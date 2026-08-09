@@ -46,7 +46,11 @@
   .app-menu-list .chip.on{background:#183952;color:#62B8D2}
   .app-menu-list .menu-reset{color:#8291A4}
   .menu-divider{height:1px;margin:3px 7px;background:rgba(255,255,255,.12)}
-  .language-picker{position:absolute;z-index:20;top:26px;right:0}
+  .language-picker{position:absolute;z-index:20;top:29px;right:0}
+  .sound-toggle{position:absolute;z-index:20;top:28px;left:0;display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;background:transparent;color:#9FB0C4;cursor:pointer}
+  .sound-toggle svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .sound-toggle:hover{opacity:.78}.sound-toggle[aria-pressed="false"]{opacity:.42}
+  .sound-toggle:focus-visible{outline:2px solid var(--washi);outline-offset:2px}
   .language-toggle{
     display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;
     background:transparent;color:#9FB0C4;font-size:24px;line-height:1;cursor:pointer;
@@ -487,6 +491,7 @@
   <p class="sub">WAKE SEVEN</p>
   <h1>だるまさんを起こして！</h1>
   <button class="rank-badge" id="rankBadge" type="button" hidden></button>
+  <button class="sound-toggle" id="soundToggle" type="button" aria-label="効果音ON" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M16 9.5a4 4 0 0 1 0 5M18.5 7a7.5 7.5 0 0 1 0 10"/></svg></button>
   <div class="app-menu">
     <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false">メニュー</button>
     <div class="app-menu-list" id="appMenu" role="menu">
@@ -1315,6 +1320,10 @@ Object.assign(UI_TEXT.ja,{share:'共有する',shareShort:'共有',shareCopied:'
 Object.assign(UI_TEXT.en,{share:'Share',shareShort:'Share',shareCopied:'Link copied',shareCopyPrompt:'Copy this link',shareGameText:'Playing Wake the Daruma! #WakeSeven',shareTrainingText:'I completed Daruma Training in Wake the Daruma! #WakeSeven',shareMasteryText:'I conquered the Path to Mastery in Wake the Daruma! #WakeSeven'});
 Object.assign(UI_TEXT.zh,{share:'分享',shareShort:'分享',shareCopied:'链接已复制',shareCopyPrompt:'请复制此链接',shareGameText:'我正在玩《叫醒不倒翁！》 #WakeSeven',shareTrainingText:'我完成了《叫醒不倒翁！》的不倒翁修行！ #WakeSeven',shareMasteryText:'我征服了《叫醒不倒翁！》的名人之路！ #WakeSeven'});
 Object.assign(UI_TEXT.ko,{share:'공유',shareShort:'공유',shareCopied:'링크를 복사했어요',shareCopyPrompt:'이 링크를 복사하세요',shareGameText:'다루마를 깨워라!를 플레이하고 있어요. #WakeSeven',shareTrainingText:'다루마를 깨워라!의 다루마 수행을 완료했어요! #WakeSeven',shareMasteryText:'다루마를 깨워라!의 명인의 길을 정복했어요! #WakeSeven'});
+Object.assign(UI_TEXT.ja,{soundOn:'効果音ON',soundOff:'効果音OFF'});
+Object.assign(UI_TEXT.en,{soundOn:'Sound on',soundOff:'Sound off'});
+Object.assign(UI_TEXT.zh,{soundOn:'音效开启',soundOff:'音效关闭'});
+Object.assign(UI_TEXT.ko,{soundOn:'효과음 켜짐',soundOff:'효과음 꺼짐'});
 Object.assign(UI_TEXT.ja,{rankListMenu:'獲得した称号一覧'});
 Object.assign(UI_TEXT.en,{rankListMenu:'Collected titles'});
 Object.assign(UI_TEXT.zh,{rankListMenu:'已获得的称号'});
@@ -1481,6 +1490,8 @@ const DEBUG_MODE=new URLSearchParams(location.search).get('debug')==='1';
 let ori=new Uint8Array(N), spin=new Int16Array(N), history=[], moves=0, best=0;
 let tileEls=[], baseTiles=[], drag=null, busy=false;
 let stageIndex=0,extraIndex=0,extraMode=false,freeMode=false,clearShown=false,clearTimer=0;
+let soundEnabled=true,audioContext=null;
+try{soundEnabled=localStorage.getItem('wake7-sound')!=='off';}catch(_){ }
 let lastStageMode={extra:false,index:0};
 let customMode=false,editingBoard=false;
 let masterDialogKind='primary';
@@ -1558,6 +1569,49 @@ function showRemaining(value,animate=true){
 function haptic(pattern){
   if(document.hidden||typeof navigator==='undefined'||typeof navigator.vibrate!=='function')return;
   try{navigator.vibrate(pattern);}catch(_){ }
+}
+function playTone(frequency,duration=.06,volume=.028,delay=0){
+  if(!soundEnabled||document.hidden)return;
+  try{
+    const AudioCtor=window.AudioContext||window.webkitAudioContext;
+    if(!AudioCtor)return;
+    if(!audioContext)audioContext=new AudioCtor();
+    if(audioContext.state==='suspended')audioContext.resume().catch(()=>{});
+    const start=audioContext.currentTime+delay;
+    const oscillator=audioContext.createOscillator();
+    const gain=audioContext.createGain();
+    oscillator.type='sine';
+    oscillator.frequency.setValueAtTime(frequency,start);
+    gain.gain.setValueAtTime(.0001,start);
+    gain.gain.exponentialRampToValueAtTime(volume,start+.008);
+    gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
+    oscillator.connect(gain).connect(audioContext.destination);
+    oscillator.start(start);oscillator.stop(start+duration+.02);
+  }catch(_){ }
+}
+function playRotateSound(direction){playTone(direction>0?392:349,.055,.022);}
+function playClearSound(kind='normal'){
+  const tunes={
+    normal:[[523,0],[659,.075],[784,.15]],
+    volume:[[440,0],[554,.08],[659,.16],[880,.26]],
+    training:[[440,0],[554,.07],[659,.14],[880,.23],[1109,.33]],
+    mastery:[[392,0],[523,.08],[659,.16],[784,.24],[1047,.34],[1319,.47]]
+  };
+  (tunes[kind]||tunes.normal).forEach(([tone,delay])=>playTone(tone,.18,.032,delay));
+}
+function clearSoundKind(){
+  if(freeMode||customMode)return 'normal';
+  if(!extraMode&&stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
+  if(extraMode&&(extraIndex+1)%STAGES.length===0)return extraIndex===EXTRA_STAGES.length-1?'mastery':'volume';
+  return 'normal';
+}
+function updateSoundToggle(){
+  const button=$('soundToggle');
+  button.setAttribute('aria-label',tr(soundEnabled?'soundOn':'soundOff'));
+  button.setAttribute('aria-pressed',String(soundEnabled));
+  button.innerHTML=soundEnabled
+    ?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M16 9.5a4 4 0 0 1 0 5M18.5 7a7.5 7.5 0 0 1 0 10"/></svg>'
+    :'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="m4 4 16 16"/></svg>';
 }
 
 function hexPath(r){
@@ -1862,6 +1916,7 @@ function applySwipe(ti,dir,save=true){
   }
   moves++;
   haptic(SOLVER.dist[enc(ori)]===0?[20,32,42]:10);
+  playRotateSound(dir);
 }
 function setPosition(state,par){
   loadFourthChecks();
@@ -2629,6 +2684,7 @@ function renderStageNav(){
 }
 function celebrateClear(){
   svg.classList.add('celebrating');
+  playClearSound(clearSoundKind());
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return 0;
   tileEls.forEach((el,i)=>{
     const base=el.style.transform;
@@ -2858,6 +2914,8 @@ function buildMessageReviewEntries(){
     const text=stageClearTextAt(false,i);if(text)entries.push({extra:false,index:i,text,art:stageClearArtAt(false,i)});
     if(PRIMARY_QUIZ_STAGES[i]!==undefined)entries.push({extra:false,index:i,quiz:PRIMARY_QUIZ_STAGES[i],art:stageClearArtAt(false,i)});
   }
+  // だるま修行を終えるまでは、後半コースのメッセージへ飛ばさない。
+  if(!allPrimaryCleared())return entries;
   for(let i=0;i<EXTRA_STAGES.length;i++){
     if(!clearedExtraStages.has(i))continue;
     if((i+1)%STAGES.length===0){entries.push({master:i===EXTRA_STAGES.length-1?'mastery':'volume',extra:true,index:i});continue;}
@@ -3907,6 +3965,7 @@ function applyLanguage(lang){
   $('freeMode').textContent=tr('freeMode');
   $('menuStagePicker').textContent=tr('stagePicker');
   $('menuRankList').textContent=tr('rankListMenu');
+  updateSoundToggle();
   $('clearMessages').textContent=tr('clearMessages');
   $('stageModeReturn').textContent=tr('stageModeReturn');
   $('shuffle').textContent=tr('shuffle');
@@ -4005,6 +4064,12 @@ $('menuToggle').addEventListener('click',e=>{
 });
 ['stageMode','freeMode','customMode','clearMessages','showTip','resetProgress'].forEach(id=>{
   $(id).addEventListener('click',closeAppMenu);
+});
+$('soundToggle').addEventListener('click',()=>{
+  soundEnabled=!soundEnabled;
+  try{localStorage.setItem('wake7-sound',soundEnabled?'on':'off');}catch(_){ }
+  updateSoundToggle();
+  if(soundEnabled)playTone(523,.07,.025);
 });
 $('twoMovePatterns').addEventListener('click',()=>{
   closeAppMenu();
