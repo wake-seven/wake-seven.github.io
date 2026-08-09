@@ -150,10 +150,10 @@
   }
   .stage-picker-backdrop[hidden]{display:none}
   .stage-picker{width:min(100%,380px);padding:18px;border:1px solid rgba(255,255,255,.15);border-radius:14px;background:#1A3047;box-shadow:0 20px 55px rgba(0,0,0,.5)}
-  .stage-picker-head{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;gap:6px}
+  .stage-picker-head{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;gap:6px;margin-bottom:14px}
   .stage-picker h2{font-size:15px;text-align:center;letter-spacing:.08em}
   .stage-picker-close{border:0;background:none;color:#A8B6C7;font:inherit;font-size:22px;cursor:pointer}
-  .stage-picker-round{display:flex;align-items:center;justify-content:space-between;margin:14px 0 10px;color:#9FB0C4;font-size:12px}
+  .stage-picker-round{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px;color:#9FB0C4;font-size:12px}
   .stage-picker-round[hidden]{display:none}
   .stage-picker-round button{border:0;background:none;color:#62B8D2;font:inherit;font-size:16px;cursor:pointer;padding:3px 8px}
   .stage-picker-round button:disabled{color:#53667B;cursor:default}
@@ -167,6 +167,8 @@
   .stage-picker-grid button.extra-lap-3{border-color:#D4899A;color:#EDB5C2}
   .stage-picker-grid button.current{box-shadow:0 0 0 2px var(--washi)}
   .stage-picker-grid button:disabled{opacity:.28;cursor:default}
+  .stage-picker-actions{display:flex;justify-content:center;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.12)}
+  .stage-picker-actions .chip{font-size:12px}
   .game-dialog-backdrop{
     position:fixed;z-index:70;inset:0;display:grid;place-items:center;padding:18px;
     background:rgba(4,13,24,.7);backdrop-filter:blur(4px);
@@ -221,6 +223,13 @@
   #twoMoveDetailDialog.comparing .two-move-detail{background:transparent;border-color:transparent;box-shadow:none}
   #twoMoveDetailDialog.comparing .two-move-detail > :not(.two-move-detail-board){opacity:0;pointer-events:none}
   .two-move-detail-tip{margin:12px 0 0!important;padding:10px 11px;border-radius:7px;background:rgba(98,184,210,.1);color:#B9E8F2!important;text-align:left}
+  .two-move-detail-play{display:flex;justify-content:center;gap:7px;margin-top:14px}
+  .two-move-detail-actions{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;margin:8px 0 4px}
+  .two-move-detail-actions .chip{padding:5px 7px;font-size:10px}
+  .two-move-detail-actions #twoMoveDetailPrev{justify-self:start}
+  .two-move-detail-actions #closeTwoMoveDetail{grid-column:2;padding-left:17px;padding-right:17px}
+  .two-move-detail-actions #twoMoveDetailNext{grid-column:3;justify-self:end}
+  .two-move-detail-return{padding:6px 17px!important;font-size:10px!important}
   .tip-guide-dialog{width:min(100%,390px)}
   .tip-guide-page{margin-top:10px;color:#9BCBDD;font-size:11px;font-weight:700;letter-spacing:.12em}
   .tip-guide-art{height:290px;margin:3px auto -4px;display:grid;place-items:center}
@@ -307,6 +316,7 @@
   .rank-row{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;min-height:42px;padding:7px 8px;border-bottom:1px solid rgba(255,255,255,.1);color:#687B8E;font-size:12px;line-height:1.35}
   .rank-row:first-child{border-top:1px solid rgba(255,255,255,.1)}.rank-row b{display:block;width:90px;height:31px}.rank-row b svg{display:block;width:100%;height:100%;overflow:visible}.rank-row.earned{color:#D4E6EC}
   .rank-stage-link{padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;text-decoration:underline;text-decoration-color:rgba(185,232,242,.38);text-underline-offset:3px;cursor:pointer}.rank-stage-link:hover{color:var(--washi);text-decoration-color:var(--washi)}.rank-stage-link:focus-visible{outline:2px solid var(--washi);outline-offset:3px;border-radius:2px}
+  .rank-row.next .rank-stage-link{color:#D4E6EC;text-decoration-color:rgba(212,230,236,.62)}
   .rank-condition{min-width:0;white-space:normal}.rank-condition > span{white-space:nowrap}
   .rank-stage-link{display:inline;max-width:100%;white-space:normal;overflow-wrap:anywhere}
   .stage-title span.hint-info{color:#62B8D2;font-weight:700}
@@ -520,11 +530,11 @@
   <button class="chip" id="debugMore" hidden>+2</button>
   <button class="chip" id="debugFar" hidden>+3</button>
   <button class="chip" id="debugUnlock14" hidden>修行14</button>
-  <button class="chip" id="debugUnlock" hidden>修行15</button>
   <button class="chip" id="debugExtra14" hidden>序14</button>
   <button class="chip" id="debugExtra29" hidden>破14</button>
   <button class="chip" id="debugExtra44" hidden>離14</button>
   <button class="chip" id="debugExtra59" hidden>極14</button>
+  <button class="chip" id="debugReset" hidden>リ</button>
 </div>
 <div class="game-dialog-backdrop" id="introDialog" hidden>
   <div class="game-dialog">
@@ -559,7 +569,7 @@
     <div class="master-roadmap" id="messageRoadmap" hidden></div>
     <p class="master-rules" id="messageRules" hidden></p>
     <div class="clear-tip-illustration" id="messageIllustration" hidden></div>
-    <div id="messageDialogText"><span id="messageDialogTextBody"></span></div>
+    <div id="messageDialogText"><span id="messageDialogTextBody"></span><button class="clear-tip-link" id="messageRankLink" type="button" hidden></button></div>
     <div id="messageQuiz" hidden>
       <div class="quiz-label" id="messageQuizTitle">だるまクイズ</div>
       <p class="quiz-question" id="messageQuizQuestion"></p>
@@ -612,10 +622,11 @@
 <div class="game-dialog-backdrop" id="twoMoveDetailDialog" hidden>
   <div class="game-dialog two-move-detail" role="dialog" aria-modal="true" aria-labelledby="twoMoveDetailTitle">
     <h2 id="twoMoveDetailTitle">この盤面のコツ</h2>
+    <div class="two-move-detail-actions"><button class="chip" id="twoMoveDetailPrev">← 前へ</button><button class="chip" id="closeTwoMoveDetail">一覧へ</button><button class="chip" id="twoMoveDetailNext">次へ →</button></div>
     <div class="two-move-detail-board" id="twoMoveDetailBoard"></div>
     <div class="two-move-controls"><button class="chip" id="twoMoveDetailMirror">左右反転</button><button class="chip" id="twoMoveDetailRotate">60°回転</button></div>
     <p class="two-move-detail-tip" id="twoMoveDetailTip"></p>
-    <div class="dialog-actions"><button class="chip" id="closeTwoMoveDetail">一覧へ</button><button class="chip on" id="playTwoMoveFree">フリーモードで遊ぶ →</button></div>
+    <div class="two-move-detail-play"><button class="chip on" id="playTwoMoveFree">フリーモードで遊ぶ →</button><button class="chip two-move-detail-return" id="returnToClearDetail" hidden>戻る</button></div>
     <p class="board-compare-hint" id="twoMoveDetailCompareHint"></p>
   </div>
 </div>
@@ -636,6 +647,7 @@
     <div class="stage-picker-head"><span></span><h2 id="stagePickerTitle">ステージを選ぶ</h2><button class="stage-picker-close" id="closeStagePicker" aria-label="閉じる">×</button></div>
     <div class="stage-picker-round" id="stagePickerRound"><button id="pickerPrevRound" aria-label="前の周">←</button><span id="pickerRoundLabel"></span><button id="pickerNextRound" aria-label="次の周">→</button></div>
     <div class="stage-picker-grid" id="stagePickerGrid"></div>
+    <div class="stage-picker-actions"><button class="chip" id="pickerFreeMode" type="button">フリーモードへ</button><button class="chip" id="pickerCustomMode" type="button">自作モードへ</button></div>
   </div>
 </div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -793,6 +805,14 @@ const masterStage=(volume,question)=>(volume-1)*STAGES.length+(question-1);
 // 覚えやすい順。番号は TWO_MOVE_STAGES 内での元の並び順（1 始まり）。
 const TWO_MOVE_PATTERN_ORDER=[7,6,5,4,3,8,0,2,1];
 const TWO_MOVE_PATTERN_POSITION=Object.fromEntries(TWO_MOVE_PATTERN_ORDER.map((pattern,position)=>[pattern,position+1]));
+const TWO_MOVE_CLEAR_MESSAGE_KEYS={
+  1:'twoMoveDiscovery1',
+  2:'twoMoveDiscovery23',3:'twoMoveDiscovery23',
+  4:'twoMoveDiscovery45',5:'twoMoveDiscovery45',
+  6:'twoMoveDiscovery6',
+  7:'twoMoveDiscovery7',
+  8:'twoMoveDiscovery89',9:'twoMoveDiscovery89'
+};
 const CLEAR_TWO_MOVE_CARDS={
   [masterStage(1,5)]:7,
   [masterStage(1,8)]:6,
@@ -980,7 +1000,7 @@ const UI_TEXT={
     prev:'前へ',next:'次へ',progress:'全15問の進捗',shortest:'残り最短',moveUnit:'手',moves:'手数',
     stageMode:'ステージモード',freeMode:'フリーモード',shuffle:'シャッフル',reset:'やり直す',
     resetAll:'全員起きる',undo:'1手戻す',shortestMoves:'最短手数',hint:'ヒント',remainingCheck:'残り手数 ×{n}',
-    debugClear:'即',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'修行14',debugUnlock:'修行15',
+    debugReset:'リ',debugClear:'即',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'修14',
     debugExtra14:'序14',debugExtra29:'破14',debugExtra44:'離14',debugExtra59:'極14',
     mirror:'左右反転',rotate:'60°回転',boardLabel:'七枚のだるま盤',tips:'攻略のコツ',
     makeBoard:'自作モード',playBoard:'この盤面で遊ぶ',nextPuzzle:'次の問題へ →',
@@ -989,7 +1009,7 @@ const UI_TEXT={
     freeKind:'FREE PLAY',makerKind:'BOARD MAKER',customKind:'CUSTOM PLAY',
     another:'もう一問',again:'もう一度',toFree:'フリーモードへ →',
     allPatternsKind:'名人への道',allPatternsNext:'名人への道へ →',nextPattern:'次の問題へ →',
-    stagePicker:'ステージを選ぶ',close:'閉じる',rankCollection:'称号',rankListMenu:'称号一覧',primaryRound:'だるま修行',patternRound:'名人への道・{n}　全15問',
+    stagePicker:'ステージを選ぶ',stagePickerFree:'フリーモードへ',stagePickerCustom:'自作モードへ',close:'閉じる',rankCollection:'称号',rankListMenu:'称号一覧',primaryRound:'だるま修行',patternRound:'名人への道・{n}　全15問',
     extraStageAria:'名人への道 {n} / {total}',
     optimalClear:'最短で全員起きました。お見事。',clear:'全員起きました！',
     remaining:'残り最短 {n}手',stageAria:'問題{n}、最短{par}手',
@@ -1021,7 +1041,7 @@ const UI_TEXT={
     ,extraClear50:'だるまが赤い理由には諸説あり。赤い法衣や、魔よけの願いにちなむとされます。'
     ,extraClear54:'高崎だるまのお腹には、「福入」と書かれることがあります。福が入るようにという願いです。'
     ,extraClear58:'「だるまさんがころんだ」遊びの由来は比較的新しい可能性もあり、明治生まれの人々の記憶のなかには無いという話もあります。'
-    ,extraClearRankCollection:'左上の称号をタップすると、集めた称号を一覧で見られます。がんばってクリアして、集めよう。'
+    ,extraClearRankCollection:'左上の称号をタップすると、集めた称号を一覧で見られます。がんばってクリアして集めよう。'
     ,extraClearMessageReview:'もう一度見たいクリア後メッセージは、メニューからいつでも見られます。'
   },
   en:{
@@ -1029,7 +1049,7 @@ const UI_TEXT={
     prev:'Prev',next:'Next',progress:'Progress through 15 puzzles',shortest:'At least',moveUnit:'moves left',moves:'Moves',
     stageMode:'Puzzles',freeMode:'Free Play',shuffle:'Shuffle',reset:'Restart',resetAll:'Stand all up',
     undo:'Undo',shortestMoves:'Moves left',hint:'Hint',remainingCheck:'Moves left ×{n}',mirror:'Mirror',rotate:'Rotate 60°',
-    debugClear:'Clear',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'Daruma Training 14',debugUnlock:'Daruma Training 15',
+    debugReset:'リ',debugClear:'Clear',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'Daruma Training 14',
     debugExtra14:'Path to Mastery 14',debugExtra29:'Path to Mastery 29',debugExtra44:'Path to Mastery 44',debugExtra59:'Path to Mastery 59',
     boardLabel:'Seven-daruma puzzle board',tips:'Quick tip',makeBoard:'Board Maker',
     playBoard:'Play this board',nextPuzzle:'Next puzzle →',resetProgress:'Reset progress',
@@ -1038,7 +1058,7 @@ const UI_TEXT={
     makerKind:'BOARD MAKER',customKind:'CUSTOM PLAY',another:'Another puzzle',again:'Try again',
     toFree:'Go to Free Play →',optimalClear:'Everyone is awake in the fewest moves. Brilliant!',
     allPatternsKind:'PATH TO MASTERY',allPatternsNext:'Path to Mastery →',nextPattern:'Next puzzle →',
-    stagePicker:'Choose a stage',close:'Close',rankCollection:'Titles',rankListMenu:'View titles',primaryRound:'Daruma Training',patternRound:'Path to Mastery {n} · 15 puzzles',
+    stagePicker:'Choose a stage',stagePickerFree:'Free Play',stagePickerCustom:'Board Maker',close:'Close',rankCollection:'Titles',rankListMenu:'View titles',primaryRound:'Daruma Training',patternRound:'Path to Mastery {n} · 15 puzzles',
     extraStageAria:'Path to Mastery {n} / {total}',
     clear:'Everyone is awake!',remaining:'Best: {n} moves left',
     stageAria:'Puzzle {n}, best in {par} moves',
@@ -1058,7 +1078,7 @@ const UI_TEXT={
     prev:'上一题',next:'下一题',progress:'15题进度',shortest:'至少还需',moveUnit:'步',moves:'步数',
     stageMode:'关卡模式',freeMode:'自由模式',shuffle:'打乱',reset:'重新开始',resetAll:'全部立起',
     undo:'撤销一步',shortestMoves:'最少步数',hint:'提示',remainingCheck:'剩余步数 ×{n}',mirror:'左右翻转',rotate:'旋转60°',
-    debugClear:'即',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'不倒翁修行 14题',debugUnlock:'不倒翁修行 15题',
+    debugReset:'リ',debugClear:'即',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'不倒翁修行 14题',
     debugExtra14:'名人之路 14题',debugExtra29:'名人之路 29题',debugExtra44:'名人之路 44题',debugExtra59:'名人之路 59题',
     boardLabel:'七个不倒翁的谜题棋盘',tips:'攻略提示',makeBoard:'制作棋盘',
     playBoard:'玩这个棋盘',nextPuzzle:'下一题 →',resetProgress:'重置进度',
@@ -1067,7 +1087,7 @@ const UI_TEXT={
     makerKind:'制作棋盘',customKind:'自制关卡',another:'再来一题',again:'再来一次',
     toFree:'进入自由模式 →',optimalClear:'用最少步数叫醒了全部不倒翁。太棒了！',
     allPatternsKind:'名人之路',allPatternsNext:'进入名人之路 →',nextPattern:'下一题 →',
-    stagePicker:'选择关卡',close:'关闭',rankCollection:'称号',rankListMenu:'称号一览',primaryRound:'不倒翁修行',patternRound:'名人之路 {n} · 15题',
+    stagePicker:'选择关卡',stagePickerFree:'前往自由模式',stagePickerCustom:'前往自制模式',close:'关闭',rankCollection:'称号',rankListMenu:'称号一览',primaryRound:'不倒翁修行',patternRound:'名人之路 {n} · 15题',
     extraStageAria:'名人之路 {n} / {total}',
     clear:'全部醒来了！',remaining:'还需最少 {n} 步',stageAria:'第{n}题，最少{par}步',
     makerImpossible:'这个布局无法解开。点击不倒翁改变方向。',
@@ -1086,7 +1106,7 @@ const UI_TEXT={
     prev:'이전',next:'다음',progress:'15문제 진행 상황',shortest:'최소',moveUnit:'수 남음',moves:'수',
     stageMode:'문제 모드',freeMode:'자유 모드',shuffle:'섞기',reset:'다시 시작',resetAll:'모두 세우기',
     undo:'한 수 되돌리기',shortestMoves:'최단 수',hint:'힌트',remainingCheck:'남은 수 ×{n}',mirror:'좌우 반전',rotate:'60° 회전',
-    debugClear:'즉시',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'다루마 수행 14문제',debugUnlock:'다루마 수행 15문제',
+    debugReset:'リ',debugClear:'즉시',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'다루마 수행 14문제',
     debugExtra14:'명인의 길 14문제',debugExtra29:'명인의 길 29문제',debugExtra44:'명인의 길 44문제',debugExtra59:'명인의 길 59문제',
     boardLabel:'일곱 다루마 퍼즐판',tips:'공략 팁',makeBoard:'보드 만들기',
     playBoard:'이 보드로 플레이',nextPuzzle:'다음 문제 →',resetProgress:'진행 상황 초기화',
@@ -1095,7 +1115,7 @@ const UI_TEXT={
     makerKind:'보드 만들기',customKind:'사용자 문제',another:'다른 문제',again:'다시 하기',
     toFree:'자유 모드로 →',optimalClear:'최단 수로 모두 깨웠습니다. 훌륭해요!',
     allPatternsKind:'명인의 길',allPatternsNext:'명인의 길로 →',nextPattern:'다음 문제 →',
-    stagePicker:'문제 선택',close:'닫기',rankCollection:'칭호',rankListMenu:'칭호 목록',primaryRound:'다루마 수행',patternRound:'명인의 길 {n} · 15문제',
+    stagePicker:'문제 선택',stagePickerFree:'자유 모드로',stagePickerCustom:'보드 만들기로',close:'닫기',rankCollection:'칭호',rankListMenu:'칭호 목록',primaryRound:'다루마 수행',patternRound:'명인의 길 {n} · 15문제',
     extraStageAria:'명인의 길 {n} / {total}',
     clear:'모두 깨어났습니다!',remaining:'남은 최단 {n}수',stageAria:'문제 {n}, 최단 {par}수',
     makerImpossible:'이 배치는 풀 수 없습니다. 다루마를 눌러 방향을 바꾸세요.',
@@ -1130,7 +1150,7 @@ Object.assign(UI_TEXT.ja,{
   stageClearChallenge2:'突破まであと一歩！\nメニューから、フリーモードや盤面を自分でつくるモードでも遊べます。',
   stageClear8:'「ヒント」ボタンを押すと、次の最善手が青い矢印で表示されます。',
   stageClear10:'一度クリアした問題は、「← 前へ」「次へ →」と、その真ん中にあるボタンでいつでも戻れます。\n金色のゲージをタップして選ぶこともできます。',
-  masterPatternCount:'盤面は全部で73パターン\n最短1手：1パターン／最短2手：9パターン／\n最短3手：39パターン／最短4手：24パターン\nこのステージモードで全パターンを遊べます\n（回転・左右反転で同じになる盤面は、同じパターンとして数えています。）',
+  masterPatternCount:'盤面は全部で73パターン\n・最短1手：1パターン\n・最短2手：9パターン\n・最短3手：39パターン\n・最短4手：24パターン\nこのステージモードで全パターンを遊べます\n（回転・左右反転で同じになる盤面は、同じパターンとして数えています。）',
   twoMoveDiscovery:'最短2手の盤面　{n} / 9\nこの形と向きを、そのまま覚えておこう。',detailsLink:'詳しい解説はこちら →',backToClear:'戻る',guideCardSmall:'4体立ち：寝ダルマの小三角は最短1手',guideCardOuter:'5体立ち：寝た2体が外周で離れていれば最短3手',guideCardCenter:'6体寝て、中央だけ立っている形は最短4手',guideCardAlternate:'外周に1つおきに3体立っている形は最短3手'
 });
 Object.assign(UI_TEXT.en,{
@@ -1277,13 +1297,29 @@ Object.assign(UI_TEXT.ja,{quizTitle:'だるまクイズ',quizCorrect:'正解！'
 Object.assign(UI_TEXT.en,{quizTitle:'Daruma Quiz',quizCorrect:'Correct!',quizWrong:'Not quite!',quizContinue:'Continue →'});
 Object.assign(UI_TEXT.zh,{quizTitle:'不倒翁小测验',quizCorrect:'答对了！',quizWrong:'差一点！',quizContinue:'继续 →'});
 Object.assign(UI_TEXT.ko,{quizTitle:'다루마 퀴즈',quizCorrect:'정답!',quizWrong:'아쉬워요!',quizContinue:'계속 →'});
+Object.assign(UI_TEXT.ja,{rankLink:'称号一覧を見る →'});
+Object.assign(UI_TEXT.en,{rankLink:'View titles →'});
+Object.assign(UI_TEXT.zh,{rankLink:'查看称号一览 →'});
+Object.assign(UI_TEXT.ko,{rankLink:'칭호 목록 보기 →'});
+Object.assign(UI_TEXT.ja,{clearMessagesLink:'クリア後のメッセージを見る →'});
+Object.assign(UI_TEXT.en,{clearMessagesLink:'View clear messages →'});
+Object.assign(UI_TEXT.zh,{clearMessagesLink:'查看通关后消息 →'});
+Object.assign(UI_TEXT.ko,{clearMessagesLink:'클리어 메시지 보기 →'});
+Object.assign(UI_TEXT.ja,{
+  twoMoveDiscovery1:'最短2手の盤面　{n} / 9\nこの形をそのまま覚えておこう。',
+  twoMoveDiscovery23:'最短2手の盤面　{n} / 9\nこの形と向きを、そのまま覚えておこう。台形の対角線同士の向きに注目すると覚えやすいです。',
+  twoMoveDiscovery45:'最短2手の盤面　{n} / 9\nこの形と向きを、そのまま覚えておこう。芋虫の目と胴体の向きに注目すると覚えやすいです。',
+  twoMoveDiscovery6:'最短2手の盤面　{n} / 9\n外周の隣り合う寝た2体は、盤面の全体を回転すると向きが変わって見えるので覚えにくい形です。以下の解説から詳しく見てみよう。',
+  twoMoveDiscovery7:'最短2手の盤面　{n} / 9\nバーベル型は仲間外れダルマの向きに注目。盤面の全体を回転すると向きが変わって見えるので覚えにくい形です。以下の解説から詳しく見てみよう。',
+  twoMoveDiscovery89:'最短2手の盤面　{n} / 9\n台形型は仲間外れダルマの向きに注目。盤面の全体を回転すると向きが変わって見えるので覚えにくい形です。以下の解説から詳しく見てみよう。'
+});
 function tr(key,vars){
   let value=(UI_TEXT[currentLang]&&UI_TEXT[currentLang][key])||UI_TEXT.ja[key]||key;
   if(vars)Object.keys(vars).forEach(name=>value=value.replaceAll('{'+name+'}',vars[name]));
   return value;
 }
 const DARUMA_QUIZZES=[
-  { q:'だるまのモデルになったお坊さんの名前は？',a:['空海','達磨大師','行基','一休'],correct:1,note:'インド出身で中国に渡った達磨大師。壁に向かって9年座り続けた逸話から、手足のない姿になりました。' },
+  { q:'だるまのモデルになったお坊さんの名前は？',a:['空海','達磨大師','行基','一休'],correct:1,note:'インドから中国へ渡ったと伝えられる達磨大師。5〜6世紀ごろの人物で、その教えは後に日本の禅へ受け継がれました。' },
   { q:'「七転び八起き」、起きる回数が1回多いのはなぜ？',a:['縁起をかつぐため','最初に起き上がるぶんを数えるから','数え間違い','八が末広がりだから'],correct:1,note:'諸説ありますが、生まれたときに起き上がる1回を足す、という説がよく知られています。' },
   { q:'願かけのとき、だるまの目はどちらから入れる？',a:['向かって右','向かって左','両目いっしょ','どちらでもよい'],correct:0,note:'向かって右（だるまから見て左目）を先に入れ、願いが叶ったらもう片方を入れるのが一般的です。' },
   { q:'だるまの生産量が日本一の県は？',a:['京都府','群馬県','愛知県','福島県'],correct:1,note:'群馬県高崎市。少林山達磨寺のふもとで作られてきた高崎だるまが、全国の大半を占めています。' },
@@ -1293,9 +1329,25 @@ const DARUMA_QUIZZES=[
   { q:'江戸時代、赤いだるまは何よけとして求められた？',a:['疱瘡（ほうそう）よけ','火事よけ','雨よけ','虫よけ'],correct:0,note:'赤い色には邪気を払う力があると信じられ、疱瘡よけとしても求められました。' },
   { q:'達磨大師が開いたとされる仏教の宗派は？',a:['禅宗','浄土宗','真言宗','日蓮宗'],correct:0,note:'達磨大師は、中国禅宗の開祖とされています。' }
 ];
+/* 正解の位置を問題ごとに散らす。翻訳版も同じ並び替えを使う。 */
+const QUIZ_OPTION_ORDERS=[
+  [0,2,3,1], // 4番目
+  [0,2,1,3], // 3番目
+  [1,0,2,3], // 2番目
+  [0,2,3,1], // 4番目
+  [0,2,1,3], // 3番目
+  [0,1,2,3], // 2番目
+  [0,1,2,3], // 1番目
+  [1,2,0,3], // 3番目
+  [0,1,2,3]  // 1番目
+];
+function quizPresentation(quizIndex,quiz){
+  const order=QUIZ_OPTION_ORDERS[quizIndex]||quiz.a.map((_,index)=>index);
+  return {answers:order.map(index=>quiz.a[index]),correct:order.indexOf(quiz.correct)};
+}
 const DARUMA_QUIZ_TRANSLATIONS={
   en:[
-    {q:'What is the name of the monk who inspired the daruma?',a:['Kūkai','Bodhidharma','Gyōki','Ikkyū'],correct:1,note:'Bodhidharma, said to have travelled from India to China, meditated facing a wall for nine years. That story inspired the limbless daruma form.'},
+    {q:'What is the name of the monk who inspired the daruma?',a:['Kūkai','Bodhidharma','Gyōki','Ikkyū'],correct:1,note:'Bodhidharma is traditionally said to have travelled from India to China. He lived around the fifth to sixth centuries, and his teachings later influenced Japanese Zen.'},
     {q:'Why does “fall seven times, rise eight” have one more rise?',a:['For good luck','It counts the first time one rises','A counting mistake','Because eight widens at the end'],correct:1,note:'There are several theories. A familiar one counts the first time a person rises when they are born.'},
     {q:'Which eye is painted first when making a wish?',a:['The right eye as you face it','The left eye as you face it','Both together','Either is fine'],correct:0,note:'Usually the eye on your right (the daruma’s left eye) is painted first, and the other is added when the wish comes true.'},
     {q:'Which prefecture produces the most daruma in Japan?',a:['Kyoto','Gunma','Aichi','Fukushima'],correct:1,note:'Takasaki, Gunma. Takasaki daruma, made near Shōrinzan Daruma Temple, account for the majority nationwide.'},
@@ -1306,7 +1358,7 @@ const DARUMA_QUIZ_TRANSLATIONS={
     {q:'Which Buddhist school is Bodhidharma said to have founded?',a:['Zen','Pure Land','Shingon','Nichiren'],correct:0,note:'Bodhidharma is regarded as the founder of Chinese Zen Buddhism.'}
   ],
   zh:[
-    {q:'不倒翁的原型是哪位僧人？',a:['空海','达摩大师','行基','一休'],correct:1,note:'达摩大师从印度来到中国，相传面壁坐禅九年。不倒翁没有手脚的样子就来自这个故事。'},
+    {q:'不倒翁的原型是哪位僧人？',a:['空海','达摩大师','行基','一休'],correct:1,note:'相传达摩大师从印度来到中国。他生活在约5～6世纪，他的教法后来传入日本禅宗。'},
     {q:'“七转八起”为什么起身次数多一次？',a:['为了讨吉利','把出生后第一次站起也算进去','数错了','八字末尾张开'],correct:1,note:'有多种说法。其中一种常见说法是，把出生时第一次站起也算进去。'},
     {q:'许愿时，先画不倒翁的哪只眼？',a:['面对不倒翁时右边的眼','面对不倒翁时左边的眼','两只一起','哪只都行'],correct:0,note:'一般先画面对不倒翁时右边的眼（不倒翁自己的左眼），愿望实现后再画另一只。'},
     {q:'日本不倒翁产量第一的县是？',a:['京都府','群马县','爱知县','福岛县'],correct:1,note:'群马县高崎市。少林山达磨寺附近制作的高崎不倒翁占全国大部分产量。'},
@@ -1317,7 +1369,7 @@ const DARUMA_QUIZ_TRANSLATIONS={
     {q:'达摩大师被认为开创了哪个佛教宗派？',a:['禅宗','净土宗','真言宗','日莲宗'],correct:0,note:'达摩大师被视为中国禅宗的开祖。'}
   ],
   ko:[
-    {q:'다루마의 모델이 된 스님의 이름은?',a:['구카이','달마대사','교키','잇큐'],correct:1,note:'인도 출신으로 중국에 건너간 달마대사는 벽을 마주 보고 9년 동안 좌선했다고 전해집니다. 손발 없는 다루마 모습은 이 일화에서 나왔어요.'},
+    {q:'다루마의 모델이 된 스님의 이름은?',a:['구카이','달마대사','교키','잇큐'],correct:1,note:'달마대사는 인도에서 중국으로 건너왔다고 전해집니다. 5~6세기 무렵의 인물이며, 그의 가르침은 훗날 일본 선종으로 이어졌어요.'},
     {q:'“일곱 번 넘어져도 여덟 번 일어난다”에서 일어나는 횟수가 하나 더 많은 이유는?',a:['복을 빌기 위해서','처음 일어나는 것도 세기 때문에','숫자를 잘못 세서','8이 끝에서 넓어지기 때문에'],correct:1,note:'여러 설이 있습니다. 태어날 때 처음 일어나는 한 번을 더한다는 설이 잘 알려져 있어요.'},
     {q:'소원을 빌 때 다루마의 어느 쪽 눈부터 그릴까?',a:['마주 보았을 때 오른쪽','마주 보았을 때 왼쪽','양쪽을 함께','어느 쪽이든'],correct:0,note:'보통 마주 보았을 때 오른쪽 눈(다루마 자신에게는 왼쪽 눈)을 먼저 그리고, 소원이 이루어지면 다른 쪽을 그립니다.'},
     {q:'일본에서 다루마 생산량이 가장 많은 현은?',a:['교토부','군마현','아이치현','후쿠시마현'],correct:1,note:'군마현 다카사키시입니다. 소린잔 다루마사 근처에서 만들어진 다카사키 다루마가 전국 대다수를 차지합니다.'},
@@ -1357,6 +1409,7 @@ let lastStageMode={extra:false,index:0};
 let customMode=false,editingBoard=false;
 let masterDialogKind='primary';
 let rankDialogReturn=null;
+let messageDialogReturn=null;
 let tutorialHintTimers=[];
 let makerButtonBlockedUntil=0,makerRevealTimer=0;
 let currentInitialState=0, currentInitialPar=0;
@@ -2246,13 +2299,13 @@ function rankPathLabel(index){
   return currentLang==='ja'?'名人への道・'+volumeLabel(volume)+'　'+masterSubtitle(volume):tr('allPatternsKind')+' '+volumeLabel(volume)+' · '+masterSubtitle(volume);
 }
 function renderRankList(){
-  const highest=highestRankIndex(),list=$('rankList');
+  const highest=highestRankIndex(),next=highest+1,list=$('rankList');
   $('rankDialogTitle').textContent=tr('rankDialogTitle');
   $('closeRankDialog').textContent=tr('close');
   list.innerHTML='';
   masterPath().ranks.forEach((rank,index)=>{
     const earned=index<=highest,row=document.createElement('div');
-    row.className='rank-row'+(earned?' earned':'');
+    row.className='rank-row'+(earned?' earned':'')+(index===next?' next':'');
     const condition=document.createElement('span'),path=document.createElement('button'),clear=document.createElement('span'),title=document.createElement('b');
     condition.className='rank-condition';
     path.className='rank-stage-link';path.type='button';path.textContent=rankPathLabel(index);title.innerHTML=rankFrameSvg(earned?rank:'？',!earned,index);
@@ -2316,8 +2369,9 @@ function renderStagePicker(){
   }
 }
 function openStagePicker(){
-  if(freeMode||customMode)return;
-  pickerRound=extraMode?Math.floor(extraIndex/STAGES.length):-1;
+  const showingExtra=extraMode||((freeMode||customMode)&&lastStageMode.extra);
+  const showingIndex=extraMode?extraIndex:lastStageMode.index;
+  pickerRound=showingExtra?Math.floor(showingIndex/STAGES.length):-1;
   renderStagePicker();
   $('stagePicker').hidden=false;
 }
@@ -2333,6 +2387,16 @@ $('closeStagePicker').addEventListener('click',closeStagePicker);
 $('stagePicker').addEventListener('click',e=>{if(e.target===$('stagePicker'))closeStagePicker();});
 $('pickerPrevRound').addEventListener('click',()=>{pickerRound--;renderStagePicker();});
 $('pickerNextRound').addEventListener('click',()=>{if(allPrimaryCleared()){pickerRound++;renderStagePicker();}});
+$('pickerFreeMode').addEventListener('click',()=>{
+  if(busy)return;
+  closeStagePicker();
+  if(!freeMode)restoreFreeSession();
+});
+$('pickerCustomMode').addEventListener('click',()=>{
+  if(busy)return;
+  closeStagePicker();
+  if(!customMode)enterBoardMaker();
+});
 
 function renderProgress(){
   const progress=$('stageProgress');
@@ -2375,7 +2439,7 @@ function renderStageNav(){
   $('stagePickerTrigger').classList.toggle('master-stage',extraMode);
   $('stageSubtitle').hidden=true;
   $('stageCount').hidden=true;
-  $('stagePickerTrigger').disabled=freeMode||customMode;
+  $('stagePickerTrigger').disabled=false;
   $('shuffle').hidden=true;
   $('undo').hidden=editingBoard;
   $('hint').hidden=editingBoard;
@@ -2387,7 +2451,7 @@ function renderStageNav(){
     $('hint').disabled=masterHintsDisabled();
   }
   $('debugTools').hidden=!DEBUG_MODE;
-  for(const id of ['debugClear','debugAlmost','debugMore','debugFar','debugUnlock14','debugUnlock','debugExtra14','debugExtra29','debugExtra44','debugExtra59'])$(id).hidden=!DEBUG_MODE;
+  for(const id of ['debugReset','debugClear','debugAlmost','debugMore','debugFar','debugUnlock14','debugExtra14','debugExtra29','debugExtra44','debugExtra59'])$(id).hidden=!DEBUG_MODE;
   $('reset').textContent=editingBoard?tr('resetAll'):tr('reset');
   const inSideMode=freeMode||customMode;
   $('stageKind').hidden=false;
@@ -2523,9 +2587,14 @@ function renderOptimalFail(){
   $('optimalFailEncourage').textContent=tr('optimalFailEncourage');
   $('optimalRetry').textContent=tr('optimalRetry');
 }
+function twoMoveDiscoveryText(card){
+  const position=TWO_MOVE_PATTERN_POSITION[card];
+  const key=TWO_MOVE_CLEAR_MESSAGE_KEYS[position];
+  return currentLang==='ja'&&key?tr(key,{n:position}):tr('twoMoveDiscovery',{n:position});
+}
 function stageClearTextAt(mode,index){
   if(mode){
-    if(CLEAR_TWO_MOVE_CARDS[index]!==undefined)return tr('twoMoveDiscovery',{n:TWO_MOVE_PATTERN_POSITION[CLEAR_TWO_MOVE_CARDS[index]]});
+    if(CLEAR_TWO_MOVE_CARDS[index]!==undefined)return twoMoveDiscoveryText(CLEAR_TWO_MOVE_CARDS[index]);
     if(CLEAR_GUIDE_CARDS[index])return tr(CLEAR_GUIDE_CARDS[index].text);
     return EXTRA_CLEAR_TIPS[index]?tr(EXTRA_CLEAR_TIPS[index]):'';
   }
@@ -2628,11 +2697,14 @@ function renderClearTip(){
   const text=stageClearText(),art=stageClearArt(),illustration=$('clearTipIllustration');
   const twoMoveCard=extraMode?CLEAR_TWO_MOVE_CARDS[extraIndex]:undefined;
   const guideCard=extraMode?CLEAR_GUIDE_CARDS[extraIndex]:null;
+  const rankLink=extraMode&&EXTRA_CLEAR_TIPS[extraIndex]==='extraClearRankCollection';
+  const messagesLink=extraMode&&EXTRA_CLEAR_TIPS[extraIndex]==='extraClearMessageReview';
   const detailLink=$('clearTipLink');
   $('clearDialogTextBody').textContent=text;
   $('clearDialogText').hidden=!text;
-  detailLink.hidden=twoMoveCard===undefined&&!guideCard;
-  detailLink.textContent=tr('detailsLink');
+  detailLink.hidden=twoMoveCard===undefined&&!guideCard&&!rankLink&&!messagesLink;
+  detailLink.dataset.target=rankLink?'rank':messagesLink?'messages':'details';
+  detailLink.textContent=tr(rankLink?'rankLink':messagesLink?'clearMessagesLink':'detailsLink');
   illustration.classList.toggle('move-graph',art==='moveGraph');
   illustration.classList.toggle('board-card',art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'));
   illustration.classList.toggle('controls-art',art==='controls');
@@ -2645,7 +2717,12 @@ function renderClearTip(){
   if(art==='introGuide')buildClearGuideBoard('clearGuideBoard');
   illustration.hidden=!art;
 }
+const MESSAGE_REVIEW_STORAGE_KEY='wake7-message-review';
 let messageReviewEntries=[],messageReviewIndex=0;
+function messageReviewEntryKey(entry){
+  const kind=entry.master?'master:'+entry.master:entry.quiz!==undefined?'quiz:'+entry.quiz:'text';
+  return (entry.extra?'extra':'primary')+':'+entry.index+':'+kind;
+}
 function buildMessageReviewEntries(){
   const entries=[];
   for(let i=0;i<STAGES.length;i++){
@@ -2683,6 +2760,9 @@ function renderMessageReview(){
   seal.hidden=!entry.master;
   rankText.hidden=true;masterText.hidden=true;
   $('messageDialogText').hidden=!!entry.master||entry.quiz!==undefined;
+  const rankLink=entry.extra&&EXTRA_CLEAR_TIPS[entry.index]==='extraClearRankCollection';
+  $('messageRankLink').hidden=!rankLink;
+  $('messageRankLink').textContent=tr('rankLink');
   $('messageQuiz').hidden=entry.quiz===undefined;
   if(entry.master){
     const volume=entry.master==='primary'?0:Math.ceil((entry.index+1)/STAGES.length);
@@ -2720,30 +2800,40 @@ function renderMessageReview(){
   illustration.hidden=!art;
   $('messagePrev').disabled=messageReviewIndex===0;
   $('messageNext').disabled=messageReviewIndex===messageReviewEntries.length-1;
+  try{localStorage.setItem(MESSAGE_REVIEW_STORAGE_KEY,messageReviewEntryKey(entry));}catch(_){}
 }
 function renderMessageQuiz(quizIndex){
   const quiz=(DARUMA_QUIZ_TRANSLATIONS[currentLang]||DARUMA_QUIZZES)[quizIndex],options=$('messageQuizOptions'),note=$('messageQuizNote');
+  const {answers,correct}=quizPresentation(quizIndex,quiz);
   $('messageQuizTitle').textContent=tr('quizTitle');
   $('messageQuizQuestion').textContent=quiz.q;
   note.textContent='';
   options.innerHTML='';
-  quiz.a.forEach((answer,index)=>{
+  answers.forEach((answer,index)=>{
     const button=document.createElement('button');
     button.className='quiz-option';button.type='button';button.textContent=answer;
     button.addEventListener('click',()=>{
       [...options.children].forEach(item=>item.disabled=true);
-      options.children[quiz.correct].classList.add('correct');
-      if(index===quiz.correct)note.textContent=tr('quizCorrect')+'　'+quiz.note;
+      options.children[correct].classList.add('correct');
+      if(index===correct)note.textContent=tr('quizCorrect')+'　'+quiz.note;
       else{button.classList.add('wrong');note.textContent=tr('quizWrong')+'　'+quiz.note;}
     });
     options.appendChild(button);
   });
 }
-function openMessageReview(){
+function openMessageReview({resume=false,returnTarget=null}={}){
+  messageDialogReturn=returnTarget;
   messageReviewEntries=buildMessageReviewEntries();
-  const currentExtra=extraMode,currentIndex=extraMode?extraIndex:stageIndex;
-  const exact=messageReviewEntries.findIndex(entry=>entry.extra===currentExtra&&entry.index===currentIndex);
-  messageReviewIndex=exact>=0?exact:0;
+  if(resume){
+    let lastKey='';
+    try{lastKey=localStorage.getItem(MESSAGE_REVIEW_STORAGE_KEY)||'';}catch(_){}
+    const saved=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===lastKey);
+    messageReviewIndex=saved>=0?saved:0;
+  }else{
+    const currentExtra=extraMode,currentIndex=extraMode?extraIndex:stageIndex;
+    const exact=messageReviewEntries.findIndex(entry=>entry.extra===currentExtra&&entry.index===currentIndex);
+    messageReviewIndex=exact>=0?exact:0;
+  }
   renderMessageReview();
   $('messageDialog').hidden=false;
   $('closeMessages').focus();
@@ -2760,6 +2850,7 @@ function volumeLabel(n){
 function hideGameDialogs(){
   $('clearDialog').hidden=true;
   $('messageDialog').hidden=true;
+  messageDialogReturn=null;
   $('optimalFailDialog').hidden=true;
   $('clearQuiz').hidden=true;
   $('masterDialog').hidden=true;
@@ -2775,17 +2866,18 @@ function renderClearQuiz(){
   root.hidden=quizIndex===undefined;
   if(quizIndex===undefined)return;
   const quiz=(DARUMA_QUIZ_TRANSLATIONS[currentLang]||DARUMA_QUIZZES)[quizIndex],options=$('quizOptions'),note=$('quizNote');
+  const {answers,correct}=quizPresentation(quizIndex,quiz);
   $('quizTitle').textContent=tr('quizTitle');
   $('quizQuestion').textContent=quiz.q;
   note.textContent='';
   options.innerHTML='';
-  quiz.a.forEach((answer,index)=>{
+  answers.forEach((answer,index)=>{
     const button=document.createElement('button');
     button.className='quiz-option';button.type='button';button.textContent=answer;
     button.addEventListener('click',()=>{
       [...options.children].forEach(item=>item.disabled=true);
-      options.children[quiz.correct].classList.add('correct');
-      if(index===quiz.correct){note.textContent=tr('quizCorrect')+'　'+quiz.note;}
+      options.children[correct].classList.add('correct');
+      if(index===correct){note.textContent=tr('quizCorrect')+'　'+quiz.note;}
       else{button.classList.add('wrong');note.textContent=tr('quizWrong')+'　'+quiz.note;}
     });
     options.appendChild(button);
@@ -2875,8 +2967,9 @@ function renderMasteryBoard(id,show){
 function renderTwoMovePatterns(){
   $('twoMoveGrid').innerHTML=twoMoveDisplayStates.map((state,index)=>'<button class="two-move-card" type="button" data-state="'+state+'" data-pattern="'+twoMoveDisplayPatterns[index]+'">'+miniBoardSvg(state)+'</button>').join('');
 }
-function openTwoMovePatterns(){
-  returnToClearCard=false;
+function openTwoMovePatterns({returnToClear=false}={}){
+  returnToClearCard=returnToClear;
+  $('returnToClearDetail').hidden=true;
   $('closeTwoMoveDetail').textContent=tr('backToPatterns');
   clearTimeout(twoMoveAnimationTimer);
   twoMoveAnimating=false;
@@ -2890,20 +2983,28 @@ function renderTwoMoveDetail(){
   $('twoMoveDetailBoard').innerHTML=miniBoardSvg(twoMoveDetailState);
   const tips=PLAY_TIPS[currentLang]||PLAY_TIPS.ja;
   $('twoMoveDetailTip').textContent=tips[TWO_MOVE_TIP_INDEX[twoMoveDetailIndex]];
+  const position=TWO_MOVE_PATTERN_ORDER.indexOf(twoMoveDetailIndex);
+  $('twoMoveDetailTitle').textContent=tr('twoMoveDetailTitle')+'　'+(position+1)+' / '+TWO_MOVE_PATTERN_ORDER.length;
+  $('twoMoveDetailPrev').textContent='← '+tr('prev');
+  $('twoMoveDetailNext').textContent=tr('next')+' →';
+  $('twoMoveDetailPrev').disabled=false;
+  $('twoMoveDetailNext').disabled=false;
 }
 function openTwoMoveDetail(state,index){
   clearTimeout(twoMoveDetailAnimationTimer);twoMoveDetailAnimating=false;
   twoMoveDetailState=state;twoMoveDetailIndex=index;
   renderTwoMoveDetail();
+  $('returnToClearDetail').hidden=!returnToClearCard;
+  $('returnToClearDetail').textContent=tr('backToClear');
   $('twoMoveDialog').hidden=true;
   $('twoMoveDetailDialog').hidden=false;
   $('playTwoMoveFree').focus();
 }
 function closeTwoMoveDetail(){
+  const returnToClear=returnToClearCard;
   $('twoMoveDetailDialog').hidden=true;
-  if(returnToClearCard){returnToClearDialog();return;}
-  $('twoMoveDialog').hidden=false;
-  $('closeTwoMovePatterns').focus();
+  $('returnToClearDetail').hidden=true;
+  openTwoMovePatterns({returnToClear});
 }
 function animateTwoMoveDetail(angle=0,mirror=false){
   if(twoMoveDetailAnimating)return;
@@ -3038,6 +3139,14 @@ function returnToStageMode(){
   else if(lastStageMode.extra)loadExtraStage(lastStageMode.index);
   else loadStage(lastStageMode.index);
 }
+function moveTwoMoveDetail(direction){
+  if(twoMoveDetailAnimating)return;
+  const position=TWO_MOVE_PATTERN_ORDER.indexOf(twoMoveDetailIndex);
+  const nextPosition=(position+direction+TWO_MOVE_PATTERN_ORDER.length)%TWO_MOVE_PATTERN_ORDER.length;
+  twoMoveDetailIndex=TWO_MOVE_PATTERN_ORDER[nextPosition];
+  twoMoveDetailState=TWO_MOVE_STAGES[twoMoveDetailIndex].state;
+  renderTwoMoveDetail();
+}
 function renderMasterRoadmap(kind){
   const roadmap=$('masterRoadmap');
   roadmap.hidden=kind==='mastery';
@@ -3115,12 +3224,6 @@ $('debugUnlock14').addEventListener('click',()=>{
   try{localStorage.setItem('wake7-cleared',JSON.stringify([...clearedStages]));}catch(_){}
   loadStage(STAGES.length-1);
 });
-$('debugUnlock').addEventListener('click',()=>{
-  if(!DEBUG_MODE)return;
-  STAGES.forEach((_,i)=>clearedStages.add(i));
-  try{localStorage.setItem('wake7-cleared',JSON.stringify([...clearedStages]));}catch(_){}
-  loadExtraStage(0);
-});
 function debugUnlockExtra(count){
   if(!DEBUG_MODE)return;
   for(let i=0;i<count;i++)clearedExtraStages.add(i);
@@ -3132,6 +3235,7 @@ $('debugExtra14').addEventListener('click',()=>debugUnlockExtra(14));
 $('debugExtra29').addEventListener('click',()=>debugUnlockExtra(29));
 $('debugExtra44').addEventListener('click',()=>debugUnlockExtra(44));
 $('debugExtra59').addEventListener('click',()=>debugUnlockExtra(59));
+$('debugReset').addEventListener('click',()=>resetStoredProgress({resetIntro:true,showIntro:true}));
 $('clearNext').addEventListener('click',()=>{
   hideGameDialogs();
   advanceAfterClear();
@@ -3145,10 +3249,18 @@ $('optimalRetry').addEventListener('click',()=>{
   setPosition(currentInitialState,currentInitialPar);
   renderStageNav();
 });
-$('clearMessages').addEventListener('click',openMessageReview);
+$('clearMessages').addEventListener('click',()=>openMessageReview({resume:true}));
 $('menuStagePicker').addEventListener('click',()=>{closeAppMenu();openStagePicker();});
 $('menuRankList').addEventListener('click',()=>{closeAppMenu();openRankDialog();});
-$('closeMessages').addEventListener('click',()=>{$('messageDialog').hidden=true;});
+$('closeMessages').addEventListener('click',()=>{
+  const returnTarget=messageDialogReturn;
+  messageDialogReturn=null;
+  $('messageDialog').hidden=true;
+  if(returnTarget){
+    $(returnTarget.dialogId).hidden=false;
+    $(returnTarget.focusId).focus();
+  }
+});
 $('messagePrev').addEventListener('click',()=>{if(messageReviewIndex>0){messageReviewIndex--;renderMessageReview();}});
 $('messageNext').addEventListener('click',()=>{if(messageReviewIndex<messageReviewEntries.length-1){messageReviewIndex++;renderMessageReview();}});
 document.addEventListener('keydown',event=>{
@@ -3157,13 +3269,22 @@ document.addEventListener('keydown',event=>{
   if(event.key==='ArrowRight'&&messageReviewIndex<messageReviewEntries.length-1){event.preventDefault();messageReviewIndex++;renderMessageReview();}
 });
 $('clearTipLink').addEventListener('click',()=>{
+  if($('clearTipLink').dataset.target==='rank'){
+    $('clearDialog').hidden=true;
+    openRankDialog({dialogId:'clearDialog',focusId:'clearTipLink'});
+    return;
+  }
+  if($('clearTipLink').dataset.target==='messages'){
+    $('clearDialog').hidden=true;
+    openMessageReview({resume:true,returnTarget:{dialogId:'clearDialog',focusId:'clearTipLink'}});
+    return;
+  }
   if(!extraMode)return;
   const twoMoveCard=CLEAR_TWO_MOVE_CARDS[extraIndex],guideCard=CLEAR_GUIDE_CARDS[extraIndex];
   if(twoMoveCard!==undefined){
     returnToClearCard=true;
     hideGameDialogs();
     openTwoMoveDetail(TWO_MOVE_STAGES[twoMoveCard].state,twoMoveCard);
-    $('closeTwoMoveDetail').textContent=tr('backToClear');
   }else if(guideCard){
     returnToClearCard=true;
     hideGameDialogs();
@@ -3176,6 +3297,10 @@ $('clearTipLink').addEventListener('click',()=>{
 $('masterClose').addEventListener('click',()=>{
   hideGameDialogs();
   renderStageNav();
+});
+$('messageRankLink').addEventListener('click',()=>{
+  $('messageDialog').hidden=true;
+  openRankDialog({dialogId:'messageDialog',focusId:'messageRankLink'});
 });
 $('rankBadge').addEventListener('click',openRankDialog);
 $('masterSeal').addEventListener('click',()=>openRankDialogFrom('masterDialog','masterSeal'));
@@ -3190,7 +3315,7 @@ $('closeRankDialog').addEventListener('click',()=>{
   $('rankDialog').hidden=true;
   if(returnTarget){
     $(returnTarget.dialogId).hidden=false;
-    $(returnTarget.sealId).focus();
+    $(returnTarget.sealId||returnTarget.focusId).focus();
   }else $('rankBadge').focus();
 });
 $('masterStart').addEventListener('click',()=>{
@@ -3417,6 +3542,8 @@ function applyLanguage(lang){
   $('nextStage').setAttribute('aria-label',tr('next'));
   $('stagePickerTrigger').setAttribute('aria-label',tr('stagePicker'));
   $('stageProgress').setAttribute('aria-label',tr('progress'));
+  $('pickerFreeMode').textContent=tr('stagePickerFree');
+  $('pickerCustomMode').textContent=tr('stagePickerCustom');
   $('shortestLabel').textContent=tr('shortest');
   $('moveUnit').textContent=tr('moveUnit');
   $('movesLabel').textContent=tr('moves');
@@ -3429,12 +3556,12 @@ function applyLanguage(lang){
   $('shuffle').textContent=tr('shuffle');
   $('undo').textContent=tr('undo');
   $('hint').textContent=tr('hint');
+  $('debugReset').textContent=tr('debugReset');
   $('debugClear').textContent=tr('debugClear');
   $('debugAlmost').textContent=tr('debugAlmost');
   $('debugMore').textContent=tr('debugMore');
   $('debugFar').textContent=tr('debugFar');
   $('debugUnlock14').textContent=tr('debugUnlock14');
-  $('debugUnlock').textContent=tr('debugUnlock');
   $('debugExtra14').textContent=tr('debugExtra14');
   $('debugExtra29').textContent=tr('debugExtra29');
   $('debugExtra44').textContent=tr('debugExtra44');
@@ -3457,6 +3584,7 @@ function applyLanguage(lang){
   $('twoMoveDetailTitle').textContent=tr('twoMoveDetailTitle');
   $('twoMoveDetailCompareHint').textContent=tr('compareBoard');
   $('closeTwoMoveDetail').textContent=tr('backToPatterns');
+  $('returnToClearDetail').textContent=tr('backToClear');
   $('playTwoMoveFree').textContent=tr('playInFree');
   $('introTitle').textContent=tr('introTitle');
   $('introText').textContent=tr('introText');
@@ -3522,14 +3650,15 @@ $('twoMovePatterns').addEventListener('click',()=>{
   closeAppMenu();
   openTwoMovePatterns();
 });
-$('closeTwoMovePatterns').addEventListener('click',()=>{
+function closeTwoMovePatterns(){
   $('twoMoveDialog').hidden=true;
+  if(returnToClearCard){returnToClearDialog();return;}
   $('menuToggle').focus();
-});
+}
+$('closeTwoMovePatterns').addEventListener('click',closeTwoMovePatterns);
 $('twoMoveDialog').addEventListener('click',event=>{
   if(event.target!==$('twoMoveDialog'))return;
-  $('twoMoveDialog').hidden=true;
-  $('menuToggle').focus();
+  closeTwoMovePatterns();
 });
 $('twoMoveGrid').addEventListener('click',event=>{
   const card=event.target.closest('.two-move-card');
@@ -3537,6 +3666,14 @@ $('twoMoveGrid').addEventListener('click',event=>{
   openTwoMoveDetail(Number(card.dataset.state),Number(card.dataset.pattern));
 });
 $('closeTwoMoveDetail').addEventListener('click',closeTwoMoveDetail);
+$('returnToClearDetail').addEventListener('click',()=>{
+  if(!returnToClearCard)return;
+  $('twoMoveDetailDialog').hidden=true;
+  $('returnToClearDetail').hidden=true;
+  returnToClearDialog();
+});
+$('twoMoveDetailPrev').addEventListener('click',()=>moveTwoMoveDetail(-1));
+$('twoMoveDetailNext').addEventListener('click',()=>moveTwoMoveDetail(1));
 $('twoMoveDetailMirror').addEventListener('click',()=>animateTwoMoveDetail(0,true));
 $('twoMoveDetailRotate').addEventListener('click',()=>animateTwoMoveDetail(60,false));
 $('twoMoveDetailBoard').addEventListener('pointerdown',startDetailDrag);
@@ -3569,13 +3706,24 @@ document.addEventListener('click',e=>{
   }
   if(!e.target.closest('.app-menu'))closeAppMenu();
 });
-$('resetProgress').addEventListener('click',()=>{
-  if(!confirm(tr('resetConfirm'))) return;
+function resetStoredProgress({resetIntro=false,showIntro=false}={}){
   clearedStages.clear();
   clearedExtraStages.clear();
-  try{localStorage.removeItem('wake7-cleared');localStorage.removeItem('wake7-extra-cleared');localStorage.removeItem('wake7-intro-seen');localStorage.removeItem('wake7-current-stage');localStorage.removeItem('wake7-active-session');}catch(_){}
+  try{
+    localStorage.removeItem('wake7-cleared');
+    localStorage.removeItem('wake7-extra-cleared');
+    localStorage.removeItem('wake7-current-stage');
+    localStorage.removeItem('wake7-active-session');
+    localStorage.removeItem(MESSAGE_REVIEW_STORAGE_KEY);
+    if(resetIntro)localStorage.removeItem('wake7-intro-seen');
+  }catch(_){}
   updateMasterTheme();
   loadStage(0);
+  if(showIntro)setTimeout(openIntroGuide,80);
+}
+$('resetProgress').addEventListener('click',()=>{
+  if(!confirm(tr('resetConfirm'))) return;
+  resetStoredProgress();
 });
 
 buildBoard();
