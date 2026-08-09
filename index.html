@@ -270,6 +270,9 @@
   .dialog-actions{display:flex;justify-content:center;gap:8px;margin-top:18px}
   .dialog-actions .chip{padding:9px 15px}
   .dialog-actions .chip:disabled{background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.07);color:#536276;opacity:.52;cursor:not-allowed}
+  .master-share{display:inline-flex;align-items:center;margin-top:12px;padding:2px 4px;border:0;background:none;color:#8FA7BD;font:inherit;font-size:11px;letter-spacing:.08em;cursor:pointer}
+  .master-share:hover{color:var(--kin)}
+  .master-share .share-mark{margin-right:4px;transform:translateY(-1px)}
   .intro-board-wrap{position:relative;width:min(100%,260px);margin:8px auto -2px}
   #introBoard{display:block;width:100%;height:auto}
   #introBoard .intro-swipe,#clearGuideBoard .intro-swipe,#messageClearGuideBoard .intro-swipe{fill:#62B8D2;filter:drop-shadow(0 0 3px rgba(98,184,210,.8))}
@@ -450,6 +453,11 @@
   .site-credit .link-welcome{display:block;margin-top:2px;letter-spacing:.02em}
   .site-credit a{color:inherit;text-decoration:none;border-bottom:1px solid color-mix(in srgb,currentColor 45%,transparent)}
   .site-credit a:hover{color:var(--kin);border-bottom-color:currentColor}
+  .site-credit button{display:inline-flex;align-items:center;gap:3px;padding:0;border:0;background:none;color:inherit;font:inherit;letter-spacing:inherit;cursor:pointer;border-bottom:1px solid color-mix(in srgb,currentColor 45%,transparent)}
+  .site-credit button:hover{color:var(--kin);border-bottom-color:currentColor}
+  .share-mark{display:inline-grid;place-items:center;width:14px;height:14px}
+  .share-mark svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .chip .share-mark{width:15px;height:15px;margin-right:4px;transform:translateY(3px)}
   @media (prefers-reduced-motion:reduce){
     .tile,.pivot{transition:none}
     .status-metric.moves b.pulse{animation:none}
@@ -539,7 +547,7 @@
 </div>
 
 <p class="msg" id="msg"></p>
-<footer class="site-credit">© 2026 WAKE SEVEN <span aria-hidden="true">·</span> <a href="https://daiwata.github.io/" target="_blank" rel="noopener">daiary</a><span class="link-welcome" id="linkWelcome">このゲームへのリンク・紹介はご自由にどうぞ。</span></footer>
+<footer class="site-credit">© 2026 WAKE SEVEN <span aria-hidden="true">·</span> <a href="https://daiwata.github.io/" target="_blank" rel="noopener">daiary</a><span class="link-welcome"><span id="linkWelcome">このゲームへのリンク・紹介はご自由にどうぞ。</span> <button id="shareGame" type="button"><span class="share-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg></span><span id="shareGameLabel">共有する</span></button></span></footer>
 <div class="debug-tools" id="debugTools" hidden>
   <button class="chip" id="debugClear" hidden>即</button>
   <button class="chip" id="debugAlmost" hidden>+1</button>
@@ -616,6 +624,7 @@
     <div class="master-roadmap" id="masterRoadmap"></div>
     <p class="master-rules" id="masterRules" hidden></p>
     <div class="dialog-actions"><button class="chip" id="masterClose">閉じる</button><button class="chip on" id="masterStart">名人への道へ →</button></div>
+    <button class="master-share" id="masterShare" hidden><span class="share-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg></span><span id="masterShareLabel">共有</span></button>
   </div>
 </div>
 <div class="game-dialog-backdrop" id="rankDialog" hidden>
@@ -1302,6 +1311,10 @@ Object.assign(UI_TEXT.ja,{linkWelcome:'このゲームへのリンク・紹介�
 Object.assign(UI_TEXT.en,{linkWelcome:'Feel free to link to or share this game.'});
 Object.assign(UI_TEXT.zh,{linkWelcome:'欢迎自由链接和介绍这款游戏。'});
 Object.assign(UI_TEXT.ko,{linkWelcome:'이 게임의 링크와 소개는 자유롭게 해 주세요.'});
+Object.assign(UI_TEXT.ja,{share:'共有する',shareShort:'共有',shareCopied:'URLをコピーしました',shareCopyPrompt:'このURLをコピーしてください',shareGameText:'だるまさんを起こして！を遊んでいます。 #WakeSeven',shareTrainingText:'だるまさんを起こして！ だるま修行を突破した。 #WakeSeven',shareMasteryText:'だるまさんを起こして！ 名人への道を制覇した。 #WakeSeven'});
+Object.assign(UI_TEXT.en,{share:'Share',shareShort:'Share',shareCopied:'Link copied',shareCopyPrompt:'Copy this link',shareGameText:'Playing Wake the Daruma! #WakeSeven',shareTrainingText:'I completed Daruma Training in Wake the Daruma! #WakeSeven',shareMasteryText:'I conquered the Path to Mastery in Wake the Daruma! #WakeSeven'});
+Object.assign(UI_TEXT.zh,{share:'分享',shareShort:'分享',shareCopied:'链接已复制',shareCopyPrompt:'请复制此链接',shareGameText:'我正在玩《叫醒不倒翁！》 #WakeSeven',shareTrainingText:'我完成了《叫醒不倒翁！》的不倒翁修行！ #WakeSeven',shareMasteryText:'我征服了《叫醒不倒翁！》的名人之路！ #WakeSeven'});
+Object.assign(UI_TEXT.ko,{share:'공유',shareShort:'공유',shareCopied:'링크를 복사했어요',shareCopyPrompt:'이 링크를 복사하세요',shareGameText:'다루마를 깨워라!를 플레이하고 있어요. #WakeSeven',shareTrainingText:'다루마를 깨워라!의 다루마 수행을 완료했어요! #WakeSeven',shareMasteryText:'다루마를 깨워라!의 명인의 길을 정복했어요! #WakeSeven'});
 Object.assign(UI_TEXT.ja,{rankListMenu:'獲得した称号一覧'});
 Object.assign(UI_TEXT.en,{rankListMenu:'Collected titles'});
 Object.assign(UI_TEXT.zh,{rankListMenu:'已获得的称号'});
@@ -1334,6 +1347,31 @@ function tr(key,vars){
   let value=(UI_TEXT[currentLang]&&UI_TEXT[currentLang][key])||UI_TEXT.ja[key]||key;
   if(vars)Object.keys(vars).forEach(name=>value=value.replaceAll('{'+name+'}',vars[name]));
   return value;
+}
+function shareData(kind='game'){
+  const key=kind==='training'?'shareTrainingText':kind==='mastery'?'shareMasteryText':'shareGameText';
+  const url=new URL(location.href);
+  url.search='';url.hash='';
+  return {title:tr('pageTitle'),text:tr(key),url:url.href};
+}
+async function shareWakeSeven(kind='game',button){
+  const data=shareData(kind);
+  try{
+    if(navigator.share){await navigator.share(data);return;}
+  }catch(error){
+    if(error&&error.name==='AbortError')return;
+  }
+  try{
+    await navigator.clipboard.writeText(data.text+'\n'+data.url);
+    if(button){
+      const label=button.querySelector('span:last-child');
+      const text=label.textContent;
+      label.textContent=tr('shareCopied');
+      setTimeout(()=>{if(button.isConnected)label.textContent=text;},1600);
+    }
+  }catch(_){
+    window.prompt(tr('shareCopyPrompt'),data.url);
+  }
 }
 const DARUMA_QUIZZES=[
   { q:'だるまのモデルになったお坊さんの名前は？',a:['空海','達磨大師','行基','一休'],correct:1,note:'インドから中国へ渡ったと伝えられる達磨大師。5〜6世紀ごろの人物で、その教えは後に日本の禅へ受け継がれました。' },
@@ -3363,6 +3401,10 @@ function showMasterDialog(kind='primary'){
   renderMasteryBoard('masteryBoard',kind==='mastery');
   const seal=$('masterSeal');
   const rankText=$('masterRankText');
+  const shareButton=$('masterShare');
+  shareButton.hidden=kind!=='primary'&&kind!=='mastery';
+  shareButton.dataset.shareKind=kind==='primary'?'training':'mastery';
+  $('masterShareLabel').textContent=tr('shareShort');
   rankText.hidden=true;
   seal.classList.remove('rank-seal');
   if(kind==='primary'){
@@ -3581,6 +3623,8 @@ $('masterClose').addEventListener('click',()=>{
   hideGameDialogs();
   renderStageNav();
 });
+$('shareGame').addEventListener('click',()=>shareWakeSeven('game',$('shareGame')));
+$('masterShare').addEventListener('click',()=>shareWakeSeven($('masterShare').dataset.shareKind,$('masterShare')));
 $('messageRankLink').addEventListener('click',()=>{
   if($('messageRankLink').dataset.target==='tips'){
     $('messageDialog').hidden=true;
@@ -3840,6 +3884,7 @@ function applyLanguage(lang){
   document.title=tr('pageTitle');
   document.querySelector('h1').textContent=tr('title');
   $('linkWelcome').textContent=tr('linkWelcome');
+  $('shareGameLabel').textContent=tr('share');
   $('languageToggle').setAttribute('aria-label',tr('language'));
   $('languageMenu').setAttribute('aria-label',tr('language'));
   $('menuToggle').textContent=tr('menu');
@@ -3902,6 +3947,7 @@ function applyLanguage(lang){
   $('introStart').textContent=tr('introStart');
   $('clearClose').textContent=tr('close');
   $('masterClose').textContent=tr('close');
+  $('masterShareLabel').textContent=tr('shareShort');
   $('masterSeal').setAttribute('aria-label',tr('rankCollection'));
   $('messageMasterSeal').setAttribute('aria-label',tr('rankCollection'));
   if(!$('rankDialog').hidden)renderRankList();
