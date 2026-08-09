@@ -1516,6 +1516,11 @@ function showRemaining(value,animate=true){
     el.classList.add('distance-pulse');
   }
 }
+// Android 系ブラウザなど、Vibration API 対応端末だけで軽い手触りを添える。
+function haptic(pattern){
+  if(document.hidden||typeof navigator==='undefined'||typeof navigator.vibrate!=='function')return;
+  try{navigator.vibrate(pattern);}catch(_){ }
+}
 
 function hexPath(r){
   let p='';
@@ -1818,6 +1823,7 @@ function applySwipe(ti,dir,save=true){
     spin[to]=oldSpin[from]+dir;
   }
   moves++;
+  haptic(SOLVER.dist[enc(ori)]===0?[20,32,42]:10);
 }
 function setPosition(state,par){
   loadFourthChecks();
