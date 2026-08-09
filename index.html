@@ -178,6 +178,10 @@
   #clearDialog .game-dialog{max-height:calc(100dvh - 36px);overflow-y:auto}
   #messageDialog .game-dialog{max-height:calc(100dvh - 36px);overflow-y:auto}
   .game-dialog h2{font-size:21px;letter-spacing:.08em;color:var(--washi);white-space:pre-line}
+  .clear-dialog-heading{position:relative;min-height:55px;padding-top:33px;margin-bottom:6px}
+  .clear-dialog-heading h2{margin:0}
+  .clear-stage-context{position:absolute;top:0;right:0;color:#8EA4B8;font-size:12px;font-weight:700;letter-spacing:.025em;line-height:1.3;text-align:right;white-space:nowrap}
+  #messageDialogPlace{display:none}
   .game-dialog p{margin-top:9px;color:#A8B6C7;font-size:13px;line-height:1.65;white-space:pre-line}
   .quiz-dialog{width:min(100%,360px)}
   .quiz-question{margin:13px 0 11px;color:var(--washi);font-size:16px;font-weight:800;line-height:1.55}
@@ -394,7 +398,7 @@
     filter:drop-shadow(0 1px 2px rgba(0,0,0,.32));
   }
   .grip-marker rect{fill:#62B8D2}
-  #board.selecting .grip-marker,#board.hinting .grip-marker,#board.celebrating .grip-marker{opacity:0}
+  #board.selecting .grip-marker,#board.hinting .grip-marker,#board.clear-pending .grip-marker,#board.celebrating .grip-marker{opacity:0}
   .hint-arrow{pointer-events:none;animation:hintArrow 1.35s ease both}
   .hint-arrow.tutorial{animation:none;opacity:1}
   .hint-arrow .arc{
@@ -546,7 +550,7 @@
 </div>
 <div class="game-dialog-backdrop" id="clearDialog" hidden>
   <div class="game-dialog">
-    <h2 id="clearDialogMessage"></h2>
+    <div class="clear-dialog-heading"><h2 id="clearDialogMessage"></h2><span class="clear-stage-context" id="clearStageContext"></span></div>
     <div class="clear-tip-illustration" id="clearTipIllustration" hidden></div>
     <div id="clearDialogText"><span id="clearDialogTextBody"></span><button class="clear-tip-link" id="clearTipLink" type="button" hidden></button></div>
     <div id="clearQuiz" hidden>
@@ -560,7 +564,7 @@
 </div>
 <div class="game-dialog-backdrop" id="messageDialog" hidden>
   <div class="game-dialog" role="dialog" aria-modal="true" aria-labelledby="messageDialogTitle">
-    <h2 id="messageDialogTitle">クリア後のメッセージ</h2>
+    <div class="clear-dialog-heading"><h2 id="messageDialogTitle">全員起きました！</h2><span class="clear-stage-context" id="messageStageContext"></span></div>
     <p id="messageDialogPlace"></p>
     <p id="messageRankText" hidden></p>
     <div class="master-seal rank-seal" id="messageMasterSeal" role="button" tabindex="0" hidden><span class="seal-label" id="messageMasterSealLabel"></span><i class="seal-spark one">✦</i><i class="seal-spark two">✦</i></div>
@@ -1140,7 +1144,7 @@ Object.assign(UI_TEXT.ja,{
   extraClear33:'最短3手の盤面で、12通りの回し方をランダムに選ぶと、最短2手になるのは約17％、そのまま最短3手は約56％、最短4手になるのは約27％です。',
   masterNextFourMoves:'次からは、最短4手の問題です。',
   extraClear46:'メニューの「最短2手の盤面を見る」から、9種類の盤面を一覧で見られます。',
-  extraClear47:'一覧の「左右反転」「60°回転」で向きを変えると、同じ盤面かどうかを確かめられます。',
+  extraClear47:'「左右反転」「60°回転」で向きを変えて、覚えた盤面と同じかどうか確かめてみよう。',
   extraClear48:'メニューの「攻略のコツ」では、特徴的な形を図解で見られます。',extraClear49:'メニューの「最短2手の盤面」と「攻略のコツ」では、盤面をスワイプするとゲーム中の盤面と並べて見比べられます。',
   extraClear45:'名人への道の終盤では、残り最短手数が表示されません。\n「ヒント」ボタンで表示されるので、困ったら押してください',
   stageClear2:'ゲームを中断して閉じても、今やっている問題から再開できます。',
@@ -1289,7 +1293,7 @@ Object.assign(UI_TEXT.ja,{rankListMenu:'獲得した称号一覧'});
 Object.assign(UI_TEXT.en,{rankListMenu:'Collected titles'});
 Object.assign(UI_TEXT.zh,{rankListMenu:'已获得的称号'});
 Object.assign(UI_TEXT.ko,{rankListMenu:'획득한 칭호'});
-Object.assign(UI_TEXT.ja,{extraFourthOneCheck:'次から「残り手数」ボタンは1回だけ使えます。',extraFourthNoCheck:'よくここまでたどり着きましたね。\n次の問題からは残り手数のボタンが使えません。\nここからが本当の正念場です。',extraFinalNotice:'次がラストの問題です。\n最後に起き上がるのは、だるまか、あなたか。'});
+Object.assign(UI_TEXT.ja,{extraFourthOneCheck:'次から「残り手数」ボタンが使えるのは1回限りです。',extraFourthNoCheck:'よくここまでたどり着きましたね。\n次の問題からは残り手数のボタンが使えません。\nここからが本当の正念場です。',extraFinalNotice:'次がラストの問題です。\n最後に起き上がるのは、だるまか、あなたか。'});
 Object.assign(UI_TEXT.en,{extraFourthOneCheck:'From the next puzzle, Moves Left can be checked only once.',extraFourthNoCheck:'You have come a long way.\nFrom the next puzzle, the Moves Left button is unavailable.\nThis is the true critical moment.',extraFinalNotice:'The next puzzle is the last one.\nWho rises last: the daruma, or you?'});
 Object.assign(UI_TEXT.zh,{extraFourthOneCheck:'从下一题起，“剩余步数”只能查看一次。',extraFourthNoCheck:'你已经走到这里了。\n从下一题起，不能再使用“剩余步数”按钮。\n真正的关键时刻到了。',extraFinalNotice:'下一题就是最后一题。\n最后站起来的是不倒翁，还是你？'});
 Object.assign(UI_TEXT.ko,{extraFourthOneCheck:'다음 문제부터 남은 수는 한 번만 확인할 수 있어요.',extraFourthNoCheck:'여기까지 정말 잘 왔어요.\n다음 문제부터는 남은 수 버튼을 쓸 수 없습니다.\n이제부터가 진짜 고비예요.',extraFinalNotice:'다음 문제가 마지막 문제예요.\n마지막에 일어나는 것은 다루마일까요, 당신일까요?'});
@@ -1321,7 +1325,7 @@ function tr(key,vars){
 const DARUMA_QUIZZES=[
   { q:'だるまのモデルになったお坊さんの名前は？',a:['空海','達磨大師','行基','一休'],correct:1,note:'インドから中国へ渡ったと伝えられる達磨大師。5〜6世紀ごろの人物で、その教えは後に日本の禅へ受け継がれました。' },
   { q:'「七転び八起き」、起きる回数が1回多いのはなぜ？',a:['縁起をかつぐため','最初に起き上がるぶんを数えるから','数え間違い','八が末広がりだから'],correct:1,note:'諸説ありますが、生まれたときに起き上がる1回を足す、という説がよく知られています。' },
-  { q:'願かけのとき、だるまの目はどちらから入れる？',a:['向かって右','向かって左','両目いっしょ','どちらでもよい'],correct:0,note:'向かって右（だるまから見て左目）を先に入れ、願いが叶ったらもう片方を入れるのが一般的です。' },
+  { q:'願かけのとき、だるまの目はどちらから入れる？',a:['だるまの左目','だるまの右目','両目いっしょ','どちらでもよい'],correct:0,note:'だるまの左目を先に入れ、願いが叶ったら右目を入れるのが一般的です。' },
   { q:'だるまの生産量が日本一の県は？',a:['京都府','群馬県','愛知県','福島県'],correct:1,note:'群馬県高崎市。少林山達磨寺のふもとで作られてきた高崎だるまが、全国の大半を占めています。' },
   { q:'だるまの原型になったとされる郷土玩具は？',a:['こけし','起き上がり小法師','張り子の虎','土鈴'],correct:1,note:'底を重くして必ず起き上がる玩具。これに達磨大師の姿を重ねたのがだるまです。' },
   { q:'役目を終えただるまは、どうするのが一般的？',a:['川に流す','お寺で供養して焼く','土に埋める','売り戻す'],correct:1,note:'だるま供養。年末年始に寺社へ納め、感謝とともにお焚き上げしてもらいます。' },
@@ -1642,6 +1646,7 @@ function paint(){
   if(!editingBoard)showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]));
   if(!editingBoard&&isSolved()&&!clearShown){
     clearShown=true;
+    svg.classList.add('clear-pending');
     if(requiresOptimalClear()&&moves!==best){
       renderOptimalFail();
       $('optimalFailDialog').hidden=false;
@@ -1775,7 +1780,7 @@ function setPosition(state,par){
   spin=Int16Array.from(ori);
   tileEls=baseTiles.slice();
   best=par; moves=0; history=[]; clearShown=false;
-  busy=false; drag=null; svg.classList.remove('spinning','selecting','celebrating');
+  busy=false; drag=null; svg.classList.remove('spinning','selecting','clear-pending','celebrating');
   baseTiles.forEach(el=>el.classList.remove('selected'));
   svg.querySelectorAll('.pivot.active').forEach(el=>el.classList.remove('active'));
   $('msg').textContent='';
@@ -1846,7 +1851,8 @@ function restoreSavedBoard(data){
   fourthChecksUsed=Number.isInteger(data.fourthChecksUsed)?data.fourthChecksUsed:0;
   fourthDistanceRevealed=!!data.fourthDistanceRevealed;
   fourthHintPreview=false;fourthHintDistance=null;busy=false;drag=null;
-  svg.classList.remove('spinning','selecting','celebrating');
+  svg.classList.remove('spinning','selecting','clear-pending','celebrating');
+  svg.classList.toggle('clear-pending',clearShown&&isSolved());
   baseTiles.forEach(el=>el.classList.remove('selected'));
   $('clearNext').hidden=!clearShown;
   paint();
@@ -1927,7 +1933,7 @@ function restoreFreeSession(){
   tileEls=s.tileEls.slice();moves=s.moves;best=s.best;
   history=s.history.map(cloneHistoryEntry);
   currentInitialState=s.initialState;currentInitialPar=s.initialPar;clearShown=s.clearShown;
-  busy=false;drag=null;svg.classList.remove('spinning','selecting','celebrating');
+  busy=false;drag=null;svg.classList.remove('spinning','selecting','clear-pending','celebrating');
   baseTiles.forEach(el=>el.classList.remove('selected'));
   svg.querySelectorAll('.pivot.active').forEach(el=>el.classList.remove('active'));
   $('msg').textContent='';
@@ -2051,7 +2057,7 @@ svg.addEventListener('pointerdown',e=>{
   }
   if(isSolved()&&clearShown){
     $('msg').classList.remove('show');
-    svg.classList.remove('celebrating');
+    svg.classList.remove('clear-pending','celebrating');
     svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   }
   e.preventDefault();
@@ -2147,7 +2153,7 @@ $('undo').addEventListener('click',()=>{
   cancelTileAnimations();
   clearTimeout(clearTimer); clearShown=false;
   $('clearNext').hidden=true;
-  svg.classList.remove('celebrating');
+  svg.classList.remove('clear-pending','celebrating');
   const h=history.pop(); ori=h.o; spin=h.s; tileEls=h.t; moves=h.m;
   if(usesHiddenRemaining())resetFourthDistance();
   $('msg').classList.remove('show'); paint();
@@ -2557,6 +2563,18 @@ function celebrateClear(){
 function showClearActions(){
   clearTimer=setTimeout(showClearDialog,celebrateClear());
 }
+function renderClearStageContext(){
+  const context=$('clearStageContext');
+  if(freeMode||customMode){
+    context.hidden=true;
+    context.textContent='';
+    return;
+  }
+  context.hidden=false;
+  context.textContent=extraMode
+    ?$('stageKind').textContent+'　'+$('stageNumber').textContent+' '+$('stageCount').textContent
+    :$('stageKind').textContent+' '+$('stageNumber').textContent;
+}
 function showClearDialog(){
   if(!freeMode&&!customMode&&!extraMode&&stageIndex===STAGES.length-1&&allPrimaryCleared()){
     showMasterDialog('primary');
@@ -2574,6 +2592,7 @@ function showClearDialog(){
   else if(stageIndex===STAGES.length-1)action.textContent=tr('toFree');
   else action.textContent=tr('nextPuzzle');
   $('clearDialogMessage').textContent=tr('clear');
+  renderClearStageContext();
   renderClearTip();
   renderClearQuiz();
   action.hidden=false;
@@ -2617,7 +2636,14 @@ function tipSleepingDaruma(x,y,scale=.55,angle=120){
   return '<g transform="translate('+x+' '+y+') rotate('+angle+') scale('+scale+')"><use href="#daruma-body"/><use href="#face-shut"/></g>';
 }
 function tipWhiteDaruma(x,y,scale=.55){
-  return '<g transform="translate('+x+' '+y+') scale('+scale+')"><path d="M0 -34C17 -34 31 -18 31 4C31 24 18 36 0 36C-18 36 -31 24 -31 4C-31 -18-17-34 0-34Z" fill="#F3E8D5" stroke="#241D1A" stroke-width="2.4"/><ellipse cx="0" cy="-6" rx="19" ry="18" fill="#F3E8D5" stroke="#241D1A" stroke-width="1.9"/><use href="#face-open"/></g>';
+  return '<g transform="translate('+x+' '+y+') scale('+scale+')">'
+    +'<path d="M0 -34C17 -34 31 -18 31 4C31 24 18 36 0 36C-18 36 -31 24 -31 4C-31 -18-17-34 0-34Z" fill="#EEE5D2" stroke="#241D1A" stroke-width="2.4"/>'
+    +'<path d="M-25 13C-19 25-9 30 1 31C12 31 21 25 26 15C22 28 13 35 0 35C-13 35-22 28-25 13Z" fill="#CDBB9D" opacity=".78"/>'
+    +'<path d="M-27 -4C-22 -19-11 -29 1 -30C-11 -25-17 -15-18 -4C-19 9-13 18-7 26C-18 21-25 11-27 -4Z" fill="#FFF9ED" opacity=".9"/>'
+    +'<path d="M20 -17C27 -10 29 -2 27 7C25 13 22 17 19 20C22 10 22 0 18 -9C16 -14 14 -18 12 -21C15 -20 18 -19 20 -17Z" fill="#C5AF8D" opacity=".55"/>'
+    +'<path d="M-20 21Q-9 17 0 22Q10 17 20 21M-24 9Q-15 5-10 10M12 11Q18 6 25 8" fill="none" stroke="#A88D66" stroke-width="1.45" stroke-linecap="round" opacity=".62"/>'
+    +'<path d="M-13 28Q-9 25-4 28M5 29Q10 26 15 28" fill="none" stroke="#FFF9ED" stroke-width="1.65" stroke-linecap="round" opacity=".95"/>'
+    +'<ellipse cx="0" cy="-6" rx="19" ry="18" fill="#F7F0E2" stroke="#241D1A" stroke-width="1.9"/><use href="#face-open"/></g>';
 }
 function tipBackDaruma(x,y,scale=.55){
   return '<g transform="translate('+x+' '+y+') scale('+scale+')"><use href="#daruma-body"/><ellipse cx="0" cy="-6" rx="20.5" ry="19.5" fill="#C8352C"/></g>';
@@ -2699,12 +2725,13 @@ function renderClearTip(){
   const guideCard=extraMode?CLEAR_GUIDE_CARDS[extraIndex]:null;
   const rankLink=extraMode&&EXTRA_CLEAR_TIPS[extraIndex]==='extraClearRankCollection';
   const messagesLink=extraMode&&EXTRA_CLEAR_TIPS[extraIndex]==='extraClearMessageReview';
+  const tipsLink=extraMode&&EXTRA_CLEAR_TIPS[extraIndex]==='extraClear48';
   const detailLink=$('clearTipLink');
   $('clearDialogTextBody').textContent=text;
   $('clearDialogText').hidden=!text;
-  detailLink.hidden=twoMoveCard===undefined&&!guideCard&&!rankLink&&!messagesLink;
-  detailLink.dataset.target=rankLink?'rank':messagesLink?'messages':'details';
-  detailLink.textContent=tr(rankLink?'rankLink':messagesLink?'clearMessagesLink':'detailsLink');
+  detailLink.hidden=twoMoveCard===undefined&&!guideCard&&!rankLink&&!messagesLink&&!tipsLink;
+  detailLink.dataset.target=rankLink?'rank':messagesLink?'messages':tipsLink?'tips':'details';
+  detailLink.textContent=tipsLink?tr('tipGuideTitle')+' →':tr(rankLink?'rankLink':messagesLink?'clearMessagesLink':'detailsLink');
   illustration.classList.toggle('move-graph',art==='moveGraph');
   illustration.classList.toggle('board-card',art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'));
   illustration.classList.toggle('controls-art',art==='controls');
@@ -2749,20 +2776,35 @@ function messageReviewPlace(entry){
   const volume=Math.floor(entry.index/STAGES.length)+1;
   return currentLang==='ja'?'名人への道 '+volumeLabel(volume)+'・第'+(entry.index%STAGES.length+1)+'問 クリア':tr('extraStageAria',{n:entry.index+1,total:EXTRA_STAGES.length});
 }
+function messageReviewStageContext(entry){
+  if(!entry.extra){
+    const group=entry.index<3?tr('intro'):entry.index<12?tr('basic'):tr('challenge');
+    const number=entry.index<3?entry.index+1:entry.index<12?entry.index-2:entry.index-11;
+    const total=entry.index<3?3:entry.index<12?9:3;
+    return group+' '+number+' / '+total;
+  }
+  const volume=Math.floor(entry.index/STAGES.length)+1;
+  const path=currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume);
+  return path+'　'+masterSubtitle(volume)+' '+(entry.index%STAGES.length+1)+' / '+STAGES.length;
+}
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
   const art=entry.art||'',illustration=$('messageIllustration'),roadmap=$('messageRoadmap'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
   $('messagePrev').textContent='← '+tr('prev');
   $('messageNext').textContent=tr('next')+' →';
   $('closeMessages').textContent=tr('close');
+  $('messageStageContext').textContent=messageReviewStageContext(entry);
+  $('messageDialogPlace').hidden=true;
   renderMasteryBoard('messageMasteryBoard',entry.master==='mastery');
   roadmap.hidden=!entry.master||entry.master==='mastery';rules.hidden=true;
   seal.hidden=!entry.master;
   rankText.hidden=true;masterText.hidden=true;
   $('messageDialogText').hidden=!!entry.master||entry.quiz!==undefined;
   const rankLink=entry.extra&&EXTRA_CLEAR_TIPS[entry.index]==='extraClearRankCollection';
-  $('messageRankLink').hidden=!rankLink;
-  $('messageRankLink').textContent=tr('rankLink');
+  const tipsLink=entry.extra&&EXTRA_CLEAR_TIPS[entry.index]==='extraClear48';
+  $('messageRankLink').hidden=!rankLink&&!tipsLink;
+  $('messageRankLink').dataset.target=tipsLink?'tips':'rank';
+  $('messageRankLink').textContent=tipsLink?tr('tipGuideTitle')+' →':tr('rankLink');
   $('messageQuiz').hidden=entry.quiz===undefined;
   if(entry.master){
     const volume=entry.master==='primary'?0:Math.ceil((entry.index+1)/STAGES.length);
@@ -2778,12 +2820,12 @@ function renderMessageReview(){
       $('messageMasterSealLabel').textContent=rankForVolume(volume);setSealColor(seal,volume);$('messageDialogTitle').textContent=tr('volumeClearTitle',{n:clearName});$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(rankForVolume(volume));masterText.hidden=false;masterText.textContent=nextRules[volume-1]||tr('volumeClearText');
     }
   }else if(entry.quiz!==undefined){
-  $('messageDialogTitle').textContent=tr('quizTitle');
+  $('messageDialogTitle').textContent=tr('clear');
   $('messageDialogPlace').textContent=messageReviewPlace(entry);
   renderMessageQuiz(entry.quiz);
   }else{
   $('messageDialogText').hidden=false;
-  $('messageDialogTitle').textContent=tr('messageDialogTitle');
+  $('messageDialogTitle').textContent=tr('clear');
   $('messageDialogPlace').textContent=messageReviewPlace(entry);
   $('messageDialogTextBody').textContent=entry.text;
   }
@@ -2858,6 +2900,7 @@ function hideGameDialogs(){
   $('twoMoveDialog').hidden=true;
   $('twoMoveDetailDialog').hidden=true;
   $('tipGuideDialog').hidden=true;
+  tipGuideReturnTarget=null;
   $('clearNext').hidden=true;
 }
 function renderClearQuiz(){
@@ -2907,6 +2950,7 @@ let returnToClearCard=false;
 function returnToClearDialog(){
   returnToClearCard=false;
   $('clearDialogMessage').textContent=tr('clear');
+  renderClearStageContext();
   renderClearTip();
   renderClearQuiz();
   $('clearNext').hidden=false;
@@ -3209,7 +3253,7 @@ function debugClearCurrent(extraMoves=0){
   clearHintVisuals();
   ori=new Uint8Array(N);spin=new Int16Array(N);tileEls=baseTiles.slice();
   history=[];moves=best+extraMoves;clearShown=false;
-  svg.classList.remove('celebrating');
+  svg.classList.remove('clear-pending','celebrating');
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   $('clearNext').hidden=true;
   paint();
@@ -3279,6 +3323,12 @@ $('clearTipLink').addEventListener('click',()=>{
     openMessageReview({resume:true,returnTarget:{dialogId:'clearDialog',focusId:'clearTipLink'}});
     return;
   }
+  if($('clearTipLink').dataset.target==='tips'){
+    returnToClearCard=true;
+    hideGameDialogs();
+    openTipGuide();
+    return;
+  }
   if(!extraMode)return;
   const twoMoveCard=CLEAR_TWO_MOVE_CARDS[extraIndex],guideCard=CLEAR_GUIDE_CARDS[extraIndex];
   if(twoMoveCard!==undefined){
@@ -3299,6 +3349,12 @@ $('masterClose').addEventListener('click',()=>{
   renderStageNav();
 });
 $('messageRankLink').addEventListener('click',()=>{
+  if($('messageRankLink').dataset.target==='tips'){
+    $('messageDialog').hidden=true;
+    tipGuideReturnTarget={dialogId:'messageDialog',focusId:'messageRankLink'};
+    openTipGuide();
+    return;
+  }
   $('messageDialog').hidden=true;
   openRankDialog({dialogId:'messageDialog',focusId:'messageRankLink'});
 });
@@ -3341,7 +3397,7 @@ const PLAY_TIPS={
     '5体寝台形：仲間外れが中央以外で、近い立ちの20分前＋左転びなら最短2手、近い立ちの20分後＋右転びなら最短2手',
     '5体寝のバーベル：仲間外れが中央以外で、隣の立ちの10分前＋右転びなら最短2手、隣の立ちの10分後＋左転びなら最短2手',
     '中央だけが立っている形は、向きに関係なく最短4手',
-    '外周に1つおきに3体立っている形は最短3手',
+    '外周に1つおきに3体立っている形は最短3手です。逆に、外周に1つおきに3体寝ている形は最短4手なので違いに注意しよう。',
     '最短2手は対称な形を除くと9パターン。ステージ4〜12で全種類を網羅'
   ],
   en:[
@@ -3395,7 +3451,7 @@ const GUIDE_PLAY_STATES=[
   [[0,0,1,1,0,1,0],[0,1,1,0,0,0,1]]
 ];
 const GUIDE_DOUBLE_INDEX=3;
-let tipGuideIndex=0,tipGuideStates=[],tipGuideAnimating=false,tipGuideAnimationTimer=0,tipGuideDrag=null;
+let tipGuideIndex=0,tipGuideStates=[],tipGuideAnimating=false,tipGuideAnimationTimer=0,tipGuideDrag=null,tipGuideReturnTarget=null;
 const TIP_CELL=[[85,25],[125,25],[66,59],[105,59],[144,59],[85,93],[125,93]];
 function tipGuideBoard(state,cx=105,cy=59,scale=1){
   return '<g class="tip-guide-board" transform="translate('+cx+' '+cy+') scale('+scale+') translate(-105 -59)">'+TIP_CELL.map(([x,y],i)=>'<g class="tip-guide-tile" data-cell="'+i+'" transform="translate('+x+' '+y+')">'
@@ -3478,6 +3534,13 @@ function closeTipGuide(){
   finishTipGuideDrag();
   $('tipGuideDialog').hidden=true;
   if(returnToClearCard){returnToClearDialog();return;}
+  if(tipGuideReturnTarget){
+    const target=tipGuideReturnTarget;
+    tipGuideReturnTarget=null;
+    $(target.dialogId).hidden=false;
+    $(target.focusId).focus();
+    return;
+  }
   $('menuToggle').focus();
 }
 function startTipGuideDrag(event){
@@ -3606,6 +3669,7 @@ function applyLanguage(lang){
   if(editingBoard)showMakerMessage();
   else if(clearShown){
     $('clearDialogMessage').textContent=tr('clear');
+    renderClearStageContext();
     renderClearTip();
     const action=$('clearNext');
     if(freeMode)action.textContent=tr('another');
