@@ -4178,7 +4178,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false}={}){
 }
 $('resetProgress').addEventListener('click',()=>{
   if(!confirm(tr('resetConfirm'))) return;
-  resetStoredProgress();
+  resetStoredProgress({resetIntro:true,showIntro:true});
 });
 
 buildBoard();
