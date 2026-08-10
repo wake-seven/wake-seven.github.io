@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 1.5 58.4 16.75 58.4 47.25 32 62.5 5.6 47.25 5.6 16.75Z' fill='%23C8352C' stroke='%238A2018' stroke-width='2.4' stroke-linejoin='round'/%3E%3Cellipse cx='32' cy='27' rx='14.5' ry='13' fill='%23F7EEDC' stroke='%238A2018' stroke-width='1.3'/%3E%3Ccircle cx='26.2' cy='27.6' r='3.2' fill='%23241D1A'/%3E%3Ccircle cx='37.8' cy='27.6' r='3.2' fill='%23241D1A'/%3E%3C/svg%3E">
 <title>だるまさんを起こして！ — WAKE SEVEN</title>
 <script>
   if(new URLSearchParams(location.search).get('embed')==='1'){
@@ -178,7 +179,7 @@
     background:rgba(4,13,24,.7);backdrop-filter:blur(4px);
   }
   .game-dialog-backdrop[hidden]{display:none}
-  .game-dialog{width:min(100%,350px);padding:22px 20px;border:1px solid rgba(255,255,255,.16);border-radius:15px;background:#1A3047;box-shadow:0 20px 55px rgba(0,0,0,.5);text-align:center}
+  .game-dialog{width:min(100%,360px);padding:22px 20px;border:1px solid rgba(255,255,255,.16);border-radius:15px;background:#1A3047;box-shadow:0 20px 55px rgba(0,0,0,.5);text-align:center}
   #clearDialog .game-dialog{max-height:calc(100dvh - 36px);overflow-y:auto}
   #messageDialog .game-dialog{max-height:calc(100dvh - 36px);overflow-y:auto}
   .game-dialog h2{font-size:21px;letter-spacing:.08em;color:var(--washi);white-space:pre-line}
@@ -217,10 +218,13 @@
   .clear-tip-illustration.rank-badge-art svg{width:72px;height:29px}
   .clear-tip-illustration.unwritten-art{height:140px;margin:18px 0 -4px}
   .clear-tip-illustration.unwritten-art svg{width:250px;height:140px}
+  .clear-tip-illustration.cheer-art{height:154px;margin:12px 0 -2px;display:flex;flex-direction:column;justify-content:center}
+  .clear-tip-illustration.cheer-art svg{width:180px;height:88px}
+  .cheer-caption{margin:1px 0 0;color:#B9E8F2;font-size:12px;font-weight:600;line-height:1.5;white-space:pre-line}
   .clear-tip-illustration.intro-guide-art{height:190px;margin:8px 0 -4px}
   .clear-tip-illustration.intro-guide-art svg{width:180px;height:auto}
   .clear-tip-illustration.move-graph{height:154px;margin:14px 0 -3px}
-  .clear-tip-illustration.move-graph svg{width:335px;height:154px}
+  .clear-tip-illustration.move-graph svg{width:335px;height:154px;transform:translateX(-20px)}
   .clear-tip-illustration.board-card{height:164px;margin:12px 0 -5px}
   .clear-tip-illustration.board-card svg{width:180px;height:164px}
   .two-move-dialog{width:min(100%,390px);padding:18px 14px 16px}
@@ -237,17 +241,18 @@
   .two-move-detail-board svg{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
   .two-move-detail-board svg:active{cursor:grabbing}
   .board-compare-hint{margin:5px 0 0;color:#78B9CC;font-size:10px;letter-spacing:.03em}
+  .two-move-detail-intro{margin:23px 0 14px!important}
   #twoMoveDetailDialog.comparing{background:rgba(4,13,24,.08);backdrop-filter:none}
   #twoMoveDetailDialog.comparing .two-move-detail{background:transparent;border-color:transparent;box-shadow:none}
   #twoMoveDetailDialog.comparing .two-move-detail > :not(.two-move-detail-board){opacity:0;pointer-events:none}
-  .two-move-detail-tip{margin:12px 0 0!important;padding:10px 11px;border-radius:7px;background:rgba(98,184,210,.1);color:#B9E8F2!important;text-align:left}
+  .two-move-detail-tip{margin:12px 0 0!important;padding:10px 11px;border-radius:7px;background:rgba(98,184,210,.1);color:#B9E8F2!important;text-align:left;white-space:pre-line}
   .two-move-detail-play{display:flex;justify-content:center;gap:7px;margin-top:14px}
   .two-move-detail-actions{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;margin:8px 0 4px}
   .two-move-detail-actions .chip{padding:5px 7px;font-size:10px}
   .two-move-detail-actions #twoMoveDetailPrev{justify-self:start}
   .two-move-detail-actions #closeTwoMoveDetail{grid-column:2;padding-left:17px;padding-right:17px}
   .two-move-detail-actions #twoMoveDetailNext{grid-column:3;justify-self:end}
-  .two-move-detail-return{padding:6px 17px!important;font-size:10px!important}
+  .two-move-detail-return{padding:6px 17px!important;font-size:12px!important}
   .tip-guide-dialog{width:min(100%,390px)}
   .tip-guide-page{margin-top:10px;color:#9BCBDD;font-size:11px;font-weight:700;letter-spacing:.12em}
   .tip-guide-art{height:290px;margin:3px auto -4px;display:grid;place-items:center}
@@ -415,7 +420,8 @@
     filter:drop-shadow(0 1px 2px rgba(0,0,0,.32));
   }
   .grip-marker rect{fill:#62B8D2}
-  #board.selecting .grip-marker,#board.hinting .grip-marker,#board.clear-pending .grip-marker,#board.celebrating .grip-marker{opacity:0}
+  #board.selecting .grip-marker,#board.hinting .grip-marker,#board.clear-pending .grip-marker,#board.celebrating .grip-marker,#board.spinning .grip-marker{opacity:0}
+  #board.spinning .pivot{opacity:0}
   .hint-arrow{pointer-events:none;animation:hintArrow 1.35s ease both}
   .hint-arrow.tutorial{animation:none;opacity:1}
   .hint-arrow .arc{
@@ -658,6 +664,7 @@
     <div class="two-move-detail-actions"><button class="chip" id="twoMoveDetailPrev">← 前へ</button><button class="chip" id="closeTwoMoveDetail">一覧へ</button><button class="chip" id="twoMoveDetailNext">次へ →</button></div>
     <div class="two-move-detail-board" id="twoMoveDetailBoard"></div>
     <div class="two-move-controls"><button class="chip" id="twoMoveDetailMirror">↔ 左右反転</button><button class="chip" id="twoMoveDetailRotate">↻ 60°回転</button></div>
+    <p class="board-compare-hint two-move-detail-intro" id="twoMoveDetailIntro" hidden></p>
     <p class="two-move-detail-tip" id="twoMoveDetailTip"></p>
     <div class="two-move-detail-play"><button class="chip on" id="playTwoMoveFree">フリーモードで遊ぶ →</button><button class="chip two-move-detail-return" id="returnToClearDetail" hidden>戻る</button></div>
     <p class="board-compare-hint" id="twoMoveDetailCompareHint"></p>
@@ -832,7 +839,8 @@ const STAGES=[
   { state:292, par:3 },
   { state:1006, par:3 }
 ];
-const TWO_MOVE_STAGES=STAGES.filter(stage=>stage.par===2);
+// 一覧・解説は、比較しやすい基準の向きを保つ。
+const TWO_MOVE_STAGES=STAGES.filter(stage=>stage.par===2).map(stage=>({...stage}));
 // 名人への道の「巻・問題番号」から、内部の通し番号（0始まり）を作る。
 const masterStage=(volume,question)=>(volume-1)*STAGES.length+(question-1);
 // 覚えやすい順。番号は TWO_MOVE_STAGES 内での元の並び順（1 始まり）。
@@ -943,6 +951,7 @@ const EXTRA_CLEAR_ARTS={
   [masterStage(3,11)]:'market',
   [masterStage(3,13)]:'crane',
   [masterStage(4,1)]:'dharma',
+  [masterStage(4,9)]:'cheer',
   [masterStage(4,13)]:'darumaOtoshi'
 };
 const SYMMETRIES=Array.from({length:6},(_,k)=>[
@@ -956,6 +965,21 @@ function transformStateBySymmetry(state,symmetry){
   }
   return enc(next);
 }
+// 基本の最短2手問題は、初手の軸が散る固定の見え方にする。
+const BASIC_STAGE_VIEWS=[
+  {permutation:makeBoardPermutation(60),flip:false},
+  {permutation:makeBoardPermutation(120),flip:false},
+  {permutation:makeBoardPermutation(180),flip:false},
+  {permutation:makeBoardPermutation(240),flip:false},
+  {permutation:makeBoardPermutation(180),flip:false},
+  {permutation:makeBoardPermutation(300),flip:false},
+  {permutation:makeBoardPermutation(300),flip:false},
+  {permutation:makeBoardPermutation(60),flip:false},
+  {permutation:makeBoardPermutation(120),flip:false}
+];
+BASIC_STAGE_VIEWS.forEach((view,index)=>{
+  if(view)STAGES[index+3].state=transformStateBySymmetry(STAGES[index+3].state,view);
+});
 function canonicalState(state){
   let canonical=state;
   for(const symmetry of SYMMETRIES)canonical=Math.min(canonical,transformStateBySymmetry(state,symmetry));
@@ -1013,13 +1037,13 @@ FOUR_MOVE_STAGES.sort((a,b)=>{
   const ae=fourMoveEase(a),be=fourMoveEase(b);
   return be.progress-ae.progress||be.followup-ae.followup;
 });
-/* 極：確認2回→1回→なしと情報を減らす。最後3問は固定し、直前3問には次に易しい盤面を置く。 */
+/* 極：確認2回→1回→なしと情報を減らす。最後は最も解きやすい最短4手盤面。 */
 EXTRA_STAGES.push(
   ...FOUR_MOVE_STAGES.slice(15),  /* 三の巻後半：難しい9問 */
   ...FOUR_MOVE_STAGES.slice(9,15),/* 極 1〜6：確認2回 */
   ...FOUR_MOVE_STAGES.slice(6,9), /* 極 7〜9：確認1回 */
   ...FOUR_MOVE_STAGES.slice(3,6), /* 極 10〜12：確認なし（易しい3問） */
-  FOUR_MOVE_STAGES[0],FOUR_MOVE_STAGES[1],FOUR_MOVE_STAGES[2] /* 最後3問：易→難 */
+  FOUR_MOVE_STAGES[2],FOUR_MOVE_STAGES[1],FOUR_MOVE_STAGES[0] /* 最後3問：難→易 */
 );
 let currentLang='ja';
 const UI_TEXT={
@@ -1163,9 +1187,9 @@ Object.assign(UI_TEXT.ja,{
   extraClear1:'名人への道では、「離」の途中まで最短3手の問題が続きます。',
   extraClear3:'この7枚の配置のだるま起こしでは、最短4手以内に必ずクリアできる仕組みになっています。',
   extraClear30:'不立文字（ふりゅうもんじ）は、悟りは文字や言葉だけでは伝えられず、心から心へ伝わるものだ、という禅の考え方です。達磨大師を始祖とする禅宗で大切にされてきました。',
-  extraClear7:'名人への道の終盤では、残り最短手数が表示されません。最短2手の9パターンは、盤面の形だけでなくだるまさんの向きも大事です。少しずつ見分ける方法を身につけていこう。',
+  extraClear7:'名人への道の終盤では、残り最短手数が表示されません。攻略のカギは、最短2手の盤面を見分けられるようになることです。\n☆ 盤面の形とだるまさんの向きが大事！',
   extraClear9:'全ての最短4手盤面で、6本の軸をランダムに選び、最短3手になる向きへ回すと、約78％で最短3手になります。',
-  extraClear33:'最短3手の盤面で、12通りの回し方をランダムに選ぶと、最短2手になるのは約17％、そのまま最短3手は約56％、最短4手になるのは約27％です。',
+  extraClear33:'最短3手の盤面での次の一手の確率です。\n・最短2手になるのは約17％\n・最短3手のままになるのは約56％\n・最短4手になるのは約27％',
   masterNextFourMoves:'次からは、最短4手の問題です。',
   extraClear46:'メニューの「最短2手の9パターンを見る」から、9種類の盤面を一覧で見られます。',
   extraClear47:'「左右反転」「60°回転」で向きを変えて、覚えた盤面と同じかどうか確かめてみよう。',
@@ -1177,7 +1201,7 @@ Object.assign(UI_TEXT.ja,{
   stageClearBasic3:'回転したら3体のだるまがどの向きになるか、想像しながら回してみよう。',
   stageClearChallenge2:'突破まであと一歩！\nメニューから、フリーモードや盤面を自分でつくるモードでも遊べます。',
   stageClear8:'「ヒント」ボタンを押すと、次の最善手が青い矢印で表示されます。',
-  stageClear10:'一度クリアした問題は、「← 前へ」「次へ →」と、その真ん中にあるボタンでいつでも戻れます。\n金色のゲージをタップして選ぶこともできます。',
+  stageClear10:'一度クリアした問題は、「← 前へ」「次へ →」と、その真ん中のボタンでいつでも戻れます。\n金色のゲージをタップしても選べます。',
   masterPatternCount:'盤面は全部で73パターン\n・最短1手：1パターン\n・最短2手：9パターン\n・最短3手：39パターン\n・最短4手：24パターン\nこのステージモードで全パターンを遊べます\n（回転・左右反転で同じになる盤面は、同じパターンとして数えています。）',
   twoMoveDiscovery:'最短2手の9パターン　{n} / 9\nこの形と向きを、そのまま覚えておこう。',detailsLink:'詳しい解説はこちら →',backToClear:'戻る',guideCardSmall:'4体立ち：寝ダルマの小三角は最短1手',guideCardOuter:'5体立ち：寝た2体が外周で離れていれば最短3手',guideCardCenter:'6体寝て、中央だけ立っている形は最短4手',guideCardAlternate:'外周に1つおきに3体立っている形は最短3手'
 });
@@ -1337,10 +1361,10 @@ Object.assign(UI_TEXT.ja,{rankListMenu:'獲得した称号一覧'});
 Object.assign(UI_TEXT.en,{rankListMenu:'Collected titles'});
 Object.assign(UI_TEXT.zh,{rankListMenu:'已获得的称号'});
 Object.assign(UI_TEXT.ko,{rankListMenu:'획득한 칭호'});
-Object.assign(UI_TEXT.ja,{extraFourthOneCheck:'次から「残り手数」ボタンが使えるのは1回限りです。',extraFourthPersistent:'ラストに近づいてきました。ここからかなり難しくなります。\n次からは「残り手数」ボタンの使用回数が、「元に戻す」などで復活しません。\n（手数オーバーで全員起きた場合にのみ復活します）',extraFourthNoCheck:'よくここまでたどり着きましたね。\n次の問題からは残り手数のボタンが使えません。\nここからが本当の正念場です。',extraFinalNotice:'次がラストの問題です。\n最後に起き上がるのは、だるまか、あなたか。'});
-Object.assign(UI_TEXT.en,{extraFourthOneCheck:'From the next puzzle, Moves Left can be checked only once.',extraFourthPersistent:'You are nearing the end. It gets much harder from here.\nFrom the next puzzle, Moves Left uses do not return after restarting, undoing, or similar actions.\n(They return only if everyone wakes up over par.)',extraFourthNoCheck:'You have come a long way.\nFrom the next puzzle, the Moves Left button is unavailable.\nThis is the true critical moment.',extraFinalNotice:'The next puzzle is the last one.\nWho rises last: the daruma, or you?'});
-Object.assign(UI_TEXT.zh,{extraFourthOneCheck:'从下一题起，“剩余步数”只能查看一次。',extraFourthPersistent:'快到最后了，从这里开始会难很多。\n从下一题起，“剩余步数”的使用次数不会因重新开始、撤销等操作而恢复。\n（只有超过最少步数叫醒全部不倒翁时才会恢复。）',extraFourthNoCheck:'你已经走到这里了。\n从下一题起，不能再使用“剩余步数”按钮。\n真正的关键时刻到了。',extraFinalNotice:'下一题就是最后一题。\n最后站起来的是不倒翁，还是你？'});
-Object.assign(UI_TEXT.ko,{extraFourthOneCheck:'다음 문제부터 남은 수는 한 번만 확인할 수 있어요.',extraFourthPersistent:'마지막이 가까워졌어요. 이제부터 꽤 어려워집니다.\n다음 문제부터 남은 수 사용 횟수는 다시 시작이나 되돌리기 등을 해도 돌아오지 않아요.\n(최단 수보다 많이 써서 모두 깨우면 다시 돌아옵니다.)',extraFourthNoCheck:'여기까지 정말 잘 왔어요.\n다음 문제부터는 남은 수 버튼을 쓸 수 없습니다.\n이제부터가 진짜 고비예요.',extraFinalNotice:'다음 문제가 마지막 문제예요.\n마지막에 일어나는 것은 다루마일까요, 당신일까요?'});
+Object.assign(UI_TEXT.ja,{extraFourthOneCheck:'次から「残り手数」ボタンが使えるのは1回限りです。',extraFourthPersistent:'次からは「残り手数」ボタンの使用回数が、「元に戻す」などで復活しません。\n(手数オーバーで全員起きた場合にのみ復活)',cheerCaption:'ラストに近づいてきました。\nさらに難しくなるけど、だるまさんも応援してます!',extraFourthNoCheck:'ラスト3問！とうとうここまで来ました。\n次からは残り手数のボタンが使えません。\nいよいよ正念場です。',extraFinalNotice:'ラスト問題！「1手戻す」も使えません。\n最後に起き上がるのは、だるまか、あなたか。'});
+Object.assign(UI_TEXT.en,{extraFourthOneCheck:'From the next puzzle, Moves Left can be checked only once.',extraFourthPersistent:'From the next puzzle, Moves Left uses do not return after restarting, undoing, or similar actions.\n(They return only if everyone wakes up over par.)',cheerCaption:'You are nearing the end.\nIt gets harder from here, but the daruma are cheering for you.',extraFourthNoCheck:'You have come a long way.\nFrom the next puzzle, the Moves Left button is unavailable.\nThis is the true critical moment.',extraFinalNotice:'The next puzzle is the last one.\nWho rises last: the daruma, or you?\nUndo is unavailable in the final puzzle.'});
+Object.assign(UI_TEXT.zh,{extraFourthOneCheck:'从下一题起，“剩余步数”只能查看一次。',extraFourthPersistent:'从下一题起，“剩余步数”的使用次数不会因重新开始、撤销等操作而恢复。\n（只有超过最少步数叫醒全部不倒翁时才会恢复。）',cheerCaption:'快到最后了。\n接下来会更难，但不倒翁也在为你加油。',extraFourthNoCheck:'你已经走到这里了。\n从下一题起，不能再使用“剩余步数”按钮。\n真正的关键时刻到了。',extraFinalNotice:'下一题就是最后一题。\n最后站起来的是不倒翁，还是你？\n最后一题不能撤销。'});
+Object.assign(UI_TEXT.ko,{extraFourthOneCheck:'다음 문제부터 남은 수는 한 번만 확인할 수 있어요.',extraFourthPersistent:'다음 문제부터 남은 수 사용 횟수는 다시 시작이나 되돌리기 등을 해도 돌아오지 않아요.\n(최단 수보다 많이 써서 모두 깨우면 다시 돌아옵니다.)',cheerCaption:'마지막이 가까워졌어요.\n더 어려워지지만 다루마도 응원하고 있어요.',extraFourthNoCheck:'여기까지 정말 잘 왔어요.\n다음 문제부터는 남은 수 버튼을 쓸 수 없습니다.\n이제부터가 진짜 고비예요.',extraFinalNotice:'다음 문제가 마지막 문제예요.\n마지막에 일어나는 것은 다루마일까요, 당신일까요?\n마지막 문제에서는 되돌리기를 쓸 수 없습니다.'});
 Object.assign(UI_TEXT.ja,{quizTitle:'だるまクイズ',quizCorrect:'正解！',quizWrong:'おしい！',quizContinue:'つづける →'});
 Object.assign(UI_TEXT.en,{quizTitle:'Daruma Quiz',quizCorrect:'Correct!',quizWrong:'Not quite!',quizContinue:'Continue →'});
 Object.assign(UI_TEXT.zh,{quizTitle:'不倒翁小测验',quizCorrect:'答对了！',quizWrong:'差一点！',quizContinue:'继续 →'});
@@ -1357,9 +1381,9 @@ Object.assign(UI_TEXT.ja,{
   twoMoveDiscovery1:'最短2手の9パターン　{n} / 9\nこの形をそのまま覚えておこう。',
   twoMoveDiscovery23:'最短2手の9パターン　{n} / 9\nこの形と向きを、そのまま覚えておこう。台形の対角線同士の向きに注目すると覚えやすいです。',
   twoMoveDiscovery45:'最短2手の9パターン　{n} / 9\nこの形と向きを、そのまま覚えておこう。芋虫の目と胴体の向きに注目すると覚えやすいです。',
-  twoMoveDiscovery6:'最短2手の9パターン　{n} / 9\n外周の隣り合う寝た2体は、盤面の全体を回転すると向きが変わって見えるので覚えにくい形です。以下の解説から詳しく見てみよう。',
-  twoMoveDiscovery7:'最短2手の9パターン　{n} / 9\nバーベル型は仲間外れダルマの向きに注目。盤面の全体を回転すると向きが変わって見えるので覚えにくい形です。以下の解説から詳しく見てみよう。',
-  twoMoveDiscovery89:'最短2手の9パターン　{n} / 9\n台形型は仲間外れダルマの向きに注目。盤面の全体を回転すると向きが変わって見えるので覚えにくい形です。以下の解説から詳しく見てみよう。'
+  twoMoveDiscovery6:'最短2手の9パターン　{n} / 9\n外周の隣り合う寝た2体は、盤面の全体を回転すると向きが変わって見えるので覚えにくい形です。',
+  twoMoveDiscovery7:'最短2手の9パターン　{n} / 9\nバーベル型は仲間外れダルマの向きに注目。盤面の全体を回転すると向きが変わって見えるので覚えにくい形です。',
+  twoMoveDiscovery89:'最短2手の9パターン　{n} / 9\n台形型は仲間外れダルマの向きに注目。盤面の全体を回転すると向きが変わって見えるので覚えにくい形です。'
 });
 function tr(key,vars){
   let value=(UI_TEXT[currentLang]&&UI_TEXT[currentLang][key])||UI_TEXT.ja[key]||key;
@@ -1403,21 +1427,17 @@ const DARUMA_QUIZZES=[
   { q:'達磨大師が開いたとされる仏教の宗派は？',a:['禅宗','浄土宗','真言宗','日蓮宗'],correct:0,note:'達磨大師は、中国禅宗の開祖とされています。' },
   { q:'新しいだるまを迎える時期として多いのは？',a:['お正月ごろ','夏休み','お盆','ハロウィン'],correct:0,note:'年末年始の初詣やだるま市で、願いを込めて新しいだるまを迎える人が多いです。' }
 ];
-/* 正解の位置を問題ごとに散らす。翻訳版も同じ並び替えを使う。 */
-const QUIZ_OPTION_ORDERS=[
-  [0,2,3,1], // 4番目
-  [0,2,1,3], // 3番目
-  [1,0,2,3], // 2番目
-  [0,2,3,1], // 4番目
-  [0,2,1,3], // 3番目
-  [0,1,2,3], // 2番目
-  [0,1,2,3], // 1番目
-  [1,2,0,3], // 3番目
-  [0,1,2,3], // 1番目
-  [1,2,3,0]  // 4番目
-];
+/* クイズは見直すたびに選択肢の位置を変える。 */
+function shuffledIndices(length){
+  const order=Array.from({length},(_,index)=>index);
+  for(let index=order.length-1;index>0;index--){
+    const swap=Math.floor(Math.random()*(index+1));
+    [order[index],order[swap]]=[order[swap],order[index]];
+  }
+  return order;
+}
 function quizPresentation(quizIndex,quiz){
-  const order=QUIZ_OPTION_ORDERS[quizIndex]||quiz.a.map((_,index)=>index);
+  const order=shuffledIndices(quiz.a.length);
   return {answers:order.map(index=>quiz.a[index]),correct:order.indexOf(quiz.correct)};
 }
 const DARUMA_QUIZ_TRANSLATIONS={
@@ -1524,20 +1544,24 @@ let fourthCheckUsage={};
 try{fourthCheckUsage=JSON.parse(localStorage.getItem(FOURTH_CHECKS_STORAGE_KEY)||'{}')||{};}catch(_){fourthCheckUsage={};}
 let fourthHintPreview=false,fourthDistanceRevealed=false,fourthHintDistance=null,fourthChecksUsed=0;
 const masterVolume=()=>extraMode?Math.floor(extraIndex/STAGES.length)+1:0;
+const isFinalMasterPuzzle=()=>extraMode&&extraIndex===EXTRA_STAGES.length-1;
+const usesSwipeDimming=()=>!extraMode&&!freeMode&&!customMode;
 const requiresOptimalClear=()=>extraMode;
 const masterHintsDisabled=()=>masterVolume()>=2;
 const isThirdVolume=()=>extraMode&&extraIndex>=30&&extraIndex<45;
 const isFourthVolume=()=>extraMode&&extraIndex>=45&&extraIndex<60;
 const fourthCheckLimit=()=>!isFourthVolume()?0:(extraIndex%STAGES.length<6?2:extraIndex%STAGES.length<12?1:0);
+// 極10〜12だけは、やり直し等でも残り手数の使用回数を引き継ぐ。
+const fourthChecksPersist=()=>isFourthVolume()&&extraIndex%STAGES.length>=9&&extraIndex%STAGES.length<12;
 const fourthChecksLeft=()=>Math.max(0,fourthCheckLimit()-fourthChecksUsed);
 const usesHiddenRemaining=()=>freeMode||isFourthVolume();
 function persistFourthChecks(){
-  if(!isFourthVolume())return;
+  if(!fourthChecksPersist())return;
   fourthCheckUsage[extraIndex]=fourthChecksUsed;
   try{localStorage.setItem(FOURTH_CHECKS_STORAGE_KEY,JSON.stringify(fourthCheckUsage));}catch(_){ }
 }
 function loadFourthChecks(){
-  fourthChecksUsed=isFourthVolume()&&Number.isInteger(fourthCheckUsage[extraIndex])?fourthCheckUsage[extraIndex]:0;
+  fourthChecksUsed=fourthChecksPersist()&&Number.isInteger(fourthCheckUsage[extraIndex])?fourthCheckUsage[extraIndex]:0;
 }
 function renewFourthChecks(){
   if(!isFourthVolume())return;
@@ -2230,9 +2254,8 @@ svg.addEventListener('pointerdown',e=>{
   let ti=0,bd=Infinity;
   TRI.forEach((t,i)=>{ const d=Math.hypot(t.x-p.x,t.y-p.y); if(d<bd){bd=d;ti=i;} });
   const t=TRI[ti], selectedTiles=new Set(t.cells.map(i=>tileEls[i]));
-  // Keep the board dimmed while handing off from the stage-one hint to dragging.
-  // Preserve the selected tiles so neither normal nor extra-dark brightness is shown.
-  svg.classList.add('selecting');
+  // だるま修行では対象の3体を見分けやすくする。それ以外では全員を見渡せるよう暗転しない。
+  if(usesSwipeDimming())svg.classList.add('selecting');
   for(const i of t.cells) tileEls[i].classList.add('selected');
   cancelTutorialHint(true);
   baseTiles.forEach(el=>el.classList.toggle('selected',selectedTiles.has(el)));
@@ -2310,12 +2333,13 @@ svg.addEventListener('pointerup',e=>finishDrag(e));
 svg.addEventListener('pointercancel',e=>finishDrag(e,true));
 
 $('undo').addEventListener('click',()=>{
-  if(busy||!history.length) return;
+  if(busy||isFinalMasterPuzzle()||!history.length) return;
   cancelTileAnimations();
   clearTimeout(clearTimer); clearShown=false;
   $('clearNext').hidden=true;
   svg.classList.remove('clear-pending','celebrating');
   const h=history.pop(); ori=h.o; spin=h.s; tileEls=h.t; moves=h.m;
+  if(isFourthVolume()&&!fourthChecksPersist())fourthChecksUsed=0;
   if(usesHiddenRemaining())resetFourthDistance();
   $('msg').classList.remove('show'); paint();
 });
@@ -2476,7 +2500,7 @@ function renderRankList(){
     const condition=document.createElement('span'),path=document.createElement('button'),clear=document.createElement('span'),title=document.createElement('b');
     condition.className='rank-condition';
     path.className='rank-stage-link';path.type='button';path.textContent=rankPathLabel(index);title.innerHTML=rankFrameSvg(earned?rank:'？',!earned,index);
-    clear.textContent=currentLang==='ja'?'　クリア':'';
+    clear.textContent=earned&&currentLang==='ja'?'　クリア':'';
     path.addEventListener('click',()=>openStagePickerForRank(index));
     condition.append(path,clear);row.append(title,condition);list.appendChild(row);
   });
@@ -2609,6 +2633,7 @@ function renderStageNav(){
   $('stagePickerTrigger').disabled=false;
   $('shuffle').hidden=true;
   $('undo').hidden=editingBoard;
+  $('undo').disabled=editingBoard||isFinalMasterPuzzle();
   $('hint').hidden=editingBoard;
   if(isFourthVolume()){
     $('hint').textContent=tr('remainingCheck',{n:fourthChecksLeft()});
@@ -2863,6 +2888,7 @@ function tipArt(key){
     case 'unwritten':return tipSvg('<path d="M39 20Q105 6 171 20L166 39Q105 48 44 39Z" fill="#F3E8D5" opacity=".12" stroke="#B9E8F2" stroke-width="1.2"/><path d="M45 21Q105 13 165 21" fill="none" stroke="#F3E8D5" stroke-width="1" opacity=".45"/><text x="72" y="34" text-anchor="middle" fill="#B9E8F2" font-family="serif" font-size="18" opacity=".54">文</text><text x="105" y="34" text-anchor="middle" fill="#B9E8F2" font-family="serif" font-size="15" opacity=".3">・</text><text x="137" y="34" text-anchor="middle" fill="#B9E8F2" font-family="serif" font-size="12" opacity=".12">字</text><path d="M75 62Q105 51 135 62" fill="none" stroke="#62B8D2" stroke-width="1.7" stroke-linecap="round" opacity=".7"/><circle cx="105" cy="59" r="10" fill="#62B8D2" opacity=".1"/><circle cx="105" cy="59" r="4" fill="#C9A54E" opacity=".9"/>'+d(59,67,.35)+d(151,67,.35));
     case 'rise':return tipSvg('<path class="tip-blue" d="M37 58C53 25 85 20 113 34"/><path class="tip-blue" d="M104 25l10 9-13 4"/><text class="tip-text" x="22" y="24">七</text><text class="tip-text" x="133" y="28">八</text>'+d(119,52));
     case 'eyes':return tipSvg(d(105,53,.75)+'<circle cx="99" cy="49" r="3" fill="#F3E8D5"/><path d="M96 50Q99 46 102 50" fill="none" stroke="#241D1A" stroke-width="1.8" stroke-linecap="round"/>');
+    case 'cheer':return tipSvg('<g transform="translate(105 51) scale(.76)"><use href="#daruma-body"/><use href="#face-happy"/></g><g stroke="#B9E8F2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M49 66L39 25M161 66l10-41"/><path d="M40 27l-17 6 20 9Z" fill="#62B8D2"/><path d="M170 27l17 6-20 9Z" fill="#62B8D2"/></g><g fill="none" stroke="#62B8D2" stroke-width="2.2" stroke-linecap="round"><path d="M47 20l-5-5M163 20l5-5M35 53l-8 2M175 53l8 2"/></g>');
     case 'red':return tipSvg('<path class="tip-line" d="M105 7v11M68 20l8 8M142 20l-8 8M58 52h12M140 52h12"/>'+d(105,52,.7));
     case 'count':return tipSvg('<g text-anchor="middle"><text class="tip-text" x="16" y="20">1</text><text class="tip-text" x="36" y="20">2</text><text class="tip-text" x="56" y="20">3</text><text class="tip-text" x="76" y="20">4</text><text class="tip-text" x="96" y="20">5</text><text class="tip-text" x="116" y="20">6</text><text class="tip-text" x="136" y="20">7</text><text class="tip-text" x="156" y="20">8</text><text class="tip-text" x="176" y="20">9</text><text class="tip-text" x="196" y="20">10</text><text class="tip-caption" x="16" y="51">だ</text><text class="tip-caption" x="36" y="51">る</text><text class="tip-caption" x="56" y="51">ま</text><text class="tip-caption" x="76" y="51">さ</text><text class="tip-caption" x="96" y="51">ん</text><text class="tip-caption" x="116" y="51">が</text><text class="tip-caption" x="136" y="51">こ</text><text class="tip-caption" x="156" y="51">ろ</text><text class="tip-caption" x="176" y="51">ん</text><text class="tip-caption" x="196" y="51">だ</text></g><path class="tip-line" d="M10 32h190" opacity=".45"/><g transform="translate(105 88) rotate(90) scale(.62)"><use href="#daruma-body"/><use href="#face-shut"/></g>',true);
     case 'chants':return tipSvg('<g text-anchor="middle">'+Array.from({length:10},(_,i)=>'<text class="tip-text" x="'+(16+i*20)+'" y="22">'+(i+1)+'</text>').join('')+Array.from({length:10},(_,i)=>'<text class="tip-caption" x="'+(16+i*20)+'" y="52" style="fill:#C9A54E">'+'だるまさんがころんだ'[i]+'</text>').join('')+Array.from({length:10},(_,i)=>'<text class="tip-caption" x="'+(16+i*20)+'" y="81" style="fill:#62B8D2">'+'へいたいさんがとおる'[i]+'</text>').join('')+'</g>',true);
@@ -2903,9 +2929,10 @@ function renderClearTip(){
   illustration.classList.toggle('navigation-art',art==='navigation');
   illustration.classList.toggle('rank-badge-art',art==='rankBadgeArt');
   illustration.classList.toggle('unwritten-art',art==='unwritten');
+  illustration.classList.toggle('cheer-art',art==='cheer');
   illustration.classList.toggle('intro-guide-art',art==='introGuide');
   stopClearGuideBoard('clearGuideBoard');
-  illustration.innerHTML=art==='introGuide'?'<svg id="clearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':art?tipArt(art):'';
+  illustration.innerHTML=art==='introGuide'?'<svg id="clearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'';
   if(art==='introGuide')buildClearGuideBoard('clearGuideBoard');
   illustration.hidden=!art;
 }
@@ -3010,9 +3037,10 @@ function renderMessageReview(){
   illustration.classList.toggle('navigation-art',art==='navigation');
   illustration.classList.toggle('rank-badge-art',art==='rankBadgeArt');
   illustration.classList.toggle('unwritten-art',art==='unwritten');
+  illustration.classList.toggle('cheer-art',art==='cheer');
   illustration.classList.toggle('intro-guide-art',art==='introGuide');
   stopClearGuideBoard('messageClearGuideBoard');
-  illustration.innerHTML=art==='introGuide'?'<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':art?tipArt(art):'';
+  illustration.innerHTML=art==='introGuide'?'<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'';
   if(art==='introGuide')buildClearGuideBoard('messageClearGuideBoard');
   illustration.hidden=!art;
   $('messagePrev').disabled=messageReviewIndex===0;
@@ -3140,6 +3168,22 @@ function returnToClearDialog(){
 let twoMoveDisplayStates=[],twoMoveDisplayPatterns=[],twoMoveAnimating=false,twoMoveAnimationTimer=0;
 let twoMoveDetailState=null,twoMoveDetailIndex=-1,twoMoveDetailAnimating=false,twoMoveDetailAnimationTimer=0,detailDrag=null;
 const TWO_MOVE_TIP_INDEX=[8,7,6,5,5,4,4,1,2];
+const TWO_MOVE_DETAIL_INTROS={
+  ja:{
+    7:'最初に覚えたい最短2手の盤面です。だるまさんの向きに関係ないので覚えやすい！',
+    6:'寝ているだるまさんがひし形にまとまっている場合、対角線同士のだるまさんの向きも確認しよう。',
+    5:'寝ているだるまさんがひし形にまとまっている場合、対角線同士のだるまさんの向きも確認しよう。',
+    4:'寝ているだるまさんの並びが芋虫の形に見える場合、目玉と体の部分のだるまさんの向きも要確認！',
+    3:'寝ているだるまさんの並びが芋虫の形に見える場合、目玉と体の部分のだるまさんの向きも要確認！',
+    8:'だるまさんが外側で隣同士で寝ている場合、だるまさんの向きが大事です。',
+    0:'寝ているだるまさんがバーベル型に並んでいる場合は、同じ向きの三角を除いたおもりの部分に注目！',
+    2:'寝ているだるまさんが台形型に並んでいる場合は、同じ向きの三角を除いた部分に注目！',
+    1:'寝ているだるまさんが台形型に並んでいる場合は、同じ向きの三角を除いた部分に注目！'
+  },
+  en:{7:'A great first 2-move board to remember: the daruma directions do not matter.'},
+  zh:{7:'这是最适合先记住的最少2步棋盘：不倒翁的朝向无关紧要。'},
+  ko:{7:'처음 외우기 좋은 최단 2수 판입니다. 다루마의 방향은 상관없어요!'}
+};
 const miniAngle=value=>value===2?-120:value*120;
 function miniBoardSvg(state){
   const board=dec(state);
@@ -3192,9 +3236,12 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   if(!config){root.hidden=true;if(requireAnswer)$('clearNext').disabled=false;return;}
   const copy=BOARD_QUIZ_COPY[currentLang]||BOARD_QUIZ_COPY.ja;
   const state=boardQuizPatternState(config.pattern||config.patterns[0]);
-  let states=[],correct=[],question=copy.choose;
+  let states=[],correct=[],question=copy.choose,moveChoiceOrder=null;
   if(config.kind==='moves'){
-    states=[state];correct=[1];question=copy.moves;
+    states=[state];
+    moveChoiceOrder=shuffledIndices(copy.moveChoices.length);
+    correct=[moveChoiceOrder.indexOf(1)];
+    question=copy.moves;
   }else if(config.kind==='choose-two'){
     const accept=config.outerOddOnly?boardQuizCenterIsNotOdd:undefined;
     const good=[state];
@@ -3209,13 +3256,18 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
     states.splice(config.correct,0,state);
     correct=[config.correct];question=copy.choose;
   }
+  if(config.kind!=='moves'){
+    const order=shuffledIndices(states.length);
+    states=order.map(index=>states[index]);
+    correct=correct.map(index=>order.indexOf(index));
+  }
   const noteKey=config.kind==='moves'?'movesNote':config.topic;
   const detailPatterns=config.patterns||[config.pattern];
   root.hidden=false;
   const controls=index=>'<div class="board-quiz-tools"><button type="button" data-board-transform="mirror" data-board-index="'+index+'">↔ '+(currentLang==='ja'?'反転':tr('mirror'))+'</button><button type="button" data-board-transform="rotate" data-board-index="'+index+'">↻ '+(currentLang==='ja'?'回転':tr('rotate'))+'</button></div>';
   const card=(board,index)=>'<div class="board-quiz-card"><button class="board-quiz-option" type="button" data-board-answer="'+index+'">'+miniBoardSvg(board)+'</button>'+controls(index)+'</div>';
   const boardMarkup=config.kind==='moves'
-    ?'<div class="board-quiz-single">'+miniBoardSvg(states[0])+controls(0)+'</div><div class="board-quiz-moves">'+copy.moveChoices.map((label,index)=>'<button class="board-quiz-option" type="button" data-board-answer="'+index+'">'+label+'</button>').join('')+'</div>'
+    ?'<div class="board-quiz-single">'+miniBoardSvg(states[0])+controls(0)+'</div><div class="board-quiz-moves">'+moveChoiceOrder.map((choice,index)=>'<button class="board-quiz-option" type="button" data-board-answer="'+index+'">'+copy.moveChoices[choice]+'</button>').join('')+'</div>'
     :'<div class="board-quiz-options '+(states.length===3?'three':'')+'">'+states.map(card).join('')+'</div>';
   const detailLinks=detailPatterns.map(pattern=>'<button class="clear-tip-link" id="'+rootId+'Patterns'+pattern+'" type="button" data-board-patterns data-board-pattern="'+pattern+'" hidden>'+(detailPatterns.length>1?'最短2手の9パターン　'+pattern+' / 9 →':tr('detailsLink'))+'</button>').join('');
   root.innerHTML='<div class="quiz-label">'+copy.title+'</div><p class="board-quiz-question">'+question+'</p>'+boardMarkup+'<p class="board-quiz-note"></p>'+detailLinks;
@@ -3358,6 +3410,9 @@ function openTwoMovePatterns({returnToClear=false}={}){
 function renderTwoMoveDetail(){
   $('twoMoveDetailBoard').innerHTML=miniBoardSvg(twoMoveDetailState);
   const tips=PLAY_TIPS[currentLang]||PLAY_TIPS.ja;
+  const intro=(TWO_MOVE_DETAIL_INTROS[currentLang]||TWO_MOVE_DETAIL_INTROS.ja)[twoMoveDetailIndex]||'';
+  $('twoMoveDetailIntro').textContent=intro;
+  $('twoMoveDetailIntro').hidden=!intro;
   $('twoMoveDetailTip').textContent=tips[TWO_MOVE_TIP_INDEX[twoMoveDetailIndex]];
   const position=TWO_MOVE_PATTERN_ORDER.indexOf(twoMoveDetailIndex);
   $('twoMoveDetailTitle').textContent=tr('twoMoveDetailTitle')+'　'+(position+1)+' / '+TWO_MOVE_PATTERN_ORDER.length;
@@ -3647,6 +3702,23 @@ $('closeMessages').addEventListener('click',()=>{
 $('messagePrev').addEventListener('click',()=>{if(messageReviewIndex>0){messageReviewIndex--;renderMessageReview();}});
 $('messageNext').addEventListener('click',()=>{if(messageReviewIndex<messageReviewEntries.length-1){messageReviewIndex++;renderMessageReview();}});
 document.addEventListener('keydown',event=>{
+  const target=event.target;
+  const typing=target instanceof HTMLElement&&target.matches('input, textarea, select, [contenteditable]');
+  const dialogOpen=[...document.querySelectorAll('.game-dialog-backdrop')].some(dialog=>!dialog.hidden);
+  if(!typing&&event.key.toLowerCase()==='p'&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&!dialogOpen){
+    event.preventDefault();
+    closeAppMenu();
+    openTwoMovePatterns();
+    return;
+  }
+  if(!typing&&event.key.toLowerCase()==='m'&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&$('messageDialog').hidden){
+    if(!dialogOpen&&buildMessageReviewEntries().length){
+      event.preventDefault();
+      closeAppMenu();
+      openMessageReview({resume:true});
+      return;
+    }
+  }
   if($('messageDialog').hidden)return;
   if(event.key==='ArrowLeft'&&messageReviewIndex>0){event.preventDefault();messageReviewIndex--;renderMessageReview();}
   if(event.key==='ArrowRight'&&messageReviewIndex<messageReviewEntries.length-1){event.preventDefault();messageReviewIndex++;renderMessageReview();}
@@ -3713,6 +3785,7 @@ $('messageRankLink').addEventListener('click',()=>{
     $('messageDialog').hidden=true;
     twoMovePatternsReturnTarget={dialogId:'messageDialog',focusId:'messageRankLink'};
     openTwoMovePatterns();
+    twoMoveDetailReturnTarget={dialogId:'messageDialog',focusId:'messageRankLink'};
     openTwoMoveDetail(TWO_MOVE_STAGES[card].state,card);
     return;
   }
@@ -3750,13 +3823,13 @@ const PLAY_TIPS={
   ja:[
     '4体立ち：寝ダルマの小三角は最短1手、大三角は最短4手、ほかは最短3手',
     '2体寝が中央と外側：向きに関係なく最短2手',
-    '2体寝が外側の隣同士：10分前が右転び＋10分後が左転びなら最短2手',
+    '2体寝が外側の隣同士：盤面を時計に見立て、進んでいる方のだるまがあと一手で起きるなら最短2手',
     '5体立ちで寝た2体が外周で離れていれば最短3手',
     '4体寝のひし形：対角が違う向きなら最短2手（同じ向きなら最短3手）',
     '4体寝の芋虫：目玉同士、体同士がそれぞれ同じ向きなら最短2手',
-    '5体寝台形：仲間外れが中央以外で、\n・近い立ちの10分前＋右転びなら最短2手\n・近い立ちの10分後＋左転びなら最短2手',
-    '5体寝台形：仲間外れが中央以外で、\n・近い立ちの20分前＋左転びなら最短2手\n・近い立ちの20分後＋右転びなら最短2手',
-    '5体寝のバーベル：仲間外れが中央以外で、\n・隣の立ちの10分前＋右転びなら最短2手\n・隣の立ちの10分後＋左転びなら最短2手',
+    '5体寝台形：同じ向きの三角を除いて並んだ2体について、盤面を時計に見立てて遅れている方のだるまがあと一手で起きるなら最短2手',
+    '5体寝台形：同じ向きの三角を除いて並んだ2体について、盤面を時計に見立てて遅れている方のだるまがあと一手で起きるなら最短2手',
+    '5体寝のバーベル：同じ向きの三角を除いた2体について、盤面を時計に見立てて遅れている方のだるまがあと一手で起きるなら最短2手',
     '中央だけが立っている形は、向きに関係なく最短4手',
     '外周に1つおきに3体立っている形は最短3手です。逆に、外周に1つおきに3体寝ている形は最短4手なので違いに注意しよう。',
     '最短2手は対称な形を除くと9パターン。ステージ4〜12で全種類を網羅'
@@ -4107,6 +4180,7 @@ $('twoMoveDialog').addEventListener('click',event=>{
 $('twoMoveGrid').addEventListener('click',event=>{
   const card=event.target.closest('.two-move-card');
   if(!card||twoMoveAnimating)return;
+  if(twoMovePatternsReturnTarget)twoMoveDetailReturnTarget={...twoMovePatternsReturnTarget};
   openTwoMoveDetail(Number(card.dataset.state),Number(card.dataset.pattern));
 });
 $('closeTwoMoveDetail').addEventListener('click',closeTwoMoveDetail);
