@@ -506,6 +506,7 @@
       <div class="menu-divider" role="separator"></div>
       <button id="twoMovePatterns" type="button" role="menuitem">最短2手の9パターンを見る</button>
       <button id="showTip" type="button" role="menuitem">攻略のコツ</button>
+      <button id="menuAllPatterns" type="button" role="menuitem" hidden>全パターン一覧</button>
       <div class="menu-divider" role="separator"></div>
       <button id="menuStagePicker" type="button" role="menuitem">ステージを選ぶ</button>
       <button id="clearMessages" type="button" role="menuitem">クリア後のメッセージ</button>
@@ -635,7 +636,7 @@
     <div class="master-roadmap" id="masterRoadmap"></div>
     <p class="master-roadmap-note" id="masterRoadmapNote" hidden></p>
     <p class="master-rules" id="masterRules" hidden></p>
-    <div class="dialog-actions"><button class="chip" id="masterClose">閉じる</button><button class="chip on" id="masterStart">名人への道へ →</button></div>
+    <div class="dialog-actions"><button class="chip" id="masterClose">閉じる</button><a class="chip" id="masterAllPatterns" href="all-patterns.html" hidden>全パターン一覧を見る</a><button class="chip on" id="masterStart">名人への道へ →</button></div>
     <button class="master-share" id="masterShare" hidden><span class="share-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg></span><span id="masterShareLabel">共有</span></button>
   </div>
 </div>
@@ -1187,7 +1188,7 @@ Object.assign(UI_TEXT.ja,{
   extraClear30:'不立文字（ふりゅうもんじ）は、悟りは文字や言葉だけでは伝えられず、心から心へ伝わるものだ、という禅の考え方です。達磨大師を始祖とする禅宗で大切にされてきました。',
   extraClear7:'名人への道の終盤では、残り最短手数が表示されません。攻略のカギは、最短2手の盤面を見分けられるようになることです。\n☆ 盤面の形とだるまさんの向きが大事！',
   extraClear9:'全ての最短4手盤面で、6本の軸をランダムに選び、最短3手になる向きへ回すと、約78％で最短3手になります。',
-  extraClear33:'最短3手の盤面での次の一手の確率です。\n・最短2手になるのは約17％\n・最短3手のままになるのは約56％\n・最短4手になるのは約27％',
+  extraClear33:'最短3手の盤面での次の一手の確率です。\n・最短2手になるのは約17% (9パターン)\n・最短3手にとどまるのは約56% (39パターン)\n・最短4手になるのは約27% (24パターン)',
   masterNextFourMoves:'次からは、最短4手の問題です。',
   extraClear46:'メニューの「最短2手の9パターンを見る」から、9種類の盤面を一覧で見られます。',
   extraClear47:'「左右反転」「60°回転」で向きを変えて、覚えた盤面と同じかどうか確かめてみよう。',
@@ -1388,8 +1389,24 @@ Object.assign(UI_TEXT.ja,{
   twoMoveDiscovery23:'最短2手の9パターン　{n} / 9\nこの形と向きを、そのまま覚えておこう。ひし形の対角線同士の向きに注目すると覚えやすいです。',
   twoMoveDiscovery45:'最短2手の9パターン　{n} / 9\nこの形と向きを、そのまま覚えておこう。芋虫の目と胴体の向きに注目すると覚えやすいです。',
   twoMoveDiscovery6:'最短2手の9パターン　{n} / 9\n外周の隣り合う寝た2体は、盤面の全体を回転すると向きが変わって見えるので覚えにくい形です。',
-  twoMoveDiscovery7:'最短2手の9パターン　{n} / 9\nバーベル型は仲間外れダルマの向きに注目。盤面の全体を回転すると向きが変わって見えるので覚えにくい形です。',
+  twoMoveDiscovery7:'最短2手の9パターン　{n} / 9\nリボン型は仲間外れダルマの向きに注目。盤面の全体を回転すると向きが変わって見えるので覚えにくい形です。',
   twoMoveDiscovery89:'最短2手の9パターン　{n} / 9\n台形型は仲間外れダルマの向きに注目。盤面の全体を回転すると向きが変わって見えるので覚えにくい形です。'
+});
+Object.assign(UI_TEXT.ja,{
+  allPatternsMenu:'全パターン一覧',allPatternsOpen:'全パターン一覧を見る →',
+  masteryText:'全パターンを攻略しました。\nメニューに「全パターン一覧」が追加されました。'
+});
+Object.assign(UI_TEXT.en,{
+  allPatternsMenu:'All patterns',allPatternsOpen:'View all patterns →',
+  masteryText:'You solved every pattern.\n“All patterns” is now available in the Menu.'
+});
+Object.assign(UI_TEXT.zh,{
+  allPatternsMenu:'全部图案',allPatternsOpen:'查看全部图案 →',
+  masteryText:'你已攻略全部图案。\n菜单中已新增“全部图案”。'
+});
+Object.assign(UI_TEXT.ko,{
+  allPatternsMenu:'모든 패턴',allPatternsOpen:'모든 패턴 보기 →',
+  masteryText:'모든 패턴을 풀었습니다.\n메뉴에 “모든 패턴”이 추가되었습니다.'
 });
 function tr(key,vars){
   let value=(UI_TEXT[currentLang]&&UI_TEXT[currentLang][key])||UI_TEXT.ja[key]||key;
@@ -1509,7 +1526,7 @@ const BOARD_QUIZ_STAGES={
   [masterStage(2,4)]:{kind:'choose',pattern:2,topic:'diamond',correct:1},
   [masterStage(2,11)]:{kind:'choose',pattern:4,topic:'caterpillar',correct:0},
   [masterStage(3,8)]:{kind:'choose',pattern:6,topic:'outer',correct:1},
-  [masterStage(3,12)]:{kind:'choose',pattern:7,topic:'barbell',correct:0},
+  [masterStage(3,12)]:{kind:'choose',pattern:7,topic:'ribbon',correct:0},
   [masterStage(4,4)]:{kind:'choose-two',patterns:[8,9],topic:'trapezoid',correct:[0,3],outerOddOnly:true},
   [masterStage(4,13)]:{kind:'choose',options:[
     {state:[0,1,1,0,0,0,1],distance:4},
@@ -1517,10 +1534,10 @@ const BOARD_QUIZ_STAGES={
   ],topic:'largeTriangle',questionKey:'chooseThree',correct:1,guidePages:[1,3]}
 };
 const BOARD_QUIZ_COPY={
-  ja:{title:'盤面クイズ',moves:'この盤面は最短何手？',choose:'最短2手の盤面を選んでね。',chooseThree:'どちらが最短3手？正解だと思う盤面を選択してね。',chooseTwo:'最短2手の盤面を、2つ選んでね。',selectMore:'あと{n}つ選んでね。',moveChoices:['最短1手','最短2手','最短3手','最短4手'],movesNote:'2体寝ていて片方が真ん中なら最短2手です。',diamond:'ひし形は、対角線のだるまが逆向きなら最短2手です。',caterpillar:'芋虫は、目玉同士・胴体同士がそれぞれ同じ向きなら最短2手です。',outer:'外周で隣り合う2体の向きまで合っていれば、最短2手です。',barbell:'バーベル型は、だるまの向きまで見分ける必要があります。',trapezoid:'台形型は、だるまの向きまで見分ける必要があります。',largeTriangle:'大三角が起きてる方は最短3手、寝てる方は最短4手です。'},
-  en:{title:'Board Quiz',moves:'What is this board’s shortest solution?',choose:'Which board takes only 2 moves?',notTwo:'Which board does not take 2 moves?',moveChoices:['1 move','2 moves','3 moves','4 moves'],movesNote:'This is pattern 1 of the nine 2-move boards.',diamond:'For a diamond, opposite corners must face opposite ways.',caterpillar:'For a caterpillar, the eyes match each other and the body pair match each other.',outer:'The two neighboring outer daruma must also have the right directions.',barbell:'In a barbell, the odd daruma’s direction is decisive.',trapezoid:'For a trapezoid, distinguish the odd daruma’s direction too.'},
-  zh:{title:'棋盘小测验',moves:'这个棋盘最少需要几步？',choose:'哪一个最少只要2步？',notTwo:'哪一个不是最少2步？',moveChoices:['最少1步','最少2步','最少3步','最少4步'],movesNote:'这是“最少2步的9种图案”中的第1种。',diamond:'菱形中，对角线上的不倒翁方向相反时才是最少2步。',caterpillar:'毛毛虫形中，眼睛彼此同向、身体彼此同向时才是最少2步。',outer:'外圈相邻的两个不倒翁方向也必须正确。',barbell:'哑铃形的关键是那个不同方向的不倒翁。',trapezoid:'梯形还需要辨认那个不同方向的不倒翁。'},
-  ko:{title:'보드 퀴즈',moves:'이 보드의 최단 수는?',choose:'어느 보드가 최단 2수일까요?',notTwo:'최단 2수가 아닌 것은?',moveChoices:['최단 1수','최단 2수','최단 3수','최단 4수'],movesNote:'최단 2수 9가지 패턴 중 1번입니다.',diamond:'마름모는 대각선 다루마가 서로 반대 방향이면 최단 2수입니다.',caterpillar:'애벌레는 눈끼리, 몸통끼리 각각 같은 방향이면 최단 2수입니다.',outer:'바깥쪽에서 이웃한 두 다루마의 방향도 맞아야 합니다.',barbell:'아령형은 다른 하나의 다루마 방향이 핵심입니다.',trapezoid:'사다리꼴은 다른 하나의 다루마 방향도 구별해야 합니다.'}
+  ja:{title:'盤面クイズ',moves:'この盤面は最短何手？',choose:'最短2手の盤面を選んでね。',chooseThree:'どちらが最短3手？正解だと思う盤面を選択してね。',chooseTwo:'最短2手の盤面を、2つ選んでね。',selectMore:'あと{n}つ選んでね。',moveChoices:['最短1手','最短2手','最短3手','最短4手'],movesNote:'2体寝ていて片方が真ん中なら最短2手です。',diamond:'ひし形は、対角線のだるまが逆向きなら最短2手です。',caterpillar:'芋虫は、目玉同士・胴体同士がそれぞれ同じ向きなら最短2手です。',outer:'外周で隣り合う2体の向きまで合っていれば、最短2手です。',ribbon:'リボン型は、だるまの向きまで見分ける必要があります。',trapezoid:'台形型は、だるまの向きまで見分ける必要があります。',largeTriangle:'大三角が起きてる方は最短3手、寝てる方は最短4手です。'},
+  en:{title:'Board Quiz',moves:'What is this board’s shortest solution?',choose:'Which board takes only 2 moves?',notTwo:'Which board does not take 2 moves?',moveChoices:['1 move','2 moves','3 moves','4 moves'],movesNote:'This is pattern 1 of the nine 2-move boards.',diamond:'For a diamond, opposite corners must face opposite ways.',caterpillar:'For a caterpillar, the eyes match each other and the body pair match each other.',outer:'The two neighboring outer daruma must also have the right directions.',ribbon:'In a ribbon, the odd daruma’s direction is decisive.',trapezoid:'For a trapezoid, distinguish the odd daruma’s direction too.'},
+  zh:{title:'棋盘小测验',moves:'这个棋盘最少需要几步？',choose:'哪一个最少只要2步？',notTwo:'哪一个不是最少2步？',moveChoices:['最少1步','最少2步','最少3步','最少4步'],movesNote:'这是“最少2步的9种图案”中的第1种。',diamond:'菱形中，对角线上的不倒翁方向相反时才是最少2步。',caterpillar:'毛毛虫形中，眼睛彼此同向、身体彼此同向时才是最少2步。',outer:'外圈相邻的两个不倒翁方向也必须正确。',ribbon:'缎带形的关键是那个不同方向的不倒翁。',trapezoid:'梯形还需要辨认那个不同方向的不倒翁。'},
+  ko:{title:'보드 퀴즈',moves:'이 보드의 최단 수는?',choose:'어느 보드가 최단 2수일까요?',notTwo:'최단 2수가 아닌 것은?',moveChoices:['최단 1수','최단 2수','최단 3수','최단 4수'],movesNote:'최단 2수 9가지 패턴 중 1번입니다.',diamond:'마름모는 대각선 다루마가 서로 반대 방향이면 최단 2수입니다.',caterpillar:'애벌레는 눈끼리, 몸통끼리 각각 같은 방향이면 최단 2수입니다.',outer:'바깥쪽에서 이웃한 두 다루마의 방향도 맞아야 합니다.',ribbon:'리본형은 다른 하나의 다루마 방향이 핵심입니다.',trapezoid:'사다리꼴은 다른 하나의 다루마 방향도 구별해야 합니다.'}
 };
 Object.assign(BOARD_QUIZ_COPY.en,{chooseThree:'Which board takes 3 moves?',largeTriangle:'A large triangle of fallen daruma can take either 3 or 4 moves, depending on their directions.'});
 Object.assign(BOARD_QUIZ_COPY.zh,{chooseThree:'哪一个最少需要3步？',largeTriangle:'倒下的大三角形会因方向不同而需要3步或4步。'});
@@ -2676,6 +2693,7 @@ function renderStageNav(){
   $('freeMode').setAttribute('aria-pressed',String(freeMode));
   $('stageModeReturn').hidden=true;
   $('menuRankList').hidden=!allPrimaryCleared();
+  $('menuAllPatterns').hidden=!isMastered();
   $('customMode').textContent=tr('makeBoard');
   $('customMode').classList.remove('ready');
   $('customMode').hidden=false;
@@ -3224,7 +3242,7 @@ const TWO_MOVE_DETAIL_INTROS={
     4:'寝ているだるまさんの並びが芋虫の形に見える場合、目玉と体の部分のだるまさんの向きも要確認！',
     3:'寝ているだるまさんの並びが芋虫の形に見える場合、目玉と体の部分のだるまさんの向きも要確認！',
     8:'だるまさんが外側で隣同士で寝ている場合、だるまさんの向きが大事です。',
-    0:'寝ているだるまさんがバーベル型に並んでいる場合は、同じ向きの三角を除いたおもりの部分に注目！',
+    0:'寝ているだるまさんがリボン型に並んでいる場合は、同じ向きの三角を除いた2体に注目！',
     2:'寝ているだるまさんが台形型に並んでいる場合は、同じ向きの三角を除いた部分に注目！',
     1:'寝ているだるまさんが台形型に並んでいる場合は、同じ向きの三角を除いた部分に注目！'
   },
@@ -3587,11 +3605,14 @@ function animateTwoMovePatterns(angle=0,mirror=false){
 }
 function showMasterDialog(kind='primary'){
   masterDialogKind=kind;
+  if(kind==='mastery')$('menuAllPatterns').hidden=false;
   renderMasteryBoard('masteryBoard',kind==='mastery');
   const seal=$('masterSeal');
   const rankText=$('masterRankText');
   const shareButton=$('masterShare');
+  const allPatternsLink=$('masterAllPatterns');
   shareButton.hidden=kind!=='primary'&&kind!=='mastery';
+  allPatternsLink.hidden=kind!=='mastery';
   shareButton.dataset.shareKind=kind==='primary'?'training':'mastery';
   $('masterShareLabel').textContent=tr('shareShort');
   rankText.hidden=true;
@@ -3757,6 +3778,7 @@ $('optimalRetry').addEventListener('click',()=>{
 $('clearMessages').addEventListener('click',()=>openMessageReview({resume:true}));
 $('menuStagePicker').addEventListener('click',()=>{closeAppMenu();openStagePicker();});
 $('menuRankList').addEventListener('click',()=>{closeAppMenu();openRankDialog();});
+$('menuAllPatterns').addEventListener('click',()=>{location.href='all-patterns.html';});
 $('closeMessages').addEventListener('click',()=>{
   const returnTarget=messageDialogReturn;
   messageDialogReturn=null;
@@ -3905,7 +3927,7 @@ const PLAY_TIPS={
     '4体寝の芋虫：目玉同士、体同士がそれぞれ同じ向きなら最短2手',
     '5体寝台形：同じ向きの三角を除いて2体を並べて残し、盤面を時計に見立てて遅れている方のだるまがあと一手で起きるなら最短2手',
     '5体寝台形：同じ向きの三角を除いて2体を並べて残し、盤面を時計に見立てて遅れている方のだるまがあと一手で起きるなら最短2手',
-    '5体寝のバーベル：同じ向きの三角を除いて2体を並べて残し、盤面を時計に見立てて遅れている方のだるまがあと一手で起きるなら最短2手',
+    '5体寝のリボン：同じ向きの三角を除いて2体を並べて残し、盤面を時計に見立てて遅れている方のだるまがあと一手で起きるなら最短2手',
     '中央だけが立っている形は、向きに関係なく最短4手',
     '外周に1つおきに3体立っている形は最短3手です。逆に、外周に1つおきに3体寝ている形は最短4手なので違いに注意しよう。',
     '最短2手は対称な形を除くと9パターン。ステージ4〜12で全種類を網羅'
@@ -3919,7 +3941,7 @@ const PLAY_TIPS={
     'Four fallen in a caterpillar: matching eyes and matching body directions mean 2 moves.',
     'Five fallen in a trapezoid: an off-center odd one is 2 moves when it is 10 minutes before the nearer standing daruma and falls right, or 10 minutes after and falls left.',
     'Five fallen in a trapezoid: an off-center odd one is 2 moves when it is 20 minutes before the nearer standing daruma and falls left, or 20 minutes after and falls right.',
-    'Five fallen in a barbell: an off-center odd one is 2 moves when it is 10 minutes before the adjacent standing daruma and falls right, or 10 minutes after and falls left.',
+    'Five fallen in a ribbon: an off-center odd one is 2 moves when it is 10 minutes before the adjacent standing daruma and falls right, or 10 minutes after and falls left.',
     'If only the center is standing, the solution is always 4 moves regardless of direction.',
     'Three standing on alternating outer positions always means 3 moves.',
     'Up to symmetry there are only nine 2-move patterns. Puzzles 4–12 cover them all.'
@@ -4125,6 +4147,8 @@ function applyLanguage(lang){
   $('freeMode').textContent=tr('freeMode');
   $('menuStagePicker').textContent=tr('stagePicker');
   $('menuRankList').textContent=tr('rankListMenu');
+  $('menuAllPatterns').textContent=tr('allPatternsMenu');
+  $('masterAllPatterns').textContent=tr('allPatternsOpen');
   updateSoundToggle();
   $('clearMessages').textContent=tr('clearMessages');
   $('stageModeReturn').textContent=tr('stageModeReturn');
