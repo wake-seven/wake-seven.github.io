@@ -269,10 +269,10 @@
   .tip-guide-text strong{color:var(--kin);font-size:1.35em;font-weight:800;white-space:nowrap}
   .tip-guide-play{display:flex;justify-content:center;gap:6px;margin-top:10px}
   .tip-guide-play .chip{padding:7px 10px;font-size:10px}
-  .tip-guide-actions{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:7px;margin-top:15px}
+  .tip-guide-actions{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:7px;margin-top:15px}
   .tip-guide-actions .chip{padding:8px 10px;font-size:11px}
   .tip-guide-actions #tipGuideNext{grid-column:3}
-  .tip-guide-actions #closeTipGuide{grid-column:2}
+  .tip-guide-actions #closeTipGuide{grid-column:2;justify-self:center;padding-inline:17px}
   .tip-line{fill:none;stroke:#C9A54E;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
   .tip-blue{fill:none;stroke:#62B8D2;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
   .tip-fill{fill:#62B8D2}.tip-gold{fill:#C9A54E}.tip-text{fill:#C9A54E;font:700 12px sans-serif;letter-spacing:.04em}.tip-caption{fill:#B9E8F2;font:700 13px sans-serif}
@@ -866,8 +866,8 @@ const CLEAR_TWO_MOVE_CARDS={
   [masterStage(3,4)]:1
 };
 const CLEAR_GUIDE_CARDS={
-  [masterStage(2,9)]:{ state:[2,0,0,0,1,0,0], text:'guideCardOuter', page:0 },
-  [masterStage(3,8)]:{ state:[1,1,1,0,1,1,1], text:'guideCardCenter', page:2 },
+  [masterStage(3,9)]:{ state:[2,0,0,0,1,0,0], text:'guideCardOuter', page:0 },
+  [masterStage(4,2)]:{ state:[1,1,1,0,1,1,1], text:'guideCardCenter', page:2 },
   [masterStage(4,8)]:{ state:[0,2,2,1,0,0,1], text:'guideCardAlternate', page:1 }
 };
 const PRIMARY_CLEAR_TIPS={
@@ -901,7 +901,7 @@ const EXTRA_CLEAR_TIPS={
   [masterStage(1,14)]:'extraClear54',
   // 名人への道・破
   [masterStage(2,1)]:'extraClear25',
-  [masterStage(2,8)]:'extraClear23',
+  [masterStage(2,8)]:'extraClear43',
   [masterStage(2,10)]:'extraClear53',
   [masterStage(2,12)]:'masterPatternCount',
   // 名人への道・離
@@ -909,19 +909,18 @@ const EXTRA_CLEAR_TIPS={
   [masterStage(3,3)]:'extraClear33',
   [masterStage(3,5)]:'extraClear35',
   [masterStage(3,6)]:'masterNextFourMoves',
-  [masterStage(3,7)]:'stageClear9',
+  [masterStage(2,9)]:'extraClear48',
+  [masterStage(2,3)]:'extraClear47',
   [masterStage(3,11)]:'extraClear41',
-  [masterStage(3,13)]:'extraClear43',
+  [masterStage(3,13)]:'extraClear49',
   // 名人への道・極
   [masterStage(4,1)]:'extraClear18',
-  [masterStage(4,2)]:'extraClear47',
-  [masterStage(4,3)]:'extraClear48',
-  [masterStage(4,4)]:'extraClear49',
+  [masterStage(4,3)]:'stageClear9',
+  [masterStage(4,7)]:'extraClear56',
   [masterStage(4,6)]:'extraFourthOneCheck',
   [masterStage(4,9)]:'extraFourthPersistent',
   [masterStage(4,10)]:'extraClearResetProgress',
   [masterStage(4,12)]:'extraFourthNoCheck',
-  [masterStage(4,13)]:'extraClear56',
   [masterStage(4,14)]:'extraFinalNotice'
 };
 const PRIMARY_CLEAR_ARTS={
@@ -942,17 +941,16 @@ const EXTRA_CLEAR_ARTS={
   [masterStage(1,13)]:'chants',
   [masterStage(1,14)]:'fuku',
   [masterStage(2,1)]:'legend',
-  [masterStage(2,8)]:'pigment',
+  [masterStage(4,7)]:'darumaOtoshi',
   [masterStage(2,10)]:'shelfFall',
   [masterStage(3,1)]:'unwritten',
   [masterStage(3,3)]:'moveGraph',
   [masterStage(3,5)]:'paper',
-  [masterStage(3,7)]:'eyes',
+  [masterStage(4,3)]:'eyes',
   [masterStage(3,11)]:'market',
-  [masterStage(3,13)]:'crane',
+  [masterStage(2,8)]:'crane',
   [masterStage(4,1)]:'dharma',
   [masterStage(4,9)]:'cheer',
-  [masterStage(4,13)]:'darumaOtoshi'
 };
 const SYMMETRIES=Array.from({length:6},(_,k)=>[
   {permutation:makeBoardPermutation(k*60),flip:false},
@@ -1083,7 +1081,7 @@ const UI_TEXT={
     ,stageClear12:'次からは、最短3手の問題です。'
     ,extraClear2:'「だるまさんがころんだ」は10文字。10まで数える代わりの言葉として使われてきました。'
     ,extraClear6:'「だるまさんがころんだ」以外の10の数え方として、地域によっては「へいたいさんがとおる」など、別の唱え言葉もありました。'
-    ,extraClear11:'高崎だるまは、群馬県ふるさと伝統工芸品に指定されています。'
+    ,extraClear11:'高崎だるまは、群馬県ふるさと伝統工芸品に指定されています。1859年に赤い顔料が輸入されると、だるまづくりは盛んになりました。'
     ,extraClear18:'サンスクリット語「dharma」は、仏が説いた教えやこの世の真理のこと。「達磨大師」の「達磨」も、だるまの名前も、この言葉に由来します。'
     ,extraClear23:'高崎のだるまづくりは、1859年に赤い顔料が輸入されると盛んになりました。'
     ,extraClear25:'達磨大師（だるまだいし）が9年座禅を続けたという伝説があり、これを面壁九年（めんぺきくねん）と言います。この伝説にちなみ、だるまは手足のない姿に描かれます。'
@@ -1123,7 +1121,7 @@ const UI_TEXT={
     masteryTitle:'Path to Mastery complete!',masteryText:'You solved every pattern.\nThe golden board theme is now yours.',masteryStart:'Go to Free Play →'
     ,pathInfoTitle:'Path to Mastery',pathInfoText:'Four volumes of 15 puzzles await: 60 puzzles in all.',pathInfoStart:'Begin Volume 1 →'
     ,breakthroughSeal:'PASS',masterySeal:'MASTER'
-    ,stageClear1:'Start your swipe near a blue handle to turn the three daruma more easily.',stageClear3:'From the next puzzle, the best solution takes two moves.',stageClear4:'Even after reloading, you can resume from the puzzle you were playing.',stageClear6:'“Fall down seven times, get up eight” means never giving up.',stageClear9:'A daruma often receives one eye with a wish, then the other when it comes true.',stageClear11:'Daruma red represents protection and vitality.',stageClear12:'From the next puzzle, the best solution takes three moves.',extraClear2:'“Daruma-san ga koronda” has ten syllables, used in place of counting to ten.',extraClear6:'Other regions used different counting chants, such as “Heitai-san ga tōru.”',extraClear11:'Takasaki daruma are designated Gunma traditional crafts.',extraClear18:'The name “daruma” comes from Bodhidharma, the master’s name. Its “dharma” is Sanskrit for teaching or law.',extraClear23:'Takasaki daruma production grew after red pigment began to be imported in 1859.',extraClear25:'Legend says Bodhidharma meditated for nine years. This is called “nine years facing a wall,” and it inspired the limbless daruma form.',extraClear35:'Daruma are papier-mâché crafts, made by layering paper over a wooden mold.',extraClear41:'In 1829, prints and writing recorded daruma being sold at a market in Takasaki.',extraClear43:'Takasaki daruma feature cranes and turtles, and are also called lucky daruma.',extraClear50:'Why daruma are red has several explanations: red robes and wishes for protection among them.',extraClear54:'Takasaki daruma sometimes carry the words “Fuku-iri” — a wish for good fortune to enter.',extraClear58:'The origin of “Daruma-san ga koronda” has several theories; it may be a relatively new folk game.',extraClearRankCollection:'Tap the title at top left to view the titles you have collected. Clear puzzles to earn them all!',extraClearMessageReview:'You can revisit any clear message from the Menu.'
+    ,stageClear1:'Start your swipe near a blue handle to turn the three daruma more easily.',stageClear3:'From the next puzzle, the best solution takes two moves.',stageClear4:'Even after reloading, you can resume from the puzzle you were playing.',stageClear6:'“Fall down seven times, get up eight” means never giving up.',stageClear9:'A daruma often receives one eye with a wish, then the other when it comes true.',stageClear11:'Daruma red represents protection and vitality.',stageClear12:'From the next puzzle, the best solution takes three moves.',extraClear2:'“Daruma-san ga koronda” has ten syllables, used in place of counting to ten.',extraClear6:'Other regions used different counting chants, such as “Heitai-san ga tōru.”',extraClear11:'Takasaki daruma are designated Gunma traditional crafts. Production flourished after red pigment began to be imported in 1859.',extraClear18:'The name “daruma” comes from Bodhidharma, the master’s name. Its “dharma” is Sanskrit for teaching or law.',extraClear23:'Takasaki daruma production grew after red pigment began to be imported in 1859.',extraClear25:'Legend says Bodhidharma meditated for nine years. This is called “nine years facing a wall,” and it inspired the limbless daruma form.',extraClear35:'Daruma are papier-mâché crafts, made by layering paper over a wooden mold.',extraClear41:'In 1829, prints and writing recorded daruma being sold at a market in Takasaki.',extraClear43:'Takasaki daruma feature cranes and turtles, and are also called lucky daruma.',extraClear50:'Why daruma are red has several explanations: red robes and wishes for protection among them.',extraClear54:'Takasaki daruma sometimes carry the words “Fuku-iri” — a wish for good fortune to enter.',extraClear58:'The origin of “Daruma-san ga koronda” has several theories; it may be a relatively new folk game.',extraClearRankCollection:'Tap the title at top left to view the titles you have collected. Clear puzzles to earn them all!',extraClearMessageReview:'You can revisit any clear message from the Menu.'
   },
   zh:{
     pageTitle:'叫醒不倒翁！— WAKE SEVEN',language:'选择语言',title:'叫醒不倒翁！',
@@ -1283,6 +1281,14 @@ Object.assign(UI_TEXT.ja,{extraClear56:'だるま落としは江戸時代から�
 Object.assign(UI_TEXT.en,{extraClear56:'Daruma otoshi has been a beloved toy since the Edo period. Hit the body blocks with a hammer, without knocking over the daruma head.'});
 Object.assign(UI_TEXT.zh,{extraClear56:'达摩落是自江户时代以来深受喜爱的玩具。用小锤敲击身体的木块，同时不能让最上面的达摩脸倒下。'});
 Object.assign(UI_TEXT.ko,{extraClear56:'다루마오토시는 에도 시대부터 사랑받은 장난감이에요. 망치로 몸통 블록을 쳐서, 맨 위 다루마 얼굴을 넘어뜨리지 않고 빼냅니다.'});
+Object.assign(UI_TEXT.ja,{extraClear35:'だるまは、木型に紙を重ねて作る「張り子」の工芸品です。\n紙を乾かして型から抜き、赤く塗って顔や文字を描くと完成します。'});
+Object.assign(UI_TEXT.en,{extraClear35:'Daruma are papier-mâché crafts: paper is layered over a mold.\nAfter drying and removing the mold, the body is painted red and the face and lettering are added.'});
+Object.assign(UI_TEXT.zh,{extraClear35:'不倒翁是把纸一层层贴在木模上制成的张子工艺品。\n干燥脱模后，涂成红色，再画上脸和文字便完成了。'});
+Object.assign(UI_TEXT.ko,{extraClear35:'다루마는 나무 틀에 종이를 겹쳐 붙이는 장지 공예품입니다.\n말린 뒤 틀에서 빼내고, 붉게 칠한 다음 얼굴과 글씨를 그려 완성합니다.'});
+Object.assign(UI_TEXT.ja,{extraClear11:'高崎だるまは、群馬県ふるさと伝統工芸品に指定されています。1859年に赤い顔料が輸入されると、だるまづくりは盛んになりました。'});
+Object.assign(UI_TEXT.en,{extraClear11:'Takasaki daruma are designated Gunma traditional crafts. Production flourished after red pigment began to be imported in 1859.'});
+Object.assign(UI_TEXT.zh,{extraClear11:'高崎不倒翁被指定为群马县传统工艺品。1859年红色颜料开始进口后，高崎不倒翁的制作兴盛起来。'});
+Object.assign(UI_TEXT.ko,{extraClear11:'다카사키 다루마는 군마현 전통 공예품으로 지정되어 있습니다. 1859년 붉은 안료가 수입되며 제작도 활발해졌습니다.'});
 Object.assign(UI_TEXT.zh,{extraClearRankCollection:'点击左上角的称号，即可查看已收集的称号。努力通关，把它们都收集起来吧！'});
 Object.assign(UI_TEXT.ko,{extraClearRankCollection:'왼쪽 위의 칭호를 누르면 모은 칭호를 한눈에 볼 수 있어요. 열심히 클리어해서 모두 모아 보세요!'});
 Object.assign(UI_TEXT.zh,{extraClearMessageReview:'想再看的通关后消息，随时可以从菜单中查看。'});
@@ -1379,7 +1385,7 @@ Object.assign(UI_TEXT.zh,{clearMessagesLink:'查看通关后消息 →'});
 Object.assign(UI_TEXT.ko,{clearMessagesLink:'클리어 메시지 보기 →'});
 Object.assign(UI_TEXT.ja,{
   twoMoveDiscovery1:'最短2手の9パターン　{n} / 9\nこの形をそのまま覚えておこう。',
-  twoMoveDiscovery23:'最短2手の9パターン　{n} / 9\nこの形と向きを、そのまま覚えておこう。台形の対角線同士の向きに注目すると覚えやすいです。',
+  twoMoveDiscovery23:'最短2手の9パターン　{n} / 9\nこの形と向きを、そのまま覚えておこう。ひし形の対角線同士の向きに注目すると覚えやすいです。',
   twoMoveDiscovery45:'最短2手の9パターン　{n} / 9\nこの形と向きを、そのまま覚えておこう。芋虫の目と胴体の向きに注目すると覚えやすいです。',
   twoMoveDiscovery6:'最短2手の9パターン　{n} / 9\n外周の隣り合う寝た2体は、盤面の全体を回転すると向きが変わって見えるので覚えにくい形です。',
   twoMoveDiscovery7:'最短2手の9パターン　{n} / 9\nバーベル型は仲間外れダルマの向きに注目。盤面の全体を回転すると向きが変わって見えるので覚えにくい形です。',
@@ -1487,11 +1493,11 @@ const QUIZ_STAGES={
   [masterStage(1,6)]:9,
   [masterStage(1,12)]:0,
   // 名人への道・破
-  [masterStage(2,3)]:7,
+  [masterStage(3,10)]:7,
   [masterStage(2,6)]:1,
   [masterStage(2,14)]:4,
   // 名人への道・離
-  [masterStage(3,9)]:2,
+  [masterStage(3,7)]:2,
   [masterStage(3,14)]:8,
   // 名人への道・極
   [masterStage(4,5)]:5,
@@ -1502,16 +1508,23 @@ const BOARD_QUIZ_STAGES={
   [masterStage(1,11)]:{kind:'moves',pattern:1},
   [masterStage(2,4)]:{kind:'choose',pattern:2,topic:'diamond',correct:1},
   [masterStage(2,11)]:{kind:'choose',pattern:4,topic:'caterpillar',correct:0},
-  [masterStage(3,10)]:{kind:'choose',pattern:6,topic:'outer',correct:1},
+  [masterStage(3,8)]:{kind:'choose',pattern:6,topic:'outer',correct:1},
   [masterStage(3,12)]:{kind:'choose',pattern:7,topic:'barbell',correct:0},
-  [masterStage(4,7)]:{kind:'choose-two',patterns:[8,9],topic:'trapezoid',correct:[0,3],outerOddOnly:true}
+  [masterStage(4,4)]:{kind:'choose-two',patterns:[8,9],topic:'trapezoid',correct:[0,3],outerOddOnly:true},
+  [masterStage(4,13)]:{kind:'choose',options:[
+    {state:[0,1,1,0,0,0,1],distance:4},
+    {state:[1,0,0,1,1,1,0],distance:3}
+  ],topic:'largeTriangle',questionKey:'chooseThree',correct:1,guidePages:[1,3]}
 };
 const BOARD_QUIZ_COPY={
-  ja:{title:'盤面クイズ',moves:'この盤面は最短何手？',choose:'最短2手の盤面を選んでね。',chooseTwo:'最短2手の盤面を、2つ選んでね。',selectMore:'あと{n}つ選んでね。',moveChoices:['最短1手','最短2手','最短3手','最短4手'],movesNote:'2体寝ていて片方が真ん中なら最短2手です。',diamond:'ひし形は、対角線のだるまが逆向きなら最短2手です。',caterpillar:'芋虫は、目玉同士・胴体同士がそれぞれ同じ向きなら最短2手です。',outer:'外周で隣り合う2体の向きまで合っていれば、最短2手です。',barbell:'バーベル型は、仲間外れだるまの向きが決め手です。',trapezoid:'台形型は、仲間外れだるまの向きまで見分ける必要があります。'},
+  ja:{title:'盤面クイズ',moves:'この盤面は最短何手？',choose:'最短2手の盤面を選んでね。',chooseThree:'どちらが最短3手？正解だと思う盤面を選択してね。',chooseTwo:'最短2手の盤面を、2つ選んでね。',selectMore:'あと{n}つ選んでね。',moveChoices:['最短1手','最短2手','最短3手','最短4手'],movesNote:'2体寝ていて片方が真ん中なら最短2手です。',diamond:'ひし形は、対角線のだるまが逆向きなら最短2手です。',caterpillar:'芋虫は、目玉同士・胴体同士がそれぞれ同じ向きなら最短2手です。',outer:'外周で隣り合う2体の向きまで合っていれば、最短2手です。',barbell:'バーベル型は、だるまの向きまで見分ける必要があります。',trapezoid:'台形型は、だるまの向きまで見分ける必要があります。',largeTriangle:'大三角が起きてる方は最短3手、寝てる方は最短4手です。'},
   en:{title:'Board Quiz',moves:'What is this board’s shortest solution?',choose:'Which board takes only 2 moves?',notTwo:'Which board does not take 2 moves?',moveChoices:['1 move','2 moves','3 moves','4 moves'],movesNote:'This is pattern 1 of the nine 2-move boards.',diamond:'For a diamond, opposite corners must face opposite ways.',caterpillar:'For a caterpillar, the eyes match each other and the body pair match each other.',outer:'The two neighboring outer daruma must also have the right directions.',barbell:'In a barbell, the odd daruma’s direction is decisive.',trapezoid:'For a trapezoid, distinguish the odd daruma’s direction too.'},
   zh:{title:'棋盘小测验',moves:'这个棋盘最少需要几步？',choose:'哪一个最少只要2步？',notTwo:'哪一个不是最少2步？',moveChoices:['最少1步','最少2步','最少3步','最少4步'],movesNote:'这是“最少2步的9种图案”中的第1种。',diamond:'菱形中，对角线上的不倒翁方向相反时才是最少2步。',caterpillar:'毛毛虫形中，眼睛彼此同向、身体彼此同向时才是最少2步。',outer:'外圈相邻的两个不倒翁方向也必须正确。',barbell:'哑铃形的关键是那个不同方向的不倒翁。',trapezoid:'梯形还需要辨认那个不同方向的不倒翁。'},
   ko:{title:'보드 퀴즈',moves:'이 보드의 최단 수는?',choose:'어느 보드가 최단 2수일까요?',notTwo:'최단 2수가 아닌 것은?',moveChoices:['최단 1수','최단 2수','최단 3수','최단 4수'],movesNote:'최단 2수 9가지 패턴 중 1번입니다.',diamond:'마름모는 대각선 다루마가 서로 반대 방향이면 최단 2수입니다.',caterpillar:'애벌레는 눈끼리, 몸통끼리 각각 같은 방향이면 최단 2수입니다.',outer:'바깥쪽에서 이웃한 두 다루마의 방향도 맞아야 합니다.',barbell:'아령형은 다른 하나의 다루마 방향이 핵심입니다.',trapezoid:'사다리꼴은 다른 하나의 다루마 방향도 구별해야 합니다.'}
 };
+Object.assign(BOARD_QUIZ_COPY.en,{chooseThree:'Which board takes 3 moves?',largeTriangle:'A large triangle of fallen daruma can take either 3 or 4 moves, depending on their directions.'});
+Object.assign(BOARD_QUIZ_COPY.zh,{chooseThree:'哪一个最少需要3步？',largeTriangle:'倒下的大三角形会因方向不同而需要3步或4步。'});
+Object.assign(BOARD_QUIZ_COPY.ko,{chooseThree:'어느 보드가 최단 3수일까요?',largeTriangle:'누운 다루마의 큰 삼각형은 방향에 따라 최단 3수 또는 4수가 됩니다.'});
 
 /* ---- 盤面 ---- */
 const svg=document.getElementById('board'), $=id=>document.getElementById(id);
@@ -2834,6 +2847,40 @@ function tipWhiteDaruma(x,y,scale=.55){
     +'<path d="M-13 28Q-9 25-4 28M5 29Q10 26 15 28" fill="none" stroke="#FFF9ED" stroke-width="1.65" stroke-linecap="round" opacity=".95"/>'
     +'<ellipse cx="0" cy="-6" rx="19" ry="18" fill="#F7F0E2" stroke="#241D1A" stroke-width="1.9"/><use href="#face-open"/></g>';
 }
+function tipPaperCraftArt(){
+  const egg='M0 -34C17 -34 31 -18 31 4C31 24 18 36 0 36C-18 36 -31 24 -31 4C-31 -18-17-34 0-34Z';
+  return tipSvg(
+    '<g transform="translate(35 46) scale(.64)"><path d="'+egg+'" fill="#E7D8BA" stroke="#241D1A" stroke-width="2.5"/>'
+      +'<path d="M-26 15Q0 11 26 15C24 29 13 36 0 36C-13 36-24 29-26 15Z" fill="#C9B08A"/>'
+      +'<path d="M-23 -15Q0 -19 23 -15" fill="none" stroke="#B99158" stroke-width="3.6" stroke-linecap="round" opacity=".8"/>'
+      +'<path d="M-26 0Q0 -4 26 0" fill="none" stroke="#B99158" stroke-width="7.4" stroke-linecap="round" opacity=".8"/>'
+      +'<path d="M-25 15Q0 11 25 15" fill="none" stroke="#B99158" stroke-width="4.3" stroke-linecap="round" opacity=".8"/>'
+      +'<g transform="translate(34 25) rotate(38)"><path d="M-3.2 -13H3.2V1H-3.2Z" fill="#B77E45" stroke="#6B4630" stroke-width="1.4"/><path d="M-5 1H5V6H-5Z" fill="#D2A94A" stroke="#6B4630" stroke-width="1.3"/><path d="M-6 6H6L4 24Q0 29-4 24Z" fill="#F1DEB8" stroke="#6B4630" stroke-width="1.25"/><path d="M-4 23Q0 30 4 23Z" fill="#E3C98F" stroke="none"/><path d="M-2 8Q0 19 0 26M2 8Q2 18 1 25" fill="none" stroke="#CDBB9D" stroke-width=".8" stroke-linecap="round"/></g></g>'
+    +'<path d="M64 45h14m-5-5 6 5-6 5" fill="none" stroke="#A88D66" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+    +'<g transform="translate(105 46) scale(.64)"><path d="'+egg+'" fill="#C8352C" stroke="#241D1A" stroke-width="2.5"/>'
+      +'<g transform="scale(.75)"><path d="'+egg+'" fill="#EEE5D2" stroke="#241D1A" stroke-width="1.8"/></g>'
+      +'<path d="M-18 18Q0 23 18 18" fill="none" stroke="#9A733B" stroke-width="2.5" stroke-linecap="round" opacity=".8"/></g>'
+    +'<path d="M133 45h14m-5-5 6 5-6 5" fill="none" stroke="#A88D66" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+    +tipDaruma(176,47,.64)
+  );
+}
+function tipMarketArt(){
+  const d=(x,y,scale)=>tipDaruma(x,y,scale);
+  return tipSvg(
+    '<rect x="3" y="3" width="204" height="112" rx="8" fill="#F3E8D5"/>'
+    +'<path d="M4 42L28 27 48 38 70 21 94 40 116 30 136 42 160 26 182 39 206 29V47H4Z" fill="#A9B9C8"/>'
+    +'<path d="M129 39L158 26 188 39Q159 35 129 39Z" fill="#4A5A6B" stroke="#241D1A" stroke-width=".9"/><path d="M138 39H179V47H138Z" fill="#7A6A56" stroke="#241D1A" stroke-width=".8"/>'
+    +'<path d="M34 38V103M176 38V103" stroke="#8A6A3F" stroke-width="3.5" stroke-linecap="round"/>'
+    +'<path d="M30 40H180V55H30Z" fill="#2F4B6B" stroke="#241D1A" stroke-width="1"/><path d="M30 55q6 6 12 0q6 6 12 0q6 6 12 0q6 6 12 0q6 6 12 0q6 6 12 0q6 6 12 0q6 6 12 0q6 6 12 0q6 6 12 0q6 6 12 0q6 6 12 0" fill="#2F4B6B" stroke="#241D1A" stroke-width="1"/>'
+    +'<g stroke="#241D1A" stroke-width="1"><path d="M53 78H157V85H53Z" fill="#C9A16A"/><path d="M47 88H163V96H47Z" fill="#B98F5A"/><path d="M42 101H168V110H42Z" fill="#A87F4C"/></g>'
+    +d(72,70,.15)+d(88,70,.15)+d(104,70,.15)+d(120,70,.15)+d(136,70,.15)
+    +d(65,81,.2)+d(90,81,.2)+d(115,81,.2)+d(140,81,.2)
+    +d(59,94,.27)+d(93,94,.27)+d(127,94,.27)+d(156,94,.27)
+    +'<g stroke="#241D1A" stroke-width="1"><circle cx="21" cy="88" r="6" fill="#E8CFA8"/><path d="M10 110q1-17 11-17t11 17Z" fill="#3E5B78"/><path d="M15 86q2-5 12 0" fill="#3A3128" stroke="none"/><circle cx="189" cy="84" r="6" fill="#E8CFA8"/><path d="M178 110q1-18 11-18t11 18Z" fill="#7A6A56"/><path d="M183 82q2-5 12 0" fill="#3A3128" stroke="none"/></g>'
+    +d(189,97,.18)
+    +'<g stroke="#241D1A" stroke-width="1"><path d="M18 10v6M192 10v6"/><g transform="translate(12 16)"><ellipse cx="6" cy="8" rx="6" ry="8" fill="#D8543F"/><path d="M1 5h10M0 8h12M1 11h10" opacity=".5"/></g><g transform="translate(186 16)"><ellipse cx="6" cy="8" rx="6" ry="8" fill="#D8543F"/><path d="M1 5h10M0 8h12M1 11h10" opacity=".5"/></g></g>'
+    +'<path d="M5 111H205" stroke="#8A6A3F" stroke-width="1" opacity=".6"/>',true);
+}
 function tipBackDaruma(x,y,scale=.55){
   return '<g transform="translate('+x+' '+y+') scale('+scale+')"><use href="#daruma-body"/><ellipse cx="0" cy="-6" rx="20.5" ry="19.5" fill="#C8352C"/></g>';
 }
@@ -2886,7 +2933,7 @@ function tipArt(key){
     case 'hintButton':return tipSvg('<g font-family="A1 Gothic,Hiragino Kaku Gothic ProN,Yu Gothic,sans-serif" font-size="14" font-weight="400" text-anchor="middle"><rect x="54" y="25.5" width="102" height="35" rx="17.5" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.14)"/><text x="105" y="49.5" fill="#B9C6D6">ヒント</text></g>');
     case 'navigation':return tipSvg('<g font-family="A1 Gothic,Hiragino Kaku Gothic ProN,Yu Gothic,sans-serif" text-anchor="middle"><rect x="4" y="8" width="47" height="32" rx="16" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.14)"/><text x="27.5" y="28" fill="#B9C6D6" font-size="9">← 前へ</text><rect x="58" y="3" width="94" height="42" rx="7" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.14)"/><text x="105" y="20" fill="#9FB0C4" font-size="9">基本</text><text x="105" y="36" fill="#F3E8D5" font-size="14">7 / 9</text><rect x="159" y="8" width="47" height="32" rx="16" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.14)"/><text x="182.5" y="28" fill="#B9C6D6" font-size="9">次へ →</text><g fill="rgba(201,165,78,.55)">'+Array.from({length:10},(_,i)=>'<rect x="'+(12+i*19)+'" y="67" width="14" height="6" rx="3"/>').join('')+'</g></g>');
     case 'unwritten':return tipSvg('<path d="M39 20Q105 6 171 20L166 39Q105 48 44 39Z" fill="#F3E8D5" opacity=".12" stroke="#B9E8F2" stroke-width="1.2"/><path d="M45 21Q105 13 165 21" fill="none" stroke="#F3E8D5" stroke-width="1" opacity=".45"/><text x="72" y="34" text-anchor="middle" fill="#B9E8F2" font-family="serif" font-size="18" opacity=".54">文</text><text x="105" y="34" text-anchor="middle" fill="#B9E8F2" font-family="serif" font-size="15" opacity=".3">・</text><text x="137" y="34" text-anchor="middle" fill="#B9E8F2" font-family="serif" font-size="12" opacity=".12">字</text><path d="M75 62Q105 51 135 62" fill="none" stroke="#62B8D2" stroke-width="1.7" stroke-linecap="round" opacity=".7"/><circle cx="105" cy="59" r="10" fill="#62B8D2" opacity=".1"/><circle cx="105" cy="59" r="4" fill="#C9A54E" opacity=".9"/>'+d(59,67,.35)+d(151,67,.35));
-    case 'rise':return tipSvg('<path class="tip-blue" d="M37 58C53 25 85 20 113 34"/><path class="tip-blue" d="M104 25l10 9-13 4"/><text class="tip-text" x="22" y="24">七</text><text class="tip-text" x="133" y="28">八</text>'+d(119,52));
+    case 'rise':return tipSvg('<path class="tip-blue" d="M37 58C53 25 85 20 113 34"/><path class="tip-blue" d="M104 25l10 9-13 4"/><text class="tip-text" x="22" y="24">7</text><text class="tip-text" x="133" y="28">8</text>'+d(119,52));
     case 'eyes':return tipSvg(d(105,53,.75)+'<circle cx="99" cy="49" r="3" fill="#F3E8D5"/><path d="M96 50Q99 46 102 50" fill="none" stroke="#241D1A" stroke-width="1.8" stroke-linecap="round"/>');
     case 'cheer':return tipSvg('<g transform="translate(105 51) scale(.76)"><use href="#daruma-body"/><use href="#face-happy"/></g><g stroke="#B9E8F2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M49 66L39 25M161 66l10-41"/><path d="M40 27l-17 6 20 9Z" fill="#62B8D2"/><path d="M170 27l17 6-20 9Z" fill="#62B8D2"/></g><g fill="none" stroke="#62B8D2" stroke-width="2.2" stroke-linecap="round"><path d="M47 20l-5-5M163 20l5-5M35 53l-8 2M175 53l8 2"/></g>');
     case 'red':return tipSvg('<path class="tip-line" d="M105 7v11M68 20l8 8M142 20l-8 8M58 52h12M140 52h12"/>'+d(105,52,.7));
@@ -2896,8 +2943,8 @@ function tipArt(key){
     case 'dharma':return tipSvg(d(105,39,.72)+'<text class="tip-text" x="105" y="91" text-anchor="middle" style="font-size:24px;letter-spacing:.04em">dharma</text>',true);
     case 'pigment':return tipSvg(tipTakasakiDaruma(105,51,.95)+'<defs><clipPath id="takasaki-pigment-belly"><ellipse cx="105" cy="54" rx="34" ry="31"/></clipPath></defs><g clip-path="url(#takasaki-pigment-belly)"><path d="M78 62C76 67 77 72 80 75M88 64C86 68 86 73 88 76M132 62C134 67 133 72 130 75M122 64C124 68 124 73 122 76" fill="none" stroke="#C9A54E" stroke-width="4.4" stroke-linecap="round"/></g><text x="105" y="77" text-anchor="middle" fill="#F3E8D5" font-family="sans-serif" font-size="17" font-weight="800">福</text>');
     case 'legend':return tipSvg('<g><path d="M88 58L91 38C87 31 88 15 95 8C101 3 109 3 115 8C122 15 123 31 119 38L122 58Q115 64 105 64Q95 64 88 58Z" fill="#C8352C" stroke="#241D1A" stroke-width="1.7"/><circle cx="105" cy="21" r="10.5" fill="#F3E8D5" stroke="#241D1A" stroke-width="1.7"/><path d="M100 20h3M107 20h3M103 25Q105 27 107 25" fill="none" stroke="#241D1A" stroke-width="1.5" stroke-linecap="round"/><path d="M94 35L105 50L116 35M105 50V60" fill="none" stroke="#C9A54E" stroke-width="2" stroke-linecap="round"/><path d="M89 58C79 62 76 70 83 74C90 78 99 71 105 67C111 71 120 78 127 74C134 70 131 62 121 58C116 61 111 63 105 63C99 63 94 61 89 58Z" fill="#C8352C" stroke="#241D1A" stroke-width="1.7"/><path d="M91 66Q98 70 105 67Q112 70 119 66" fill="none" stroke="#E2897B" stroke-width="2" stroke-linecap="round"/><path d="M99 48Q105 52 111 48" fill="none" stroke="#F3E8D5" stroke-width="3" stroke-linecap="round"/></g>');
-    case 'paper':return tipSvg(tipWhiteDaruma(105,51,.84));
-    case 'market':return tipSvg('<path class="tip-line" d="M25 37h160M32 37l25-22 25 22M88 37l25-22 25 22M144 37l25-22 20 22M34 37v31M180 37v31"/>'+d(58,65,.27)+d(106,65,.27)+d(154,65,.27));
+    case 'paper':return tipPaperCraftArt();
+    case 'market':return tipMarketArt();
     case 'crane':return tipSvg('<g stroke="#292827" stroke-width="1.8" stroke-linejoin="round"><path d="M61 48L22 14L53 31L64 7L70 37L103 17L80 50L61 62Z" fill="#F3E8D5"/><path d="M61 48L22 14L53 31Z" fill="#DDEDF0"/><path d="M61 48L64 7L70 37Z" fill="#FFF9ED"/><path d="M61 48L103 17L80 50Z" fill="#C9DDE2"/><path d="M53 31L70 37L61 48Z" fill="#C9A54E" opacity=".55"/><path d="M80 50L89 29L100 25L93 35L86 52Z" fill="#F3E8D5"/><path d="M99 25L108 27L98 31Z" fill="#C8352C"/><path d="M61 48L40 58L55 58Z" fill="#292827"/><path d="M132 46L158 33L184 46L178 66L151 75L127 62Z" fill="#6E9C78"/><path d="M158 33L161 55L132 46Z" fill="#8FB598"/><path d="M158 33L184 46L161 55Z" fill="#5D8B6A"/><path d="M132 46L161 55L151 75L127 62Z" fill="#79A986"/><path d="M161 55L184 46L178 66L151 75Z" fill="#4F7E60"/><path d="M184 49L199 54L185 61Z" fill="#8FB598"/><circle cx="193" cy="54" r="1.4" fill="#292827" stroke="none"/><path d="M135 45L121 36L127 51ZM132 63L119 72L139 69ZM176 66L187 76L169 72ZM179 45L190 36L185 51Z" fill="#8FB598"/></g>');
     case 'monaka':return tipSvg('<g stroke="#6B4630" stroke-linejoin="round"><path d="M69 66C54 61 48 47 52 31C56 16 68 9 82 9C96 9 108 16 112 31C116 47 110 61 95 66Z" fill="#D9A65F" stroke-width="2"/><path d="M98 66C113 61 119 47 115 31C111 16 99 9 85 9C71 9 59 16 55 31C51 47 57 61 72 66Z" fill="#E8C17D" stroke-width="2"/><path d="M83 12V64" fill="none" stroke="#A77443" stroke-width="1.5"/><path d="M61 39C70 35 79 34 83 34C88 34 98 35 106 39" fill="none" stroke="#A77443" stroke-width="1.5"/><path d="M74 24Q83 18 92 24M74 46Q83 51 92 46" fill="none" stroke="#B27D45" stroke-width="1.6" stroke-linecap="round"/><path d="M126 19C140 18 153 29 154 45C155 60 144 71 130 72C116 73 105 64 104 50C103 36 112 21 126 19Z" fill="#E8C17D" stroke-width="2"/><path d="M126 22C137 21 147 31 148 44C149 56 141 66 130 68C119 70 110 62 109 51C108 39 115 24 126 22Z" fill="#70402C" stroke="none" opacity=".92"/><path d="M126 22C137 21 147 31 148 44C149 56 141 66 130 68C119 70 110 62 109 51C108 39 115 24 126 22Z" fill="none" stroke="#A77443" stroke-width="2"/></g><text x="105" y="82" text-anchor="middle" fill="#E8C17D" font-family="sans-serif" font-size="11" font-weight="800" letter-spacing=".12em">だるま最中</text>');
     case 'redTheory':return tipSvg('<text class="tip-text" x="30" y="28">？</text><text class="tip-text" x="166" y="28">？</text><path class="tip-blue" d="M47 34l22 14M163 34l-22 14"/>'+d(105,54,.68));
@@ -2996,12 +3043,13 @@ function renderMessageReview(){
   rankText.hidden=true;masterText.hidden=true;
   $('messageDialogText').hidden=!!entry.master||entry.quiz!==undefined||!!entry.boardQuiz;
   const twoMoveCard=entry.extra?CLEAR_TWO_MOVE_CARDS[entry.index]:undefined;
+  const guideCard=entry.extra?CLEAR_GUIDE_CARDS[entry.index]:null;
   const rankLink=entry.extra&&EXTRA_CLEAR_TIPS[entry.index]==='extraClearRankCollection';
   const tipsLink=entry.extra&&EXTRA_CLEAR_TIPS[entry.index]==='extraClear48';
   const patternsLink=entry.extra&&['extraClear7','extraAdviceTwoMove'].includes(EXTRA_CLEAR_TIPS[entry.index]);
-  $('messageRankLink').hidden=twoMoveCard===undefined&&!rankLink&&!tipsLink&&!patternsLink;
-  $('messageRankLink').dataset.target=tipsLink?'tips':patternsLink?'patterns':twoMoveCard!==undefined?'card':'rank';
-  $('messageRankLink').textContent=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatterns')+' →':twoMoveCard!==undefined?tr('detailsLink'):tr('rankLink');
+  $('messageRankLink').hidden=twoMoveCard===undefined&&!guideCard&&!rankLink&&!tipsLink&&!patternsLink;
+  $('messageRankLink').dataset.target=tipsLink?'tips':patternsLink?'patterns':twoMoveCard!==undefined?'card':guideCard?'guide':'rank';
+  $('messageRankLink').textContent=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatterns')+' →':twoMoveCard!==undefined||guideCard?tr('detailsLink'):tr('rankLink');
   $('messageQuiz').hidden=entry.quiz===undefined;
   $('messageBoardQuiz').hidden=!entry.boardQuiz;
   if(entry.master){
@@ -3235,7 +3283,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
   if(!config){root.hidden=true;if(requireAnswer)$('clearNext').disabled=false;return;}
   const copy=BOARD_QUIZ_COPY[currentLang]||BOARD_QUIZ_COPY.ja;
-  const state=boardQuizPatternState(config.pattern||config.patterns[0]);
+  const state=config.state?enc(Uint8Array.from(config.state)):config.options?null:boardQuizPatternState(config.pattern||config.patterns[0]);
   let states=[],correct=[],question=copy.choose,moveChoiceOrder=null;
   if(config.kind==='moves'){
     states=[state];
@@ -3251,10 +3299,18 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
     states=[...wrong];
     for(const index of config.correct)states.splice(index,0,good.shift());
     correct=config.correct;question=copy.chooseTwo||copy.choose;
+  }else if(config.options){
+    states=config.options.map(option=>{
+      const reference=enc(Uint8Array.from(option.state));
+      return SOLVER.dist[reference]===option.distance?reference:boardQuizMatchingStates(reference,distance=>distance===option.distance,1)[0]??reference;
+    });
+    correct=[config.correct];question=copy[config.questionKey]||copy.choose;
   }else{
-    states=boardQuizMatchingStates(state,distance=>distance>=3,1);
-    states.splice(config.correct,0,state);
-    correct=[config.correct];question=copy.choose;
+    const targetDistance=config.targetDistance||2;
+    const target=SOLVER.dist[state]===targetDistance?state:boardQuizMatchingStates(state,distance=>distance===targetDistance,1)[0]??state;
+    states=boardQuizMatchingStates(target,distance=>distance>targetDistance,1);
+    states.splice(config.correct,0,target);
+    correct=[config.correct];question=targetDistance===3?(copy.chooseThree||copy.choose):copy.choose;
   }
   if(config.kind!=='moves'){
     const order=shuffledIndices(states.length);
@@ -3262,7 +3318,8 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
     correct=correct.map(index=>order.indexOf(index));
   }
   const noteKey=config.kind==='moves'?'movesNote':config.topic;
-  const detailPatterns=config.patterns||[config.pattern];
+  const detailPatterns=config.patterns||(config.pattern?[config.pattern]:[]);
+  const guideLinks=(config.guidePages||[]).map(page=>'<button class="clear-tip-link" id="'+rootId+'Guide'+page+'" type="button" data-guide-page="'+page+'" hidden>'+tr('tipGuideTitle').replace('を見る','')+' '+(page+1)+' / '+GUIDE_TIP_INDEX.length+' →</button>').join('');
   root.hidden=false;
   const controls=index=>'<div class="board-quiz-tools"><button type="button" data-board-transform="mirror" data-board-index="'+index+'">↔ '+(currentLang==='ja'?'反転':tr('mirror'))+'</button><button type="button" data-board-transform="rotate" data-board-index="'+index+'">↻ '+(currentLang==='ja'?'回転':tr('rotate'))+'</button></div>';
   const card=(board,index)=>'<div class="board-quiz-card"><button class="board-quiz-option" type="button" data-board-answer="'+index+'">'+miniBoardSvg(board)+'</button>'+controls(index)+'</div>';
@@ -3270,7 +3327,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
     ?'<div class="board-quiz-single">'+miniBoardSvg(states[0])+controls(0)+'</div><div class="board-quiz-moves">'+moveChoiceOrder.map((choice,index)=>'<button class="board-quiz-option" type="button" data-board-answer="'+index+'">'+copy.moveChoices[choice]+'</button>').join('')+'</div>'
     :'<div class="board-quiz-options '+(states.length===3?'three':'')+'">'+states.map(card).join('')+'</div>';
   const detailLinks=detailPatterns.map(pattern=>'<button class="clear-tip-link" id="'+rootId+'Patterns'+pattern+'" type="button" data-board-patterns data-board-pattern="'+pattern+'" hidden>'+(detailPatterns.length>1?'最短2手の9パターン　'+pattern+' / 9 →':tr('detailsLink'))+'</button>').join('');
-  root.innerHTML='<div class="quiz-label">'+copy.title+'</div><p class="board-quiz-question">'+question+'</p>'+boardMarkup+'<p class="board-quiz-note"></p>'+detailLinks;
+  root.innerHTML='<div class="quiz-label">'+copy.title+'</div><p class="board-quiz-question">'+question+'</p>'+boardMarkup+'<p class="board-quiz-note"></p>'+detailLinks+guideLinks;
   const note=root.querySelector('.board-quiz-note');
   let animating=false;
   const updateCard=index=>{
@@ -3310,6 +3367,16 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
     },480);
   };
   root.onclick=event=>{
+    const guide=event.target.closest('[data-guide-page]');
+    if(guide){
+      const dialogId=rootId==='boardQuiz'?'clearDialog':'messageDialog';
+      $(dialogId).hidden=true;
+      tipGuideReturnTarget={dialogId,focusId:guide.id};
+      openTipGuide();
+      tipGuideIndex=Number(guide.dataset.guidePage);
+      renderTipGuide();
+      return;
+    }
     const patterns=event.target.closest('[data-board-patterns]');
     if(patterns){
       const pattern=Number(patterns.dataset.boardPattern),state=boardQuizPatternState(pattern),index=TWO_MOVE_PATTERN_ORDER[pattern-1];
@@ -3349,7 +3416,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
     selected.filter(selectedIndex=>!correct.includes(selectedIndex)).forEach(wrongIndex=>root.querySelector('[data-board-answer="'+wrongIndex+'"]').classList.add('wrong'));
     const passed=selected.length===correct.length&&selected.every(selectedIndex=>correct.includes(selectedIndex));
     note.textContent=(passed?tr('quizCorrect'):tr('quizWrong'))+'　'+copy[noteKey];
-    root.querySelectorAll('[data-board-patterns]').forEach(link=>link.hidden=false);
+    root.querySelectorAll('[data-board-patterns],[data-guide-page]').forEach(link=>link.hidden=false);
     if(requireAnswer)$('clearNext').disabled=false;
   }));
   if(requireAnswer)$('clearNext').disabled=true;
@@ -3780,6 +3847,15 @@ $('messageRankLink').addEventListener('click',()=>{
     openTwoMovePatterns();
     return;
   }
+  if($('messageRankLink').dataset.target==='guide'){
+    const entry=messageReviewEntries[messageReviewIndex],guideCard=CLEAR_GUIDE_CARDS[entry.index];
+    $('messageDialog').hidden=true;
+    tipGuideReturnTarget={dialogId:'messageDialog',focusId:'messageRankLink'};
+    openTipGuide();
+    tipGuideIndex=guideCard.page;
+    renderTipGuide();
+    return;
+  }
   if($('messageRankLink').dataset.target==='card'){
     const entry=messageReviewEntries[messageReviewIndex],card=CLEAR_TWO_MOVE_CARDS[entry.index];
     $('messageDialog').hidden=true;
@@ -3924,15 +4000,14 @@ function renderTipGuide(){
   }).join('');
   $('tipGuidePrev').textContent='← '+tr('prev');
   $('tipGuideNext').textContent=tr('next')+' →';
-  $('closeTipGuide').textContent=tr('close');
-  $('tipGuidePrev').disabled=tipGuideIndex===0;
-  $('tipGuideNext').disabled=tipGuideIndex===GUIDE_TIP_INDEX.length-1;
+  $('closeTipGuide').textContent=(returnToClearCard||tipGuideReturnTarget)?tr('backToClear'):tr('close');
+  $('tipGuidePrev').disabled=false;
+  $('tipGuideNext').disabled=false;
 }
 function openTipGuide(){
   clearTimeout(tipGuideAnimationTimer);tipGuideAnimating=false;
   tipGuideIndex=0;tipGuideStates=GUIDE_PLAY_STATES.map(page=>page.map(state=>Uint8Array.from(state)));renderTipGuide();
   $('tipGuideDialog').hidden=false;
-  $('closeTipGuide').textContent=tr('close');
   $('tipGuideNext').focus();
 }
 function transformTipGuide(angle=0,mirror=false){
@@ -4002,8 +4077,8 @@ function finishTipGuideDrag(event){
   $('tipGuideDialog').classList.remove('comparing');
 }
 $('showTip').addEventListener('click',()=>{returnToClearCard=false;openTipGuide();});
-$('tipGuidePrev').addEventListener('click',()=>{if(!tipGuideAnimating&&tipGuideIndex>0){tipGuideIndex--;renderTipGuide();}});
-$('tipGuideNext').addEventListener('click',()=>{if(!tipGuideAnimating&&tipGuideIndex<GUIDE_TIP_INDEX.length-1){tipGuideIndex++;renderTipGuide();}});
+$('tipGuidePrev').addEventListener('click',()=>{if(!tipGuideAnimating){tipGuideIndex=(tipGuideIndex+GUIDE_TIP_INDEX.length-1)%GUIDE_TIP_INDEX.length;renderTipGuide();}});
+$('tipGuideNext').addEventListener('click',()=>{if(!tipGuideAnimating){tipGuideIndex=(tipGuideIndex+1)%GUIDE_TIP_INDEX.length;renderTipGuide();}});
 $('tipGuideMirror').addEventListener('click',()=>animateTipGuide(0,true));
 $('tipGuideRotate').addEventListener('click',()=>animateTipGuide(60,false));
 $('tipGuideArt').addEventListener('pointerdown',startTipGuideDrag);
