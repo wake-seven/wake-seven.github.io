@@ -23,8 +23,8 @@
     color:var(--washi);font-family:"A1 Gothic","Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,"Noto Sans JP",sans-serif;
     min-height:100vh;padding:26px 12px max(12px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;touch-action:manipulation;
   }
-  body.mastered #board .tile.stand .hex{fill:#F6DE93;stroke:#C89C35}
-  body.mastered #board .tile.fallen .hex{fill:#D7B75F;stroke:#A67D28}
+  body[data-board-theme="gold"] #board .tile.stand .hex{fill:#F6DE93;stroke:#C89C35}
+  body[data-board-theme="gold"] #board .tile.fallen .hex{fill:#D7B75F;stroke:#A67D28}
   .brand{position:relative;width:100%;max-width:372px;display:flex;flex-direction:column;align-items:center}
   .app-menu{position:absolute;z-index:20;top:-10px;right:0}
   .menu-toggle{
@@ -154,10 +154,13 @@
     background:rgba(4,13,24,.72);backdrop-filter:blur(4px);
   }
   .stage-picker-backdrop[hidden]{display:none}
-  .stage-picker{width:min(100%,380px);padding:18px;border:1px solid rgba(255,255,255,.15);border-radius:14px;background:#1A3047;box-shadow:0 20px 55px rgba(0,0,0,.5)}
+  .stage-picker{position:relative;width:min(100%,380px);padding:18px;border:1px solid rgba(255,255,255,.15);border-radius:14px;background:#1A3047;box-shadow:0 20px 55px rgba(0,0,0,.5)}
   .stage-picker-head{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;gap:6px;margin-bottom:14px}
   .stage-picker h2{font-size:15px;text-align:center;letter-spacing:.08em}
   .stage-picker-close{border:0;background:none;color:#A8B6C7;font:inherit;font-size:22px;cursor:pointer}
+  .stage-picker-rank{position:absolute;z-index:1;top:13px;left:12px;width:63px;height:25px;padding:0;border:0;background:transparent;cursor:pointer}
+  .stage-picker-rank svg{display:block;width:100%;height:100%}
+  .stage-picker-rank:focus-visible{outline:2px solid var(--washi);outline-offset:2px;border-radius:5px}
   .stage-picker-round{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px;color:#9FB0C4;font-size:12px}
   .stage-picker-round[hidden]{display:none}
   .stage-picker-round button{border:0;background:none;color:#62B8D2;font:inherit;font-size:16px;cursor:pointer;padding:3px 8px}
@@ -174,12 +177,29 @@
   .stage-picker-grid button:disabled{opacity:.28;cursor:default}
   .stage-picker-actions{display:flex;justify-content:center;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.12)}
   .stage-picker-actions .chip{font-size:12px}
+  .stage-picker.satori-picker{max-height:none}
+  .stage-picker.satori-picker .stage-picker-grid{grid-template-columns:repeat(5,1fr);overflow:visible;padding-right:0}
+  body[data-board-theme="satori"] #board .tile.stand .hex{fill:#F1F1ED;stroke:#D6D6D0}
+  body[data-board-theme="satori"] #board .tile.fallen .hex{fill:#C1C0BB;stroke:#A4A39D}
+  .mode-row.satori-mode .remaining,.mode-row.satori-mode .status-separator{display:none}
+  .progress[hidden]{display:none!important}
+  .new-tab-mark{display:inline-block;width:.72em;height:.72em;margin-left:.25em;vertical-align:.04em;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M9.5 2H14v4.5M14 2 8.75 7.25M12.5 8.5V12A1.5 1.5 0 0 1 11 13.5H4A1.5 1.5 0 0 1 2.5 12V5A1.5 1.5 0 0 1 4 3.5h3.5' fill='none' stroke='black' stroke-width='1.35' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M9.5 2H14v4.5M14 2 8.75 7.25M12.5 8.5V12A1.5 1.5 0 0 1 11 13.5H4A1.5 1.5 0 0 1 2.5 12V5A1.5 1.5 0 0 1 4 3.5h3.5' fill='none' stroke='black' stroke-width='1.35' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+  .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
   .game-dialog-backdrop{
     position:fixed;z-index:70;inset:0;display:grid;place-items:center;padding:18px;
     background:rgba(4,13,24,.7);backdrop-filter:blur(4px);
   }
   .game-dialog-backdrop[hidden]{display:none}
   .game-dialog{width:min(100%,360px);padding:22px 20px;border:1px solid rgba(255,255,255,.16);border-radius:15px;background:#1A3047;box-shadow:0 20px 55px rgba(0,0,0,.5);text-align:center}
+  .board-theme-dialog{width:min(100%,330px)}
+  .board-theme-options{display:grid;gap:8px;margin-top:17px}
+  .board-theme-option{display:flex;align-items:center;gap:11px;width:100%;min-height:54px;padding:8px 11px;border:1px solid rgba(255,255,255,.15);border-radius:9px;background:rgba(255,255,255,.045);color:#D4E6EC;font:700 13px/1.2 inherit;text-align:left;cursor:pointer}
+  .board-theme-option[hidden]{display:none!important}
+  .board-theme-option:hover{border-color:#62B8D2;background:rgba(98,184,210,.1)}
+  .board-theme-option.selected{border-color:#C9A54E;background:rgba(201,165,78,.12);color:#F6DE93}
+  .board-theme-option:disabled{opacity:.35;cursor:not-allowed}
+  .theme-swatch{display:grid;grid-template-columns:1fr 1fr;width:39px;height:30px;overflow:hidden;border:1px solid rgba(255,255,255,.28);border-radius:5px;flex:0 0 auto}
+  .theme-swatch i{display:block}.theme-swatch.normal i:first-child{background:#4B8BA3}.theme-swatch.normal i:last-child{background:#6E8599}.theme-swatch.gold i:first-child{background:#F6DE93}.theme-swatch.gold i:last-child{background:#D7B75F}.theme-swatch.satori i:first-child{background:#F1F1ED}.theme-swatch.satori i:last-child{background:#C1C0BB}
   #clearDialog .game-dialog{max-height:calc(100dvh - 36px);overflow-y:auto}
   #messageDialog .game-dialog{max-height:calc(100dvh - 36px);overflow-y:auto}
   .game-dialog h2{font-size:21px;letter-spacing:.08em;color:var(--washi);white-space:pre-line}
@@ -232,22 +252,35 @@
   .two-move-dialog p{margin-top:4px;font-size:11px}
   .two-move-controls{display:flex;justify-content:center;gap:6px;margin-top:11px}
   .two-move-controls .chip{padding:6px 11px;font-size:11px}
-  .two-move-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px}
-  .two-move-card{padding:3px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:rgba(255,255,255,.04);color:inherit;font:inherit;cursor:pointer}
+  .transform-corners{position:absolute;z-index:2;inset:0;display:block!important;margin:0!important;pointer-events:none}
+  .transform-corners .chip{position:absolute;pointer-events:auto}
+  .transform-corners .chip:nth-child(1){top:0;left:0}.transform-corners .chip:nth-child(2){top:0;right:0}.transform-corners .chip:nth-child(3){bottom:0;left:0}.transform-corners .chip:nth-child(4){right:0;bottom:0}
+  .two-move-board-area,.two-move-detail-board-area,.tip-guide-board-area{position:relative;perspective:820px}
+  .two-move-board-area{margin-top:12px;padding:3px 0}
+  .two-move-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:0}
+  .two-move-card{position:relative;padding:3px;border:1px solid rgba(255,255,255,.12);border-radius:8px;background:rgba(255,255,255,.04);color:inherit;font:inherit}
+  .two-move-card-open{display:block;width:100%;padding:0;border:0;background:transparent;color:inherit;cursor:pointer}
   .two-move-card:hover{border-color:#62B8D2;background:rgba(98,184,210,.08)}
-  .two-move-card:focus-visible{outline:2px solid var(--washi);outline-offset:2px}
+  .two-move-card-open:focus-visible{outline:2px solid var(--washi);outline-offset:2px}
   .two-move-card svg{display:block;width:100%;height:auto}
-  .two-move-detail-board{width:250px;max-width:100%;margin:8px auto -4px}
+  .two-move-card-tools{position:absolute;z-index:2;inset:5px;pointer-events:none}
+  .two-move-card-tools .chip,.two-move-controls.transform-icons .chip,.tip-guide-transform.transform-icons .chip{display:grid;place-items:center;width:21px;height:21px;padding:0;border:0;border-radius:3px;background:rgba(18,45,63,.66);color:#8BCDE0;font:700 12px/1 sans-serif;letter-spacing:0;pointer-events:auto}
+  .two-move-card-tools .chip:hover,.two-move-controls.transform-icons .chip:hover,.tip-guide-transform.transform-icons .chip:hover{background:#62B8D2;color:#102736}
+  .two-move-card-tools .chip{position:absolute}
+  .two-move-card-tools .chip:nth-child(1){top:0;left:0}.two-move-card-tools .chip:nth-child(2){top:0;right:0}.two-move-card-tools .chip:nth-child(3){bottom:0;left:0}.two-move-card-tools .chip:nth-child(4){right:0;bottom:0}
+  .two-move-card-open,.two-move-detail-board,.tip-guide-art,.board-quiz-option,.board-quiz-single{transform-style:preserve-3d;backface-visibility:hidden}
+  .two-move-detail-board-area{width:250px;max-width:100%;margin:8px auto -4px;padding:3px 0}
+  .two-move-detail-board{width:100%;margin:0}
   .two-move-detail-board svg{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
   .two-move-detail-board svg:active{cursor:grabbing}
   .board-compare-hint{margin:5px 0 0;color:#78B9CC;font-size:10px;letter-spacing:.03em}
   .two-move-detail-intro{margin:23px 0 14px!important}
   #twoMoveDetailDialog.comparing{background:rgba(4,13,24,.08);backdrop-filter:none}
   #twoMoveDetailDialog.comparing .two-move-detail{background:transparent;border-color:transparent;box-shadow:none}
-  #twoMoveDetailDialog.comparing .two-move-detail > :not(.two-move-detail-board){opacity:0;pointer-events:none}
+  #twoMoveDetailDialog.comparing .two-move-detail > :not(.two-move-detail-board-area){opacity:0;pointer-events:none}
   .two-move-detail-tip{margin:12px 0 0!important;padding:10px 11px;border-radius:7px;background:rgba(98,184,210,.1);color:#B9E8F2!important;text-align:left;white-space:pre-line}
   .two-move-detail-play{display:flex;justify-content:center;gap:7px;margin-top:14px}
-  .two-move-detail-actions{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;margin:8px 0 4px}
+  .two-move-detail-actions{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;margin:16px 0 4px}
   .two-move-detail-actions .chip{padding:5px 7px;font-size:10px}
   .two-move-detail-actions #twoMoveDetailPrev{justify-self:start}
   .two-move-detail-actions #closeTwoMoveDetail{grid-column:2;padding-left:17px;padding-right:17px}
@@ -255,16 +288,33 @@
   .two-move-detail-return{padding:6px 17px!important;font-size:12px!important}
   .tip-guide-dialog{width:min(100%,390px)}
   .tip-guide-page{margin-top:10px;color:#9BCBDD;font-size:11px;font-weight:700;letter-spacing:.12em}
-  .tip-guide-art{height:290px;margin:3px auto -4px;display:grid;place-items:center}
+  .tip-guide-art{position:relative;height:290px;margin:3px auto -4px;display:grid;place-items:center}
+  .tip-guide-art.compact{height:198px;margin-bottom:0}
+  .tip-guide-board-area{width:330px;max-width:100%;margin:0 auto}
   .tip-guide-art svg{width:330px;max-width:100%;height:auto;overflow:visible;touch-action:none;cursor:grab}
   .tip-guide-art svg:active{cursor:grabbing}
   #tipGuideDialog.comparing{background:rgba(4,13,24,.08);backdrop-filter:none}
   #tipGuideDialog.comparing .tip-guide-dialog{background:transparent;border-color:transparent;box-shadow:none}
-  #tipGuideDialog.comparing .tip-guide-dialog > :not(.tip-guide-art){opacity:0;pointer-events:none}
-  #tipGuideDialog.comparing .tip-guide-drag-board:not(.is-comparing){opacity:0}
+  #tipGuideDialog.comparing .tip-guide-dialog > :not(.tip-guide-board-area){opacity:0;pointer-events:none}
+  #tipGuideDialog.comparing .tip-guide-double-visual:not(.is-comparing){opacity:0}
+  #tipGuideDialog.comparing .tip-guide-board-controls{opacity:0;pointer-events:none}
+  #tipGuideDialog.comparing .tip-guide-board-caption,#tipGuideDialog.comparing .tip-guide-double-caption{opacity:0}
   .tip-guide-art .tip-guide-label{fill:#62B8D2;font:700 10px sans-serif}
   .tip-guide-transform{display:flex;justify-content:center;gap:6px;margin:-2px 0 8px}
   .tip-guide-transform .chip{padding:6px 10px;font-size:10px}
+  .tip-guide-board-controls{top:1px;right:52px;bottom:102px;left:52px}
+  .tip-guide-art.compact .tip-guide-board-controls{bottom:12px}
+  .tip-guide-board-controls.double{top:1px;right:auto;bottom:102px;left:0;width:50%}
+  .tip-guide-board-controls.double.second{right:0;left:auto}
+  .tip-guide-board-caption{min-height:49px;margin:1px 0 5px;color:#B9E8F2;font-size:13px;font-weight:700;line-height:1.45;text-align:center}
+  .tip-guide-board-caption strong{display:block;color:#C9A54E;font-size:17px;letter-spacing:.04em}
+  .tip-guide-art.double{height:232px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;align-items:start}
+  .tip-guide-double-board{position:relative;min-width:0}
+  .tip-guide-single-visual,.tip-guide-double-visual{transform-style:preserve-3d;backface-visibility:hidden}
+  .tip-guide-double-visual svg{display:block;width:100%;height:auto;overflow:visible}
+  .tip-guide-double-caption{min-height:42px;margin-top:-2px;color:#62B8D2;font-size:10px;font-weight:700;line-height:1.35;text-align:center}
+  .tip-guide-double-caption strong{display:block;color:#C9A54E;font-size:15px;letter-spacing:.04em}
+  .tip-guide-double-board .tip-guide-board-controls{top:0;right:0;bottom:42px;left:0;width:auto}
   .tip-guide-text{min-height:48px;margin:8px 0 0!important;padding:9px 11px;border-radius:7px;background:rgba(98,184,210,.1);color:#B9E8F2!important;text-align:left}
   .tip-guide-text strong{color:var(--kin);font-size:1.35em;font-weight:800;white-space:nowrap}
   .tip-guide-play{display:flex;justify-content:center;gap:6px;margin-top:10px}
@@ -305,8 +355,12 @@
   .master-roadmap[hidden]{display:none}
   .mastery-board{display:grid;place-items:center;height:200px;margin:8px 0 20px;overflow:hidden}
   .mastery-board[hidden]{display:none}
+  .master-board-note{margin:-6px 0 20px;text-align:center;white-space:pre-line;line-height:1.65;color:#C8D7E4}
+  .master-board-note[hidden]{display:none}
   .mastery-board svg{display:block;width:230px;height:200px;overflow:visible}
   .mastery-board .tile.stand .hex{fill:#F6DE93;stroke:#C89C35}
+  .mastery-board.satori-theme .tile.stand .hex{fill:#F1F1ED;stroke:#D6D6D0}
+  .mastery-board.satori-theme .tile.fallen .hex{fill:#C1C0BB;stroke:#A4A39D}
   .mastery-board .tile .open,.mastery-board .tile .shut{display:none}
   .mastery-board .tile .happy{display:block}
   .road-step{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 67px;align-items:center;min-height:35px;padding-left:25px;color:#586B80;text-align:left}
@@ -365,22 +419,23 @@
   .debug-tools{width:100%;max-width:372px;display:flex;justify-content:center;gap:5px;margin-top:14px}
   .debug-tools .chip{padding:5px 8px;font-size:10px;opacity:.7}
 
-  .board-wrap{position:relative;width:100%;max-width:372px;margin-top:14px}
+  .board-wrap{position:relative;width:100%;max-width:372px;margin-top:14px;perspective:820px}
   #board{
     width:100%;height:auto;display:block;margin:0;
-    touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;overflow:visible;
+    touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;overflow:visible;transform-style:preserve-3d;backface-visibility:hidden;
   }
   .board-view-controls{
     position:absolute;z-index:2;top:3px;left:4px;right:4px;
     display:flex;justify-content:space-between;pointer-events:none;
   }
+  .board-view-controls.bottom{top:auto;bottom:7px}
   .view-button{
     pointer-events:auto;padding:5px 4px;border:0;background:rgba(22,40,60,.72);
     color:#718297;font:inherit;font-size:12px;border-radius:4px;cursor:pointer;
     transition:color .18s,background .18s;
   }
   .view-button:hover{color:#A8B6C7;background:rgba(22,40,60,.9)}
-  #mirrorBoard,#rotateBoard{padding-inline:8px;font-variant-east-asian:proportional-width;font-feature-settings:"pwid";letter-spacing:-.045em}
+  #mirrorBoard,#flipBoardVertical,#rotateBoardBack,#rotateBoard{padding-inline:8px;font-variant-east-asian:proportional-width;font-feature-settings:"pwid";letter-spacing:-.045em}
   .view-button:focus-visible{outline:2px solid var(--washi);outline-offset:2px}
   #board.spinning{cursor:grabbing}
   .tile{
@@ -506,12 +561,14 @@
       <div class="menu-divider" role="separator"></div>
       <button id="twoMovePatterns" type="button" role="menuitem">最短2手の9パターンを見る</button>
       <button id="showTip" type="button" role="menuitem">攻略のコツ</button>
-      <button id="menuAllPatterns" type="button" role="menuitem" hidden>全パターン一覧</button>
+      <button id="menuAllPatterns" type="button" role="menuitem" hidden>全パターン一覧<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span></button>
+      <button id="menuSatori" type="button" role="menuitem" hidden>悟りへの道</button>
       <div class="menu-divider" role="separator"></div>
       <button id="menuStagePicker" type="button" role="menuitem">ステージを選ぶ</button>
       <button id="clearMessages" type="button" role="menuitem">クリア後のメッセージ</button>
       <button id="menuRankList" type="button" role="menuitem">称号一覧</button>
       <div class="menu-divider" role="separator"></div>
+      <button id="menuBoardTheme" type="button" role="menuitem" hidden>盤面の色</button>
       <button id="resetProgress" class="menu-reset" type="button" role="menuitem">進行状況をリセット</button>
     </div>
   </div>
@@ -551,10 +608,14 @@
 
 <div class="board-wrap">
   <div class="board-view-controls">
-    <button class="view-button" id="mirrorBoard">↔ 左右反転</button>
+    <button class="view-button" id="rotateBoardBack">↺ 60°回転</button>
     <button class="view-button" id="rotateBoard">↻ 60°回転</button>
   </div>
   <svg id="board" viewBox="14 0 293 310" aria-label="七枚のだるま盤"></svg>
+  <div class="board-view-controls bottom">
+    <button class="view-button" id="mirrorBoard">↔ 左右反転</button>
+    <button class="view-button" id="flipBoardVertical">↕ 上下反転</button>
+  </div>
 </div>
 
 <p class="msg" id="msg"></p>
@@ -569,6 +630,7 @@
   <button class="chip" id="debugExtra29" hidden>破14</button>
   <button class="chip" id="debugExtra44" hidden>離14</button>
   <button class="chip" id="debugExtra59" hidden>極14</button>
+  <button class="chip" id="debugSatori72" hidden>悟72</button>
   <button class="chip" id="debugReset" hidden>リ</button>
 </div>
 <div class="game-dialog-backdrop" id="introDialog" hidden>
@@ -602,6 +664,7 @@
     <div class="master-seal rank-seal" id="messageMasterSeal" role="button" tabindex="0" hidden><span class="seal-label" id="messageMasterSealLabel"></span><i class="seal-spark one">✦</i><i class="seal-spark two">✦</i></div>
     <p id="messageMasterText" hidden></p>
     <div class="mastery-board" id="messageMasteryBoard" hidden></div>
+    <p class="master-board-note" id="messageMasterBoardNote" hidden></p>
     <div class="master-roadmap" id="messageRoadmap" hidden></div>
     <p class="master-roadmap-note" id="messageRoadmapNote" hidden></p>
     <p class="master-rules" id="messageRules" hidden></p>
@@ -633,9 +696,11 @@
     <div class="master-seal" id="masterSeal" role="button" tabindex="0"><span class="seal-label" id="masterSealLabel">突破</span><i class="seal-spark one">✦</i><i class="seal-spark two">✦</i></div>
     <p id="masterDialogText">名人への道が開かれました。</p>
     <div class="mastery-board" id="masteryBoard" hidden></div>
+    <p class="master-board-note" id="masterBoardNote" hidden></p>
     <div class="master-roadmap" id="masterRoadmap"></div>
     <p class="master-roadmap-note" id="masterRoadmapNote" hidden></p>
     <p class="master-rules" id="masterRules" hidden></p>
+    <p class="master-final-thanks" id="masterFinalThanks" hidden></p>
     <div class="dialog-actions"><button class="chip" id="masterClose">閉じる</button><a class="chip" id="masterAllPatterns" href="all-patterns.html" hidden>全パターン一覧を見る</a><button class="chip on" id="masterStart">名人への道へ →</button></div>
     <button class="master-share" id="masterShare" hidden><span class="share-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg></span><span id="masterShareLabel">共有</span></button>
   </div>
@@ -647,27 +712,35 @@
     <div class="dialog-actions"><button class="chip" id="closeRankDialog">閉じる</button></div>
   </div>
 </div>
+<div class="game-dialog-backdrop" id="boardThemeDialog" hidden>
+  <div class="game-dialog board-theme-dialog" role="dialog" aria-modal="true" aria-labelledby="boardThemeTitle">
+    <h2 id="boardThemeTitle">盤面の色</h2>
+    <div class="board-theme-options" id="boardThemeOptions">
+      <button class="board-theme-option" type="button" data-board-theme="default"><span class="theme-swatch normal"><i></i><i></i></span><span id="boardThemeDefault">通常</span></button>
+      <button class="board-theme-option" type="button" data-board-theme="gold"><span class="theme-swatch gold"><i></i><i></i></span><span id="boardThemeGold">金</span></button>
+      <button class="board-theme-option" type="button" data-board-theme="satori" hidden><span class="theme-swatch satori"><i></i><i></i></span><span id="boardThemeSatori">白黒</span></button>
+    </div>
+    <div class="dialog-actions"><button class="chip" id="closeBoardTheme">閉じる</button></div>
+  </div>
+</div>
 <div class="game-dialog-backdrop" id="twoMoveDialog" hidden>
   <div class="game-dialog two-move-dialog" role="dialog" aria-modal="true" aria-labelledby="twoMoveTitle">
     <h2 id="twoMoveTitle">最短2手の9パターン</h2>
     <p id="twoMoveText">基本3〜11で、すべて遊べます。</p>
-    <div class="two-move-controls">
-      <button class="chip" id="twoMoveMirror">↔ 左右反転</button>
-      <button class="chip" id="twoMoveRotate">↻ 60°回転</button>
+    <div class="two-move-board-area">
+      <div class="two-move-grid" id="twoMoveGrid"></div>
     </div>
-    <div class="two-move-grid" id="twoMoveGrid"></div>
     <div class="dialog-actions"><button class="chip" id="closeTwoMovePatterns">閉じる</button></div>
   </div>
 </div>
 <div class="game-dialog-backdrop" id="twoMoveDetailDialog" hidden>
   <div class="game-dialog two-move-detail" role="dialog" aria-modal="true" aria-labelledby="twoMoveDetailTitle">
     <h2 id="twoMoveDetailTitle">この盤面のコツ</h2>
-    <div class="two-move-detail-actions"><button class="chip" id="twoMoveDetailPrev">← 前へ</button><button class="chip" id="closeTwoMoveDetail">一覧へ</button><button class="chip" id="twoMoveDetailNext">次へ →</button></div>
-    <div class="two-move-detail-board" id="twoMoveDetailBoard"></div>
-    <div class="two-move-controls"><button class="chip" id="twoMoveDetailMirror">↔ 左右反転</button><button class="chip" id="twoMoveDetailRotate">↻ 60°回転</button></div>
+    <div class="two-move-detail-board-area"><div class="two-move-detail-board" id="twoMoveDetailBoard"></div><div class="two-move-controls transform-icons transform-corners"><button class="chip" id="twoMoveDetailRotateBack" aria-label="60°逆回転">↺</button><button class="chip" id="twoMoveDetailRotate" aria-label="60°回転">↻</button><button class="chip" id="twoMoveDetailMirror" aria-label="左右反転">↔</button><button class="chip" id="twoMoveDetailFlipVertical" aria-label="上下反転">↕</button></div></div>
     <p class="board-compare-hint two-move-detail-intro" id="twoMoveDetailIntro" hidden></p>
     <p class="two-move-detail-tip" id="twoMoveDetailTip"></p>
     <div class="two-move-detail-play"><button class="chip on" id="playTwoMoveFree">フリーモードで遊ぶ →</button><button class="chip two-move-detail-return" id="returnToClearDetail" hidden>戻る</button></div>
+    <div class="two-move-detail-actions"><button class="chip" id="twoMoveDetailPrev">← 前へ</button><button class="chip" id="closeTwoMoveDetail">一覧へ</button><button class="chip" id="twoMoveDetailNext">次へ →</button></div>
     <p class="board-compare-hint" id="twoMoveDetailCompareHint"></p>
   </div>
 </div>
@@ -675,8 +748,7 @@
   <div class="game-dialog tip-guide-dialog" role="dialog" aria-modal="true" aria-labelledby="tipGuideTitle">
     <h2 id="tipGuideTitle">攻略のコツ</h2>
     <div class="tip-guide-page" id="tipGuidePage">1 / 4</div>
-    <div class="tip-guide-art" id="tipGuideArt"></div>
-    <div class="tip-guide-transform"><button class="chip" id="tipGuideMirror">↔ 左右反転</button><button class="chip" id="tipGuideRotate">↻ 60°回転</button></div>
+    <div class="tip-guide-board-area"><div class="tip-guide-art" id="tipGuideArt"></div><div class="tip-guide-board-caption" id="tipGuideBoardCaption"></div></div>
     <p class="tip-guide-text" id="tipGuideText"></p>
     <div class="tip-guide-play" id="tipGuidePlay"></div>
     <div class="tip-guide-actions"><button class="chip" id="tipGuidePrev">← 前へ</button><button class="chip" id="closeTipGuide">閉じる</button><button class="chip" id="tipGuideNext">次へ →</button></div>
@@ -685,7 +757,7 @@
 </div>
 <div class="stage-picker-backdrop" id="stagePicker" hidden>
   <div class="stage-picker" role="dialog" aria-modal="true" aria-labelledby="stagePickerTitle">
-    <div class="stage-picker-head"><span></span><h2 id="stagePickerTitle">ステージを選ぶ</h2><button class="stage-picker-close" id="closeStagePicker" aria-label="閉じる">×</button></div>
+    <div class="stage-picker-head"><span></span><h2 id="stagePickerTitle">ステージを選ぶ</h2><button class="stage-picker-close" id="closeStagePicker" aria-label="閉じる">×</button><button class="stage-picker-rank" id="stagePickerRankBadge" type="button" hidden></button></div>
     <div class="stage-picker-round" id="stagePickerRound"><button id="pickerPrevRound" aria-label="前の周">←</button><span id="pickerRoundLabel"></span><button id="pickerNextRound" aria-label="次の周">→</button></div>
     <div class="stage-picker-grid" id="stagePickerGrid"></div>
     <div class="stage-picker-actions"><button class="chip" id="pickerFreeMode" type="button">フリーモードへ</button><button class="chip" id="pickerCustomMode" type="button">自作モードへ</button></div>
@@ -757,7 +829,9 @@ function makeBoardPermutation(angleDeg=0,mirror=false){
   });
 }
 const VIEW_ROTATE_60=makeBoardPermutation(60);
+const VIEW_ROTATE_MINUS60=makeBoardPermutation(-60);
 const VIEW_MIRROR=makeBoardPermutation(0,true);
+const VIEW_FLIP_VERTICAL=makeBoardPermutation(180,true);
 
 /* ---- 全探索ソルバ（向き3値・7マス = 3進7桁） ---- */
 const P3=[1,3,9,27,81,243,729], NS=2187;
@@ -1044,6 +1118,82 @@ EXTRA_STAGES.push(
   ...FOUR_MOVE_STAGES.slice(3,6), /* 極 10〜12：確認なし（易しい3問） */
   FOUR_MOVE_STAGES[2],FOUR_MOVE_STAGES[1],FOUR_MOVE_STAGES[0] /* 最後3問：難→易 */
 );
+// 悟りへの道：対称な盤面をひとつと数えた73種を集める。
+function satoriStagesAtDepth(depth){
+  const seen=new Set(),stages=[];
+  for(const state of SOLVER.byDepth[depth]){
+    const canonical=canonicalState(state);
+    if(seen.has(canonical))continue;
+    seen.add(canonical);stages.push({state:canonical,par:depth});
+  }
+  return stages.sort((a,b)=>{
+    const ae=progressOptionCounts(a),be=progressOptionCounts(b);
+    return be.progress-ae.progress||ae.worse-be.worse||a.state-b.state;
+  });
+}
+// 最短手数ぶん、毎手12通りを完全にランダムに選んだときの最短クリア確率で並べる。
+// 最短4手に入った途端に急に易しくなることを避ける。
+const LEGACY_SATORI_STAGES=[1,2,3,4].flatMap(satoriStagesAtDepth);
+const SATORI_PROBABILITY_ASCENDING=[...LEGACY_SATORI_STAGES].sort((a,b)=>{
+  const ae=progressOptionCounts(a),be=progressOptionCounts(b);
+  return ae.progress-be.progress||be.worse-ae.worse||a.state-b.state;
+});
+const SATORI_PROBABILITY_DESCENDING=[...LEGACY_SATORI_STAGES].sort((a,b)=>{
+  const ae=progressOptionCounts(a),be=progressOptionCounts(b);
+  return be.progress-ae.progress||ae.worse-be.worse||a.state-b.state;
+});
+function satoriExpectedNextDistance(stage){
+  const ae=progressOptionCounts(stage);
+  return stage.par+(ae.worse-ae.progress)/12;
+}
+const SATORI_EXPECTED_STAGES=[
+  ...LEGACY_SATORI_STAGES.filter(stage=>stage.par===1),
+  ...LEGACY_SATORI_STAGES.filter(stage=>stage.par===2),
+  ...LEGACY_SATORI_STAGES.filter(stage=>stage.par>=3).sort((a,b)=>{
+    const delta=satoriExpectedNextDistance(a)-satoriExpectedNextDistance(b);
+    return delta||a.par-b.par||a.state-b.state;
+  })
+];
+const satoriOptimalPathMemo=new Map();
+function satoriOptimalPathCount(state,steps){
+  if(steps===0)return state===0?1:0;
+  const key=state+'|'+steps;
+  if(satoriOptimalPathMemo.has(key))return satoriOptimalPathMemo.get(key);
+  const board=dec(state);
+  let count=0;
+  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){
+    count+=satoriOptimalPathCount(enc(rollOnce(board,ti,dir)),steps-1);
+  }
+  satoriOptimalPathMemo.set(key,count);
+  return count;
+}
+function satoriOptimalClearProbability(stage){
+  return satoriOptimalPathCount(stage.state,stage.par)/(12**stage.par);
+}
+// ひとつ前の並び。保存済みの悟り進行を、盤面そのものを基準に移し替えるために残す。
+const SATORI_GLOBAL_OPTIMAL_STAGES=[...LEGACY_SATORI_STAGES].sort((a,b)=>{
+  const delta=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
+  return delta||a.par-b.par||a.state-b.state;
+});
+// 一時的に採用していた「手数優先」の並び。保存済み進行の移行にだけ使う。
+const SATORI_DEPTH_OPTIMAL_STAGES=[...LEGACY_SATORI_STAGES].sort((a,b)=>{
+  // まず最短手数の少ない順。その同じ手数の中だけ、最短で解ける確率順にする。
+  // 3手の問題が4手の問題より後になることはない。
+  const depth=a.par-b.par;
+  if(depth)return depth;
+  const delta=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
+  return delta||a.state-b.state;
+});
+// 悟りへの道は、手数をまたいでも最短で解ける確率が高い盤面から出す。
+// 同率なら、次の一手で進める選択肢が多く、悪化が少ない盤面を先にする。
+const SATORI_STAGES=[...LEGACY_SATORI_STAGES].sort((a,b)=>{
+  const probability=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
+  if(probability)return probability;
+  const ae=progressOptionCounts(a),be=progressOptionCounts(b);
+  return be.progress-ae.progress||ae.worse-be.worse||a.par-b.par||a.state-b.state;
+});
+const SATORI_ORDER_VERSION='optimal-path-human-ties-8';
+const satoriStageIndexByState=new Map(SATORI_STAGES.map((stage,index)=>[stage.state,index]));
 let currentLang='ja';
 const UI_TEXT={
   ja:{
@@ -1348,10 +1498,10 @@ Object.assign(UI_TEXT.ja,{linkWelcome:'このゲームへのリンク・紹介�
 Object.assign(UI_TEXT.en,{linkWelcome:'Feel free to link to or share this game.'});
 Object.assign(UI_TEXT.zh,{linkWelcome:'欢迎自由链接和介绍这款游戏。'});
 Object.assign(UI_TEXT.ko,{linkWelcome:'이 게임의 링크와 소개는 자유롭게 해 주세요.'});
-Object.assign(UI_TEXT.ja,{share:'共有する',shareShort:'共有',shareCopied:'URLをコピーしました',shareCopyPrompt:'このURLをコピーしてください',shareGameText:'だるまさんを起こして！を遊んでいます。 #WakeSeven',shareTrainingText:'だるまさんを起こして！ だるま修行を突破した。 #WakeSeven',shareMasteryText:'だるまさんを起こして！ 名人への道を制覇した。 #WakeSeven'});
-Object.assign(UI_TEXT.en,{share:'Share',shareShort:'Share',shareCopied:'Link copied',shareCopyPrompt:'Copy this link',shareGameText:'Playing Wake the Daruma! #WakeSeven',shareTrainingText:'I completed Daruma Training in Wake the Daruma! #WakeSeven',shareMasteryText:'I conquered the Path to Mastery in Wake the Daruma! #WakeSeven'});
-Object.assign(UI_TEXT.zh,{share:'分享',shareShort:'分享',shareCopied:'链接已复制',shareCopyPrompt:'请复制此链接',shareGameText:'我正在玩《叫醒不倒翁！》 #WakeSeven',shareTrainingText:'我完成了《叫醒不倒翁！》的不倒翁修行！ #WakeSeven',shareMasteryText:'我征服了《叫醒不倒翁！》的名人之路！ #WakeSeven'});
-Object.assign(UI_TEXT.ko,{share:'공유',shareShort:'공유',shareCopied:'링크를 복사했어요',shareCopyPrompt:'이 링크를 복사하세요',shareGameText:'다루마를 깨워라!를 플레이하고 있어요. #WakeSeven',shareTrainingText:'다루마를 깨워라!의 다루마 수행을 완료했어요! #WakeSeven',shareMasteryText:'다루마를 깨워라!의 명인의 길을 정복했어요! #WakeSeven'});
+Object.assign(UI_TEXT.ja,{share:'共有する',shareShort:'共有',shareCopied:'URLをコピーしました',shareCopyPrompt:'このURLをコピーしてください',shareGameText:'だるまさんを起こして！を遊んでいます。 #WakeSeven',shareTrainingText:'だるまさんを起こして！ だるま修行を突破した。 #WakeSeven',shareMasteryText:'だるまさんを起こして！ 名人への道を制覇した。 #WakeSeven',shareSatoriText:'だるまさんを起こして！ 悟りへの道を制覇した。 #WakeSeven'});
+Object.assign(UI_TEXT.en,{share:'Share',shareShort:'Share',shareCopied:'Link copied',shareCopyPrompt:'Copy this link',shareGameText:'Playing Wake the Daruma! #WakeSeven',shareTrainingText:'I completed Daruma Training in Wake the Daruma! #WakeSeven',shareMasteryText:'I conquered the Path to Mastery in Wake the Daruma! #WakeSeven',shareSatoriText:'I completed the Path to Awakening in Wake the Daruma! #WakeSeven'});
+Object.assign(UI_TEXT.zh,{share:'分享',shareShort:'分享',shareCopied:'链接已复制',shareCopyPrompt:'请复制此链接',shareGameText:'我正在玩《叫醒不倒翁！》 #WakeSeven',shareTrainingText:'我完成了《叫醒不倒翁！》的不倒翁修行！ #WakeSeven',shareMasteryText:'我征服了《叫醒不倒翁！》的名人之路！ #WakeSeven',shareSatoriText:'我完成了《叫醒不倒翁！》的悟道之路！ #WakeSeven'});
+Object.assign(UI_TEXT.ko,{share:'공유',shareShort:'공유',shareCopied:'링크를 복사했어요',shareCopyPrompt:'이 링크를 복사하세요',shareGameText:'다루마를 깨워라!를 플레이하고 있어요. #WakeSeven',shareTrainingText:'다루마를 깨워라!의 다루마 수행을 완료했어요! #WakeSeven',shareMasteryText:'다루마를 깨워라!의 명인의 길을 정복했어요! #WakeSeven',shareSatoriText:'다루마를 깨워라!의 깨달음의 길을 완료했어요! #WakeSeven'});
 Object.assign(UI_TEXT.ja,{soundOn:'効果音ON',soundOff:'効果音OFF'});
 Object.assign(UI_TEXT.en,{soundOn:'Sound on',soundOff:'Sound off'});
 Object.assign(UI_TEXT.zh,{soundOn:'音效开启',soundOff:'音效关闭'});
@@ -1394,27 +1544,63 @@ Object.assign(UI_TEXT.ja,{
 });
 Object.assign(UI_TEXT.ja,{
   allPatternsMenu:'全パターン一覧',allPatternsOpen:'全パターン一覧を見る →',
-  masteryText:'全パターンを攻略しました。\nメニューに「全パターン一覧」が追加されました。'
+  masteryText:'金色の盤面を獲得しました。\nメニューから盤面の色を選べます。',
+  masteryBoardNote:'これで盤面の全パターンを制覇したことになります。\nメニューに「全パターン一覧」が追加されました。'
 });
 Object.assign(UI_TEXT.en,{
   allPatternsMenu:'All patterns',allPatternsOpen:'View all patterns →',
-  masteryText:'You solved every pattern.\n“All patterns” is now available in the Menu.'
+  masteryText:'You earned the golden board.\nChoose board colors from the Menu.',
+  masteryBoardNote:'“All patterns” is now available in the Menu.'
 });
 Object.assign(UI_TEXT.zh,{
   allPatternsMenu:'全部图案',allPatternsOpen:'查看全部图案 →',
-  masteryText:'你已攻略全部图案。\n菜单中已新增“全部图案”。'
+  masteryText:'已获得金色棋盘。\n可在菜单中选择棋盘颜色。',
+  masteryBoardNote:'菜单中已新增“全部图案”。'
 });
 Object.assign(UI_TEXT.ko,{
   allPatternsMenu:'모든 패턴',allPatternsOpen:'모든 패턴 보기 →',
-  masteryText:'모든 패턴을 풀었습니다.\n메뉴에 “모든 패턴”이 추가되었습니다.'
+  masteryText:'황금 보드를 얻었습니다.\n메뉴에서 보드 색을 고를 수 있습니다.',
+  masteryBoardNote:'메뉴에 “모든 패턴”이 추가되었습니다.'
 });
+Object.assign(UI_TEXT.ja,{satori:'悟りへの道',satoriPicker:'悟りへの道　73問',satoriChoose:'問題を選ぶ',satoriFailRule:'悟りへの道は最短の手でのみクリアできます。',satoriFailEncourage:'ゲノムを見ながら、もう一度挑もう。',satoriTitle:'悟りへの道 制覇！',satoriText:'称号「無心」を獲得しました。\n白黒の盤を手に入れました。',satoriStart:'悟りへの道へ →',satoriRank:'無心',satoriUnlock:'悟りへの道が開かれました。'});
+Object.assign(UI_TEXT.en,{satori:'Path to Awakening',satoriPicker:'Path to Awakening · 73 puzzles',satoriChoose:'Choose a puzzle',satoriFailRule:'Path to Awakening must be cleared in the fewest moves.',satoriFailEncourage:'Study the Genome, then try again.',satoriTitle:'Path to Awakening complete!',satoriText:'You earned the title “No Mind”.\nThe monochrome board is now yours.',satoriStart:'Path to Awakening →',satoriRank:'No Mind',satoriUnlock:'Path to Awakening is now open.'});
+Object.assign(UI_TEXT.zh,{satori:'悟道之路',satoriPicker:'悟道之路 · 73题',satoriChoose:'选择题目',satoriFailRule:'悟道之路必须用最少步数通关。',satoriFailEncourage:'看看图鉴，再试一次吧。',satoriTitle:'悟道之路 完成！',satoriText:'获得称号“无心”。\n已解锁黑白棋盘。',satoriStart:'前往悟道之路 →',satoriRank:'无心',satoriUnlock:'悟道之路已开启。'});
+Object.assign(UI_TEXT.ko,{satori:'깨달음의 길',satoriPicker:'깨달음의 길 · 73문제',satoriChoose:'문제 선택',satoriFailRule:'깨달음의 길은 최단 수로만 클리어할 수 있습니다.',satoriFailEncourage:'게놈을 보고 다시 도전해 보세요.',satoriTitle:'깨달음의 길 완료!',satoriText:'칭호 “무심”을 획득했습니다.\n흑백 보드를 얻었습니다.',satoriStart:'깨달음의 길로 →',satoriRank:'무심',satoriUnlock:'깨달음의 길이 열렸습니다.'});
+Object.assign(UI_TEXT.ja,{satoriFailLimit:'最短手数に達しました。',satoriFailResult:'この問題の最短手数は{best}手です。'});
+Object.assign(UI_TEXT.en,{satoriFailLimit:'You reached the move limit.',satoriFailResult:'The fewest solution is {best} moves.'});
+Object.assign(UI_TEXT.zh,{satoriFailLimit:'已达到最短步数。',satoriFailResult:'这题最少需要{best}步。'});
+Object.assign(UI_TEXT.ko,{satoriFailLimit:'최단 수에 도달했습니다.',satoriFailResult:'이 문제의 최단 수는 {best}수입니다.'});
+Object.assign(UI_TEXT.ja,{satoriIntroTitle:'悟りへの道',satoriIntroText:'名人となったあなたに、悟りへの道が開かれました。\n全73パターンを最短手数で見抜く道です。\nメニューから行ける「全パターン一覧」も参考に。',satoriIntroStart:'第一問へ →'});
+Object.assign(UI_TEXT.en,{satoriIntroTitle:'Path to Awakening',satoriIntroText:'Recognize all 73 patterns in the fewest moves.\nThere are no hints and no moves-left display.\nStudy the Genome, then begin.',satoriIntroStart:'First puzzle →'});
+Object.assign(UI_TEXT.zh,{satoriIntroTitle:'悟道之路',satoriIntroText:'用最少步数看穿全部73种图案。\n没有提示，也不显示剩余步数。\n看着图鉴来挑战吧。',satoriIntroStart:'第一题 →'});
+Object.assign(UI_TEXT.ko,{satoriIntroTitle:'깨달음의 길',satoriIntroText:'73가지 패턴을 최단 수로 꿰뚫어 보세요.\n힌트와 남은 수 표시는 없습니다.\n게놈을 보며 도전하세요.',satoriIntroStart:'첫 문제 →'});
+Object.assign(UI_TEXT.ja,{debugSatori72:'悟72'});
+Object.assign(UI_TEXT.en,{debugSatori72:'Awake 72'});
+Object.assign(UI_TEXT.zh,{debugSatori72:'悟72'});
+Object.assign(UI_TEXT.ko,{debugSatori72:'깨72'});
+Object.assign(UI_TEXT.ja,{satoriText:'白黒の盤を手に入れました。'});
+Object.assign(UI_TEXT.en,{satoriText:'The monochrome board is now yours.'});
+Object.assign(UI_TEXT.zh,{satoriText:'已解锁黑白棋盘。'});
+Object.assign(UI_TEXT.ko,{satoriText:'흑백 보드를 얻었습니다.'});
+Object.assign(UI_TEXT.ja,{satoriThanks:'ステージモードはこれで本当に終わりです。\n最後までプレイしてくださりありがとうございます。'});
+Object.assign(UI_TEXT.en,{satoriThanks:'This is truly the end of Stage Mode.\nThank you for playing all the way through.'});
+Object.assign(UI_TEXT.zh,{satoriThanks:'这就是关卡模式真正的终点。\n感谢你一路玩到最后。'});
+Object.assign(UI_TEXT.ko,{satoriThanks:'스테이지 모드는 여기서 정말 끝입니다.\n끝까지 플레이해 주셔서 감사합니다.'});
+Object.assign(UI_TEXT.ja,{boardTheme:'盤面の色',boardThemeDefault:'通常',boardThemeGold:'金',boardThemeSatori:'白黒'});
+Object.assign(UI_TEXT.en,{boardTheme:'Board colors',boardThemeDefault:'Standard',boardThemeGold:'Gold',boardThemeSatori:'Monochrome'});
+Object.assign(UI_TEXT.zh,{boardTheme:'棋盘颜色',boardThemeDefault:'标准',boardThemeGold:'金色',boardThemeSatori:'黑白'});
+Object.assign(UI_TEXT.ko,{boardTheme:'보드 색상',boardThemeDefault:'기본',boardThemeGold:'금색',boardThemeSatori:'흑백'});
+Object.assign(UI_TEXT.ja,{rotateCcw:'↺ 60°回転',rotateCw:'↻ 60°回転',flipVertical:'↕ 上下反転'});
+Object.assign(UI_TEXT.en,{rotateCcw:'↺ Rotate 60°',rotateCw:'↻ Rotate 60°',flipVertical:'↕ Flip vertical'});
+Object.assign(UI_TEXT.zh,{rotateCcw:'↺ 旋转60°',rotateCw:'↻ 旋转60°',flipVertical:'↕ 上下翻转'});
+Object.assign(UI_TEXT.ko,{rotateCcw:'↺ 60° 회전',rotateCw:'↻ 60° 회전',flipVertical:'↕ 상하 반전'});
 function tr(key,vars){
   let value=(UI_TEXT[currentLang]&&UI_TEXT[currentLang][key])||UI_TEXT.ja[key]||key;
   if(vars)Object.keys(vars).forEach(name=>value=value.replaceAll('{'+name+'}',vars[name]));
   return value;
 }
 function shareData(kind='game'){
-  const key=kind==='training'?'shareTrainingText':kind==='mastery'?'shareMasteryText':'shareGameText';
+  const key=kind==='training'?'shareTrainingText':kind==='mastery'?'shareMasteryText':kind==='satori'?'shareSatoriText':'shareGameText';
   const url=new URL(location.href);
   url.search='';url.hash='';
   return {title:tr('pageTitle'),text:tr(key),url:url.href};
@@ -1548,9 +1734,13 @@ const svg=document.getElementById('board'), $=id=>document.getElementById(id);
 const DEBUG_MODE=new URLSearchParams(location.search).get('debug')==='1';
 let ori=new Uint8Array(N), spin=new Int16Array(N), history=[], moves=0, best=0;
 let tileEls=[], baseTiles=[], drag=null, busy=false;
-let stageIndex=0,extraIndex=0,extraMode=false,freeMode=false,clearShown=false,clearTimer=0;
+let stageIndex=0,extraIndex=0,satoriIndex=0,extraMode=false,satoriMode=false,freeMode=false,clearShown=false,clearTimer=0;
 let soundEnabled=true,audioContext=null;
 try{soundEnabled=localStorage.getItem('wake7-sound')!=='off';}catch(_){ }
+let boardTheme='default';
+try{const savedTheme=localStorage.getItem('wake7-board-theme');if(['default','gold','satori'].includes(savedTheme))boardTheme=savedTheme;}catch(_){ }
+let boardThemeChosen=false;
+try{boardThemeChosen=localStorage.getItem('wake7-board-theme-chosen')==='1';}catch(_){ }
 let lastStageMode={extra:false,index:0};
 let customMode=false,editingBoard=false;
 let masterDialogKind='primary';
@@ -1564,8 +1754,81 @@ let clearedStages=new Set();
 try{clearedStages=new Set(JSON.parse(localStorage.getItem('wake7-cleared')||'[]'));}catch(_){}
 let clearedExtraStages=new Set();
 try{clearedExtraStages=new Set(JSON.parse(localStorage.getItem('wake7-extra-cleared')||'[]'));}catch(_){}
+let clearedSatoriStages=new Set();
+try{clearedSatoriStages=new Set(JSON.parse(localStorage.getItem('wake7-satori-cleared')||'[]'));}catch(_){}
+function migrateSatoriOrder(){
+  let version='';
+  try{version=localStorage.getItem('wake7-satori-order-version')||'';}catch(_){}
+  if(version===SATORI_ORDER_VERSION)return;
+  const sourceStages=version==='probability-2'?SATORI_PROBABILITY_ASCENDING
+    :version==='probability-3'?SATORI_PROBABILITY_DESCENDING
+    :version==='expected-4'?SATORI_EXPECTED_STAGES
+    :version==='optimal-path-5'?SATORI_GLOBAL_OPTIMAL_STAGES
+    :version==='optimal-path-by-depth-6'?SATORI_DEPTH_OPTIMAL_STAGES
+    :version==='optimal-path-7'?SATORI_GLOBAL_OPTIMAL_STAGES
+    :LEGACY_SATORI_STAGES;
+  const remapIndex=index=>{
+    const stage=sourceStages[index];
+    return stage?satoriStageIndexByState.get(stage.state):undefined;
+  };
+  clearedSatoriStages=new Set([...clearedSatoriStages].map(remapIndex).filter(Number.isInteger));
+  for(const key of ['wake7-current-stage','wake7-active-session']){
+    try{
+      const saved=JSON.parse(localStorage.getItem(key)||'null');
+      if(saved&&saved.satori===true&&Number.isInteger(saved.index)){
+        const next=remapIndex(saved.index);
+        if(Number.isInteger(next)){saved.index=next;localStorage.setItem(key,JSON.stringify(saved));}
+      }
+    }catch(_){}
+  }
+  try{
+    localStorage.setItem('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));
+    localStorage.setItem('wake7-satori-order-version',SATORI_ORDER_VERSION);
+  }catch(_){}
+}
+migrateSatoriOrder();
 const isMastered=()=>EXTRA_STAGES.every((_,i)=>clearedExtraStages.has(i));
-function updateMasterTheme(){document.body.classList.toggle('mastered',isMastered());}
+const isSatoriMastered=()=>SATORI_STAGES.every((_,i)=>clearedSatoriStages.has(i));
+function updateMasterTheme(){
+  document.body.classList.toggle('mastered',isMastered());
+  document.body.classList.toggle('satori-mastered',isSatoriMastered());
+  if(isMastered()&&!boardThemeChosen)boardTheme=isSatoriMastered()?'satori':'gold';
+  if((boardTheme==='gold'&&!isMastered())||(boardTheme==='satori'&&!isSatoriMastered()))boardTheme='default';
+  document.body.dataset.boardTheme=boardTheme;
+  applyBoardTheme();
+  try{localStorage.setItem('wake7-board-theme',boardTheme);}catch(_){ }
+}
+const BOARD_THEME_TONES={
+  gold:{stand:{fill:'#F6DE93',stroke:'#C89C35'},fallen:{fill:'#D7B75F',stroke:'#A67D28'}},
+  satori:{stand:{fill:'#F1F1ED',stroke:'#D6D6D0'},fallen:{fill:'#C1C0BB',stroke:'#A4A39D'}}
+};
+function applyBoardTheme(){
+  const tones=BOARD_THEME_TONES[boardTheme];
+  tileEls.forEach(tile=>{
+    const hex=tile.querySelector('.hex');
+    if(!hex)return;
+    const tone=tones?.[tile.classList.contains('fallen')?'fallen':'stand'];
+    hex.style.fill=tone?.fill||'';
+    hex.style.stroke=tone?.stroke||'';
+  });
+  const bodyPath=document.querySelector('#daruma-body path:first-child');
+  if(bodyPath)bodyPath.style.fill='';
+}
+function renderBoardThemeOptions(){
+  const unlocked={default:true,gold:isMastered(),satori:isSatoriMastered()};
+  document.querySelectorAll('[data-board-theme]').forEach(button=>{
+    const theme=button.dataset.boardTheme;
+    button.hidden=theme==='satori'&&!isSatoriMastered();
+    button.disabled=!unlocked[theme];
+    button.classList.toggle('selected',theme===boardTheme);
+    button.setAttribute('aria-pressed',String(theme===boardTheme));
+  });
+}
+function openBoardThemeDialog(){
+  renderBoardThemeOptions();
+  $('boardThemeDialog').hidden=false;
+  $('boardThemeOptions').querySelector(':not(:disabled)')?.focus();
+}
 const mod3=v=>((v%3)+3)%3;
 const isSolved=()=>SOLVER.dist[enc(ori)]===0;
 let displayedMoves=null,displayedRemaining=null;
@@ -1575,8 +1838,8 @@ try{fourthCheckUsage=JSON.parse(localStorage.getItem(FOURTH_CHECKS_STORAGE_KEY)|
 let fourthHintPreview=false,fourthDistanceRevealed=false,fourthHintDistance=null,fourthChecksUsed=0;
 const masterVolume=()=>extraMode?Math.floor(extraIndex/STAGES.length)+1:0;
 const isFinalMasterPuzzle=()=>extraMode&&extraIndex===EXTRA_STAGES.length-1;
-const usesSwipeDimming=()=>!extraMode&&!freeMode&&!customMode;
-const requiresOptimalClear=()=>extraMode;
+const usesSwipeDimming=()=>!extraMode&&!satoriMode&&!freeMode&&!customMode;
+const requiresOptimalClear=()=>extraMode||satoriMode;
 const masterHintsDisabled=()=>masterVolume()>=2;
 const isThirdVolume=()=>extraMode&&extraIndex>=30&&extraIndex<45;
 const isFourthVolume=()=>extraMode&&extraIndex>=45&&extraIndex<60;
@@ -1584,7 +1847,7 @@ const fourthCheckLimit=()=>!isFourthVolume()?0:(extraIndex%STAGES.length<6?2:ext
 // 極10〜12だけは、やり直し等でも残り手数の使用回数を引き継ぐ。
 const fourthChecksPersist=()=>isFourthVolume()&&extraIndex%STAGES.length>=9&&extraIndex%STAGES.length<12;
 const fourthChecksLeft=()=>Math.max(0,fourthCheckLimit()-fourthChecksUsed);
-const usesHiddenRemaining=()=>freeMode||isFourthVolume();
+const usesHiddenRemaining=()=>satoriMode||freeMode||isFourthVolume();
 function persistFourthChecks(){
   if(!fourthChecksPersist())return;
   fourthCheckUsage[extraIndex]=fourthChecksUsed;
@@ -1852,8 +2115,15 @@ function paint(){
     tileEls[i].setAttribute('class','tile '+(up?'stand':'fallen'));
     tileEls[i].style.transform='translate('+CELL[i].x.toFixed(2)+'px,'+CELL[i].y.toFixed(2)+'px) rotate('+(spin[i]*120)+'deg)';
   }
+  applyBoardTheme();
   showMoves(moves);
   if(!editingBoard)showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]));
+  if(satoriMode&&!isSolved()&&moves>=best&&!clearShown){
+    clearShown=true;
+    renderOptimalFail();
+    $('optimalFailDialog').hidden=false;
+    return;
+  }
   if(!editingBoard&&isSolved()&&!clearShown){
     clearShown=true;
     svg.classList.add('clear-pending');
@@ -1863,7 +2133,12 @@ function paint(){
       $('optimalFailDialog').hidden=false;
       return;
     }
-    if(extraMode){
+    if(satoriMode){
+      clearedSatoriStages.add(satoriIndex);
+      try{localStorage.setItem('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));}catch(_){}
+      updateMasterTheme();
+      renderStageNav();
+    }else if(extraMode){
       clearedExtraStages.add(extraIndex);
       try{localStorage.setItem('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));}catch(_){}
       updateMasterTheme();
@@ -1916,16 +2191,45 @@ function reorientBoard(permutation,flip=false,rotationDeg=0){
   cancelTileAnimations();
   clearHintVisuals();
   if(usesHiddenRemaining())resetFourthDistance();
+  const applyTransform=()=>{
+    const transformed=transformPosition(ori,spin,tileEls,permutation,flip);
+    ori=transformed.o;spin=transformed.s;tileEls=transformed.t;
+    history=history.map(h=>{
+      const next=transformPosition(h.o,h.s,h.t,permutation,flip);
+      return {o:next.o,s:next.s,t:next.t,m:h.m};
+    });
+    currentInitialState=transformStateCode(currentInitialState,permutation,flip);
+  };
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(flip&&!rotationDeg&&!reduced){
+    busy=true;
+    const turn=permutation===VIEW_MIRROR?'rotateY':'rotateX';
+    const first=turn==='rotateY'?90:-90;
+    const duration=480;
+    const board=$('board');
+    const firstHalf=board.animate([
+      {transform:'perspective(820px) '+turn+'(0deg)'},
+      {transform:'perspective(820px) '+turn+'('+first+'deg)'}
+    ],{duration:duration/2,fill:'forwards',easing:'linear'});
+    firstHalf.onfinish=()=>{
+      const reverse='perspective(820px) '+turn+'('+(-first)+'deg)';
+      board.style.transform=reverse;
+      firstHalf.cancel();
+      applyTransform();paint();
+      const secondHalf=board.animate([
+        {transform:reverse},
+        {transform:'perspective(820px) '+turn+'(0deg)'}
+      ],{duration:duration/2,easing:'linear'});
+      secondHalf.onfinish=()=>{board.style.transform='';busy=false;paint();};
+      secondHalf.oncancel=()=>{board.style.transform='';busy=false;paint();};
+    };
+    firstHalf.oncancel=()=>{board.style.transform='';busy=false;paint();};
+    return;
+  }
   const before=new Map(tileEls.map((el,i)=>[el,{cell:i,spin:spin[i]}]));
-  const transformed=transformPosition(ori,spin,tileEls,permutation,flip);
-  ori=transformed.o;spin=transformed.s;tileEls=transformed.t;
-  history=history.map(h=>{
-    const next=transformPosition(h.o,h.s,h.t,permutation,flip);
-    return {o:next.o,s:next.s,t:next.t,m:h.m};
-  });
-  currentInitialState=transformStateCode(currentInitialState,permutation,flip);
+  applyTransform();
   paint();
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  if(reduced)return;
   busy=true;
   let remaining=baseTiles.length;
   const finished=new Set();
@@ -2003,7 +2307,7 @@ function setPosition(state,par){
   paint();
 }
 function loadStage(index){
-  extraMode=false;freeMode=false;customMode=false;editingBoard=false;
+  extraMode=false;satoriMode=false;freeMode=false;customMode=false;editingBoard=false;
   stageIndex=Math.max(0,Math.min(STAGES.length-1,index));
   lastStageMode={extra:false,index:stageIndex};
   const stage=STAGES[stageIndex];
@@ -2013,11 +2317,20 @@ function loadStage(index){
   if(stageIndex===0)scheduleStageOneTutorial();
 }
 function loadExtraStage(index){
-  extraMode=true;freeMode=false;customMode=false;editingBoard=false;
+  extraMode=true;satoriMode=false;freeMode=false;customMode=false;editingBoard=false;
   extraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
   lastStageMode={extra:true,index:extraIndex};
   const stage=EXTRA_STAGES[extraIndex];
   saveCurrentStage(true,extraIndex);
+  setPosition(stage.state,stage.par);
+  renderStageNav();
+}
+function loadSatoriStage(index){
+  if(!isMastered())return;
+  extraMode=false;satoriMode=true;freeMode=false;customMode=false;editingBoard=false;
+  satoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
+  const stage=SATORI_STAGES[satoriIndex];
+  try{localStorage.setItem('wake7-current-stage',JSON.stringify({satori:true,index:satoriIndex}));}catch(_){}
   setPosition(stage.state,stage.par);
   renderStageNav();
 }
@@ -2027,7 +2340,10 @@ function saveCurrentStage(extra,index){
 function restoreCurrentStage(){
   let saved=null;
   try{saved=JSON.parse(localStorage.getItem('wake7-current-stage')||'null');}catch(_){}
-  if(saved&&saved.extra===true&&Number.isInteger(saved.index)
+  if(saved&&saved.satori===true&&Number.isInteger(saved.index)
+    &&saved.index>=0&&saved.index<SATORI_STAGES.length&&isMastered()){
+    loadSatoriStage(saved.index);
+  }else if(saved&&saved.extra===true&&Number.isInteger(saved.index)
     &&saved.index>=0&&saved.index<EXTRA_STAGES.length&&allPrimaryCleared()&&extraStageUnlocked(saved.index)){
     loadExtraStage(saved.index);
   }else if(saved&&saved.extra===false&&Number.isInteger(saved.index)
@@ -2073,9 +2389,9 @@ function restoreSavedBoard(data){
   return true;
 }
 function saveActiveSession(){
-  const mode=customMode?'custom':freeMode?'free':'stage';
+  const mode=customMode?'custom':freeMode?'free':satoriMode?'satori':'stage';
   const payload={
-    mode,editingBoard,extra:extraMode,index:extraMode?extraIndex:stageIndex,
+    mode,editingBoard,extra:extraMode,satori:satoriMode,index:satoriMode?satoriIndex:extraMode?extraIndex:stageIndex,
     lastStageMode,board:serializeActiveBoard()
   };
   try{localStorage.setItem('wake7-active-session',JSON.stringify(payload));}catch(_){ }
@@ -2084,16 +2400,18 @@ function restoreActiveSession(){
   let saved=null;
   try{saved=JSON.parse(localStorage.getItem('wake7-active-session')||'null');}catch(_){ }
   if(!saved||!validSavedBoard(saved.board)){restoreCurrentStage();return;}
+  const canRestoreSatori=saved.satori===true&&Number.isInteger(saved.index)&&saved.index>=0&&saved.index<SATORI_STAGES.length&&isMastered();
   const canRestoreExtra=saved.extra===true&&Number.isInteger(saved.index)&&saved.index>=0&&saved.index<EXTRA_STAGES.length&&allPrimaryCleared()&&extraStageUnlocked(saved.index);
   const canRestoreStage=saved.extra===false&&Number.isInteger(saved.index)&&saved.index>=0&&saved.index<STAGES.length&&primaryStageUnlocked(saved.index);
-  if(saved.mode==='stage'){
-    if(canRestoreExtra)loadExtraStage(saved.index);
+  if(saved.mode==='stage'||saved.mode==='satori'){
+    if(canRestoreSatori)loadSatoriStage(saved.index);
+    else if(canRestoreExtra)loadExtraStage(saved.index);
     else if(canRestoreStage)loadStage(saved.index);
     else{restoreCurrentStage();return;}
   }else if(saved.mode==='free'){
-    extraMode=false;freeMode=true;customMode=false;editingBoard=false;
+    extraMode=false;satoriMode=false;freeMode=true;customMode=false;editingBoard=false;
   }else if(saved.mode==='custom'){
-    extraMode=false;freeMode=false;customMode=true;editingBoard=!!saved.editingBoard;
+    extraMode=false;satoriMode=false;freeMode=false;customMode=true;editingBoard=!!saved.editingBoard;
   }else{restoreCurrentStage();return;}
   if(saved.lastStageMode&&typeof saved.lastStageMode.extra==='boolean'&&Number.isInteger(saved.lastStageMode.index)){
     lastStageMode={extra:saved.lastStageMode.extra,index:saved.lastStageMode.index};
@@ -2104,7 +2422,7 @@ function restoreActiveSession(){
 }
 function startFree(){
   savedFreeSession=null;
-  extraMode=false;freeMode=true;customMode=false;editingBoard=false;
+  extraMode=false;satoriMode=false;freeMode=true;customMode=false;editingBoard=false;
   const pool=[...SOLVER.byDepth[2],...SOLVER.byDepth[3],...SOLVER.byDepth[4]];
   let state=pool[(Math.random()*pool.length)|0];
   if(pool.length>1)while(state===currentInitialState)state=pool[(Math.random()*pool.length)|0];
@@ -2121,7 +2439,7 @@ function revealFourthDistance(){
 }
 function startFreeFromState(state){
   savedFreeSession=null;
-  extraMode=false;freeMode=true;customMode=false;editingBoard=false;
+  extraMode=false;satoriMode=false;freeMode=true;customMode=false;editingBoard=false;
   setPosition(state,SOLVER.dist[state]);
   renderStageNav();
 }
@@ -2142,7 +2460,7 @@ function restoreFreeSession(){
   clearHintVisuals();
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   clearTimeout(clearTimer);
-  extraMode=false;freeMode=true;customMode=false;editingBoard=false;
+  extraMode=false;satoriMode=false;freeMode=true;customMode=false;editingBoard=false;
   resetFourthDistance();
   ori=Uint8Array.from(s.ori);spin=Int16Array.from(s.spin);
   tileEls=s.tileEls.slice();moves=s.moves;best=s.best;
@@ -2177,7 +2495,7 @@ function enterBoardMaker(){
   if(busy)return;
   if(freeMode)saveFreeSession();
   const state=enc(ori);
-  extraMode=false;freeMode=false;customMode=true;editingBoard=true;
+  extraMode=false;satoriMode=false;freeMode=false;customMode=true;editingBoard=true;
   setPosition(state,SOLVER.dist[state]===255?0:SOLVER.dist[state]);
   clearShown=true;
   renderStageNav();
@@ -2186,7 +2504,7 @@ function enterBoardMaker(){
 function playCustomBoard(){
   const state=enc(ori),d=SOLVER.dist[state];
   if(d===255||d===0)return;
-  extraMode=false;editingBoard=false;customMode=true;freeMode=false;
+  extraMode=false;satoriMode=false;editingBoard=false;customMode=true;freeMode=false;
   setPosition(state,d);
   renderStageNav();
 }
@@ -2330,6 +2648,7 @@ svg.addEventListener('pointermove',e=>{
     item.el.style.transform=orbitTransform(item,drag.deg,t);
     previewWake(item,drag.deg);
   }
+  applyBoardTheme();
 });
 function finishDrag(e,cancel=false){
   if(!drag||(e&&e.pointerId!==drag.id)) return;
@@ -2471,19 +2790,21 @@ $('hint').addEventListener('click',()=>{
   else showBestMoveHint();
 });
 
-let pickerRound=-1;
+let pickerRound=-1,satoriPickerPage=0;
 const EXTRA_ROUNDS=Math.ceil(EXTRA_STAGES.length/STAGES.length);
+const SATORI_PICKER_PAGES=5;
 const allPrimaryCleared=()=>STAGES.every((_,i)=>clearedStages.has(i));
 const MASTER_PATH={
-  ja:{subtitles:['七転八起','面壁九年','不立文字','達磨大師'],ranks:['一人前','不屈','熟練','師範','名人'],earned:'称号「{rank}」を獲得しました。'},
-  en:{subtitles:['Seven Falls, Eight Rises','Nine Years Facing the Wall','Beyond Words','Bodhidharma'],roadSubtitles:['Seven Falls','Nine Years','Beyond Words','Bodhidharma'],ranks:['Adept','Unyielding','Seasoned','Instructor','Master'],earned:'You earned the title “{rank}”.'},
-  zh:{subtitles:['七转八起','面壁九年','不立文字','达摩大师'],ranks:['独当一面','不屈','熟练','师范','名人'],earned:'获得称号“{rank}”。'},
-  ko:{subtitles:['칠전팔기','면벽구년','불립문자','달마대사'],ranks:['일인분','불굴','숙련','사범','명인'],earned:'칭호 “{rank}”을(를) 획득했습니다.'}
+  ja:{subtitles:['七転八起','面壁九年','不立文字','達磨大師'],ranks:['一人前','不屈','熟練','師範','名人','無心'],earned:'称号「{rank}」を獲得しました。'},
+  en:{subtitles:['Seven Falls, Eight Rises','Nine Years Facing the Wall','Beyond Words','Bodhidharma'],roadSubtitles:['Seven Falls','Nine Years','Beyond Words','Bodhidharma'],ranks:['Adept','Unyielding','Seasoned','Instructor','Master','No Mind'],earned:'You earned the title “{rank}”.'},
+  zh:{subtitles:['七转八起','面壁九年','不立文字','达摩大师'],ranks:['独当一面','不屈','熟练','师范','名人','无心'],earned:'获得称号“{rank}”。'},
+  ko:{subtitles:['칠전팔기','면벽구년','불립문자','달마대사'],ranks:['일인분','불굴','숙련','사범','명인','무심'],earned:'칭호 “{rank}”을(를) 획득했습니다.'}
 };
 const masterPath=()=>MASTER_PATH[currentLang]||MASTER_PATH.ja;
 const masterSubtitle=volume=>masterPath().subtitles[volume-1]||'';
 const rankForVolume=volume=>masterPath().ranks[volume]||'';
 function highestRankIndex(){
+  if(isSatoriMastered())return 5;
   if(isMastered())return 4;
   if(clearedExtraStages.has(44))return 3;
   if(clearedExtraStages.has(29))return 2;
@@ -2492,18 +2813,23 @@ function highestRankIndex(){
 }
 function rankEarnedText(rank){return masterPath().earned.replace('{rank}',rank);}
 const RANK_FRAME_COLORS=[
-  {stroke:'#F3E8D5',ink:'#F3E8D5'},
+  {stroke:'#E2CFA8',ink:'#F0E3C8'},
   {stroke:'#D9827A',ink:'#D9827A'},
   {stroke:'#9A86D6',ink:'#9A86D6'},
   {stroke:'#62B8D2',ink:'#62B8D2'},
-  {stroke:'#C9A54E',ink:'#C9A54E'}
+  {stroke:'#C9A54E',ink:'#C9A54E'},
+  {stroke:'#BCC9CD',ink:'#E6EEF0'}
 ];
 function setSealColor(seal,index){seal.style.setProperty('--seal-color',(RANK_FRAME_COLORS[index]||RANK_FRAME_COLORS[0]).stroke);}
 function rankFrameSvg(text,locked=false,index=0){
   const colors=RANK_FRAME_COLORS[index]||RANK_FRAME_COLORS[0];
-  const stroke=locked?'#64778A':colors.stroke,fill=locked?'rgba(80,101,120,.08)':'rgba(201,165,78,.05)',ink=locked?'#73869A':colors.ink;
+  const noMind=index===5&&!locked;
+  const stroke=locked?'#64778A':colors.stroke;
+  const fill=locked?'rgba(80,101,120,.08)':noMind?'#14262E':index===0?'rgba(226,207,168,.09)':'rgba(201,165,78,.05)';
+  const ink=locked?'#73869A':colors.ink;
   const size=text.length>=3?23:27;
-  return '<svg viewBox="0 0 150 58" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+text+'"><path d="M15 3H135L147 29 135 55H15L3 29Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="2" stroke-linejoin="round"/><text x="75" y="30" text-anchor="middle" dominant-baseline="central" font-family="Hiragino Sans,Yu Gothic,sans-serif" font-size="'+size+'" font-weight="700" fill="'+ink+'" letter-spacing="1">'+text+'</text></svg>';
+  const inner=noMind?'<path d="M19 9H131L139 29 131 49H19L11 29Z" fill="none" stroke="'+stroke+'" stroke-width=".8" opacity=".7" stroke-linejoin="round"/>':'';
+  return '<svg viewBox="0 0 150 58" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+text+'"><path d="M15 3H135L147 29 135 55H15L3 29Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+(noMind?'1.5':'2')+'" stroke-linejoin="round"/>'+inner+'<text x="75" y="30" text-anchor="middle" dominant-baseline="central" font-family="Hiragino Sans,Yu Gothic,sans-serif" font-size="'+size+'" font-weight="700" fill="'+ink+'" letter-spacing="1">'+text+'</text></svg>';
 }
 function renderRankBadge(){
   const index=highestRankIndex(),badge=$('rankBadge');
@@ -2514,8 +2840,18 @@ function renderRankBadge(){
     badge.setAttribute('aria-label',tr('rankCollection'));
   }
 }
+function renderStagePickerRankBadge(){
+  const index=highestRankIndex(),badge=$('stagePickerRankBadge');
+  badge.hidden=index<0;
+  if(index>=0){
+    badge.innerHTML=rankFrameSvg(masterPath().ranks[index],false,index);
+    badge.title=tr('rankCollection');
+    badge.setAttribute('aria-label',tr('rankCollection'));
+  }
+}
 function rankPathLabel(index){
   if(index===0)return tr('primaryRound');
+  if(index===5)return tr('satori');
   const volume=index;
   return currentLang==='ja'?'名人への道・'+volumeLabel(volume)+'　'+masterSubtitle(volume):tr('allPatternsKind')+' '+volumeLabel(volume)+' · '+masterSubtitle(volume);
 }
@@ -2524,14 +2860,17 @@ function renderRankList(){
   $('rankDialogTitle').textContent=tr('rankDialogTitle');
   $('closeRankDialog').textContent=tr('close');
   list.innerHTML='';
-  masterPath().ranks.forEach((rank,index)=>{
+  masterPath().ranks.slice(0,isMastered()?6:5).forEach((rank,index)=>{
     const earned=index<=highest,row=document.createElement('div');
     row.className='rank-row'+(earned?' earned':'')+(index===next?' next':'');
     const condition=document.createElement('span'),path=document.createElement('button'),clear=document.createElement('span'),title=document.createElement('b');
     condition.className='rank-condition';
     path.className='rank-stage-link';path.type='button';path.textContent=rankPathLabel(index);title.innerHTML=rankFrameSvg(earned?rank:'？',!earned,index);
     clear.textContent=earned&&currentLang==='ja'?'　クリア':'';
-    path.addEventListener('click',()=>openStagePickerForRank(index));
+    path.addEventListener('click',()=>{
+      if(index===5){rankDialogReturn=null;$('rankDialog').hidden=true;openSatoriPicker();}
+      else openStagePickerForRank(index);
+    });
     condition.append(path,clear);row.append(title,condition);list.appendChild(row);
   });
 }
@@ -2548,6 +2887,7 @@ function openRankDialogFrom(dialogId,sealId){
   openRankDialog({dialogId,sealId});
 }
 const primaryStageUnlocked=index=>index===0||clearedStages.has(index)||clearedStages.has(index-1);
+const satoriStageUnlocked=index=>index===0||clearedSatoriStages.has(index)||clearedSatoriStages.has(index-1);
 const extraStageUnlocked=index=>index===0||clearedExtraStages.has(index)||clearedExtraStages.has(index-1);
 function extraRoundLabel(round){
   if(currentLang==='ja')return (['序','破','離','極'][round]||String(round+1))+'　'+masterSubtitle(round+1);
@@ -2556,7 +2896,42 @@ function extraRoundLabel(round){
 function closeStagePicker(){
   $('stagePicker').hidden=true;
 }
+function renderSatoriStagePicker(){
+  const picker=$('stagePicker'),grid=$('stagePickerGrid');
+  renderStagePickerRankBadge();
+  const pageSize=Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES);
+  const start=satoriPickerPage*pageSize,end=Math.min(SATORI_STAGES.length,start+pageSize);
+  picker.classList.add('satori-picker');
+  $('stagePickerTitle').textContent=tr('satori');
+  $('closeStagePicker').setAttribute('aria-label',tr('close'));
+  $('stagePickerRound').hidden=false;
+  $('pickerRoundLabel').textContent=tr('satoriPicker')+'　'+(satoriPickerPage+1)+' / '+SATORI_PICKER_PAGES;
+  $('pickerPrevRound').hidden=false;$('pickerNextRound').hidden=false;
+  $('pickerPrevRound').disabled=false;$('pickerNextRound').disabled=satoriPickerPage===SATORI_PICKER_PAGES-1;
+  grid.innerHTML='';
+  SATORI_STAGES.slice(start,end).forEach((stage,offset)=>{
+    const index=start+offset;
+    const button=document.createElement('button');
+    button.textContent=index+1;
+    button.classList.toggle('cleared',clearedSatoriStages.has(index));
+    button.classList.toggle('current',satoriMode&&satoriIndex===index);
+    button.disabled=!satoriStageUnlocked(index);
+    button.setAttribute('aria-label',tr('satori')+' '+(index+1));
+    button.addEventListener('click',()=>{closeStagePicker();loadSatoriStage(index);});
+    grid.appendChild(button);
+  });
+}
+function openSatoriPicker(){
+  if(!isMastered())return;
+  pickerRound='satori';
+  satoriPickerPage=satoriMode?Math.floor(satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0;
+  renderSatoriStagePicker();
+  $('stagePicker').hidden=false;
+}
 function renderStagePicker(){
+  if(pickerRound==='satori'){renderSatoriStagePicker();return;}
+  renderStagePickerRankBadge();
+  $('stagePicker').classList.remove('satori-picker');
   if(!allPrimaryCleared()&&pickerRound!==-1)pickerRound=-1;
   const isPrimary=pickerRound===-1;
   const canSeeMaster=allPrimaryCleared();
@@ -2567,7 +2942,7 @@ function renderStagePicker(){
   $('pickerPrevRound').hidden=!canSeeMaster;
   $('pickerNextRound').hidden=!canSeeMaster;
   $('pickerPrevRound').disabled=pickerRound<=-1;
-  $('pickerNextRound').disabled=!canSeeMaster||pickerRound>=EXTRA_ROUNDS-1;
+  $('pickerNextRound').disabled=!canSeeMaster||pickerRound>=EXTRA_ROUNDS;
   const grid=$('stagePickerGrid');
   grid.innerHTML='';
   for(let i=0;i<STAGES.length;i++){
@@ -2590,6 +2965,7 @@ function renderStagePicker(){
   }
 }
 function openStagePicker(){
+  if(satoriMode){openSatoriPicker();return;}
   const showingExtra=extraMode||((freeMode||customMode)&&lastStageMode.extra);
   const showingIndex=extraMode?extraIndex:lastStageMode.index;
   pickerRound=showingExtra?Math.floor(showingIndex/STAGES.length):-1;
@@ -2605,9 +2981,25 @@ function openStagePickerForRank(rankIndex){
 }
 $('stagePickerTrigger').addEventListener('click',openStagePicker);
 $('closeStagePicker').addEventListener('click',closeStagePicker);
+$('stagePickerRankBadge').addEventListener('click',()=>{
+  if($('stagePickerRankBadge').hidden)return;
+  $('stagePicker').hidden=true;
+  openRankDialog({dialogId:'stagePicker',focusId:'stagePickerRankBadge'});
+});
 $('stagePicker').addEventListener('click',e=>{if(e.target===$('stagePicker'))closeStagePicker();});
-$('pickerPrevRound').addEventListener('click',()=>{pickerRound--;renderStagePicker();});
-$('pickerNextRound').addEventListener('click',()=>{if(allPrimaryCleared()){pickerRound++;renderStagePicker();}});
+$('pickerPrevRound').addEventListener('click',()=>{
+  if(pickerRound==='satori'&&satoriPickerPage>0)satoriPickerPage--;
+  else if(pickerRound==='satori')pickerRound=EXTRA_ROUNDS-1;
+  else pickerRound--;
+  renderStagePicker();
+});
+$('pickerNextRound').addEventListener('click',()=>{
+  if(!allPrimaryCleared())return;
+  if(pickerRound==='satori'&&satoriPickerPage<SATORI_PICKER_PAGES-1)satoriPickerPage++;
+  else if(pickerRound===EXTRA_ROUNDS-1){pickerRound='satori';satoriPickerPage=0;}
+  else if(pickerRound!=='satori')pickerRound++;
+  renderStagePicker();
+});
 $('pickerFreeMode').addEventListener('click',()=>{
   if(busy)return;
   closeStagePicker();
@@ -2656,15 +3048,16 @@ function renderProgress(){
   });
 }
 function renderStageNav(){
-  $('stageProgress').hidden=false;
-  $('stagePickerTrigger').classList.toggle('master-stage',extraMode);
+  document.querySelector('.mode-row').classList.toggle('satori-mode',satoriMode);
+  $('stageProgress').hidden=satoriMode;
+  $('stagePickerTrigger').classList.toggle('master-stage',extraMode||satoriMode);
   $('stageSubtitle').hidden=true;
   $('stageCount').hidden=true;
   $('stagePickerTrigger').disabled=false;
   $('shuffle').hidden=true;
-  $('undo').hidden=editingBoard;
-  $('undo').disabled=editingBoard||isFinalMasterPuzzle();
-  $('hint').hidden=editingBoard;
+  $('undo').hidden=editingBoard||satoriMode;
+  $('undo').disabled=editingBoard||satoriMode||isFinalMasterPuzzle();
+  $('hint').hidden=editingBoard||satoriMode;
   if(isFourthVolume()){
     $('hint').textContent=tr('remainingCheck',{n:fourthChecksLeft()});
     $('hint').disabled=fourthChecksLeft()<=0||fourthDistanceRevealed;
@@ -2673,8 +3066,9 @@ function renderStageNav(){
     $('hint').disabled=masterHintsDisabled();
   }
   $('debugTools').hidden=!DEBUG_MODE;
-  for(const id of ['debugReset','debugClear','debugAlmost','debugMore','debugFar','debugUnlock14','debugExtra14','debugExtra29','debugExtra44','debugExtra59'])$(id).hidden=!DEBUG_MODE;
+  for(const id of ['debugReset','debugClear','debugAlmost','debugMore','debugFar','debugUnlock14','debugExtra14','debugExtra29','debugExtra44','debugExtra59','debugSatori72'])$(id).hidden=!DEBUG_MODE;
   $('reset').textContent=editingBoard?tr('resetAll'):tr('reset');
+  $('reset').hidden=satoriMode;
   const inSideMode=freeMode||customMode;
   $('stageKind').hidden=false;
   $('stageNav').classList.toggle('side-mode-nav',inSideMode);
@@ -2686,7 +3080,9 @@ function renderStageNav(){
   $('nextStage').textContent=nextLabel;
   $('nextStage').setAttribute('aria-label',nextLabel);
   $('nextStage').hidden=customMode&&!customPlaying;
-  $('nextStage').disabled=customPlaying?false:customMode||(!freeMode&&(extraMode?(extraIndex===EXTRA_STAGES.length-1||!clearedExtraStages.has(extraIndex)):(stageIndex===STAGES.length-1?!allPrimaryCleared():!clearedStages.has(stageIndex))));
+  $('nextStage').disabled=customPlaying?false:customMode?true:freeMode?false:extraMode
+    ?(extraIndex===EXTRA_STAGES.length-1?!isMastered():!clearedExtraStages.has(extraIndex))
+    :(stageIndex===STAGES.length-1?!allPrimaryCleared():!clearedStages.has(stageIndex));
   $('stageMode').classList.toggle('on',!freeMode&&!customMode);
   $('freeMode').classList.toggle('on',freeMode);
   $('stageMode').setAttribute('aria-pressed',String(!freeMode&&!customMode));
@@ -2694,6 +3090,8 @@ function renderStageNav(){
   $('stageModeReturn').hidden=true;
   $('menuRankList').hidden=!allPrimaryCleared();
   $('menuAllPatterns').hidden=!isMastered();
+  $('menuBoardTheme').hidden=!isMastered();
+  $('menuSatori').hidden=true;
   $('customMode').textContent=tr('makeBoard');
   $('customMode').classList.remove('ready');
   $('customMode').hidden=false;
@@ -2713,6 +3111,10 @@ function renderStageNav(){
     const d=SOLVER.dist[enc(ori)];
     if(editingBoard)$('stagePar').textContent=d===255?'—':d;
     else showRemaining(d,false);
+  }else if(satoriMode){
+    $('stageKind').textContent=tr('satori');
+    $('stageNumber').textContent=(satoriIndex+1)+' / '+SATORI_STAGES.length;
+    showRemaining('?',false);
   }else if(extraMode){
     const volume=Math.floor(extraIndex/STAGES.length)+1;
     $('stageKind').textContent=currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume);
@@ -2734,7 +3136,7 @@ function renderStageNav(){
     }
     showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
   }
-  const showingCourseProgress=!freeMode&&!customMode;
+  const showingCourseProgress=!freeMode&&!customMode&&!satoriMode;
   $('primaryTotal').hidden=!showingCourseProgress;
   $('primaryTotalKind').hidden=!(extraMode||allPrimaryCleared());
   if(extraMode){
@@ -2746,6 +3148,12 @@ function renderStageNav(){
   }
   renderRankBadge();
   renderProgress();
+  if(satoriMode){
+    $('prevStage').hidden=false;$('nextStage').hidden=false;
+    $('prevStage').disabled=false;
+    $('nextStage').disabled=satoriIndex===SATORI_STAGES.length-1||!clearedSatoriStages.has(satoriIndex);
+  }
+  else{$('prevStage').hidden=false;$('nextStage').hidden=customMode&&!customPlaying;}
 }
 function celebrateClear(){
   svg.classList.add('celebrating');
@@ -2794,6 +3202,10 @@ function renderClearStageContext(){
     :$('stageKind').textContent+' '+$('stageNumber').textContent;
 }
 function showClearDialog(){
+  if(satoriMode&&isSatoriMastered()){
+    showMasterDialog('satori');
+    return;
+  }
   if(!freeMode&&!customMode&&!extraMode&&stageIndex===STAGES.length-1&&allPrimaryCleared()){
     showMasterDialog('primary');
     return;
@@ -2805,6 +3217,7 @@ function showClearDialog(){
   const action=$('clearNext');
   if(freeMode)action.textContent=tr('another');
   else if(customMode)action.textContent=tr('again');
+  else if(satoriMode)action.textContent=satoriIndex===SATORI_STAGES.length-1?tr('satoriChoose'):tr('nextPuzzle');
   else if(extraMode)action.textContent=extraIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');
   else if(stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');
   else if(stageIndex===STAGES.length-1)action.textContent=tr('toFree');
@@ -2820,10 +3233,11 @@ function showClearDialog(){
 }
 function renderOptimalFail(){
   const over=Math.max(1,moves-best);
-  $('optimalFailTitle').textContent=tr(over===1?'optimalFailOne':over===2?'optimalFailTwo':'optimalFailMany');
-  $('optimalFailRule').textContent=tr('optimalFailRule');
-  $('optimalFailResult').textContent=tr('optimalFailResult',{best,moves});
-  $('optimalFailEncourage').textContent=tr('optimalFailEncourage');
+  const satoriLimit=satoriMode&&!isSolved()&&moves>=best;
+  $('optimalFailTitle').textContent=satoriLimit?tr('satoriFailLimit'):tr(over===1?'optimalFailOne':over===2?'optimalFailTwo':'optimalFailMany');
+  $('optimalFailRule').textContent=tr(satoriMode?'satoriFailRule':'optimalFailRule');
+  $('optimalFailResult').textContent=satoriLimit?tr('satoriFailResult',{best}):tr('optimalFailResult',{best,moves});
+  $('optimalFailEncourage').textContent=tr(satoriMode?'satoriFailEncourage':'optimalFailEncourage');
   $('optimalRetry').textContent=tr('optimalRetry');
 }
 function twoMoveDiscoveryText(card){
@@ -2839,7 +3253,7 @@ function stageClearTextAt(mode,index){
   }
   return PRIMARY_CLEAR_TIPS[index]?tr(PRIMARY_CLEAR_TIPS[index]):'';
 }
-function stageClearText(){return freeMode||customMode?'':stageClearTextAt(extraMode,extraMode?extraIndex:stageIndex);}
+function stageClearText(){return freeMode||customMode||satoriMode?'':stageClearTextAt(extraMode,extraMode?extraIndex:stageIndex);}
 function stageClearArtAt(mode,index){
   if(mode){
     if(CLEAR_TWO_MOVE_CARDS[index]!==undefined)return 'twoMoveCard:'+CLEAR_TWO_MOVE_CARDS[index];
@@ -2848,7 +3262,7 @@ function stageClearArtAt(mode,index){
   }
   return PRIMARY_CLEAR_ARTS[index]||'';
 }
-function stageClearArt(){return stageClearArtAt(extraMode,extraMode?extraIndex:stageIndex);}
+function stageClearArt(){return satoriMode?'':stageClearArtAt(extraMode,extraMode?extraIndex:stageIndex);}
 function tipDaruma(x,y,scale=.55){
   return '<g transform="translate('+x+' '+y+') scale('+scale+')"><use href="#daruma-body"/><use href="#face-open"/></g>';
 }
@@ -3049,14 +3463,14 @@ function messageReviewStageContext(entry){
 }
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
-  const art=entry.art||'',illustration=$('messageIllustration'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
+  const art=entry.art||'',illustration=$('messageIllustration'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
   $('messagePrev').textContent='← '+tr('prev');
   $('messageNext').textContent=tr('next')+' →';
   $('closeMessages').textContent=tr('close');
   $('messageStageContext').textContent=messageReviewStageContext(entry);
   $('messageDialogPlace').hidden=true;
   renderMasteryBoard('messageMasteryBoard',entry.master==='mastery');
-  roadmap.hidden=!entry.master||entry.master==='mastery';roadmapNote.hidden=true;rules.hidden=true;
+  roadmap.hidden=!entry.master||entry.master==='mastery';roadmapNote.hidden=true;boardNote.hidden=true;rules.hidden=true;
   seal.hidden=!entry.master;
   rankText.hidden=true;masterText.hidden=true;
   $('messageDialogText').hidden=!!entry.master||entry.quiz!==undefined||!!entry.boardQuiz;
@@ -3077,7 +3491,7 @@ function renderMessageReview(){
     if(entry.master==='primary'){
       $('messageMasterSealLabel').textContent=masterPath().ranks[0];setSealColor(seal,0);$('messageDialogTitle').textContent=tr('masterTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[0]);masterText.hidden=false;masterText.textContent=tr('masterText');rules.hidden=false;rules.textContent=masterCommonRules();
     }else if(entry.master==='mastery'){
-      $('messageMasterSealLabel').textContent=masterPath().ranks[4];setSealColor(seal,4);$('messageDialogTitle').textContent=tr('masteryTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[4]);masterText.hidden=false;masterText.textContent=tr('masteryText');
+      $('messageMasterSealLabel').textContent=masterPath().ranks[4];setSealColor(seal,4);$('messageDialogTitle').textContent=tr('masteryTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[4]);masterText.hidden=false;masterText.textContent=tr('masteryText');boardNote.hidden=false;boardNote.textContent=tr('masteryBoardNote');
     }else{
       const nextRules={ja:['「破」からは、ヒントが使えなくなります。','「離」では途中から最短4手の問題です。\nスワイプ中は残り最短手数が「？」になります。','「極」では残り最短手数が表示されません。\nかわりに回数限定で「残り手数」のボタンが使えますが、これも途中から使用回数が減っていきます。']}[currentLang]||[];
       const clearName=currentLang==='ja'?'名人への道・'+volumeLabel(volume)+'　'+masterSubtitle(volume):volumeLabel(volume)+'　'+masterSubtitle(volume);
@@ -3167,6 +3581,7 @@ function hideGameDialogs(){
   $('boardQuiz').hidden=true;
   $('messageBoardQuiz').hidden=true;
   $('masterDialog').hidden=true;
+  $('boardThemeDialog').hidden=true;
   $('rankDialog').hidden=true;
   $('twoMoveDialog').hidden=true;
   $('twoMoveDetailDialog').hidden=true;
@@ -3176,7 +3591,7 @@ function hideGameDialogs(){
   $('clearNext').hidden=true;
 }
 function renderClearQuiz(){
-  const quizIndex=extraMode?QUIZ_STAGES[extraIndex]:(!freeMode&&!customMode?PRIMARY_QUIZ_STAGES[stageIndex]:undefined);
+  const quizIndex=extraMode?QUIZ_STAGES[extraIndex]:(!freeMode&&!customMode&&!satoriMode?PRIMARY_QUIZ_STAGES[stageIndex]:undefined);
   const root=$('clearQuiz');
   root.hidden=quizIndex===undefined;
   if(quizIndex===undefined)return;
@@ -3209,6 +3624,10 @@ function advanceAfterClear(){
   else if(customMode){
     setPosition(currentInitialState,currentInitialPar);
     renderStageNav();
+  }
+  else if(satoriMode){
+    if(satoriIndex<SATORI_STAGES.length-1)loadSatoriStage(satoriIndex+1);
+    else openSatoriPicker();
   }
   else if(extraMode){
     if(extraIndex===EXTRA_STAGES.length-1)restoreFreeSession();
@@ -3260,6 +3679,28 @@ function miniBoardSvg(state){
       +'<use href="#daruma-body"/><use href="#'+(fallen?'face-shut':'face-open')+'"/></g></g>';
   }).join('');
   return '<svg viewBox="14 0 293 310" aria-hidden="true">'+tiles+'</svg>';
+}
+function flipPreview(element,vertical,swap,done){
+  const turn=vertical?'rotateX':'rotateY',first=vertical?-90:90,duration=480;
+  element.style.transformOrigin='center';
+  element.style.transformBox='fill-box';
+  const firstHalf=element.animate([
+    {transform:'perspective(820px) '+turn+'(0deg)'},
+    {transform:'perspective(820px) '+turn+'('+first+'deg)'}
+  ],{duration:duration/2,fill:'forwards',easing:'linear'});
+  const finish=()=>{
+    element.style.transform='';element.style.transformOrigin='';element.style.transformBox='';
+    if(done)done();
+  };
+  firstHalf.onfinish=()=>{
+    const reverse='perspective(820px) '+turn+'('+(-first)+'deg)';
+    element.style.transform=reverse;
+    firstHalf.cancel();
+    swap();
+    const secondHalf=element.animate([{transform:reverse},{transform:'perspective(820px) '+turn+'(0deg)'}],{duration:duration/2,easing:'linear'});
+    secondHalf.onfinish=finish;secondHalf.oncancel=finish;
+  };
+  firstHalf.oncancel=finish;
 }
 function transformButtonText(kind){return (kind==='mirror'?'↔ ':'↻ ')+tr(kind);}
 function boardQuizPatternState(position){
@@ -3364,6 +3805,13 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
       :root.querySelector('[data-board-answer="'+index+'"]');
     if(!holder)return;
     animating=true;
+    if(mirror){
+      flipPreview(holder,false,()=>{
+        states[index]=transformStateBySymmetry(states[index],symmetry);
+        updateCard(index);
+      },()=>{animating=false;});
+      return;
+    }
     const before=dec(states[index]),after=dec(transformStateBySymmetry(states[index],symmetry));
     const NS_='http://www.w3.org/2000/svg',duration='.48s';
     holder.querySelectorAll('.mini-tile').forEach(tile=>{
@@ -3469,15 +3917,20 @@ function animateMasteryBoard(id){
   };
   masteryBoardTimers.set(id,setTimeout(play,180));
 }
-function renderMasteryBoard(id,show){
+function renderMasteryBoard(id,show,theme='gold'){
   const board=$(id);
   clearTimeout(masteryBoardTimers.get(id));
+  board.classList.toggle('satori-theme',show&&theme==='satori');
   board.hidden=!show;
   board.innerHTML=show?masteryBoardSvg():'';
   if(show)animateMasteryBoard(id);
 }
 function renderTwoMovePatterns(){
-  $('twoMoveGrid').innerHTML=twoMoveDisplayStates.map((state,index)=>'<button class="two-move-card" type="button" data-state="'+state+'" data-pattern="'+twoMoveDisplayPatterns[index]+'">'+miniBoardSvg(state)+'</button>').join('');
+  const controls=[['rotateBack','↺','rotateCcw'],['rotate','↻','rotateCw'],['mirror','↔','mirror'],['vertical','↕','flipVertical']];
+  $('twoMoveGrid').innerHTML=twoMoveDisplayStates.map((state,index)=>{
+    const buttons=controls.map(([transform,icon,label])=>'<button class="chip" type="button" data-two-move-transform="'+transform+'" aria-label="'+tr(label)+'">'+icon+'</button>').join('');
+    return '<article class="two-move-card" data-state="'+state+'" data-pattern="'+twoMoveDisplayPatterns[index]+'" data-board-index="'+index+'"><div class="two-move-card-tools">'+buttons+'</div><button class="two-move-card-open" type="button">'+miniBoardSvg(state)+'</button></article>';
+  }).join('');
 }
 function openTwoMovePatterns({returnToClear=false}={}){
   returnToClearCard=returnToClear;
@@ -3529,6 +3982,12 @@ function animateTwoMoveDetail(angle=0,mirror=false){
     twoMoveDetailState=transformStateBySymmetry(twoMoveDetailState,symmetry);renderTwoMoveDetail();return;
   }
   twoMoveDetailAnimating=true;
+  if(mirror){
+    flipPreview($('twoMoveDetailBoard'),angle===180,()=>{
+      twoMoveDetailState=transformStateBySymmetry(twoMoveDetailState,symmetry);renderTwoMoveDetail();
+    },()=>{twoMoveDetailAnimating=false;});
+    return;
+  }
   const before=dec(twoMoveDetailState),after=dec(transformStateBySymmetry(twoMoveDetailState,symmetry));
   const NS_='http://www.w3.org/2000/svg',duration='.48s';
   $('twoMoveDetailBoard').querySelectorAll('.mini-tile').forEach(tile=>{
@@ -3569,51 +4028,68 @@ function finishDetailDrag(event,cancel=false){
   drag.board.style.transform='';
   $('twoMoveDetailDialog').classList.remove('comparing');
 }
-function transformTwoMovePatterns(angle=0,mirror=false){
+function transformTwoMovePattern(boardIndex,angle=0,mirror=false){
   const symmetry={permutation:makeBoardPermutation(angle,mirror),flip:mirror};
-  twoMoveDisplayStates=twoMoveDisplayStates.map(state=>transformStateBySymmetry(state,symmetry));
+  twoMoveDisplayStates[boardIndex]=transformStateBySymmetry(twoMoveDisplayStates[boardIndex],symmetry);
   renderTwoMovePatterns();
 }
-function animateTwoMovePatterns(angle=0,mirror=false){
+function updateTwoMovePatternCard(card,boardIndex,state){
+  twoMoveDisplayStates[boardIndex]=state;
+  card.dataset.state=state;
+  card.querySelector('.two-move-card-open').innerHTML=miniBoardSvg(state);
+}
+function animateTwoMovePattern(boardIndex,angle=0,mirror=false){
   if(twoMoveAnimating)return;
-  twoMoveAnimating=true;
   const symmetry={permutation:makeBoardPermutation(angle,mirror),flip:mirror};
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){transformTwoMovePattern(boardIndex,angle,mirror);return;}
+  twoMoveAnimating=true;
   const NS_='http://www.w3.org/2000/svg',duration='.48s';
-  document.querySelectorAll('.two-move-card').forEach((card,cardIndex)=>{
-    const before=dec(twoMoveDisplayStates[cardIndex]);
-    const after=dec(transformStateBySymmetry(twoMoveDisplayStates[cardIndex],symmetry));
-    card.querySelectorAll('.mini-tile').forEach(tile=>{
-      const from=Number(tile.dataset.cell),to=symmetry.permutation[from];
-      const move=document.createElementNS(NS_,'animateTransform');
-      move.setAttribute('attributeName','transform');move.setAttribute('type','translate');
-      move.setAttribute('from',CELL[from].x+' '+CELL[from].y);move.setAttribute('to',CELL[to].x+' '+CELL[to].y);
-      move.setAttribute('dur',duration);move.setAttribute('fill','freeze');
-      tile.appendChild(move);
-      const daruma=tile.querySelector('.mini-daruma');
-      const turn=document.createElementNS(NS_,'animateTransform');
-      turn.setAttribute('attributeName','transform');turn.setAttribute('type','rotate');
-      turn.setAttribute('from',String(miniAngle(before[from])));turn.setAttribute('to',String(miniAngle(after[to])));
-      turn.setAttribute('dur',duration);turn.setAttribute('fill','freeze');
-      daruma.appendChild(turn);
-      move.beginElement();turn.beginElement();
-    });
+  const card=document.querySelectorAll('.two-move-card')[boardIndex];
+  if(!card){twoMoveAnimating=false;return;}
+  if(mirror){
+    flipPreview(card.querySelector('.two-move-card-open'),angle===180,()=>{
+      updateTwoMovePatternCard(card,boardIndex,transformStateBySymmetry(twoMoveDisplayStates[boardIndex],symmetry));
+    },()=>{twoMoveAnimating=false;});
+    return;
+  }
+  const before=dec(twoMoveDisplayStates[boardIndex]);
+  const after=dec(transformStateBySymmetry(twoMoveDisplayStates[boardIndex],symmetry));
+  card.querySelectorAll('.mini-tile').forEach(tile=>{
+    const from=Number(tile.dataset.cell),to=symmetry.permutation[from];
+    const move=document.createElementNS(NS_,'animateTransform');
+    move.setAttribute('attributeName','transform');move.setAttribute('type','translate');
+    move.setAttribute('from',CELL[from].x+' '+CELL[from].y);move.setAttribute('to',CELL[to].x+' '+CELL[to].y);
+    move.setAttribute('dur',duration);move.setAttribute('fill','freeze');
+    tile.appendChild(move);
+    const daruma=tile.querySelector('.mini-daruma');
+    const turn=document.createElementNS(NS_,'animateTransform');
+    turn.setAttribute('attributeName','transform');turn.setAttribute('type','rotate');
+    turn.setAttribute('from',String(miniAngle(before[from])));turn.setAttribute('to',String(miniAngle(after[to])));
+    turn.setAttribute('dur',duration);turn.setAttribute('fill','freeze');
+    daruma.appendChild(turn);
+    move.beginElement();turn.beginElement();
   });
   twoMoveAnimationTimer=setTimeout(()=>{
-    transformTwoMovePatterns(angle,mirror);
+    transformTwoMovePattern(boardIndex,angle,mirror);
     twoMoveAnimating=false;
   },480);
 }
 function showMasterDialog(kind='primary'){
   masterDialogKind=kind;
   if(kind==='mastery')$('menuAllPatterns').hidden=false;
-  renderMasteryBoard('masteryBoard',kind==='mastery');
+  renderMasteryBoard('masteryBoard',kind==='mastery'||kind==='satori',kind==='satori'?'satori':'gold');
   const seal=$('masterSeal');
   const rankText=$('masterRankText');
   const shareButton=$('masterShare');
   const allPatternsLink=$('masterAllPatterns');
-  shareButton.hidden=kind!=='primary'&&kind!=='mastery';
-  allPatternsLink.hidden=kind!=='mastery';
-  shareButton.dataset.shareKind=kind==='primary'?'training':'mastery';
+  const finalThanks=$('masterFinalThanks');
+  const boardNote=$('masterBoardNote');
+  finalThanks.hidden=true;
+  boardNote.hidden=true;
+  shareButton.hidden=kind!=='primary'&&kind!=='satori';
+  allPatternsLink.hidden=true;
+  $('masterStart').hidden=kind==='mastery'||kind==='satori';
+  shareButton.dataset.shareKind=kind==='primary'?'training':kind==='satori'?'satori':'mastery';
   $('masterShareLabel').textContent=tr('shareShort');
   rankText.hidden=true;
   seal.classList.remove('rank-seal');
@@ -3641,13 +4117,28 @@ function showMasterDialog(kind='primary'){
     rankText.hidden=false;rankText.textContent=rankEarnedText(rank);
     $('masterDialogText').textContent=nextRule;
     $('masterStart').textContent=currentLang==='ja'?'名人への道・'+volumeLabel(volume+1)+'　'+masterSubtitle(volume+1)+'へ →':tr('volumeStart');
+  }else if(kind==='satori'){
+    $('masterSealLabel').textContent=tr('satoriRank');setSealColor(seal,5);
+    seal.classList.add('rank-seal');
+    $('masterDialogTitle').textContent=tr('satoriTitle');
+    rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));
+    $('masterDialogText').textContent=tr('satoriText');
+    finalThanks.textContent=tr('satoriThanks');
+    finalThanks.hidden=false;
+    $('masterStart').textContent=tr('satoriStart');
+  }else if(kind==='satoriIntro'){
+    $('masterSealLabel').textContent='悟';
+    $('masterDialogTitle').textContent=tr('satoriIntroTitle');
+    $('masterDialogText').textContent=tr('satoriIntroText');
+    $('masterStart').textContent=tr('satoriIntroStart');
   }else{
     $('masterSealLabel').textContent=masterPath().ranks[4];setSealColor(seal,4);
     seal.classList.add('rank-seal');
     $('masterDialogTitle').textContent=tr('masteryTitle');
     rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[4]);
     $('masterDialogText').textContent=tr('masteryText');
-    $('masterStart').textContent=tr('masteryStart');
+    boardNote.hidden=false;boardNote.textContent=tr('masteryBoardNote');
+    $('masterStart').textContent=tr('satoriStart');
   }
   seal.tabIndex=seal.classList.contains('rank-seal')?0:-1;
   renderMasterRoadmap(kind);
@@ -3673,7 +4164,7 @@ function moveTwoMoveDetail(direction){
 function renderMasterRoadmap(kind){
   const roadmap=$('masterRoadmap');
   const roadmapNote=$('masterRoadmapNote');
-  roadmap.hidden=kind==='mastery';
+  roadmap.hidden=kind==='mastery'||kind==='satori'||kind==='satoriIntro';
   roadmapNote.hidden=true;
   const rules=$('masterRules');rules.hidden=kind!=='primary';
   if(roadmap.hidden)return;
@@ -3695,6 +4186,11 @@ function masterRoadmapMarkup(current){
 function masterCommonRules(){return currentLang==='ja'?'名人への道は最短の手でクリアする必要があります。\nまた、進むほど自力で考える場面が増えていきます。':'Path to Mastery must be cleared in the fewest moves. As you advance, the rules become stricter.';}
 $('prevStage').addEventListener('click',()=>{
   if(freeMode||customMode){returnToStageMode();return;}
+  if(satoriMode){
+    if(satoriIndex>0)loadSatoriStage(satoriIndex-1);
+    else loadExtraStage(EXTRA_STAGES.length-1);
+    return;
+  }
   if(extraMode){
     if(extraIndex===0)loadStage(STAGES.length-1);
     else loadExtraStage(extraIndex-1);
@@ -3703,11 +4199,17 @@ $('prevStage').addEventListener('click',()=>{
 $('nextStage').addEventListener('click',()=>{
   if(freeMode){startFree();return;}
   if(customMode&&!editingBoard){enterBoardMaker();return;}
-  if(extraMode)loadExtraStage(extraIndex+1);
+  if(satoriMode){if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);return;}
+  if(extraMode){
+    if(extraIndex===EXTRA_STAGES.length-1&&isMastered())loadSatoriStage(0);
+    else loadExtraStage(extraIndex+1);
+  }
   else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);
   else loadStage(stageIndex+1);
  });
 $('mirrorBoard').addEventListener('click',()=>reorientBoard(VIEW_MIRROR,true));
+$('flipBoardVertical').addEventListener('click',()=>reorientBoard(VIEW_FLIP_VERTICAL,true));
+$('rotateBoardBack').addEventListener('click',()=>reorientBoard(VIEW_ROTATE_MINUS60,false,-60));
 $('rotateBoard').addEventListener('click',()=>reorientBoard(VIEW_ROTATE_60,false,60));
 $('customMode').addEventListener('click',()=>{
   if(performance.now()<makerButtonBlockedUntil||editingBoard)return;
@@ -3761,6 +4263,19 @@ $('debugExtra14').addEventListener('click',()=>debugUnlockExtra(14));
 $('debugExtra29').addEventListener('click',()=>debugUnlockExtra(29));
 $('debugExtra44').addEventListener('click',()=>debugUnlockExtra(44));
 $('debugExtra59').addEventListener('click',()=>debugUnlockExtra(59));
+$('debugSatori72').addEventListener('click',()=>{
+  if(!DEBUG_MODE)return;
+  STAGES.forEach((_,i)=>clearedStages.add(i));
+  EXTRA_STAGES.forEach((_,i)=>clearedExtraStages.add(i));
+  for(let i=0;i<SATORI_STAGES.length-1;i++)clearedSatoriStages.add(i);
+  try{
+    localStorage.setItem('wake7-cleared',JSON.stringify([...clearedStages]));
+    localStorage.setItem('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
+    localStorage.setItem('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));
+  }catch(_){}
+  updateMasterTheme();
+  loadSatoriStage(SATORI_STAGES.length-1);
+});
 $('debugReset').addEventListener('click',()=>resetStoredProgress({resetIntro:true,showIntro:true}));
 $('clearNext').addEventListener('click',()=>{
   hideGameDialogs();
@@ -3778,7 +4293,8 @@ $('optimalRetry').addEventListener('click',()=>{
 $('clearMessages').addEventListener('click',()=>openMessageReview({resume:true}));
 $('menuStagePicker').addEventListener('click',()=>{closeAppMenu();openStagePicker();});
 $('menuRankList').addEventListener('click',()=>{closeAppMenu();openRankDialog();});
-$('menuAllPatterns').addEventListener('click',()=>{location.href='all-patterns.html';});
+$('menuAllPatterns').addEventListener('click',()=>{window.open('all-patterns.html','_blank','noopener');});
+$('menuSatori').addEventListener('click',()=>{closeAppMenu();openSatoriPicker();});
 $('closeMessages').addEventListener('click',()=>{
   const returnTarget=messageDialogReturn;
   messageDialogReturn=null;
@@ -3851,8 +4367,10 @@ $('clearTipLink').addEventListener('click',()=>{
   }
 });
 $('masterClose').addEventListener('click',()=>{
+  const openSatori=masterDialogKind==='mastery';
   hideGameDialogs();
   renderStageNav();
+  if(openSatori)showMasterDialog('satoriIntro');
 });
 $('shareGame').addEventListener('click',()=>shareWakeSeven('game',$('shareGame')));
 $('masterShare').addEventListener('click',()=>shareWakeSeven($('masterShare').dataset.shareKind,$('masterShare')));
@@ -3909,7 +4427,9 @@ $('closeRankDialog').addEventListener('click',()=>{
 $('masterStart').addEventListener('click',()=>{
   hideGameDialogs();
   if(masterDialogKind==='primary'||masterDialogKind==='pathInfo')loadExtraStage(0);
-  else if(masterDialogKind==='mastery')restoreFreeSession();
+  else if(masterDialogKind==='satoriIntro')loadSatoriStage(0);
+  else if(masterDialogKind==='satori')openSatoriPicker();
+  else if(masterDialogKind==='mastery')openSatoriPicker();
   else loadExtraStage(extraIndex+1);
 });
 $('introStart').addEventListener('click',()=>{
@@ -3990,27 +4510,58 @@ function tipGuideBoard(state,cx=105,cy=59,scale=1){
     +'<path d="M0 -23L19.92 -11.5L19.92 11.5L0 23L-19.92 11.5L-19.92 -11.5Z" fill="'+(state[i]===0?'#F3E8D5':'#B9C6D6')+'" stroke="'+(state[i]===0?'#C9A54E':'#8795A3')+'" stroke-width="'+(state[i]===0?'1.3':'.8')+'"/>'
     +'<g class="tip-guide-daruma" transform="rotate('+miniAngle(state[i])+')"><g transform="translate(0 1) scale(.42)"><use href="#daruma-body"/><use href="#'+(state[i]===0?'face-open':'face-shut')+'"/></g></g></g>').join('')+'</g>';
 }
+function tipGuideBestLabel(n){
+  return ({ja:'最短'+n+'手',en:'Best: '+n+' moves',zh:'最少'+n+'步',ko:'최단 '+n+'수'}[currentLang]||('最短'+n+'手'));
+}
 function tipGuideSvg(index,states){
   const labels={ja:['小三角の寝ダルマ','大三角の寝ダルマ'],en:['Small triangle of fallen daruma','Large triangle of fallen daruma'],zh:['倒下的小三角','倒下的大三角'],ko:['누운 다루마의 작은 삼각형','누운 다루마의 큰 삼각형']};
   const l=labels[currentLang]||labels.ja;
-  const best={ja:n=>'最短'+n+'手',en:n=>'Best: '+n+' moves',zh:n=>'最少'+n+'步',ko:n=>'최단 '+n+'수'}[currentLang]||((n)=>'最短'+n+'手');
+  const best=tipGuideBestLabel;
   const boards=[
-    ()=>tipGuideBoard(states[0])+'<text x="105" y="136" text-anchor="middle" class="tip-caption">寝た2体が外周で離れている</text><text x="105" y="158" text-anchor="middle" class="tip-text" style="font-size:17px">'+best(3)+'</text>',
-    ()=>tipGuideBoard(states[0])+'<text x="105" y="136" text-anchor="middle" class="tip-caption">外周に1つおきに3体立っている</text><text x="105" y="158" text-anchor="middle" class="tip-text" style="font-size:17px">'+best(3)+'</text>',
-    ()=>tipGuideBoard(states[0])+'<text x="105" y="136" text-anchor="middle" class="tip-caption">6体寝て、中央だけ立っている</text><text x="105" y="158" text-anchor="middle" class="tip-text" style="font-size:17px">'+best(4)+'</text>',
+    ()=>tipGuideBoard(states[0]),
+    ()=>tipGuideBoard(states[0]),
+    ()=>tipGuideBoard(states[0]),
     ()=>'<g class="tip-guide-drag-board">'+tipGuideBoard(states[0],49,57,.84)
       +'<text x="49" y="130" text-anchor="middle" class="tip-guide-label">'+l[0]+'</text><text x="49" y="148" text-anchor="middle" class="tip-text" style="font-size:15px">'+best(1)+'</text></g>'
       +'<g class="tip-guide-drag-board">'+tipGuideBoard(states[1],161,57,.84)
       +'<text x="161" y="130" text-anchor="middle" class="tip-guide-label">'+l[1]+'</text><text x="161" y="148" text-anchor="middle" class="tip-text" style="font-size:15px">'+best(4)+'</text></g>'
   ];
-  return '<svg viewBox="0 0 210 180" aria-hidden="true">'+boards[index]()+'</svg>';
+  return '<svg viewBox="0 0 210 '+(index===GUIDE_DOUBLE_INDEX?180:120)+'" aria-hidden="true">'+boards[index]()+'</svg>';
+}
+function tipGuideControls(index,count){
+  const position=count>1?' double'+(index?' second':''):'';
+  const buttons=[['rotateBack','↺','rotateCcw'],['rotate','↻','rotateCw'],['mirror','↔','mirror'],['vertical','↕','flipVertical']]
+    .map(([transform,icon,label])=>'<button class="chip" type="button" data-tip-transform="'+transform+'" data-tip-board-index="'+index+'" aria-label="'+tr(label)+'">'+icon+'</button>').join('');
+  return '<div class="tip-guide-transform transform-icons transform-corners tip-guide-board-controls'+position+'">'+buttons+'</div>';
+}
+function tipGuideDoubleVisualMarkup(state){
+  return '<svg viewBox="0 0 105 120" aria-hidden="true"><g class="tip-guide-drag-board">'+tipGuideBoard(state,52.5,57,.84)+'</g></svg>';
+}
+function tipGuideDoubleMarkup(states){
+  const labels={ja:['小三角の寝ダルマ','大三角の寝ダルマ'],en:['Small triangle of fallen daruma','Large triangle of fallen daruma'],zh:['倒下的小三角','倒下的大三角'],ko:['누운 다루마의 작은 삼각형','누운 다루마의 큰 삼각형']};
+  const names=labels[currentLang]||labels.ja;
+  const best=[1,4];
+  return states.map((state,index)=>'<div class="tip-guide-double-board"><div class="tip-guide-double-visual">'+tipGuideDoubleVisualMarkup(state)+'</div><div class="tip-guide-double-caption">'+names[index]+'<strong>'+tipGuideBestLabel(best[index])+'</strong></div>'+tipGuideControls(index,1)+'</div>').join('');
 }
 function renderTipGuide(){
   const tips=PLAY_TIPS[currentLang]||PLAY_TIPS.ja;
   $('tipGuideTitle').textContent=tr('tipGuideTitle');
   $('tipGuidePage').textContent=(tipGuideIndex+1)+' / '+GUIDE_TIP_INDEX.length;
   $('tipGuideCompareHint').textContent=tr('compareBoard');
-  $('tipGuideArt').innerHTML=tipGuideSvg(tipGuideIndex,tipGuideStates[tipGuideIndex]);
+  const currentBoards=tipGuideStates[tipGuideIndex];
+  const captions=['寝た2体が外周で離れている','外周に1つおきに3体立っている','6体寝て、中央だけ立っている'];
+  const caption=$('tipGuideBoardCaption');
+  const compact=tipGuideIndex!==GUIDE_DOUBLE_INDEX;
+  $('tipGuideArt').classList.toggle('compact',compact);
+  $('tipGuideArt').classList.toggle('double',!compact);
+  caption.hidden=!compact;
+  if(compact){
+    const best=[3,3,4][tipGuideIndex];
+    caption.innerHTML=captions[tipGuideIndex]+'<strong>'+tipGuideBestLabel(best)+'</strong>';
+  }
+  $('tipGuideArt').innerHTML=compact
+    ?'<div class="tip-guide-single-visual">'+tipGuideSvg(tipGuideIndex,currentBoards)+'</div>'+tipGuideControls(0,1)
+    :tipGuideDoubleMarkup(currentBoards);
   const tipText=tips[GUIDE_TIP_INDEX[tipGuideIndex]];
   $('tipGuideText').innerHTML=currentLang==='ja'&&tipGuideIndex===GUIDE_DOUBLE_INDEX
     ?tipText.replace('ほかは最短3手','<strong>ほかは最短3手</strong>')
@@ -4032,20 +4583,35 @@ function openTipGuide(){
   $('tipGuideDialog').hidden=false;
   $('tipGuideNext').focus();
 }
-function transformTipGuide(angle=0,mirror=false){
+function transformTipGuide(angle=0,mirror=false,boardIndex=0,inPlace=false){
   const symmetry={permutation:makeBoardPermutation(angle,mirror),flip:mirror};
-  tipGuideStates=tipGuideStates.map(page=>page.map(state=>dec(transformStateBySymmetry(enc(state),symmetry))));
-  renderTipGuide();
+  tipGuideStates[tipGuideIndex][boardIndex]=dec(transformStateBySymmetry(enc(tipGuideStates[tipGuideIndex][boardIndex]),symmetry));
+  if(!inPlace){renderTipGuide();return;}
+  const state=tipGuideStates[tipGuideIndex][boardIndex];
+  if(tipGuideIndex===GUIDE_DOUBLE_INDEX){
+    const visual=document.querySelectorAll('.tip-guide-double-visual')[boardIndex];
+    if(visual)visual.innerHTML=tipGuideDoubleVisualMarkup(state);
+  }else{
+    const visual=$('tipGuideArt').querySelector('.tip-guide-single-visual');
+    if(visual)visual.innerHTML=tipGuideSvg(tipGuideIndex,[state]);
+  }
 }
-function animateTipGuide(angle=0,mirror=false){
+function animateTipGuide(angle=0,mirror=false,boardIndex=0){
   if(tipGuideAnimating)return;
   const symmetry={permutation:makeBoardPermutation(angle,mirror),flip:mirror};
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches){transformTipGuide(angle,mirror);return;}
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){transformTipGuide(angle,mirror,boardIndex);return;}
   tipGuideAnimating=true;
-  const before=tipGuideStates[tipGuideIndex],NS_='http://www.w3.org/2000/svg',duration='.48s';
-  document.querySelectorAll('.tip-guide-board').forEach((board,boardIndex)=>{
-    const state=before[boardIndex],after=dec(transformStateBySymmetry(enc(state),symmetry));
-    board.querySelectorAll('.tip-guide-tile').forEach(tile=>{
+  if(mirror){
+    const preview=tipGuideIndex===GUIDE_DOUBLE_INDEX
+      ?document.querySelectorAll('.tip-guide-double-visual')[boardIndex]
+      :$('tipGuideArt').querySelector('.tip-guide-single-visual');
+    flipPreview(preview,angle===180,()=>transformTipGuide(angle,mirror,boardIndex,true),()=>{tipGuideAnimating=false;});
+    return;
+  }
+  const state=tipGuideStates[tipGuideIndex][boardIndex],after=dec(transformStateBySymmetry(enc(state),symmetry)),NS_='http://www.w3.org/2000/svg',duration='.48s';
+  const board=document.querySelectorAll('.tip-guide-board')[boardIndex];
+  if(!board){tipGuideAnimating=false;return;}
+  board.querySelectorAll('.tip-guide-tile').forEach(tile=>{
       const from=Number(tile.dataset.cell),to=symmetry.permutation[from];
       const move=document.createElementNS(NS_,'animateTransform');
       move.setAttribute('attributeName','transform');move.setAttribute('type','translate');
@@ -4058,8 +4624,7 @@ function animateTipGuide(angle=0,mirror=false){
       turn.setAttribute('dur',duration);turn.setAttribute('fill','freeze');daruma.appendChild(turn);
       move.beginElement();turn.beginElement();
     });
-  });
-  tipGuideAnimationTimer=setTimeout(()=>{transformTipGuide(angle,mirror);tipGuideAnimating=false;},480);
+  tipGuideAnimationTimer=setTimeout(()=>{transformTipGuide(angle,mirror,boardIndex);tipGuideAnimating=false;},480);
 }
 function closeTipGuide(){
   finishTipGuideDrag();
@@ -4075,9 +4640,10 @@ function closeTipGuide(){
   $('menuToggle').focus();
 }
 function startTipGuideDrag(event){
+  if(event.target.closest('[data-tip-transform]'))return;
   if(tipGuideAnimating||tipGuideDrag||(event.pointerType==='mouse'&&event.button!==0))return;
   const art=$('tipGuideArt');
-  const board=tipGuideIndex===GUIDE_DOUBLE_INDEX?event.target.closest('.tip-guide-drag-board'):art;
+  const board=tipGuideIndex===GUIDE_DOUBLE_INDEX?event.target.closest('.tip-guide-double-visual'):event.target.closest('svg');
   if(!board)return;
   event.preventDefault();
   tipGuideDrag={id:event.pointerId,art,board,startX:event.clientX,startY:event.clientY};
@@ -4101,8 +4667,14 @@ function finishTipGuideDrag(event){
 $('showTip').addEventListener('click',()=>{returnToClearCard=false;openTipGuide();});
 $('tipGuidePrev').addEventListener('click',()=>{if(!tipGuideAnimating){tipGuideIndex=(tipGuideIndex+GUIDE_TIP_INDEX.length-1)%GUIDE_TIP_INDEX.length;renderTipGuide();}});
 $('tipGuideNext').addEventListener('click',()=>{if(!tipGuideAnimating){tipGuideIndex=(tipGuideIndex+1)%GUIDE_TIP_INDEX.length;renderTipGuide();}});
-$('tipGuideMirror').addEventListener('click',()=>animateTipGuide(0,true));
-$('tipGuideRotate').addEventListener('click',()=>animateTipGuide(60,false));
+$('tipGuideArt').addEventListener('click',event=>{
+  const button=event.target.closest('[data-tip-transform]');
+  if(!button)return;
+  event.stopPropagation();
+  const transforms={rotateBack:[-60,false],rotate:[60,false],mirror:[0,true],vertical:[180,true]};
+  const [angle,mirror]=transforms[button.dataset.tipTransform];
+  animateTipGuide(angle,mirror,Number(button.dataset.tipBoardIndex));
+});
 $('tipGuideArt').addEventListener('pointerdown',startTipGuideDrag);
 $('tipGuideArt').addEventListener('pointermove',moveTipGuideDrag);
 $('tipGuideArt').addEventListener('pointerup',finishTipGuideDrag);
@@ -4147,7 +4719,14 @@ function applyLanguage(lang){
   $('freeMode').textContent=tr('freeMode');
   $('menuStagePicker').textContent=tr('stagePicker');
   $('menuRankList').textContent=tr('rankListMenu');
-  $('menuAllPatterns').textContent=tr('allPatternsMenu');
+  $('menuBoardTheme').textContent=tr('boardTheme');
+  $('boardThemeTitle').textContent=tr('boardTheme');
+  $('boardThemeDefault').textContent=tr('boardThemeDefault');
+  $('boardThemeGold').textContent=tr('boardThemeGold');
+  $('boardThemeSatori').textContent=tr('boardThemeSatori');
+  $('closeBoardTheme').textContent=tr('close');
+  $('menuAllPatterns').innerHTML=tr('allPatternsMenu')+'<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span>';
+  $('menuSatori').textContent=tr('satori');
   $('masterAllPatterns').textContent=tr('allPatternsOpen');
   updateSoundToggle();
   $('clearMessages').textContent=tr('clearMessages');
@@ -4165,20 +4744,20 @@ function applyLanguage(lang){
   $('debugExtra29').textContent=tr('debugExtra29');
   $('debugExtra44').textContent=tr('debugExtra44');
   $('debugExtra59').textContent=tr('debugExtra59');
+  $('debugSatori72').textContent=tr('debugSatori72');
   $('mirrorBoard').textContent=transformButtonText('mirror');
-  $('rotateBoard').textContent=transformButtonText('rotate');
+  $('flipBoardVertical').textContent=tr('flipVertical');
+  $('rotateBoardBack').textContent=tr('rotateCcw');
+  $('rotateBoard').textContent=tr('rotateCw');
   $('board').setAttribute('aria-label',tr('boardLabel'));
   $('showTip').textContent=tr('tips');
   $('resetProgress').textContent=tr('resetProgress');
   $('twoMovePatterns').textContent=tr('twoMovePatterns');
   $('twoMoveTitle').textContent=tr('twoMoveTitle');
   $('twoMoveText').textContent=tr('twoMoveText');
-  $('twoMoveMirror').textContent=transformButtonText('mirror');
-  $('twoMoveRotate').textContent=transformButtonText('rotate');
-  $('twoMoveDetailMirror').textContent=transformButtonText('mirror');
-  $('twoMoveDetailRotate').textContent=transformButtonText('rotate');
-  $('tipGuideMirror').textContent=transformButtonText('mirror');
-  $('tipGuideRotate').textContent=transformButtonText('rotate');
+  [
+    ['twoMoveDetailRotateBack','↺','rotateCcw'],['twoMoveDetailRotate','↻','rotateCw'],['twoMoveDetailMirror','↔','mirror'],['twoMoveDetailFlipVertical','↕','flipVertical']
+  ].forEach(([id,icon,label])=>{$(id).textContent=icon;$(id).setAttribute('aria-label',tr(label));});
   $('closeTwoMovePatterns').textContent=tr('close');
   $('twoMoveDetailTitle').textContent=tr('twoMoveDetailTitle');
   $('twoMoveDetailCompareHint').textContent=tr('compareBoard');
@@ -4259,6 +4838,24 @@ $('twoMovePatterns').addEventListener('click',()=>{
   closeAppMenu();
   openTwoMovePatterns();
 });
+$('menuBoardTheme').addEventListener('click',()=>{
+  closeAppMenu();
+  openBoardThemeDialog();
+});
+$('closeBoardTheme').addEventListener('click',()=>{$('boardThemeDialog').hidden=true;});
+$('boardThemeDialog').addEventListener('click',event=>{
+  if(event.target===$('boardThemeDialog'))$('boardThemeDialog').hidden=true;
+});
+$('boardThemeOptions').addEventListener('click',event=>{
+  const button=event.target.closest('[data-board-theme]');
+  if(!button||button.disabled)return;
+  boardTheme=button.dataset.boardTheme;
+  boardThemeChosen=true;
+  try{localStorage.setItem('wake7-board-theme-chosen','1');}catch(_){ }
+  updateMasterTheme();
+  renderBoardThemeOptions();
+  $('boardThemeDialog').hidden=true;
+});
 function closeTwoMovePatterns(){
   $('twoMoveDialog').hidden=true;
   if(returnToClearCard){returnToClearDialog();return;}
@@ -4279,6 +4876,14 @@ $('twoMoveDialog').addEventListener('click',event=>{
 $('twoMoveGrid').addEventListener('click',event=>{
   const card=event.target.closest('.two-move-card');
   if(!card||twoMoveAnimating)return;
+  const transform=event.target.closest('[data-two-move-transform]');
+  if(transform){
+    const transforms={rotateBack:[-60,false],rotate:[60,false],mirror:[0,true],vertical:[180,true]};
+    const [angle,mirror]=transforms[transform.dataset.twoMoveTransform];
+    animateTwoMovePattern(Number(card.dataset.boardIndex),angle,mirror);
+    return;
+  }
+  if(!event.target.closest('.two-move-card-open'))return;
   if(twoMovePatternsReturnTarget)twoMoveDetailReturnTarget={...twoMovePatternsReturnTarget};
   openTwoMoveDetail(Number(card.dataset.state),Number(card.dataset.pattern));
 });
@@ -4300,8 +4905,10 @@ $('returnToClearDetail').addEventListener('click',()=>{
 });
 $('twoMoveDetailPrev').addEventListener('click',()=>moveTwoMoveDetail(-1));
 $('twoMoveDetailNext').addEventListener('click',()=>moveTwoMoveDetail(1));
-$('twoMoveDetailMirror').addEventListener('click',()=>animateTwoMoveDetail(0,true));
+$('twoMoveDetailRotateBack').addEventListener('click',()=>animateTwoMoveDetail(-60,false));
 $('twoMoveDetailRotate').addEventListener('click',()=>animateTwoMoveDetail(60,false));
+$('twoMoveDetailMirror').addEventListener('click',()=>animateTwoMoveDetail(0,true));
+$('twoMoveDetailFlipVertical').addEventListener('click',()=>animateTwoMoveDetail(180,true));
 $('twoMoveDetailBoard').addEventListener('pointerdown',startDetailDrag);
 $('twoMoveDetailBoard').addEventListener('pointermove',moveDetailDrag);
 $('twoMoveDetailBoard').addEventListener('pointerup',finishDetailDrag);
@@ -4315,8 +4922,6 @@ $('playTwoMoveFree').addEventListener('click',()=>{
   $('twoMoveDetailDialog').hidden=true;
   startFreeFromState(twoMoveDetailState);
 });
-$('twoMoveMirror').addEventListener('click',()=>animateTwoMovePatterns(0,true));
-$('twoMoveRotate').addEventListener('click',()=>animateTwoMovePatterns(60,false));
 document.querySelectorAll('[data-lang]').forEach(button=>{
   button.addEventListener('click',()=>{
     applyLanguage(button.dataset.lang);
@@ -4335,16 +4940,20 @@ document.addEventListener('click',e=>{
 function resetStoredProgress({resetIntro=false,showIntro=false}={}){
   clearedStages.clear();
   clearedExtraStages.clear();
+  clearedSatoriStages.clear();
   fourthCheckUsage={};
   try{
     localStorage.removeItem('wake7-cleared');
     localStorage.removeItem('wake7-extra-cleared');
+    localStorage.removeItem('wake7-satori-cleared');
     localStorage.removeItem('wake7-current-stage');
     localStorage.removeItem('wake7-active-session');
+    localStorage.removeItem('wake7-board-theme-chosen');
     localStorage.removeItem(FOURTH_CHECKS_STORAGE_KEY);
     localStorage.removeItem(MESSAGE_REVIEW_STORAGE_KEY);
     if(resetIntro)localStorage.removeItem('wake7-intro-seen');
   }catch(_){}
+  boardThemeChosen=false;
   updateMasterTheme();
   loadStage(0);
   if(showIntro)setTimeout(openIntroGuide,80);
