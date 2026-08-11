@@ -200,7 +200,10 @@
   .board-theme-options{display:grid;gap:15px;margin-top:17px}
   .board-theme-section>p{margin:0 0 6px;color:#8295AA;font-size:11px;font-weight:700;letter-spacing:.12em;text-align:left}
   .board-theme-choice-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .board-theme-section.two-color-choice .board-theme-choice-row{grid-template-columns:repeat(2,minmax(0,1fr));max-width:208px;margin-inline:auto}
+  .board-theme-section.two-color-choice>p{text-align:center}
   .board-theme-section:last-child .board-theme-choice-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #boardThemeDialog .dialog-actions{margin-top:27px}
   .board-theme-option{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;min-height:68px;padding:7px 5px;border:1px solid rgba(255,255,255,.15);border-radius:9px;background:rgba(255,255,255,.045);color:#D4E6EC;font:700 11px/1.2 inherit;text-align:center;cursor:pointer}
   .board-theme-option[hidden]{display:none!important}
   .board-theme-option:hover{border-color:#62B8D2;background:rgba(98,184,210,.1)}
@@ -218,6 +221,9 @@
   .clear-stage-context{position:absolute;top:0;right:0;color:#8EA4B8;font-size:12px;font-weight:700;letter-spacing:.025em;line-height:1.3;text-align:right;white-space:nowrap}
   #messageDialogPlace{display:none}
   .game-dialog p{margin-top:9px;color:#A8B6C7;font-size:13px;line-height:1.65;white-space:pre-line}
+  #resetDialog .game-dialog{position:relative}
+  .reset-dialog-close{position:absolute;top:9px;right:10px;width:28px;height:28px;border:0;background:transparent;color:#A8B6C7;font:300 25px/1 system-ui;cursor:pointer}
+  .reset-dialog-close:hover{color:var(--washi)}
   .quiz-dialog{width:min(100%,360px)}
   .quiz-question{margin:13px 0 11px;color:var(--washi);font-size:16px;font-weight:800;line-height:1.55}
   .quiz-label{margin:17px 0 -4px;color:#C9A54E;font-size:12px;font-weight:800;letter-spacing:.14em}
@@ -641,6 +647,7 @@
   <button class="chip" id="debugExtra44" hidden>離14</button>
   <button class="chip" id="debugExtra59" hidden>極14</button>
   <button class="chip" id="debugSatori72" hidden>悟72</button>
+  <button class="chip" id="debugAllClear" hidden>全</button>
   <button class="chip" id="debugReset" hidden>リ</button>
 </div>
 <div class="game-dialog-backdrop" id="introDialog" hidden>
@@ -722,6 +729,14 @@
     <div class="dialog-actions"><button class="chip" id="closeRankDialog">閉じる</button></div>
   </div>
 </div>
+<div class="game-dialog-backdrop" id="resetDialog" hidden>
+  <div class="game-dialog" role="dialog" aria-modal="true" aria-labelledby="resetDialogTitle">
+    <button class="reset-dialog-close" id="resetDialogClose" type="button" aria-label="閉じる">×</button>
+    <h2 id="resetDialogTitle">進行状況をリセット</h2>
+    <p id="resetDialogText"></p>
+    <div class="dialog-actions"><button class="chip" id="resetDialogAll" hidden>全てリセット</button><button class="chip" id="resetDialogConfirm">進行状況をリセット</button></div>
+  </div>
+</div>
 <div class="game-dialog-backdrop" id="boardThemeDialog" hidden>
   <div class="game-dialog board-theme-dialog" role="dialog" aria-modal="true" aria-labelledby="boardThemeTitle">
     <h2 id="boardThemeTitle">盤面のデザイン</h2>
@@ -731,7 +746,7 @@
         <button class="board-theme-option" type="button" data-board-color="gold"><span class="theme-swatch gold"><i></i><i></i></span><span id="boardThemeGold">金</span></button>
         <button class="board-theme-option" type="button" data-board-color="satori" hidden><span class="theme-swatch satori"><i></i><i></i></span><span id="boardThemeSatori">白黒</span></button>
       </div></section>
-      <section class="board-theme-section"><p id="boardThemeLayoutLabel">配置</p><div class="board-theme-choice-row">
+      <section class="board-theme-section" id="boardThemeLayoutSection"><p id="boardThemeLayoutLabel">配置</p><div class="board-theme-choice-row">
         <button class="board-theme-option" type="button" data-board-layout="normal"><svg class="layout-swatch" viewBox="0 0 48 38" aria-hidden="true"><path d="M18.37 0 24 3.25 24 9.75 18.37 13 12.74 9.75 12.74 3.25Z M29.63 0 35.26 3.25 35.26 9.75 29.63 13 24 9.75 24 3.25Z M12.74 9.75 18.37 13 18.37 19.5 12.74 22.75 7.11 19.5 7.11 13Z M24 9.75 29.63 13 29.63 19.5 24 22.75 18.37 19.5 18.37 13Z M35.26 9.75 40.89 13 40.89 19.5 35.26 22.75 29.63 19.5 29.63 13Z M18.37 19.5 24 22.75 24 29.25 18.37 32.5 12.74 29.25 12.74 22.75Z M29.63 19.5 35.26 22.75 35.26 29.25 29.63 32.5 24 29.25 24 22.75Z"/></svg><span id="boardLayoutNormal">横配置</span></button>
         <button class="board-theme-option" type="button" data-board-layout="tilted" hidden><svg class="layout-swatch" viewBox="0 0 48 38" aria-hidden="true"><path d="M14.25 6.87 19.88 10.12 19.88 16.62 14.25 19.87 8.62 16.62 8.62 10.12Z" transform="rotate(-30 14.25 13.37)"/><path d="M14.25 18.13 19.88 21.38 19.88 27.88 14.25 31.13 8.62 27.88 8.62 21.38Z" transform="rotate(-30 14.25 24.63)"/><path d="M24 1.24 29.63 4.49 29.63 10.99 24 14.24 18.37 10.99 18.37 4.49Z" transform="rotate(-30 24 7.74)"/><path d="M24 12.5 29.63 15.75 29.63 22.25 24 25.5 18.37 22.25 18.37 15.75Z" transform="rotate(-30 24 19)"/><path d="M24 23.76 29.63 27.01 29.63 33.51 24 36.76 18.37 33.51 18.37 27.01Z" transform="rotate(-30 24 30.26)"/><path d="M33.75 6.87 39.38 10.12 39.38 16.62 33.75 19.87 28.12 16.62 28.12 10.12Z" transform="rotate(-30 33.75 13.37)"/><path d="M33.75 18.13 39.38 21.38 39.38 27.88 33.75 31.13 28.12 27.88 28.12 21.38Z" transform="rotate(-30 33.75 24.63)"/></svg><span id="boardThemeTilted">縦配置</span></button>
       </div></section>
@@ -1221,7 +1236,7 @@ const UI_TEXT={
     prev:'前へ',next:'次へ',progress:'全15問の進捗',shortest:'残り最短',moveUnit:'手',moves:'手数',
     stageMode:'ステージモード',freeMode:'フリーモード',shuffle:'シャッフル',reset:'やり直す',
     resetAll:'全員起きる',undo:'1手戻す',shortestMoves:'最短手数',hint:'ヒント',remainingCheck:'残り手数 ×{n}',
-    debugReset:'リ',debugClear:'即',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'修14',
+    debugReset:'リ',debugClear:'即',debugAllClear:'全',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'修14',
     debugExtra14:'序14',debugExtra29:'破14',debugExtra44:'離14',debugExtra59:'極14',
     mirror:'左右反転',rotate:'60°回転',boardLabel:'七枚のだるま盤',tips:'攻略のコツ',
     makeBoard:'自作モード',playBoard:'この盤面で遊ぶ',nextPuzzle:'次の問題へ →',
@@ -1270,7 +1285,7 @@ const UI_TEXT={
     prev:'Prev',next:'Next',progress:'Progress through 15 puzzles',shortest:'At least',moveUnit:'moves left',moves:'Moves',
     stageMode:'Puzzles',freeMode:'Free Play',shuffle:'Shuffle',reset:'Restart',resetAll:'Stand all up',
     undo:'Undo',shortestMoves:'Moves left',hint:'Hint',remainingCheck:'Moves left ×{n}',mirror:'Mirror',rotate:'Rotate 60°',
-    debugReset:'リ',debugClear:'Clear',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'Daruma Training 14',
+    debugReset:'リ',debugClear:'Clear',debugAllClear:'All',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'Daruma Training 14',
     debugExtra14:'Path to Mastery 14',debugExtra29:'Path to Mastery 29',debugExtra44:'Path to Mastery 44',debugExtra59:'Path to Mastery 59',
     boardLabel:'Seven-daruma puzzle board',tips:'Quick tip',makeBoard:'Board Maker',
     playBoard:'Play this board',nextPuzzle:'Next puzzle →',resetProgress:'Reset progress',
@@ -1299,7 +1314,7 @@ const UI_TEXT={
     prev:'上一题',next:'下一题',progress:'15题进度',shortest:'至少还需',moveUnit:'步',moves:'步数',
     stageMode:'关卡模式',freeMode:'自由模式',shuffle:'打乱',reset:'重新开始',resetAll:'全部立起',
     undo:'撤销一步',shortestMoves:'最少步数',hint:'提示',remainingCheck:'剩余步数 ×{n}',mirror:'左右翻转',rotate:'旋转60°',
-    debugReset:'リ',debugClear:'即',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'不倒翁修行 14题',
+    debugReset:'リ',debugClear:'即',debugAllClear:'全',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'不倒翁修行 14题',
     debugExtra14:'名人之路 14题',debugExtra29:'名人之路 29题',debugExtra44:'名人之路 44题',debugExtra59:'名人之路 59题',
     boardLabel:'七个不倒翁的谜题棋盘',tips:'攻略提示',makeBoard:'制作棋盘',
     playBoard:'玩这个棋盘',nextPuzzle:'下一题 →',resetProgress:'重置进度',
@@ -1327,7 +1342,7 @@ const UI_TEXT={
     prev:'이전',next:'다음',progress:'15문제 진행 상황',shortest:'최소',moveUnit:'수 남음',moves:'수',
     stageMode:'문제 모드',freeMode:'자유 모드',shuffle:'섞기',reset:'다시 시작',resetAll:'모두 세우기',
     undo:'한 수 되돌리기',shortestMoves:'최단 수',hint:'힌트',remainingCheck:'남은 수 ×{n}',mirror:'좌우 반전',rotate:'60° 회전',
-    debugReset:'リ',debugClear:'즉시',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'다루마 수행 14문제',
+    debugReset:'リ',debugClear:'즉시',debugAllClear:'전체',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'다루마 수행 14문제',
     debugExtra14:'명인의 길 14문제',debugExtra29:'명인의 길 29문제',debugExtra44:'명인의 길 44문제',debugExtra59:'명인의 길 59문제',
     boardLabel:'일곱 다루마 퍼즐판',tips:'공략 팁',makeBoard:'보드 만들기',
     playBoard:'이 보드로 플레이',nextPuzzle:'다음 문제 →',resetProgress:'진행 상황 초기화',
@@ -1502,10 +1517,10 @@ Object.assign(UI_TEXT.ko,{
   extraAdviceNearTwo:'세 수 앞을 모두 읽기보다 최단 2수 모양에 가까워지는지 살펴보세요.',
   extraAdviceInnerEye:'여기까지 왔다면 답을 찾는 눈은 이미 당신 안에 있어요.'
 });
-Object.assign(UI_TEXT.ja,{extraClearResetProgress:'最初からやり直したいときは、メニューの「進行状況をリセット」を使えます。集めた称号も消えるので注意。',resetConfirm:'進行状況と、集めた称号がすべて消えます。最初からやり直しますか？'});
-Object.assign(UI_TEXT.en,{extraClearResetProgress:'To start again from the beginning, choose “Reset progress” from the Menu. Your collected titles will also be erased.',resetConfirm:'This will erase all progress and collected titles. Start again from the beginning?'});
-Object.assign(UI_TEXT.zh,{extraClearResetProgress:'想从头再来时，可从菜单选择“重置进度”。已获得的称号也会被删除，请注意。',resetConfirm:'进度和已获得的称号都会被删除。要从头再来吗？'});
-Object.assign(UI_TEXT.ko,{extraClearResetProgress:'처음부터 다시 하려면 메뉴의 “진행 상황 초기화”를 사용하세요. 모은 칭호도 함께 사라지니 주의하세요.',resetConfirm:'진행 상황과 모은 칭호가 모두 사라집니다. 처음부터 다시 시작할까요?'});
+Object.assign(UI_TEXT.ja,{extraClearResetProgress:'最初からやり直したいときは、メニューの「進行状況をリセット」を使えます。集めた称号も消えるので注意。',resetConfirm:'進行状況と、集めた称号がすべて消えます。最初からやり直しますか？',resetConfirmEarly:'進行状況がすべて消えます。最初からやり直しますか？',resetConfirmKeepRewards:'「進行状況をリセット」では、盤面のデザインと「全パターン一覧」を残して最初から始めます。\n「全てリセット」では、それらも含めてすべて消去します。',resetEverything:'全てリセット'});
+Object.assign(UI_TEXT.en,{extraClearResetProgress:'To start again from the beginning, choose “Reset progress” from the Menu. Your collected titles will also be erased.',resetConfirm:'This will erase all progress and collected titles. Start again from the beginning?',resetConfirmEarly:'This will erase all progress. Start again from the beginning?',resetConfirmKeepRewards:'“Reset progress” keeps your board design and All Patterns access.\n“Reset everything” erases those as well.',resetEverything:'Reset everything'});
+Object.assign(UI_TEXT.zh,{extraClearResetProgress:'想从头再来时，可从菜单选择“重置进度”。已获得的称号也会被删除，请注意。',resetConfirm:'进度和已获得的称号都会被删除。要从头再来吗？',resetConfirmEarly:'进度都会被删除。要从头再来吗？',resetConfirmKeepRewards:'“重置进度”会保留棋盘设计和全部图案页面。\n“全部重置”也会删除它们。',resetEverything:'全部重置'});
+Object.assign(UI_TEXT.ko,{extraClearResetProgress:'처음부터 다시 하려면 메뉴의 “진행 상황 초기화”를 사용하세요. 모은 칭호도 함께 사라지니 주의하세요.',resetConfirm:'진행 상황과 모은 칭호가 모두 사라집니다. 처음부터 다시 시작할까요?',resetConfirmEarly:'진행 상황이 모두 사라집니다. 처음부터 다시 시작할까요?',resetConfirmKeepRewards:'“진행 상황 초기화”는 보드 디자인과 모든 패턴 목록을 유지합니다.\n“모두 초기화”는 이것들도 삭제합니다.',resetEverything:'모두 초기화'});
 Object.assign(UI_TEXT.ja,{rankDialogTitle:'獲得した称号一覧'});
 Object.assign(UI_TEXT.en,{rankDialogTitle:'Collected titles'});
 Object.assign(UI_TEXT.zh,{rankDialogTitle:'已获得的称号'});
@@ -1822,9 +1837,11 @@ function migrateSatoriOrder(){
 migrateSatoriOrder();
 const isMastered=()=>EXTRA_STAGES.every((_,i)=>clearedExtraStages.has(i));
 const isSatoriMastered=()=>SATORI_STAGES.every((_,i)=>clearedSatoriStages.has(i));
+const hasMasterReward=()=>isMastered()||masterGoldGranted;
+const hasSatoriReward=()=>isSatoriMastered()||satoriDesignGranted;
 function updateMasterTheme(){
-  document.body.classList.toggle('mastered',isMastered());
-  document.body.classList.toggle('satori-mastered',isSatoriMastered());
+  document.body.classList.toggle('mastered',hasMasterReward());
+  document.body.classList.toggle('satori-mastered',hasSatoriReward());
   // 名人制覇の瞬間は、直前の手動選択より金の盤面を優先して褒美として見せる。
   if(isMastered()&&!masterGoldGranted){
     boardTheme='gold';masterGoldGranted=true;
@@ -1835,10 +1852,10 @@ function updateMasterTheme(){
     boardTheme='satori';boardLayout='tilted';satoriDesignGranted=true;
     try{localStorage.setItem('wake7-satori-design-granted','1');}catch(_){ }
   }
-  if(isMastered()&&!boardThemeChosen)boardTheme=isSatoriMastered()?'satori':'gold';
-  if(isSatoriMastered()&&!boardLayoutChosen)boardLayout='tilted';
-  if((boardTheme==='gold'&&!isMastered())||(boardTheme==='satori'&&!isSatoriMastered()))boardTheme='default';
-  if(boardLayout==='tilted'&&!isSatoriMastered())boardLayout='normal';
+  if(hasMasterReward()&&!boardThemeChosen)boardTheme=hasSatoriReward()?'satori':'gold';
+  if(hasSatoriReward()&&!boardLayoutChosen)boardLayout='tilted';
+  if((boardTheme==='gold'&&!hasMasterReward())||(boardTheme==='satori'&&!hasSatoriReward()))boardTheme='default';
+  if(boardLayout==='tilted'&&!hasSatoriReward())boardLayout='normal';
   document.body.dataset.boardTheme=boardTheme;
   document.body.dataset.boardLayout=boardLayout;
   applyBoardTheme();
@@ -1861,18 +1878,20 @@ function applyBoardTheme(){
   if(bodyPath)bodyPath.style.fill='';
 }
 function renderBoardThemeOptions(){
-  const colors={default:true,gold:isMastered(),satori:isSatoriMastered()};
+  const colors={default:true,gold:hasMasterReward(),satori:hasSatoriReward()};
+  $('boardThemeLayoutSection').hidden=!hasSatoriReward();
+  $('boardThemeColorLabel').closest('.board-theme-section').classList.toggle('two-color-choice',!hasSatoriReward());
   document.querySelectorAll('[data-board-color]').forEach(button=>{
     const color=button.dataset.boardColor;
-    button.hidden=color==='satori'&&!isSatoriMastered();
+    button.hidden=color==='satori'&&!hasSatoriReward();
     button.disabled=!colors[color];
     button.classList.toggle('selected',color===boardTheme);
     button.setAttribute('aria-pressed',String(color===boardTheme));
   });
   document.querySelectorAll('[data-board-layout]').forEach(button=>{
     const layout=button.dataset.boardLayout;
-    button.hidden=layout==='tilted'&&!isSatoriMastered();
-    button.disabled=layout==='tilted'&&!isSatoriMastered();
+    button.hidden=layout==='tilted'&&!hasSatoriReward();
+    button.disabled=layout==='tilted'&&!hasSatoriReward();
     button.classList.toggle('selected',layout===boardLayout);
     button.setAttribute('aria-pressed',String(layout===boardLayout));
   });
@@ -3036,6 +3055,7 @@ function openStagePicker(){
 function openStagePickerForRank(rankIndex){
   rankDialogReturn=null;
   $('rankDialog').hidden=true;
+  $('resetDialog').hidden=true;
   pickerRound=rankIndex===0?-1:rankIndex-1;
   renderStagePicker();
   $('stagePicker').hidden=false;
@@ -3127,7 +3147,7 @@ function renderStageNav(){
     $('hint').disabled=masterHintsDisabled();
   }
   $('debugTools').hidden=!DEBUG_MODE;
-  for(const id of ['debugReset','debugClear','debugAlmost','debugMore','debugFar','debugUnlock14','debugExtra14','debugExtra29','debugExtra44','debugExtra59','debugSatori72'])$(id).hidden=!DEBUG_MODE;
+  for(const id of ['debugReset','debugClear','debugAllClear','debugAlmost','debugMore','debugFar','debugUnlock14','debugExtra14','debugExtra29','debugExtra44','debugExtra59','debugSatori72'])$(id).hidden=!DEBUG_MODE;
   $('reset').textContent=editingBoard?tr('resetAll'):tr('reset');
   $('reset').hidden=satoriMode;
   const inSideMode=freeMode||customMode;
@@ -3150,8 +3170,8 @@ function renderStageNav(){
   $('freeMode').setAttribute('aria-pressed',String(freeMode));
   $('stageModeReturn').hidden=true;
   $('menuRankList').hidden=!allPrimaryCleared();
-  $('menuAllPatterns').hidden=!isMastered();
-  $('menuBoardTheme').hidden=!isMastered();
+  $('menuAllPatterns').hidden=!hasMasterReward();
+  $('menuBoardTheme').hidden=!hasMasterReward();
   $('menuSatori').hidden=true;
   $('customMode').textContent=tr('makeBoard');
   $('customMode').classList.remove('ready');
@@ -4304,6 +4324,19 @@ function debugClearCurrent(extraMoves=0){
   paint();
 }
 $('debugClear').addEventListener('click',()=>debugClearCurrent(0));
+$('debugAllClear').addEventListener('click',()=>{
+  if(!DEBUG_MODE)return;
+  STAGES.forEach((_,i)=>clearedStages.add(i));
+  EXTRA_STAGES.forEach((_,i)=>clearedExtraStages.add(i));
+  SATORI_STAGES.forEach((_,i)=>clearedSatoriStages.add(i));
+  try{
+    localStorage.setItem('wake7-cleared',JSON.stringify([...clearedStages]));
+    localStorage.setItem('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
+    localStorage.setItem('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));
+  }catch(_){}
+  updateMasterTheme();
+  loadStage(0);
+});
 $('debugAlmost').addEventListener('click',()=>debugClearCurrent(1));
 $('debugMore').addEventListener('click',()=>debugClearCurrent(2));
 $('debugFar').addEventListener('click',()=>debugClearCurrent(3));
@@ -4315,8 +4348,13 @@ $('debugUnlock14').addEventListener('click',()=>{
 });
 function debugUnlockExtra(count){
   if(!DEBUG_MODE)return;
+  // 名人への道を直接検証するときも、前提の「だるま修行クリア」状態を再現する。
+  STAGES.forEach((_,i)=>clearedStages.add(i));
   for(let i=0;i<count;i++)clearedExtraStages.add(i);
-  try{localStorage.setItem('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));}catch(_){}
+  try{
+    localStorage.setItem('wake7-cleared',JSON.stringify([...clearedStages]));
+    localStorage.setItem('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
+  }catch(_){}
   updateMasterTheme();
   loadExtraStage(Math.min(count,EXTRA_STAGES.length-1));
 }
@@ -4803,6 +4841,7 @@ function applyLanguage(lang){
   $('hint').textContent=tr('hint');
   $('debugReset').textContent=tr('debugReset');
   $('debugClear').textContent=tr('debugClear');
+  $('debugAllClear').textContent=tr('debugAllClear');
   $('debugAlmost').textContent=tr('debugAlmost');
   $('debugMore').textContent=tr('debugMore');
   $('debugFar').textContent=tr('debugFar');
@@ -4819,6 +4858,11 @@ function applyLanguage(lang){
   $('board').setAttribute('aria-label',tr('boardLabel'));
   $('showTip').textContent=tr('tips');
   $('resetProgress').textContent=tr('resetProgress');
+  $('resetDialogTitle').textContent=tr('resetProgress');
+  $('resetDialogText').textContent=tr('resetConfirm');
+  $('resetDialogClose').setAttribute('aria-label',tr('close'));
+  $('resetDialogConfirm').textContent=tr('resetProgress');
+  $('resetDialogAll').textContent=tr('resetEverything');
   $('twoMovePatterns').textContent=tr('twoMovePatterns');
   $('twoMoveTitle').textContent=tr('twoMoveTitle');
   $('twoMoveText').textContent=tr('twoMoveText');
@@ -5009,7 +5053,7 @@ document.addEventListener('click',e=>{
   }
   if(!e.target.closest('.app-menu'))closeAppMenu();
 });
-function resetStoredProgress({resetIntro=false,showIntro=false}={}){
+function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=false}={}){
   clearedStages.clear();
   clearedExtraStages.clear();
   clearedSatoriStages.clear();
@@ -5020,24 +5064,42 @@ function resetStoredProgress({resetIntro=false,showIntro=false}={}){
     localStorage.removeItem('wake7-satori-cleared');
     localStorage.removeItem('wake7-current-stage');
     localStorage.removeItem('wake7-active-session');
-    localStorage.removeItem('wake7-board-theme-chosen');
-    localStorage.removeItem('wake7-board-layout-chosen');
-    localStorage.removeItem('wake7-master-gold-granted');
-    localStorage.removeItem('wake7-satori-design-granted');
+    if(!preserveRewards){
+      localStorage.removeItem('wake7-board-theme-chosen');
+      localStorage.removeItem('wake7-board-layout-chosen');
+      localStorage.removeItem('wake7-master-gold-granted');
+      localStorage.removeItem('wake7-satori-design-granted');
+    }
     localStorage.removeItem(FOURTH_CHECKS_STORAGE_KEY);
     localStorage.removeItem(MESSAGE_REVIEW_STORAGE_KEY);
     if(resetIntro)localStorage.removeItem('wake7-intro-seen');
   }catch(_){}
-  boardThemeChosen=false;
-  boardLayoutChosen=false;
-  masterGoldGranted=false;
-  satoriDesignGranted=false;
+  if(!preserveRewards){
+    boardThemeChosen=false;
+    boardLayoutChosen=false;
+    masterGoldGranted=false;
+    satoriDesignGranted=false;
+  }
   updateMasterTheme();
   loadStage(0);
   if(showIntro)setTimeout(openIntroGuide,80);
 }
 $('resetProgress').addEventListener('click',()=>{
-  if(!confirm(tr('resetConfirm'))) return;
+  const canKeepRewards=hasMasterReward();
+  $('resetDialogText').textContent=tr(canKeepRewards?'resetConfirmKeepRewards':'resetConfirmEarly');
+  $('resetDialogAll').hidden=!canKeepRewards;
+  $('resetDialogConfirm').textContent=tr('resetProgress');
+  $('resetDialogAll').textContent=tr('resetEverything');
+  $('resetDialog').hidden=false;
+  $('resetDialogClose').focus();
+});
+$('resetDialogClose').addEventListener('click',()=>{$('resetDialog').hidden=true;});
+$('resetDialogConfirm').addEventListener('click',()=>{
+  $('resetDialog').hidden=true;
+  resetStoredProgress({resetIntro:true,showIntro:true,preserveRewards:true});
+});
+$('resetDialogAll').addEventListener('click',()=>{
+  $('resetDialog').hidden=true;
   resetStoredProgress({resetIntro:true,showIntro:true});
 });
 
