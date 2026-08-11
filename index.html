@@ -3777,6 +3777,7 @@ const TWO_MOVE_DETAIL_INTROS={
   ko:{7:'처음 외우기 좋은 최단 2수 판입니다. 다루마의 방향은 상관없어요!'}
 };
 const miniAngle=value=>value===2?-120:value*120;
+const miniTargetAngle=(fromValue,toValue)=>nearestRotationDeg(miniAngle(fromValue),miniAngle(toValue));
 function miniBoardSvg(state){
   const board=dec(state);
   const tiles=CELL.map((cell,i)=>{
@@ -3786,23 +3787,6 @@ function miniBoardSvg(state){
       +'<use href="#daruma-body"/><use href="#'+(fallen?'face-shut':'face-open')+'"/></g></g>';
   }).join('');
   return '<svg viewBox="14 0 293 310" aria-hidden="true">'+tiles+'</svg>';
-}
-function flipPreview(element,vertical,swap,done){
-  const axis=vertical?'Y':'X',distance=vertical?'12px':'16px',duration=300;
-  const finish=()=>{element.style.transform='';element.style.opacity='';if(done)done();};
-  const firstHalf=element.animate([
-    {transform:'translate'+axis+'(0)',opacity:1},
-    {transform:'translate'+axis+'('+distance+')',opacity:.22}
-  ],{duration:duration/2,fill:'forwards',easing:'ease-in'});
-  firstHalf.onfinish=()=>{
-    firstHalf.cancel();swap();
-    const secondHalf=element.animate([
-      {transform:'translate'+axis+'(-'+distance+')',opacity:.22},
-      {transform:'translate'+axis+'(0)',opacity:1}
-    ],{duration:duration/2,easing:'ease-out'});
-    secondHalf.onfinish=finish;secondHalf.oncancel=finish;
-  };
-  firstHalf.oncancel=finish;
 }
 function transformIcon(kind){
   const paths={
@@ -3914,7 +3898,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
       vertical:{permutation:VIEW_FLIP_VERTICAL,flip:true}
     }[kind];
     if(!transform)return;
-    const symmetry=transform,mirror=transform.flip;
+    const symmetry=transform;
     if(matchMedia('(prefers-reduced-motion: reduce)').matches){
       states[index]=transformStateBySymmetry(states[index],symmetry);updateCard(index);return;
     }
@@ -3926,13 +3910,6 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
     const boardSvg=boardVisual?.querySelector('svg');
     if(!boardSvg)return;
     animating=true;
-    if(mirror){
-      flipPreview(boardVisual,kind==='vertical',()=>{
-        states[index]=transformStateBySymmetry(states[index],symmetry);
-        updateCard(index);
-      },()=>{animating=false;});
-      return;
-    }
     const before=dec(states[index]),after=dec(transformStateBySymmetry(states[index],symmetry));
     const NS_='http://www.w3.org/2000/svg',duration='.48s';
     boardSvg.querySelectorAll('.mini-tile').forEach(tile=>{
@@ -3944,7 +3921,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
       const daruma=tile.querySelector('.mini-daruma');
       const turn=document.createElementNS(NS_,'animateTransform');
       turn.setAttribute('attributeName','transform');turn.setAttribute('type','rotate');
-      turn.setAttribute('from',String(miniAngle(before[from])));turn.setAttribute('to',String(miniAngle(after[to])));
+      turn.setAttribute('from',String(miniAngle(before[from])));turn.setAttribute('to',String(miniTargetAngle(before[from],after[to])));
       turn.setAttribute('dur',duration);turn.setAttribute('fill','freeze');daruma.appendChild(turn);
       move.beginElement();turn.beginElement();
     });
@@ -4110,12 +4087,6 @@ function animateTwoMoveDetail(angle=0,mirror=false){
     twoMoveDetailState=transformStateBySymmetry(twoMoveDetailState,symmetry);renderTwoMoveDetail();return;
   }
   twoMoveDetailAnimating=true;
-  if(mirror){
-    flipPreview($('twoMoveDetailBoard'),angle===180,()=>{
-      twoMoveDetailState=transformStateBySymmetry(twoMoveDetailState,symmetry);renderTwoMoveDetail();
-    },()=>{twoMoveDetailAnimating=false;});
-    return;
-  }
   const before=dec(twoMoveDetailState),after=dec(transformStateBySymmetry(twoMoveDetailState,symmetry));
   const NS_='http://www.w3.org/2000/svg',duration='.48s';
   $('twoMoveDetailBoard').querySelectorAll('.mini-tile').forEach(tile=>{
@@ -4127,7 +4098,7 @@ function animateTwoMoveDetail(angle=0,mirror=false){
     const daruma=tile.querySelector('.mini-daruma');
     const turn=document.createElementNS(NS_,'animateTransform');
     turn.setAttribute('attributeName','transform');turn.setAttribute('type','rotate');
-    turn.setAttribute('from',String(miniAngle(before[from])));turn.setAttribute('to',String(miniAngle(after[to])));
+    turn.setAttribute('from',String(miniAngle(before[from])));turn.setAttribute('to',String(miniTargetAngle(before[from],after[to])));
     turn.setAttribute('dur',duration);turn.setAttribute('fill','freeze');daruma.appendChild(turn);
     move.beginElement();turn.beginElement();
   });
@@ -4174,12 +4145,6 @@ function animateTwoMovePattern(boardIndex,angle=0,mirror=false){
   const NS_='http://www.w3.org/2000/svg',duration='.48s';
   const card=document.querySelectorAll('.two-move-card')[boardIndex];
   if(!card){twoMoveAnimating=false;return;}
-  if(mirror){
-    flipPreview(card.querySelector('.two-move-card-open'),angle===180,()=>{
-      updateTwoMovePatternCard(card,boardIndex,transformStateBySymmetry(twoMoveDisplayStates[boardIndex],symmetry));
-    },()=>{twoMoveAnimating=false;});
-    return;
-  }
   const before=dec(twoMoveDisplayStates[boardIndex]);
   const after=dec(transformStateBySymmetry(twoMoveDisplayStates[boardIndex],symmetry));
   card.querySelectorAll('.mini-tile').forEach(tile=>{
@@ -4192,7 +4157,7 @@ function animateTwoMovePattern(boardIndex,angle=0,mirror=false){
     const daruma=tile.querySelector('.mini-daruma');
     const turn=document.createElementNS(NS_,'animateTransform');
     turn.setAttribute('attributeName','transform');turn.setAttribute('type','rotate');
-    turn.setAttribute('from',String(miniAngle(before[from])));turn.setAttribute('to',String(miniAngle(after[to])));
+    turn.setAttribute('from',String(miniAngle(before[from])));turn.setAttribute('to',String(miniTargetAngle(before[from],after[to])));
     turn.setAttribute('dur',duration);turn.setAttribute('fill','freeze');
     daruma.appendChild(turn);
     move.beginElement();turn.beginElement();
@@ -4757,13 +4722,6 @@ function animateTipGuide(angle=0,mirror=false,boardIndex=0){
   const symmetry={permutation:makeBoardPermutation(angle,mirror),flip:mirror};
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){transformTipGuide(angle,mirror,boardIndex);return;}
   tipGuideAnimating=true;
-  if(mirror){
-    const preview=tipGuideIndex===GUIDE_DOUBLE_INDEX
-      ?document.querySelectorAll('.tip-guide-double-visual')[boardIndex]
-      :$('tipGuideArt').querySelector('.tip-guide-single-visual');
-    flipPreview(preview,angle===180,()=>transformTipGuide(angle,mirror,boardIndex,true),()=>{tipGuideAnimating=false;});
-    return;
-  }
   const state=tipGuideStates[tipGuideIndex][boardIndex],after=dec(transformStateBySymmetry(enc(state),symmetry)),NS_='http://www.w3.org/2000/svg',duration='.48s';
   const board=document.querySelectorAll('.tip-guide-board')[boardIndex];
   if(!board){tipGuideAnimating=false;return;}
@@ -4776,7 +4734,7 @@ function animateTipGuide(angle=0,mirror=false,boardIndex=0){
       const daruma=tile.querySelector('.tip-guide-daruma');
       const turn=document.createElementNS(NS_,'animateTransform');
       turn.setAttribute('attributeName','transform');turn.setAttribute('type','rotate');
-      turn.setAttribute('from',String(miniAngle(state[from])));turn.setAttribute('to',String(miniAngle(after[to])));
+      turn.setAttribute('from',String(miniAngle(state[from])));turn.setAttribute('to',String(miniTargetAngle(state[from],after[to])));
       turn.setAttribute('dur',duration);turn.setAttribute('fill','freeze');daruma.appendChild(turn);
       move.beginElement();turn.beginElement();
     });
