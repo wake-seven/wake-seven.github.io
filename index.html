@@ -13,7 +13,7 @@
 <style>
   :root{
     --ai:#16283C; --ai2:#1F3752;
-    --washi:#F3E8D5; --washi2:#C8CDD1;
+    --washi:#F7EEDC; --washi2:#A9CDD9;
     --kin:#C9A54E; --sumi:#241D1A; --shu:#C8352C;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -180,7 +180,11 @@
   .stage-picker.satori-picker{max-height:none}
   .stage-picker.satori-picker .stage-picker-grid{grid-template-columns:repeat(5,1fr);overflow:visible;padding-right:0}
   body[data-board-theme="satori"] #board .tile.stand .hex{fill:#F1F1ED;stroke:#D6D6D0}
-  body[data-board-theme="satori"] #board .tile.fallen .hex{fill:#C1C0BB;stroke:#A4A39D}
+  body[data-board-theme="satori"] #board .tile.fallen .hex{fill:#AAA9A4;stroke:#8E8D88}
+  /* 悟りの褒美：パネルを30°左へ回し、縦に2・3・2と見える配置にする。 */
+  body[data-board-layout="tilted"] #board{transform:rotate(-30deg);transform-origin:50% 50%}
+  /* 盤が傾いても、だるまは画面に対してまっすぐ立つ。 */
+  body[data-board-layout="tilted"] #board .daruma-shell{transform:rotate(30deg);transform-box:fill-box;transform-origin:center}
   .mode-row.satori-mode .remaining,.mode-row.satori-mode .status-separator{display:none}
   .progress[hidden]{display:none!important}
   .new-tab-mark{display:inline-block;width:.72em;height:.72em;margin-left:.25em;vertical-align:.04em;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M9.5 2H14v4.5M14 2 8.75 7.25M12.5 8.5V12A1.5 1.5 0 0 1 11 13.5H4A1.5 1.5 0 0 1 2.5 12V5A1.5 1.5 0 0 1 4 3.5h3.5' fill='none' stroke='black' stroke-width='1.35' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M9.5 2H14v4.5M14 2 8.75 7.25M12.5 8.5V12A1.5 1.5 0 0 1 11 13.5H4A1.5 1.5 0 0 1 2.5 12V5A1.5 1.5 0 0 1 4 3.5h3.5' fill='none' stroke='black' stroke-width='1.35' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
@@ -192,14 +196,19 @@
   .game-dialog-backdrop[hidden]{display:none}
   .game-dialog{width:min(100%,360px);padding:22px 20px;border:1px solid rgba(255,255,255,.16);border-radius:15px;background:#1A3047;box-shadow:0 20px 55px rgba(0,0,0,.5);text-align:center}
   .board-theme-dialog{width:min(100%,330px)}
-  .board-theme-options{display:grid;gap:8px;margin-top:17px}
-  .board-theme-option{display:flex;align-items:center;gap:11px;width:100%;min-height:54px;padding:8px 11px;border:1px solid rgba(255,255,255,.15);border-radius:9px;background:rgba(255,255,255,.045);color:#D4E6EC;font:700 13px/1.2 inherit;text-align:left;cursor:pointer}
+  .board-theme-options{display:grid;gap:15px;margin-top:17px}
+  .board-theme-section>p{margin:0 0 6px;color:#8295AA;font-size:11px;font-weight:700;letter-spacing:.12em;text-align:left}
+  .board-theme-choice-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .board-theme-section:last-child .board-theme-choice-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .board-theme-option{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;min-height:68px;padding:7px 5px;border:1px solid rgba(255,255,255,.15);border-radius:9px;background:rgba(255,255,255,.045);color:#D4E6EC;font:700 11px/1.2 inherit;text-align:center;cursor:pointer}
   .board-theme-option[hidden]{display:none!important}
   .board-theme-option:hover{border-color:#62B8D2;background:rgba(98,184,210,.1)}
   .board-theme-option.selected{border-color:#C9A54E;background:rgba(201,165,78,.12);color:#F6DE93}
   .board-theme-option:disabled{opacity:.35;cursor:not-allowed}
   .theme-swatch{display:grid;grid-template-columns:1fr 1fr;width:39px;height:30px;overflow:hidden;border:1px solid rgba(255,255,255,.28);border-radius:5px;flex:0 0 auto}
-  .theme-swatch i{display:block}.theme-swatch.normal i:first-child{background:#4B8BA3}.theme-swatch.normal i:last-child{background:#6E8599}.theme-swatch.gold i:first-child{background:#F6DE93}.theme-swatch.gold i:last-child{background:#D7B75F}.theme-swatch.satori i:first-child{background:#F1F1ED}.theme-swatch.satori i:last-child{background:#C1C0BB}
+  .theme-swatch i{display:block}.theme-swatch.normal i:first-child{background:#F7EEDC}.theme-swatch.normal i:last-child{background:#A9CDD9}.theme-swatch.gold i:first-child{background:#F6DE93}.theme-swatch.gold i:last-child{background:#D7B75F}.theme-swatch.satori i:first-child{background:#F1F1ED}.theme-swatch.satori i:last-child{background:#AAA9A4}.theme-swatch.tilted{position:relative;background:#547F96}.theme-swatch.tilted i{position:absolute;left:5px;top:4px;width:27px;height:20px;border:2px solid #B9E8F2;border-radius:2px;transform:rotate(30deg)}
+  .layout-swatch{display:block;width:48px;height:38px;flex:0 0 auto;overflow:visible}
+  .layout-swatch path{fill:none;stroke:#D6E5ED;stroke-width:1.8;stroke-linejoin:round}
   #clearDialog .game-dialog{max-height:calc(100dvh - 36px);overflow-y:auto}
   #messageDialog .game-dialog{max-height:calc(100dvh - 36px);overflow-y:auto}
   .game-dialog h2{font-size:21px;letter-spacing:.08em;color:var(--washi);white-space:pre-line}
@@ -360,7 +369,7 @@
   .mastery-board svg{display:block;width:230px;height:200px;overflow:visible}
   .mastery-board .tile.stand .hex{fill:#F6DE93;stroke:#C89C35}
   .mastery-board.satori-theme .tile.stand .hex{fill:#F1F1ED;stroke:#D6D6D0}
-  .mastery-board.satori-theme .tile.fallen .hex{fill:#C1C0BB;stroke:#A4A39D}
+  .mastery-board.satori-theme .tile.fallen .hex{fill:#AAA9A4;stroke:#8E8D88}
   .mastery-board .tile .open,.mastery-board .tile .shut{display:none}
   .mastery-board .tile .happy{display:block}
   .road-step{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 67px;align-items:center;min-height:35px;padding-left:25px;color:#586B80;text-align:left}
@@ -714,11 +723,17 @@
 </div>
 <div class="game-dialog-backdrop" id="boardThemeDialog" hidden>
   <div class="game-dialog board-theme-dialog" role="dialog" aria-modal="true" aria-labelledby="boardThemeTitle">
-    <h2 id="boardThemeTitle">盤面の色</h2>
+    <h2 id="boardThemeTitle">盤面のデザイン</h2>
     <div class="board-theme-options" id="boardThemeOptions">
-      <button class="board-theme-option" type="button" data-board-theme="default"><span class="theme-swatch normal"><i></i><i></i></span><span id="boardThemeDefault">通常</span></button>
-      <button class="board-theme-option" type="button" data-board-theme="gold"><span class="theme-swatch gold"><i></i><i></i></span><span id="boardThemeGold">金</span></button>
-      <button class="board-theme-option" type="button" data-board-theme="satori" hidden><span class="theme-swatch satori"><i></i><i></i></span><span id="boardThemeSatori">白黒</span></button>
+      <section class="board-theme-section"><p id="boardThemeColorLabel">色</p><div class="board-theme-choice-row">
+        <button class="board-theme-option" type="button" data-board-color="default"><span class="theme-swatch normal"><i></i><i></i></span><span id="boardThemeDefault">通常</span></button>
+        <button class="board-theme-option" type="button" data-board-color="gold"><span class="theme-swatch gold"><i></i><i></i></span><span id="boardThemeGold">金</span></button>
+        <button class="board-theme-option" type="button" data-board-color="satori" hidden><span class="theme-swatch satori"><i></i><i></i></span><span id="boardThemeSatori">白黒</span></button>
+      </div></section>
+      <section class="board-theme-section"><p id="boardThemeLayoutLabel">配置</p><div class="board-theme-choice-row">
+        <button class="board-theme-option" type="button" data-board-layout="normal"><svg class="layout-swatch" viewBox="0 0 48 38" aria-hidden="true"><path d="M18.37 0 24 3.25 24 9.75 18.37 13 12.74 9.75 12.74 3.25Z M29.63 0 35.26 3.25 35.26 9.75 29.63 13 24 9.75 24 3.25Z M12.74 9.75 18.37 13 18.37 19.5 12.74 22.75 7.11 19.5 7.11 13Z M24 9.75 29.63 13 29.63 19.5 24 22.75 18.37 19.5 18.37 13Z M35.26 9.75 40.89 13 40.89 19.5 35.26 22.75 29.63 19.5 29.63 13Z M18.37 19.5 24 22.75 24 29.25 18.37 32.5 12.74 29.25 12.74 22.75Z M29.63 19.5 35.26 22.75 35.26 29.25 29.63 32.5 24 29.25 24 22.75Z"/></svg><span id="boardLayoutNormal">横配置</span></button>
+        <button class="board-theme-option" type="button" data-board-layout="tilted" hidden><svg class="layout-swatch" viewBox="0 0 48 38" aria-hidden="true"><path d="M14.25 6.87 19.88 10.12 19.88 16.62 14.25 19.87 8.62 16.62 8.62 10.12Z" transform="rotate(-30 14.25 13.37)"/><path d="M14.25 18.13 19.88 21.38 19.88 27.88 14.25 31.13 8.62 27.88 8.62 21.38Z" transform="rotate(-30 14.25 24.63)"/><path d="M24 1.24 29.63 4.49 29.63 10.99 24 14.24 18.37 10.99 18.37 4.49Z" transform="rotate(-30 24 7.74)"/><path d="M24 12.5 29.63 15.75 29.63 22.25 24 25.5 18.37 22.25 18.37 15.75Z" transform="rotate(-30 24 19)"/><path d="M24 23.76 29.63 27.01 29.63 33.51 24 36.76 18.37 33.51 18.37 27.01Z" transform="rotate(-30 24 30.26)"/><path d="M33.75 6.87 39.38 10.12 39.38 16.62 33.75 19.87 28.12 16.62 28.12 10.12Z" transform="rotate(-30 33.75 13.37)"/><path d="M33.75 18.13 39.38 21.38 39.38 27.88 33.75 31.13 28.12 27.88 28.12 21.38Z" transform="rotate(-30 33.75 24.63)"/></svg><span id="boardThemeTilted">縦配置</span></button>
+      </div></section>
     </div>
     <div class="dialog-actions"><button class="chip" id="closeBoardTheme">閉じる</button></div>
   </div>
@@ -832,6 +847,9 @@ const VIEW_ROTATE_60=makeBoardPermutation(60);
 const VIEW_ROTATE_MINUS60=makeBoardPermutation(-60);
 const VIEW_MIRROR=makeBoardPermutation(0,true);
 const VIEW_FLIP_VERTICAL=makeBoardPermutation(180,true);
+// 縦配置は盤を30°左へ傾けているため、画面上の水平・垂直に見える反転軸を補正する。
+const VIEW_TILTED_MIRROR=makeBoardPermutation(60,true);
+const VIEW_TILTED_FLIP_VERTICAL=makeBoardPermutation(-120,true);
 
 /* ---- 全探索ソルバ（向き3値・7マス = 3進7桁） ---- */
 const P3=[1,3,9,27,81,243,729], NS=2187;
@@ -1562,8 +1580,10 @@ Object.assign(UI_TEXT.ko,{
   masteryText:'황금 보드를 얻었습니다.\n메뉴에서 보드 색을 고를 수 있습니다.',
   masteryBoardNote:'메뉴에 “모든 패턴”이 추가되었습니다.'
 });
-Object.assign(UI_TEXT.ja,{satori:'悟りへの道',satoriPicker:'悟りへの道　73問',satoriChoose:'問題を選ぶ',satoriFailRule:'悟りへの道は最短の手でのみクリアできます。',satoriFailEncourage:'ゲノムを見ながら、もう一度挑もう。',satoriTitle:'悟りへの道 制覇！',satoriText:'称号「無心」を獲得しました。\n白黒の盤を手に入れました。',satoriStart:'悟りへの道へ →',satoriRank:'無心',satoriUnlock:'悟りへの道が開かれました。'});
-Object.assign(UI_TEXT.en,{satori:'Path to Awakening',satoriPicker:'Path to Awakening · 73 puzzles',satoriChoose:'Choose a puzzle',satoriFailRule:'Path to Awakening must be cleared in the fewest moves.',satoriFailEncourage:'Study the Genome, then try again.',satoriTitle:'Path to Awakening complete!',satoriText:'You earned the title “No Mind”.\nThe monochrome board is now yours.',satoriStart:'Path to Awakening →',satoriRank:'No Mind',satoriUnlock:'Path to Awakening is now open.'});
+Object.assign(UI_TEXT.ja,{satori:'悟りへの道',satoriPicker:'悟りへの道　73問',satoriChoose:'問題を選ぶ',satoriFailRule:'悟りへの道は最短の手でのみクリアできます。',satoriFailEncourage:'ゲノムを見ながら、もう一度挑もう。',satoriTitle:'悟りへの道 制覇！',satoriText:'称号「無心」を獲得しました。\n白い盤・新しい角度の盤を手に入れました。',satoriStart:'悟りへの道へ →',satoriRank:'無心',satoriUnlock:'悟りへの道が開かれました。'});
+Object.assign(UI_TEXT.en,{satori:'Path to Awakening',satoriPicker:'Path to Awakening · 73 puzzles',satoriChoose:'Choose a puzzle',satoriFailRule:'Path to Awakening must be cleared in the fewest moves.',satoriFailEncourage:'Study the Genome, then try again.',satoriTitle:'Path to Awakening complete!',satoriText:'You earned the title “No Mind”.\nThe vertical board layout is now yours.',satoriStart:'Path to Awakening →',satoriRank:'No Mind',satoriUnlock:'Path to Awakening is now open.'});
+Object.assign(UI_TEXT.zh,{satoriText:'已获得称号“无心”。\n已获得纵向布局棋盘。'});
+Object.assign(UI_TEXT.ko,{satoriText:'칭호 “무심”을 획득했습니다.\n세로 배치 보드를 얻었습니다.'});
 Object.assign(UI_TEXT.zh,{satori:'悟道之路',satoriPicker:'悟道之路 · 73题',satoriChoose:'选择题目',satoriFailRule:'悟道之路必须用最少步数通关。',satoriFailEncourage:'看看图鉴，再试一次吧。',satoriTitle:'悟道之路 完成！',satoriText:'获得称号“无心”。\n已解锁黑白棋盘。',satoriStart:'前往悟道之路 →',satoriRank:'无心',satoriUnlock:'悟道之路已开启。'});
 Object.assign(UI_TEXT.ko,{satori:'깨달음의 길',satoriPicker:'깨달음의 길 · 73문제',satoriChoose:'문제 선택',satoriFailRule:'깨달음의 길은 최단 수로만 클리어할 수 있습니다.',satoriFailEncourage:'게놈을 보고 다시 도전해 보세요.',satoriTitle:'깨달음의 길 완료!',satoriText:'칭호 “무심”을 획득했습니다.\n흑백 보드를 얻었습니다.',satoriStart:'깨달음의 길로 →',satoriRank:'무심',satoriUnlock:'깨달음의 길이 열렸습니다.'});
 Object.assign(UI_TEXT.ja,{satoriFailLimit:'最短手数に達しました。',satoriFailResult:'この問題の最短手数は{best}手です。'});
@@ -1578,18 +1598,18 @@ Object.assign(UI_TEXT.ja,{debugSatori72:'悟72'});
 Object.assign(UI_TEXT.en,{debugSatori72:'Awake 72'});
 Object.assign(UI_TEXT.zh,{debugSatori72:'悟72'});
 Object.assign(UI_TEXT.ko,{debugSatori72:'깨72'});
-Object.assign(UI_TEXT.ja,{satoriText:'白黒の盤を手に入れました。'});
-Object.assign(UI_TEXT.en,{satoriText:'The monochrome board is now yours.'});
-Object.assign(UI_TEXT.zh,{satoriText:'已解锁黑白棋盘。'});
-Object.assign(UI_TEXT.ko,{satoriText:'흑백 보드를 얻었습니다.'});
+Object.assign(UI_TEXT.ja,{satoriText:'白い盤・新しい角度の盤を手に入れました。'});
+Object.assign(UI_TEXT.en,{satoriText:'You earned the white board and its new angle.'});
+Object.assign(UI_TEXT.zh,{satoriText:'已获得白色棋盘和新的角度布局。'});
+Object.assign(UI_TEXT.ko,{satoriText:'하얀 보드와 새로운 각도 배치를 얻었습니다.'});
 Object.assign(UI_TEXT.ja,{satoriThanks:'ステージモードはこれで本当に終わりです。\n最後までプレイしてくださりありがとうございます。'});
 Object.assign(UI_TEXT.en,{satoriThanks:'This is truly the end of Stage Mode.\nThank you for playing all the way through.'});
 Object.assign(UI_TEXT.zh,{satoriThanks:'这就是关卡模式真正的终点。\n感谢你一路玩到最后。'});
 Object.assign(UI_TEXT.ko,{satoriThanks:'스테이지 모드는 여기서 정말 끝입니다.\n끝까지 플레이해 주셔서 감사합니다.'});
-Object.assign(UI_TEXT.ja,{boardTheme:'盤面の色',boardThemeDefault:'通常',boardThemeGold:'金',boardThemeSatori:'白黒'});
-Object.assign(UI_TEXT.en,{boardTheme:'Board colors',boardThemeDefault:'Standard',boardThemeGold:'Gold',boardThemeSatori:'Monochrome'});
-Object.assign(UI_TEXT.zh,{boardTheme:'棋盘颜色',boardThemeDefault:'标准',boardThemeGold:'金色',boardThemeSatori:'黑白'});
-Object.assign(UI_TEXT.ko,{boardTheme:'보드 색상',boardThemeDefault:'기본',boardThemeGold:'금색',boardThemeSatori:'흑백'});
+Object.assign(UI_TEXT.ja,{boardTheme:'盤面のデザイン',boardThemeColor:'色',boardThemeLayout:'配置',boardThemeDefault:'通常',boardThemeGold:'金',boardThemeSatori:'白黒',boardLayoutNormal:'横配置',boardThemeTilted:'縦配置'});
+Object.assign(UI_TEXT.en,{boardTheme:'Board design',boardThemeColor:'Color',boardThemeLayout:'Layout',boardThemeDefault:'Standard',boardThemeGold:'Gold',boardThemeSatori:'Monochrome',boardLayoutNormal:'Horizontal',boardThemeTilted:'Vertical'});
+Object.assign(UI_TEXT.zh,{boardTheme:'棋盘设计',boardThemeColor:'颜色',boardThemeLayout:'布局',boardThemeDefault:'标准',boardThemeGold:'金色',boardThemeSatori:'黑白',boardLayoutNormal:'横向布局',boardThemeTilted:'纵向布局'});
+Object.assign(UI_TEXT.ko,{boardTheme:'보드 디자인',boardThemeColor:'색상',boardThemeLayout:'배치',boardThemeDefault:'기본',boardThemeGold:'금색',boardThemeSatori:'흑백',boardLayoutNormal:'가로 배치',boardThemeTilted:'세로 배치'});
 Object.assign(UI_TEXT.ja,{rotateCcw:'↺ 60°回転',rotateCw:'↻ 60°回転',flipVertical:'↕ 上下反転'});
 Object.assign(UI_TEXT.en,{rotateCcw:'↺ Rotate 60°',rotateCw:'↻ Rotate 60°',flipVertical:'↕ Flip vertical'});
 Object.assign(UI_TEXT.zh,{rotateCcw:'↺ 旋转60°',rotateCw:'↻ 旋转60°',flipVertical:'↕ 上下翻转'});
@@ -1735,12 +1755,28 @@ const DEBUG_MODE=new URLSearchParams(location.search).get('debug')==='1';
 let ori=new Uint8Array(N), spin=new Int16Array(N), history=[], moves=0, best=0;
 let tileEls=[], baseTiles=[], drag=null, busy=false;
 let stageIndex=0,extraIndex=0,satoriIndex=0,extraMode=false,satoriMode=false,freeMode=false,clearShown=false,clearTimer=0;
+let satoriMasteryJustCompleted=false;
+let pendingMasterThemeRefresh=false;
 let soundEnabled=true,audioContext=null;
 try{soundEnabled=localStorage.getItem('wake7-sound')!=='off';}catch(_){ }
 let boardTheme='default';
-try{const savedTheme=localStorage.getItem('wake7-board-theme');if(['default','gold','satori'].includes(savedTheme))boardTheme=savedTheme;}catch(_){ }
+let boardLayout='normal';
+try{
+  const savedTheme=localStorage.getItem('wake7-board-theme');
+  // 旧「縦配置」テーマは、通常色 + 縦配置へ移行する。
+  if(savedTheme==='tilted')boardLayout='tilted';
+  else if(['default','gold','satori'].includes(savedTheme))boardTheme=savedTheme;
+  const savedLayout=localStorage.getItem('wake7-board-layout');
+  if(['normal','tilted'].includes(savedLayout))boardLayout=savedLayout;
+}catch(_){ }
 let boardThemeChosen=false;
 try{boardThemeChosen=localStorage.getItem('wake7-board-theme-chosen')==='1';}catch(_){ }
+let boardLayoutChosen=false;
+try{boardLayoutChosen=localStorage.getItem('wake7-board-layout-chosen')==='1';}catch(_){ }
+let masterGoldGranted=false;
+try{masterGoldGranted=localStorage.getItem('wake7-master-gold-granted')==='1';}catch(_){ }
+let satoriDesignGranted=false;
+try{satoriDesignGranted=localStorage.getItem('wake7-satori-design-granted')==='1';}catch(_){ }
 let lastStageMode={extra:false,index:0};
 let customMode=false,editingBoard=false;
 let masterDialogKind='primary';
@@ -1792,15 +1828,28 @@ const isSatoriMastered=()=>SATORI_STAGES.every((_,i)=>clearedSatoriStages.has(i)
 function updateMasterTheme(){
   document.body.classList.toggle('mastered',isMastered());
   document.body.classList.toggle('satori-mastered',isSatoriMastered());
+  // 名人制覇の瞬間は、直前の手動選択より金の盤面を優先して褒美として見せる。
+  if(isMastered()&&!masterGoldGranted){
+    boardTheme='gold';masterGoldGranted=true;
+    try{localStorage.setItem('wake7-master-gold-granted','1');}catch(_){ }
+  }
+  // 悟り制覇の瞬間は、白黒と縦配置をセットで新しい褒美として見せる。
+  if(isSatoriMastered()&&!satoriDesignGranted){
+    boardTheme='satori';boardLayout='tilted';satoriDesignGranted=true;
+    try{localStorage.setItem('wake7-satori-design-granted','1');}catch(_){ }
+  }
   if(isMastered()&&!boardThemeChosen)boardTheme=isSatoriMastered()?'satori':'gold';
+  if(isSatoriMastered()&&!boardLayoutChosen)boardLayout='tilted';
   if((boardTheme==='gold'&&!isMastered())||(boardTheme==='satori'&&!isSatoriMastered()))boardTheme='default';
+  if(boardLayout==='tilted'&&!isSatoriMastered())boardLayout='normal';
   document.body.dataset.boardTheme=boardTheme;
+  document.body.dataset.boardLayout=boardLayout;
   applyBoardTheme();
-  try{localStorage.setItem('wake7-board-theme',boardTheme);}catch(_){ }
+  try{localStorage.setItem('wake7-board-theme',boardTheme);localStorage.setItem('wake7-board-layout',boardLayout);}catch(_){ }
 }
 const BOARD_THEME_TONES={
   gold:{stand:{fill:'#F6DE93',stroke:'#C89C35'},fallen:{fill:'#D7B75F',stroke:'#A67D28'}},
-  satori:{stand:{fill:'#F1F1ED',stroke:'#D6D6D0'},fallen:{fill:'#C1C0BB',stroke:'#A4A39D'}}
+  satori:{stand:{fill:'#F1F1ED',stroke:'#D6D6D0'},fallen:{fill:'#AAA9A4',stroke:'#8E8D88'}}
 };
 function applyBoardTheme(){
   const tones=BOARD_THEME_TONES[boardTheme];
@@ -1815,19 +1864,26 @@ function applyBoardTheme(){
   if(bodyPath)bodyPath.style.fill='';
 }
 function renderBoardThemeOptions(){
-  const unlocked={default:true,gold:isMastered(),satori:isSatoriMastered()};
-  document.querySelectorAll('[data-board-theme]').forEach(button=>{
-    const theme=button.dataset.boardTheme;
-    button.hidden=theme==='satori'&&!isSatoriMastered();
-    button.disabled=!unlocked[theme];
-    button.classList.toggle('selected',theme===boardTheme);
-    button.setAttribute('aria-pressed',String(theme===boardTheme));
+  const colors={default:true,gold:isMastered(),satori:isSatoriMastered()};
+  document.querySelectorAll('[data-board-color]').forEach(button=>{
+    const color=button.dataset.boardColor;
+    button.hidden=color==='satori'&&!isSatoriMastered();
+    button.disabled=!colors[color];
+    button.classList.toggle('selected',color===boardTheme);
+    button.setAttribute('aria-pressed',String(color===boardTheme));
+  });
+  document.querySelectorAll('[data-board-layout]').forEach(button=>{
+    const layout=button.dataset.boardLayout;
+    button.hidden=layout==='tilted'&&!isSatoriMastered();
+    button.disabled=layout==='tilted'&&!isSatoriMastered();
+    button.classList.toggle('selected',layout===boardLayout);
+    button.setAttribute('aria-pressed',String(layout===boardLayout));
   });
 }
 function openBoardThemeDialog(){
   renderBoardThemeOptions();
   $('boardThemeDialog').hidden=false;
-  $('boardThemeOptions').querySelector(':not(:disabled)')?.focus();
+  $('boardThemeOptions').querySelector('[data-board-color]:not(:disabled),[data-board-layout]:not(:disabled)')?.focus();
 }
 const mod3=v=>((v%3)+3)%3;
 const isSolved=()=>SOLVER.dist[enc(ori)]===0;
@@ -1838,7 +1894,8 @@ try{fourthCheckUsage=JSON.parse(localStorage.getItem(FOURTH_CHECKS_STORAGE_KEY)|
 let fourthHintPreview=false,fourthDistanceRevealed=false,fourthHintDistance=null,fourthChecksUsed=0;
 const masterVolume=()=>extraMode?Math.floor(extraIndex/STAGES.length)+1:0;
 const isFinalMasterPuzzle=()=>extraMode&&extraIndex===EXTRA_STAGES.length-1;
-const usesSwipeDimming=()=>!extraMode&&!satoriMode&&!freeMode&&!customMode;
+// だるま修行を一巡した後は、盤面を見渡しながら練習できるよう暗転しない。
+const usesSwipeDimming=()=>!extraMode&&!satoriMode&&!freeMode&&!customMode&&!allPrimaryCleared();
 const requiresOptimalClear=()=>extraMode||satoriMode;
 const masterHintsDisabled=()=>masterVolume()>=2;
 const isThirdVolume=()=>extraMode&&extraIndex>=30&&extraIndex<45;
@@ -1957,8 +2014,8 @@ function buildBoard(){
     g.setAttribute('class','tile');
     g.dataset.cell=i;
     g.innerHTML='<path class="hex" d="'+hexPath(R)+'"/>'
-      +'<use href="#daruma-body"/><g class="open"><use href="#face-open"/></g><g class="shut"><use href="#face-shut"/></g>'
-      +'<g class="happy"><use href="#face-happy"/></g>';
+      +'<g class="daruma-shell"><use href="#daruma-body"/><g class="open"><use href="#face-open"/></g><g class="shut"><use href="#face-shut"/></g>'
+      +'<g class="happy"><use href="#face-happy"/></g></g>';
     svg.appendChild(g); tileEls.push(g);
   });
   TRI.forEach((t,ti)=>{
@@ -2134,14 +2191,18 @@ function paint(){
       return;
     }
     if(satoriMode){
+      const wasSatoriMastered=isSatoriMastered();
       clearedSatoriStages.add(satoriIndex);
       try{localStorage.setItem('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));}catch(_){}
-      updateMasterTheme();
+      satoriMasteryJustCompleted=!wasSatoriMastered&&isSatoriMastered();
+      if(satoriMasteryJustCompleted)pendingMasterThemeRefresh=true;
+      else updateMasterTheme();
       renderStageNav();
     }else if(extraMode){
       clearedExtraStages.add(extraIndex);
       try{localStorage.setItem('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));}catch(_){}
-      updateMasterTheme();
+      if(isMastered())pendingMasterThemeRefresh=true;
+      else updateMasterTheme();
       renderProgress();
     }else if(!freeMode&&!customMode){
       clearedStages.add(stageIndex);
@@ -2203,22 +2264,25 @@ function reorientBoard(permutation,flip=false,rotationDeg=0){
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(flip&&!rotationDeg&&!reduced){
     busy=true;
-    const turn=permutation===VIEW_MIRROR?'rotateY':'rotateX';
+    const turn=(permutation===VIEW_MIRROR||permutation===VIEW_TILTED_MIRROR)?'rotateY':'rotateX';
     const first=turn==='rotateY'?90:-90;
     const duration=480;
     const board=$('board');
+    // 盤の傾きは先に適用し、反転そのものは画面の水平・垂直軸で行う。
+    const layout=boardLayout==='tilted'?' rotate(-30deg)':'';
+    const flipTransform=angle=>'perspective(820px) '+turn+'('+angle+'deg)'+layout;
     const firstHalf=board.animate([
-      {transform:'perspective(820px) '+turn+'(0deg)'},
-      {transform:'perspective(820px) '+turn+'('+first+'deg)'}
+      {transform:flipTransform(0)},
+      {transform:flipTransform(first)}
     ],{duration:duration/2,fill:'forwards',easing:'linear'});
     firstHalf.onfinish=()=>{
-      const reverse='perspective(820px) '+turn+'('+(-first)+'deg)';
+      const reverse=flipTransform(-first);
       board.style.transform=reverse;
       firstHalf.cancel();
       applyTransform();paint();
       const secondHalf=board.animate([
         {transform:reverse},
-        {transform:'perspective(820px) '+turn+'(0deg)'}
+        {transform:flipTransform(0)}
       ],{duration:duration/2,easing:'linear'});
       secondHalf.onfinish=()=>{board.style.transform='';busy=false;paint();};
       secondHalf.oncancel=()=>{board.style.transform='';busy=false;paint();};
@@ -2294,6 +2358,7 @@ function setPosition(state,par){
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   clearTimeout(clearTimer);
   currentInitialState=state; currentInitialPar=par;
+  satoriMasteryJustCompleted=false;
   ori=dec(state);
   spin=Int16Array.from(ori);
   tileEls=baseTiles.slice();
@@ -2314,7 +2379,7 @@ function loadStage(index){
   saveCurrentStage(false,stageIndex);
   setPosition(stage.state,stage.par);
   renderStageNav();
-  if(stageIndex===0)scheduleStageOneTutorial();
+  if(stageIndex===0&&!allPrimaryCleared())scheduleStageOneTutorial();
 }
 function loadExtraStage(index){
   extraMode=true;satoriMode=false;freeMode=false;customMode=false;editingBoard=false;
@@ -2697,7 +2762,7 @@ $('reset').addEventListener('click',()=>{
   if(editingBoard){resetMakerBoard();return;}
   setPosition(currentInitialState,currentInitialPar);
   renderStageNav();
-  if(!freeMode&&!customMode&&!extraMode&&stageIndex===0)scheduleStageOneTutorial();
+  if(!freeMode&&!customMode&&!extraMode&&stageIndex===0&&!allPrimaryCleared())scheduleStageOneTutorial();
 });
 $('shuffle').addEventListener('click',()=>{
   if(!busy&&freeMode)startFree();
@@ -2779,6 +2844,7 @@ function cancelTutorialHint(preserveSelection=false){
   clearHintVisuals(preserveSelection);
 }
 function scheduleStageOneTutorial(){
+  if(allPrimaryCleared())return;
   cancelTutorialHint();
   tutorialHintTimers.push(setTimeout(()=>{
     if(stageIndex===0&&!freeMode&&!customMode&&!extraMode&&moves===0&&!busy)showBestMoveHint(true);
@@ -3202,7 +3268,15 @@ function renderClearStageContext(){
     :$('stageKind').textContent+' '+$('stageNumber').textContent;
 }
 function showClearDialog(){
-  if(satoriMode&&isSatoriMastered()){
+  // 悟りの最終問題は、再挑戦で解いた場合も制覇ダイアログを見せる。
+  // それ以外の悟り問題は、制覇後も通常のクリアダイアログにする。
+  const showSatoriMastery=satoriMode&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered();
+  if(pendingMasterThemeRefresh){
+    pendingMasterThemeRefresh=false;
+    updateMasterTheme();
+  }
+  if(showSatoriMastery){
+    satoriMasteryJustCompleted=false;
     showMasterDialog('satori');
     return;
   }
@@ -3887,10 +3961,11 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   }));
   if(requireAnswer)$('clearNext').disabled=true;
 }
-function masteryBoardSvg(){
+function masteryBoardSvg(tilted=false){
   const tiles=CELL.map((cell,i)=>'<g class="tile stand mastery-tile" data-cell="'+i+'" style="transform:'+tileTransform(cell.x,cell.y,0)+'">'
-    +'<path class="hex" d="'+hexPath(R)+'"/><use href="#daruma-body"/><g class="open"><use href="#face-open"/></g><g class="shut"><use href="#face-shut"/></g><g class="happy"><use href="#face-happy"/></g></g>').join('');
-  return '<svg viewBox="14 0 293 310" aria-hidden="true">'+tiles+'</svg>';
+    +'<path class="hex" d="'+hexPath(R)+'"/><g class="mastery-daruma-shell"'+(tilted?' transform="rotate(30)"':'')+'><use href="#daruma-body"/><g class="open"><use href="#face-open"/></g><g class="shut"><use href="#face-shut"/></g><g class="happy"><use href="#face-happy"/></g></g></g>').join('');
+  const layout=tilted?'<g transform="rotate(-30 160 155)">'+tiles+'</g>':tiles;
+  return '<svg viewBox="14 0 293 310" aria-hidden="true">'+layout+'</svg>';
 }
 const masteryBoardTimers=new Map();
 function animateMasteryBoard(id){
@@ -3920,9 +3995,10 @@ function animateMasteryBoard(id){
 function renderMasteryBoard(id,show,theme='gold'){
   const board=$(id);
   clearTimeout(masteryBoardTimers.get(id));
-  board.classList.toggle('satori-theme',show&&theme==='satori');
+  board.classList.toggle('satori-theme',show&&theme.startsWith('satori'));
+  board.classList.toggle('tilted-theme',show&&theme==='satori-tilted');
   board.hidden=!show;
-  board.innerHTML=show?masteryBoardSvg():'';
+  board.innerHTML=show?masteryBoardSvg(theme==='satori-tilted'):'';
   if(show)animateMasteryBoard(id);
 }
 function renderTwoMovePatterns(){
@@ -4077,7 +4153,7 @@ function animateTwoMovePattern(boardIndex,angle=0,mirror=false){
 function showMasterDialog(kind='primary'){
   masterDialogKind=kind;
   if(kind==='mastery')$('menuAllPatterns').hidden=false;
-  renderMasteryBoard('masteryBoard',kind==='mastery'||kind==='satori',kind==='satori'?'satori':'gold');
+  renderMasteryBoard('masteryBoard',kind==='mastery'||kind==='satori',kind==='satori'?'satori-tilted':'gold');
   const seal=$('masterSeal');
   const rankText=$('masterRankText');
   const shareButton=$('masterShare');
@@ -4207,8 +4283,8 @@ $('nextStage').addEventListener('click',()=>{
   else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);
   else loadStage(stageIndex+1);
  });
-$('mirrorBoard').addEventListener('click',()=>reorientBoard(VIEW_MIRROR,true));
-$('flipBoardVertical').addEventListener('click',()=>reorientBoard(VIEW_FLIP_VERTICAL,true));
+$('mirrorBoard').addEventListener('click',()=>reorientBoard(boardLayout==='tilted'?VIEW_TILTED_MIRROR:VIEW_MIRROR,true));
+$('flipBoardVertical').addEventListener('click',()=>reorientBoard(boardLayout==='tilted'?VIEW_TILTED_FLIP_VERTICAL:VIEW_FLIP_VERTICAL,true));
 $('rotateBoardBack').addEventListener('click',()=>reorientBoard(VIEW_ROTATE_MINUS60,false,-60));
 $('rotateBoard').addEventListener('click',()=>reorientBoard(VIEW_ROTATE_60,false,60));
 $('customMode').addEventListener('click',()=>{
@@ -4368,7 +4444,9 @@ $('clearTipLink').addEventListener('click',()=>{
 });
 $('masterClose').addEventListener('click',()=>{
   const openSatori=masterDialogKind==='mastery';
+  const restartTraining=masterDialogKind==='satori';
   hideGameDialogs();
+  if(restartTraining){loadStage(0);return;}
   renderStageNav();
   if(openSatori)showMasterDialog('satoriIntro');
 });
@@ -4721,9 +4799,13 @@ function applyLanguage(lang){
   $('menuRankList').textContent=tr('rankListMenu');
   $('menuBoardTheme').textContent=tr('boardTheme');
   $('boardThemeTitle').textContent=tr('boardTheme');
+  $('boardThemeColorLabel').textContent=tr('boardThemeColor');
+  $('boardThemeLayoutLabel').textContent=tr('boardThemeLayout');
   $('boardThemeDefault').textContent=tr('boardThemeDefault');
   $('boardThemeGold').textContent=tr('boardThemeGold');
   $('boardThemeSatori').textContent=tr('boardThemeSatori');
+  $('boardLayoutNormal').textContent=tr('boardLayoutNormal');
+  $('boardThemeTilted').textContent=tr('boardThemeTilted');
   $('closeBoardTheme').textContent=tr('close');
   $('menuAllPatterns').innerHTML=tr('allPatternsMenu')+'<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span>';
   $('menuSatori').textContent=tr('satori');
@@ -4847,14 +4929,19 @@ $('boardThemeDialog').addEventListener('click',event=>{
   if(event.target===$('boardThemeDialog'))$('boardThemeDialog').hidden=true;
 });
 $('boardThemeOptions').addEventListener('click',event=>{
-  const button=event.target.closest('[data-board-theme]');
+  const button=event.target.closest('[data-board-color],[data-board-layout]');
   if(!button||button.disabled)return;
-  boardTheme=button.dataset.boardTheme;
-  boardThemeChosen=true;
-  try{localStorage.setItem('wake7-board-theme-chosen','1');}catch(_){ }
+  if(button.dataset.boardColor){
+    boardTheme=button.dataset.boardColor;
+    boardThemeChosen=true;
+    try{localStorage.setItem('wake7-board-theme-chosen','1');}catch(_){ }
+  }else{
+    boardLayout=button.dataset.boardLayout;
+    boardLayoutChosen=true;
+    try{localStorage.setItem('wake7-board-layout-chosen','1');}catch(_){ }
+  }
   updateMasterTheme();
   renderBoardThemeOptions();
-  $('boardThemeDialog').hidden=true;
 });
 function closeTwoMovePatterns(){
   $('twoMoveDialog').hidden=true;
@@ -4949,11 +5036,17 @@ function resetStoredProgress({resetIntro=false,showIntro=false}={}){
     localStorage.removeItem('wake7-current-stage');
     localStorage.removeItem('wake7-active-session');
     localStorage.removeItem('wake7-board-theme-chosen');
+    localStorage.removeItem('wake7-board-layout-chosen');
+    localStorage.removeItem('wake7-master-gold-granted');
+    localStorage.removeItem('wake7-satori-design-granted');
     localStorage.removeItem(FOURTH_CHECKS_STORAGE_KEY);
     localStorage.removeItem(MESSAGE_REVIEW_STORAGE_KEY);
     if(resetIntro)localStorage.removeItem('wake7-intro-seen');
   }catch(_){}
   boardThemeChosen=false;
+  boardLayoutChosen=false;
+  masterGoldGranted=false;
+  satoriDesignGranted=false;
   updateMasterTheme();
   loadStage(0);
   if(showIntro)setTimeout(openIntroGuide,80);
