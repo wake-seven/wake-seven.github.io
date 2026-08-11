@@ -279,8 +279,11 @@
   .two-move-card:hover{border-color:#62B8D2;background:rgba(98,184,210,.08)}
   .two-move-card-open:focus-visible{outline:2px solid var(--washi);outline-offset:2px}
   .two-move-card svg{display:block;width:100%;height:auto}
-  .two-move-card-tools{position:absolute;z-index:2;inset:5px;pointer-events:none}
+  .two-move-card-tools{position:absolute;z-index:2;inset:-2px;pointer-events:none}
   .two-move-card-tools .chip,.two-move-controls.transform-icons .chip,.tip-guide-transform.transform-icons .chip{display:grid;place-items:center;width:21px;height:21px;padding:0;border:0;border-radius:3px;background:rgba(18,45,63,.66);color:#8BCDE0;font:700 12px/1 sans-serif;letter-spacing:0;pointer-events:auto}
+  .two-move-card-tools .chip{background:transparent;border-color:transparent}
+  .two-move-card-tools .chip:hover{background:transparent;color:#B9E8F2}
+  .two-move-card-tools .transform-svg{width:11px;height:11px;stroke-width:1.7}
   .two-move-card-tools .chip:hover,.two-move-controls.transform-icons .chip:hover,.tip-guide-transform.transform-icons .chip:hover{background:#62B8D2;color:#102736}
   .two-move-card-tools .chip{position:absolute}
   .two-move-card-tools .chip:nth-child(1){top:0;left:0}.two-move-card-tools .chip:nth-child(2){top:0;right:0}.two-move-card-tools .chip:nth-child(3){bottom:0;left:0}.two-move-card-tools .chip:nth-child(4){right:0;bottom:0}
@@ -451,7 +454,9 @@
     transition:color .18s,background .18s;
   }
   .view-button:hover{color:#A8B6C7;background:rgba(22,40,60,.9)}
-  #mirrorBoard,#flipBoardVertical,#rotateBoardBack,#rotateBoard{padding-inline:8px;font-variant-east-asian:proportional-width;font-feature-settings:"pwid";letter-spacing:-.045em}
+  #mirrorBoard,#flipBoardVertical,#rotateBoardBack,#rotateBoard{padding-inline:8px;font-variant-east-asian:proportional-width;font-feature-settings:"pwid";letter-spacing:0}
+  .transform-svg{display:inline-block;width:1em;height:1em;margin-right:.28em;vertical-align:-.13em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .transform-icons .transform-svg,.board-quiz-tools .transform-svg{display:block;width:11px;height:11px;margin:0;vertical-align:0;stroke-width:1.7}
   .view-button:focus-visible{outline:2px solid var(--washi);outline-offset:2px}
   #board.spinning{cursor:grabbing}
   .tile{
@@ -562,7 +567,7 @@
   .board-quiz-card,.board-quiz-single{position:relative}.board-quiz-board{display:block}
   .board-quiz-tools{position:absolute;inset:4px;display:block;margin:0;pointer-events:none}
   .board-quiz-tools button{position:absolute;display:grid;place-items:center;width:18px;min-height:18px;height:18px;padding:0;border:0;border-radius:3px;background:rgba(16,39,54,.7);color:#8fc6d6;font:700 12px/1 sans-serif;pointer-events:auto}
-  .board-quiz-tools button:nth-child(1){top:0;left:0}.board-quiz-tools button:nth-child(2){top:0;right:0}.board-quiz-tools button:nth-child(3){bottom:0;left:0}.board-quiz-tools button:nth-child(4){right:0;bottom:0}
+  .board-quiz-tools button:nth-child(1){top:0;left:0}.board-quiz-tools button:nth-child(2){top:0;right:0}.board-quiz-tools button:nth-child(3){bottom:12px;left:0}.board-quiz-tools button:nth-child(4){right:0;bottom:12px}
   .board-quiz-tools button:hover{background:#62B8D2;color:#102736}
 </style>
 </head>
@@ -629,13 +634,13 @@
 
 <div class="board-wrap">
   <div class="board-view-controls">
-    <button class="view-button" id="rotateBoardBack">↺ 60°回転</button>
-    <button class="view-button" id="rotateBoard">↻ 60°回転</button>
+    <button class="view-button" id="rotateBoardBack">60°回転</button>
+    <button class="view-button" id="rotateBoard">60°回転</button>
   </div>
   <svg id="board" viewBox="14 0 293 310" aria-label="七枚のだるま盤"></svg>
   <div class="board-view-controls bottom">
-    <button class="view-button" id="mirrorBoard">↔ 左右反転</button>
-    <button class="view-button" id="flipBoardVertical">↕ 上下反転</button>
+    <button class="view-button" id="mirrorBoard">左右反転</button>
+    <button class="view-button" id="flipBoardVertical">上下反転</button>
   </div>
 </div>
 
@@ -1628,10 +1633,10 @@ Object.assign(UI_TEXT.ja,{boardTheme:'盤面のデザイン',boardThemeColor:'�
 Object.assign(UI_TEXT.en,{boardTheme:'Board design',boardThemeColor:'Color',boardThemeLayout:'Layout',boardThemeDefault:'Standard',boardThemeGold:'Gold',boardThemeSatori:'Monochrome',boardLayoutNormal:'Horizontal',boardThemeTilted:'Vertical'});
 Object.assign(UI_TEXT.zh,{boardTheme:'棋盘设计',boardThemeColor:'颜色',boardThemeLayout:'布局',boardThemeDefault:'标准',boardThemeGold:'金色',boardThemeSatori:'黑白',boardLayoutNormal:'横向布局',boardThemeTilted:'纵向布局'});
 Object.assign(UI_TEXT.ko,{boardTheme:'보드 디자인',boardThemeColor:'색상',boardThemeLayout:'배치',boardThemeDefault:'기본',boardThemeGold:'금색',boardThemeSatori:'흑백',boardLayoutNormal:'가로 배치',boardThemeTilted:'세로 배치'});
-Object.assign(UI_TEXT.ja,{rotateCcw:'↺ 60°回転',rotateCw:'↻ 60°回転',flipVertical:'↕ 上下反転'});
-Object.assign(UI_TEXT.en,{rotateCcw:'↺ Rotate 60°',rotateCw:'↻ Rotate 60°',flipVertical:'↕ Flip vertical'});
-Object.assign(UI_TEXT.zh,{rotateCcw:'↺ 旋转60°',rotateCw:'↻ 旋转60°',flipVertical:'↕ 上下翻转'});
-Object.assign(UI_TEXT.ko,{rotateCcw:'↺ 60° 회전',rotateCw:'↻ 60° 회전',flipVertical:'↕ 상하 반전'});
+Object.assign(UI_TEXT.ja,{rotateCcw:'60°回転',rotateCw:'60°回転',flipVertical:'上下反転'});
+Object.assign(UI_TEXT.en,{rotateCcw:'Rotate 60°',rotateCw:'Rotate 60°',flipVertical:'Flip vertical'});
+Object.assign(UI_TEXT.zh,{rotateCcw:'旋转60°',rotateCw:'旋转60°',flipVertical:'上下翻转'});
+Object.assign(UI_TEXT.ko,{rotateCcw:'60° 회전',rotateCw:'60° 회전',flipVertical:'상하 반전'});
 function tr(key,vars){
   let value=(UI_TEXT[currentLang]&&UI_TEXT[currentLang][key])||UI_TEXT.ja[key]||key;
   if(vars)Object.keys(vars).forEach(name=>value=value.replaceAll('{'+name+'}',vars[name]));
@@ -1769,7 +1774,6 @@ Object.assign(BOARD_QUIZ_COPY.ko,{chooseThree:'어느 보드가 최단 3수일�
 
 /* ---- 盤面 ---- */
 const svg=document.getElementById('board'), $=id=>document.getElementById(id);
-const IS_ANDROID=/android/i.test(navigator.userAgent);
 const DEBUG_MODE=new URLSearchParams(location.search).get('debug')==='1'
   &&(location.protocol==='file:'||['localhost','127.0.0.1','::1'].includes(location.hostname));
 let ori=new Uint8Array(N), spin=new Int16Array(N), history=[], moves=0, best=0;
@@ -2247,6 +2251,10 @@ function tileTransform(x,y,turn){
 function tileTransformDeg(x,y,deg){
   return 'translate('+x.toFixed(2)+'px,'+y.toFixed(2)+'px) rotate('+deg+'deg)';
 }
+function nearestRotationDeg(fromDeg,toDeg){
+  const delta=((toDeg-fromDeg+180)%360+360)%360-180;
+  return fromDeg+delta;
+}
 function snapshot(){
   return {o:Uint8Array.from(ori),s:Int16Array.from(spin),t:tileEls.slice(),m:moves};
 }
@@ -2287,34 +2295,6 @@ function reorientBoard(permutation,flip=false,rotationDeg=0){
     currentInitialState=transformStateCode(currentInitialState,permutation,flip);
   };
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(flip&&!rotationDeg&&!reduced&&!IS_ANDROID){
-    busy=true;
-    const turn=(permutation===VIEW_MIRROR||permutation===VIEW_TILTED_MIRROR)?'rotateY':'rotateX';
-    const first=turn==='rotateY'?90:-90;
-    const duration=360;
-    const board=$('board');
-    // 盤の傾きは先に適用し、反転そのものは画面の水平・垂直軸で行う。
-    const layout=boardLayout==='tilted'?' rotate(-30deg)':'';
-    const flipTransform=angle=>'perspective(820px) '+turn+'('+angle+'deg)'+layout;
-    const firstHalf=board.animate([
-      {transform:flipTransform(0)},
-      {transform:flipTransform(first)}
-    ],{duration:duration/2,fill:'forwards',easing:'linear'});
-    firstHalf.onfinish=()=>{
-      const reverse=flipTransform(-first);
-      board.style.transform=reverse;
-      firstHalf.cancel();
-      applyTransform();paint();
-      const secondHalf=board.animate([
-        {transform:reverse},
-        {transform:flipTransform(0)}
-      ],{duration:duration/2,easing:'linear'});
-      secondHalf.onfinish=()=>{board.style.transform='';busy=false;paint();};
-      secondHalf.oncancel=()=>{board.style.transform='';busy=false;paint();};
-    };
-    firstHalf.oncancel=()=>{board.style.transform='';busy=false;paint();};
-    return;
-  }
   const before=new Map(tileEls.map((el,i)=>[el,{cell:i,spin:spin[i]}]));
   applyTransform();
   paint();
@@ -2323,7 +2303,9 @@ function reorientBoard(permutation,flip=false,rotationDeg=0){
   let remaining=baseTiles.length;
   const finished=new Set();
   for(const el of baseTiles){
-    const old=before.get(el),to=tileEls.indexOf(el),finalTransform=el.style.transform;
+    const old=before.get(el),to=tileEls.indexOf(el);
+    const finalDeg=nearestRotationDeg(old.spin*120,spin[to]*120);
+    const finalTransform=tileTransformDeg(CELL[to].x,CELL[to].y,finalDeg);
     let frames;
     if(rotationDeg){
       const middle=rotatePointAroundBoard(CELL[old.cell],rotationDeg/2);
@@ -3806,46 +3788,35 @@ function miniBoardSvg(state){
   return '<svg viewBox="14 0 293 310" aria-hidden="true">'+tiles+'</svg>';
 }
 function flipPreview(element,vertical,swap,done){
-  if(IS_ANDROID){
-    const axis=vertical?'Y':'X',distance=vertical?'12px':'16px',duration=300;
-    const finish=()=>{element.style.transform='';element.style.opacity='';if(done)done();};
-    const firstHalf=element.animate([
-      {transform:'translate'+axis+'(0)',opacity:1},
-      {transform:'translate'+axis+'('+distance+')',opacity:.22}
-    ],{duration:duration/2,fill:'forwards',easing:'ease-in'});
-    firstHalf.onfinish=()=>{
-      firstHalf.cancel();swap();
-      const secondHalf=element.animate([
-        {transform:'translate'+axis+'(-'+distance+')',opacity:.22},
-        {transform:'translate'+axis+'(0)',opacity:1}
-      ],{duration:duration/2,easing:'ease-out'});
-      secondHalf.onfinish=finish;secondHalf.oncancel=finish;
-    };
-    firstHalf.oncancel=finish;
-    return;
-  }
-  const turn=vertical?'rotateX':'rotateY',first=vertical?-90:90,duration=360;
-  element.style.transformOrigin='center';
-  element.style.transformBox='fill-box';
+  const axis=vertical?'Y':'X',distance=vertical?'12px':'16px',duration=300;
+  const finish=()=>{element.style.transform='';element.style.opacity='';if(done)done();};
   const firstHalf=element.animate([
-    {transform:'perspective(820px) '+turn+'(0deg)'},
-    {transform:'perspective(820px) '+turn+'('+first+'deg)'}
-  ],{duration:duration/2,fill:'forwards',easing:'linear'});
-  const finish=()=>{
-    element.style.transform='';element.style.transformOrigin='';element.style.transformBox='';
-    if(done)done();
-  };
+    {transform:'translate'+axis+'(0)',opacity:1},
+    {transform:'translate'+axis+'('+distance+')',opacity:.22}
+  ],{duration:duration/2,fill:'forwards',easing:'ease-in'});
   firstHalf.onfinish=()=>{
-    const reverse='perspective(820px) '+turn+'('+(-first)+'deg)';
-    element.style.transform=reverse;
-    firstHalf.cancel();
-    swap();
-    const secondHalf=element.animate([{transform:reverse},{transform:'perspective(820px) '+turn+'(0deg)'}],{duration:duration/2,easing:'linear'});
+    firstHalf.cancel();swap();
+    const secondHalf=element.animate([
+      {transform:'translate'+axis+'(-'+distance+')',opacity:.22},
+      {transform:'translate'+axis+'(0)',opacity:1}
+    ],{duration:duration/2,easing:'ease-out'});
     secondHalf.onfinish=finish;secondHalf.oncancel=finish;
   };
   firstHalf.oncancel=finish;
 }
-function transformButtonText(kind){return (kind==='mirror'?'↔ ':'↻ ')+tr(kind);}
+function transformIcon(kind){
+  const paths={
+    rotateBack:'<g transform="rotate(-36 12 12)"><path d="M3 12a9 9 0 1 0 6.22-8.56"/></g><path d="M3 3v6h6"/>',
+    rotate:'<g transform="rotate(36 12 12)"><path d="M21 12a9 9 0 1 1-6.22-8.56"/></g><path d="M21 3v6h-6"/>',
+    mirror:'<path d="M4 12h16"/><path d="m8 8-4 4 4 4"/><path d="m16 8 4 4-4 4"/>',
+    vertical:'<path d="M12 4v16"/><path d="m8 8 4-4 4 4"/><path d="m8 16 4 4 4-4"/>'
+  };
+  return '<svg class="transform-svg" viewBox="0 0 24 24" aria-hidden="true">'+paths[kind]+'</svg>';
+}
+function transformButtonText(kind){
+  const label={rotateBack:'rotateCcw',rotate:'rotateCw',mirror:'mirror',vertical:'flipVertical'}[kind]||kind;
+  return transformIcon(kind)+' '+tr(label);
+}
 function boardQuizPatternState(position){
   return TWO_MOVE_STAGES[TWO_MOVE_PATTERN_ORDER[position-1]].state;
 }
@@ -3920,7 +3891,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const detailPatterns=config.patterns||(config.pattern?[config.pattern]:[]);
   const guideLinks=(config.guidePages||[]).map(page=>'<button class="clear-tip-link" id="'+rootId+'Guide'+page+'" type="button" data-guide-page="'+page+'" hidden>'+tr('tipGuideTitle').replace('を見る','')+' '+(page+1)+' / '+GUIDE_TIP_INDEX.length+' →</button>').join('');
   root.hidden=false;
-  const controls=index=>'<div class="board-quiz-tools"><button type="button" data-board-transform="rotateBack" data-board-index="'+index+'" aria-label="60°逆回転">↺</button><button type="button" data-board-transform="rotate" data-board-index="'+index+'" aria-label="60°回転">↻</button><button type="button" data-board-transform="mirror" data-board-index="'+index+'" aria-label="左右反転">↔</button><button type="button" data-board-transform="vertical" data-board-index="'+index+'" aria-label="上下反転">↕</button></div>';
+  const controls=index=>'<div class="board-quiz-tools"><button type="button" data-board-transform="rotateBack" data-board-index="'+index+'" aria-label="60°逆回転">'+transformIcon('rotateBack')+'</button><button type="button" data-board-transform="rotate" data-board-index="'+index+'" aria-label="60°回転">'+transformIcon('rotate')+'</button><button type="button" data-board-transform="mirror" data-board-index="'+index+'" aria-label="左右反転">'+transformIcon('mirror')+'</button><button type="button" data-board-transform="vertical" data-board-index="'+index+'" aria-label="上下反転">'+transformIcon('vertical')+'</button></div>';
   const card=(board,index)=>'<div class="board-quiz-card"><button class="board-quiz-option" type="button" data-board-answer="'+index+'"><span class="board-quiz-board">'+miniBoardSvg(board)+'</span></button>'+controls(index)+'</div>';
   const boardMarkup=config.kind==='moves'
     ?'<div class="board-quiz-single"><span class="board-quiz-board">'+miniBoardSvg(states[0])+'</span>'+controls(0)+'</div><div class="board-quiz-moves">'+moveChoiceOrder.map((choice,index)=>'<button class="board-quiz-option" type="button" data-board-answer="'+index+'">'+copy.moveChoices[choice]+'</button>').join('')+'</div>'
@@ -4083,9 +4054,9 @@ function renderMasteryBoard(id,show,theme='gold'){
   if(show)animateMasteryBoard(id);
 }
 function renderTwoMovePatterns(){
-  const controls=[['rotateBack','↺','rotateCcw'],['rotate','↻','rotateCw'],['mirror','↔','mirror'],['vertical','↕','flipVertical']];
+  const controls=[['rotateBack','rotateCcw'],['rotate','rotateCw'],['mirror','mirror'],['vertical','flipVertical']];
   $('twoMoveGrid').innerHTML=twoMoveDisplayStates.map((state,index)=>{
-    const buttons=controls.map(([transform,icon,label])=>'<button class="chip" type="button" data-two-move-transform="'+transform+'" aria-label="'+tr(label)+'">'+icon+'</button>').join('');
+    const buttons=controls.map(([transform,label])=>'<button class="chip" type="button" data-two-move-transform="'+transform+'" aria-label="'+tr(label)+'">'+transformIcon(transform)+'</button>').join('');
     return '<article class="two-move-card" data-state="'+state+'" data-pattern="'+twoMoveDisplayPatterns[index]+'" data-board-index="'+index+'"><div class="two-move-card-tools">'+buttons+'</div><button class="two-move-card-open" type="button">'+miniBoardSvg(state)+'</button></article>';
   }).join('');
 }
@@ -4715,8 +4686,8 @@ function tipGuideSvg(index,states){
 }
 function tipGuideControls(index,count){
   const position=count>1?' double'+(index?' second':''):'';
-  const buttons=[['rotateBack','↺','rotateCcw'],['rotate','↻','rotateCw'],['mirror','↔','mirror'],['vertical','↕','flipVertical']]
-    .map(([transform,icon,label])=>'<button class="chip" type="button" data-tip-transform="'+transform+'" data-tip-board-index="'+index+'" aria-label="'+tr(label)+'">'+icon+'</button>').join('');
+  const buttons=[['rotateBack','rotateCcw'],['rotate','rotateCw'],['mirror','mirror'],['vertical','flipVertical']]
+    .map(([transform,label])=>'<button class="chip" type="button" data-tip-transform="'+transform+'" data-tip-board-index="'+index+'" aria-label="'+tr(label)+'">'+transformIcon(transform)+'</button>').join('');
   return '<div class="tip-guide-transform transform-icons transform-corners tip-guide-board-controls'+position+'">'+buttons+'</div>';
 }
 function tipGuideDoubleVisualMarkup(state){
@@ -4935,10 +4906,10 @@ function applyLanguage(lang){
   $('debugExtra44').textContent=tr('debugExtra44');
   $('debugExtra59').textContent=tr('debugExtra59');
   $('debugSatori72').textContent=tr('debugSatori72');
-  $('mirrorBoard').textContent=transformButtonText('mirror');
-  $('flipBoardVertical').textContent=tr('flipVertical');
-  $('rotateBoardBack').textContent=tr('rotateCcw');
-  $('rotateBoard').textContent=tr('rotateCw');
+  $('mirrorBoard').innerHTML=transformButtonText('mirror');
+  $('flipBoardVertical').innerHTML=transformButtonText('vertical');
+  $('rotateBoardBack').innerHTML=transformButtonText('rotateBack');
+  $('rotateBoard').innerHTML=transformButtonText('rotate');
   $('board').setAttribute('aria-label',tr('boardLabel'));
   $('showTip').textContent=tr('tips');
   $('resetProgress').textContent=tr('resetProgress');
@@ -4951,8 +4922,8 @@ function applyLanguage(lang){
   $('twoMoveTitle').textContent=tr('twoMoveTitle');
   $('twoMoveText').textContent=tr('twoMoveText');
   [
-    ['twoMoveDetailRotateBack','↺','rotateCcw'],['twoMoveDetailRotate','↻','rotateCw'],['twoMoveDetailMirror','↔','mirror'],['twoMoveDetailFlipVertical','↕','flipVertical']
-  ].forEach(([id,icon,label])=>{$(id).textContent=icon;$(id).setAttribute('aria-label',tr(label));});
+    ['twoMoveDetailRotateBack','rotateBack','rotateCcw'],['twoMoveDetailRotate','rotate','rotateCw'],['twoMoveDetailMirror','mirror','mirror'],['twoMoveDetailFlipVertical','vertical','flipVertical']
+  ].forEach(([id,icon,label])=>{$(id).innerHTML=transformIcon(icon);$(id).setAttribute('aria-label',tr(label));});
   $('closeTwoMovePatterns').textContent=tr('close');
   $('twoMoveDetailTitle').textContent=tr('twoMoveDetailTitle');
   $('twoMoveDetailCompareHint').textContent=tr('compareBoard');
