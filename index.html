@@ -1764,7 +1764,8 @@ Object.assign(BOARD_QUIZ_COPY.ko,{chooseThree:'어느 보드가 최단 3수일�
 
 /* ---- 盤面 ---- */
 const svg=document.getElementById('board'), $=id=>document.getElementById(id);
-const DEBUG_MODE=new URLSearchParams(location.search).get('debug')==='1';
+const DEBUG_MODE=new URLSearchParams(location.search).get('debug')==='1'
+  &&(location.protocol==='file:'||['localhost','127.0.0.1','::1'].includes(location.hostname));
 let ori=new Uint8Array(N), spin=new Int16Array(N), history=[], moves=0, best=0;
 let tileEls=[], baseTiles=[], drag=null, busy=false;
 let stageIndex=0,extraIndex=0,satoriIndex=0,extraMode=false,satoriMode=false,freeMode=false,clearShown=false,clearTimer=0;
