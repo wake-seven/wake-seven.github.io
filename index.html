@@ -1016,6 +1016,7 @@ const EXTRA_CLEAR_TIPS={
   [masterStage(4,12)]:'extraFourthNoCheck',
   [masterStage(4,14)]:'extraFinalNotice'
 };
+// クリア後の挿絵。上の EXTRA_CLEAR_TIPS と同じ問題番号を使う。
 const PRIMARY_CLEAR_ARTS={
   0:'introGuide',
   3:'remaining',
@@ -1230,7 +1231,7 @@ const UI_TEXT={
     allPatternsKind:'名人への道',allPatternsNext:'名人への道へ →',nextPattern:'次の問題へ →',
     stagePicker:'ステージを選ぶ',stagePickerFree:'フリーモードへ',stagePickerCustom:'自作モードへ',close:'閉じる',rankCollection:'称号',rankListMenu:'称号一覧',primaryRound:'だるま修行',patternRound:'名人への道・{n}　全15問',
     extraStageAria:'名人への道 {n} / {total}',
-    optimalClear:'最短で全員起きました。お見事。',clear:'全員起きました！',
+    optimalClear:'最短手数で全員起きました！',clear:'全員起きました！',
     remaining:'残り最短 {n}手',stageAria:'問題{n}、最短{par}手',
     makerImpossible:'この配置は解けません。ダルマをタップして向きを変えてください',
     makerStatus:'ダルマをタップして向きを変更　現在の最短は{n}手',
@@ -1275,7 +1276,7 @@ const UI_TEXT={
     stage:'Puzzle',intro:'INTRO',basic:'BASIC',challenge:'CHALLENGE',freePlay:'Free Play',
     boardMaker:'Edit board',customPuzzle:'Custom Puzzle',freeKind:'FREE PLAY',
     makerKind:'BOARD MAKER',customKind:'CUSTOM PLAY',another:'Another puzzle',again:'Try again',
-    toFree:'Go to Free Play →',optimalClear:'Everyone is awake in the fewest moves. Brilliant!',
+    toFree:'Go to Free Play →',optimalClear:'Everyone is awake in the fewest moves!',
     allPatternsKind:'PATH TO MASTERY',allPatternsNext:'Path to Mastery →',nextPattern:'Next puzzle →',
     stagePicker:'Choose a stage',stagePickerFree:'Free Play',stagePickerCustom:'Board Maker',close:'Close',rankCollection:'Titles',rankListMenu:'View titles',primaryRound:'Daruma Training',patternRound:'Path to Mastery {n} · 15 puzzles',
     extraStageAria:'Path to Mastery {n} / {total}',
@@ -1304,7 +1305,7 @@ const UI_TEXT={
     stage:'关卡',intro:'入门',basic:'基础',challenge:'挑战',freePlay:'自由模式',
     boardMaker:'编辑棋盘',customPuzzle:'自制关卡',freeKind:'自由模式',
     makerKind:'制作棋盘',customKind:'自制关卡',another:'再来一题',again:'再来一次',
-    toFree:'进入自由模式 →',optimalClear:'用最少步数叫醒了全部不倒翁。太棒了！',
+    toFree:'进入自由模式 →',optimalClear:'用最少步数叫醒了全部不倒翁！',
     allPatternsKind:'名人之路',allPatternsNext:'进入名人之路 →',nextPattern:'下一题 →',
     stagePicker:'选择关卡',stagePickerFree:'前往自由模式',stagePickerCustom:'前往自制模式',close:'关闭',rankCollection:'称号',rankListMenu:'称号一览',primaryRound:'不倒翁修行',patternRound:'名人之路 {n} · 15题',
     extraStageAria:'名人之路 {n} / {total}',
@@ -1332,7 +1333,7 @@ const UI_TEXT={
     stage:'문제',intro:'입문',basic:'기본',challenge:'도전',freePlay:'자유 모드',
     boardMaker:'보드 편집',customPuzzle:'사용자 문제',freeKind:'자유 모드',
     makerKind:'보드 만들기',customKind:'사용자 문제',another:'다른 문제',again:'다시 하기',
-    toFree:'자유 모드로 →',optimalClear:'최단 수로 모두 깨웠습니다. 훌륭해요!',
+    toFree:'자유 모드로 →',optimalClear:'최단 수로 모두 깨웠습니다!',
     allPatternsKind:'명인의 길',allPatternsNext:'명인의 길로 →',nextPattern:'다음 문제 →',
     stagePicker:'문제 선택',stagePickerFree:'자유 모드로',stagePickerCustom:'보드 만들기로',close:'닫기',rankCollection:'칭호',rankListMenu:'칭호 목록',primaryRound:'다루마 수행',patternRound:'명인의 길 {n} · 15문제',
     extraStageAria:'명인의 길 {n} / {total}',
@@ -1355,7 +1356,6 @@ Object.assign(UI_TEXT.ja,{
   extraClear3:'この7枚の配置のだるま起こしでは、最短4手以内に必ずクリアできる仕組みになっています。',
   extraClear30:'不立文字（ふりゅうもんじ）は、悟りは文字や言葉だけでは伝えられず、心から心へ伝わるものだ、という禅の考え方です。達磨大師を始祖とする禅宗で大切にされてきました。',
   extraClear7:'名人への道の終盤では、残り最短手数が表示されません。攻略のカギは、最短2手の盤面を見分けられるようになることです。\n☆ 盤面の形とだるまさんの向きが大事！',
-  extraClear9:'全ての最短4手盤面で、6本の軸をランダムに選び、最短3手になる向きへ回すと、約78％で最短3手になります。',
   extraClear33:'最短3手の盤面での次の一手の確率です。\n・最短2手になるのは約17% (9パターン)\n・最短3手にとどまるのは約56% (39パターン)\n・最短4手になるのは約27% (24パターン)',
   masterNextFourMoves:'次からは、最短4手の問題です。',
   extraClear46:'メニューの「最短2手の9パターンを見る」から、9種類の盤面を一覧で見られます。',
@@ -1377,7 +1377,6 @@ Object.assign(UI_TEXT.en,{
   extraClear1:'Path to Mastery continues with three-move puzzles through the middle of Volume 3.',
   extraClear3:'Every arrangement of these seven daruma can be solved in four moves or fewer.',
   extraClear7:'Volume 4 does not show moves left. Start building an eye for two-move boards now.',
-  extraClear9:'Across all four-move boards, choose one of the six axes at random, then turn in the better direction: about 78% reach a three-move board.',
   extraClear33:'From a three-move board, a random choice among 12 turns reaches a two-move board about 17% of the time, stays at three moves about 56%, and goes to four moves about 27%.',
   masterNextFourMoves:'From the next puzzle, the best solution takes four moves.',
   extraClear46:'Open “View 2-move boards” from the Menu to see all nine patterns at once.',
@@ -1399,7 +1398,6 @@ Object.assign(UI_TEXT.zh,{
   extraClear1:'名人之路会持续出现最少3步的题目，直到第三卷中途。',
   extraClear3:'这七个不倒翁的任何布局，都一定能在最少4步以内完成。',
   extraClear7:'第四卷不会显示剩余最少步数。现在就开始培养识别最少2步棋盘的感觉吧。',
-  extraClear9:'在所有最少4步的棋盘中，随机选择6条轴之一，再朝能变为最少3步的方向转动，约78％会变为最少3步。',
   extraClear33:'在最少3步的棋盘中，随机选择12种转法之一，约17％会变为最少2步，约56％仍为最少3步，约27％会变为最少4步。',
   masterNextFourMoves:'从下一题开始，最少需要四步。',
   extraClear46:'从菜单打开“查看最少2步棋盘”，即可一次查看全部9种图案。',
@@ -1421,7 +1419,6 @@ Object.assign(UI_TEXT.ko,{
   extraClear1:'명인의 길에서는 3권 중간까지 최단 3수 문제가 이어집니다.',
   extraClear3:'이 7개 다루마의 모든 배치는 반드시 최단 4수 이내에 풀 수 있도록 되어 있어요.',
   extraClear7:'4권에서는 남은 최단 수가 표시되지 않습니다. 지금부터 최단 2수 보드를 알아보는 감각을 길러 보세요.',
-  extraClear9:'모든 최단 4수 보드에서 6개 축 중 하나를 무작위로 고르고, 최단 3수가 되는 방향으로 돌리면 약 78％가 최단 3수가 됩니다.',
   extraClear33:'최단 3수 보드에서 12가지 회전 중 하나를 무작위로 고르면 약 17％는 최단 2수, 약 56％는 그대로 최단 3수, 약 27％는 최단 4수가 됩니다.',
   masterNextFourMoves:'다음 문제부터는 최단 4수 문제입니다.',
   extraClear46:'메뉴의 “최단 2수 보드 보기”에서 9가지 패턴을 한눈에 볼 수 있어요.',
@@ -1755,7 +1752,6 @@ const DEBUG_MODE=new URLSearchParams(location.search).get('debug')==='1';
 let ori=new Uint8Array(N), spin=new Int16Array(N), history=[], moves=0, best=0;
 let tileEls=[], baseTiles=[], drag=null, busy=false;
 let stageIndex=0,extraIndex=0,satoriIndex=0,extraMode=false,satoriMode=false,freeMode=false,clearShown=false,clearTimer=0;
-let satoriMasteryJustCompleted=false;
 let pendingMasterThemeRefresh=false;
 let soundEnabled=true,audioContext=null;
 try{soundEnabled=localStorage.getItem('wake7-sound')!=='off';}catch(_){ }
@@ -2194,8 +2190,7 @@ function paint(){
       const wasSatoriMastered=isSatoriMastered();
       clearedSatoriStages.add(satoriIndex);
       try{localStorage.setItem('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));}catch(_){}
-      satoriMasteryJustCompleted=!wasSatoriMastered&&isSatoriMastered();
-      if(satoriMasteryJustCompleted)pendingMasterThemeRefresh=true;
+      if(!wasSatoriMastered&&isSatoriMastered())pendingMasterThemeRefresh=true;
       else updateMasterTheme();
       renderStageNav();
     }else if(extraMode){
@@ -2358,7 +2353,6 @@ function setPosition(state,par){
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   clearTimeout(clearTimer);
   currentInitialState=state; currentInitialPar=par;
-  satoriMasteryJustCompleted=false;
   ori=dec(state);
   spin=Int16Array.from(ori);
   tileEls=baseTiles.slice();
@@ -3276,7 +3270,6 @@ function showClearDialog(){
     updateMasterTheme();
   }
   if(showSatoriMastery){
-    satoriMasteryJustCompleted=false;
     showMasterDialog('satori');
     return;
   }
@@ -3296,7 +3289,7 @@ function showClearDialog(){
   else if(stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');
   else if(stageIndex===STAGES.length-1)action.textContent=tr('toFree');
   else action.textContent=tr('nextPuzzle');
-  $('clearDialogMessage').textContent=tr('clear');
+  $('clearDialogMessage').textContent=(extraMode||satoriMode)?tr('optimalClear'):tr('clear');
   renderClearStageContext();
   renderClearTip();
   renderClearQuiz();
@@ -3339,9 +3332,6 @@ function stageClearArtAt(mode,index){
 function stageClearArt(){return satoriMode?'':stageClearArtAt(extraMode,extraMode?extraIndex:stageIndex);}
 function tipDaruma(x,y,scale=.55){
   return '<g transform="translate('+x+' '+y+') scale('+scale+')"><use href="#daruma-body"/><use href="#face-open"/></g>';
-}
-function tipSleepingDaruma(x,y,scale=.55,angle=120){
-  return '<g transform="translate('+x+' '+y+') rotate('+angle+') scale('+scale+')"><use href="#daruma-body"/><use href="#face-shut"/></g>';
 }
 function tipWhiteDaruma(x,y,scale=.55){
   return '<g transform="translate('+x+' '+y+') scale('+scale+')">'
@@ -3386,9 +3376,6 @@ function tipMarketArt(){
     +d(189,97,.18)
     +'<g stroke="#241D1A" stroke-width="1"><path d="M18 10v6M192 10v6"/><g transform="translate(12 16)"><ellipse cx="6" cy="8" rx="6" ry="8" fill="#D8543F"/><path d="M1 5h10M0 8h12M1 11h10" opacity=".5"/></g><g transform="translate(186 16)"><ellipse cx="6" cy="8" rx="6" ry="8" fill="#D8543F"/><path d="M1 5h10M0 8h12M1 11h10" opacity=".5"/></g></g>'
     +'<path d="M5 111H205" stroke="#8A6A3F" stroke-width="1" opacity=".6"/>',true);
-}
-function tipBackDaruma(x,y,scale=.55){
-  return '<g transform="translate('+x+' '+y+') scale('+scale+')"><use href="#daruma-body"/><ellipse cx="0" cy="-6" rx="20.5" ry="19.5" fill="#C8352C"/></g>';
 }
 function tipTakasakiDaruma(x,y,scale=.55){
   return '<g transform="translate('+x+' '+y+') scale('+(scale*1.15)+' '+scale+')"><use href="#daruma-body"/>'
@@ -3793,9 +3780,6 @@ function boardQuizMatchingStates(state,match,limit=Infinity,accept=()=>true){
   }
   candidates.sort((a,b)=>a.distance-b.distance||a.changes-b.changes||a.state-b.state);
   return candidates.slice(0,limit).map(candidate=>candidate.state);
-}
-function boardQuizDistractor(state){
-  return boardQuizMatchingStates(state,distance=>distance>=3,1)[0]??state;
 }
 function boardQuizSameShapeState(state,shapeState){
   const shape=dec(shapeState);
