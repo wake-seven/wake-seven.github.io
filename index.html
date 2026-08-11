@@ -559,6 +559,11 @@
   html.embed h1{margin-top:5px}
   html.embed .stage-nav{margin-top:12px}
   html.embed .site-credit{display:none}
+  .board-quiz-card,.board-quiz-single{position:relative}.board-quiz-board{display:block}
+  .board-quiz-tools{position:absolute;inset:4px;display:block;margin:0;pointer-events:none}
+  .board-quiz-tools button{position:absolute;display:grid;place-items:center;width:18px;min-height:18px;height:18px;padding:0;border:0;border-radius:3px;background:rgba(16,39,54,.7);color:#8fc6d6;font:700 12px/1 sans-serif;pointer-events:auto}
+  .board-quiz-tools button:nth-child(1){top:0;left:0}.board-quiz-tools button:nth-child(2){top:0;right:0}.board-quiz-tools button:nth-child(3){bottom:0;left:0}.board-quiz-tools button:nth-child(4){right:0;bottom:0}
+  .board-quiz-tools button:hover{background:#62B8D2;color:#102736}
 </style>
 </head>
 <body>
@@ -1367,7 +1372,7 @@ const UI_TEXT={
   }
 };
 Object.assign(UI_TEXT.ja,{
-  menu:'メニュー',clearMessages:'クリア後のメッセージ',messageDialogTitle:'クリア後のメッセージ',optimalFailOne:'おしい！あと1手短縮できればクリア。',optimalFailTwo:'もう少し！あと2手短縮できればクリア。',optimalFailMany:'回し方を変えて最短への道を探そう！',optimalFailRule:'名人への道は最短手数でのクリアが必要です。',optimalFailResult:'この問題は最短{best}手でした。（あなたの手数：{moves}手）',optimalFailEncourage:'もう一度チャレンジしよう。',optimalRetry:'再挑戦する',twoMovePatterns:'最短2手の9パターンを見る',twoMoveTitle:'最短2手の9パターン',twoMoveText:'基本4〜12で、すべて遊べます。',twoMoveDetailTitle:'最短2手の盤面解説',compareBoard:'盤面をスワイプしてゲーム中の盤面と比べよう',playInFree:'フリーモードで遊ぶ →',backToPatterns:'一覧へ',stageModeReturn:'ステージモードへ',tipGuideTitle:'攻略のコツを見る',playThisBoard:'この盤面で遊ぶ →',
+  menu:'メニュー',clearMessages:'クリア後のメッセージ',messageDialogTitle:'クリア後のメッセージ',optimalFailOne:'おしい！あと1手短縮できればクリア。',optimalFailTwo:'もう少し！あと2手短縮できればクリア。',optimalFailMany:'回し方を変えて最短への道を探そう！',optimalFailRule:'名人への道は最短手数でのクリアが必要です。',optimalFailResult:'この問題は最短{best}手でした。（あなたの手数：{moves}手）',optimalFailEncourage:'もう一度チャレンジしよう。',optimalRetry:'再挑戦する',twoMovePatterns:'最短2手の9パターン',twoMoveTitle:'最短2手の9パターン',twoMoveText:'基本4〜12で、すべて遊べます。',twoMoveDetailTitle:'最短2手の盤面解説',compareBoard:'盤面をスワイプしてゲーム中の盤面と比べよう',playInFree:'フリーモードで遊ぶ →',backToPatterns:'一覧へ',stageModeReturn:'ステージモードへ',tipGuideTitle:'攻略のコツを見る',playThisBoard:'この盤面で遊ぶ →',
   extraClear1:'名人への道では、「離」の途中まで最短3手の問題が続きます。',
   extraClear3:'この7枚の配置のだるま起こしでは、最短4手以内に必ずクリアできる仕組みになっています。',
   extraClear30:'不立文字（ふりゅうもんじ）は、悟りは文字や言葉だけでは伝えられず、心から心へ伝わるものだ、という禅の考え方です。達磨大師を始祖とする禅宗で大切にされてきました。',
@@ -3860,10 +3865,10 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const detailPatterns=config.patterns||(config.pattern?[config.pattern]:[]);
   const guideLinks=(config.guidePages||[]).map(page=>'<button class="clear-tip-link" id="'+rootId+'Guide'+page+'" type="button" data-guide-page="'+page+'" hidden>'+tr('tipGuideTitle').replace('を見る','')+' '+(page+1)+' / '+GUIDE_TIP_INDEX.length+' →</button>').join('');
   root.hidden=false;
-  const controls=index=>'<div class="board-quiz-tools"><button type="button" data-board-transform="mirror" data-board-index="'+index+'">↔ '+(currentLang==='ja'?'反転':tr('mirror'))+'</button><button type="button" data-board-transform="rotate" data-board-index="'+index+'">↻ '+(currentLang==='ja'?'回転':tr('rotate'))+'</button></div>';
-  const card=(board,index)=>'<div class="board-quiz-card"><button class="board-quiz-option" type="button" data-board-answer="'+index+'">'+miniBoardSvg(board)+'</button>'+controls(index)+'</div>';
+  const controls=index=>'<div class="board-quiz-tools"><button type="button" data-board-transform="rotateBack" data-board-index="'+index+'" aria-label="60°逆回転">↺</button><button type="button" data-board-transform="rotate" data-board-index="'+index+'" aria-label="60°回転">↻</button><button type="button" data-board-transform="mirror" data-board-index="'+index+'" aria-label="左右反転">↔</button><button type="button" data-board-transform="vertical" data-board-index="'+index+'" aria-label="上下反転">↕</button></div>';
+  const card=(board,index)=>'<div class="board-quiz-card"><button class="board-quiz-option" type="button" data-board-answer="'+index+'"><span class="board-quiz-board">'+miniBoardSvg(board)+'</span></button>'+controls(index)+'</div>';
   const boardMarkup=config.kind==='moves'
-    ?'<div class="board-quiz-single">'+miniBoardSvg(states[0])+controls(0)+'</div><div class="board-quiz-moves">'+moveChoiceOrder.map((choice,index)=>'<button class="board-quiz-option" type="button" data-board-answer="'+index+'">'+copy.moveChoices[choice]+'</button>').join('')+'</div>'
+    ?'<div class="board-quiz-single"><span class="board-quiz-board">'+miniBoardSvg(states[0])+'</span>'+controls(0)+'</div><div class="board-quiz-moves">'+moveChoiceOrder.map((choice,index)=>'<button class="board-quiz-option" type="button" data-board-answer="'+index+'">'+copy.moveChoices[choice]+'</button>').join('')+'</div>'
     :'<div class="board-quiz-options '+(states.length===3?'three':'')+'">'+states.map(card).join('')+'</div>';
   const detailLinks=detailPatterns.map(pattern=>'<button class="clear-tip-link" id="'+rootId+'Patterns'+pattern+'" type="button" data-board-patterns data-board-pattern="'+pattern+'" hidden>'+(detailPatterns.length>1?'最短2手の9パターン　'+pattern+' / 9 →':tr('detailsLink'))+'</button>').join('');
   root.innerHTML='<div class="quiz-label">'+copy.title+'</div><p class="board-quiz-question">'+question+'</p>'+boardMarkup+'<p class="board-quiz-note"></p>'+detailLinks+guideLinks;
@@ -3871,12 +3876,19 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   let animating=false;
   const updateCard=index=>{
     const button=root.querySelector('[data-board-answer="'+index+'"]');
-    if(button&&config.kind!=='moves')button.innerHTML=miniBoardSvg(states[index]);
-    if(config.kind==='moves')root.querySelector('.board-quiz-single').innerHTML=miniBoardSvg(states[0])+controls(0);
+    if(button&&config.kind!=='moves')button.querySelector('.board-quiz-board').innerHTML=miniBoardSvg(states[index]);
+    if(config.kind==='moves')root.querySelector('.board-quiz-single .board-quiz-board').innerHTML=miniBoardSvg(states[0]);
   };
-  const animateTransform=(index,mirror)=>{
+  const animateTransform=(index,kind)=>{
     if(animating)return;
-    const symmetry={permutation:mirror?VIEW_MIRROR:VIEW_ROTATE_60,flip:mirror};
+    const transform={
+      rotateBack:{permutation:VIEW_ROTATE_MINUS60,flip:false},
+      rotate:{permutation:VIEW_ROTATE_60,flip:false},
+      mirror:{permutation:VIEW_MIRROR,flip:true},
+      vertical:{permutation:VIEW_FLIP_VERTICAL,flip:true}
+    }[kind];
+    if(!transform)return;
+    const symmetry=transform,mirror=transform.flip;
     if(matchMedia('(prefers-reduced-motion: reduce)').matches){
       states[index]=transformStateBySymmetry(states[index],symmetry);updateCard(index);return;
     }
@@ -3884,9 +3896,12 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
       ?root.querySelector('.board-quiz-single')
       :root.querySelector('[data-board-answer="'+index+'"]');
     if(!holder)return;
+    const boardVisual=holder.querySelector('.board-quiz-board');
+    const boardSvg=boardVisual?.querySelector('svg');
+    if(!boardSvg)return;
     animating=true;
     if(mirror){
-      flipPreview(holder,false,()=>{
+      flipPreview(boardVisual,kind==='vertical',()=>{
         states[index]=transformStateBySymmetry(states[index],symmetry);
         updateCard(index);
       },()=>{animating=false;});
@@ -3894,7 +3909,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
     }
     const before=dec(states[index]),after=dec(transformStateBySymmetry(states[index],symmetry));
     const NS_='http://www.w3.org/2000/svg',duration='.48s';
-    holder.querySelectorAll('.mini-tile').forEach(tile=>{
+    boardSvg.querySelectorAll('.mini-tile').forEach(tile=>{
       const from=Number(tile.dataset.cell),to=symmetry.permutation[from];
       const move=document.createElementNS(NS_,'animateTransform');
       move.setAttribute('attributeName','transform');move.setAttribute('type','translate');
@@ -3943,8 +3958,8 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
     }
     const transform=event.target.closest('[data-board-transform]');
     if(!transform)return;
-    const index=Number(transform.dataset.boardIndex),mirror=transform.dataset.boardTransform==='mirror';
-    animateTransform(index,mirror);
+    const index=Number(transform.dataset.boardIndex);
+    animateTransform(index,transform.dataset.boardTransform);
   };
   const required=correct.length,selected=[];
   root.querySelectorAll('[data-board-answer]').forEach(button=>button.addEventListener('click',()=>{
