@@ -2216,18 +2216,21 @@ function paint(){
       const wasSatoriMastered=isSatoriMastered();
       clearedSatoriStages.add(satoriIndex);
       try{localStorage.setItem('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));}catch(_){}
+      if(isSatoriMastered())rememberClearedMessage(false,satoriIndex,true);
       if(!wasSatoriMastered&&isSatoriMastered())pendingMasterThemeRefresh=true;
       else updateMasterTheme();
       renderStageNav();
     }else if(extraMode){
       clearedExtraStages.add(extraIndex);
       try{localStorage.setItem('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));}catch(_){}
+      rememberClearedMessage(true,extraIndex);
       if(isMastered())pendingMasterThemeRefresh=true;
       else updateMasterTheme();
       renderProgress();
     }else if(!freeMode&&!customMode){
       clearedStages.add(stageIndex);
       try{localStorage.setItem('wake7-cleared',JSON.stringify([...clearedStages]));}catch(_){}
+      rememberClearedMessage(false,stageIndex);
       renderProgress();
     }
     const m=$('msg');
@@ -3504,10 +3507,11 @@ function renderClearTip(){
   illustration.hidden=!art;
 }
 const MESSAGE_REVIEW_STORAGE_KEY='wake7-message-review';
+const MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY='wake7-message-review-last-clear';
 let messageReviewEntries=[],messageReviewIndex=0;
 function messageReviewEntryKey(entry){
-  const kind=entry.master?'master:'+entry.master:entry.boardQuiz?'board-quiz':entry.quiz!==undefined?'quiz:'+entry.quiz:'text';
-  return (entry.extra?'extra':'primary')+':'+entry.index+':'+kind;
+  const kind=entry.satori?'satori':entry.master?'master:'+entry.master:entry.boardQuiz?'board-quiz':entry.quiz!==undefined?'quiz:'+entry.quiz:'text';
+  return (entry.satori?'satori':entry.extra?'extra':'primary')+':'+entry.index+':'+kind;
 }
 function buildMessageReviewEntries(){
   const entries=[];
@@ -3526,9 +3530,22 @@ function buildMessageReviewEntries(){
     if(BOARD_QUIZ_STAGES[i])entries.push({extra:true,index:i,boardQuiz:true});
     if(QUIZ_STAGES[i]!==undefined)entries.push({extra:true,index:i,quiz:QUIZ_STAGES[i],art:stageClearArtAt(true,i)});
   }
+  if(isMastered())entries.push({master:'satoriIntro',extra:true,index:EXTRA_STAGES.length-1});
+  if(isSatoriMastered())entries.push({master:'satori',satori:true,index:SATORI_STAGES.length-1});
   return entries;
 }
+function rememberClearedMessage(extra,index,satori=false){
+  const entry=buildMessageReviewEntries().find(item=>!!item.satori===satori&&!!item.extra===extra&&item.index===index);
+  if(!entry)return;
+  const key=messageReviewEntryKey(entry);
+  try{
+    localStorage.setItem(MESSAGE_REVIEW_STORAGE_KEY,key);
+    localStorage.setItem(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);
+  }catch(_){}
+}
 function messageReviewPlace(entry){
+  if(entry.satori)return currentLang==='ja'?'悟りへの道・第'+(entry.index+1)+'問 クリア':tr('satoriTitle');
+  if(entry.master==='satoriIntro')return currentLang==='ja'?'悟りへの道の案内':tr('satoriIntroTitle');
   if(!entry.extra){
     if(currentLang!=='ja')return tr('stageAria',{n:entry.index+1,par:STAGES[entry.index].par});
     const group=entry.index<3?'入門':entry.index<12?'基本':'挑戦';
@@ -3539,6 +3556,8 @@ function messageReviewPlace(entry){
   return currentLang==='ja'?'名人への道 '+volumeLabel(volume)+'・第'+(entry.index%STAGES.length+1)+'問 クリア':tr('extraStageAria',{n:entry.index+1,total:EXTRA_STAGES.length});
 }
 function messageReviewStageContext(entry){
+  if(entry.satori)return tr('satori')+' '+(entry.index+1)+' / '+SATORI_STAGES.length;
+  if(entry.master==='satoriIntro')return tr('satori');
   if(!entry.extra){
     const group=entry.index<3?tr('intro'):entry.index<12?tr('basic'):tr('challenge');
     const number=entry.index<3?entry.index+1:entry.index<12?entry.index-2:entry.index-11;
@@ -3557,8 +3576,8 @@ function renderMessageReview(){
   $('closeMessages').textContent=tr('close');
   $('messageStageContext').textContent=messageReviewStageContext(entry);
   $('messageDialogPlace').hidden=true;
-  renderMasteryBoard('messageMasteryBoard',entry.master==='mastery');
-  roadmap.hidden=!entry.master||entry.master==='mastery';roadmapNote.hidden=true;boardNote.hidden=true;rules.hidden=true;
+  renderMasteryBoard('messageMasteryBoard',entry.master==='mastery'||entry.master==='satori',entry.master==='satori'?'satori-tilted':'gold');
+  roadmap.hidden=!entry.master||entry.master==='mastery'||entry.master==='satori'||entry.master==='satoriIntro';roadmapNote.hidden=true;boardNote.hidden=true;rules.hidden=true;
   seal.hidden=!entry.master;
   rankText.hidden=true;masterText.hidden=true;
   $('messageDialogText').hidden=!!entry.master||entry.quiz!==undefined||!!entry.boardQuiz;
@@ -3580,6 +3599,10 @@ function renderMessageReview(){
       $('messageMasterSealLabel').textContent=masterPath().ranks[0];setSealColor(seal,0);$('messageDialogTitle').textContent=tr('masterTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[0]);masterText.hidden=false;masterText.textContent=tr('masterText');rules.hidden=false;rules.textContent=masterCommonRules();
     }else if(entry.master==='mastery'){
       $('messageMasterSealLabel').textContent=masterPath().ranks[4];setSealColor(seal,4);$('messageDialogTitle').textContent=tr('masteryTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[4]);masterText.hidden=false;masterText.textContent=tr('masteryText');boardNote.hidden=false;boardNote.textContent=tr('masteryBoardNote');
+    }else if(entry.master==='satori'){
+      $('messageMasterSealLabel').textContent=tr('satoriRank');setSealColor(seal,5);$('messageDialogTitle').textContent=tr('satoriTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));masterText.hidden=false;masterText.textContent=tr('satoriText');boardNote.hidden=false;boardNote.textContent=tr('satoriThanks');
+    }else if(entry.master==='satoriIntro'){
+      seal.hidden=true;$('messageDialogTitle').textContent=tr('satoriIntroTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr('satoriIntroText');
     }else{
       const nextRules={ja:['「破」からは、ヒントが使えなくなります。','「離」では途中から最短4手の問題です。\nスワイプ中は残り最短手数が「？」になります。','「極」では残り最短手数が表示されません。\nかわりに回数限定で「残り手数」のボタンが使えますが、これも途中から使用回数が減っていきます。']}[currentLang]||[];
       const clearName=currentLang==='ja'?'名人への道・'+volumeLabel(volume)+'　'+masterSubtitle(volume):volumeLabel(volume)+'　'+masterSubtitle(volume);
@@ -3638,10 +3661,23 @@ function openMessageReview({resume=false,returnTarget=null}={}){
   messageDialogReturn=returnTarget;
   messageReviewEntries=buildMessageReviewEntries();
   if(resume){
-    let lastKey='';
-    try{lastKey=localStorage.getItem(MESSAGE_REVIEW_STORAGE_KEY)||'';}catch(_){}
-    const saved=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===lastKey);
-    messageReviewIndex=saved>=0?saved:0;
+    let lastKey='',lastClearKey='';
+    try{
+      lastKey=localStorage.getItem(MESSAGE_REVIEW_STORAGE_KEY)||'';
+      lastClearKey=localStorage.getItem(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY)||'';
+    }catch(_){}
+    // 以前の保存データには「最後にクリアした問題」がないため、悟り制覇済みなら一度だけ制覇メッセージへ移行する。
+    if(!lastClearKey&&isSatoriMastered()){
+      const satoriEntry=messageReviewEntries.findIndex(entry=>entry.satori);
+      if(satoriEntry>=0){
+        messageReviewIndex=satoriEntry;
+        const key=messageReviewEntryKey(messageReviewEntries[satoriEntry]);
+        try{localStorage.setItem(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);}catch(_){}
+      }else messageReviewIndex=0;
+    }else{
+      const saved=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===lastKey);
+      messageReviewIndex=saved>=0?saved:0;
+    }
   }else{
     const currentExtra=extraMode,currentIndex=extraMode?extraIndex:stageIndex;
     const exact=messageReviewEntries.findIndex(entry=>entry.extra===currentExtra&&entry.index===currentIndex);
@@ -3989,10 +4025,12 @@ function masteryBoardSvg(tilted=false){
   return '<svg viewBox="14 0 293 310" aria-hidden="true">'+layout+'</svg>';
 }
 const masteryBoardTimers=new Map();
+const masteryBoardRuns=new Map();
 function animateMasteryBoard(id){
   const board=$(id);
+  const run=masteryBoardRuns.get(id);
   const play=()=>{
-    if(board.hidden||!board.isConnected)return;
+    if(run!==masteryBoardRuns.get(id)||board.hidden||!board.isConnected)return;
     const tiles=[...board.querySelectorAll('.mastery-tile')];
     if(!tiles.length||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
     let remaining=tiles.length;
@@ -4006,6 +4044,7 @@ function animateMasteryBoard(id){
         {transform:final}
       ],{duration:680,easing:'cubic-bezier(.2,.72,.2,1)',fill:'forwards'});
       animation.onfinish=()=>{
+        if(run!==masteryBoardRuns.get(id))return;
         tile.style.transform=final;tile.dataset.cell=to;
         if(--remaining===0)masteryBoardTimers.set(id,setTimeout(play,130));
       };
@@ -4016,6 +4055,8 @@ function animateMasteryBoard(id){
 function renderMasteryBoard(id,show,theme='gold'){
   const board=$(id);
   clearTimeout(masteryBoardTimers.get(id));
+  masteryBoardRuns.set(id,(masteryBoardRuns.get(id)||0)+1);
+  board.getAnimations?.({subtree:true}).forEach(animation=>animation.cancel());
   board.classList.toggle('satori-theme',show&&theme.startsWith('satori'));
   board.classList.toggle('tilted-theme',show&&theme==='satori-tilted');
   board.hidden=!show;
@@ -4338,6 +4379,10 @@ function debugClearCurrent(extraMoves=0){
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   $('clearNext').hidden=true;
   paint();
+  // 即クリアでも、通常操作と同じくメッセージ一覧の開始位置を更新する。
+  if(extraMoves===0&&!satoriMode&&!freeMode&&!customMode){
+    rememberClearedMessage(extraMode,extraMode?extraIndex:stageIndex);
+  }
 }
 $('debugClear').addEventListener('click',()=>debugClearCurrent(0));
 $('debugAllClear').addEventListener('click',()=>{
@@ -4351,6 +4396,7 @@ $('debugAllClear').addEventListener('click',()=>{
     localStorage.setItem('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));
   }catch(_){}
   updateMasterTheme();
+  rememberClearedMessage(false,SATORI_STAGES.length-1,true);
   loadStage(0);
 });
 $('debugAlmost').addEventListener('click',()=>debugClearCurrent(1));
@@ -4360,6 +4406,7 @@ $('debugUnlock14').addEventListener('click',()=>{
   if(!DEBUG_MODE)return;
   for(let i=0;i<STAGES.length-1;i++)clearedStages.add(i);
   try{localStorage.setItem('wake7-cleared',JSON.stringify([...clearedStages]));}catch(_){}
+  rememberClearedMessage(false,STAGES.length-2);
   loadStage(STAGES.length-1);
 });
 function debugUnlockExtra(count){
@@ -4372,6 +4419,7 @@ function debugUnlockExtra(count){
     localStorage.setItem('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
   }catch(_){}
   updateMasterTheme();
+  if(count>0)rememberClearedMessage(true,count-1);
   loadExtraStage(Math.min(count,EXTRA_STAGES.length-1));
 }
 $('debugExtra14').addEventListener('click',()=>debugUnlockExtra(14));
@@ -4389,6 +4437,7 @@ $('debugSatori72').addEventListener('click',()=>{
     localStorage.setItem('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));
   }catch(_){}
   updateMasterTheme();
+  rememberClearedMessage(true,EXTRA_STAGES.length-1);
   loadSatoriStage(SATORI_STAGES.length-1);
 });
 $('debugReset').addEventListener('click',()=>resetStoredProgress({resetIntro:true,showIntro:true}));
@@ -5088,6 +5137,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
     }
     localStorage.removeItem(FOURTH_CHECKS_STORAGE_KEY);
     localStorage.removeItem(MESSAGE_REVIEW_STORAGE_KEY);
+    localStorage.removeItem(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY);
     if(resetIntro)localStorage.removeItem('wake7-intro-seen');
   }catch(_){}
   if(!preserveRewards){
