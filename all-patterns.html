@@ -71,6 +71,13 @@
  .modal-board-area .modal-tools .modal-transform--top-right{grid-area:1/3}
  .modal-board-area .modal-tools .modal-transform--bottom-left{grid-area:3/1}
  .modal-board-area .modal-tools .modal-transform--bottom-right{grid-area:3/3}
+ .filter-sidebar .summary button.active,
+ .filter-sidebar .fallen-filter button.active,
+ .filter-sidebar .catalog-card.active{
+   border-color:var(--gold);background:var(--gold);color:var(--bg);font-weight:700;
+ }
+ .filter-sidebar .summary button.active b,
+ .filter-sidebar .catalog-card.active b{color:var(--bg)}
 </style>
 <main><div class="page-layout"><section class="genome-main"><div class="language-picker"><button class="language-toggle" id="languageToggle" type="button" aria-label="言語を選ぶ" aria-expanded="false">🌐</button><div class="language-menu" id="languageMenu" role="radiogroup"><button type="button" role="radio" data-lang="ja">日本語</button><button type="button" role="radio" data-lang="en">English</button><button type="button" role="radio" data-lang="zh">简体中文</button><button type="button" role="radio" data-lang="ko">한국어</button></div></div><a class="back" href="index.html" data-i18n="back">← WAKE SEVEN に戻る</a><h1>WAKE SEVEN <em>GENOME</em></h1><p class="sub" data-i18n="subtitle">全パターン一覧 · ALL 73 PATTERNS</p><div class="display-size" id="boardSize" aria-label="盤面サイズ"><span data-i18n="size">盤面サイズ</span><button type="button" data-size="small" data-i18n="small">小</button><button type="button" data-size="normal" data-i18n="normal">標準</button><button type="button" data-size="large" data-i18n="large">大</button></div><div id="content"></div></section><aside class="filter-sidebar" id="filterSidebar"><button class="filter-sidebar-toggle" id="filterSidebarToggle" type="button" data-i18n="filters">絞り込み</button><div class="filter-sidebar-panel"><div class="filter-heading"><p class="filter-title" data-i18n="minMoves">最短手数</p><button class="filter-clear" id="filterClear" type="button" data-i18n="clearFilters">フィルターをクリア</button></div><div class="summary" id="summary"></div><p class="filter-title" data-i18n="asleep">寝ている数</p><div class="fallen-filter" id="fallenFilter" aria-label="寝ているダルマの数"></div><section class="shape-catalog"><h2 class="shape-catalog-title" data-i18n="shapeFilter">形で絞り込む（23形）</h2><div class="shape-catalog-grid" id="shapeCatalog"></div></section></div></aside></div></main>
 <div class="modal" id="modal" hidden><article><h2 id="modalTitle"></h2><div class="modal-board-area"><div id="modalBoard"></div><div class="modal-tools"><button class="modal-transform modal-transform--top-left" type="button" data-genome-modal-transform="rotateBack" aria-label="60°逆回転"></button><button class="modal-transform modal-transform--top-right" type="button" data-genome-modal-transform="rotate" aria-label="60°回転"></button><button class="modal-transform modal-transform--bottom-left" type="button" data-genome-modal-transform="mirror" aria-label="左右反転"></button><button class="modal-transform modal-transform--bottom-right" type="button" data-genome-modal-transform="vertical" aria-label="上下反転"></button></div></div><p id="modalText"></p><button id="modalClose" data-i18n="close">閉じる</button></article></div>
@@ -81,12 +88,13 @@
 </defs></svg>
 <script>
 const GENOME_I18N={
-  ja:{back:'← WAKE SEVEN に戻る',title:'WAKE SEVEN 全パターン一覧',intro:'回転・左右反転で同じになる盤面をひとつとして数えた、73の盤面です。だるまたちの向きまで含めて、すべて異なる「種」です。',language:'言語を選ぶ',size:'盤面サイズ',small:'小',normal:'標準',large:'大',filters:'絞り込み',minMoves:'最短手数',asleep:'寝ている数',shapeFilter:'形で絞り込む（23形）',all:'すべて',sleep:'寝',shortest:'最短',moves:'手',patterns:'パターン',noMatches:'該当する盤面はありません。',close:'閉じる',mirror:'左右反転',rotate:'60°回転',samePattern:'回転・左右反転で同じになる盤面は、ひとつのパターンとして数えています。',moveLabels:{1:'最短1手',2:'最短2手',3:'最短3手',4:'最短4手'},catalogLabels:{1:'最短1手',2:'最短2手あり（混在）',3:'最短3手',4:'最短4手',mixed34:'最短3手・4手（混在）'},shapes:{outerAdjacent:'外隣り',reverseBowArrow:'猫の耳',reverseBay:'カギ',reverseRibbon:'両岸',dish:'お皿',smallTriangle:'小三角',necklace:'ネックレス',reverseCaterpillar:'直角三角形',ichimonji:'一文字',largeTriangle:'大三角',diamond:'ひし形',crown:'王冠',caterpillar:'芋虫',reverseNecklace:'気球',reverseIchimonji:'長方形',shuriken:'手裏剣',trapezoid:'台形',bay:'ひづめ',bowArrow:'弓矢',ribbon:'リボン',turtleShell:'お皿二枚',ring:'輪',sleepQuiet:'寝静まり'}},
-  en:{back:'← Back to WAKE SEVEN',title:'WAKE SEVEN · All Patterns',intro:'These are all 73 unique board patterns, counting rotations and mirror images as one. Daruma directions are part of each distinct pattern.',language:'Choose language',size:'Board size',small:'Small',normal:'Medium',large:'Large',filters:'Filters',minMoves:'Minimum moves',asleep:'Daruma asleep',shapeFilter:'Filter by shape (23 shapes)',all:'All',sleep:'Asleep',shortest:'Min. ',moves:' moves',patterns:'patterns',noMatches:'No matching boards.',close:'Close',mirror:'Mirror',rotate:'Rotate 60°',samePattern:'Rotations and mirror images are counted as a single pattern.',moveLabels:{1:'1 move',2:'2 moves',3:'3 moves',4:'4 moves'},catalogLabels:{1:'1 move',2:'Includes 2 moves',3:'3 moves',4:'4 moves',mixed34:'3–4 moves'},shapes:{outerAdjacent:'Outer pair',reverseBowArrow:'Cat ears',reverseBay:'Hook',reverseRibbon:'Two banks',dish:'Dish',smallTriangle:'Small triangle',necklace:'Necklace',reverseCaterpillar:'Right triangle',ichimonji:'Straight line',largeTriangle:'Large triangle',diamond:'Diamond',crown:'Crown',caterpillar:'Caterpillar',reverseNecklace:'Balloon',reverseIchimonji:'Rectangle',shuriken:'Shuriken',trapezoid:'Trapezoid',bay:'Hoof',bowArrow:'Bow and arrow',ribbon:'Ribbon',turtleShell:'Double dish',ring:'Ring',sleepQuiet:'All asleep'}},
-  zh:{back:'← 返回 WAKE SEVEN',title:'WAKE SEVEN · 全部图案',intro:'这里展示73种独特盘面：旋转或左右翻转后相同的盘面算作一种。达摩的朝向也包含在图案中。',language:'选择语言',size:'盘面大小',small:'小',normal:'标准',large:'大',filters:'筛选',minMoves:'最少步数',asleep:'躺下数量',shapeFilter:'按形状筛选（23种）',all:'全部',sleep:'躺',shortest:'最少',moves:'步',patterns:'种',noMatches:'没有符合的盘面。',close:'关闭',mirror:'左右翻转',rotate:'旋转60°',samePattern:'旋转或左右翻转后相同的盘面算作一种。',moveLabels:{1:'最少1步',2:'最少2步',3:'最少3步',4:'最少4步'},catalogLabels:{1:'最少1步',2:'含最少2步',3:'最少3步',4:'最少4步',mixed34:'最少3～4步'},shapes:{outerAdjacent:'外侧相邻',reverseBowArrow:'猫耳',reverseBay:'钩形',reverseRibbon:'两岸',dish:'盘子',smallTriangle:'小三角',necklace:'项链',reverseCaterpillar:'直角三角',ichimonji:'一字',largeTriangle:'大三角',diamond:'菱形',crown:'王冠',caterpillar:'毛毛虫',reverseNecklace:'气球',reverseIchimonji:'长方形',shuriken:'手里剑',trapezoid:'梯形',bay:'蹄形',bowArrow:'弓箭',ribbon:'丝带',turtleShell:'双盘',ring:'环',sleepQuiet:'全睡'}},
-  ko:{back:'← WAKE SEVEN으로 돌아가기',title:'WAKE SEVEN · 전체 패턴',intro:'회전·좌우 반전으로 같아지는 판을 하나로 센 73가지 패턴입니다. 다루마의 방향까지 서로 다른 패턴입니다.',language:'언어 선택',size:'판 크기',small:'작게',normal:'보통',large:'크게',filters:'필터',minMoves:'최단 수',asleep:'누운 수',shapeFilter:'모양으로 찾기 (23가지)',all:'전체',sleep:'잠',shortest:'최단 ',moves:'수',patterns:'패턴',noMatches:'해당하는 판이 없습니다.',close:'닫기',mirror:'좌우 반전',rotate:'60° 회전',samePattern:'회전·좌우 반전으로 같아지는 판은 하나의 패턴으로 셉니다.',moveLabels:{1:'최단 1수',2:'최단 2수',3:'최단 3수',4:'최단 4수'},catalogLabels:{1:'최단 1수',2:'최단 2수 포함',3:'최단 3수',4:'최단 4수',mixed34:'최단 3·4수'},shapes:{outerAdjacent:'바깥 이웃',reverseBowArrow:'고양이 귀',reverseBay:'갈고리',reverseRibbon:'양쪽 둑',dish:'접시',smallTriangle:'작은 삼각형',necklace:'목걸이',reverseCaterpillar:'직각삼각형',ichimonji:'일자',largeTriangle:'큰 삼각형',diamond:'마름모',crown:'왕관',caterpillar:'애벌레',reverseNecklace:'풍선',reverseIchimonji:'직사각형',shuriken:'수리검',trapezoid:'사다리꼴',bay:'발굽',bowArrow:'활과 화살',ribbon:'리본',turtleShell:'접시 둘',ring:'고리',sleepQuiet:'모두 잠듦'}}
+  ja:{back:'← WAKE SEVEN に戻る',title:'WAKE SEVEN 全パターン一覧',intro:'回転・左右反転で同じになる盤面をひとつとして数えた、73の盤面です。だるまたちの向きまで含めて、すべて異なる「種」です。',language:'言語を選ぶ',size:'盤面サイズ',small:'小',normal:'標準',large:'大',filters:'絞り込み',minMoves:'最短手数',asleep:'寝ている数',shapeFilter:'形で絞り込む（23形）',all:'すべて',sleep:'寝',shortest:'最短',moves:'手',patterns:'パターン',noMatches:'該当する盤面はありません。',close:'閉じる',mirror:'左右反転',rotate:'60°回転',samePattern:'回転・左右反転で同じになる盤面は、ひとつのパターンとして数えています。',moveLabels:{1:'最短1手',2:'最短2手',3:'最短3手',4:'最短4手'},catalogLabels:{1:'最短1手',2:'最短2手あり（混在）',3:'最短3手',4:'最短4手',mixed34:'最短3手・4手（混在）'},shapes:{outerAdjacent:'外隣り',reverseBowArrow:'猫の耳',reverseBay:'カギ',reverseRibbon:'両岸',dish:'お皿',smallTriangle:'小三角',necklace:'ネックレス',reverseCaterpillar:'直角三角形',ichimonji:'一文字',largeTriangle:'大三角',diamond:'ひし形',crown:'王冠',caterpillar:'芋虫',reverseNecklace:'気球',reverseIchimonji:'長方形',shuriken:'手裏剣',trapezoid:'台形',bay:'ひづめ',bowArrow:'弓矢',ribbon:'リボン',turtleShell:'亀',ring:'輪',sleepQuiet:'寝静まり'}},
+  en:{back:'← Back to WAKE SEVEN',title:'WAKE SEVEN · All Patterns',intro:'These are all 73 unique board patterns, counting rotations and mirror images as one. Daruma directions are part of each distinct pattern.',language:'Choose language',size:'Board size',small:'Small',normal:'Medium',large:'Large',filters:'Filters',minMoves:'Minimum moves',asleep:'Daruma asleep',shapeFilter:'Filter by shape (23 shapes)',all:'All',sleep:'Asleep',shortest:'Min. ',moves:' moves',patterns:'patterns',noMatches:'No matching boards.',close:'Close',mirror:'Mirror',rotate:'Rotate 60°',samePattern:'Rotations and mirror images are counted as a single pattern.',moveLabels:{1:'1 move',2:'2 moves',3:'3 moves',4:'4 moves'},catalogLabels:{1:'1 move',2:'Includes 2 moves',3:'3 moves',4:'4 moves',mixed34:'3–4 moves'},shapes:{outerAdjacent:'Outer pair',reverseBowArrow:'Cat ears',reverseBay:'Hook',reverseRibbon:'Two banks',dish:'Dish',smallTriangle:'Small triangle',necklace:'Necklace',reverseCaterpillar:'Right triangle',ichimonji:'Straight line',largeTriangle:'Large triangle',diamond:'Diamond',crown:'Crown',caterpillar:'Caterpillar',reverseNecklace:'Balloon',reverseIchimonji:'Rectangle',shuriken:'Shuriken',trapezoid:'Trapezoid',bay:'Hoof',bowArrow:'Bow and arrow',ribbon:'Ribbon',turtleShell:'Turtle',ring:'Ring',sleepQuiet:'All asleep'}},
+  zh:{back:'← 返回 WAKE SEVEN',title:'WAKE SEVEN · 全部图案',intro:'这里展示73种独特盘面：旋转或左右翻转后相同的盘面算作一种。达摩的朝向也包含在图案中。',language:'选择语言',size:'盘面大小',small:'小',normal:'标准',large:'大',filters:'筛选',minMoves:'最少步数',asleep:'躺下数量',shapeFilter:'按形状筛选（23种）',all:'全部',sleep:'躺',shortest:'最少',moves:'步',patterns:'种',noMatches:'没有符合的盘面。',close:'关闭',mirror:'左右翻转',rotate:'旋转60°',samePattern:'旋转或左右翻转后相同的盘面算作一种。',moveLabels:{1:'最少1步',2:'最少2步',3:'最少3步',4:'最少4步'},catalogLabels:{1:'最少1步',2:'含最少2步',3:'最少3步',4:'最少4步',mixed34:'最少3～4步'},shapes:{outerAdjacent:'外侧相邻',reverseBowArrow:'猫耳',reverseBay:'钩形',reverseRibbon:'两岸',dish:'盘子',smallTriangle:'小三角',necklace:'项链',reverseCaterpillar:'直角三角',ichimonji:'一字',largeTriangle:'大三角',diamond:'菱形',crown:'王冠',caterpillar:'毛毛虫',reverseNecklace:'气球',reverseIchimonji:'长方形',shuriken:'手里剑',trapezoid:'梯形',bay:'蹄形',bowArrow:'弓箭',ribbon:'丝带',turtleShell:'乌龟',ring:'环',sleepQuiet:'全睡'}},
+  ko:{back:'← WAKE SEVEN으로 돌아가기',title:'WAKE SEVEN · 전체 패턴',intro:'회전·좌우 반전으로 같아지는 판을 하나로 센 73가지 패턴입니다. 다루마의 방향까지 서로 다른 패턴입니다.',language:'언어 선택',size:'판 크기',small:'작게',normal:'보통',large:'크게',filters:'필터',minMoves:'최단 수',asleep:'누운 수',shapeFilter:'모양으로 찾기 (23가지)',all:'전체',sleep:'잠',shortest:'최단 ',moves:'수',patterns:'패턴',noMatches:'해당하는 판이 없습니다.',close:'닫기',mirror:'좌우 반전',rotate:'60° 회전',samePattern:'회전·좌우 반전으로 같아지는 판은 하나의 패턴으로 셉니다.',moveLabels:{1:'최단 1수',2:'최단 2수',3:'최단 3수',4:'최단 4수'},catalogLabels:{1:'최단 1수',2:'최단 2수 포함',3:'최단 3수',4:'최단 4수',mixed34:'최단 3·4수'},shapes:{outerAdjacent:'바깥 이웃',reverseBowArrow:'고양이 귀',reverseBay:'갈고리',reverseRibbon:'양쪽 둑',dish:'접시',smallTriangle:'작은 삼각형',necklace:'목걸이',reverseCaterpillar:'직각삼각형',ichimonji:'일자',largeTriangle:'큰 삼각형',diamond:'마름모',crown:'왕관',caterpillar:'애벌레',reverseNecklace:'풍선',reverseIchimonji:'직사각형',shuriken:'수리검',trapezoid:'사다리꼴',bay:'발굽',bowArrow:'활과 화살',ribbon:'리본',turtleShell:'거북이',ring:'고리',sleepQuiet:'모두 잠듦'}}
 };
 Object.assign(GENOME_I18N.ja,{title:'WAKE SEVEN GENOME — 全パターン一覧',subtitle:'全パターン一覧 · ALL 73 PATTERNS'});
+Object.assign(GENOME_I18N.ja.shapes,{ichimonji:'直線',ring:'リング'});
 Object.assign(GENOME_I18N.en,{title:'WAKE SEVEN GENOME — All Patterns',subtitle:'ALL 73 PATTERNS'});
 Object.assign(GENOME_I18N.zh,{title:'WAKE SEVEN GENOME — 全部图案',subtitle:'全部图案 · ALL 73 PATTERNS'});
 Object.assign(GENOME_I18N.ko,{title:'WAKE SEVEN GENOME — 전체 패턴',subtitle:'전체 패턴 · ALL 73 PATTERNS'});
@@ -295,10 +303,10 @@ shapeFilterControl.addEventListener('click',event=>{
 <script>
 const SHAPE_CATALOG=[
   ['outerAdjacent',3,'外隣り'],['reverseBowArrow',6,'逆弓矢'],['reverseBay',9,'カギ'],['reverseRibbon',20,'逆リボン'],
-  ['dish',7,'お皿'],['smallTriangle',11,'小三角'],['necklace',14,'ネックレス'],['reverseCaterpillar',21,'直角三角形'],['ichimonji',28,'一文字'],['largeTriangle',49,'大三角'],
+  ['dish',7,'お皿'],['smallTriangle',11,'小三角'],['necklace',14,'ネックレス'],['reverseCaterpillar',21,'直角三角形'],['ichimonji',28,'直線'],['largeTriangle',49,'大三角'],
   ['diamond',15,'ひし形'],['crown',23,'王冠'],['caterpillar',29,'芋虫'],['reverseNecklace',51,'気球'],['reverseIchimonji',54,'長方形'],['shuriken',57,'手裏剣'],
   ['trapezoid',31,'台形'],['bay',55,'ひづめ'],['bowArrow',59,'弓矢'],['ribbon',62,'リボン'],
-  ['turtleShell',63,'お皿二枚'],['ring',119,'輪'],['sleepQuiet',127,'寝静まり']
+  ['turtleShell',63,'亀'],['ring',119,'リング'],['sleepQuiet',127,'寝静まり']
 ];
 const shapeCount=mask=>mask.toString(2).split('1').length-1;
 const catalogStates=Object.values(groups).flat();
@@ -414,11 +422,12 @@ function setGenomeBoardLayout(layout){
   document.documentElement.dataset.boardLayout=layout;
   try{localStorage.setItem('wake7-board-layout',layout)}catch(_){ }
   refreshGenomeLayoutControl();
+  refreshGenomeCatalogBoards();
   render();
 }
 
 // パネルは傾け、だるまは逆向きに回して本編と同じく立たせる。
-board=function(state,big=false){
+board=function(state,big=false,catalog=false){
   const values=dec(state);
   const radius=big?54:48;
   const width=big?330:300;
@@ -426,7 +435,7 @@ board=function(state,big=false){
   const centerX=width/2,centerY=height/2;
   const points=[[0,-radius],[radius*.866,-radius*.5],[radius*.866,radius*.5],[0,radius],[-radius*.866,radius*.5],[-radius*.866,-radius*.5]]
     .map(point=>point.map(value=>value.toFixed(1)).join(',')).join(' ');
-  const scale=big?.95:.88;
+  const scale=big?.95:catalog?.68:.88;
   const originX=big?78:70,originY=big?62:55;
   const tilted=genomeBoardLayout==='tilted';
   const boardStart=tilted?'<g transform="rotate(-30 '+centerX+' '+centerY+')">':'';
@@ -434,14 +443,28 @@ board=function(state,big=false){
   const tiles=C.map((point,index)=>{
     const x=originX+point.x*radius,y=originY+point.y*radius,value=values[index];
     const angle=(value===2?-120:value*120)+(tilted?30:0);
-    const fill=value?'#B9C6D6':'#F3E8D5';
-    const stroke=value?'#718297':'#C9A54E';
+    const fill=value?(catalog?'#A8C9D3':'#B9C6D6'):'#F3E8D5';
+    const stroke=value?(catalog?'#698F9F':'#718297'):'#C9A54E';
     return '<g class="genome-tile" data-cell="'+index+'" transform="translate('+x+' '+y+')">'
       +'<polygon points="'+points+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+(big?2.1:1.7)+'"/>'
       +'<g class="genome-daruma" transform="rotate('+angle+') scale('+scale+')"><use href="#genome-body"/><use href="#'+(value?'genome-shut':'genome-open')+'"/></g></g>';
   }).join('');
   return '<svg viewBox="0 0 '+width+' '+height+'" aria-hidden="true">'+boardStart+tiles+boardEnd+'</svg>';
 };
+
+function refreshGenomeCatalogBoards(){
+  const items=Object.values(catalogBuckets).flat();
+  document.querySelectorAll('#shapeCatalog .catalog-card[data-shape-name]').forEach(card=>{
+    const item=items.find(entry=>entry.key===card.dataset.shapeName);
+    const current=card.querySelector('svg');
+    if(!item||!current)return;
+    const holder=document.createElement('div');
+    holder.innerHTML=board(item.state,false,true);
+    current.replaceWith(holder.firstElementChild);
+  });
+}
+
+refreshGenomeCatalogBoards();
 
 genomeLayoutControl.addEventListener('click',event=>{
   const button=event.target.closest('[data-layout]');
