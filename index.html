@@ -453,6 +453,7 @@
   .stage-title span.hint-info{color:#62B8D2;font-weight:700}
   .status-metric.moves b.pulse{animation:movePulse .3s cubic-bezier(.2,.8,.25,1)}
   .playbar{
+    position:relative;z-index:3;
     width:100%;max-width:372px;display:flex;justify-content:flex-end;margin-top:10px;
   }
   @keyframes movePulse{
@@ -1263,15 +1264,37 @@ const SATORI_DEPTH_OPTIMAL_STAGES=[...LEGACY_SATORI_STAGES].sort((a,b)=>{
   const delta=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
   return delta||a.state-b.state;
 });
-// 悟りへの道は、手数をまたいでも最短で解ける確率が高い盤面から出す。
-// 同率なら、次の一手で進める選択肢が多く、悪化が少ない盤面を先にする。
-const SATORI_STAGES=[...LEGACY_SATORI_STAGES].sort((a,b)=>{
+// 以前の確率順。保存済みの悟り進行を盤面基準で移行するためにも残す。
+const SATORI_HUMAN_TIE_STAGES=[...LEGACY_SATORI_STAGES].sort((a,b)=>{
   const probability=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
   if(probability)return probability;
   const ae=progressOptionCounts(a),be=progressOptionCounts(b);
   return be.progress-ae.progress||ae.worse-be.worse||a.par-b.par||a.state-b.state;
 });
-const SATORI_ORDER_VERSION='optimal-path-human-ties-8';
+// 第25問までは1手→2手→3手。第26問以降は3手と4手を予測しにくい固定順で混ぜる。
+// 各手数の中では従来の難易度順を保ち、8問ごとに3手・4手を4問ずつ配置する。
+const SATORI_MIXED_DEPTHS=[
+  4,3,4,4,3,3,4,3,
+  3,4,3,4,4,3,3,4,
+  4,3,3,4,3,4,4,3,
+  3,4,4,3,4,3,3,4,
+  3,4,3,3,4,4,3,4,
+  4,3,4,3,3,4,4,3
+];
+const satoriIntroStages=SATORI_HUMAN_TIE_STAGES.filter(stage=>stage.par<=2);
+const satoriThreeStages=SATORI_HUMAN_TIE_STAGES.filter(stage=>stage.par===3);
+const satoriFourStages=SATORI_HUMAN_TIE_STAGES.filter(stage=>stage.par===4);
+let satoriMixedThreeIndex=15,satoriMixedFourIndex=0;
+const SATORI_MIXED_STAGES=[
+  ...satoriIntroStages,
+  ...satoriThreeStages.slice(0,15),
+  ...SATORI_MIXED_DEPTHS.map(depth=>depth===3
+    ?satoriThreeStages[satoriMixedThreeIndex++]
+    :satoriFourStages[satoriMixedFourIndex++])
+];
+const SATORI_STAGES=[...SATORI_MIXED_STAGES];
+[SATORI_STAGES[71],SATORI_STAGES[72]]=[SATORI_STAGES[72],SATORI_STAGES[71]];
+const SATORI_ORDER_VERSION='mixed-depths-final-swap-10';
 const satoriStageIndexByState=new Map(SATORI_STAGES.map((stage,index)=>[stage.state,index]));
 let currentLang='ja';
 const UI_TEXT={
@@ -1419,7 +1442,7 @@ Object.assign(UI_TEXT.ja,{
   extraClear33:'最短3手の盤面での次の一手の確率です。\n・最短2手になるのは約17% (9パターン)\n・最短3手にとどまるのは約56% (39パターン)\n・最短4手になるのは約27% (24パターン)',
   masterNextFourMoves:'次からは、最短4手の問題です。',
   extraClear46:'メニューの「最短2手の9パターンを見る」から、9種類の盤面を一覧で見られます。',
-  extraClear47:'「左右反転」「60°回転」で向きを変えて、覚えた盤面と同じかどうか確かめてみよう。',
+  extraClear47:'反転と回転で向きを変えて、覚えた盤面と同じかどうか確かめてみよう。',
   extraClear48:'メニューの「攻略のコツ」では、特徴的な形を図解で見られます。',extraClear49:'メニューの「最短2手の9パターン」と「攻略のコツ」では、盤面をスワイプするとゲーム中の盤面と並べて見比べられます。',
   extraClear45:'名人への道の終盤では、残り最短手数が表示されません。\n「ヒント」ボタンで表示されるので、困ったら押してください',
   stageClear2:'ゲームを中断して閉じても、今やっている問題から再開できます。',
@@ -1929,6 +1952,8 @@ function migrateSatoriOrder(){
     :version==='optimal-path-5'?SATORI_GLOBAL_OPTIMAL_STAGES
     :version==='optimal-path-by-depth-6'?SATORI_DEPTH_OPTIMAL_STAGES
     :version==='optimal-path-7'?SATORI_GLOBAL_OPTIMAL_STAGES
+    :version==='optimal-path-human-ties-8'?SATORI_HUMAN_TIE_STAGES
+    :version==='mixed-depths-from-26-9'?SATORI_MIXED_STAGES
     :LEGACY_SATORI_STAGES;
   const remapIndex=index=>{
     const stage=sourceStages[index];
@@ -3391,6 +3416,9 @@ function renderClearStageContext(){
     ?$('stageKind').textContent+'　'+$('stageNumber').textContent+' '+$('stageCount').textContent
     :$('stageKind').textContent+' '+$('stageNumber').textContent;
 }
+function clearDialogHeading(){
+  return tr(extraMode||satoriMode?'optimalClear':'clear');
+}
 function showClearDialog(){
   // 悟りの最終問題は、再挑戦で解いた場合も制覇ダイアログを見せる。
   // それ以外の悟り問題は、制覇後も通常のクリアダイアログにする。
@@ -3419,7 +3447,7 @@ function showClearDialog(){
   else if(stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');
   else if(stageIndex===STAGES.length-1)action.textContent=tr('toFree');
   else action.textContent=tr('nextPuzzle');
-  $('clearDialogMessage').textContent=(extraMode||satoriMode)?tr('optimalClear'):tr('clear');
+  $('clearDialogMessage').textContent=clearDialogHeading();
   renderClearStageContext();
   renderClearTip();
   renderClearQuiz();
@@ -3864,7 +3892,7 @@ function advanceAfterClear(){
 let returnToClearCard=false,twoMovePatternsReturnTarget=null,twoMoveDetailReturnTarget=null;
 function returnToClearDialog(){
   returnToClearCard=false;
-  $('clearDialogMessage').textContent=tr('clear');
+  $('clearDialogMessage').textContent=clearDialogHeading();
   renderClearStageContext();
   renderClearTip();
   renderClearQuiz();
@@ -5027,7 +5055,7 @@ function applyLanguage(lang){
   }
   if(editingBoard)showMakerMessage();
   else if(clearShown){
-    $('clearDialogMessage').textContent=tr('clear');
+    $('clearDialogMessage').textContent=clearDialogHeading();
     renderClearStageContext();
     renderClearTip();
     renderClearQuiz();
