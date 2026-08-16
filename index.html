@@ -3244,7 +3244,7 @@ function setSealColor(seal,index){
   seal.style.setProperty('--seal-color',stroke);
   seal.style.setProperty('--spark-color',index===6?'#C9A54E':stroke);
 }
-function rankFrameSvg(text,locked=false,index=0,doubleFrame=false){
+function rankFrameSvg(text,locked=false,index=0,doubleFrame=false,dimmed=false){
   const colors=RANK_FRAME_COLORS[index]||RANK_FRAME_COLORS[0];
   const noMind=index===5&&!locked;
   const awakened=index===6&&!locked;
@@ -3253,7 +3253,7 @@ function rankFrameSvg(text,locked=false,index=0,doubleFrame=false){
   const ink=locked?'#73869A':colors.ink;
   const size=awakened?29:text.length>=3?23:27;
   const inner=doubleFrame||(!locked&&(noMind||awakened))?'<path d="M19 9H131L139 29 131 49H19L11 29Z" fill="none" stroke="'+(awakened?'#34393C':stroke)+'" stroke-width="'+(awakened?'.75':'.8')+'" opacity="'+(awakened?'1':'.7')+'" stroke-linejoin="round"/>':'';
-  return '<svg viewBox="0 0 150 58" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+text+'"><path d="M15 3H135L147 29 135 55H15L3 29Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+(awakened?'1.7':noMind?'1.5':'2')+'" stroke-linejoin="round"/>'+inner+'<text x="75" y="30" text-anchor="middle" dominant-baseline="central" font-family="Hiragino Sans,Yu Gothic,sans-serif" font-size="'+size+'" font-weight="700" fill="'+ink+'" letter-spacing="'+(awakened?'4':'1')+'">'+text+'</text></svg>';
+  return '<svg class="'+(dimmed?'second-lap-rank':'')+'" viewBox="0 0 150 58" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+text+'"><path d="M15 3H135L147 29 135 55H15L3 29Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+(awakened?'1.7':noMind?'1.5':'2')+'" stroke-linejoin="round"/>'+inner+'<text x="75" y="30" text-anchor="middle" dominant-baseline="central" font-family="Hiragino Sans,Yu Gothic,sans-serif" font-size="'+size+'" font-weight="700" fill="'+ink+'" letter-spacing="'+(awakened?'4':'1')+'">'+text+'</text></svg>';
 }
 function renderRankBadge(){
   const first=firstLapRankIndex(),second=secondLapRankIndex(),badge=$('rankBadge');
@@ -3261,7 +3261,7 @@ function renderRankBadge(){
   badge.classList.remove('dual-rank');
   if(first>=0){
     const index=secondLapUnlocked&&second>=0?second:first;
-    badge.innerHTML=rankFrameSvg(masterPath().ranks[index],false,index,secondLapUnlocked&&second>=0);
+    badge.innerHTML=rankFrameSvg(masterPath().ranks[index],false,index,secondLapUnlocked&&second>=0,secondLapUnlocked&&second>=0);
     badge.title=tr('rankCollection');
     badge.setAttribute('aria-label',tr('rankCollection'));
   }
@@ -3272,7 +3272,7 @@ function renderStagePickerRankBadge(){
   badge.classList.remove('dual-rank');
   if(first>=0){
     const index=secondLapUnlocked&&second>=0?second:first;
-    badge.innerHTML=rankFrameSvg(masterPath().ranks[index],false,index,secondLapUnlocked&&second>=0);
+    badge.innerHTML=rankFrameSvg(masterPath().ranks[index],false,index,secondLapUnlocked&&second>=0,secondLapUnlocked&&second>=0);
     badge.title=tr('rankCollection');
     badge.setAttribute('aria-label',tr('rankCollection'));
   }
@@ -3283,6 +3283,13 @@ function rankPathLabel(index){
   if(index===6)return tr('secondLapPath');
   const volume=index;
   return currentLang==='ja'?'名人への道・'+volumeLabel(volume)+'　'+masterSubtitle(volume):tr('allPatternsKind')+' '+volumeLabel(volume)+' · '+masterSubtitle(volume);
+}
+function rankProblemCount(index){
+  const count=(index===5||index===6)?SATORI_STAGES.length:STAGES.length;
+  if(currentLang==='ja')return '　'+count+'問';
+  if(currentLang==='zh')return '　'+count+'题';
+  if(currentLang==='ko')return '　'+count+'문제';
+  return ' · '+count+' puzzles';
 }
 function renderRankList(){
   if(!secondLapUnlocked)rankListLap=1;
@@ -3308,20 +3315,20 @@ function renderRankList(){
     const next=position===earnedCount;
     const linkable=earned||next,row=document.createElement('div');
     row.className='rank-row'+(earned?' earned':'')+(next?' next':'');
-    const condition=document.createElement('span'),path=document.createElement(linkable?'button':'span'),clear=document.createElement('span'),title=document.createElement('b');
+    const condition=document.createElement('span'),path=document.createElement(linkable?'button':'span'),count=document.createElement('span'),title=document.createElement('b');
     condition.className='rank-condition';
     path.className=linkable?'rank-stage-link':'rank-stage-label';
     if(linkable)path.type='button';
     path.textContent=index===6?tr('satori'):rankPathLabel(index);
-    title.innerHTML=rankFrameSvg(earned?rank:'？',!earned,index,second);
-    clear.textContent=earned&&currentLang==='ja'?'　クリア':'';
+    title.innerHTML=rankFrameSvg(earned?rank:'？',!earned,index,second,second);
+    count.textContent=rankProblemCount(index);
     if(linkable)path.addEventListener('click',()=>{
         activateCampaignLap(second?2:1);
         rankDialogReturn=null;$('rankDialog').hidden=true;
         if(index===6||index===5)openSatoriPicker();
         else openStagePickerForRank(index);
       });
-    condition.append(path,clear);row.append(title,condition);list.appendChild(row);
+    condition.append(path,count);row.append(title,condition);list.appendChild(row);
   });
 }
 function openRankDialog(returnTarget=null){
@@ -3391,18 +3398,22 @@ function renderStagePicker(){
   const pickerPrimary=pickerLap===2?lap2ClearedStages:lap1ClearedStages;
   const pickerExtra=pickerLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
   const pickerPrimaryDone=STAGES.every((_,i)=>pickerPrimary.has(i));
+  const pickerMastered=EXTRA_STAGES.every((_,i)=>pickerExtra.has(i));
   if(!pickerPrimaryDone&&pickerRound!==-1)pickerRound=-1;
   const isPrimary=pickerRound===-1;
   const canSeeMaster=pickerPrimaryDone;
+  // 悟りへの道は、名人への道を制覇してから初めて選択画面に現す。
+  const canSeeSatori=pickerMastered;
   const canNavigateRounds=canSeeMaster||pickerLap===2;
+  const canGoNext=canSeeMaster&&(pickerRound<EXTRA_ROUNDS-1||canSeeSatori);
   $('stagePickerTitle').textContent=tr('stagePicker');
   $('closeStagePicker').setAttribute('aria-label',tr('close'));
   $('stagePickerRound').hidden=!canNavigateRounds;
   $('pickerRoundLabel').textContent=(pickerLap===2?tr('secondLapBadge')+'　':'')+(isPrimary?tr('primaryRound'):tr('patternRound',{n:extraRoundLabel(pickerRound)}));
   $('pickerPrevRound').hidden=!canNavigateRounds;
-  $('pickerNextRound').hidden=!canSeeMaster;
+  $('pickerNextRound').hidden=!canGoNext;
   $('pickerPrevRound').disabled=pickerRound<=-1&&pickerLap===1;
-  $('pickerNextRound').disabled=!canSeeMaster||pickerRound>=EXTRA_ROUNDS;
+  $('pickerNextRound').disabled=!canGoNext;
   const grid=$('stagePickerGrid');
   grid.innerHTML='';
   for(let i=0;i<STAGES.length;i++){
@@ -3461,10 +3472,12 @@ $('pickerPrevRound').addEventListener('click',()=>{
 });
 $('pickerNextRound').addEventListener('click',()=>{
   const pickerPrimary=pickerLap===2?lap2ClearedStages:lap1ClearedStages;
+  const pickerExtra=pickerLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
+  const pickerMastered=EXTRA_STAGES.every((_,i)=>pickerExtra.has(i));
   if(!STAGES.every((_,i)=>pickerPrimary.has(i)))return;
   if(pickerRound==='satori'&&satoriPickerPage<SATORI_PICKER_PAGES-1)satoriPickerPage++;
   else if(pickerRound==='satori'&&pickerLap===1&&secondLapUnlocked){pickerLap=2;pickerRound=-1;satoriPickerPage=0;}
-  else if(pickerRound===EXTRA_ROUNDS-1){pickerRound='satori';satoriPickerPage=0;}
+  else if(pickerRound===EXTRA_ROUNDS-1&&pickerMastered){pickerRound='satori';satoriPickerPage=0;}
   else if(pickerRound!=='satori')pickerRound++;
   renderStagePicker();
 });
@@ -4626,7 +4639,7 @@ function showMasterDialog(kind='primary'){
     setSealColor(seal,index);
     seal.classList.add('rank-seal');
     if(secondLapActive){
-      $('masterSealLabel').innerHTML=rankFrameSvg(rank,false,index,true);
+      $('masterSealLabel').innerHTML=rankFrameSvg(rank,false,index,true,true);
       seal.classList.add('rank-frame-seal');
     }else $('masterSealLabel').textContent=rank;
   };
@@ -4725,7 +4738,7 @@ function masterRoadmapMarkup(current){
     // 地図は「この節目までに得た称号」だけ見せ、先の称号名は伏せる。
     const earned=i<current-1;
     const rank=earned?masterPath().ranks[i]:'？';
-    return '<div class="road-step '+(i+1<current?'done':i+1===current?'current':'')+'"><span class="road-dot"><b class="road-name">'+label+'</b><small>'+detail+'</small></span><span class="road-rank">'+rankFrameSvg(rank,!earned,i,secondLapActive)+'</span></div>';
+    return '<div class="road-step '+(i+1<current?'done':i+1===current?'current':'')+'"><span class="road-dot"><b class="road-name">'+label+'</b><small>'+detail+'</small></span><span class="road-rank">'+rankFrameSvg(rank,!earned,i,secondLapActive,secondLapActive)+'</span></div>';
   }).join('');
 }
 function masterCommonRules(){return currentLang==='ja'?'名人への道は最短の手でクリアする必要があります。\nまた、進むほど自力で考える場面が増えていきます。':'Path to Mastery must be cleared in the fewest moves. As you advance, the rules become stricter.';}
