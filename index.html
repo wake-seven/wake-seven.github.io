@@ -61,8 +61,8 @@
   .brand{position:relative;width:100%;max-width:372px;display:flex;flex-direction:column;align-items:center}
   .app-menu{position:absolute;z-index:20;top:-10px;right:0}
   .menu-toggle{
-    min-height:30px;padding:0 10px;border:1px solid rgba(255,255,255,.14);border-radius:999px;
-    background:rgba(22,40,60,.72);color:#9FB0C4;font:700 11px/1 inherit;letter-spacing:.06em;cursor:pointer;
+    min-height:36px;padding:0 14px;border:1px solid rgba(255,255,255,.14);border-radius:999px;
+    background:rgba(22,40,60,.72);color:#9FB0C4;font:700 13px/1 inherit;letter-spacing:.06em;cursor:pointer;
   }
   .menu-toggle:hover,.menu-toggle[aria-expanded="true"]{border-color:#62B8D2;color:#62B8D2}
   .menu-toggle:focus-visible{outline:2px solid var(--washi);outline-offset:2px}
@@ -191,7 +191,7 @@
   .stage-picker-head{display:grid;grid-template-columns:36px 1fr 36px;align-items:center;gap:6px;margin-bottom:14px}
   .stage-picker h2{font-size:15px;text-align:center;letter-spacing:.08em}
   .stage-picker-close{border:0;background:none;color:#A8B6C7;font:inherit;font-size:22px;cursor:pointer}
-  .stage-picker-rank{position:absolute;z-index:1;top:13px;left:12px;width:63px;height:25px;padding:0;border:0;background:transparent;cursor:pointer}
+  .stage-picker-rank{position:absolute;z-index:1;top:9px;left:10px;width:86px;height:35px;padding:0;border:0;background:transparent;cursor:pointer}
   .stage-picker-rank svg{display:block;width:100%;height:100%}
   .stage-picker-rank:focus-visible{outline:2px solid var(--washi);outline-offset:2px;border-radius:5px}
   .stage-picker-round{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px;color:#9FB0C4;font-size:12px}
@@ -442,7 +442,7 @@
   .status-metric.remaining b.distance-pulse{animation:distancePulse .34s cubic-bezier(.2,.8,.25,1)}
   .status-metric.moves b{color:var(--washi);font-size:30px}
   .status-separator{color:rgba(255,255,255,.26);font-size:23px;font-weight:300}
-  .rank-badge{width:72px;height:29px;margin-left:auto;padding:0;border:0;background:transparent;color:var(--kin);cursor:pointer}
+  .rank-badge{width:86px;height:35px;margin-left:auto;padding:0;border:0;background:transparent;color:var(--kin);cursor:pointer}
   .rank-badge svg{display:block;width:100%;height:100%;overflow:visible}.rank-badge:hover{filter:brightness(1.15)}.rank-badge:focus-visible{outline:2px solid var(--washi);outline-offset:3px}
   .rank-badge[hidden]{display:none}
   .brand .rank-badge{position:absolute;z-index:2;top:-10px;left:0;margin:0}
@@ -450,7 +450,8 @@
   .rank-row{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;min-height:42px;padding:7px 8px;border-bottom:1px solid rgba(255,255,255,.1);color:#687B8E;font-size:12px;line-height:1.35}
   .rank-row:first-child{border-top:1px solid rgba(255,255,255,.1)}.rank-row b{display:block;width:90px;height:31px}.rank-row b svg{display:block;width:100%;height:100%;overflow:visible}.rank-row.earned{color:#D4E6EC}
   .rank-stage-link{padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;text-decoration:underline;text-decoration-color:rgba(185,232,242,.38);text-underline-offset:3px;cursor:pointer}.rank-stage-link:hover{color:var(--washi);text-decoration-color:var(--washi)}.rank-stage-link:focus-visible{outline:2px solid var(--washi);outline-offset:3px;border-radius:2px}
-  .rank-row.next .rank-stage-link{color:#D4E6EC;text-decoration-color:rgba(212,230,236,.62)}
+  .rank-stage-label{color:inherit}
+  .rank-row.next .rank-stage-link,.rank-row.next .rank-stage-label{color:#D4E6EC;text-decoration-color:rgba(212,230,236,.62)}
   .rank-condition{min-width:0;white-space:normal}.rank-condition > span{white-space:nowrap}
   .rank-stage-link{display:inline;max-width:100%;white-space:normal;overflow-wrap:anywhere}
   .stage-title span.hint-info{color:#62B8D2;font-weight:700}
@@ -686,14 +687,15 @@
 <footer class="site-credit">© 2026 WAKE SEVEN <span aria-hidden="true">·</span> <a href="https://daiwata.github.io/" target="_blank" rel="noopener">daiary</a><span class="link-welcome"><span id="linkWelcome">このゲームへのリンク・紹介はご自由にどうぞ。</span> <button id="shareGame" type="button"><span class="share-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg></span><span id="shareGameLabel">共有する</span></button></span><span class="analytics-notice"><a id="analyticsNotice" href="https://policies.google.com/technologies/partner-sites?hl=ja" target="_blank" rel="noopener">アクセス解析にGoogle Analyticsを使用しています。</a></span></footer>
 <div class="debug-tools" id="debugTools" hidden>
   <button class="chip" id="debugClear" hidden>即</button>
-  <button class="chip" id="debugAlmost" hidden>+1</button>
-  <button class="chip" id="debugMore" hidden>+2</button>
-  <button class="chip" id="debugFar" hidden>+3</button>
+  <button class="chip" id="debugAlmost" hidden>＋１</button>
+  <button class="chip" id="debugMore" hidden>＋２</button>
+  <button class="chip" id="debugFar" hidden>＋３</button>
   <button class="chip" id="debugUnlock14" hidden>修行14</button>
   <button class="chip" id="debugExtra14" hidden>序14</button>
   <button class="chip" id="debugExtra29" hidden>破14</button>
   <button class="chip" id="debugExtra44" hidden>離14</button>
   <button class="chip" id="debugExtra59" hidden>極14</button>
+  <button class="chip" id="debugSatori25" hidden>悟25</button>
   <button class="chip" id="debugSatori72" hidden>悟72</button>
   <button class="chip" id="debugAllClear" hidden>全</button>
   <button class="chip" id="debugReset" hidden>リ</button>
@@ -1306,7 +1308,7 @@ const UI_TEXT={
     prev:'前へ',next:'次へ',progress:'全15問の進捗',shortest:'残り最短',moveUnit:'手',moves:'手数',
     stageMode:'ステージモード',freeMode:'フリーモード',shuffle:'シャッフル',reset:'やり直す',
     resetAll:'全員起きる',undo:'1手戻す',shortestMoves:'最短手数',hint:'ヒント',remainingCheck:'残り手数 ×{n}',
-    debugReset:'リ',debugClear:'即',debugAllClear:'全',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'修14',
+    debugReset:'リ',debugClear:'即',debugAllClear:'全',debugAlmost:'＋１',debugMore:'＋２',debugFar:'＋３',debugUnlock14:'修14',
     debugExtra14:'序14',debugExtra29:'破14',debugExtra44:'離14',debugExtra59:'極14',
     mirror:'左右反転',rotate:'60°回転',boardLabel:'七枚のだるま盤',tips:'攻略のコツ',
     makeBoard:'自作モード',playBoard:'この盤面で遊ぶ',nextPuzzle:'次の問題へ →',
@@ -1342,7 +1344,7 @@ const UI_TEXT={
     ,extraClear23:'高崎のだるまづくりは、1859年に赤い顔料が輸入されると盛んになりました。'
     ,extraClear25:'達磨大師（だるまだいし）が9年座禅を続けたという伝説があり、これを面壁九年（めんぺきくねん）と言います。この伝説にちなみ、だるまは手足のない姿に描かれます。'
     ,extraClear35:'だるまは、木型に紙を重ねて作る「張り子」の工芸品です。'
-    ,extraClear41:'1829年の高崎では、市でだるまを売る様子が版画と文章に残されています。'
+    ,extraClear41:'1829年の高崎の、市でだるまを売る様子が版画と文章に残されています。'
     ,extraClear43:'高崎だるまの顔は、眉毛が鶴、ヒゲが亀を表すように描かれます。「縁起だるま」「福だるま」とも呼ばれます。'
     ,extraClear50:'だるまが赤い理由には諸説あり。赤い法衣や、魔よけの願いにちなむとされます。'
     ,extraClear54:'高崎だるまのお腹には、「福入」と書かれることがあります。福が入るようにという願いです。'
@@ -1355,7 +1357,7 @@ const UI_TEXT={
     prev:'Prev',next:'Next',progress:'Progress through 15 puzzles',shortest:'At least',moveUnit:'moves left',moves:'Moves',
     stageMode:'Puzzles',freeMode:'Free Play',shuffle:'Shuffle',reset:'Restart',resetAll:'Stand all up',
     undo:'Undo',shortestMoves:'Moves left',hint:'Hint',remainingCheck:'Moves left ×{n}',mirror:'Mirror',rotate:'Rotate 60°',
-    debugReset:'リ',debugClear:'Clear',debugAllClear:'All',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'Daruma Training 14',
+    debugReset:'リ',debugClear:'Clear',debugAllClear:'All',debugAlmost:'＋１',debugMore:'＋２',debugFar:'＋３',debugUnlock14:'Daruma Training 14',
     debugExtra14:'Path to Mastery 14',debugExtra29:'Path to Mastery 29',debugExtra44:'Path to Mastery 44',debugExtra59:'Path to Mastery 59',
     boardLabel:'Seven-daruma puzzle board',tips:'Quick tip',makeBoard:'Board Maker',
     playBoard:'Play this board',nextPuzzle:'Next puzzle →',resetProgress:'Reset progress',
@@ -1384,7 +1386,7 @@ const UI_TEXT={
     prev:'上一题',next:'下一题',progress:'15题进度',shortest:'至少还需',moveUnit:'步',moves:'步数',
     stageMode:'关卡模式',freeMode:'自由模式',shuffle:'打乱',reset:'重新开始',resetAll:'全部立起',
     undo:'撤销一步',shortestMoves:'最少步数',hint:'提示',remainingCheck:'剩余步数 ×{n}',mirror:'左右翻转',rotate:'旋转60°',
-    debugReset:'リ',debugClear:'即',debugAllClear:'全',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'不倒翁修行 14题',
+    debugReset:'リ',debugClear:'即',debugAllClear:'全',debugAlmost:'＋１',debugMore:'＋２',debugFar:'＋３',debugUnlock14:'不倒翁修行 14题',
     debugExtra14:'名人之路 14题',debugExtra29:'名人之路 29题',debugExtra44:'名人之路 44题',debugExtra59:'名人之路 59题',
     boardLabel:'七个不倒翁的谜题棋盘',tips:'攻略提示',makeBoard:'制作棋盘',
     playBoard:'玩这个棋盘',nextPuzzle:'下一题 →',resetProgress:'重置进度',
@@ -1412,7 +1414,7 @@ const UI_TEXT={
     prev:'이전',next:'다음',progress:'15문제 진행 상황',shortest:'최소',moveUnit:'수 남음',moves:'수',
     stageMode:'문제 모드',freeMode:'자유 모드',shuffle:'섞기',reset:'다시 시작',resetAll:'모두 세우기',
     undo:'한 수 되돌리기',shortestMoves:'최단 수',hint:'힌트',remainingCheck:'남은 수 ×{n}',mirror:'좌우 반전',rotate:'60° 회전',
-    debugReset:'リ',debugClear:'즉시',debugAllClear:'전체',debugAlmost:'+1',debugMore:'+2',debugFar:'+3',debugUnlock14:'다루마 수행 14문제',
+    debugReset:'リ',debugClear:'즉시',debugAllClear:'전체',debugAlmost:'＋１',debugMore:'＋２',debugFar:'＋３',debugUnlock14:'다루마 수행 14문제',
     debugExtra14:'명인의 길 14문제',debugExtra29:'명인의 길 29문제',debugExtra44:'명인의 길 44문제',debugExtra59:'명인의 길 59문제',
     boardLabel:'일곱 다루마 퍼즐판',tips:'공략 팁',makeBoard:'보드 만들기',
     playBoard:'이 보드로 플레이',nextPuzzle:'다음 문제 →',resetProgress:'진행 상황 초기화',
@@ -1689,6 +1691,10 @@ Object.assign(UI_TEXT.ja,{debugSatori72:'悟72'});
 Object.assign(UI_TEXT.en,{debugSatori72:'Awake 72'});
 Object.assign(UI_TEXT.zh,{debugSatori72:'悟72'});
 Object.assign(UI_TEXT.ko,{debugSatori72:'깨72'});
+Object.assign(UI_TEXT.ja,{debugSatori25:'悟25'});
+Object.assign(UI_TEXT.en,{debugSatori25:'Awake 25'});
+Object.assign(UI_TEXT.zh,{debugSatori25:'悟25'});
+Object.assign(UI_TEXT.ko,{debugSatori25:'깨25'});
 Object.assign(UI_TEXT.ja,{satoriText:'白い盤・新しい角度の盤を手に入れました。'});
 Object.assign(UI_TEXT.en,{satoriText:'You earned the white board and its new angle.'});
 Object.assign(UI_TEXT.zh,{satoriText:'已获得白色棋盘和新的角度布局。'});
@@ -2057,8 +2063,8 @@ try{fourthCheckUsage=JSON.parse(localStorage.getItem(FOURTH_CHECKS_STORAGE_KEY)|
 let fourthHintPreview=false,fourthDistanceRevealed=false,fourthHintDistance=null,fourthChecksUsed=0;
 const masterVolume=()=>extraMode?Math.floor(extraIndex/STAGES.length)+1:0;
 const isFinalMasterPuzzle=()=>extraMode&&extraIndex===EXTRA_STAGES.length-1;
-// だるま修行を一巡した後は、盤面を見渡しながら練習できるよう暗転しない。
-const usesSwipeDimming=()=>!extraMode&&!satoriMode&&!freeMode&&!customMode&&!allPrimaryCleared();
+// スワイプ対象を暗転で案内するのは、操作に慣れるまでの最初の3問だけ。
+const usesSwipeDimming=()=>!extraMode&&!satoriMode&&!freeMode&&!customMode&&stageIndex<3;
 const requiresOptimalClear=()=>extraMode||satoriMode;
 const masterHintsDisabled=()=>masterVolume()>=2;
 const isThirdVolume=()=>extraMode&&extraIndex>=30&&extraIndex<45;
@@ -2822,7 +2828,7 @@ svg.addEventListener('pointerdown',e=>{
   let ti=0,bd=Infinity;
   TRI.forEach((t,i)=>{ const d=Math.hypot(t.x-p.x,t.y-p.y); if(d<bd){bd=d;ti=i;} });
   const t=TRI[ti], selectedTiles=new Set(t.cells.map(i=>tileEls[i]));
-  // だるま修行では対象の3体を見分けやすくする。それ以外では全員を見渡せるよう暗転しない。
+  // 最初の3問だけ対象の3体を見分けやすくし、それ以降は全員を見渡せるよう暗転しない。
   if(usesSwipeDimming())svg.classList.add('selecting');
   for(const i of t.cells) tileEls[i].classList.add('selected');
   cancelTutorialHint(true);
@@ -3082,16 +3088,18 @@ function renderRankList(){
   $('closeRankDialog').textContent=tr('close');
   list.innerHTML='';
   masterPath().ranks.slice(0,isMastered()?6:5).forEach((rank,index)=>{
-    const earned=index<=highest,row=document.createElement('div');
+    const earned=index<=highest,linkable=earned||index===next,row=document.createElement('div');
     row.className='rank-row'+(earned?' earned':'')+(index===next?' next':'');
-    const condition=document.createElement('span'),path=document.createElement('button'),clear=document.createElement('span'),title=document.createElement('b');
+    const condition=document.createElement('span'),path=document.createElement(linkable?'button':'span'),clear=document.createElement('span'),title=document.createElement('b');
     condition.className='rank-condition';
-    path.className='rank-stage-link';path.type='button';path.textContent=rankPathLabel(index);title.innerHTML=rankFrameSvg(earned?rank:'？',!earned,index);
+    path.className=linkable?'rank-stage-link':'rank-stage-label';
+    if(linkable)path.type='button';
+    path.textContent=rankPathLabel(index);title.innerHTML=rankFrameSvg(earned?rank:'？',!earned,index);
     clear.textContent=earned&&currentLang==='ja'?'　クリア':'';
-    path.addEventListener('click',()=>{
-      if(index===5){rankDialogReturn=null;$('rankDialog').hidden=true;openSatoriPicker();}
-      else openStagePickerForRank(index);
-    });
+    if(linkable)path.addEventListener('click',()=>{
+        if(index===5){rankDialogReturn=null;$('rankDialog').hidden=true;openSatoriPicker();}
+        else openStagePickerForRank(index);
+      });
     condition.append(path,clear);row.append(title,condition);list.appendChild(row);
   });
 }
@@ -3288,7 +3296,7 @@ function renderStageNav(){
     $('hint').disabled=masterHintsDisabled();
   }
   $('debugTools').hidden=!DEBUG_MODE;
-  for(const id of ['debugReset','debugClear','debugAllClear','debugAlmost','debugMore','debugFar','debugUnlock14','debugExtra14','debugExtra29','debugExtra44','debugExtra59','debugSatori72'])$(id).hidden=!DEBUG_MODE;
+  for(const id of ['debugReset','debugClear','debugAllClear','debugAlmost','debugMore','debugFar','debugUnlock14','debugExtra14','debugExtra29','debugExtra44','debugExtra59','debugSatori25','debugSatori72'])$(id).hidden=!DEBUG_MODE;
   $('reset').textContent=editingBoard?tr('resetAll'):tr('reset');
   $('reset').hidden=satoriMode;
   const inSideMode=freeMode||customMode;
@@ -4534,11 +4542,11 @@ $('debugExtra14').addEventListener('click',()=>debugUnlockExtra(14));
 $('debugExtra29').addEventListener('click',()=>debugUnlockExtra(29));
 $('debugExtra44').addEventListener('click',()=>debugUnlockExtra(44));
 $('debugExtra59').addEventListener('click',()=>debugUnlockExtra(59));
-$('debugSatori72').addEventListener('click',()=>{
+function debugUnlockSatori(count){
   if(!DEBUG_MODE)return;
   STAGES.forEach((_,i)=>clearedStages.add(i));
   EXTRA_STAGES.forEach((_,i)=>clearedExtraStages.add(i));
-  for(let i=0;i<SATORI_STAGES.length-1;i++)clearedSatoriStages.add(i);
+  for(let i=0;i<count;i++)clearedSatoriStages.add(i);
   try{
     localStorage.setItem('wake7-cleared',JSON.stringify([...clearedStages]));
     localStorage.setItem('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
@@ -4546,8 +4554,10 @@ $('debugSatori72').addEventListener('click',()=>{
   }catch(_){}
   updateMasterTheme();
   rememberClearedMessage(true,EXTRA_STAGES.length-1);
-  loadSatoriStage(SATORI_STAGES.length-1);
-});
+  loadSatoriStage(Math.min(count,SATORI_STAGES.length-1));
+}
+$('debugSatori25').addEventListener('click',()=>debugUnlockSatori(25));
+$('debugSatori72').addEventListener('click',()=>debugUnlockSatori(72));
 $('debugReset').addEventListener('click',()=>resetStoredProgress({resetIntro:true,showIntro:true}));
 $('clearNext').addEventListener('click',()=>{
   hideGameDialogs();
@@ -5018,6 +5028,7 @@ function applyLanguage(lang){
   $('debugExtra29').textContent=tr('debugExtra29');
   $('debugExtra44').textContent=tr('debugExtra44');
   $('debugExtra59').textContent=tr('debugExtra59');
+  $('debugSatori25').textContent=tr('debugSatori25');
   $('debugSatori72').textContent=tr('debugSatori72');
   $('mirrorBoard').innerHTML=transformButtonText('mirror');
   $('flipBoardVertical').innerHTML=transformButtonText('vertical');
