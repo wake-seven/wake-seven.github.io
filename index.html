@@ -297,8 +297,8 @@
   .clear-tip-illustration.board-card{height:164px;margin:12px 0 -5px}
   .clear-tip-illustration.board-card svg{width:180px;height:164px}
   .two-move-dialog{width:min(100%,390px);padding:18px 14px 16px}
-  .two-move-dialog h2{font-size:17px}
-  .two-move-dialog p{margin-top:4px;font-size:11px}
+  .two-move-dialog h2{font-size:19px}
+  .two-move-dialog p{margin:10px 0 14px;font-size:13px;line-height:1.65;white-space:pre-line}
   .two-move-controls{display:flex;justify-content:center;gap:6px;margin-top:11px}
   .two-move-controls .chip{padding:6px 11px;font-size:11px}
   .transform-corners{position:absolute;z-index:2;inset:0;display:block!important;margin:0!important;pointer-events:none}
@@ -401,6 +401,9 @@
   .master-seal.rank-seal::before{inset:0;background:currentColor;clip-path:polygon(10% 0,90% 0,100% 50%,90% 100%,10% 100%,0 50%);z-index:0}
   .master-seal.rank-seal::after{inset:2px;background:#1A3047;clip-path:polygon(10% 0,90% 0,100% 50%,90% 100%,10% 100%,0 50%);z-index:1}
   .master-seal.rank-seal .seal-label{z-index:2}.master-seal.rank-seal .seal-spark{display:block;position:absolute;z-index:3;color:currentColor;font-size:18px;font-style:normal;animation:masterSpark 1.3s ease-in-out infinite alternate}
+  .master-seal.rank-seal.rank-frame-seal::before,.master-seal.rank-seal.rank-frame-seal::after{display:none}
+  .master-seal.rank-seal.rank-frame-seal .seal-label{position:absolute;inset:0;display:block}
+  .master-seal.rank-seal.rank-frame-seal .seal-label svg{display:block;width:100%;height:100%;overflow:visible}
   .master-seal.rank-seal .seal-spark.one{left:-22px;top:1px}.master-seal.rank-seal .seal-spark.two{right:-21px;bottom:-3px;animation-delay:.35s}
   #masterDialog .game-dialog{max-height:calc(100dvh - 32px);overflow-y:auto}
   .master-roadmap{display:grid;grid-template-columns:1fr;gap:0;margin:18px 0 16px;padding:5px 8px;border:1px solid rgba(185,198,214,.22);border-radius:8px;background:rgba(255,255,255,.025);align-items:stretch}
@@ -1344,7 +1347,7 @@ const UI_TEXT={
     ,extraClear50:'だるまが赤い理由には諸説あり。赤い法衣や、魔よけの願いにちなむとされます。'
     ,extraClear54:'高崎だるまのお腹には、「福入」と書かれることがあります。福が入るようにという願いです。'
     ,extraClear58:'「だるまさんがころんだ」遊びの由来は比較的新しい可能性もあり、明治生まれの人々の記憶のなかには無いという話もあります。'
-    ,extraClearRankCollection:'左上の称号をタップすると、集めた称号を一覧で見られます。がんばってクリアして集めよう。'
+    ,extraClearRankCollection:'左上の称号をタップすると、集めた称号が見られます。がんばってクリアして集めよう。'
     ,extraClearMessageReview:'もう一度見たいクリア後メッセージは、メニューからいつでも見られます。'
   },
   en:{
@@ -1434,11 +1437,11 @@ const UI_TEXT={
   }
 };
 Object.assign(UI_TEXT.ja,{
-  menu:'メニュー',clearMessages:'クリア後のメッセージ',messageDialogTitle:'クリア後のメッセージ',optimalFailOne:'おしい！あと1手短縮できればクリア。',optimalFailTwo:'もう少し！あと2手短縮できればクリア。',optimalFailMany:'回し方を変えて最短への道を探そう！',optimalFailRule:'名人への道は最短手数でのクリアが必要です。',optimalFailResult:'この問題は最短{best}手でした。（あなたの手数：{moves}手）',optimalFailEncourage:'もう一度チャレンジしよう。',optimalRetry:'再挑戦する',twoMovePatterns:'最短2手の9パターン',twoMoveTitle:'最短2手の9パターン',twoMoveText:'基本4〜12で、すべて遊べます。',twoMoveDetailTitle:'最短2手の盤面解説',compareBoard:'盤面をスワイプしてゲーム中の盤面と比べよう',playInFree:'フリーモードで遊ぶ →',backToPatterns:'一覧へ',stageModeReturn:'ステージモードへ',tipGuideTitle:'攻略のコツを見る',playThisBoard:'この盤面で遊ぶ →',
+  menu:'メニュー',clearMessages:'クリア後のメッセージ',messageDialogTitle:'クリア後のメッセージ',optimalFailOne:'おしい！あと1手短縮できればクリア。',optimalFailTwo:'もう少し！あと2手短縮できればクリア。',optimalFailMany:'回し方を変えて最短への道を探そう！',optimalFailRule:'名人への道は最短手数でのクリアが必要です。',optimalFailResult:'この問題は最短{best}手でした。（あなたの手数：{moves}手）',optimalFailEncourage:'もう一度チャレンジしよう。',optimalRetry:'再挑戦する',twoMovePatterns:'最短2手の9パターン',twoMoveTitle:'最短2手の9パターン',twoMoveText:'攻略のカギは、最短2手の盤面を見分けることです。\n↓ 盤面をクリックして詳しい解説を見よう。',twoMoveDetailTitle:'最短2手の盤面解説',compareBoard:'盤面をスワイプしてゲーム中の盤面と比べよう',playInFree:'フリーモードで遊ぶ →',backToPatterns:'一覧へ',stageModeReturn:'ステージモードへ',tipGuideTitle:'攻略のコツを見る',playThisBoard:'この盤面で遊ぶ →',
   extraClear1:'名人への道では、「離」の途中まで最短3手の問題が続きます。',
   extraClear3:'この7枚の配置のだるま起こしでは、最短4手以内に必ずクリアできる仕組みになっています。',
   extraClear30:'不立文字（ふりゅうもんじ）は、悟りは文字や言葉だけでは伝えられず、心から心へ伝わるものだ、という禅の考え方です。達磨大師を始祖とする禅宗で大切にされてきました。',
-  extraClear7:'名人への道の終盤では、残り最短手数が表示されません。攻略のカギは、最短2手の盤面を見分けられるようになることです。\n☆ 盤面の形とだるまさんの向きが大事！',
+  extraClear7:'攻略のカギは、最短2手の盤面を見分けられるようになることです。終盤では残り最短手数が表示されないので、少しずつ身につけよう。',
   extraClear33:'最短3手の盤面での次の一手の確率です。\n・最短2手になるのは約17% (9パターン)\n・最短3手にとどまるのは約56% (39パターン)\n・最短4手になるのは約27% (24パターン)',
   masterNextFourMoves:'次からは、最短4手の問題です。',
   extraClear46:'メニューの「最短2手の9パターンを見る」から、9種類の盤面を一覧で見られます。',
@@ -1670,6 +1673,10 @@ Object.assign(UI_TEXT.zh,{satoriText:'已获得称号“无心”。\n已获得�
 Object.assign(UI_TEXT.ko,{satoriText:'칭호 “무심”을 획득했습니다.\n세로 배치 보드를 얻었습니다.'});
 Object.assign(UI_TEXT.zh,{satori:'悟道之路',satoriPicker:'悟道之路 · 73题',satoriChoose:'选择题目',satoriFailRule:'悟道之路必须用最少步数通关。',satoriFailEncourage:'看看图鉴，再试一次吧。',satoriTitle:'悟道之路 完成！',satoriText:'获得称号“无心”。\n已解锁黑白棋盘。',satoriStart:'前往悟道之路 →',satoriRank:'无心',satoriUnlock:'悟道之路已开启。'});
 Object.assign(UI_TEXT.ko,{satori:'깨달음의 길',satoriPicker:'깨달음의 길 · 73문제',satoriChoose:'문제 선택',satoriFailRule:'깨달음의 길은 최단 수로만 클리어할 수 있습니다.',satoriFailEncourage:'게놈을 보고 다시 도전해 보세요.',satoriTitle:'깨달음의 길 완료!',satoriText:'칭호 “무심”을 획득했습니다.\n흑백 보드를 얻었습니다.',satoriStart:'깨달음의 길로 →',satoriRank:'무심',satoriUnlock:'깨달음의 길이 열렸습니다.'});
+Object.assign(UI_TEXT.ja,{twoMovePatternsLink:'最短2手の9パターンを見る'});
+Object.assign(UI_TEXT.en,{twoMovePatternsLink:'View the nine 2-move patterns'});
+Object.assign(UI_TEXT.zh,{twoMovePatternsLink:'查看最少2步的9种图案'});
+Object.assign(UI_TEXT.ko,{twoMovePatternsLink:'최단 2수의 9가지 패턴 보기'});
 Object.assign(UI_TEXT.ja,{satoriFailLimit:'最短手数に達しました。',satoriFailResult:'この問題の最短手数は{best}手です。'});
 Object.assign(UI_TEXT.en,{satoriFailLimit:'You reached the move limit.',satoriFailResult:'The fewest solution is {best} moves.'});
 Object.assign(UI_TEXT.zh,{satoriFailLimit:'已达到最短步数。',satoriFailResult:'这题最少需要{best}步。'});
@@ -3620,7 +3627,7 @@ function renderClearTip(){
   $('clearDialogText').hidden=!text;
   detailLink.hidden=twoMoveCard===undefined&&!guideCard&&!rankLink&&!messagesLink&&!tipsLink&&!patternsLink;
   detailLink.dataset.target=rankLink?'rank':messagesLink?'messages':tipsLink?'tips':patternsLink?'patterns':'details';
-  detailLink.textContent=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatterns')+' →':tr(rankLink?'rankLink':messagesLink?'clearMessagesLink':'detailsLink');
+  detailLink.textContent=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatternsLink')+' →':tr(rankLink?'rankLink':messagesLink?'clearMessagesLink':'detailsLink');
   illustration.classList.toggle('move-graph',art==='moveGraph');
   illustration.classList.toggle('board-card',art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'));
   illustration.classList.toggle('controls-art',art==='controls');
@@ -3707,6 +3714,7 @@ function renderMessageReview(){
   renderMasteryBoard('messageMasteryBoard',entry.master==='mastery'||entry.master==='satori',entry.master==='satori'?'satori-tilted':'gold');
   roadmap.hidden=!entry.master||entry.master==='mastery'||entry.master==='satori'||entry.master==='satoriIntro';roadmapNote.hidden=true;boardNote.hidden=true;rules.hidden=true;
   seal.hidden=!entry.master;
+  seal.classList.remove('rank-frame-seal');
   rankText.hidden=true;masterText.hidden=true;
   $('messageDialogText').hidden=!!entry.master||entry.quiz!==undefined||!!entry.boardQuiz;
   const twoMoveCard=entry.extra?CLEAR_TWO_MOVE_CARDS[entry.index]:undefined;
@@ -3716,7 +3724,7 @@ function renderMessageReview(){
   const patternsLink=entry.extra&&['extraClear7','extraAdviceTwoMove'].includes(EXTRA_CLEAR_TIPS[entry.index]);
   $('messageRankLink').hidden=twoMoveCard===undefined&&!guideCard&&!rankLink&&!tipsLink&&!patternsLink;
   $('messageRankLink').dataset.target=tipsLink?'tips':patternsLink?'patterns':twoMoveCard!==undefined?'card':guideCard?'guide':'rank';
-  $('messageRankLink').textContent=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatterns')+' →':twoMoveCard!==undefined||guideCard?tr('detailsLink'):tr('rankLink');
+  $('messageRankLink').textContent=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatternsLink')+' →':twoMoveCard!==undefined||guideCard?tr('detailsLink'):tr('rankLink');
   $('messageQuiz').hidden=entry.quiz===undefined;
   $('messageBoardQuiz').hidden=!entry.boardQuiz;
   if(entry.master){
@@ -3728,7 +3736,7 @@ function renderMessageReview(){
     }else if(entry.master==='mastery'){
       $('messageMasterSealLabel').textContent=masterPath().ranks[4];setSealColor(seal,4);$('messageDialogTitle').textContent=tr('masteryTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[4]);masterText.hidden=false;masterText.textContent=tr('masteryText');boardNote.hidden=false;boardNote.textContent=tr('masteryBoardNote');
     }else if(entry.master==='satori'){
-      $('messageMasterSealLabel').textContent=tr('satoriRank');setSealColor(seal,5);$('messageDialogTitle').textContent=tr('satoriTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));masterText.hidden=false;masterText.textContent=tr('satoriText');boardNote.hidden=false;boardNote.textContent=tr('satoriThanks');
+      $('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('satoriRank'),false,5);setSealColor(seal,5);seal.classList.add('rank-frame-seal');$('messageDialogTitle').textContent=tr('satoriTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));masterText.hidden=false;masterText.textContent=tr('satoriText');boardNote.hidden=false;boardNote.textContent=tr('satoriThanks');
     }else if(entry.master==='satoriIntro'){
       seal.hidden=true;$('messageDialogTitle').textContent=tr('satoriIntroTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr('satoriIntroText');
     }else{
@@ -4330,7 +4338,7 @@ function showMasterDialog(kind='primary'){
   shareButton.dataset.shareKind=kind==='primary'?'training':kind==='satori'?'satori':'mastery';
   $('masterShareLabel').textContent=tr('shareShort');
   rankText.hidden=true;
-  seal.classList.remove('rank-seal');
+  seal.classList.remove('rank-seal','rank-frame-seal');
   if(kind==='primary'){
     $('masterSealLabel').textContent=masterPath().ranks[0];setSealColor(seal,0);
     seal.classList.add('rank-seal');
@@ -4356,8 +4364,8 @@ function showMasterDialog(kind='primary'){
     $('masterDialogText').textContent=nextRule;
     $('masterStart').textContent=currentLang==='ja'?'名人への道・'+volumeLabel(volume+1)+'　'+masterSubtitle(volume+1)+'へ →':tr('volumeStart');
   }else if(kind==='satori'){
-    $('masterSealLabel').textContent=tr('satoriRank');setSealColor(seal,5);
-    seal.classList.add('rank-seal');
+    $('masterSealLabel').innerHTML=rankFrameSvg(tr('satoriRank'),false,5);setSealColor(seal,5);
+    seal.classList.add('rank-seal','rank-frame-seal');
     $('masterDialogTitle').textContent=tr('satoriTitle');
     rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));
     $('masterDialogText').textContent=tr('satoriText');
