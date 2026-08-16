@@ -149,8 +149,10 @@ function matchesShape(state,shape){
 }
 const groups={1:[],2:[],3:[],4:[]};for(let s=0;s<NS;s++)if(dist[s]>=1&&dist[s]<=4&&canon(s)===s)groups[dist[s]].push(s);
 const labels={...gt('moveLabels')};let filter=0,fallenFilter=-1,shapeFilter='all';
+// 後から追加した表示機能の初期化中に、73盤面を何度も描画しない。
+let genomeBooting=true;
 function board(s,big=false){const a=dec(s),r=big?27:14,pts=(x,y)=>[[-r,0],[-r/2,-r*.86],[r/2,-r*.86],[r,0],[r/2,r*.86],[-r/2,r*.86]].map(p=>p.map(n=>n.toFixed(1)).join(',')).join(' ');return '<svg viewBox="0 0 184 '+(big?178:105)+'" aria-hidden="true">'+C.map((p,i)=>{const x=(big?47:43)+p.x*(big?26:20),y=(big?40:10)+p.y*(big?26:20),v=a[i],ang=v*120;return '<g transform="translate('+x+' '+y+') rotate('+ang+')"><polygon points="'+pts(x,y)+'" fill="'+(v?'#b9c6d6':'#f3e8d5')+'" stroke="'+(v?'#718297':'#c9a54e')+'" stroke-width="'+(big?1.8:1)+'"/><path d="M0 -'+(r*.62)+'C'+(r*.32)+' -'+(r*.62)+' '+(r*.57)+' -'+(r*.33)+' '+(r*.57)+' '+(r*.08)+'C'+(r*.57)+' '+(r*.45)+' '+(r*.33)+' '+(r*.66)+' 0 '+(r*.66)+'C-'+(r*.33)+' '+(r*.66)+' -'+(r*.57)+' '+(r*.45)+' -'+(r*.57)+' '+(r*.08)+'C-'+(r*.57)+' -'+(r*.33)+' -'+(r*.32)+' -'+(r*.62)+' 0 -'+(r*.62)+'Z" fill="#c8352c" stroke="#241d1a" stroke-width="'+(big?1.3:.7)+'"/><ellipse cy="-'+(r*.1)+'" rx="'+(r*.35)+'" ry="'+(r*.31)+'" fill="#f7eedc" stroke="#241d1a" stroke-width="'+(big?1:.5)+'"/>'+(v?'<path d="M-'+(r*.22)+' -'+(r*.1)+'q'+(r*.1)+' '+(r*.12)+' '+(r*.2)+' 0m'+(r*.14)+' 0q'+(r*.1)+' '+(r*.12)+' '+(r*.2)+' 0" fill="none" stroke="#241d1a" stroke-width="'+(big?1.4:.7)+'"/>':'<circle cx="-'+(r*.14)+'" cy="-'+(r*.08)+'" r="'+(r*.07)+'"/><circle cx="'+(r*.14)+'" cy="-'+(r*.08)+'" r="'+(r*.07)+'"/>')+'</g>'}).join('')+'</svg>'}
-function render(){const matches=s=>(fallenFilter<0||dec(s).filter(v=>v>0).length===fallenFilter)&&matchesShape(s,shapeFilter),matchGroup=n=>groups[n].filter(matches),summary=document.querySelector('#summary');summary.innerHTML=[0,1,2,3,4].map(n=>{const count=n?matchGroup(n).length:[1,2,3,4].reduce((sum,d)=>sum+matchGroup(d).length,0);return '<button class="'+(filter===n?'active':'')+'" data-f="'+n+'">'+(n?labels[n]:gt('all'))+'<b>'+count+'</b></button>'}).join('');summary.onclick=e=>{const b=e.target.closest('button');if(b){filter=+b.dataset.f;closeGenomeFilters();render()}};const shown=filter?[filter]:[1,2,3,4];document.querySelector('#content').innerHTML=shown.map(n=>{const states=matchGroup(n);return states.length?'<section><div class="section"><h2>'+labels[n]+'</h2><span>'+states.length+' '+gt('patterns')+'</span></div><div class="grid">'+states.map(s=>'<button class="card" data-s="'+s+'" data-d="'+n+'">'+board(s)+'<small><b>'+labels[n]+'</b> · '+(groups[n].indexOf(s)+1)+' / '+groups[n].length+'</small></button>').join('')+'</div></section>':''}).join('')||'<p class="empty">'+gt('noMatches')+'</p>';document.querySelector('#content').onclick=e=>{const b=e.target.closest('.card');if(!b)return;const s=+b.dataset.s,d=+b.dataset.d,i=groups[d].indexOf(s)+1;document.querySelector('#modalTitle').textContent=labels[d]+' · '+i+' / '+groups[d].length;document.querySelector('#modalBoard').innerHTML=board(s,true);document.querySelector('#modalText').textContent=gt('samePattern');document.querySelector('#modal').hidden=false}};document.querySelector('#modalClose').onclick=()=>document.querySelector('#modal').hidden=true;document.querySelector('#modal').onclick=e=>{if(e.target.id==='modal')e.currentTarget.hidden=true};render();
+function render(){if(genomeBooting)return;const matches=s=>(fallenFilter<0||dec(s).filter(v=>v>0).length===fallenFilter)&&matchesShape(s,shapeFilter),matchGroup=n=>groups[n].filter(matches),summary=document.querySelector('#summary');summary.innerHTML=[0,1,2,3,4].map(n=>{const count=n?matchGroup(n).length:[1,2,3,4].reduce((sum,d)=>sum+matchGroup(d).length,0);return '<button class="'+(filter===n?'active':'')+'" data-f="'+n+'">'+(n?labels[n]:gt('all'))+'<b>'+count+'</b></button>'}).join('');summary.onclick=e=>{const b=e.target.closest('button');if(b){filter=+b.dataset.f;closeGenomeFilters();render()}};const shown=filter?[filter]:[1,2,3,4];document.querySelector('#content').innerHTML=shown.map(n=>{const states=matchGroup(n);return states.length?'<section><div class="section"><h2>'+labels[n]+'</h2><span>'+states.length+' '+gt('patterns')+'</span></div><div class="grid">'+states.map(s=>'<button class="card" data-s="'+s+'" data-d="'+n+'">'+board(s)+'<small><b>'+labels[n]+'</b> · '+(groups[n].indexOf(s)+1)+' / '+groups[n].length+'</small></button>').join('')+'</div></section>':''}).join('')||'<p class="empty">'+gt('noMatches')+'</p>';document.querySelector('#content').onclick=e=>{const b=e.target.closest('.card');if(!b)return;const s=+b.dataset.s,d=+b.dataset.d,i=groups[d].indexOf(s)+1;document.querySelector('#modalTitle').textContent=labels[d]+' · '+i+' / '+groups[d].length;document.querySelector('#modalBoard').innerHTML=board(s,true);document.querySelector('#modalText').textContent=gt('samePattern');document.querySelector('#modal').hidden=false}};document.querySelector('#modalClose').onclick=()=>document.querySelector('#modal').hidden=true;document.querySelector('#modal').onclick=e=>{if(e.target.id==='modal')e.currentTarget.hidden=true};render();
 </script>
 <script>
 const genomeModalPos=i=>({x:78+C[i].x*54,y:62+C[i].y*54});
@@ -267,6 +269,7 @@ function setGenomeBoardSize(size){
   genomeSizeControl.querySelectorAll('button').forEach(button=>button.classList.toggle('active',button.dataset.size===size));
   try{localStorage.setItem('wakeSevenGenomeBoardSize',size)}catch(_e){}
 }
+// 初回は標準サイズ。選択済みなら、その表示サイズを引き継ぐ。
 let genomeBoardSize='normal';
 try{genomeBoardSize=localStorage.getItem('wakeSevenGenomeBoardSize')||genomeBoardSize}catch(_e){}
 setGenomeBoardSize(['small','normal','large'].includes(genomeBoardSize)?genomeBoardSize:'normal');
@@ -319,6 +322,14 @@ SHAPE_CATALOG.forEach(([key,mask,name])=>{
 });
 const mixed34Order=['crown','bowArrow','reverseIchimonji','reverseNecklace','sleepQuiet','bay','turtleShell'];
 catalogBuckets.mixed34.sort((a,b)=>mixed34Order.indexOf(a.key)-mixed34Order.indexOf(b.key));
+// プルダウンもサイドバーの並びに合わせる。大三角・リングだけは最後に置く。
+const SHAPE_SELECT_ORDER=[
+  ...catalogBuckets[1],
+  ...catalogBuckets[2],
+  ...catalogBuckets[3],
+  ...catalogBuckets.mixed34,
+  ...catalogBuckets[4]
+].map(item=>item.key);
 const catalogLabels={...gt('catalogLabels')};
 const catalogCard=item=>'<button type="button" class="catalog-card" data-shape="'+item.key+'" data-shape-name="'+item.key+'">'+board(item.state)+'<b>'+item.name+'</b><small>'+gt('sleep')+' '+shapeCount(item.mask)+'</small></button>';
 const catalogSection=bucket=>'<section class="shape-catalog-group"><h3 data-catalog-bucket="'+bucket+'">'+catalogLabels[bucket]+'</h3><div class="shape-catalog-row">'+catalogBuckets[bucket].map(catalogCard).join('')+'</div></section>';
@@ -401,9 +412,10 @@ genomeLayoutControl.hidden=!genomeSatoriUnlocked();
 genomeLayoutControl.innerHTML='<span></span><button type="button" data-layout="normal"></button><button type="button" data-layout="tilted"></button>';
 document.querySelector('#boardSize').after(genomeLayoutControl);
 
-let genomeBoardLayout='normal';
+// 悟りを制覇した後の初回表示は縦配置。選択済みならその配置を引き継ぐ。
+let genomeBoardLayout=genomeSatoriUnlocked()?'tilted':'normal';
 try{
-  const savedLayout=localStorage.getItem('wake7-board-layout');
+  const savedLayout=localStorage.getItem('wakeSevenGenomeBoardLayout')||localStorage.getItem('wake7-board-layout');
   if(genomeSatoriUnlocked()&&['normal','tilted'].includes(savedLayout))genomeBoardLayout=savedLayout;
 }catch(_){ }
 
@@ -422,7 +434,7 @@ function setGenomeBoardLayout(layout){
   if(!genomeSatoriUnlocked()||!['normal','tilted'].includes(layout))return;
   genomeBoardLayout=layout;
   document.documentElement.dataset.boardLayout=layout;
-  try{localStorage.setItem('wake7-board-layout',layout)}catch(_){ }
+  try{localStorage.setItem('wakeSevenGenomeBoardLayout',layout)}catch(_){ }
   refreshGenomeLayoutControl();
   refreshGenomeCatalogBoards();
   render();
@@ -506,7 +518,6 @@ render=()=>{
   renderGenomeFilterState();
 };
 document.querySelectorAll('[data-lang]').forEach(button=>button.addEventListener('click',()=>setTimeout(renderGenomeFilterState,0)));
-render();
 </script>
 <script>
 Object.assign(GENOME_I18N.ja,{rotateBack:'60°逆回転',flipVertical:'上下反転'});
@@ -594,7 +605,7 @@ renderGenomeFilterState=()=>{
   const moveOptions=[[0,text('filterAll')],[1,text('moveLabels')[1]],[2,text('moveLabels')[2]],[3,text('moveLabels')[3]],[4,text('moveLabels')[4]]];
   const asleepOptions=[[-1,text('filterAll')],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7]]
     .map(([value,label])=>[value,value<0?label:text('asleepCountShort').replace('{n}',label)]);
-  const shapeOptions=[['all',text('filterAll')],...SHAPE_CATALOG.map(([key])=>[key,text('shapes')[key]])];
+  const shapeOptions=[['all',text('filterAll')],...SHAPE_SELECT_ORDER.map(key=>[key,text('shapes')[key]])];
   document.querySelectorAll('#fallenFilter [data-fallen]').forEach(button=>{
     button.classList.toggle('active',+button.dataset.fallen===fallenFilter);
   });
@@ -636,5 +647,8 @@ render=()=>{
   renderGenomeFilterState();
 };
 document.querySelectorAll('[data-lang]').forEach(button=>button.addEventListener('click',()=>setTimeout(renderGenomeFilterState,0)));
-render();
+// 上部の条件選択を先に完成させ、重い盤面一覧は次フレームで一度だけ描画する。
+genomeBooting=false;
+renderGenomeFilterState();
+requestAnimationFrame(render);
 </script>

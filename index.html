@@ -61,8 +61,9 @@
   .brand{position:relative;width:100%;max-width:372px;display:flex;flex-direction:column;align-items:center}
   .app-menu{position:absolute;z-index:20;top:-10px;right:0}
   .menu-toggle{
-    min-height:36px;padding:0 14px;border:1px solid rgba(255,255,255,.14);border-radius:999px;
-    background:rgba(22,40,60,.72);color:#9FB0C4;font:700 13px/1 inherit;letter-spacing:.06em;cursor:pointer;
+    min-height:36px;padding:0 14px;border:1px solid rgba(98,184,210,.58);border-radius:999px;
+    background:rgba(22,40,60,.76);color:#B9E8F2;font:700 13px/1 inherit;letter-spacing:.06em;cursor:pointer;
+    box-shadow:0 0 0 2px rgba(98,184,210,.055),0 2px 10px rgba(0,0,0,.12);
   }
   .menu-toggle:hover,.menu-toggle[aria-expanded="true"]{border-color:#62B8D2;color:#62B8D2}
   .menu-toggle:focus-visible{outline:2px solid var(--washi);outline-offset:2px}
@@ -80,8 +81,8 @@
   .app-menu-list .chip.on{background:#183952;color:#62B8D2}
   .app-menu-list .menu-reset{color:#8291A4}
   .menu-divider{height:1px;margin:3px 7px;background:rgba(255,255,255,.12)}
-  .language-picker{position:absolute;z-index:20;top:29px;right:0}
-  .sound-toggle{position:absolute;z-index:20;top:28px;left:0;display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;background:transparent;color:#9FB0C4;cursor:pointer}
+  .language-picker{position:absolute;z-index:20;top:35px;right:0}
+  .sound-toggle{position:absolute;z-index:20;top:34px;left:0;display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;background:transparent;color:#9FB0C4;cursor:pointer}
   .sound-toggle svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .sound-toggle:hover{opacity:.78}.sound-toggle[aria-pressed="false"]{opacity:.42}
   .sound-toggle:focus-visible{outline:2px solid var(--washi);outline-offset:2px}
@@ -103,7 +104,7 @@
   }
   .language-menu button:hover{background:rgba(98,184,210,.1);color:var(--washi)}
   .language-menu button[aria-checked="true"]{background:#183952;color:#62B8D2}
-  h1{font-size:25px;font-weight:800;letter-spacing:.07em;margin-top:8px}
+  h1{font-size:25px;font-weight:800;letter-spacing:.07em;margin-top:14px}
   .sub{
     display:flex;align-items:center;gap:10px;font-size:10px;font-weight:750;
     letter-spacing:.27em;color:var(--kin);
@@ -123,7 +124,7 @@
   .chip:focus-visible{outline:2.5px solid var(--washi);outline-offset:3px}
   .stage-nav{
     width:100%;max-width:372px;display:grid;grid-template-columns:72px 1fr 72px;
-    align-items:center;gap:8px;margin-top:12px;
+    align-items:center;gap:8px;margin-top:6px;
   }
   .stage-nav .chip{padding:9px 8px}
   .stage-nav .chip:disabled{background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.07);color:#536276;opacity:.52;cursor:not-allowed}
@@ -152,7 +153,7 @@
   .stage-picker-trigger.master-stage .stage-subtitle{font-size:10px}
   .stage-picker-trigger.master-stage .stage-detail{justify-content:space-between;gap:6px}
   .stage-kind-line{display:flex;align-items:center;justify-content:center;gap:6px;min-width:0}
-  .lap-badge{display:inline-grid;place-items:center;padding:4px 7px;border:1px solid #BCC9CD;border-radius:5px;color:#DCE6E9!important;font-size:12px!important;font-weight:800;line-height:1;letter-spacing:.02em;white-space:nowrap}
+  .lap-badge{display:inline-grid;place-items:center;width:23px;height:23px;box-sizing:border-box;border:1.5px solid #62B8D2;border-radius:50%;color:#62B8D2!important;font-family:var(--serif);font-size:14px!important;font-weight:800;line-height:1;letter-spacing:0;white-space:nowrap;box-shadow:0 0 0 3px rgba(98,184,210,.07)}
   .lap-badge[hidden]{display:none}
   .stage-picker-trigger.second-lap-stage{height:52px;padding:2px 8px 1px;gap:1px}
   .stage-picker-trigger.master-stage .stage-left{flex:1}
@@ -255,6 +256,7 @@
   #clearDialog .game-dialog{max-height:calc(100dvh - 36px);overflow-y:auto}
   #messageDialog .game-dialog{max-height:calc(100dvh - 36px);overflow-y:auto}
   .game-dialog h2{font-size:21px;letter-spacing:.08em;color:var(--washi);white-space:pre-line}
+  #optimalFailRule{white-space:pre-line}
   .clear-dialog-heading{position:relative;min-height:55px;padding-top:33px;margin-bottom:6px}
   .clear-dialog-heading h2{margin:0}
   .clear-stage-context{position:absolute;top:0;right:0;color:#8EA4B8;font-size:12px;font-weight:700;letter-spacing:.025em;line-height:1.3;text-align:right;white-space:nowrap}
@@ -289,6 +291,8 @@
   .clear-tip-illustration svg{width:220px;height:124px;overflow:visible}
   .clear-tip-illustration.controls-art svg{width:240px}
   .clear-tip-illustration.navigation-art svg{width:240px}
+  .clear-tip-illustration.menu-art{height:96px;margin:12px 0 -4px}
+  .clear-tip-illustration.menu-art svg{width:220px;height:96px}
   .clear-tip-illustration.rank-badge-art{height:40px;margin:14px 0 4px}
   .clear-tip-illustration.rank-badge-art svg{width:72px;height:29px}
   .clear-tip-illustration.unwritten-art{height:140px;margin:18px 0 -4px}
@@ -397,6 +401,7 @@
   #introBoard .guide-happy .open,#introBoard .guide-happy .shut,#clearGuideBoard .guide-happy .open,#clearGuideBoard .guide-happy .shut,#messageClearGuideBoard .guide-happy .open,#messageClearGuideBoard .guide-happy .shut{display:none}
   #introBoard .guide-happy .happy,#clearGuideBoard .guide-happy .happy,#messageClearGuideBoard .guide-happy .happy{display:block}
   .master-seal{position:relative;width:86px;height:86px;margin:0 auto 6px;border:3px solid var(--kin);border-radius:50%;color:var(--kin);display:grid;place-items:center;font-size:27px}
+  .master-seal.second-lap-mark{margin:16px auto 20px;border-color:#62B8D2;color:#62B8D2;box-shadow:0 0 0 6px rgba(98,184,210,.07),0 0 22px rgba(98,184,210,.13);font-size:31px;font-weight:800}
   .master-seal[hidden]{display:none}
   .master-seal .seal-label{position:relative;z-index:2}
   .master-seal .seal-spark{display:none}
@@ -1118,7 +1123,8 @@ const PRIMARY_CLEAR_ARTS={
   8:'craft',
   9:'navigation',
   10:'red',
-  12:'monaka'
+  12:'monaka',
+  13:'menuButtons'
 };
 const EXTRA_CLEAR_ARTS={
   [masterStage(1,1)]:'rise',
@@ -1164,6 +1170,12 @@ const BASIC_STAGE_VIEWS=[
 BASIC_STAGE_VIEWS.forEach((view,index)=>{
   if(view)STAGES[index+3].state=transformStateBySymmetry(STAGES[index+3].state,view);
 });
+// 二周目は全コースを180°回した見え方で出題する。
+// 回転対称なので、盤面の最短手数や解法そのものは変わらない。
+const SECOND_LAP_BOARD_VIEW={permutation:makeBoardPermutation(180),flip:false};
+function campaignStageState(state){
+  return activeLap===2?transformStateBySymmetry(state,SECOND_LAP_BOARD_VIEW):state;
+}
 function canonicalState(state){
   let canonical=state;
   for(const symmetry of SYMMETRIES)canonical=Math.min(canonical,transformStateBySymmetry(state,symmetry));
@@ -1709,6 +1721,10 @@ Object.assign(UI_TEXT.ja,{satoriFailLimit:'最短手数に達しました。',sa
 Object.assign(UI_TEXT.en,{satoriFailLimit:'You reached the move limit.',satoriFailResult:'The fewest solution is {best} moves.'});
 Object.assign(UI_TEXT.zh,{satoriFailLimit:'已达到最短步数。',satoriFailResult:'这题最少需要{best}步。'});
 Object.assign(UI_TEXT.ko,{satoriFailLimit:'최단 수에 도달했습니다.',satoriFailResult:'이 문제의 최단 수는 {best}수입니다.'});
+Object.assign(UI_TEXT.ja,{satoriSecondFailTitle:'最短手数ではありません。',satoriSecondFailRule:'悟りへの道では、最短手数で全員を起こそう。\n（二周目では最短手数はここにも表示されません）',satoriSecondFailEncourage:'もう一度チャレンジしよう。'});
+Object.assign(UI_TEXT.en,{satoriSecondFailTitle:'That was not the fewest path.',satoriSecondFailRule:'On the Path to Awakening, wake everyone in the fewest moves.',satoriSecondFailEncourage:'Try again.'});
+Object.assign(UI_TEXT.zh,{satoriSecondFailTitle:'这不是最少步数。',satoriSecondFailRule:'悟道之路要用最少步数叫醒全部不倒翁。',satoriSecondFailEncourage:'再挑战一次吧。'});
+Object.assign(UI_TEXT.ko,{satoriSecondFailTitle:'최단 수가 아닙니다.',satoriSecondFailRule:'깨달음의 길에서는 최단 수로 모두 깨워야 합니다.',satoriSecondFailEncourage:'다시 도전해 보세요.'});
 Object.assign(UI_TEXT.ja,{satoriIntroTitle:'悟りへの道',satoriIntroText:'名人となったあなたに、悟りへの道が開かれました。\n全73パターンを最短手数で見抜く道です。\nメニューから行ける「全パターン一覧」も参考に。',satoriIntroStart:'第一問へ →'});
 Object.assign(UI_TEXT.en,{satoriIntroTitle:'Path to Awakening',satoriIntroText:'Recognize all 73 patterns in the fewest moves.\nThere are no hints and no moves-left display.\nStudy the Genome, then begin.',satoriIntroStart:'First puzzle →'});
 Object.assign(UI_TEXT.zh,{satoriIntroTitle:'悟道之路',satoriIntroText:'用最少步数看穿全部73种图案。\n没有提示，也不显示剩余步数。\n看着图鉴来挑战吧。',satoriIntroStart:'第一题 →'});
@@ -1725,7 +1741,7 @@ Object.assign(UI_TEXT.ja,{satoriText:'白い盤・新しい角度の盤を手に
 Object.assign(UI_TEXT.en,{satoriText:'You earned the white board and its new angle.'});
 Object.assign(UI_TEXT.zh,{satoriText:'已获得白色棋盘和新的角度布局。'});
 Object.assign(UI_TEXT.ko,{satoriText:'하얀 보드와 새로운 각도 배치를 얻었습니다.'});
-Object.assign(UI_TEXT.ja,{secondLapTitle:'二周目へ',secondLapText:'ここから二周目。二周クリアで本当のクリアです。\n二周目ではスワイプし始めたら一手が確定します。\n全ての道を制覇すると、特別な称号を獲得できます。',secondLapStart:'二周目を始める →',secondLapPath:'二周目',awakenedRank:'覚者',awakenedTitle:'二周目 制覇！',awakenedText:'二周目も、すべての道を歩ききりました。'});
+Object.assign(UI_TEXT.ja,{secondLapTitle:'ここから二周目へ',secondLapText:'すべてをもう一度制覇すれば、本当のクリアです。\n二周目ではスワイプし始めたら一手が確定します。\nクリア後には特別な称号を獲得できます。',secondLapStart:'二周目を始める →',secondLapPath:'二周目',awakenedRank:'覚者',awakenedTitle:'二周目 制覇！',awakenedText:'二周目も、すべての道を歩ききりました。'});
 Object.assign(UI_TEXT.en,{secondLapTitle:'The Second Journey',secondLapText:'Your progress returns to the beginning, while earned titles remain.\nOn this journey, a move is committed as soon as you begin swiping, and the board automatically turns 120°.\nComplete every path once more to earn the special title “Awakened”.',secondLapStart:'Begin the second journey →',secondLapPath:'Second Journey',awakenedRank:'Awakened',awakenedTitle:'Second Journey Complete!',awakenedText:'You have walked every path once again.'});
 Object.assign(UI_TEXT.zh,{secondLapTitle:'第二周目',secondLapText:'进度将回到起点，已获得的称号会保留。\n第二周目中，开始滑动时操作便会确定，棋盘会朝所选方向自动旋转120°。\n再次完成所有道路，即可获得特别称号“觉者”。',secondLapStart:'开始第二周目 →',secondLapPath:'第二周目',awakenedRank:'觉者',awakenedTitle:'第二周目完成！',awakenedText:'你再次走完了所有道路。'});
 Object.assign(UI_TEXT.ko,{secondLapTitle:'두 번째 여정',secondLapText:'진행 상황은 처음으로 돌아가지만 획득한 칭호는 유지됩니다.\n두 번째 여정에서는 스와이프를 시작하는 순간 한 수가 확정되고 선택한 방향으로 120° 자동 회전합니다.\n모든 길을 다시 완주하면 특별 칭호 “각자”를 얻습니다.',secondLapStart:'두 번째 여정 시작 →',secondLapPath:'두 번째 여정',awakenedRank:'각자',awakenedTitle:'두 번째 여정 완료!',awakenedText:'모든 길을 다시 한번 걸어냈습니다.'});
@@ -1750,6 +1766,7 @@ function tr(key,vars){
   if(vars)Object.keys(vars).forEach(name=>value=value.replaceAll('{'+name+'}',vars[name]));
   return value;
 }
+function secondLapMark(){return currentLang==='zh'?'贰':(currentLang==='en'||currentLang==='ko')?'Ⅱ':'弐'}
 function shareData(kind='game'){
   const key=kind==='training'?'shareTrainingText':kind==='mastery'?'shareMasteryText':kind==='satori'?'shareSatoriText':'shareGameText';
   const url=new URL(location.href);
@@ -2454,7 +2471,9 @@ function paint(){
   applyBoardTheme();
   showMoves(moves);
   if(!editingBoard)showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]));
-  if(satoriMode&&!isSolved()&&moves>=best&&!clearShown){
+  // 二周目の悟りは、最短手数を手がかりにさせない。成功しない限り4手目まで続けられる。
+  const satoriFailureLimit=secondLapActive?4:best;
+  if(satoriMode&&!isSolved()&&moves>=satoriFailureLimit&&!clearShown){
     clearShown=true;
     renderOptimalFail();
     $('optimalFailDialog').hidden=false;
@@ -2647,7 +2666,7 @@ function loadStage(index){
   lastStageMode={extra:false,index:stageIndex};
   const stage=STAGES[stageIndex];
   saveCurrentStage(false,stageIndex);
-  setPosition(stage.state,stage.par);
+  setPosition(campaignStageState(stage.state),stage.par);
   renderStageNav();
   trackStageView();
   if(stageIndex===0&&!hasMasterReward())scheduleStageOneTutorial();
@@ -2658,7 +2677,7 @@ function loadExtraStage(index){
   lastStageMode={extra:true,index:extraIndex};
   const stage=EXTRA_STAGES[extraIndex];
   saveCurrentStage(true,extraIndex);
-  setPosition(stage.state,stage.par);
+  setPosition(campaignStageState(stage.state),stage.par);
   renderStageNav();
   trackStageView();
 }
@@ -2668,7 +2687,7 @@ function loadSatoriStage(index){
   satoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
   const stage=SATORI_STAGES[satoriIndex];
   try{localStorage.setItem('wake7-current-stage',JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}
-  setPosition(stage.state,stage.par);
+  setPosition(campaignStageState(stage.state),stage.par);
   renderStageNav();
   trackStageView();
 }
@@ -3248,12 +3267,16 @@ function rankFrameSvg(text,locked=false,index=0,doubleFrame=false,dimmed=false){
   const colors=RANK_FRAME_COLORS[index]||RANK_FRAME_COLORS[0];
   const noMind=index===5&&!locked;
   const awakened=index===6&&!locked;
+  // 二周目だけ、二重枠のあいだを称号色で淡く塗る。
+  const secondLapBand=doubleFrame&&dimmed&&!locked;
   const stroke=locked?'#64778A':colors.stroke;
   const fill=locked?'rgba(80,101,120,.08)':awakened?'#FAFAF7':noMind?'#14262E':index===0?'rgba(226,207,168,.09)':'rgba(201,165,78,.05)';
   const ink=locked?'#73869A':colors.ink;
-  const size=awakened?29:text.length>=3?23:27;
-  const inner=doubleFrame||(!locked&&(noMind||awakened))?'<path d="M19 9H131L139 29 131 49H19L11 29Z" fill="none" stroke="'+(awakened?'#34393C':stroke)+'" stroke-width="'+(awakened?'.75':'.8')+'" opacity="'+(awakened?'1':'.7')+'" stroke-linejoin="round"/>':'';
-  return '<svg class="'+(dimmed?'second-lap-rank':'')+'" viewBox="0 0 150 58" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+text+'"><path d="M15 3H135L147 29 135 55H15L3 29Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+(awakened?'1.7':noMind?'1.5':'2')+'" stroke-linejoin="round"/>'+inner+'<text x="75" y="30" text-anchor="middle" dominant-baseline="central" font-family="Hiragino Sans,Yu Gothic,sans-serif" font-size="'+size+'" font-weight="700" fill="'+ink+'" letter-spacing="'+(awakened?'4':'1')+'">'+text+'</text></svg>';
+  // 「覚者」は大きく、英語の Awakened は枠内に収まるサイズにする。
+  const size=awakened?(text.length>=7?20:29):text.length>=8?18:text.length>=3?23:27;
+  const band=secondLapBand?'<path d="M15 3H135L147 29 135 55H15L3 29Z M19 9H131L139 29 131 49H19L11 29Z" fill="'+colors.stroke+'" fill-opacity=".22" fill-rule="evenodd"/>':'';
+  const inner=doubleFrame||(!locked&&awakened)?'<path d="M19 9H131L139 29 131 49H19L11 29Z" fill="none" stroke="'+(awakened?'#34393C':stroke)+'" stroke-width="'+(awakened?'.75':'.8')+'" opacity="'+(awakened?'1':'.7')+'" stroke-linejoin="round"/>':'';
+  return '<svg class="'+(dimmed?'second-lap-rank':'')+'" viewBox="0 0 150 58" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+text+'"><path d="M15 3H135L147 29 135 55H15L3 29Z" fill="'+fill+'" stroke="'+stroke+'" stroke-width="'+(awakened?'1.7':noMind?'1.5':'2')+'" stroke-linejoin="round"/>'+band+inner+'<text x="75" y="30" text-anchor="middle" dominant-baseline="central" font-family="Hiragino Sans,Yu Gothic,sans-serif" font-size="'+size+'" font-weight="700" fill="'+ink+'" letter-spacing="1">'+text+'</text></svg>';
 }
 function renderRankBadge(){
   const first=firstLapRankIndex(),second=secondLapRankIndex(),badge=$('rankBadge');
@@ -3537,7 +3560,7 @@ function renderStageNav(){
   $('stagePickerTrigger').disabled=false;
   $('stagePickerTrigger').classList.toggle('second-lap-stage',activeLap===2&&!freeMode&&!customMode);
   $('lapBadge').hidden=activeLap!==2||freeMode||customMode;
-  $('lapBadge').textContent=tr('secondLapBadge');
+  $('lapBadge').textContent=secondLapMark();
   $('shuffle').hidden=true;
   $('undo').hidden=editingBoard||satoriMode;
   $('undo').disabled=editingBoard||satoriMode||isFinalMasterPuzzle();
@@ -3702,7 +3725,7 @@ function showClearDialog(){
     showMasterDialog(secondLapActive?'awakening':'satori');
     return;
   }
-  if(!freeMode&&!customMode&&!extraMode&&stageIndex===STAGES.length-1&&allPrimaryCleared()){
+  if(!freeMode&&!customMode&&!extraMode&&!satoriMode&&stageIndex===STAGES.length-1&&allPrimaryCleared()){
     showMasterDialog('primary');
     return;
   }
@@ -3728,8 +3751,19 @@ function showClearDialog(){
   $('clearDialog').hidden=false;
 }
 function renderOptimalFail(){
+  const secondSatori=satoriMode&&secondLapActive;
   const over=Math.max(1,moves-best);
   const satoriLimit=satoriMode&&!isSolved()&&moves>=best;
+  if(secondSatori){
+    $('optimalFailTitle').textContent=tr('satoriSecondFailTitle');
+    $('optimalFailRule').textContent=tr('satoriSecondFailRule');
+    $('optimalFailResult').hidden=true;
+    $('optimalFailEncourage').hidden=true;
+    $('optimalRetry').textContent=tr('optimalRetry');
+    return;
+  }
+  $('optimalFailResult').hidden=false;
+  $('optimalFailEncourage').hidden=false;
   $('optimalFailTitle').textContent=satoriLimit?tr('satoriFailLimit'):tr(over===1?'optimalFailOne':over===2?'optimalFailTwo':'optimalFailMany');
   $('optimalFailRule').textContent=tr(satoriMode?'satoriFailRule':'optimalFailRule');
   $('optimalFailResult').textContent=satoriLimit?tr('satoriFailResult',{best}):tr('optimalFailResult',{best,moves});
@@ -3854,6 +3888,7 @@ function tipArt(key){
     case 'controls':return tipSvg('<g font-family="A1 Gothic,Hiragino Kaku Gothic ProN,Yu Gothic,sans-serif" font-size="12" font-weight="400" text-anchor="middle"><rect x="5" y="25.5" width="100" height="35" rx="17.5" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.14)"/><text x="55" y="48.5" fill="#B9C6D6">やり直す</text><rect x="110" y="25.5" width="100" height="35" rx="17.5" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.14)"/><text x="160" y="48.5" fill="#B9C6D6">1手戻す</text></g>');
     case 'hintButton':return tipSvg('<g font-family="A1 Gothic,Hiragino Kaku Gothic ProN,Yu Gothic,sans-serif" font-size="14" font-weight="400" text-anchor="middle"><rect x="54" y="25.5" width="102" height="35" rx="17.5" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.14)"/><text x="105" y="49.5" fill="#B9C6D6">ヒント</text></g>');
     case 'navigation':return tipSvg('<g font-family="A1 Gothic,Hiragino Kaku Gothic ProN,Yu Gothic,sans-serif" text-anchor="middle"><rect x="4" y="8" width="47" height="32" rx="16" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.14)"/><text x="27.5" y="28" fill="#B9C6D6" font-size="9">← 前へ</text><rect x="58" y="3" width="94" height="42" rx="7" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.14)"/><text x="105" y="20" fill="#9FB0C4" font-size="9">基本</text><text x="105" y="36" fill="#F3E8D5" font-size="14">7 / 9</text><rect x="159" y="8" width="47" height="32" rx="16" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.14)"/><text x="182.5" y="28" fill="#B9C6D6" font-size="9">次へ →</text><g fill="rgba(201,165,78,.55)">'+Array.from({length:10},(_,i)=>'<rect x="'+(12+i*19)+'" y="67" width="14" height="6" rx="3"/>').join('')+'</g></g>');
+    case 'menuButtons':return tipSvg('<g font-family="A1 Gothic,Hiragino Kaku Gothic ProN,Yu Gothic,sans-serif" text-anchor="middle"><rect x="54" y="23" width="102" height="40" rx="20" fill="rgba(98,184,210,.055)"/><rect x="56" y="25" width="98" height="36" rx="18" fill="rgba(22,40,60,.76)" stroke="rgba(98,184,210,.58)"/><text x="105" y="48" fill="#B9E8F2" font-size="13" font-weight="700" letter-spacing=".06em">'+tr('menu')+'</text></g>');
     case 'unwritten':return tipSvg('<path d="M39 20Q105 6 171 20L166 39Q105 48 44 39Z" fill="#F3E8D5" opacity=".12" stroke="#B9E8F2" stroke-width="1.2"/><path d="M45 21Q105 13 165 21" fill="none" stroke="#F3E8D5" stroke-width="1" opacity=".45"/><text x="72" y="34" text-anchor="middle" fill="#B9E8F2" font-family="serif" font-size="18" opacity=".54">文</text><text x="105" y="34" text-anchor="middle" fill="#B9E8F2" font-family="serif" font-size="15" opacity=".3">・</text><text x="137" y="34" text-anchor="middle" fill="#B9E8F2" font-family="serif" font-size="12" opacity=".12">字</text><path d="M75 62Q105 51 135 62" fill="none" stroke="#62B8D2" stroke-width="1.7" stroke-linecap="round" opacity=".7"/><circle cx="105" cy="59" r="10" fill="#62B8D2" opacity=".1"/><circle cx="105" cy="59" r="4" fill="#C9A54E" opacity=".9"/>'+d(59,67,.35)+d(151,67,.35));
     case 'rise':return tipSvg('<path class="tip-blue" d="M37 58C53 25 85 20 113 34"/><path class="tip-blue" d="M104 25l10 9-13 4"/><text class="tip-text" x="22" y="24">7</text><text class="tip-text" x="133" y="28">8</text>'+d(119,52));
     case 'eyes':return tipSvg(d(105,53,.75)+'<circle cx="99" cy="49" r="3" fill="#F3E8D5"/><path d="M96 50Q99 46 102 50" fill="none" stroke="#241D1A" stroke-width="1.8" stroke-linecap="round"/>');
@@ -3896,6 +3931,7 @@ function renderClearTip(){
   illustration.classList.toggle('board-card',art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'));
   illustration.classList.toggle('controls-art',art==='controls');
   illustration.classList.toggle('navigation-art',art==='navigation');
+  illustration.classList.toggle('menu-art',art==='menuButtons');
   illustration.classList.toggle('rank-badge-art',art==='rankBadgeArt');
   illustration.classList.toggle('unwritten-art',art==='unwritten');
   illustration.classList.toggle('cheer-art',art==='cheer');
@@ -3914,26 +3950,33 @@ function messageReviewEntryKey(entry){
 }
 function buildMessageReviewEntries(){
   const entries=[];
+  // 二周目を始めた直後も、一周目で集めたメッセージを読み返せるようにする。
+  const reviewPrimary=activeLap===2?lap1ClearedStages:clearedStages;
+  const reviewExtra=activeLap===2?lap1ClearedExtraStages:clearedExtraStages;
+  const reviewSatori=activeLap===2?lap1ClearedSatoriStages:clearedSatoriStages;
+  const reviewPrimaryDone=STAGES.every((_,i)=>reviewPrimary.has(i));
+  const reviewMastered=EXTRA_STAGES.every((_,i)=>reviewExtra.has(i));
+  const reviewSatoriMastered=SATORI_STAGES.every((_,i)=>reviewSatori.has(i));
   for(let i=0;i<STAGES.length;i++){
-    if(!clearedStages.has(i))continue;
+    if(!reviewPrimary.has(i))continue;
     if(i===14){entries.push({master:'primary',extra:false,index:i});continue;}
     const text=stageClearTextAt(false,i);if(text)entries.push({extra:false,index:i,text,art:stageClearArtAt(false,i)});
     if(PRIMARY_QUIZ_STAGES[i]!==undefined)entries.push({extra:false,index:i,quiz:PRIMARY_QUIZ_STAGES[i],art:stageClearArtAt(false,i)});
   }
   // だるま修行を終えるまでは、後半コースのメッセージへ飛ばさない。
-  if(!allPrimaryCleared()){
+  if(!reviewPrimaryDone){
     if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});
     return entries;
   }
   for(let i=0;i<EXTRA_STAGES.length;i++){
-    if(!clearedExtraStages.has(i))continue;
+    if(!reviewExtra.has(i))continue;
     if((i+1)%STAGES.length===0){entries.push({master:i===EXTRA_STAGES.length-1?'mastery':'volume',extra:true,index:i});continue;}
     const text=stageClearTextAt(true,i);if(text)entries.push({extra:true,index:i,text,art:stageClearArtAt(true,i)});
     if(BOARD_QUIZ_STAGES[i])entries.push({extra:true,index:i,boardQuiz:true});
     if(QUIZ_STAGES[i]!==undefined)entries.push({extra:true,index:i,quiz:QUIZ_STAGES[i],art:stageClearArtAt(true,i)});
   }
-  if(isMastered())entries.push({master:'satoriIntro',extra:true,index:EXTRA_STAGES.length-1});
-  if(hasSatoriReward())entries.push({master:'satori',satori:true,index:SATORI_STAGES.length-1});
+  if(reviewMastered)entries.push({master:'satoriIntro',extra:true,index:EXTRA_STAGES.length-1});
+  if(reviewSatoriMastered||hasSatoriReward())entries.push({master:'satori',satori:true,index:SATORI_STAGES.length-1});
   if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});
   if(awakenedGranted)entries.push({master:'awakening',awakened:true,index:SATORI_STAGES.length-1});
   return entries;
@@ -3996,7 +4039,9 @@ function renderMessageReview(){
   renderMasteryBoard('messageMasteryBoard',['mastery','satori','awakening'].includes(entry.master),['satori','awakening'].includes(entry.master)?'satori-tilted':'gold');
   roadmap.hidden=!entry.master||['mastery','satori','satoriIntro','secondLapIntro','awakening'].includes(entry.master);roadmapNote.hidden=true;boardNote.hidden=true;rules.hidden=true;
   seal.hidden=!entry.master;
-  seal.classList.remove('rank-frame-seal');
+  seal.classList.add('rank-seal');
+  seal.classList.remove('rank-frame-seal','second-lap-mark');
+  seal.tabIndex=0;
   rankText.hidden=true;masterText.hidden=true;
   $('messageDialogText').hidden=!!entry.master||entry.quiz!==undefined||!!entry.boardQuiz;
   const twoMoveCard=entry.extra?CLEAR_TWO_MOVE_CARDS[entry.index]:undefined;
@@ -4022,9 +4067,9 @@ function renderMessageReview(){
     }else if(entry.master==='awakening'){
       $('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('awakenedRank'),false,6);setSealColor(seal,6);seal.classList.add('rank-frame-seal');$('messageDialogTitle').textContent=tr('awakenedTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('awakenedRank'));masterText.hidden=false;masterText.textContent=tr('awakenedText');boardNote.hidden=false;boardNote.textContent=tr('satoriThanks');
     }else if(entry.master==='satoriIntro'){
-      seal.hidden=true;$('messageDialogTitle').textContent=tr('satoriIntroTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr('satoriIntroText');
+      seal.hidden=false;seal.classList.remove('rank-seal','rank-frame-seal','second-lap-mark');seal.tabIndex=-1;setSealColor(seal,5);$('messageMasterSealLabel').textContent='悟';$('messageDialogTitle').textContent=tr('satoriIntroTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr('satoriIntroText');
     }else if(entry.master==='secondLapIntro'){
-      seal.hidden=true;$('messageDialogTitle').textContent=tr('secondLapTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr('secondLapText');
+      seal.hidden=false;seal.classList.remove('rank-seal','rank-frame-seal');seal.classList.add('second-lap-mark');seal.tabIndex=-1;$('messageMasterSealLabel').textContent=secondLapMark();$('messageDialogTitle').textContent=tr('secondLapTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr('secondLapText');
     }else{
       const nextRules={ja:['「破」からは、ヒントが使えなくなります。','「離」では途中から最短4手の問題です。\nスワイプ中は残り最短手数が「？」になります。','「極」では残り最短手数が表示されません。\nかわりに回数限定で「残り手数」のボタンが使えますが、これも途中から使用回数が減っていきます。']}[currentLang]||[];
       const clearName=currentLang==='ja'?'名人への道・'+volumeLabel(volume)+'　'+masterSubtitle(volume):volumeLabel(volume)+'　'+masterSubtitle(volume);
@@ -4048,6 +4093,7 @@ function renderMessageReview(){
   illustration.classList.toggle('board-card',art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'));
   illustration.classList.toggle('controls-art',art==='controls');
   illustration.classList.toggle('navigation-art',art==='navigation');
+  illustration.classList.toggle('menu-art',art==='menuButtons');
   illustration.classList.toggle('rank-badge-art',art==='rankBadgeArt');
   illustration.classList.toggle('unwritten-art',art==='unwritten');
   illustration.classList.toggle('cheer-art',art==='cheer');
@@ -4056,6 +4102,11 @@ function renderMessageReview(){
   illustration.innerHTML=art==='introGuide'?'<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'';
   if(art==='introGuide')buildClearGuideBoard('messageClearGuideBoard');
   illustration.hidden=!art;
+  if(entry.master==='satoriIntro'||entry.master==='secondLapIntro'){
+    seal.classList.remove('animate');
+    void seal.offsetWidth;
+    seal.classList.add('animate');
+  }
   $('messagePrev').disabled=messageReviewIndex===0;
   $('messageNext').disabled=messageReviewIndex===messageReviewEntries.length-1;
   try{localStorage.setItem(MESSAGE_REVIEW_STORAGE_KEY,messageReviewEntryKey(entry));}catch(_){}
@@ -4634,7 +4685,7 @@ function showMasterDialog(kind='primary'){
   $('masterShareLabel').textContent=tr('shareShort');
   rankText.hidden=true;
   seal.hidden=false;
-  seal.classList.remove('rank-seal','rank-frame-seal');
+  seal.classList.remove('rank-seal','rank-frame-seal','second-lap-mark');
   const showRankSeal=(rank,index)=>{
     setSealColor(seal,index);
     seal.classList.add('rank-seal');
@@ -4673,7 +4724,9 @@ function showMasterDialog(kind='primary'){
     $('masterDialogText').textContent=tr('satoriText');
     $('masterStart').textContent=tr('satoriStart');
   }else if(kind==='secondLapIntro'){
-    seal.hidden=true;
+    seal.hidden=false;
+    seal.classList.add('second-lap-mark');
+    $('masterSealLabel').textContent=secondLapMark();
     $('masterDialogTitle').textContent=tr('secondLapTitle');
     $('masterDialogText').textContent=tr('secondLapText');
     $('masterStart').textContent=tr('secondLapStart');
@@ -5673,6 +5726,11 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
     for(const lap of [1,2])for(const part of ['primary','extra','satori'])localStorage.removeItem('wake7-lap'+lap+'-'+part+'-cleared');
     localStorage.removeItem('wake7-awakened-granted');
     if(!preserveRewards){
+      // デバッグの完全リセットでは、ゲノム側で選んだ表示設定も初期化する。
+      localStorage.removeItem('wakeSevenGenomeBoardSize');
+      localStorage.removeItem('wakeSevenGenomeBoardLayout');
+      localStorage.removeItem('wake7-board-theme');
+      localStorage.removeItem('wake7-board-layout');
       localStorage.removeItem('wake7-board-theme-chosen');
       localStorage.removeItem('wake7-board-layout-chosen');
       localStorage.removeItem('wake7-master-gold-granted');
@@ -5684,6 +5742,8 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
     if(resetIntro)localStorage.removeItem('wake7-intro-seen');
   }catch(_){}
   if(!preserveRewards){
+    boardTheme='default';
+    boardLayout='normal';
     boardThemeChosen=false;
     boardLayoutChosen=false;
     masterGoldGranted=false;
