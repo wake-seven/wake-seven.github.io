@@ -5285,10 +5285,16 @@ function beginSecondLap(){
 }
 $('masterClose').addEventListener('click',()=>{
   const openSatori=masterDialogKind==='mastery';
-  const startSecondLap=masterDialogKind==='satori'&&!secondLapUnlocked;
+  // 二周目を既に制覇していても、一周目をもう一度完走したら
+  // 新しい二周目を始められるようにする。
+  const startSecondLap=masterDialogKind==='satori'&&activeLap===1;
   const restartTraining=masterDialogKind==='awakening';
   hideGameDialogs();
-  if(startSecondLap){beginSecondLap();rememberSpecialMessage('secondLapIntro');showMasterDialog('secondLapIntro');return;}
+  if(startSecondLap){
+    if(!secondLapUnlocked)beginSecondLap();
+    else{activateCampaignLap(2);loadStage(0);}
+    rememberSpecialMessage('secondLapIntro');showMasterDialog('secondLapIntro');return;
+  }
   if(restartTraining){activateCampaignLap(1);loadStage(0);return;}
   renderStageNav();
   if(openSatori)showMasterDialog('satoriIntro');
