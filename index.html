@@ -245,8 +245,8 @@
   .board-theme-choice-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
   .board-theme-section.two-color-choice .board-theme-choice-row{grid-template-columns:repeat(2,minmax(0,1fr));max-width:208px;margin-inline:auto}
   .board-theme-section.two-color-choice>p{text-align:center}
-  #darumaColorSection .board-theme-choice-row{grid-template-columns:repeat(2,minmax(0,1fr));max-width:208px;margin-inline:auto}
-  #darumaColorSection>p{text-align:center}
+  #darumaColorSection .board-theme-choice-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #darumaColorSection>p{text-align:left}
   .board-theme-section:last-child .board-theme-choice-row{grid-template-columns:repeat(2,minmax(0,1fr))}
   #boardThemeDialog .dialog-actions{margin-top:27px}
   .board-theme-option{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;min-height:68px;padding:7px 5px;border:1px solid rgba(255,255,255,.15);border-radius:9px;background:rgba(255,255,255,.045);color:#D4E6EC;font:700 11px/1.2 inherit;text-align:center;cursor:pointer}
@@ -256,8 +256,8 @@
   .board-theme-option:disabled{opacity:.35;cursor:not-allowed}
   .theme-swatch{display:grid;grid-template-columns:1fr 1fr;width:39px;height:30px;overflow:hidden;border:1px solid rgba(255,255,255,.28);border-radius:5px;flex:0 0 auto}
   .theme-swatch i{display:block}.theme-swatch.normal i:first-child{background:#F7EEDC}.theme-swatch.normal i:last-child{background:#BCCDD3}.theme-swatch.gold i:first-child{background:#F6DE93}.theme-swatch.gold i:last-child{background:#D7B75F}.theme-swatch.satori i:first-child{background:#F1F1ED}.theme-swatch.satori i:last-child{background:#AAA9A4}.theme-swatch.tilted{position:relative;background:#547F96}.theme-swatch.tilted i{position:absolute;left:5px;top:4px;width:27px;height:20px;border:2px solid #B9E8F2;border-radius:2px;transform:rotate(30deg)}
-  .daruma-swatch{width:27px;height:31px;border:2px solid #241D1A;border-radius:48% 48% 43% 43%/42% 42% 54% 54%;background:#C8352C;box-shadow:inset 0 -5px 0 rgba(0,0,0,.09),inset 0 3px 0 rgba(255,255,255,.1)}
-  .daruma-swatch.rainbow{background:conic-gradient(from 20deg,#C93D35,#D7763D,#C89A36,#4F9676,#4C7FAE,#6B63A4,#AF5E84,#C93D35)}
+  .daruma-swatch{display:block;width:29px;height:34px;overflow:visible;flex:0 0 auto}
+  .daruma-swatch path{stroke:#241D1A;stroke-width:3.8;stroke-linejoin:round}
   .layout-swatch{display:block;width:48px;height:38px;flex:0 0 auto;overflow:visible}
   .layout-swatch path{fill:none;stroke:#D6E5ED;stroke-width:1.8;stroke-linejoin:round}
   #clearDialog .game-dialog{max-height:calc(100dvh - 36px);overflow-y:auto}
@@ -842,8 +842,8 @@
         <button class="board-theme-option" type="button" data-board-color="satori" hidden><span class="theme-swatch satori"><i></i><i></i></span><span id="boardThemeSatori">白黒</span></button>
       </div></section>
       <section class="board-theme-section" id="darumaColorSection" hidden><p id="darumaColorLabel">だるま</p><div class="board-theme-choice-row">
-        <button class="board-theme-option" type="button" data-daruma-color="red"><span class="daruma-swatch"></span><span id="darumaColorRed">赤</span></button>
-        <button class="board-theme-option" type="button" data-daruma-color="rainbow"><span class="daruma-swatch rainbow"></span><span id="darumaColorRainbow">七色</span></button>
+        <button class="board-theme-option" type="button" data-daruma-color="red"><svg class="daruma-swatch" viewBox="-34 -37 68 76" aria-hidden="true"><path d="M0 -34C17 -34 31 -18 31 4C31 24 18 36 0 36C-18 36 -31 24 -31 4C-31 -18-17 -34 0 -34Z" fill="#C8352C"/></svg><span id="darumaColorRed">赤</span></button>
+        <button class="board-theme-option" type="button" data-daruma-color="rainbow"><svg class="daruma-swatch" viewBox="-34 -37 68 76" aria-hidden="true"><defs><linearGradient id="darumaRainbowSwatch" x1="0" x2="1"><stop stop-color="#C93D35"/><stop offset=".18" stop-color="#D7763D"/><stop offset=".34" stop-color="#C89A36"/><stop offset=".5" stop-color="#4F9676"/><stop offset=".67" stop-color="#4C7FAE"/><stop offset=".83" stop-color="#6B63A4"/><stop offset="1" stop-color="#AF5E84"/></linearGradient></defs><path d="M0 -34C17 -34 31 -18 31 4C31 24 18 36 0 36C-18 36 -31 24 -31 4C-31 -18-17 -34 0 -34Z" fill="url(#darumaRainbowSwatch)"/></svg><span id="darumaColorRainbow">七色</span></button>
       </div></section>
       <section class="board-theme-section" id="boardThemeLayoutSection"><p id="boardThemeLayoutLabel">配置</p><div class="board-theme-choice-row">
         <button class="board-theme-option" type="button" data-board-layout="normal"><svg class="layout-swatch" viewBox="0 0 48 38" aria-hidden="true"><path d="M18.37 0 24 3.25 24 9.75 18.37 13 12.74 9.75 12.74 3.25Z M29.63 0 35.26 3.25 35.26 9.75 29.63 13 24 9.75 24 3.25Z M12.74 9.75 18.37 13 18.37 19.5 12.74 22.75 7.11 19.5 7.11 13Z M24 9.75 29.63 13 29.63 19.5 24 22.75 18.37 19.5 18.37 13Z M35.26 9.75 40.89 13 40.89 19.5 35.26 22.75 29.63 19.5 29.63 13Z M18.37 19.5 24 22.75 24 29.25 18.37 32.5 12.74 29.25 12.74 22.75Z M29.63 19.5 35.26 22.75 35.26 29.25 29.63 32.5 24 29.25 24 22.75Z"/></svg><span id="boardLayoutNormal">横配置</span></button>
