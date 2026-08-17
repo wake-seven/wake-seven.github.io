@@ -49,12 +49,13 @@
     --washi:#F7EEDC; --washi2:#BCCDD3;
     --kin:#C9A54E; --sumi:#241D1A; --shu:#C8352C;
   }
+  html{max-width:100%;overflow-x:hidden}
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   body{
     background:var(--ai);
     background-image:radial-gradient(120% 70% at 50% 0%,var(--ai2) 0%,var(--ai) 62%);
     color:var(--washi);font-family:"A1 Gothic","Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,"Noto Sans JP",sans-serif;
-    min-height:100vh;padding:26px 12px max(12px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;touch-action:manipulation;
+    min-height:100vh;max-width:100%;overflow-x:hidden;padding:26px 12px max(12px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;touch-action:manipulation;
   }
   body[data-board-theme="gold"] #board .tile.stand .hex{fill:#F6DE93;stroke:#C89C35}
   body[data-board-theme="gold"] #board .tile.fallen .hex{fill:#D7B75F;stroke:#A67D28}
@@ -127,6 +128,8 @@
     align-items:center;gap:8px;margin-top:6px;
   }
   .stage-nav .chip{padding:9px 8px}
+  .stage-nav .chip.next-attention{background:var(--kin);border-color:var(--kin);color:var(--ai);font-weight:700;animation:nextAttention 1.05s ease-in-out 2}
+  @keyframes nextAttention{50%{box-shadow:0 0 0 5px rgba(201,165,78,.14)}}
   .stage-nav .chip:disabled{background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.07);color:#536276;opacity:.52;cursor:not-allowed}
   .stage-nav.side-mode-nav{grid-template-columns:104px 1fr 104px}
   .stage-nav.side-mode-nav .chip{padding:8px 5px;font-size:11px;white-space:nowrap}
@@ -272,6 +275,13 @@
   .quiz-option{min-height:42px;padding:7px 9px;border:1px solid rgba(185,232,242,.24);border-radius:7px;background:rgba(255,255,255,.035);color:#D4E6EC;font:600 12px/1.35 inherit;text-align:left;cursor:pointer}
   .quiz-option:disabled{cursor:default}.quiz-option.correct{border-color:#56C7A2;background:rgba(86,199,162,.16);color:#D9F6E9}.quiz-option.wrong{border-color:#DF6C61;background:rgba(223,108,97,.13);color:#F2C2BE}
   .quiz-note{min-height:42px;margin:12px 0 0;color:#B9E8F2;font-size:12px;line-height:1.6;text-align:left}
+  .quiz-success{position:relative}
+  .quiz-success::before,.quiz-success::after{position:absolute;z-index:3;pointer-events:none;color:#F2D77A;font-size:18px;line-height:1;opacity:0;animation:quizSpark .7s cubic-bezier(.18,.8,.24,1) both}
+  .quiz-success::before{content:"✦";top:28%;left:8%}.quiz-success::after{content:"✧";top:16%;right:9%;animation-delay:.09s}
+  .quiz-success .quiz-option.correct{animation:quizCorrectPop .48s cubic-bezier(.18,.9,.25,1) both}
+  .quiz-success .board-quiz-option.correct{animation:quizCorrectPop .48s cubic-bezier(.18,.9,.25,1) both}
+  @keyframes quizCorrectPop{0%{transform:scale(.92);filter:brightness(.9)}55%{transform:scale(1.045);filter:brightness(1.32)}100%{transform:scale(1);filter:brightness(1)}}
+  @keyframes quizSpark{0%{transform:translateY(8px) scale(.35) rotate(-18deg);opacity:0}28%{opacity:1}100%{transform:translateY(-19px) scale(1.15) rotate(14deg);opacity:0}}
   .board-quiz{margin-top:14px;padding:11px 9px 9px;border:1px solid rgba(98,184,210,.24);border-radius:9px;background:rgba(98,184,210,.06)}
   .board-quiz[hidden]{display:none}
   .board-quiz .quiz-label{margin:3px 0 7px;font-size:14px;letter-spacing:.16em}
@@ -1707,7 +1717,7 @@ Object.assign(UI_TEXT.ko,{
   masteryText:'황금 보드를 얻었습니다.\n메뉴에서 보드 색을 고를 수 있습니다.',
   masteryBoardNote:'메뉴에 “모든 패턴”이 추가되었습니다.'
 });
-Object.assign(UI_TEXT.ja,{satori:'悟りへの道',satoriPicker:'悟りへの道　73問',satoriChoose:'問題を選ぶ',satoriFailRule:'悟りへの道は最短の手でのみクリアできます。',satoriFailEncourage:'ゲノムを見ながら、もう一度挑もう。',satoriTitle:'悟りへの道 制覇！',satoriText:'称号「無心」を獲得しました。\n白い盤・新しい角度の盤を手に入れました。',satoriStart:'悟りへの道へ →',satoriRank:'無心',satoriUnlock:'悟りへの道が開かれました。'});
+Object.assign(UI_TEXT.ja,{satori:'悟りへの道',satoriPicker:'悟りへの道　73問',satoriChoose:'問題を選ぶ',satoriFailRule:'悟りへの道は最短の手でのみクリアできます。',satoriFailEncourage:'',satoriTitle:'悟りへの道 制覇！',satoriText:'称号「無心」を獲得しました。\n白い盤・新しい角度の盤を手に入れました。',satoriStart:'悟りへの道へ →',satoriRank:'無心',satoriUnlock:'悟りへの道が開かれました。'});
 Object.assign(UI_TEXT.en,{satori:'Path to Awakening',satoriPicker:'Path to Awakening · 73 puzzles',satoriChoose:'Choose a puzzle',satoriFailRule:'Path to Awakening must be cleared in the fewest moves.',satoriFailEncourage:'Study the Genome, then try again.',satoriTitle:'Path to Awakening complete!',satoriText:'You earned the title “No Mind”.\nThe vertical board layout is now yours.',satoriStart:'Path to Awakening →',satoriRank:'No Mind',satoriUnlock:'Path to Awakening is now open.'});
 Object.assign(UI_TEXT.zh,{satoriText:'已获得称号“无心”。\n已获得纵向布局棋盘。'});
 Object.assign(UI_TEXT.ko,{satoriText:'칭호 “무심”을 획득했습니다.\n세로 배치 보드를 얻었습니다.'});
@@ -1762,7 +1772,9 @@ Object.assign(UI_TEXT.en,{rotateCcw:'Rotate 60°',rotateCw:'Rotate 60°',flipVer
 Object.assign(UI_TEXT.zh,{rotateCcw:'旋转60°',rotateCw:'旋转60°',flipVertical:'上下翻转'});
 Object.assign(UI_TEXT.ko,{rotateCcw:'60° 회전',rotateCw:'60° 회전',flipVertical:'상하 반전'});
 function tr(key,vars){
-  let value=(UI_TEXT[currentLang]&&UI_TEXT[currentLang][key])||UI_TEXT.ja[key]||key;
+  const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
+  let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
+    :Object.prototype.hasOwnProperty.call(fallback,key)?fallback[key]:key;
   if(vars)Object.keys(vars).forEach(name=>value=value.replaceAll('{'+name+'}',vars[name]));
   return value;
 }
@@ -1908,7 +1920,7 @@ const DEBUG_MODE=new URLSearchParams(location.search).get('debug')==='1'
   &&(location.protocol==='file:'||['localhost','127.0.0.1','::1'].includes(location.hostname));
 let ori=new Uint8Array(N), spin=new Int16Array(N), history=[], moves=0, best=0;
 let tileEls=[], baseTiles=[], drag=null, busy=false;
-let stageIndex=0,extraIndex=0,satoriIndex=0,extraMode=false,satoriMode=false,freeMode=false,clearShown=false,clearTimer=0;
+let stageIndex=0,extraIndex=0,satoriIndex=0,extraMode=false,satoriMode=false,freeMode=false,clearShown=false,clearTimer=0,nextStageAttention=false;
 let pendingMasterThemeRefresh=false;
 let lastAnalyticsStageKey='';
 function analyticsStageInfo(){
@@ -2002,7 +2014,7 @@ try{
   const savedLap=Number(localStorage.getItem('wake7-active-lap'));
   if(savedLap===1||savedLap===2)activeLap=savedLap;
 }catch(_){ }
-let lastStageMode={extra:false,index:0};
+let lastStageMode={extra:false,satori:false,index:0};
 let customMode=false,editingBoard=false;
 let masterDialogKind='primary';
 let rankDialogReturn=null;
@@ -2274,12 +2286,15 @@ function playClearSound(kind='normal'){
     normal:[[523,0],[659,.075],[784,.15]],
     volume:[[440,0],[554,.08],[659,.16],[880,.26]],
     training:[[440,0],[554,.07],[659,.14],[880,.23],[1109,.33]],
-    mastery:[[392,0],[523,.08],[659,.16],[784,.24],[1047,.34],[1319,.47]]
+    mastery:[[392,0],[523,.08],[659,.16],[784,.24],[1047,.34],[1319,.47]],
+    // 悟りの制覇は名人クリアよりさらに一段高い、C7 まで届く上昇音にする。
+    satori:[[392,0],[523,.075],[659,.15],[784,.225],[1047,.31],[1319,.405],[1568,.51],[2093,.64]]
   };
   (tunes[kind]||tunes.normal).forEach(([tone,delay])=>playTone(tone,.18,.032,delay));
 }
 function clearSoundKind(){
   if(freeMode||customMode)return 'normal';
+  if(satoriMode&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';
   if(!extraMode&&stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
   if(extraMode&&(extraIndex+1)%STAGES.length===0)return extraIndex===EXTRA_STAGES.length-1?'mastery':'volume';
   return 'normal';
@@ -2662,8 +2677,9 @@ function setPosition(state,par){
 }
 function loadStage(index){
   extraMode=false;satoriMode=false;freeMode=false;customMode=false;editingBoard=false;
+  nextStageAttention=false;
   stageIndex=Math.max(0,Math.min(STAGES.length-1,index));
-  lastStageMode={extra:false,index:stageIndex};
+  lastStageMode={extra:false,satori:false,index:stageIndex};
   const stage=STAGES[stageIndex];
   saveCurrentStage(false,stageIndex);
   setPosition(campaignStageState(stage.state),stage.par);
@@ -2673,8 +2689,9 @@ function loadStage(index){
 }
 function loadExtraStage(index){
   extraMode=true;satoriMode=false;freeMode=false;customMode=false;editingBoard=false;
+  nextStageAttention=false;
   extraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
-  lastStageMode={extra:true,index:extraIndex};
+  lastStageMode={extra:true,satori:false,index:extraIndex};
   const stage=EXTRA_STAGES[extraIndex];
   saveCurrentStage(true,extraIndex);
   setPosition(campaignStageState(stage.state),stage.par);
@@ -2684,7 +2701,9 @@ function loadExtraStage(index){
 function loadSatoriStage(index){
   if(!isMastered())return;
   extraMode=false;satoriMode=true;freeMode=false;customMode=false;editingBoard=false;
+  nextStageAttention=false;
   satoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
+  lastStageMode={extra:false,satori:true,index:satoriIndex};
   const stage=SATORI_STAGES[satoriIndex];
   try{localStorage.setItem('wake7-current-stage',JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}
   setPosition(campaignStageState(stage.state),stage.par);
@@ -2774,7 +2793,7 @@ function restoreActiveSession(){
     extraMode=false;satoriMode=false;freeMode=false;customMode=true;editingBoard=!!saved.editingBoard;
   }else{restoreCurrentStage();return;}
   if(saved.lastStageMode&&typeof saved.lastStageMode.extra==='boolean'&&Number.isInteger(saved.lastStageMode.index)){
-    lastStageMode={extra:saved.lastStageMode.extra,index:saved.lastStageMode.index};
+    lastStageMode={extra:saved.lastStageMode.extra,satori:!!saved.lastStageMode.satori,index:saved.lastStageMode.index};
   }
   restoreSavedBoard(saved.board);
   renderStageNav();
@@ -2838,7 +2857,7 @@ function restoreFreeSession(){
 }
 function leaveFreeMode(){
   saveFreeSession();
-  lastStageMode.extra?loadExtraStage(lastStageMode.index):loadStage(lastStageMode.index);
+  lastStageMode.satori?loadSatoriStage(lastStageMode.index):lastStageMode.extra?loadExtraStage(lastStageMode.index):loadStage(lastStageMode.index);
 }
 function makerDistance(){
   return SOLVER.dist[enc(ori)];
@@ -3002,6 +3021,7 @@ svg.addEventListener('pointerdown',e=>{
     return;
   }
   if(isSolved()&&clearShown){
+    nextStageAttention=false;
     $('msg').classList.remove('show');
     svg.classList.remove('clear-pending','celebrating');
     svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
@@ -3356,7 +3376,8 @@ function renderRankList(){
 }
 function openRankDialog(returnTarget=null){
   rankDialogReturn=returnTarget;
-  rankListLap=secondLapUnlocked&&secondLapRankIndex()>=0?2:1;
+  // 一覧を開いた時は、最新到達周ではなく現在遊んでいる周を見せる。
+  rankListLap=activeLap;
   renderRankList();
   $('rankDialog').hidden=false;
   $('closeRankDialog').focus();
@@ -3463,7 +3484,7 @@ function renderStagePicker(){
 }
 function openStagePicker(){
   pickerLap=activeLap;
-  if(satoriMode){openSatoriPicker();return;}
+  if(satoriMode||((freeMode||customMode)&&lastStageMode.satori)){openSatoriPicker();return;}
   const showingExtra=extraMode||((freeMode||customMode)&&lastStageMode.extra);
   const showingIndex=extraMode?extraIndex:lastStageMode.index;
   pickerRound=showingExtra?Math.floor(showingIndex/STAGES.length):-1;
@@ -3474,6 +3495,8 @@ function openStagePickerForRank(rankIndex){
   rankDialogReturn=null;
   $('rankDialog').hidden=true;
   $('resetDialog').hidden=true;
+  // 称号一覧で選択した周（activeLap）を、そのまま問題選択にも引き継ぐ。
+  pickerLap=activeLap;
   pickerRound=rankIndex===0?-1:rankIndex-1;
   renderStagePicker();
   $('stagePicker').hidden=false;
@@ -3663,6 +3686,8 @@ function renderStageNav(){
       :!clearedSatoriStages.has(satoriIndex);
   }
   else{$('prevStage').hidden=false;$('nextStage').hidden=customMode&&!customPlaying;}
+  const highlightNext=nextStageAttention&&!freeMode&&!customMode&&!$('nextStage').hidden&&!$('nextStage').disabled;
+  $('nextStage').classList.toggle('next-attention',highlightNext);
 }
 function celebrateClear(){
   svg.classList.add('celebrating');
@@ -3763,11 +3788,12 @@ function renderOptimalFail(){
     return;
   }
   $('optimalFailResult').hidden=false;
-  $('optimalFailEncourage').hidden=false;
+  const encourage=tr(satoriMode?'satoriFailEncourage':'optimalFailEncourage');
+  $('optimalFailEncourage').hidden=!encourage;
   $('optimalFailTitle').textContent=satoriLimit?tr('satoriFailLimit'):tr(over===1?'optimalFailOne':over===2?'optimalFailTwo':'optimalFailMany');
   $('optimalFailRule').textContent=tr(satoriMode?'satoriFailRule':'optimalFailRule');
   $('optimalFailResult').textContent=satoriLimit?tr('satoriFailResult',{best}):tr('optimalFailResult',{best,moves});
-  $('optimalFailEncourage').textContent=tr(satoriMode?'satoriFailEncourage':'optimalFailEncourage');
+  $('optimalFailEncourage').textContent=encourage;
   $('optimalRetry').textContent=tr('optimalRetry');
 }
 function twoMoveDiscoveryText(card){
@@ -4111,8 +4137,17 @@ function renderMessageReview(){
   $('messageNext').disabled=messageReviewIndex===messageReviewEntries.length-1;
   try{localStorage.setItem(MESSAGE_REVIEW_STORAGE_KEY,messageReviewEntryKey(entry));}catch(_){}
 }
+function celebrateQuiz(root){
+  root.classList.remove('quiz-success');
+  void root.offsetWidth;
+  root.classList.add('quiz-success');
+  playTone(784,.09,.024);
+  playTone(1047,.13,.026,.07);
+  haptic([10,32,16]);
+}
 function renderMessageQuiz(quizIndex){
-  const quiz=(DARUMA_QUIZ_TRANSLATIONS[currentLang]||DARUMA_QUIZZES)[quizIndex],options=$('messageQuizOptions'),note=$('messageQuizNote');
+  const quiz=(DARUMA_QUIZ_TRANSLATIONS[currentLang]||DARUMA_QUIZZES)[quizIndex],root=$('messageQuiz'),options=$('messageQuizOptions'),note=$('messageQuizNote');
+  root.classList.remove('quiz-success');
   const {answers,correct}=quizPresentation(quizIndex,quiz);
   $('messageQuizTitle').textContent=tr('quizTitle');
   $('messageQuizQuestion').textContent=quiz.q;
@@ -4124,7 +4159,7 @@ function renderMessageQuiz(quizIndex){
     button.addEventListener('click',()=>{
       [...options.children].forEach(item=>item.disabled=true);
       options.children[correct].classList.add('correct');
-      if(index===correct)note.textContent=tr('quizCorrect')+'　'+quiz.note;
+      if(index===correct){note.textContent=tr('quizCorrect')+'　'+quiz.note;celebrateQuiz(root);}
       else{button.classList.add('wrong');note.textContent=tr('quizWrong')+'　'+quiz.note;}
     });
     options.appendChild(button);
@@ -4190,6 +4225,7 @@ function hideGameDialogs(){
 function renderClearQuiz(){
   const quizIndex=extraMode?QUIZ_STAGES[extraIndex]:(!freeMode&&!customMode&&!satoriMode?PRIMARY_QUIZ_STAGES[stageIndex]:undefined);
   const root=$('clearQuiz');
+  root.classList.remove('quiz-success');
   root.hidden=quizIndex===undefined;
   if(quizIndex===undefined)return;
   const quiz=(DARUMA_QUIZ_TRANSLATIONS[currentLang]||DARUMA_QUIZZES)[quizIndex],options=$('quizOptions'),note=$('quizNote');
@@ -4204,7 +4240,7 @@ function renderClearQuiz(){
     button.addEventListener('click',()=>{
       [...options.children].forEach(item=>item.disabled=true);
       options.children[correct].classList.add('correct');
-      if(index===correct){note.textContent=tr('quizCorrect')+'　'+quiz.note;}
+      if(index===correct){note.textContent=tr('quizCorrect')+'　'+quiz.note;celebrateQuiz(root);}
       else{button.classList.add('wrong');note.textContent=tr('quizWrong')+'　'+quiz.note;}
     });
     options.appendChild(button);
@@ -4325,6 +4361,7 @@ function boardQuizCenterIsNotOdd(board){
 function boardQuizConfigForCurrent(){return extraMode?BOARD_QUIZ_STAGES[extraIndex]:null;}
 function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
+  root.classList.remove('quiz-success');
   if(!config){root.hidden=true;if(requireAnswer)$('clearNext').disabled=false;return;}
   const copy=BOARD_QUIZ_COPY[currentLang]||BOARD_QUIZ_COPY.ja;
   const state=config.state?enc(Uint8Array.from(config.state)):config.options?null:boardQuizPatternState(config.pattern||config.patterns[0]);
@@ -4470,6 +4507,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
     selected.filter(selectedIndex=>!correct.includes(selectedIndex)).forEach(wrongIndex=>root.querySelector('[data-board-answer="'+wrongIndex+'"]').classList.add('wrong'));
     const passed=selected.length===correct.length&&selected.every(selectedIndex=>correct.includes(selectedIndex));
     note.textContent=(passed?tr('quizCorrect'):tr('quizWrong'))+'　'+copy[noteKey];
+    if(passed)celebrateQuiz(root);
     root.querySelectorAll('[data-board-patterns],[data-guide-page]').forEach(link=>link.hidden=false);
     if(requireAnswer)$('clearNext').disabled=false;
   }));
@@ -4761,6 +4799,7 @@ function showMasterDialog(kind='primary'){
 function returnToStageMode(){
   if(busy)return;
   if(freeMode)leaveFreeMode();
+  else if(lastStageMode.satori)loadSatoriStage(lastStageMode.index);
   else if(lastStageMode.extra)loadExtraStage(lastStageMode.index);
   else loadStage(lastStageMode.index);
 }
@@ -4837,8 +4876,9 @@ $('customMode').addEventListener('click',()=>{
 });
 $('playCustomBoard').addEventListener('click',playCustomBoard);
 $('stageMode').addEventListener('click',()=>{
-  if(busy||(!freeMode&&!customMode&&!extraMode))return;
+  if(busy||(!freeMode&&!customMode&&!extraMode&&!satoriMode))return;
   if(freeMode)leaveFreeMode();
+  else if(lastStageMode.satori)loadSatoriStage(lastStageMode.index);
   else if(lastStageMode.extra)loadExtraStage(lastStageMode.index);
   else loadStage(lastStageMode.index);
 });
@@ -5009,6 +5049,7 @@ $('clearNext').addEventListener('click',()=>{
 });
 $('clearClose').addEventListener('click',()=>{
   hideGameDialogs();
+  nextStageAttention=!freeMode&&!customMode&&!editingBoard;
   renderStageNav();
 });
 $('optimalRetry').addEventListener('click',()=>{
@@ -5108,7 +5149,7 @@ function beginSecondLap(){
     localStorage.removeItem(MESSAGE_REVIEW_STORAGE_KEY);
     localStorage.removeItem(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY);
   }catch(_){ }
-  lastStageMode={extra:false,index:0};
+  lastStageMode={extra:false,satori:false,index:0};
   persistLapProgress();
   updateMasterTheme();
   loadStage(0);
