@@ -234,7 +234,7 @@
   .mode-row.speed-mode .status-metric.remaining{color:#62B8D2}
   .progress[hidden]{display:none!important}
   .new-tab-mark{display:inline-block;width:.72em;height:.72em;margin-left:.25em;vertical-align:.04em;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M9.5 2H14v4.5M14 2 8.75 7.25M12.5 8.5V12A1.5 1.5 0 0 1 11 13.5H4A1.5 1.5 0 0 1 2.5 12V5A1.5 1.5 0 0 1 4 3.5h3.5' fill='none' stroke='black' stroke-width='1.35' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M9.5 2H14v4.5M14 2 8.75 7.25M12.5 8.5V12A1.5 1.5 0 0 1 11 13.5H4A1.5 1.5 0 0 1 2.5 12V5A1.5 1.5 0 0 1 4 3.5h3.5' fill='none' stroke='black' stroke-width='1.35' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
-  #menuAllPatterns .new-tab-mark{width:.96em;height:.96em;margin-left:.32em;vertical-align:-.1em}
+  #menuAllPatterns .new-tab-mark,#menuOpen3D .new-tab-mark{width:.96em;height:.96em;margin-left:.32em;vertical-align:-.1em}
   .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
   .game-dialog-backdrop{
     position:fixed;z-index:70;inset:0;display:grid;place-items:center;padding:18px;
@@ -487,6 +487,10 @@
   .speed-pause-stats>p{margin:0 0 7px!important;font-size:12px!important;white-space:pre-line}
   .speed-pause-stats-title{display:block;color:var(--kin);font-size:12px;letter-spacing:.08em}
   .speed-pause-stats .speed-stats-list{margin:3px 0 0;gap:0;max-height:142px;overflow-y:auto}
+  .master-3d-reward{margin:14px 0 0;padding:11px 13px;border:1px solid rgba(98,184,210,.24);border-radius:9px;background:rgba(98,184,210,.08)}
+  .master-3d-reward[hidden]{display:none}
+  .master-3d-reward p{margin:0;color:#B9E8F2;font-size:12px;font-weight:600;line-height:1.6;text-align:left;white-space:pre-line}
+  .master-3d-reward .clear-tip-link{margin:8px auto 0}
   .speed-pause-stats .rank-row{padding:7px 0;font-size:11px}.speed-pause-stats .rank-row:last-child{border-bottom:0}
   .speed-result{display:grid;grid-template-columns:31px 1fr;align-items:center;gap:9px;min-height:42px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1)}.speed-result:last-child{border-bottom:0}
   .speed-result-medal{display:grid;place-items:center;width:27px;height:27px;border:1.5px solid currentColor;border-radius:50%;color:#172A39;font:700 13px/1 system-ui,sans-serif;box-shadow:inset 0 0 0 2px rgba(7,24,39,.18)}
@@ -679,6 +683,7 @@
       <button id="twoMovePatterns" type="button" role="menuitem">最短2手の9パターンを見る</button>
       <button id="showTip" type="button" role="menuitem">攻略のコツ</button>
       <button id="menuAllPatterns" type="button" role="menuitem" hidden>全パターン一覧<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span></button>
+      <button id="menuOpen3D" type="button" role="menuitem" hidden>3Dだるまを見る<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span></button>
       <button id="menuSatori" type="button" role="menuitem" hidden>悟りへの道</button>
       <div class="menu-divider" role="separator"></div>
       <button id="menuStagePicker" type="button" role="menuitem">ステージを選ぶ</button>
@@ -838,6 +843,10 @@
     <p class="master-rules" id="masterRules" hidden></p>
     <p class="master-final-thanks" id="masterFinalThanks" hidden></p>
     <div class="speed-pause-stats master-speed-stats" id="masterSpeedStats" hidden><p id="masterSpeedStatsSummary"></p><strong class="speed-pause-stats-title" id="masterSpeedStatsTitle">ベスト3</strong><div class="rank-list speed-stats-list" id="masterSpeedStatsList"></div></div>
+    <div class="master-3d-reward" id="master3DRewardBox" hidden>
+      <p id="master3DReward"></p>
+      <a class="clear-tip-link" id="master3DLink" href="index_3D.html" target="_blank" rel="noopener"></a>
+    </div>
     <div class="dialog-actions"><button class="chip" id="masterClose">閉じる</button><a class="chip" id="masterAllPatterns" href="all-patterns.html" hidden>全パターン一覧を見る</a><button class="chip on" id="masterStart">名人への道へ →</button></div>
     <button class="master-share" id="masterShare" hidden><span class="share-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg></span><span id="masterShareLabel">共有</span></button>
   </div>
@@ -1839,6 +1848,10 @@ Object.assign(UI_TEXT.zh,{
 Object.assign(UI_TEXT.ko,{
   speedMode:'속도전 모드',speedTitle:'속도전 모드',speedIntro:'73개 보드를 중복 없이 빠르게 푸는 모드입니다.\n비슷한 난이도 안에서 순서가 매번 바뀝니다.\n도중에 닫아도 시간과 보드가 저장됩니다.',speedStart:'도전하기 →',speedResume:'계속하기 →',speedPause:'일시 중지',speedPauseTitle:'일시 중지됨',speedPauseText:'타이머가 멈췄습니다. 보드와 시간은 저장됩니다.',speedRestart:'처음부터',speedPuzzleRestart:'이 문제 다시 하기',speedRestartTitle:'처음부터 다시 할까요?',speedRestartText:'현재 시간과 진행 상황이 사라집니다.',speedRestartCancel:'돌아가기',speedRestartConfirm:'처음부터 다시',speedCompleteTitle:'속도전 완주!',speedComplete:'73문제를 모두 풀었습니다.\n이번 기록: {time}\n최고 기록: {best}',speedUnlocked:'속도전 모드가 열렸습니다.\n73개 보드를 달려 최고 기록에 도전하세요.',secondMasteryReward:'일곱 색 다루마를 얻었습니다.\n메뉴의 보드 디자인에서 선택할 수 있습니다.',timeLabel:'시간'
 });
+Object.assign(UI_TEXT.ja,{threeDMenu:'3Dだるまを見る',threeDUnlockedText:'初回クリアの報酬として、特別な3Dページが開放されました。リアルな盤面で遊べます。',threeDOpen:'3Dページを見る →'});
+Object.assign(UI_TEXT.en,{threeDMenu:'View in 3D',threeDUnlockedText:'As a reward for your first clear, a special 3D page has been unlocked. Play on a realistic board.',threeDOpen:'Open the 3D page →'});
+Object.assign(UI_TEXT.zh,{threeDMenu:'查看3D效果',threeDUnlockedText:'作为首次通关的奖励，解锁了特别的3D页面。可以在逼真的棋盘上畅玩。',threeDOpen:'打开3D页面 →'});
+Object.assign(UI_TEXT.ko,{threeDMenu:'3D로 보기',threeDUnlockedText:'첫 클리어 보상으로 특별한 3D 페이지가 열렸습니다. 리얼한 보드에서 플레이할 수 있습니다.',threeDOpen:'3D 페이지 열기 →'});
 Object.assign(UI_TEXT.ja,{boardTheme:'盤面のデザイン',boardThemeColor:'色',boardThemeLayout:'配置',boardThemeDefault:'通常',boardThemeGold:'金',boardThemeSatori:'白黒',boardLayoutNormal:'横配置',boardThemeTilted:'縦配置',darumaColor:'だるま',darumaColorRed:'赤',darumaColorRainbow:'七色'});
 Object.assign(UI_TEXT.en,{boardTheme:'Board design',boardThemeColor:'Color',boardThemeLayout:'Layout',boardThemeDefault:'Standard',boardThemeGold:'Gold',boardThemeSatori:'Monochrome',boardLayoutNormal:'Horizontal',boardThemeTilted:'Vertical',darumaColor:'Daruma',darumaColorRed:'Red',darumaColorRainbow:'Seven colors'});
 Object.assign(UI_TEXT.zh,{boardTheme:'棋盘设计',boardThemeColor:'颜色',boardThemeLayout:'布局',boardThemeDefault:'标准',boardThemeGold:'金色',boardThemeSatori:'黑白',boardLayoutNormal:'横向布局',boardThemeTilted:'纵向布局',darumaColor:'不倒翁',darumaColorRed:'红色',darumaColorRainbow:'七色'});
@@ -2102,6 +2115,9 @@ try{awakenedGranted=localStorage.getItem('wake7-awakened-granted')==='1';}catch(
 let speedModeUnlocked=false;
 try{speedModeUnlocked=localStorage.getItem('wake7-speed-unlocked')==='1'||awakenedGranted;}catch(_){speedModeUnlocked=awakenedGranted;}
 if(speedModeUnlocked)try{localStorage.setItem('wake7-speed-unlocked','1');}catch(_){ }
+// 3Dページは速解きモード初回クリアの報酬。速解きの解放同様、進行状況リセットでは残す。
+let threeDUnlocked=false;
+try{threeDUnlocked=localStorage.getItem('wake7-3d-unlocked')==='1';}catch(_){ }
 // 七色だるまは二周目の名人達成報酬。旧版で覚者まで到達済みなら移行して保持する。
 let rainbowDarumaGranted=false;
 try{rainbowDarumaGranted=localStorage.getItem('wake7-rainbow-daruma-granted')==='1'||awakenedGranted;}catch(_){rainbowDarumaGranted=awakenedGranted;}
@@ -2450,7 +2466,12 @@ function finishSpeedRun(){
   history.unshift({elapsedMs:elapsed,optimalClears,completedAt:Date.now()});
   writeSpeedHistory(history);
   try{localStorage.removeItem(SPEED_SESSION_KEY);}catch(_){ }
-  speedSession={...speedSession,completed:true,elapsedMs:elapsed,bestMs:bestTime,optimalClears,runNumber:history.length};
+  const unlockedThreeD=!threeDUnlocked;
+  if(unlockedThreeD){
+    threeDUnlocked=true;
+    try{localStorage.setItem('wake7-3d-unlocked','1');}catch(_){ }
+  }
+  speedSession={...speedSession,completed:true,elapsedMs:elapsed,bestMs:bestTime,optimalClears,runNumber:history.length,unlockedThreeD};
   showMasterDialog('speedComplete');
 }
 function speedStatsData(){
@@ -4039,6 +4060,7 @@ function renderStageNav(){
   $('menuBoardTheme').hidden=!hasMasterReward();
   $('menuSatori').hidden=true;
   $('menuSpeed').hidden=!speedModeUnlocked;
+  $('menuOpen3D').hidden=!threeDUnlocked;
   $('customMode').textContent=tr('makeBoard');
   $('customMode').classList.remove('ready');
   $('customMode').hidden=false;
@@ -5151,6 +5173,7 @@ function showMasterDialog(kind='primary'){
   const rankText=$('masterRankText');
   const shareButton=$('masterShare');
   const allPatternsLink=$('masterAllPatterns');
+  const threeDRewardBox=$('master3DRewardBox');
   const finalThanks=$('masterFinalThanks');
   const speedStats=$('masterSpeedStats');
   const boardNote=$('masterBoardNote');
@@ -5159,6 +5182,7 @@ function showMasterDialog(kind='primary'){
   boardNote.hidden=true;
   shareButton.hidden=!['primary','satori','awakening'].includes(kind);
   allPatternsLink.hidden=true;
+  threeDRewardBox.hidden=true;
   $('masterStart').hidden=['mastery','satori'].includes(kind);
   shareButton.dataset.shareKind=kind==='primary'?'training':['satori','awakening'].includes(kind)?'satori':'mastery';
   $('masterShareLabel').textContent=tr('shareShort');
@@ -5230,6 +5254,10 @@ function showMasterDialog(kind='primary'){
     $('masterDialogText').textContent=tr('speedComplete',{time:formatSpeedTime(speedSession.elapsedMs),optimal:speedOptimalClears(),attempt:tr('speedStatsAttempt',{n:speedSession.runNumber||1}),best:formatSpeedTime(speedSession.bestMs)});
     renderMasterSpeedStats();
     speedStats.hidden=false;
+    if(speedSession.unlockedThreeD){
+      $('master3DReward').textContent=tr('threeDUnlockedText');
+      threeDRewardBox.hidden=false;
+    }
     $('masterStart').textContent=tr('speedRetry');
   }else if(kind==='satoriIntro'){
     $('masterSealLabel').textContent='悟';
@@ -5544,6 +5572,7 @@ $('clearMessages').addEventListener('click',()=>openMessageReview({resume:true})
 $('menuStagePicker').addEventListener('click',()=>{closeAppMenu();openStagePicker();});
 $('menuRankList').addEventListener('click',()=>{closeAppMenu();openRankDialog();});
 $('menuAllPatterns').addEventListener('click',()=>{window.open('all-patterns.html','_blank','noopener');});
+$('menuOpen3D').addEventListener('click',()=>{window.open('index_3D.html','_blank','noopener');});
 $('menuSatori').addEventListener('click',()=>{closeAppMenu();openSatoriPicker();});
 $('menuSpeed').addEventListener('click',()=>{
   closeAppMenu();
@@ -6052,9 +6081,11 @@ function applyLanguage(lang){
   $('boardThemeTilted').textContent=tr('boardThemeTilted');
   $('closeBoardTheme').textContent=tr('close');
   $('menuAllPatterns').innerHTML=tr('allPatternsMenu')+'<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span>';
+  $('menuOpen3D').innerHTML=tr('threeDMenu')+'<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span>';
   $('menuSatori').textContent=tr('satori');
   $('menuSpeed').textContent=tr('speedMode');
   $('masterAllPatterns').textContent=tr('allPatternsOpen');
+  $('master3DLink').textContent=tr('threeDOpen');
   updateSoundToggle();
   $('clearMessages').textContent=tr('clearMessages');
   $('stageModeReturn').textContent=tr('stageModeReturn');
@@ -6331,6 +6362,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
       localStorage.removeItem('wake7-satori-design-granted');
       localStorage.removeItem('wake7-rainbow-daruma-granted');
       localStorage.removeItem('wake7-speed-unlocked');
+      localStorage.removeItem('wake7-3d-unlocked');
       localStorage.removeItem(SPEED_SESSION_KEY);
       localStorage.removeItem(SPEED_BEST_KEY);
       localStorage.removeItem(SPEED_HISTORY_KEY);
@@ -6351,6 +6383,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
     satoriDesignGranted=false;
     rainbowDarumaGranted=false;
     speedModeUnlocked=false;
+    threeDUnlocked=false;
   }
   secondLapActive=false;
   awakenedGranted=false;
