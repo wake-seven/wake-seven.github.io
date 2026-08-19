@@ -477,6 +477,7 @@
     width:100%;max-width:var(--content-max);display:flex;align-items:center;gap:0.5rem;margin-top:0.625rem
   }
   .stage-return{margin-left:auto;padding:0.375rem 0.5625rem!important;white-space:nowrap;font-size:0.625rem!important}
+  .mode-action-btn{margin-left:auto;flex:0 1 33%;min-width:5.5rem;padding:0.625rem 0.5rem;font-size:0.8125rem;text-align:center;white-space:nowrap}
   .status-metric{display:flex;align-items:baseline;gap:0.3125rem;color:#9FB0C4;font-size:0.6875rem;letter-spacing:.06em}
   .status-metric b{color:var(--kin);font-size:1.875rem;line-height:1;font-weight:750;font-variant-numeric:tabular-nums}
   .status-metric.remaining{color:#9BCBDD}
@@ -729,6 +730,8 @@
   <div class="status-metric remaining"><span id="shortestLabel">残り最短</span><b id="stagePar">1</b><span id="moveUnit">手</span></div>
   <span class="status-separator">/</span>
   <div class="status-metric moves"><span id="movesLabel">手数</span><b id="moves">0</b></div>
+  <button class="chip mode-action-btn" id="speedPause" hidden>一時中止</button>
+  <button class="chip on mode-action-btn" id="speedGo" hidden>スタート</button>
   <button class="chip stage-return" id="stageModeReturn" hidden>ステージモードへ</button>
 </div>
 <div class="playbar">
@@ -738,7 +741,6 @@
     <button class="chip on" id="playCustomBoard" hidden>この盤面で遊ぶ</button>
     <button class="chip" id="undo">1手戻す</button>
     <button class="chip" id="hint">ヒント</button>
-    <button class="chip" id="speedPause" hidden>一時中止</button>
   </div>
 </div>
 
@@ -1852,16 +1854,16 @@ Object.assign(UI_TEXT.en,{satoriThanks:'This is truly the end of Stage Mode.\nTh
 Object.assign(UI_TEXT.zh,{satoriThanks:'这就是关卡模式真正的终点。\n感谢你一路玩到最后。'});
 Object.assign(UI_TEXT.ko,{satoriThanks:'스테이지 모드는 여기서 정말 끝입니다.\n끝까지 플레이해 주셔서 감사합니다.'});
 Object.assign(UI_TEXT.ja,{
-  speedMode:'速解きモード',speedTitle:'速解きモード',speedIntro:'73の盤面を、タイマー付きで駆け抜けるモードです。\n途中で閉じても時間と盤面を保存して再開できます。',speedStart:'挑戦する →',speedUnlockedStart:'速解きモードに挑戦する →',speedResume:'再開する →',speedRetry:'再挑戦する',speedPause:'一時停止',speedPauseTitle:'一時停止中',speedPauseText:'タイマーを止めています。盤面と時間は保存されています。',speedPauseProgress:'現在：{current} / {total}　{time}',speedRestart:'最初から',speedPuzzleRestart:'この問題をやり直す',speedRestartTitle:'最初からやり直しますか？',speedRestartText:'今のタイムと進行状況は失われます。',speedRestartCancel:'戻る',speedRestartConfirm:'最初からやり直す',speedCompleteTitle:'速解きモード 完走！',speedComplete:'今回の記録：{time}　最短クリア：{optimal} / 73　{attempt}',speedUnlocked:'速解きモードが開放されました。\n73の盤面を駆け抜け、自己ベストに挑戦できます。',speedStats:'速解きの成績',speedStatsSummary:'完走回数：{runs}回',speedStatsEmpty:'まだ完走記録がありません。',speedStatsEntry:'{num}回目　{time}　最短 {optimal} / 73',secondMasteryReward:'七色のだるまさんを手に入れました。\nメニューの「盤面のデザイン」から選べます。',timeLabel:'タイム'
+  speedMode:'速解きモード',speedTitle:'速解きモード',speedIntro:'73の盤面を、タイマー付きで駆け抜けるモードです。\n途中で閉じても時間と盤面を保存して再開できます。',speedStart:'挑戦する →',speedGo:'スタート',speedUnlockedStart:'速解きモードに挑戦する →',speedResume:'再開する →',speedRetry:'再挑戦する',speedPause:'一時停止',speedPauseTitle:'一時停止中',speedPauseText:'タイマーを止めています。盤面と時間は保存されています。',speedPauseProgress:'現在：{current} / {total}　{time}',speedRestart:'最初から',speedPuzzleRestart:'この問題をやり直す',speedRestartTitle:'最初からやり直しますか？',speedRestartText:'今のタイムと進行状況は失われます。',speedRestartCancel:'戻る',speedRestartConfirm:'最初からやり直す',speedCompleteTitle:'速解きモード 完走！',speedComplete:'今回の記録：{time}　最短クリア：{optimal} / 73　{attempt}',speedUnlocked:'速解きモードが開放されました。\n73の盤面を駆け抜け、自己ベストに挑戦できます。',speedStats:'速解きの成績',speedStatsSummary:'完走回数：{runs}回',speedStatsEmpty:'まだ完走記録がありません。',speedStatsEntry:'{num}回目　{time}　最短 {optimal} / 73',secondMasteryReward:'七色のだるまさんを手に入れました。\nメニューの「盤面のデザイン」から選べます。',timeLabel:'タイム'
 });
 Object.assign(UI_TEXT.en,{
-  speedMode:'Speed Run',speedTitle:'Speed Run',speedIntro:'Race through all 73 boards against the clock.\nYour time and board are saved if you leave partway.',speedStart:'Start →',speedUnlockedStart:'Try Speed Run →',speedResume:'Resume →',speedRetry:'Try again',speedPause:'Pause',speedPauseTitle:'Paused',speedPauseText:'The timer is stopped. Your board and time are saved.',speedPauseProgress:'Current: {current} / {total} · {time}',speedRestart:'Restart',speedPuzzleRestart:'Restart this puzzle',speedRestartTitle:'Restart from the beginning?',speedRestartText:'Your current time and progress will be lost.',speedRestartCancel:'Back',speedRestartConfirm:'Restart',speedCompleteTitle:'Speed Run Complete!',speedComplete:'All 73 boards cleared.\nTime: {time}\nOptimal clears: {optimal} / 73\nPersonal best: {best}',speedUnlocked:'Speed Run is now unlocked.\nRace through all 73 boards and set your best time.',speedStats:'Speed Run Results',speedStatsSummary:'Runs: {runs}',speedStatsEmpty:'No completed runs yet.',speedStatsEntry:'Run {num} · {time} · Optimal {optimal} / 73',secondMasteryReward:'You earned the seven-color daruma.\nChoose it from Board Design in the Menu.',timeLabel:'Time'
+  speedMode:'Speed Run',speedTitle:'Speed Run',speedIntro:'Race through all 73 boards against the clock.\nYour time and board are saved if you leave partway.',speedStart:'Start →',speedGo:'Start',speedUnlockedStart:'Try Speed Run →',speedResume:'Resume →',speedRetry:'Try again',speedPause:'Pause',speedPauseTitle:'Paused',speedPauseText:'The timer is stopped. Your board and time are saved.',speedPauseProgress:'Current: {current} / {total} · {time}',speedRestart:'Restart',speedPuzzleRestart:'Restart this puzzle',speedRestartTitle:'Restart from the beginning?',speedRestartText:'Your current time and progress will be lost.',speedRestartCancel:'Back',speedRestartConfirm:'Restart',speedCompleteTitle:'Speed Run Complete!',speedComplete:'All 73 boards cleared.\nTime: {time}\nOptimal clears: {optimal} / 73\nPersonal best: {best}',speedUnlocked:'Speed Run is now unlocked.\nRace through all 73 boards and set your best time.',speedStats:'Speed Run Results',speedStatsSummary:'Runs: {runs}',speedStatsEmpty:'No completed runs yet.',speedStatsEntry:'Run {num} · {time} · Optimal {optimal} / 73',secondMasteryReward:'You earned the seven-color daruma.\nChoose it from Board Design in the Menu.',timeLabel:'Time'
 });
 Object.assign(UI_TEXT.zh,{
-  speedMode:'速解模式',speedTitle:'速解模式',speedIntro:'带计时器挑战全部73种棋盘。\n中途关闭后仍会保存时间和棋盘。',speedStart:'开始挑战 →',speedResume:'继续 →',speedPause:'暂停',speedPauseTitle:'已暂停',speedPauseText:'计时已停止。棋盘和时间已保存。',speedRestart:'重新开始',speedPuzzleRestart:'重新开始这一题',speedRestartTitle:'要从头重新开始吗？',speedRestartText:'当前时间和进度将会丢失。',speedRestartCancel:'返回',speedRestartConfirm:'从头开始',speedCompleteTitle:'速解模式完成！',speedComplete:'完成全部73题。\n本次记录：{time}\n最佳记录：{best}',speedUnlocked:'速解模式已开放。\n挑战全部73种棋盘，刷新最佳记录吧。',secondMasteryReward:'获得了七色不倒翁。\n可在菜单的“棋盘设计”中选择。',timeLabel:'计时'
+  speedMode:'速解模式',speedTitle:'速解模式',speedIntro:'带计时器挑战全部73种棋盘。\n中途关闭后仍会保存时间和棋盘。',speedStart:'开始挑战 →',speedGo:'开始',speedResume:'继续 →',speedPause:'暂停',speedPauseTitle:'已暂停',speedPauseText:'计时已停止。棋盘和时间已保存。',speedRestart:'重新开始',speedPuzzleRestart:'重新开始这一题',speedRestartTitle:'要从头重新开始吗？',speedRestartText:'当前时间和进度将会丢失。',speedRestartCancel:'返回',speedRestartConfirm:'从头开始',speedCompleteTitle:'速解模式完成！',speedComplete:'完成全部73题。\n本次记录：{time}\n最佳记录：{best}',speedUnlocked:'速解模式已开放。\n挑战全部73种棋盘，刷新最佳记录吧。',secondMasteryReward:'获得了七色不倒翁。\n可在菜单的“棋盘设计”中选择。',timeLabel:'计时'
 });
 Object.assign(UI_TEXT.ko,{
-  speedMode:'속도전 모드',speedTitle:'속도전 모드',speedIntro:'타이머와 함께 73개 보드를 도전하는 모드입니다.\n도중에 닫아도 시간과 보드가 저장됩니다.',speedStart:'도전하기 →',speedResume:'계속하기 →',speedPause:'일시 중지',speedPauseTitle:'일시 중지됨',speedPauseText:'타이머가 멈췄습니다. 보드와 시간은 저장됩니다.',speedRestart:'처음부터',speedPuzzleRestart:'이 문제 다시 하기',speedRestartTitle:'처음부터 다시 할까요?',speedRestartText:'현재 시간과 진행 상황이 사라집니다.',speedRestartCancel:'돌아가기',speedRestartConfirm:'처음부터 다시',speedCompleteTitle:'속도전 완주!',speedComplete:'73문제를 모두 풀었습니다.\n이번 기록: {time}\n최고 기록: {best}',speedUnlocked:'속도전 모드가 열렸습니다.\n73개 보드를 달려 최고 기록에 도전하세요.',secondMasteryReward:'일곱 색 다루마를 얻었습니다.\n메뉴의 보드 디자인에서 선택할 수 있습니다.',timeLabel:'시간'
+  speedMode:'속도전 모드',speedTitle:'속도전 모드',speedIntro:'타이머와 함께 73개 보드를 도전하는 모드입니다.\n도중에 닫아도 시간과 보드가 저장됩니다.',speedStart:'도전하기 →',speedGo:'시작',speedResume:'계속하기 →',speedPause:'일시 중지',speedPauseTitle:'일시 중지됨',speedPauseText:'타이머가 멈췄습니다. 보드와 시간은 저장됩니다.',speedRestart:'처음부터',speedPuzzleRestart:'이 문제 다시 하기',speedRestartTitle:'처음부터 다시 할까요?',speedRestartText:'현재 시간과 진행 상황이 사라집니다.',speedRestartCancel:'돌아가기',speedRestartConfirm:'처음부터 다시',speedCompleteTitle:'속도전 완주!',speedComplete:'73문제를 모두 풀었습니다.\n이번 기록: {time}\n최고 기록: {best}',speedUnlocked:'속도전 모드가 열렸습니다.\n73개 보드를 달려 최고 기록에 도전하세요.',secondMasteryReward:'일곱 색 다루마를 얻었습니다.\n메뉴의 보드 디자인에서 선택할 수 있습니다.',timeLabel:'시간'
 });
 Object.assign(UI_TEXT.ja,{threeDMenu:'3Dだるまを見る',threeDUnlockedText:'初回クリアの報酬として、特別な3Dページが開放されました。リアルな盤面で遊べます。',threeDOpen:'3Dページを見る →'});
 Object.assign(UI_TEXT.en,{threeDMenu:'View in 3D',threeDUnlockedText:'As a reward for your first clear, a special 3D page has been unlocked. Play on a realistic board.',threeDOpen:'Open the 3D page →'});
@@ -2437,7 +2439,11 @@ function ensureSpeedBoardView(session){
   session.view='left60';
   return session;
 }
-function newSpeedSession(){return {version:3,view:'left60',order:makeSpeedOrder(),index:0,elapsedMs:0,board:null,completed:false,optimalClears:0};}
+function newSpeedSession(){return {version:3,view:'left60',order:makeSpeedOrder(),index:0,elapsedMs:0,board:null,completed:false,optimalClears:0,started:false};}
+// 1問目を始める前だけ、タイマーを止めた「スタート待ち」の状態にする。
+function speedAwaitingStart(){
+  return !!(speedMode&&speedSession&&!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent);
+}
 function animateSpeedBoardArrival(){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   const center=CELL[3];
@@ -2455,6 +2461,13 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
   if(!speedSession)return;
   speedManuallyPaused=false;
   extraMode=false;satoriMode=false;freeMode=false;customMode=false;editingBoard=false;speedMode=true;
+  if(!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent){
+    // スタートを押すまでは、全員起きた状態でタイマーも止めておく。
+    setPosition(0,SATORI_STAGES[speedSession.order[0]].par);
+    renderStageNav();
+    saveSpeedSession();
+    return;
+  }
   const stage=SATORI_STAGES[speedSession.order[speedSession.index]];
   setPosition(transformStateBySymmetry(stage.state,SPEED_BOARD_VIEW),stage.par);
   if(restoreBoard&&validSavedBoard(speedSession.board)){
@@ -2473,6 +2486,11 @@ function enterSpeedMode(forceNew=false){
   speedSession=saved||newSpeedSession();
   ensureSpeedBoardView(speedSession);
   loadSpeedStage(!isNew,isNew);
+}
+function beginSpeedRun(){
+  if(!speedMode||!speedSession||speedSession.started)return;
+  speedSession.started=true;
+  loadSpeedStage(false,true);
 }
 function finishSpeedRun(){
   pauseSpeedClock();
@@ -2817,7 +2835,7 @@ function paint(){
   showMoves(moves);
   if(!editingBoard&&!speedMode)showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]));
   else if(speedMode)renderSpeedClock();
-  if(speedMode&&isSolved()&&!clearShown){
+  if(speedMode&&isSolved()&&!clearShown&&speedSession&&speedSession.started){
     completeSpeedStage();
     return;
   }
@@ -2829,7 +2847,7 @@ function paint(){
     $('optimalFailDialog').hidden=false;
     return;
   }
-  if(!editingBoard&&isSolved()&&!clearShown){
+  if(!editingBoard&&!speedMode&&isSolved()&&!clearShown){
     clearShown=true;
     svg.classList.add('clear-pending');
     if(requiresOptimalClear()&&moves!==best){
@@ -3491,7 +3509,9 @@ svg.addEventListener('pointerdown',e=>{
     last:r>=MINR?Math.atan2(p.y-t.y,p.x-t.x):null,
     start:p,t0:performance.now()
   };
-  for(const item of items) item.el.classList.add('selected');
+  // 回す3体は他のパネルより手前に。ただし軸の点・持ち手・スワイプ中の点線より奥に留める。
+  const frontMarker=svg.querySelector('.pivot');
+  for(const item of items){ item.el.classList.add('selected'); svg.insertBefore(item.el,frontMarker); }
   svg.querySelector('.pivot[data-tri="'+ti+'"]').classList.add('active');
   svg.setPointerCapture(e.pointerId);
   svg.classList.add('spinning');
@@ -4053,8 +4073,9 @@ function renderStageNav(){
   $('debugTools').hidden=!DEBUG_MODE;
   for(const id of ['debugReset','debugClear','debugAllClear','debugSecondAllClear','debugAlmost','debugMore','debugFar','debugSpeed71','debugSpeed72','debugUnlock14','debugExtra14','debugExtra29','debugExtra44','debugExtra59','debugSatori25','debugSatori72','debugSecondUnlock14','debugSecondExtra14','debugSecondExtra29','debugSecondExtra44','debugSecondExtra59','debugSecondSatori25','debugSecondSatori72'])$(id).hidden=!DEBUG_MODE;
   $('reset').textContent=editingBoard?tr('resetAll'):speedMode?tr('speedPuzzleRestart'):tr('reset');
-  $('reset').hidden=satoriMode;
-  $('speedPause').hidden=!speedMode;
+  $('reset').hidden=satoriMode||speedMode;
+  $('speedPause').hidden=!speedMode||speedAwaitingStart();
+  $('speedGo').hidden=!speedAwaitingStart();
   const inSideMode=freeMode||customMode;
   $('stageKind').hidden=false;
   $('stageNav').classList.toggle('side-mode-nav',inSideMode);
@@ -5604,6 +5625,7 @@ $('menuSpeed').addEventListener('click',()=>{
   if(speedMode){pauseSpeedRun();showMasterDialog('speedIntro');return;}
   showMasterDialog('speedIntro');
 });
+$('speedGo').addEventListener('click',beginSpeedRun);
 $('speedPause').addEventListener('click',()=>{
   if(!speedMode)return;
   speedManuallyPaused=true;
@@ -6134,6 +6156,7 @@ function applyLanguage(lang){
   $('undo').textContent=tr('undo');
   $('hint').textContent=tr('hint');
   $('speedPause').textContent=tr('speedPause');
+  $('speedGo').textContent=tr('speedGo');
   $('speedPauseTitle').textContent=tr('speedPauseTitle');
   $('speedResume').textContent=tr('speedResume');
   $('speedRestart').textContent=tr('speedRestartConfirm');
