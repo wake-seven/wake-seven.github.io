@@ -51,10 +51,10 @@
     /* コンテナ幅はrem定数。html の font-size と連動し、盤面も文字も同じ比率で拡大する。 */
     --content-max:23.25rem; /* 372px ÷ 16px基準 */
   }
-  /* ページ全体の拡大係数をルートのfont-sizeに集約。スマホ幅(650px未満)では16px=変化なし、
-     大画面では最大1.5倍まで。
+  /* ページ全体の拡大係数をルートのfont-sizeに集約。スマホ幅(570px未満)では16px=変化なし、
+     570pxから伸び始め、iPad mini(744px)で約1.3倍、855px以降は最大1.5倍。
      vh・SVGのviewBoxのサイズには一切触れないので、zoomのような二重掛けは起きない。 */
-  html{font-size:calc(16px * clamp(1,calc(100vw / 650px),1.5));max-width:100%;overflow-x:hidden;overscroll-behavior:none}
+  html{font-size:calc(16px * clamp(1,calc(100vw / 570px),1.5));max-width:100%;overflow-x:hidden;overscroll-behavior:none}
   /* ダイアログ表示中は背後のページを固定し、ダイアログ自身のスクロールと二重にならないようにする。 */
   html:has(.game-dialog-backdrop:not([hidden])),
   html:has(.stage-picker-backdrop:not([hidden])){overflow-y:hidden}
@@ -234,9 +234,9 @@
   body[data-board-theme="satori"] #board .tile.stand .hex{fill:#F1F1ED;stroke:#D6D6D0}
   body[data-board-theme="satori"] #board .tile.fallen .hex{fill:#AAA9A4;stroke:#8E8D88}
   /* 悟りの褒美：パネルを30°左へ回し、縦に2・3・2と見える配置にする。
-     回転すると見た目の幅は約1.4倍に膨らむため、画面が狭い(480px以下=盤面が画面幅いっぱいまで伸びる)
-     うちは.71倍に抑えてはみ出しを防ぎ、画面に余裕が出る480px超からは徐々に等倍へ戻す。 */
-  body[data-board-layout="tilted"] #board{transform:rotate(-30deg) scale(clamp(.71,calc(100vw / 530px),1));transform-origin:50% 50%}
+     回転で見た目の幅は約1.4倍に膨らむが、縮小はせず.board-wrap側のoverflow:hiddenで
+     枠の外にはみ出た分(六角形の先端のごく一部)だけを切り取る。盤面自体は等倍のまま。 */
+  body[data-board-layout="tilted"] #board{transform:rotate(-30deg);transform-origin:50% 50%}
   /* 盤が傾いても、だるまは画面に対してまっすぐ立つ。 */
   body[data-board-layout="tilted"] #board .daruma-shell{transform:rotate(30deg);transform-box:fill-box;transform-origin:center}
   .mode-row.satori-mode .remaining,.mode-row.satori-mode .status-separator{display:none}
@@ -543,7 +543,7 @@
   .debug-row{width:100%;display:flex;justify-content:center;gap:0.3125rem}
   .debug-tools .chip{padding:0.3125rem 0.5rem;font-size:0.625rem;opacity:.7}
 
-  .board-wrap{position:relative;width:100%;max-width:var(--content-max);margin-top:0.875rem;perspective:820px}
+  .board-wrap{position:relative;width:100%;max-width:var(--content-max);margin-top:0.875rem;perspective:820px;overflow:hidden}
   #board{
     width:100%;height:auto;display:block;margin:0;
     touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;overflow:visible;transform-style:preserve-3d;backface-visibility:hidden;
@@ -660,9 +660,6 @@
     .playbar{margin-top:0.4375rem}
     .board-wrap{max-width:none;margin-top:0.625rem}
     .stage-nav,.progress,.primary-total,.mode-row,.playbar{width:calc(100% - 8px)}
-    /* この幅では盤面(.board-wrap)がmax-widthの制限を受けず画面幅いっぱいまで伸びるため、
-       縦配置の縮小率は徐々に戻さず.71倍で固定する。 */
-    body[data-board-layout="tilted"] #board{transform:rotate(-30deg) scale(.71)}
   }
   html.embed,html.embed body{min-height:0}
   html.embed body{
