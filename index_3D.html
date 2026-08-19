@@ -7,7 +7,9 @@
 <title>WAKE SEVEN — PHYSICAL CONCEPT</title>
 <script>
   try{
-    document.documentElement.dataset.pageAccess=localStorage.getItem('wake7-3d-unlocked')==='1'?'granted':'locked';
+    const unlocked=localStorage.getItem('wake7-3d-unlocked')==='1';
+    const shared=new URLSearchParams(location.search).get('friend')==='1';
+    document.documentElement.dataset.pageAccess=(unlocked||shared)?'granted':'locked';
   }catch(_){document.documentElement.dataset.pageAccess='locked';}
 </script>
 <style>
@@ -41,7 +43,7 @@
   }
   #stage.drag{cursor:grabbing}
   #stage canvas{display:block;width:100%;height:100%}
-  .cap{margin-top:11px;font-size:13px;color:#AAC6D7;min-height:1.7em;text-align:center}
+  .cap{margin-top:11px;font-size:16px;color:#AAC6D7;min-height:1.7em;text-align:center}
   .cap b{color:var(--blue);font-weight:700}
   #pageAccessDenied{display:none;min-height:100vh;padding:96px 24px 32px;text-align:center;color:var(--washi)}
   #pageAccessDenied h1{font-family:"Hiragino Mincho ProN","Yu Mincho",YuMincho,serif;font-size:26px}
@@ -49,6 +51,65 @@
   #pageAccessDenied a{display:inline-block;border:1px solid rgba(121,204,224,.35);border-radius:999px;padding:9px 18px;color:var(--washi);text-decoration:none}
   html[data-page-access="locked"] .wrap{display:none!important}
   html[data-page-access="locked"] #pageAccessDenied{display:block}
+  @media (max-width:900px){
+    body{padding-left:3px;padding-right:3px}
+    #stage{border-radius:8px}
+  }
+
+  .howto-backdrop{
+    position:fixed;inset:0;background:rgba(9,16,26,.72);backdrop-filter:blur(2px);
+    display:flex;align-items:center;justify-content:center;padding:20px;z-index:20;
+  }
+  .howto-backdrop[hidden]{display:none}
+  .howto-dialog{
+    width:100%;max-width:400px;background:linear-gradient(180deg,#1E3349,#152538);
+    border:1px solid rgba(215,179,83,.35);border-radius:18px;padding:22px 20px 20px;
+    text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.45);
+  }
+  .howto-dialog h2{font-family:"Hiragino Mincho ProN","Yu Mincho",YuMincho,serif;font-size:20px;font-weight:600;letter-spacing:.06em}
+  .howto-dialog .howto-sub{margin-top:6px;font-size:12px;color:#94B2C8}
+  .howto-anim{margin:4px auto 0;width:100%;max-width:360px;aspect-ratio:2.812;overflow:hidden;perspective:360px}
+  .howto-anim svg{display:block;width:100%;height:auto;margin-top:-30.5%;transform:rotateX(56deg);transform-origin:50% 100%}
+  .howto-hex{fill:rgba(121,204,224,.08);stroke:rgba(148,178,200,.55);stroke-width:2}
+  .howto-hex-active{animation:howtoHexActive 4.2s ease-in-out infinite}
+  .howto-socket{fill:rgba(0,0,0,.35);stroke:none}
+  .howto-active-group{transform-box:view-box;transform-origin:112px 100px;animation:howtoPanelSpin 4.2s ease-in-out infinite}
+  .howto-panel-mark{fill:var(--blue)}
+  .howto-path{fill:none;stroke:#AAC6D7;stroke-width:2;stroke-dasharray:5 6;opacity:0;animation:howtoPath 4.2s ease-in-out infinite}
+  .howto-tri{transform-box:view-box;transform-origin:0px 0px;animation:howtoTri 4.2s ease-in-out infinite}
+  .howto-tri line{stroke:var(--kin);stroke-width:5;stroke-linecap:round}
+  .howto-tri circle{fill:#8a6428}
+  @keyframes howtoHexActive{
+    0%,50%{stroke:rgba(148,178,200,.55);stroke-width:2;fill:rgba(121,204,224,.08)}
+    58%,86%{stroke:var(--kin);stroke-width:3;fill:rgba(215,179,83,.22)}
+    94%,100%{stroke:rgba(148,178,200,.55);stroke-width:2;fill:rgba(121,204,224,.08)}
+  }
+  /* 三又と一緒に3枚も持ち上がってから回り、下りて外れる。 */
+  @keyframes howtoPanelSpin{
+    0%,46%{transform:translate(0px,0px) scale(1) rotate(0deg)}
+    54%{transform:translate(0px,-16px) scale(1.08) rotate(0deg)}
+    84%{transform:translate(0px,-16px) scale(1.08) rotate(120deg)}
+    92%,100%{transform:translate(0px,0px) scale(1) rotate(120deg)}
+  }
+  @keyframes howtoPath{0%,24%{opacity:0}30%,44%{opacity:1}50%,100%{opacity:0}}
+  /* 三又:運ぶ→軸に下りる→持ち上げる→回す→下ろす→外れて戻る。 */
+  @keyframes howtoTri{
+    0%{opacity:0;transform:translate(198px,74px) scale(1) rotate(0deg)}
+    6%{opacity:1;transform:translate(198px,74px) scale(1) rotate(0deg)}
+    24%{opacity:1;transform:translate(198px,74px) scale(1) rotate(0deg)}
+    46%{opacity:1;transform:translate(112px,100px) scale(1) rotate(0deg)}
+    54%{opacity:1;transform:translate(112px,84px) scale(1.08) rotate(0deg)}
+    84%{opacity:1;transform:translate(112px,84px) scale(1.08) rotate(120deg)}
+    92%{opacity:1;transform:translate(112px,100px) scale(1) rotate(120deg)}
+    96%{opacity:0;transform:translate(112px,100px) scale(1) rotate(120deg)}
+    100%{opacity:0;transform:translate(198px,74px) scale(1) rotate(0deg)}
+  }
+  .howto-steps{margin:6px 0 0;text-align:left;font-size:13px;color:#DCE6EE;display:grid;gap:5px}
+  .howto-steps li{list-style:none;display:flex;gap:8px;align-items:baseline}
+  .howto-steps b{color:var(--kin);font-weight:800;flex:none}
+  .howto-mech{margin:14px 0 18px;padding:12px 14px;border:1px solid rgba(148,178,200,.25);border-radius:12px;background:rgba(255,255,255,.04);text-align:left}
+  .howto-mech-title{font-size:12px;font-weight:800;color:var(--kin);letter-spacing:.06em;margin-bottom:5px}
+  .howto-mech-text{font-size:12px;line-height:1.7;color:#B9C9D6}
 </style>
 </head>
 <body>
@@ -56,19 +117,64 @@
 <div class="wrap">
   <header class="hero">
     <div class="brandline">WAKE SEVEN</div>
-    <h1>手で回す、<b>三枚のだるま</b></h1>
+    <h1>だるまさんをおこして！<b>3D</b></h1>
     <p class="sub">PHYSICAL CONCEPT MODEL</p>
   </header>
 
   <div class="bar">
     <button class="chip primary" id="shuffle">シャッフル</button>
+    <button class="chip" id="solve">自動解答</button>
     <button class="chip" id="top">上から見る</button>
     <button class="chip" id="under">裏から見る</button>
     <button class="chip" id="reset">視点を戻す</button>
+    <button class="chip" id="howtoReplay">遊び方</button>
   </div>
 
   <div id="stage"></div>
   <p class="cap" id="cap"><b>三又</b>をつかんで軸まで運び、腕をスワイプして回そう。</p>
+</div>
+
+<div class="howto-backdrop" id="howtoBackdrop" hidden>
+  <div class="howto-dialog" role="dialog" aria-modal="true" aria-labelledby="howtoTitle">
+    <h2 id="howtoTitle">あそびかた</h2>
+    <p class="howto-sub"><b>三又</b>をつかんで、光る3枚の軸まで運ぼう</p>
+    <div class="howto-anim">
+      <svg viewBox="0 0 224 148">
+        <polygon class="howto-hex" points="89.5,10 67.85,22.5 67.85,47.5 89.5,60 111.15,47.5 111.15,22.5"/>
+        <polygon class="howto-hex" points="134.5,10 112.85,22.5 112.85,47.5 134.5,60 156.15,47.5 156.15,22.5"/>
+        <polygon class="howto-hex" points="67,49 45.35,61.5 45.35,86.5 67,99 88.65,86.5 88.65,61.5"/>
+        <polygon class="howto-hex" points="157,49 135.35,61.5 135.35,86.5 157,99 178.65,86.5 178.65,61.5"/>
+        <ellipse class="howto-socket" cx="112" cy="100" rx="11" ry="5.5"/>
+        <g class="howto-active-group">
+          <polygon class="howto-hex howto-hex-active" points="112,49 90.35,61.5 90.35,86.5 112,99 133.65,86.5 133.65,61.5"/>
+          <polygon class="howto-hex howto-hex-active" points="89.5,88 67.85,100.5 67.85,125.5 89.5,138 111.15,125.5 111.15,100.5"/>
+          <polygon class="howto-hex howto-hex-active" points="134.5,88 112.85,100.5 112.85,125.5 134.5,138 156.15,125.5 156.15,100.5"/>
+          <circle class="howto-panel-mark" cx="112" cy="74" r="3.2"/>
+          <circle class="howto-panel-mark" cx="89.5" cy="113" r="3.2"/>
+          <circle class="howto-panel-mark" cx="134.5" cy="113" r="3.2"/>
+        </g>
+        <path class="howto-path" d="M198,74 L112,100"/>
+        <g class="howto-tri">
+          <line x1="0" y1="0" x2="0" y2="-26"/>
+          <line x1="0" y1="0" x2="-22.5" y2="13"/>
+          <line x1="0" y1="0" x2="22.5" y2="13"/>
+          <circle cx="0" cy="-26" r="4"/>
+          <circle cx="-22.5" cy="13" r="4"/>
+          <circle cx="22.5" cy="13" r="4"/>
+        </g>
+      </svg>
+    </div>
+    <ol class="howto-steps">
+      <li><b>1</b> 三又をつかむ</li>
+      <li><b>2</b> 3枚の交わる軸まで運ぶ</li>
+      <li><b>3</b> スワイプして3枚ごと回す</li>
+    </ol>
+    <div class="howto-mech">
+      <p class="howto-mech-title">仕組み</p>
+      <p class="howto-mech-text">三又の先には磁石が付いています。パネルの真ん中(だるまさんの裏側)には鉄板が仕込んであり、三又を軸に下ろすとそこにくっついて、3枚まとめて持ち上げられる仕組みです。</p>
+    </div>
+    <button class="chip primary" id="howtoStart">はじめる</button>
+  </div>
 </div>
 
 <script type="importmap">
@@ -103,7 +209,7 @@ const MAT={
   // 本編の通常盤に寄せた、少し黄みのある淡いベージュのパネル。
   pla :{board:0x3d5670, recess:0x28394a, edge:0xF7EEDC, plug:0xEFC84F, grip:0xBF9A2E, face:'#FFF7E8'}
 };
-let mat='pla', spinning=false;
+let mat='pla';
 
 /* ---- 外形は正六角形のまま。パネル側には操作用の加工を作らない ---- */
 function regularHex(r){
@@ -176,7 +282,7 @@ let panels=[], parts=[], holes=[], plug=null, claws=[], magnets=[];
 let slot=[{p:0,o:0},{p:1,o:1},{p:2,o:2},{p:3,o:0},{p:4,o:2},{p:5,o:1},{p:6,o:0}];
 let anim=null, homeTri=0;
 // 三又を運ぶ高さ／持ち上げる高さ／磁石を外す時のひねり角／回転を拾い始める最小半径。
-const PLUG_HOME_Y=98, PLUG_LIFT_Y=42, DETACH_TWIST_DEG=14, MIN_ROT_R=18;
+const PLUG_HOME_Y=98, PLUG_LIFT_Y=42, DETACH_TWIST_DEG=28, MIN_ROT_R=18;
 const SM=(c,r,m)=>new THREE.MeshStandardMaterial({color:c,roughness:r??(mat==='wood'?0.85:0.35),metalness:m??(mat==='wood'?0:0.08)});
 
 /* パネル：薄いプラスチック製。裏側だけに受けを持ち、天面はだるまだけ。 */
@@ -243,8 +349,8 @@ function build(){
   const plate=new THREE.Mesh(new THREE.CylinderGeometry(157,160,8,6), SM(MAT[mat].board));
   plate.position.y=-5; plate.rotation.y=Math.PI/6; root.add(plate); parts.push(plate);
   POS.forEach(([x,z])=>{
-    const socket=new THREE.Mesh(hexRing(2.3,R+1.2,R-2.8), SM(MAT[mat].recess));
-    socket.position.set(x,-2.25,z); root.add(socket); parts.push(socket);
+    const socket=new THREE.Mesh(hexRing(5.6,R+1.2,R-2.8), SM(MAT[mat].recess));
+    socket.position.set(x,-4.7,z); root.add(socket); parts.push(socket);
   });
   // 台座の上側を示す金の矢印。盤を回しても「起きる向き」はここで分かる。
   const markShape=new THREE.Shape();
@@ -327,6 +433,14 @@ function pointerOnPlug(e){
   ray.setFromCamera(ndc,camera);
   return ray.intersectObject(plug,true).length>0;
 }
+function pointerOnLiftedPanels(e){
+  if(!pivot) return false;
+  const r=stage.getBoundingClientRect();
+  ndc.x=((e.clientX-r.left)/r.width)*2-1;
+  ndc.y=-((e.clientY-r.top)/r.height)*2+1;
+  ray.setFromCamera(ndc,camera);
+  return ray.intersectObject(pivot,true).length>0;
+}
 function nearestTriangle(x,z){
   let best=0,bd=Infinity;
   TRI.forEach((t,i)=>{ const d=(t.x-x)**2+(t.z-z)**2; if(d<bd){bd=d;best=i;} });
@@ -344,6 +458,15 @@ function shortestDelta(from,to){
   while(d<-Math.PI) d+=2*Math.PI;
   return d;
 }
+// 三又は120°ごとに腕が同じ見た目になる対称形。軸に降ろす時はその対称性を使い、
+// 見た目上その軸に合ってさえいれば良いので、±60°以内の最小回転で済ませる。
+function shortestDeltaSym(from,to){
+  const period=2*Math.PI/3;
+  let d=(to-from)%period;
+  if(d>period/2) d-=period;
+  if(d<-period/2) d+=period;
+  return d;
+}
 /* pivot を theta=-n*120° だけ回したときの、着地後の席と向き。
    n は正負・大きさとも自由（連続回転の総量からそのまま求まる）。 */
 function applyRotation(ti,n){
@@ -359,6 +482,8 @@ function applyRotation(ti,n){
 }
 
 const ease=k=>k<0.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+// 着地の瞬間だけ、ほんの少し行き過ぎてから戻る「カチッ」としたばね感を出す。
+const easeSettle=(k,c1=1.15)=>{ const x=k-1; return 1+(c1+1)*x*x*x+c1*x*x; };
 function runSteps(steps,done){
   let si=0,t0=performance.now();
   function frame(now){
@@ -378,6 +503,8 @@ function settleAndLift(ti){
   const tri=TRI[ti], cells=tri.cells;
   const startX=plug.position.x, startZ=plug.position.z, startRot=plug.rotation.y;
   const targetRot=triAngle(ti);
+  // 三又の対称性を使い、±60°以内の最小回転で軸に合わせる。
+  const finalRot=startRot+shortestDeltaSym(startRot,targetRot);
   pivot=new THREE.Group(); pivot.position.set(tri.x,0,tri.z); root.add(pivot);
   const moving=cells.map(c=>panels[slot[c].p]);
   moving.forEach((p,idx)=>{
@@ -386,14 +513,14 @@ function settleAndLift(ti){
     p.position.set(POS[cell][0]-tri.x,0,POS[cell][1]-tri.z);
     pivot.add(p);
   });
-  const setPlug=(y,open)=>{ plug.position.set(tri.x,y,tri.z); plug.rotation.y=targetRot; setClaw(open); };
+  const setPlug=(y,open)=>{ plug.position.set(tri.x,y,tri.z); plug.rotation.y=finalRot; setClaw(open); };
   const steps=[
-    {t:'三つ葉キーが軸に合わせて下りる', d:420, f:k=>{
+    {d:420, f:k=>{
       plug.position.set(startX+(tri.x-startX)*k, PLUG_HOME_Y*(1-k), startZ+(tri.z-startZ)*k);
-      plug.rotation.y=startRot+shortestDelta(startRot,targetRot)*k; setClaw(0);
+      plug.rotation.y=startRot+(finalRot-startRot)*k; setClaw(0);
     }},
-    {t:'3つの磁力パッドが吸着する', d:320, f:k=>setPlug(0,k)},
-    {t:'3枚を高く持ち上げる', d:480, f:k=>{ setPlug(k*PLUG_LIFT_Y,1); pivot.position.y=k*PLUG_LIFT_Y; }}
+    {d:320, f:k=>setPlug(0,k)},
+    {d:480, f:k=>{ setPlug(k*PLUG_LIFT_Y,1); pivot.position.y=k*PLUG_LIFT_Y; }}
   ];
   runSteps(steps,()=>{
     liftedTi=ti; anim=false; mode='lifted';
@@ -410,12 +537,12 @@ function commitRotation(totalRad){
   const twistSign=n?Math.sign(n):(Math.sign(totalRad)||1);
   const twistRad=twistSign*DETACH_TWIST_DEG*Math.PI/180;
   const steps=[
-    {t:'一番近い120度まで回しきる', d:180, f:k=>{
+    {d:180, f:k=>{
       const r=totalRad+(targetRad-totalRad)*k;
       pivot.rotation.y=r; plug.rotation.y=triAngle(ti)+r;
     }},
-    {t:'3枚を下ろす', d:480, f:k=>{
-      const y=PLUG_LIFT_Y*(1-k);
+    {d:480, f:k=>{
+      const y=PLUG_LIFT_Y*(1-easeSettle(k));
       pivot.position.y=y; plug.position.set(tri.x,y,tri.z);
       pivot.rotation.y=targetRad; plug.rotation.y=triAngle(ti)+targetRad; setClaw(1);
     }}
@@ -427,12 +554,12 @@ function commitRotation(totalRad){
     root.remove(pivot); pivot=null; applyPanels();
     const settledRot=triAngle(ti)+targetRad;
     const steps2=[
-      {t:'キーを少しひねって磁石から外す', d:300, f:k=>{ plug.rotation.y=settledRot+twistRad*k; setClaw(1); }},
-      {t:'三つ葉キーが上へ戻る', d:420, f:k=>{ plug.position.set(tri.x,k*PLUG_HOME_Y,tri.z); setClaw(0); }}
+      // ひねって磁石から外す。このひねりは戻さず、そのまま残す。
+      {d:300, f:k=>{ plug.rotation.y=settledRot+twistRad*k; setClaw(1); }},
+      // 上がる間は回転させない(ひねり角のまま静かに上昇)。
+      {d:420, f:k=>{ plug.position.set(tri.x,k*PLUG_HOME_Y,tri.z); setClaw(0); }}
     ];
     runSteps(steps2,()=>{
-      // 浮き上がったら、外すためのひねりは残さずまっすぐに戻す。
-      plug.rotation.y=triAngle(ti);
       anim=false; mode='idle';
       CAP.innerHTML='<b>三又</b>をスワイプして、狙った軸まで運んでください。';
     });
@@ -449,7 +576,7 @@ stage.addEventListener('pointerdown',e=>{
     CAP.textContent='そのまま軸の上まで運んでください。';
     return;
   }
-  if(mode==='lifted'&&pointerOnPlug(e)){
+  if(mode==='lifted'&&(pointerOnPlug(e)||pointerOnLiftedPanels(e))){
     rotateDrag={id:e.pointerId, axis:projectedTriangle(liftedTi,PLUG_LIFT_Y), last:null, total:0};
     stage.setPointerCapture(e.pointerId); stage.classList.add('drag');
     return;
@@ -462,8 +589,8 @@ stage.addEventListener('pointermove',e=>{
     const pt=pointerToBoardXZ(e);
     if(pt){
       plug.position.x=pt.x+carryDrag.dx; plug.position.z=pt.z+carryDrag.dz;
+      // 運んでいる間は向きを変えない。軸に合わせる回転は下りる時にまとめて行う。
       const nt=nearestTriangle(plug.position.x,plug.position.z);
-      plug.rotation.y=triAngle(nt);
       if(nt!==carryDrag.nearest) showTargetRing(nt);
       carryDrag.nearest=nt;
     }
@@ -516,11 +643,14 @@ stage.addEventListener('pointercancel',e=>{
 
 const $=id=>document.getElementById(id);
 
-/* シャッフル：三又が実際に軸へ運ばれ、持ち上げて回し、下ろす動きをキビキビ繰り返す。 */
-function shuffleStep(ti,n,done){
+/* シャッフル(自動解答と共用)：三又が実際に軸へ運ばれ、持ち上げて回し、下ろす動きを繰り返す。
+   durMul で全体の速さを調整できる(自動解答はシャッフルよりゆっくり)。 */
+function shuffleStep(ti,n,done,durMul=1){
   const tri=TRI[ti], cells=tri.cells;
   const startX=plug.position.x, startZ=plug.position.z, startRot=plug.rotation.y;
   const targetRot=triAngle(ti), targetRad=-n*2*Math.PI/3;
+  // 三又の対称性を使い、±60°以内の最小回転で軸に合わせる。
+  const finalRot=startRot+shortestDeltaSym(startRot,targetRot);
   pivot=new THREE.Group(); pivot.position.set(tri.x,0,tri.z); root.add(pivot);
   const moving=cells.map(c=>panels[slot[c].p]);
   moving.forEach((p,idx)=>{
@@ -530,27 +660,27 @@ function shuffleStep(ti,n,done){
     pivot.add(p);
   });
   const steps=[
-    {d:110,f:k=>{ // 三又が軸へ滑る
+    {d:110*durMul,f:k=>{ // 三又が軸へ滑る
       plug.position.set(startX+(tri.x-startX)*k, PLUG_HOME_Y, startZ+(tri.z-startZ)*k);
-      plug.rotation.y=startRot+shortestDelta(startRot,targetRot)*k; setClaw(0);
+      plug.rotation.y=startRot+(finalRot-startRot)*k; setClaw(0);
     }},
-    {d:110,f:k=>{ // 下りて吸着
-      plug.position.set(tri.x,PLUG_HOME_Y*(1-k),tri.z); plug.rotation.y=targetRot; setClaw(k);
+    {d:110*durMul,f:k=>{ // 下りて吸着
+      plug.position.set(tri.x,PLUG_HOME_Y*(1-k),tri.z); plug.rotation.y=finalRot; setClaw(k);
     }},
-    {d:110,f:k=>{ // 持ち上げる
-      plug.position.set(tri.x,k*PLUG_LIFT_Y,tri.z); plug.rotation.y=targetRot; setClaw(1);
+    {d:110*durMul,f:k=>{ // 持ち上げる
+      plug.position.set(tri.x,k*PLUG_LIFT_Y,tri.z); plug.rotation.y=finalRot; setClaw(1);
       pivot.position.y=k*PLUG_LIFT_Y;
     }},
-    {d:170,f:k=>{ // 空中で回す
+    {d:170*durMul,f:k=>{ // 空中で回す
       const r=targetRad*k;
-      pivot.rotation.y=r; plug.rotation.y=targetRot+r;
+      pivot.rotation.y=r; plug.rotation.y=finalRot+r;
     }},
-    {d:110,f:k=>{ // 下ろす
-      const y=PLUG_LIFT_Y*(1-k);
+    {d:110*durMul,f:k=>{ // 下ろす(着地の瞬間だけ少し行き過ぎてから収まる)
+      const y=PLUG_LIFT_Y*(1-easeSettle(k));
       pivot.position.y=y; plug.position.set(tri.x,y,tri.z);
-      pivot.rotation.y=targetRad; plug.rotation.y=targetRot+targetRad; setClaw(1);
+      pivot.rotation.y=targetRad; plug.rotation.y=finalRot+targetRad; setClaw(1);
     }},
-    {d:100,f:k=>{ // 磁石を離して浮き上がる
+    {d:100*durMul,f:k=>{ // 磁石を離して浮き上がる
       plug.position.set(tri.x,k*PLUG_HOME_Y,tri.z); setClaw(1-k);
     }}
   ];
@@ -578,12 +708,92 @@ $('shuffle').addEventListener('click',()=>{
   const moves=Array.from({length:5},()=>[(Math.random()*6)|0, Math.random()<.5?1:-1]);
   playShuffle(moves,0);
 });
+
+/* 自動解答：全マスの向き(o)だけを状態としてBFSし、全員が起きる(o=0)までの手順を求める。
+   置かれているだるまの種類(p)は勝敗に関係しないので状態には含めない。 */
+const P3=[1,3,9,27,81,243,729], SOLVE_STATES=2187;
+function encodeO(o){ let v=0; for(let i=0;i<7;i++) v+=o[i]*P3[i]; return v; }
+function decodeO(v){ const o=new Array(7); for(let i=0;i<7;i++){ o[i]=v%3; v=(v/3)|0; } return o; }
+function rollO(o,ti,n){
+  const cells=TRI[ti].cells, t=o.slice();
+  for(let i=0;i<3;i++){
+    const f=cells[i], to=cells[(((i+n)%3)+3)%3];
+    t[to]=(((o[f]-n)%3)+3)%3;
+  }
+  return t;
+}
+let SOLVE_DIST=null;
+function buildSolver(){
+  const dist=new Int16Array(SOLVE_STATES).fill(-1);
+  dist[0]=0;
+  let frontier=[0];
+  while(frontier.length){
+    const next=[];
+    for(const s of frontier){
+      const o=decodeO(s);
+      for(let ti=0;ti<6;ti++) for(const n of [1,-1]){
+        const ns=encodeO(rollO(o,ti,n));
+        if(dist[ns]===-1){ dist[ns]=dist[s]+1; next.push(ns); }
+      }
+    }
+    frontier=next;
+  }
+  return dist;
+}
+function solveMoves(){
+  if(!SOLVE_DIST) SOLVE_DIST=buildSolver();
+  let o=slot.map(s=>s.o);
+  const moves=[];
+  while(true){
+    const d=SOLVE_DIST[encodeO(o)];
+    if(d===0) break;
+    let step=null;
+    outer: for(let ti=0;ti<6;ti++) for(const n of [1,-1]){
+      const no=rollO(o,ti,n);
+      if(SOLVE_DIST[encodeO(no)]===d-1){ step={ti,n,no}; break outer; }
+    }
+    if(!step) break;
+    moves.push([step.ti,step.n]); o=step.no;
+  }
+  return moves;
+}
+function playSolve(moves,i){
+  if(i>=moves.length){
+    anim=false;
+    CAP.innerHTML='全員起きました。<b>三又</b>をつかんで軸まで運んでください。';
+    return;
+  }
+  const [ti,n]=moves[i];
+  shuffleStep(ti,n,()=>playSolve(moves,i+1),1.8);
+}
+$('solve').addEventListener('click',()=>{
+  if(anim||mode==='lifted'||carryDrag||rotateDrag||viewDrag) return;
+  const moves=solveMoves();
+  if(!moves.length){ CAP.textContent='もう全員起きています。'; return; }
+  anim=true; targetRing.visible=false;
+  CAP.textContent='自動で解いています…';
+  playSolve(moves,0);
+});
 $('top').addEventListener('click',()=>{yaw=0;pitch=1.32;place();});
 $('under').addEventListener('click',()=>{yaw=-.55;pitch=-.72;place();});
 $('reset').addEventListener('click',()=>{yaw=-0.22;pitch=0.85;place();});
 
+/* あそびかたダイアログ:初回だけ自動表示し、ローカルストレージに既読を残す。
+   「遊び方」ボタンでいつでも再表示できる。 */
+const HOWTO_KEY='wake7-3d-howto-seen';
+const howtoBackdrop=$('howtoBackdrop');
+function showHowto(){ howtoBackdrop.hidden=false; }
+function hideHowto(){
+  howtoBackdrop.hidden=true;
+  try{ localStorage.setItem(HOWTO_KEY,'1'); }catch(_){}
+}
+$('howtoStart').addEventListener('click',hideHowto);
+$('howtoReplay').addEventListener('click',showHowto);
+let howtoSeen=false;
+try{ howtoSeen=localStorage.getItem(HOWTO_KEY)==='1'; }catch(_){}
+if(!howtoSeen) showHowto();
+
 function loop(){
-  if(spinning&&!carryDrag&&!rotateDrag&&!viewDrag){ yaw+=0.004; place(); }
   if(targetRing.visible){
     // 小さな印を見失わないよう、ゆっくり明滅させる。
     const s=1+Math.sin(performance.now()*0.004)*.18;
