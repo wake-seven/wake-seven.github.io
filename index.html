@@ -48,12 +48,13 @@
     --ai:#16283C; --ai2:#1F3752;
     --washi:#F7EEDC; --washi2:#BCCDD3;
     --kin:#C9A54E; --sumi:#241D1A; --shu:#C8352C;
-    /* スマホ幅では372pxのまま、iPad mini〜iPad Pro 12.9インチでは画面幅の約78%までなめらかに拡大する。 */
-    --content-max:clamp(372px,78vw,760px);
+    --content-max:372px;
   }
   html{max-width:100%;overflow-x:hidden;overscroll-behavior:none}
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   body{
+    /* 盤面だけでなく文字やボタンも含めて画面全体を一様に拡大する。スマホ幅（580px未満）では1倍のまま。 */
+    zoom:clamp(1,calc(100vw / 580px),1.45);
     background:var(--ai);
     background-image:radial-gradient(120% 70% at 50% 0%,var(--ai2) 0%,var(--ai) 62%);
     color:var(--washi);font-family:"A1 Gothic","Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,"Noto Sans JP",sans-serif;
