@@ -48,18 +48,20 @@
     --ai:#16283C; --ai2:#1F3752;
     --washi:#F7EEDC; --washi2:#BCCDD3;
     --kin:#C9A54E; --sumi:#241D1A; --shu:#C8352C;
+    /* スマホ幅では372pxのまま、iPad mini〜iPad Pro 12.9インチまで画面幅に応じてなめらかに拡大する。 */
+    --content-max:clamp(372px,280px + 20vw,640px);
   }
-  html{max-width:100%;overflow-x:hidden}
+  html{max-width:100%;overflow-x:hidden;overscroll-behavior:none}
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   body{
     background:var(--ai);
     background-image:radial-gradient(120% 70% at 50% 0%,var(--ai2) 0%,var(--ai) 62%);
     color:var(--washi);font-family:"A1 Gothic","Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,"Noto Sans JP",sans-serif;
-    min-height:100vh;min-height:100dvh;max-width:100%;overflow-x:hidden;padding:26px 12px max(12px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;touch-action:manipulation;
+    min-height:100vh;min-height:100dvh;max-width:100%;overflow-x:hidden;padding:26px 12px max(12px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;touch-action:manipulation;overscroll-behavior:none;
   }
   body[data-board-theme="gold"] #board .tile.stand .hex{fill:#F6DE93;stroke:#C89C35}
   body[data-board-theme="gold"] #board .tile.fallen .hex{fill:#D7B75F;stroke:#A67D28}
-  .brand{position:relative;width:100%;max-width:372px;display:flex;flex-direction:column;align-items:center}
+  .brand{position:relative;width:100%;max-width:var(--content-max);display:flex;flex-direction:column;align-items:center}
   .app-menu{position:absolute;z-index:20;top:-10px;right:0}
   .menu-toggle{
     min-height:36px;padding:0 14px;border:1px solid rgba(98,184,210,.58);border-radius:999px;
@@ -124,7 +126,7 @@
   #playCustomBoard:disabled{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.1);color:#657386;font-weight:400;opacity:.55;cursor:not-allowed}
   .chip:focus-visible{outline:2.5px solid var(--washi);outline-offset:3px}
   .stage-nav{
-    width:100%;max-width:372px;display:grid;grid-template-columns:72px 1fr 72px;
+    width:100%;max-width:var(--content-max);display:grid;grid-template-columns:72px 1fr 72px;
     align-items:center;gap:8px;margin-top:6px;
   }
   .stage-nav .chip{padding:9px 8px}
@@ -164,10 +166,10 @@
   html[lang=en] .stage-picker-trigger.master-stage #stageKind{letter-spacing:0;white-space:nowrap}
   html[lang="en"] .stage-picker-trigger.master-stage #stageNumber{font-size:13px;letter-spacing:-.07em;white-space:nowrap}
   .progress{
-    width:100%;max-width:372px;display:grid;grid-template-columns:repeat(15,1fr);
+    width:100%;max-width:var(--content-max);display:grid;grid-template-columns:repeat(15,1fr);
     gap:5px;margin:15px 0 6px;
   }
-  .primary-total{position:relative;top:5px;display:flex;justify-content:flex-end;gap:9px;width:100%;max-width:372px;height:0;margin:0;color:#8295AA;font-size:11px;line-height:14px;letter-spacing:.08em;pointer-events:none}
+  .primary-total{position:relative;top:5px;display:flex;justify-content:flex-end;gap:9px;width:100%;max-width:var(--content-max);height:0;margin:0;color:#8295AA;font-size:11px;line-height:14px;letter-spacing:.08em;pointer-events:none}
   .primary-total-kind{color:inherit;font-weight:400}
   .primary-total[hidden]{display:none}
   .progress button{
@@ -461,7 +463,7 @@
   @keyframes masterSeal{0%{opacity:0;transform:scale(.35) rotate(-30deg)}65%{opacity:1;transform:scale(1.16) rotate(8deg)}100%{transform:scale(1) rotate(0)}}
   @keyframes masterSpark{from{opacity:.25;transform:scale(.7)}to{opacity:1;transform:scale(1.25)}}
   .mode-row{
-    width:100%;max-width:372px;display:flex;align-items:center;gap:8px;margin-top:10px
+    width:100%;max-width:var(--content-max);display:flex;align-items:center;gap:8px;margin-top:10px
   }
   .stage-return{margin-left:auto;padding:6px 9px!important;white-space:nowrap;font-size:10px!important}
   .status-metric{display:flex;align-items:baseline;gap:5px;color:#9FB0C4;font-size:11px;letter-spacing:.06em}
@@ -510,7 +512,7 @@
   .status-metric.moves b.pulse{animation:movePulse .3s cubic-bezier(.2,.8,.25,1)}
   .playbar{
     position:relative;z-index:3;
-    width:100%;max-width:372px;display:flex;justify-content:flex-end;margin-top:10px;
+    width:100%;max-width:var(--content-max);display:flex;justify-content:flex-end;margin-top:10px;
   }
   @keyframes movePulse{
     0%{transform:scale(1);color:var(--washi);text-shadow:none}
@@ -525,13 +527,13 @@
   .play-actions{width:100%;display:flex;gap:5px;margin-left:auto}
   .play-actions .chip{flex:1;white-space:nowrap;padding:8px 5px;font-size:13px}
   .play-actions .chip:disabled{background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.07);color:#536276;opacity:.52;cursor:not-allowed}
-  .debug-tools{width:100%;max-width:372px;display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:14px}
+  .debug-tools{width:100%;max-width:var(--content-max);display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:14px}
   /* 公開時は、デバッグ領域そのものをレイアウトから外す。 */
   .debug-tools[hidden]{display:none!important}
   .debug-row{width:100%;display:flex;justify-content:center;gap:5px}
   .debug-tools .chip{padding:5px 8px;font-size:10px;opacity:.7}
 
-  .board-wrap{position:relative;width:100%;max-width:372px;margin-top:14px;perspective:820px}
+  .board-wrap{position:relative;width:100%;max-width:var(--content-max);margin-top:14px;perspective:820px}
   #board{
     width:100%;height:auto;display:block;margin:0;
     touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;overflow:visible;transform-style:preserve-3d;backface-visibility:hidden;
@@ -613,14 +615,14 @@
     0%{opacity:0}18%,72%{opacity:1}100%{opacity:0}
   }
   .msg{
-    width:100%;max-width:372px;height:0;margin:0;
+    width:100%;max-width:var(--content-max);height:0;margin:0;
     display:flex;align-items:center;justify-content:center;overflow:hidden;
     font-size:16px;line-height:1.4;font-family:"Hiragino Mincho ProN",serif;
     color:var(--kin);opacity:0;transition:opacity .35s ease;text-align:center;
   }
   .msg.show{height:38px;margin-top:2px;opacity:1}
   .msg.tip{
-    width:100%;max-width:372px;font-family:inherit;font-size:clamp(9px,2.8vw,11.5px);
+    width:100%;max-width:var(--content-max);font-family:inherit;font-size:clamp(9px,2.8vw,11.5px);
     color:#A8B6C7;white-space:nowrap;
   }
   .msg.tip.long-tip{
@@ -3480,6 +3482,8 @@ svg.addEventListener('pointerdown',e=>{
 });
 svg.addEventListener('pointermove',e=>{
   if(!drag||e.pointerId!==drag.id) return;
+  // touch-action:none が効かない一部のアプリ内ブラウザ向けに、ドラッグ中は明示的にスクロール等を止める。
+  e.preventDefault();
   const p=toView(e), t=drag.kc;
   const dx=p.x-t.x, dy=p.y-t.y;
   if(Math.hypot(dx,dy)<MINR){ drag.last=null; return; }
