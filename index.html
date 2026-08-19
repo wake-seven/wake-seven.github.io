@@ -629,8 +629,8 @@
     padding:0 6px;font-size:clamp(10px,2.8vw,11.5px);
     line-height:1.45;white-space:normal;
   }
-  .site-credit{margin:8px 0 2px;font-size:10px;letter-spacing:.06em;color:#7E8FA3;text-align:center;line-height:1.4}
-  .site-credit .link-welcome{display:block;margin-top:2px;letter-spacing:.02em}
+  .site-credit{margin:8px 0 2px;font-size:10px;letter-spacing:.06em;color:#7E8FA3;text-align:center;line-height:1.5}
+  .site-credit .link-welcome{letter-spacing:.02em}
   .site-credit .analytics-notice{display:block;margin-top:2px;letter-spacing:.01em;opacity:.78}
   .site-credit a{color:inherit;text-decoration:none;border-bottom:1px solid color-mix(in srgb,currentColor 45%,transparent)}
   .site-credit a:hover{color:var(--kin);border-bottom-color:currentColor}
@@ -744,7 +744,7 @@
 </div>
 
 <p class="msg" id="msg"></p>
-<footer class="site-credit">© 2026 WAKE SEVEN <span aria-hidden="true">·</span> <a href="https://daiwata.github.io/" target="_blank" rel="noopener">daiary</a><span class="link-welcome"><span id="linkWelcome">このゲームへのリンク・紹介はご自由にどうぞ。</span> <button id="shareGame" type="button"><span class="share-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg></span><span id="shareGameLabel">共有する</span></button></span><span class="analytics-notice"><a id="analyticsNotice" href="https://policies.google.com/technologies/partner-sites?hl=ja" target="_blank" rel="noopener">アクセス解析にGoogle Analyticsを使用しています。</a></span></footer>
+<footer class="site-credit">© 2026 WAKE SEVEN <span aria-hidden="true">·</span> <a href="https://daiwata.github.io/" target="_blank" rel="noopener">daiary</a> <span aria-hidden="true">·</span> <span class="link-welcome"><span id="linkWelcome">リンク・紹介はご自由に。</span> <button id="shareGame" type="button" aria-label="共有する"><span class="share-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg></span><span id="shareGameLabel" class="visually-hidden">共有する</span></button></span><span class="analytics-notice"><a id="analyticsNotice" href="https://policies.google.com/technologies/partner-sites?hl=ja" target="_blank" rel="noopener">Google Analyticsでアクセス解析しています。</a></span></footer>
 <div class="debug-tools" id="debugTools" hidden>
   <div class="debug-row">
     <button class="chip" id="debugClear" hidden>即</button>
@@ -1716,14 +1716,14 @@ Object.assign(UI_TEXT.ja,{rankDialogTitle:'獲得した称号一覧'});
 Object.assign(UI_TEXT.en,{rankDialogTitle:'Collected titles'});
 Object.assign(UI_TEXT.zh,{rankDialogTitle:'已获得的称号'});
 Object.assign(UI_TEXT.ko,{rankDialogTitle:'획득한 칭호'});
-Object.assign(UI_TEXT.ja,{linkWelcome:'このゲームへのリンク・紹介はご自由にどうぞ。'});
-Object.assign(UI_TEXT.en,{linkWelcome:'Feel free to link to or share this game.'});
-Object.assign(UI_TEXT.zh,{linkWelcome:'欢迎自由链接和介绍这款游戏。'});
-Object.assign(UI_TEXT.ko,{linkWelcome:'이 게임의 링크와 소개는 자유롭게 해 주세요.'});
-Object.assign(UI_TEXT.ja,{analyticsNotice:'アクセス解析にGoogle Analyticsを使用しています。'});
-Object.assign(UI_TEXT.en,{analyticsNotice:'This site uses Google Analytics for usage analysis.'});
-Object.assign(UI_TEXT.zh,{analyticsNotice:'本网站使用Google Analytics分析使用情况。'});
-Object.assign(UI_TEXT.ko,{analyticsNotice:'이 사이트는 이용 현황 분석에 Google Analytics를 사용합니다.'});
+Object.assign(UI_TEXT.ja,{linkWelcome:'リンク・紹介はご自由に。'});
+Object.assign(UI_TEXT.en,{linkWelcome:'Feel free to share this.'});
+Object.assign(UI_TEXT.zh,{linkWelcome:'欢迎自由分享本站。'});
+Object.assign(UI_TEXT.ko,{linkWelcome:'자유롭게 공유해 주세요.'});
+Object.assign(UI_TEXT.ja,{analyticsNotice:'Google Analyticsでアクセス解析しています。'});
+Object.assign(UI_TEXT.en,{analyticsNotice:'Uses Google Analytics for access analysis.'});
+Object.assign(UI_TEXT.zh,{analyticsNotice:'使用Google Analytics进行访问分析。'});
+Object.assign(UI_TEXT.ko,{analyticsNotice:'접속 분석에 Google Analytics를 사용합니다.'});
 Object.assign(UI_TEXT.ja,{share:'共有する',shareShort:'共有',shareCopied:'URLをコピーしました',shareCopyPrompt:'このURLをコピーしてください',shareGameText:'だるまさんを起こして！を遊んでいます。 #WakeSeven',shareTrainingText:'だるまさんを起こして！ だるま修行の道を突破した。 #WakeSeven',shareMasteryText:'だるまさんを起こして！ 名人への道を制覇した。 #WakeSeven',shareSatoriText:'だるまさんを起こして！ 悟りへの道を制覇した。 #WakeSeven'});
 Object.assign(UI_TEXT.en,{share:'Share',shareShort:'Share',shareCopied:'Link copied',shareCopyPrompt:'Copy this link',shareGameText:'Playing Wake the Daruma! #WakeSeven',shareTrainingText:'I completed Daruma Training in Wake the Daruma! #WakeSeven',shareMasteryText:'I conquered the Path to Mastery in Wake the Daruma! #WakeSeven',shareSatoriText:'I completed the Path to Awakening in Wake the Daruma! #WakeSeven'});
 Object.assign(UI_TEXT.zh,{share:'分享',shareShort:'分享',shareCopied:'链接已复制',shareCopyPrompt:'请复制此链接',shareGameText:'我正在玩《叫醒不倒翁！》 #WakeSeven',shareTrainingText:'我完成了《叫醒不倒翁！》的不倒翁修行！ #WakeSeven',shareMasteryText:'我征服了《叫醒不倒翁！》的名人之路！ #WakeSeven',shareSatoriText:'我完成了《叫醒不倒翁！》的悟道之路！ #WakeSeven'});
@@ -6051,6 +6051,7 @@ function applyLanguage(lang){
   $('analyticsNotice').textContent=tr('analyticsNotice');
   $('analyticsNotice').href='https://policies.google.com/technologies/partner-sites?hl='+(lang==='zh'?'zh-CN':lang);
   $('shareGameLabel').textContent=tr('share');
+  $('shareGame').setAttribute('aria-label',tr('share'));
   $('languageToggle').setAttribute('aria-label',tr('language'));
   $('languageMenu').setAttribute('aria-label',tr('language'));
   $('menuToggle').textContent=tr('menu');
