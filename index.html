@@ -2009,6 +2009,9 @@ Object.assign(BOARD_QUIZ_COPY.zh,{chooseThree:'哪一个最少需要3步？',lar
 Object.assign(BOARD_QUIZ_COPY.ko,{chooseThree:'어느 보드가 최단 3수일까요?',largeTriangle:'누운 다루마의 큰 삼각형은 방향에 따라 최단 3수 또는 4수가 됩니다.'});
 
 /* ---- 盤面 ---- */
+// iPadOS Safariは:hover付きの要素だと「1回目のタップはhoverだけ、2回目でclick」になることがある。
+// ダミーのtouchstartリスナーを一つ登録しておくと、その挙動を止められる（既知の回避策）。
+document.addEventListener('touchstart',()=>{},{passive:true});
 const svg=document.getElementById('board'), $=id=>document.getElementById(id);
 const DEBUG_MODE=new URLSearchParams(location.search).get('debug')==='1'
   &&(location.protocol==='file:'||['localhost','127.0.0.1','::1'].includes(location.hostname));
