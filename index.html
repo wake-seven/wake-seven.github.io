@@ -51,10 +51,10 @@
     /* コンテナ幅はrem定数。html の font-size と連動し、盤面も文字も同じ比率で拡大する。 */
     --content-max:23.25rem; /* 372px ÷ 16px基準 */
   }
-  /* ページ全体の拡大係数をルートのfont-sizeに集約。スマホ幅でも最低1.25倍、画面が広がるほど最大1.5倍まで。
+  /* ページ全体の拡大係数をルートのfont-sizeに集約。スマホ幅でも最低1.35倍、画面が広がるほど最大1.5倍まで。
      コンテナ幅はmax-width/min()で常に画面内に収まる作りなので、床を上げても横スクロールの心配はない。
      vh・SVGのviewBoxのサイズには一切触れないので、zoomのような二重掛けは起きない。 */
-  html{font-size:calc(16px * clamp(1.25,calc(100vw / 540px),1.5));max-width:100%;overflow-x:hidden;overscroll-behavior:none}
+  html{font-size:calc(16px * clamp(1.35,calc(100vw / 540px),1.5));max-width:100%;overflow-x:hidden;overscroll-behavior:none}
   /* ダイアログ表示中は背後のページを固定し、ダイアログ自身のスクロールと二重にならないようにする。 */
   html:has(.game-dialog-backdrop:not([hidden])),
   html:has(.stage-picker-backdrop:not([hidden])){overflow-y:hidden}
