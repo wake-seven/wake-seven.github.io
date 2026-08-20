@@ -641,13 +641,13 @@
     padding:0 0.375rem;font-size:clamp(10px,2.8vw,11.5px);
     line-height:1.45;white-space:normal;
   }
-  .site-credit{margin:0.5rem 0 0.125rem;font-size:0.625rem;letter-spacing:.06em;color:#7E8FA3;text-align:center;line-height:1.5}
-  .site-credit .link-welcome{letter-spacing:.02em}
-  .site-credit .analytics-notice{display:block;margin-top:0.125rem;letter-spacing:.01em;opacity:.78}
-  .site-credit a{color:inherit;text-decoration:none;border-bottom:1px solid color-mix(in srgb,currentColor 45%,transparent)}
-  .site-credit a:hover{color:var(--kin);border-bottom-color:currentColor}
-  .site-credit button{display:inline-flex;align-items:center;gap:0.1875rem;padding:0;border:0;background:none;color:inherit;font:inherit;letter-spacing:inherit;cursor:pointer;border-bottom:1px solid color-mix(in srgb,currentColor 45%,transparent)}
-  .site-credit button:hover{color:var(--kin);border-bottom-color:currentColor}
+  .about-dialog{text-align:center}
+  .about-dialog p{margin-top:0.75rem;font-size:0.75rem;letter-spacing:.03em;color:#9FB0C4;line-height:1.6}
+  .about-dialog p:last-of-type{opacity:.78}
+  .about-dialog a{color:inherit;text-decoration:none;border-bottom:1px solid color-mix(in srgb,currentColor 45%,transparent)}
+  .about-dialog a:hover{color:var(--kin);border-bottom-color:currentColor}
+  .about-dialog #shareGame{display:inline-flex;align-items:center;gap:0.1875rem;padding:0;border:0;background:none;color:inherit;font:inherit;letter-spacing:inherit;cursor:pointer;border-bottom:1px solid color-mix(in srgb,currentColor 45%,transparent)}
+  .about-dialog #shareGame:hover{color:var(--kin);border-bottom-color:currentColor}
   .share-mark{display:inline-grid;place-items:center;width:0.875rem;height:0.875rem}
   .share-mark svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .chip .share-mark{width:0.9375rem;height:0.9375rem;margin-right:0.25rem;transform:translateY(3px)}
@@ -663,6 +663,16 @@
     .board-wrap{max-width:none;margin-top:0.625rem}
     .stage-nav,.progress,.primary-total,.mode-row,.playbar{width:calc(100% - 8px)}
   }
+  /* 縦が狭い端末(iPhone SEなど)では、盤面より上を詰めて盤面を少しでも高い位置に出す。 */
+  @media (max-height:700px){
+    body{padding-top:0.5rem}
+    h1{margin-top:0.25rem;font-size:1.3125rem}
+    .stage-nav{margin-top:0.25rem}
+    .progress{margin:0.375rem 0 0.1875rem}
+    .mode-row{margin-top:0.25rem}
+    .playbar{margin-top:0.25rem}
+    .board-wrap{margin-top:0.1875rem}
+  }
   html.embed,html.embed body{min-height:0}
   html.embed body{
     padding-top:0.875rem;
@@ -671,7 +681,6 @@
   }
   html.embed h1{margin-top:0.3125rem}
   html.embed .stage-nav{margin-top:0.75rem}
-  html.embed .site-credit{display:none}
   .board-quiz-card,.board-quiz-single{position:relative}.board-quiz-board{display:block}
   .board-quiz-tools{position:absolute;inset:0.25rem;display:block;margin:0;pointer-events:none}
   .board-quiz-tools button{position:absolute;display:grid;place-items:center;width:1.125rem;min-height:1.125rem;height:1.125rem;padding:0;border:0;border-radius:0.1875rem;background:rgba(16,39,54,.7);color:#8fc6d6;font:700 0.75rem/1 sans-serif;pointer-events:auto}
@@ -705,6 +714,7 @@
       <button id="menuRankList" type="button" role="menuitem">称号一覧</button>
       <div class="menu-divider" role="separator"></div>
       <button id="menuBoardTheme" type="button" role="menuitem" hidden>盤面の色</button>
+      <button id="menuAbout" type="button" role="menuitem">このゲームについて</button>
       <button id="resetProgress" class="menu-reset" type="button" role="menuitem">進行状況をリセット</button>
     </div>
   </div>
@@ -757,7 +767,6 @@
 </div>
 
 <p class="msg" id="msg"></p>
-<footer class="site-credit">© 2026 WAKE SEVEN <span aria-hidden="true">·</span> <a href="https://daiwata.github.io/" target="_blank" rel="noopener">daiary</a> <span aria-hidden="true">·</span> <span class="link-welcome"><span id="linkWelcome">リンク・紹介はご自由に。</span> <button id="shareGame" type="button" aria-label="共有する"><span class="share-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg></span><span id="shareGameLabel" class="visually-hidden">共有する</span></button></span><span class="analytics-notice"><a id="analyticsNotice" href="https://policies.google.com/technologies/partner-sites?hl=ja" target="_blank" rel="noopener">Google Analyticsでアクセス解析しています。</a></span></footer>
 <div class="debug-tools" id="debugTools" hidden>
   <div class="debug-row">
     <button class="chip" id="debugClear" hidden>即</button>
@@ -897,6 +906,15 @@
     <h2 id="resetDialogTitle">進行状況をリセット</h2>
     <p id="resetDialogText"></p>
     <div class="dialog-actions"><button class="chip" id="resetDialogAll" hidden>全てリセット</button><button class="chip" id="resetDialogConfirm">進行状況をリセット</button></div>
+  </div>
+</div>
+<div class="game-dialog-backdrop" id="aboutDialog" hidden>
+  <div class="game-dialog about-dialog" role="dialog" aria-modal="true" aria-labelledby="aboutDialogTitle">
+    <h2 id="aboutDialogTitle">このゲームについて</h2>
+    <p>© 2026 WAKE SEVEN <span aria-hidden="true">·</span> <a href="https://daiwata.github.io/" target="_blank" rel="noopener">daiary</a></p>
+    <p><span id="linkWelcome">リンク・紹介はご自由に。</span> <button id="shareGame" type="button" aria-label="共有する"><span class="share-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg></span><span id="shareGameLabel">共有する</span></button></p>
+    <p><a id="analyticsNotice" href="https://policies.google.com/technologies/partner-sites?hl=ja" target="_blank" rel="noopener">Google Analyticsでアクセス解析しています。</a></p>
+    <div class="dialog-actions"><button class="chip" id="aboutDialogCloseBtn">閉じる</button></div>
   </div>
 </div>
 <div class="game-dialog-backdrop" id="boardThemeDialog" hidden>
@@ -1437,7 +1455,7 @@ const UI_TEXT={
     debugExtra14:'序14',debugExtra29:'破14',debugExtra44:'離14',debugExtra59:'極14',
     mirror:'左右反転',rotate:'60°回転',boardLabel:'七枚のだるま盤',tips:'攻略のコツ',
     makeBoard:'自作モード',playBoard:'この盤面で遊ぶ',nextPuzzle:'次の問題へ →',
-    resetProgress:'進行状況をリセット',stage:'問題',intro:'入門',basic:'基本',challenge:'挑戦',
+    resetProgress:'進行状況をリセット',menuAbout:'このゲームについて',stage:'問題',intro:'入門',basic:'基本',challenge:'挑戦',
     freePlay:'フリーモード',boardMaker:'盤面を編集する',customPuzzle:'自作問題',
     freeKind:'FREE PLAY',makerKind:'BOARD MAKER',customKind:'CUSTOM PLAY',
     another:'もう一問',again:'もう一度',toFree:'フリーモードへ →',
@@ -1485,7 +1503,7 @@ const UI_TEXT={
     debugReset:'リ',debugClear:'Clear',debugAllClear:'All 1',debugSecondAllClear:'All 2',debugAlmost:'＋１',debugMore:'＋２',debugFar:'＋３',debugUnlock14:'Daruma Training 14',
     debugExtra14:'Path to Mastery 14',debugExtra29:'Path to Mastery 29',debugExtra44:'Path to Mastery 44',debugExtra59:'Path to Mastery 59',
     boardLabel:'Seven-daruma puzzle board',tips:'Quick tip',makeBoard:'Board Maker',
-    playBoard:'Play this board',nextPuzzle:'Next puzzle →',resetProgress:'Reset progress',
+    playBoard:'Play this board',nextPuzzle:'Next puzzle →',resetProgress:'Reset progress',menuAbout:'About this game',
     stage:'Puzzle',intro:'INTRO',basic:'BASIC',challenge:'CHALLENGE',freePlay:'Free Play',
     boardMaker:'Edit board',customPuzzle:'Custom Puzzle',freeKind:'FREE PLAY',
     makerKind:'BOARD MAKER',customKind:'CUSTOM PLAY',another:'Another puzzle',again:'Try again',
@@ -1514,7 +1532,7 @@ const UI_TEXT={
     debugReset:'リ',debugClear:'即',debugAllClear:'一全',debugSecondAllClear:'二全',debugAlmost:'＋１',debugMore:'＋２',debugFar:'＋３',debugUnlock14:'不倒翁修行 14题',
     debugExtra14:'名人之路 14题',debugExtra29:'名人之路 29题',debugExtra44:'名人之路 44题',debugExtra59:'名人之路 59题',
     boardLabel:'七个不倒翁的谜题棋盘',tips:'攻略提示',makeBoard:'制作棋盘',
-    playBoard:'玩这个棋盘',nextPuzzle:'下一题 →',resetProgress:'重置进度',
+    playBoard:'玩这个棋盘',nextPuzzle:'下一题 →',resetProgress:'重置进度',menuAbout:'关于本游戏',
     stage:'关卡',intro:'入门',basic:'基础',challenge:'挑战',freePlay:'自由模式',
     boardMaker:'编辑棋盘',customPuzzle:'自制关卡',freeKind:'自由模式',
     makerKind:'制作棋盘',customKind:'自制关卡',another:'再来一题',again:'再来一次',
@@ -1542,7 +1560,7 @@ const UI_TEXT={
     debugReset:'リ',debugClear:'즉시',debugAllClear:'1전체',debugSecondAllClear:'2전체',debugAlmost:'＋１',debugMore:'＋２',debugFar:'＋３',debugUnlock14:'다루마 수행 14문제',
     debugExtra14:'명인의 길 14문제',debugExtra29:'명인의 길 29문제',debugExtra44:'명인의 길 44문제',debugExtra59:'명인의 길 59문제',
     boardLabel:'일곱 다루마 퍼즐판',tips:'공략 팁',makeBoard:'보드 만들기',
-    playBoard:'이 보드로 플레이',nextPuzzle:'다음 문제 →',resetProgress:'진행 상황 초기화',
+    playBoard:'이 보드로 플레이',nextPuzzle:'다음 문제 →',resetProgress:'진행 상황 초기화',menuAbout:'이 게임에 대하여',
     stage:'문제',intro:'입문',basic:'기본',challenge:'도전',freePlay:'자유 모드',
     boardMaker:'보드 편집',customPuzzle:'사용자 문제',freeKind:'자유 모드',
     makerKind:'보드 만들기',customKind:'사용자 문제',another:'다른 문제',again:'다시 하기',
@@ -2410,7 +2428,7 @@ function formatSpeedClock(ms){
 }
 function renderSpeedClock(){if(speedMode)$('stagePar').textContent=formatSpeedClock(speedElapsedMs());}
 function startSpeedClock(){
-  if(!speedMode||speedManuallyPaused||speedClockStarted||document.visibilityState==='hidden')return;
+  if(!speedMode||speedManuallyPaused||speedClockStarted||document.visibilityState==='hidden'||speedAwaitingStart())return;
   speedClockStarted=performance.now();clearInterval(speedClockTimer);speedClockTimer=setInterval(renderSpeedClock,100);renderSpeedClock();
 }
 function pauseSpeedClock(){
@@ -2424,6 +2442,13 @@ function saveSpeedSession(){
   try{localStorage.setItem(SPEED_SESSION_KEY,JSON.stringify(payload));}catch(_){ }
 }
 function pauseSpeedRun(){if(!speedMode)return;pauseSpeedClock();saveSpeedSession();}
+function openSpeedPauseDialog(){
+  if(!speedMode)return;
+  speedManuallyPaused=true;
+  pauseSpeedClock();saveSpeedSession();
+  renderSpeedPauseStats();
+  $('speedPauseDialog').hidden=false;
+}
 function rotateSpeedSnapshot(data){
   if(!validSavedBoard(data))return data;
   const position=transformPosition(Uint8Array.from(data.o),Int16Array.from(data.s),data.t.map(index=>baseTiles[index]),SPEED_BOARD_VIEW.permutation,false);
@@ -4704,6 +4729,7 @@ function hideGameDialogs(){
   $('speedPauseDialog').hidden=true;
   $('speedRestartDialog').hidden=true;
   $('boardThemeDialog').hidden=true;
+  $('aboutDialog').hidden=true;
   $('rankDialog').hidden=true;
   $('twoMoveDialog').hidden=true;
   $('twoMoveDetailDialog').hidden=true;
@@ -5617,6 +5643,13 @@ $('optimalRetry').addEventListener('click',()=>{
 $('clearMessages').addEventListener('click',()=>openMessageReview({resume:true}));
 $('menuStagePicker').addEventListener('click',()=>{closeAppMenu();openStagePicker();});
 $('menuRankList').addEventListener('click',()=>{closeAppMenu();openRankDialog();});
+$('menuAbout').addEventListener('click',()=>{
+  closeAppMenu();
+  $('aboutDialog').hidden=false;
+  $('aboutDialogCloseBtn').focus();
+});
+$('aboutDialogCloseBtn').addEventListener('click',()=>{$('aboutDialog').hidden=true;});
+$('aboutDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)$('aboutDialog').hidden=true;});
 $('menuAllPatterns').addEventListener('click',()=>{window.open('all-patterns.html','_blank','noopener');});
 $('menuOpen3D').addEventListener('click',()=>{window.open('index_3D.html','_blank','noopener');});
 $('menuSatori').addEventListener('click',()=>{closeAppMenu();openSatoriPicker();});
@@ -5628,10 +5661,7 @@ $('menuSpeed').addEventListener('click',()=>{
 $('speedGo').addEventListener('click',beginSpeedRun);
 $('speedPause').addEventListener('click',()=>{
   if(!speedMode)return;
-  speedManuallyPaused=true;
-  pauseSpeedClock();saveSpeedSession();
-  renderSpeedPauseStats();
-  $('speedPauseDialog').hidden=false;
+  openSpeedPauseDialog();
   $('speedResume').focus();
 });
 $('speedResume').addEventListener('click',()=>{
@@ -6130,6 +6160,9 @@ function applyLanguage(lang){
   $('freeMode').textContent=tr('freeMode');
   $('menuStagePicker').textContent=tr('stagePicker');
   $('menuRankList').textContent=tr('rankListMenu');
+  $('menuAbout').textContent=tr('menuAbout');
+  $('aboutDialogTitle').textContent=tr('menuAbout');
+  $('aboutDialogCloseBtn').textContent=tr('close');
   $('menuBoardTheme').textContent=tr('boardTheme');
   $('boardThemeTitle').textContent=tr('boardTheme');
   $('boardThemeColorLabel').textContent=tr('boardThemeColor');
@@ -6489,7 +6522,8 @@ try{if(!localStorage.getItem('wake7-intro-seen'))setTimeout(openIntroGuide,350);
 window.addEventListener('pagehide',()=>{if(speedMode)pauseSpeedClock();saveActiveSession();});
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'){if(speedMode)pauseSpeedClock();saveActiveSession();}
-  else if(speedMode)startSpeedClock();
+  // 非表示から戻った時はタイマーを黙って再開せず、一時停止ダイアログを出して本人の操作で再開させる。
+  else if(speedMode&&!speedAwaitingStart()&&$('speedPauseDialog').hidden)openSpeedPauseDialog();
 });
 
 if(document.documentElement.classList.contains('embed')&&window.parent!==window){
