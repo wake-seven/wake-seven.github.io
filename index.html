@@ -545,7 +545,7 @@
   .debug-row{width:100%;display:flex;justify-content:center;gap:0.3125rem}
   .debug-tools .chip{padding:0.3125rem 0.5rem;font-size:0.625rem;opacity:.7}
 
-  .board-wrap{position:relative;width:100%;max-width:var(--content-max);margin-top:0.875rem;perspective:820px;overflow:hidden}
+  .board-wrap{position:relative;z-index:4;width:100%;max-width:var(--content-max);margin-top:0.875rem;perspective:820px}
   #board{
     width:100%;height:auto;display:block;margin:0;
     touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;overflow:visible;transform-style:preserve-3d;backface-visibility:hidden;
@@ -2860,7 +2860,7 @@ function paint(){
   showMoves(moves);
   if(!editingBoard&&!speedMode)showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]));
   else if(speedMode)renderSpeedClock();
-  if(speedMode&&isSolved()&&!clearShown&&speedSession&&speedSession.started){
+  if(speedMode&&isSolved()&&!clearShown&&speedSession&&!speedAwaitingStart()){
     completeSpeedStage();
     return;
   }
@@ -6522,8 +6522,17 @@ try{if(!localStorage.getItem('wake7-intro-seen'))setTimeout(openIntroGuide,350);
 window.addEventListener('pagehide',()=>{if(speedMode)pauseSpeedClock();saveActiveSession();});
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'){if(speedMode)pauseSpeedClock();saveActiveSession();}
-  // 非表示から戻った時はタイマーを黙って再開せず、一時停止ダイアログを出して本人の操作で再開させる。
-  else if(speedMode&&!speedAwaitingStart()&&$('speedPauseDialog').hidden)openSpeedPauseDialog();
+  else if(speedMode&&!speedAwaitingStart()){
+    if(isSolved()&&speedSession){
+      // 非表示の間にクリア演出や、その後の次の問題へ進む処理が止まってしまうことがある
+      // (裏に回った端末がタイマーの発火を止める・遅らせる等)。
+      // 復帰時にクリア済みの盤面が残っていたら、保留中のタイマーは捨てて即座に確定させる。
+      clearTimeout(clearTimer);
+      if(!clearShown)completeSpeedStage();else advanceSpeedRun();
+    }
+    // 非表示から戻った時はタイマーを黙って再開せず、一時停止ダイアログを出して本人の操作で再開させる。
+    else if($('speedPauseDialog').hidden)openSpeedPauseDialog();
+  }
 });
 
 if(document.documentElement.classList.contains('embed')&&window.parent!==window){
