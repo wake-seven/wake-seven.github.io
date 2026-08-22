@@ -241,8 +241,14 @@
   /* 盤が傾いても、だるまは画面に対してまっすぐ立つ。 */
   body[data-board-layout="tilted"] #board .daruma-shell{transform:rotate(30deg);transform-box:fill-box;transform-origin:center}
   .mode-row.satori-mode .remaining,.mode-row.satori-mode .status-separator{display:none}
-  .mode-row.speed-mode .status-metric.remaining b{font-size:1.5rem;letter-spacing:.02em;color:#F3E8D5}
+  .mode-row.speed-mode .status-metric.remaining b{font-size:2.125rem;letter-spacing:.02em;color:#62B8D2}
   .mode-row.speed-mode .status-metric.remaining{color:#62B8D2}
+  .mode-row.speed-mode:not(.speed-training) .status-metric.remaining b{color:var(--kin)}
+  /* 速解きではタイムを先頭に置く。残り手数／手数とは既存の区切りだけで十分。 */
+  .speed-clock-inline{display:flex;order:-1;align-items:baseline;gap:0.25rem;margin-left:0;white-space:nowrap;color:#9FB0C4;font-size:0.6875rem;letter-spacing:.04em}
+  .speed-clock-inline[hidden]{display:none!important}
+  .speed-clock-inline b{color:var(--kin);font-size:2.125rem;line-height:1;font-variant-numeric:tabular-nums}
+  .speed-clock-inline #speedClockLabel:empty{display:none}
   .progress[hidden]{display:none!important}
   .new-tab-mark{display:inline-block;width:.72em;height:.72em;margin-left:.25em;vertical-align:.04em;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M9.5 2H14v4.5M14 2 8.75 7.25M12.5 8.5V12A1.5 1.5 0 0 1 11 13.5H4A1.5 1.5 0 0 1 2.5 12V5A1.5 1.5 0 0 1 4 3.5h3.5' fill='none' stroke='black' stroke-width='1.35' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M9.5 2H14v4.5M14 2 8.75 7.25M12.5 8.5V12A1.5 1.5 0 0 1 11 13.5H4A1.5 1.5 0 0 1 2.5 12V5A1.5 1.5 0 0 1 4 3.5h3.5' fill='none' stroke='black' stroke-width='1.35' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
   #menuAllPatterns .new-tab-mark,#menuOpen3D .new-tab-mark{width:.96em;height:.96em;margin-left:.32em;vertical-align:-.1em}
@@ -277,7 +283,7 @@
   .layout-swatch path{fill:none;stroke:#D6E5ED;stroke-width:1.8;stroke-linejoin:round}
   #clearDialog .game-dialog{max-height:calc(100dvh - 36px);overflow-y:auto}
   #messageDialog .game-dialog{max-height:calc(100dvh - 36px);overflow-y:auto}
-  .game-dialog h2{font-size:1.3125rem;letter-spacing:.08em;color:var(--washi);white-space:pre-line}
+  .game-dialog h2{margin:0 0 0.875rem;font-size:1.3125rem;letter-spacing:.08em;color:var(--washi);white-space:pre-line}
   #optimalFailRule{white-space:pre-line}
   .clear-dialog-heading{position:relative;min-height:3.4375rem;padding-top:2.0625rem;margin-bottom:0.375rem}
   .clear-dialog-heading h2{margin:0}
@@ -337,6 +343,12 @@
   .clear-tip-illustration.board-card svg{width:11.25rem;height:10.25rem}
   .clear-tip-illustration.speed-art{height:8.75rem;margin:1.875rem 0 1.375rem}
   .clear-tip-illustration.speed-art svg{width:9.375rem;height:8.75rem}
+  .speed-mode-options{margin:0.875rem 0 0;padding:0.75rem 0.5rem;border-top:1px solid rgba(255,255,255,.12)}
+  .speed-mode-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+  .speed-mode-tab{min-width:0;padding:0.5rem 0.125rem 0.4375rem;border:0;border-bottom:0.15625rem solid transparent;background:transparent;color:#8295AA;font:inherit;font-size:0.75rem;font-weight:700;line-height:1.25;white-space:nowrap;cursor:pointer}
+  .speed-mode-tab.selected{border-bottom-color:#E4BD57;background:linear-gradient(to bottom,transparent,rgba(228,189,87,.12));color:#FFE4A0}
+  .speed-mode-detail{min-height:3.25rem;padding:0.5625rem 0.25rem 0;text-align:left}
+  .speed-mode-detail p{margin:0!important;color:#B9E8F2;font-size:0.75rem!important;font-weight:600;line-height:1.6;white-space:pre-line}
   .two-move-dialog{width:min(100%,24.375rem);padding:1.125rem 0.875rem 1rem}
   .two-move-dialog h2{font-size:1.1875rem}
   .two-move-dialog p{margin:0.625rem 0 0.875rem;font-size:0.8125rem;line-height:1.65;white-space:pre-line}
@@ -477,7 +489,11 @@
     width:100%;max-width:var(--content-max);display:flex;align-items:center;gap:0.5rem;margin-top:0.625rem
   }
   .stage-return{margin-left:auto;padding:0.375rem 0.5625rem!important;white-space:nowrap;font-size:0.625rem!important}
+  .speed-pause-inline{display:flex;margin-left:auto}
+  .speed-pause-inline #speedPause{min-width:7.375rem;padding:0.625rem 0.75rem;font-size:0.8125rem;white-space:nowrap}
   .mode-action-btn{margin-left:auto;flex:0 1 33%;min-width:5.5rem;padding:0.625rem 0.5rem;font-size:0.8125rem;text-align:center;white-space:nowrap}
+  .mode-row.speed-mode .status-metric.remaining{flex-shrink:0;white-space:nowrap}
+  .mode-row.speed-mode:not(.speed-with-remaining) .status-metric.remaining,.mode-row.speed-mode:not(.speed-with-remaining) .status-separator{display:none}
   .status-metric{display:flex;align-items:baseline;gap:0.3125rem;color:#9FB0C4;font-size:0.6875rem;letter-spacing:.06em}
   .status-metric b{color:var(--kin);font-size:1.875rem;line-height:1;font-weight:750;font-variant-numeric:tabular-nums}
   .status-metric.remaining{color:#9BCBDD}
@@ -505,6 +521,11 @@
   .master-3d-reward[hidden]{display:none}
   .master-3d-reward p{margin:0;color:#B9E8F2;font-size:0.75rem;font-weight:600;line-height:1.6;text-align:left;white-space:pre-line}
   .master-3d-reward .clear-tip-link{margin:0.5rem auto 0}
+  .master-speed-unlock{margin:0.875rem 0 0;padding:0.6875rem 0.8125rem;border:1px solid rgba(98,184,210,.24);border-radius:0.5625rem;background:rgba(98,184,210,.08)}
+  .master-speed-unlock[hidden]{display:none}
+  .master-speed-unlock p{margin:0;color:#B9E8F2;font-size:0.75rem;font-weight:600;line-height:1.6;text-align:left;white-space:pre-line}
+  .master-speed-unlock .clear-tip-link{margin:0.5rem auto 0}
+  .master-trial-footer{margin:0.875rem 0 0!important;padding-top:0.75rem;border-top:1px solid rgba(255,255,255,.14);color:#8EA4B8!important;font-size:0.6875rem!important;line-height:1.55!important}
   .speed-pause-stats .rank-row{padding:0.4375rem 0;font-size:0.6875rem}.speed-pause-stats .rank-row:last-child{border-bottom:0}
   .speed-result{display:grid;grid-template-columns:1.9375rem 1fr;align-items:center;gap:0.5625rem;min-height:2.625rem;padding:0.375rem 0;border-bottom:1px solid rgba(255,255,255,.1)}.speed-result:last-child{border-bottom:0}
   .speed-result-medal{display:grid;place-items:center;width:1.6875rem;height:1.6875rem;border:1.5px solid currentColor;border-radius:50%;color:#172A39;font:700 0.8125rem/1 system-ui,sans-serif;box-shadow:inset 0 0 0 2px rgba(7,24,39,.18)}
@@ -538,6 +559,7 @@
   }
   .play-actions{width:100%;display:flex;gap:0.3125rem;margin-left:auto}
   .play-actions .chip{flex:1;min-width:0;padding:0.5rem 0.3125rem;font-size:0.8125rem}
+  .play-actions #speedPause,.play-actions #speedGo{margin-left:0}
   .play-actions .chip:disabled{background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.07);color:#536276;opacity:.52;cursor:not-allowed}
   .debug-tools{width:100%;max-width:var(--content-max);display:flex;flex-direction:column;align-items:center;gap:0.3125rem;margin-top:0.875rem}
   /* 公開時は、デバッグ領域そのものをレイアウトから外す。 */
@@ -740,8 +762,8 @@
   <div class="status-metric remaining"><span id="shortestLabel">残り最短</span><b id="stagePar">1</b><span id="moveUnit">手</span></div>
   <span class="status-separator">/</span>
   <div class="status-metric moves"><span id="movesLabel">手数</span><b id="moves">0</b></div>
-  <button class="chip mode-action-btn" id="speedPause" hidden>一時中止</button>
-  <button class="chip on mode-action-btn" id="speedGo" hidden>スタート</button>
+  <div class="speed-clock-inline" id="speedClockInline" hidden><span id="speedClockLabel">タイム</span><b id="speedClockValue">00:00</b></div>
+  <div class="speed-pause-inline" id="speedPauseInline"></div>
   <button class="chip stage-return" id="stageModeReturn" hidden>ステージモードへ</button>
 </div>
 <div class="playbar">
@@ -750,6 +772,8 @@
     <button class="chip" id="reset">やり直す</button>
     <button class="chip on" id="playCustomBoard" hidden>この盤面で遊ぶ</button>
     <button class="chip" id="undo">1手戻す</button>
+    <button class="chip" id="speedPause" hidden>一時停止</button>
+    <button class="chip on" id="speedGo" hidden>スタート</button>
     <button class="chip" id="hint">ヒント</button>
   </div>
 </div>
@@ -773,7 +797,9 @@
     <button class="chip" id="debugAlmost" hidden>＋１</button>
     <button class="chip" id="debugMore" hidden>＋２</button>
     <button class="chip" id="debugFar" hidden>＋３</button>
-    <button class="chip" id="debugSpeed71" hidden>速71</button>
+    <button class="chip" id="debugSpeedTraining8" hidden>速8</button>
+    <button class="chip" id="debugSpeedMastery14" hidden>速14</button>
+    <button class="chip" id="debugSpeedMastery23" hidden>速23</button>
     <button class="chip" id="debugSpeed72" hidden>速72</button>
     <button class="chip" id="debugReset" hidden>リ</button>
   </div>
@@ -859,9 +885,15 @@
     <h2 id="masterDialogTitle">はじめの15問 クリア！</h2>
     <p id="masterRankText" hidden></p>
     <div class="master-seal" id="masterSeal" role="button" tabindex="0"><span class="seal-label" id="masterSealLabel">突破</span><i class="seal-spark one">✦</i><i class="seal-spark two">✦</i></div>
-    <div class="clear-tip-illustration speed-art" id="speedIntroArt" hidden><svg viewBox="0 0 150 140" aria-hidden="true"><path d="M18 58H50M10 76H54M18 94H46" stroke="#62B8D2" stroke-width="4" stroke-linecap="round" opacity=".55" fill="none"/><rect x="67" y="10" width="16" height="11" rx="4" fill="none" stroke="#62B8D2" stroke-width="4"/><line x1="93" y1="22" x2="103" y2="12" stroke="#62B8D2" stroke-width="4" stroke-linecap="round"/><circle cx="95" cy="80" r="52" fill="none" stroke="#62B8D2" stroke-width="5"/><circle cx="95" cy="80" r="40" fill="none" stroke="#62B8D2" stroke-width="2" opacity=".4"/><g stroke="#62B8D2" stroke-width="3" stroke-linecap="round" opacity=".7"><line x1="95" y1="42" x2="95" y2="48"/><line x1="133" y1="80" x2="127" y2="80"/><line x1="95" y1="118" x2="95" y2="112"/><line x1="57" y1="80" x2="63" y2="80"/></g><line x1="95" y1="80" x2="95" y2="52" stroke="#F2D77A" stroke-width="4" stroke-linecap="round"/><line x1="95" y1="80" x2="117" y2="92" stroke="#F2D77A" stroke-width="4" stroke-linecap="round"/><circle cx="95" cy="80" r="4" fill="#F2D77A"/></svg></div>
     <p id="masterDialogText">名人への道が開かれました。</p>
+    <div class="clear-tip-illustration speed-art" id="speedIntroArt" hidden><svg viewBox="0 0 150 140" aria-hidden="true"><path d="M18 58H50M10 76H54M18 94H46" stroke="#62B8D2" stroke-width="4" stroke-linecap="round" opacity=".55" fill="none"/><rect x="67" y="10" width="16" height="11" rx="4" fill="none" stroke="#62B8D2" stroke-width="4"/><line x1="93" y1="22" x2="103" y2="12" stroke="#62B8D2" stroke-width="4" stroke-linecap="round"/><circle cx="95" cy="80" r="52" fill="none" stroke="#62B8D2" stroke-width="5"/><circle cx="95" cy="80" r="40" fill="none" stroke="#62B8D2" stroke-width="2" opacity=".4"/><g stroke="#62B8D2" stroke-width="3" stroke-linecap="round" opacity=".7"><line x1="95" y1="42" x2="95" y2="48"/><line x1="133" y1="80" x2="127" y2="80"/><line x1="95" y1="118" x2="95" y2="112"/><line x1="57" y1="80" x2="63" y2="80"/></g><line x1="95" y1="80" x2="95" y2="52" stroke="#F2D77A" stroke-width="4" stroke-linecap="round"/><line x1="95" y1="80" x2="117" y2="92" stroke="#F2D77A" stroke-width="4" stroke-linecap="round"/><circle cx="95" cy="80" r="4" fill="#F2D77A"/></svg></div>
+    <p class="speed-intro-note" id="masterSpeedIntroNote" hidden></p>
+    <div class="speed-mode-options" id="speedModeOptions" hidden><div class="speed-mode-tabs" id="speedModeOptionsList" role="tablist"></div><div class="speed-mode-detail"><p id="speedModeOptionsDetail"></p></div></div>
     <div class="mastery-board" id="masteryBoard" hidden></div>
+    <div class="master-speed-unlock" id="masterSpeedUnlockBox" hidden>
+      <p id="masterSpeedUnlockText"></p>
+      <button class="clear-tip-link" id="masterSpeedUnlockStart" type="button"></button>
+    </div>
     <p class="master-board-note" id="masterBoardNote" hidden></p>
     <div class="master-roadmap" id="masterRoadmap"></div>
     <p class="master-roadmap-note" id="masterRoadmapNote" hidden></p>
@@ -873,6 +905,7 @@
       <a class="clear-tip-link" id="master3DLink" href="index_3D.html" target="_blank" rel="noopener"></a>
     </div>
     <div class="dialog-actions"><button class="chip" id="masterClose">閉じる</button><a class="chip" id="masterAllPatterns" href="all-patterns.html" hidden>全パターン一覧を見る</a><button class="chip on" id="masterStart">名人への道へ →</button></div>
+    <p class="master-trial-footer" id="masterTrialFooter" hidden></p>
     <button class="master-share" id="masterShare" hidden><span class="share-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg></span><span id="masterShareLabel">共有</span></button>
   </div>
 </div>
@@ -1448,7 +1481,7 @@ let currentLang='ja';
 const UI_TEXT={
   ja:{
     pageTitle:'だるまさんを起こして！ — WAKE SEVEN',language:'言語を選ぶ',title:'だるまさんを起こして！',
-    prev:'前へ',next:'次へ',progress:'全15問の進捗',shortest:'残り最短',moveUnit:'手',moves:'手数',
+    prev:'前へ',next:'次へ',progress:'全15問の進捗',shortest:'残り最短',shortestDisplay:'残り最短',moveUnit:'手',moves:'手数',
     stageMode:'ステージモード',freeMode:'フリーモード',shuffle:'シャッフル',reset:'やり直す',
     resetAll:'全員起きる',undo:'1手戻す',shortestMoves:'最短手数',hint:'ヒント',remainingCheck:'残り手数 ×{n}',
     debugReset:'リ',debugClear:'即',debugAllClear:'一全',debugSecondAllClear:'二全',debugAlmost:'＋１',debugMore:'＋２',debugFar:'＋３',debugUnlock14:'修14',
@@ -1468,7 +1501,7 @@ const UI_TEXT={
     makerStatus:'ダルマをタップして向きを変更　現在の最短は{n}手',
     resetConfirm:'すべてのクリア記録をリセットしますか？',
     introTitle:'だるまさんを起こして！',introText:'くるりと3体をまわして、みんな起こそう。',introStart:'はじめる',
-    masterTitle:'おめでとうございます！',masterText:'「だるま修行の道」を終え、名人への道が開かれました。\n制覇の先には、名人だけのささやかなご褒美も。',masterStart:'名人への道・序　七転八起へ →',
+    masterTitle:'おめでとうございます！',masterText:'だるま修行を終え、名人への道が開かれました。\n制覇の先には、名人だけのささやかなご褒美も。',masterStart:'名人への道・序　七転八起へ →',
     volumeName:'{n}の巻',volumeClearTitle:'{n}\nクリア！',volumeClearText:'次の巻へ進めます。',volumeStart:'次の巻へ →',
     masteryTitle:'名人への道 制覇！',masteryText:'全パターンを攻略しました。\n金色の盤面テーマを手に入れました。',masteryStart:'フリーモードへ →'
     ,pathInfoTitle:'名人への道',pathInfoText:'「序」から「極」まで、各15問。全60問の道のりです。',pathInfoStart:'序を始める →'
@@ -1497,7 +1530,7 @@ const UI_TEXT={
   },
   en:{
     pageTitle:'Wake the Daruma! — WAKE SEVEN',language:'Choose language',title:'Wake the Daruma!',
-    prev:'Prev',next:'Next',progress:'Progress through 15 puzzles',shortest:'At least',moveUnit:'moves left',moves:'Moves',
+    prev:'Prev',next:'Next',progress:'Progress through 15 puzzles',shortest:'At least',shortestDisplay:'',moveUnit:'moves left',moves:'Moves',
     stageMode:'Puzzles',freeMode:'Free Play',shuffle:'Shuffle',reset:'Restart',resetAll:'Stand all up',
     undo:'Undo',shortestMoves:'Moves left',hint:'Hint',remainingCheck:'Moves left ×{n}',mirror:'Mirror',rotate:'Rotate 60°',
     debugReset:'リ',debugClear:'Clear',debugAllClear:'All 1',debugSecondAllClear:'All 2',debugAlmost:'＋１',debugMore:'＋２',debugFar:'＋３',debugUnlock14:'Daruma Training 14',
@@ -1526,7 +1559,7 @@ const UI_TEXT={
   },
   zh:{
     pageTitle:'叫醒不倒翁！— WAKE SEVEN',language:'选择语言',title:'叫醒不倒翁！',
-    prev:'上一题',next:'下一题',progress:'15题进度',shortest:'至少还需',moveUnit:'步',moves:'步数',
+    prev:'上一题',next:'下一题',progress:'15题进度',shortest:'至少还需',shortestDisplay:'至少还需',moveUnit:'步',moves:'步数',
     stageMode:'关卡模式',freeMode:'自由模式',shuffle:'打乱',reset:'重新开始',resetAll:'全部立起',
     undo:'撤销一步',shortestMoves:'最少步数',hint:'提示',remainingCheck:'剩余步数 ×{n}',mirror:'左右翻转',rotate:'旋转60°',
     debugReset:'リ',debugClear:'即',debugAllClear:'一全',debugSecondAllClear:'二全',debugAlmost:'＋１',debugMore:'＋２',debugFar:'＋３',debugUnlock14:'不倒翁修行 14题',
@@ -1554,7 +1587,7 @@ const UI_TEXT={
   },
   ko:{
     pageTitle:'다루마를 깨워라! — WAKE SEVEN',language:'언어 선택',title:'다루마를 깨워라!',
-    prev:'이전',next:'다음',progress:'15문제 진행 상황',shortest:'최소',moveUnit:'수 남음',moves:'수',
+    prev:'이전',next:'다음',progress:'15문제 진행 상황',shortest:'최소',shortestDisplay:'최소',moveUnit:'수 남음',moves:'수',
     stageMode:'문제 모드',freeMode:'자유 모드',shuffle:'섞기',reset:'다시 시작',resetAll:'모두 세우기',
     undo:'한 수 되돌리기',shortestMoves:'최단 수',hint:'힌트',remainingCheck:'남은 수 ×{n}',mirror:'좌우 반전',rotate:'60° 회전',
     debugReset:'リ',debugClear:'즉시',debugAllClear:'1전체',debugSecondAllClear:'2전체',debugAlmost:'＋１',debugMore:'＋２',debugFar:'＋３',debugUnlock14:'다루마 수행 14문제',
@@ -1847,10 +1880,14 @@ Object.assign(UI_TEXT.ja,{debugSatori72:'悟72'});
 Object.assign(UI_TEXT.en,{debugSatori72:'Awake 72'});
 Object.assign(UI_TEXT.zh,{debugSatori72:'悟72'});
 Object.assign(UI_TEXT.ko,{debugSatori72:'깨72'});
-Object.assign(UI_TEXT.ja,{debugSpeed71:'速71',debugSpeed72:'速72'});
-Object.assign(UI_TEXT.en,{debugSpeed71:'Speed 71',debugSpeed72:'Speed 72'});
-Object.assign(UI_TEXT.zh,{debugSpeed71:'速71',debugSpeed72:'速72'});
-Object.assign(UI_TEXT.ko,{debugSpeed71:'속71',debugSpeed72:'속72'});
+Object.assign(UI_TEXT.ja,{debugSpeed72:'速72'});
+Object.assign(UI_TEXT.en,{debugSpeed72:'Speed 72'});
+Object.assign(UI_TEXT.zh,{debugSpeed72:'速72'});
+Object.assign(UI_TEXT.ko,{debugSpeed72:'속72'});
+Object.assign(UI_TEXT.ja,{debugSpeedTraining8:'速8',debugSpeedMastery14:'速14',debugSpeedMastery23:'速23'});
+Object.assign(UI_TEXT.en,{debugSpeedTraining8:'Speed 8',debugSpeedMastery14:'Speed 14',debugSpeedMastery23:'Speed 23'});
+Object.assign(UI_TEXT.zh,{debugSpeedTraining8:'速8',debugSpeedMastery14:'速14',debugSpeedMastery23:'速23'});
+Object.assign(UI_TEXT.ko,{debugSpeedTraining8:'속8',debugSpeedMastery14:'속14',debugSpeedMastery23:'속23'});
 Object.assign(UI_TEXT.ja,{debugSatori25:'悟25'});
 Object.assign(UI_TEXT.en,{debugSatori25:'Awake 25'});
 Object.assign(UI_TEXT.zh,{debugSatori25:'悟25'});
@@ -1872,10 +1909,10 @@ Object.assign(UI_TEXT.en,{satoriThanks:'This is truly the end of Stage Mode.\nTh
 Object.assign(UI_TEXT.zh,{satoriThanks:'这就是关卡模式真正的终点。\n感谢你一路玩到最后。'});
 Object.assign(UI_TEXT.ko,{satoriThanks:'스테이지 모드는 여기서 정말 끝입니다.\n끝까지 플레이해 주셔서 감사합니다.'});
 Object.assign(UI_TEXT.ja,{
-  speedMode:'速解きモード',speedTitle:'速解きモード',speedIntro:'73の盤面を、タイマー付きで駆け抜けるモードです。\n途中で閉じても時間と盤面を保存して再開できます。',speedStart:'挑戦する →',speedGo:'スタート',speedUnlockedStart:'速解きモードに挑戦する →',speedResume:'再開する →',speedRetry:'再挑戦する',speedPause:'一時停止',speedPauseTitle:'一時停止中',speedPauseText:'タイマーを止めています。盤面と時間は保存されています。',speedPauseProgress:'現在：{current} / {total}　{time}',speedRestart:'最初から',speedPuzzleRestart:'この問題をやり直す',speedRestartTitle:'最初からやり直しますか？',speedRestartText:'今のタイムと進行状況は失われます。',speedRestartCancel:'戻る',speedRestartConfirm:'最初からやり直す',speedCompleteTitle:'速解きモード 完走！',speedComplete:'今回の記録：{time}　最短クリア：{optimal} / 73　{attempt}',speedUnlocked:'速解きモードが開放されました。\n73の盤面を駆け抜け、自己ベストに挑戦できます。',speedStats:'速解きの成績',speedStatsSummary:'完走回数：{runs}回',speedStatsEmpty:'まだ完走記録がありません。',speedStatsEntry:'{num}回目　{time}　最短 {optimal} / 73',secondMasteryReward:'七色のだるまさんを手に入れました。\nメニューの「盤面のデザイン」から選べます。',timeLabel:'タイム'
+  speedMode:'速解きモード',speedTitle:'速解きモード',speedIntro:'73の盤面を、タイマー付きで駆け抜けるモードです。\n途中で閉じても時間と盤面を保存して再開できます。',speedStart:'挑戦する →',speedGo:'スタート',speedUnlockedStart:'速解きモードに挑戦する →',speedResume:'再開する →',speedRetry:'再挑戦する',speedPause:'一時停止',speedPauseTitle:'一時停止中',speedPauseText:'タイマーを止めています。盤面と時間は保存されています。',speedPauseProgress:'現在：{current} / {total}　{time}',speedRestart:'最初から',speedPuzzleRestart:'この問題をやり直す',speedRestartTitle:'最初からやり直しますか？',speedRestartText:'今のタイムと進行状況は失われます。',speedRestartCancel:'戻る',speedRestartConfirm:'最初からやり直す',speedCompleteTitle:'速解きモード 完走！',speedComplete:'今回の記録：{time}　最短クリア：{optimal} / {total}　{attempt}',speedUnlocked:'速解きモードが開放されました。\n73の盤面を駆け抜け、自己ベストに挑戦できます。',speedStats:'速解きの成績',speedStatsSummary:'完走回数：{runs}回',speedStatsEmpty:'まだ完走記録がありません。',speedStatsEntry:'{num}回目　{time}　最短 {optimal} / {total}',secondMasteryReward:'七色のだるまさんを手に入れました。\nメニューの「盤面のデザイン」から選べます。',timeLabel:'タイム'
 });
 Object.assign(UI_TEXT.en,{
-  speedMode:'Speed Run',speedTitle:'Speed Run',speedIntro:'Race through all 73 boards against the clock.\nYour time and board are saved if you leave partway.',speedStart:'Start →',speedGo:'Start',speedUnlockedStart:'Try Speed Run →',speedResume:'Resume →',speedRetry:'Try again',speedPause:'Pause',speedPauseTitle:'Paused',speedPauseText:'The timer is stopped. Your board and time are saved.',speedPauseProgress:'Current: {current} / {total} · {time}',speedRestart:'Restart',speedPuzzleRestart:'Restart this puzzle',speedRestartTitle:'Restart from the beginning?',speedRestartText:'Your current time and progress will be lost.',speedRestartCancel:'Back',speedRestartConfirm:'Restart',speedCompleteTitle:'Speed Run Complete!',speedComplete:'All 73 boards cleared.\nTime: {time}\nOptimal clears: {optimal} / 73\nPersonal best: {best}',speedUnlocked:'Speed Run is now unlocked.\nRace through all 73 boards and set your best time.',speedStats:'Speed Run Results',speedStatsSummary:'Runs: {runs}',speedStatsEmpty:'No completed runs yet.',speedStatsEntry:'Run {num} · {time} · Optimal {optimal} / 73',secondMasteryReward:'You earned the seven-color daruma.\nChoose it from Board Design in the Menu.',timeLabel:'Time'
+  speedMode:'Speed Run',speedTitle:'Speed Run',speedIntro:'Race through all 73 boards against the clock.\nYour time and board are saved if you leave partway.',speedStart:'Start →',speedGo:'Start',speedUnlockedStart:'Try Speed Run →',speedResume:'Resume →',speedRetry:'Try again',speedPause:'Pause',speedPauseTitle:'Paused',speedPauseText:'The timer is stopped. Your board and time are saved.',speedPauseProgress:'Current: {current} / {total} · {time}',speedRestart:'Restart',speedPuzzleRestart:'Restart this puzzle',speedRestartTitle:'Restart from the beginning?',speedRestartText:'Your current time and progress will be lost.',speedRestartCancel:'Back',speedRestartConfirm:'Restart',speedCompleteTitle:'Speed Run Complete!',speedComplete:'All {total} boards cleared.\nTime: {time}\nOptimal clears: {optimal} / {total}\nPersonal best: {best}',speedUnlocked:'Speed Run is now unlocked.\nRace through all 73 boards and set your best time.',speedStats:'Speed Run Results',speedStatsSummary:'Runs: {runs}',speedStatsEmpty:'No completed runs yet.',speedStatsEntry:'Run {num} · {time} · Optimal {optimal} / {total}',secondMasteryReward:'You earned the seven-color daruma.\nChoose it from Board Design in the Menu.',timeLabel:'Time'
 });
 Object.assign(UI_TEXT.zh,{
   speedMode:'速解模式',speedTitle:'速解模式',speedIntro:'带计时器挑战全部73种棋盘。\n中途关闭后仍会保存时间和棋盘。',speedStart:'开始挑战 →',speedGo:'开始',speedResume:'继续 →',speedPause:'暂停',speedPauseTitle:'已暂停',speedPauseText:'计时已停止。棋盘和时间已保存。',speedRestart:'重新开始',speedPuzzleRestart:'重新开始这一题',speedRestartTitle:'要从头重新开始吗？',speedRestartText:'当前时间和进度将会丢失。',speedRestartCancel:'返回',speedRestartConfirm:'从头开始',speedCompleteTitle:'速解模式完成！',speedComplete:'完成全部73题。\n本次记录：{time}\n最佳记录：{best}',speedUnlocked:'速解模式已开放。\n挑战全部73种棋盘，刷新最佳记录吧。',secondMasteryReward:'获得了七色不倒翁。\n可在菜单的“棋盘设计”中选择。',timeLabel:'计时'
@@ -1883,6 +1920,16 @@ Object.assign(UI_TEXT.zh,{
 Object.assign(UI_TEXT.ko,{
   speedMode:'속도전 모드',speedTitle:'속도전 모드',speedIntro:'타이머와 함께 73개 보드를 도전하는 모드입니다.\n도중에 닫아도 시간과 보드가 저장됩니다.',speedStart:'도전하기 →',speedGo:'시작',speedResume:'계속하기 →',speedPause:'일시 중지',speedPauseTitle:'일시 중지됨',speedPauseText:'타이머가 멈췄습니다. 보드와 시간은 저장됩니다.',speedRestart:'처음부터',speedPuzzleRestart:'이 문제 다시 하기',speedRestartTitle:'처음부터 다시 할까요?',speedRestartText:'현재 시간과 진행 상황이 사라집니다.',speedRestartCancel:'돌아가기',speedRestartConfirm:'처음부터 다시',speedCompleteTitle:'속도전 완주!',speedComplete:'73문제를 모두 풀었습니다.\n이번 기록: {time}\n최고 기록: {best}',speedUnlocked:'속도전 모드가 열렸습니다.\n73개 보드를 달려 최고 기록에 도전하세요.',secondMasteryReward:'일곱 색 다루마를 얻었습니다.\n메뉴의 보드 디자인에서 선택할 수 있습니다.',timeLabel:'시간'
 });
+Object.assign(UI_TEXT.ja,{speedModeSelect:'速解きモード',speedOpen:'速解きモードへ →',speedTrainingLabel:'速解き九番勝負',speedTrainingIntro:'だるま修行の道の修了試験。最短2手の全9パターンを、タイマー付きで駆け抜けます。',speedIntermediateLabel:'速解き十五番勝負',speedIntermediateIntro:'名人への道の試練の関門。最短3手の全39パターンの中からランダムで15問を、タイマー付きで駆け抜けます。',speedMasteryLabel:'速解き二十四番勝負',speedMasteryIntro:'名人への道の皆伝試験。全73パターンから選ばれた24問を、タイマー付きで駆け抜けます。',speedSatoriLabel:'速解き七十三番勝負',speedSatoriIntro:'悟りへの道クリアの報酬。全73の盤面を、タイマー付きで駆け抜けます。',primaryTrialTitle:'だるま修行の道 修了試験へ',primaryTrialText:'だるま修行の修了試験として、「速解き九番勝負」に挑戦します。',primaryTrialNote:'速解き九番勝負では、基本編に出てきた最短2手の全9パターンが出題されます。頑張ってマスターしよう。',primaryTrialStart:'修了試験 速解き九番勝負へ →',primaryTrialFooter:'メニューに「速解きモード」が追加されました。繰り返し挑戦して最短記録の更新を目指そう。',intermediateTrialTitle:'名人への道 試練の関門へ',intermediateTrialText:'名人への道の折り返し地点まで来ました。ここで、試練の関門「速解き十五番勝負」に挑戦します。',intermediateTrialNote:'速解き十五番勝負では、最短3手の全39パターンからランダムに15問出題されます。',intermediateTrialStart:'試練の関門 速解き十五番勝負へ →',masteryTrialTitle:'名人への道 皆伝試験へ',masteryTrialText:'さぁ、名人になるための皆伝試験「速解き二十四番勝負」に挑戦しましょう！',masteryTrialNote:'速解き二十四番勝負では、全73パターンの盤面からランダムに24問が出題されます。',masteryTrialStart:'皆伝試験 速解き二十四番勝負へ →',speedTrialFailTitle:'試験に再挑戦',speedTrainingTrialFailText:'すべての問題を最短2手で解くと、名人への道が開かれます。',speedIntermediateTrialFailText:'すべての問題を最短3手で解くと、名人への道・離が開かれます。',speedMasteryTrialFailText:'すべての問題を最短手数で解くと、悟りへの道が開かれます。',speedTrialRetry:'試験に再挑戦する'});
+Object.assign(UI_TEXT.en,{speedModeSelect:'Choose a speed run',speedOpen:'Open speed run →',speedTrainingLabel:'Speed Run: Nine',speedTrainingIntro:'Graduation trial for Daruma Training: race through nine two-move patterns.',speedIntermediateLabel:'Speed Run: Fifteen',speedIntermediateIntro:'Midterm trial for the Path to Mastery: race through fifteen three-move boards with moves left shown.',speedMasteryLabel:'Speed Run: Twenty-Four',speedMasteryIntro:'Graduation trial for the Path to Mastery: take on 24 selected boards with moves left hidden.',speedSatoriLabel:'Speed Run: Seventy-Three',speedSatoriIntro:'A reward for the Path to Satori: race through all 73 boards.',primaryTrialText:'Daruma Training is complete.\nBefore the Path to Mastery opens, pass the graduation trial: Speed Run: Nine.',primaryTrialStart:'Speed Run: Nine →',intermediateTrialText:'Path to Mastery II is complete.\nTake the midterm trial: Speed Run: Fifteen.',intermediateTrialStart:'Midterm: Speed Run: Fifteen →',masteryTrialText:'The Path to Mastery is complete.\nBefore the Path to Satori opens, pass the graduation trial: Speed Run: Twenty-Four.',masteryTrialStart:'Speed Run: Twenty-Four →',speedTrialFailTitle:'Retry the graduation trial',speedTrainingTrialFailText:'Clear every board in its minimum moves to open the Path to Mastery.',speedIntermediateTrialFailText:'Clear every board in 3 moves to open Path to Mastery III.',speedMasteryTrialFailText:'Clear every board in its minimum moves to open the Path to Satori.',speedTrialRetry:'Retry graduation trial'});
+Object.assign(UI_TEXT.zh,{speedModeSelect:'选择速解模式',speedOpen:'前往速解 →',speedTrainingLabel:'速解九番胜负',speedTrainingIntro:'达摩修行的毕业考试：挑战9个最短两步棋盘。',speedMasteryLabel:'速解十五番胜负',speedMasteryIntro:'名人之路的毕业考试：从全部棋盘中抽取15题挑战。',speedSatoriLabel:'速解七十三番胜负',speedSatoriIntro:'悟道之路的奖励：挑战全部73种棋盘。',speedTrainingUnlocked:'达摩修行的毕业考试“速解九番胜负”已开放。',speedMasteryUnlocked:'名人之路的毕业考试“速解十五番胜负”已开放。',speedSatoriUnlocked:'悟道之路的奖励“速解七十三番胜负”已开放。',primaryTrialText:'达摩修行完成。\n进入名人之路前，请通过毕业考试“速解九番胜负”。',primaryTrialStart:'前往速解九番胜负 →',masteryTrialText:'名人之路完成。\n进入悟道之路前，请通过毕业考试“速解十五番胜负”。',masteryTrialStart:'前往速解十五番胜负 →',speedTrialFailTitle:'再次挑战毕业考试',speedTrainingTrialFailText:'以最少步数完成所有棋盘，即可开启名人之路。',speedMasteryTrialFailText:'以最少步数完成所有棋盘，即可开启悟道之路。',speedTrialRetry:'再次挑战毕业考试'});
+Object.assign(UI_TEXT.ko,{speedModeSelect:'속도전 선택',speedOpen:'속도전으로 →',speedTrainingLabel:'속도전 아홉 판',speedTrainingIntro:'다루마 수련의 졸업 시험: 최단 2수 보드 9개에 도전합니다.',speedMasteryLabel:'속도전 열다섯 판',speedMasteryIntro:'명인의 길 졸업 시험: 전체 보드에서 뽑은 15문제에 도전합니다.',speedSatoriLabel:'속도전 일흔세 판',speedSatoriIntro:'깨달음의 길 보상: 73개 보드를 모두 달립니다.',speedTrainingUnlocked:'다루마 수련 졸업 시험 “속도전 아홉 판”이 열렸습니다.',speedMasteryUnlocked:'명인의 길 졸업 시험 “속도전 열다섯 판”이 열렸습니다.',speedSatoriUnlocked:'깨달음의 길 보상 “속도전 일흔세 판”이 열렸습니다.',primaryTrialText:'다루마 수련을 마쳤습니다.\n명인의 길로 가기 전에 졸업 시험 “속도전 아홉 판”에 도전하세요.',primaryTrialStart:'속도전 아홉 판으로 →',masteryTrialText:'명인의 길을 마쳤습니다.\n깨달음의 길로 가기 전에 졸업 시험 “속도전 열다섯 판”에 도전하세요.',masteryTrialStart:'속도전 열다섯 판으로 →',speedTrialFailTitle:'졸업 시험 재도전',speedTrainingTrialFailText:'모든 보드를 최단 수로 풀면 명인의 길이 열립니다.',speedMasteryTrialFailText:'모든 보드를 최단 수로 풀면 깨달음의 길이 열립니다.',speedTrialRetry:'졸업 시험 다시 도전'});
+Object.assign(UI_TEXT.ja,{speedSatoriUnlockText:'速解き七十三番勝負が解禁されました。\n73の盤面を駆け抜け、自己ベストに挑戦できます。',speedSatoriUnlockStart:'速解き七十三番勝負へ →'});
+Object.assign(UI_TEXT.en,{speedSatoriUnlockText:'Speed Run: Seventy-Three is now unlocked.\nRace through all 73 boards and set a new personal best.',speedSatoriUnlockStart:'Speed Run: Seventy-Three →'});
+Object.assign(UI_TEXT.zh,{speedSatoriUnlockText:'速解七十三番胜负已解锁。\n挑战全部73种棋盘，刷新最佳记录吧。',speedSatoriUnlockStart:'前往速解七十三番胜负 →'});
+Object.assign(UI_TEXT.ko,{speedSatoriUnlockText:'속도전 일흔세 판이 열렸습니다.\n73개 보드를 달려 최고 기록에 도전하세요.',speedSatoriUnlockStart:'속도전 일흔세 판으로 →'});
+Object.assign(UI_TEXT.zh,{speedIntermediateLabel:'速解十五番胜负',speedIntermediateIntro:'名人之路的期中考试：显示剩余步数，挑战15个最少3步的棋盘。',speedMasteryLabel:'速解二十四番胜负',speedMasteryIntro:'名人之路的毕业考试：不显示剩余步数，挑战24个棋盘。',intermediateTrialText:'完成名人之路·破。\n请挑战期中考试“速解十五番胜负”。',intermediateTrialStart:'期中考试 速解十五番胜负 →',masteryTrialText:'完成名人之路。\n进入悟道之路前，请通过毕业考试“速解二十四番胜负”。',masteryTrialStart:'毕业考试 速解二十四番胜负 →',speedIntermediateTrialFailText:'以最少3步完成所有棋盘，即可开启名人之路·离。'});
+Object.assign(UI_TEXT.ko,{speedIntermediateLabel:'속도전 열다섯 판',speedIntermediateIntro:'명인의 길 중간 시험: 남은 수를 보며 최단 3수 보드 15개에 도전합니다.',speedMasteryLabel:'속도전 스물네 판',speedMasteryIntro:'명인의 길 졸업 시험: 남은 수 없이 24개 보드에 도전합니다.',intermediateTrialText:'명인의 길·파를 마쳤습니다.\n중간 시험 “속도전 열다섯 판”에 도전하세요.',intermediateTrialStart:'중간 시험 속도전 열다섯 판 →',masteryTrialText:'명인의 길을 마쳤습니다.\n깨달음의 길로 가기 전에 졸업 시험 “속도전 스물네 판”에 도전하세요.',masteryTrialStart:'졸업 시험 속도전 스물네 판 →',speedIntermediateTrialFailText:'모든 보드를 최단 3수로 풀면 명인의 길·리가 열립니다.'});
 Object.assign(UI_TEXT.ja,{threeDMenu:'3Dだるまを見る',threeDUnlockedText:'初回クリアの報酬として、特別な3Dページが開放されました。リアルな盤面で遊べます。',threeDOpen:'3Dページを見る →'});
 Object.assign(UI_TEXT.en,{threeDMenu:'View in 3D',threeDUnlockedText:'As a reward for your first clear, a special 3D page has been unlocked. Play on a realistic board.',threeDOpen:'Open the 3D page →'});
 Object.assign(UI_TEXT.zh,{threeDMenu:'查看3D效果',threeDUnlockedText:'作为首次通关的奖励，解锁了特别的3D页面。可以在逼真的棋盘上畅玩。',threeDOpen:'打开3D页面 →'});
@@ -2067,8 +2114,8 @@ const STORAGE_KEYS=Object.freeze({
   cleared:'wake7-cleared',extraCleared:'wake7-extra-cleared',satoriCleared:'wake7-satori-cleared',
   currentStage:'wake7-current-stage',activeSession:'wake7-active-session',activeLap:'wake7-active-lap',
   introSeen:'wake7-intro-seen',messageReview:'wake7-message-review',messageReviewLast:'wake7-message-review-last-clear',
-  speedSession:'wake7-speed-session',speedBestMs:'wake7-speed-best-ms',speedHistory:'wake7-speed-history',
-  speedUnlocked:'wake7-speed-unlocked',threeDUnlocked:'wake7-3d-unlocked',
+  speedSession:'wake7-speed-session',speedActiveVariant:'wake7-speed-active-variant',speedBestMs:'wake7-speed-best-ms',speedHistory:'wake7-speed-history',
+  speedUnlocked:'wake7-speed-unlocked',speedTrainingUnlocked:'wake7-speed-training-unlocked',speedIntermediateUnlocked:'wake7-speed-intermediate-unlocked',speedMasteryUnlocked:'wake7-speed-mastery-unlocked',speedSatoriUnlocked:'wake7-speed-satori-unlocked',speedUnlockModelVersion:'wake7-speed-unlock-model-version',speedTrainingTrialCleared:'wake7-speed-training-trial-cleared',speedIntermediateTrialCleared:'wake7-speed-intermediate-trial-cleared',speedMasteryTrialCleared:'wake7-speed-mastery-trial-cleared',speedTrialModelVersion:'wake7-speed-trial-model-version',threeDUnlocked:'wake7-3d-unlocked',
   masterGoldGranted:'wake7-master-gold-granted',satoriDesignGranted:'wake7-satori-design-granted',
   secondLapActive:'wake7-second-lap-active',secondLapUnlocked:'wake7-second-lap-unlocked',
   rainbowDarumaGranted:'wake7-rainbow-daruma-granted',awakenedGranted:'wake7-awakened-granted',
@@ -2081,6 +2128,8 @@ const storage={
   json(key,fallback=null){try{const raw=localStorage.getItem(key);return raw===null?fallback:JSON.parse(raw);}catch(_){return fallback;}},
   setJson(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch(_){return false;}}
 };
+const SPEED_LAST_TAB_STORAGE_KEY='wake7-speed-last-tab';
+const SPEED_NEW_TAB_STORAGE_KEY='wake7-speed-new-tab';
 const COURSE_DEFINITIONS=Object.freeze({
   primary:{id:'primary',total:STAGES.length,label:'training'},
   mastery:{id:'mastery',total:EXTRA_STAGES.length,label:'mastery'},
@@ -2112,7 +2161,7 @@ function activeProgressStore(course=runtimeContext().mode){
 function isCampaignMode(){const mode=runtimeContext().mode;return mode==='primary'||mode==='mastery'||mode==='satori';}
 function featureUnlocked(feature){
   switch(feature){
-    case 'speedRun':return speedModeUnlocked;
+    case 'speedRun':return speedTrainingUnlocked||speedIntermediateUnlocked||speedMasteryUnlocked||speedSatoriUnlocked;
     case 'genome':return hasMasterReward();
     case 'boardTheme':return hasMasterReward();
     case 'threeD':return threeDUnlocked;
@@ -2224,6 +2273,53 @@ try{awakenedGranted=localStorage.getItem('wake7-awakened-granted')==='1';}catch(
 let speedModeUnlocked=false;
 try{speedModeUnlocked=localStorage.getItem('wake7-speed-unlocked')==='1'||awakenedGranted;}catch(_){speedModeUnlocked=awakenedGranted;}
 if(speedModeUnlocked)try{localStorage.setItem('wake7-speed-unlocked','1');}catch(_){ }
+// この印がない保存データだけを、旧「速解き一括解放」仕様として移行する。
+const hasSpeedTrialModel=storage.get(STORAGE_KEYS.speedTrialModelVersion)==='3';
+// 速解きは解放された範囲ごとに選択できる。旧版の一括解放は、互換性のため全て解放済みとして移行する。
+let speedTrainingUnlocked=false,speedIntermediateUnlocked=false,speedMasteryUnlocked=false,speedSatoriUnlocked=false;
+let speedTrainingTrialCleared=false,speedIntermediateTrialCleared=false,speedMasteryTrialCleared=false;
+try{
+  speedTrainingUnlocked=localStorage.getItem('wake7-speed-training-unlocked')==='1';
+  speedIntermediateUnlocked=localStorage.getItem(STORAGE_KEYS.speedIntermediateUnlocked)==='1';
+  speedMasteryUnlocked=localStorage.getItem('wake7-speed-mastery-unlocked')==='1';
+  speedSatoriUnlocked=localStorage.getItem('wake7-speed-satori-unlocked')==='1';
+  speedTrainingTrialCleared=localStorage.getItem(STORAGE_KEYS.speedTrainingTrialCleared)==='1';
+  speedIntermediateTrialCleared=localStorage.getItem(STORAGE_KEYS.speedIntermediateTrialCleared)==='1';
+  speedMasteryTrialCleared=localStorage.getItem(STORAGE_KEYS.speedMasteryTrialCleared)==='1';
+}catch(_){ }
+if(speedModeUnlocked&&!hasSpeedTrialModel){speedTrainingUnlocked=true;speedIntermediateUnlocked=true;speedMasteryUnlocked=true;speedSatoriUnlocked=true;}
+// 旧保存の合格状態は、盤面クリア状況を読み込んだ後で新しい関門へ対応付ける。
+// 見た目の報酬だけを残したリセットでは、試験を通過済みにしない。
+storage.set(STORAGE_KEYS.speedTrialModelVersion,'3');
+if(speedTrainingTrialCleared)try{localStorage.setItem(STORAGE_KEYS.speedTrainingTrialCleared,'1');}catch(_){ }
+if(speedIntermediateTrialCleared)try{localStorage.setItem(STORAGE_KEYS.speedIntermediateTrialCleared,'1');}catch(_){ }
+if(speedMasteryTrialCleared)try{localStorage.setItem(STORAGE_KEYS.speedMasteryTrialCleared,'1');}catch(_){ }
+if(speedModeUnlocked&&!hasSpeedTrialModel)try{
+  localStorage.setItem(STORAGE_KEYS.speedTrainingUnlocked,'1');
+  localStorage.setItem(STORAGE_KEYS.speedIntermediateUnlocked,'1');
+  localStorage.setItem(STORAGE_KEYS.speedMasteryUnlocked,'1');
+  localStorage.setItem(STORAGE_KEYS.speedSatoriUnlocked,'1');
+}catch(_){ }
+function syncSpeedUnlockFlag(){
+  speedModeUnlocked=speedTrainingUnlocked||speedIntermediateUnlocked||speedMasteryUnlocked||speedSatoriUnlocked;
+  if(speedModeUnlocked)storage.set(STORAGE_KEYS.speedUnlocked,'1');
+  else storage.remove(STORAGE_KEYS.speedUnlocked);
+}
+function unlockSpeedVariant(id){
+  const wasUnlocked=speedVariantUnlocked(id);
+  if(id==='training9')speedTrainingUnlocked=true;
+  else if(id==='mastery15')speedIntermediateUnlocked=true;
+  else if(id==='mastery24')speedMasteryUnlocked=true;
+  else if(id==='satori73'||id==='standard')speedSatoriUnlocked=true;
+  syncSpeedUnlockFlag();
+  if(!wasUnlocked)storage.set(SPEED_NEW_TAB_STORAGE_KEY,id);
+  try{
+    if(speedTrainingUnlocked)localStorage.setItem(STORAGE_KEYS.speedTrainingUnlocked,'1');
+    if(speedIntermediateUnlocked)localStorage.setItem(STORAGE_KEYS.speedIntermediateUnlocked,'1');
+    if(speedMasteryUnlocked)localStorage.setItem(STORAGE_KEYS.speedMasteryUnlocked,'1');
+    if(speedSatoriUnlocked)localStorage.setItem(STORAGE_KEYS.speedSatoriUnlocked,'1');
+  }catch(_){ }
+}
 // 3Dページは速解きモード初回クリアの報酬。速解きの解放同様、進行状況リセットでは残す。
 let threeDUnlocked=false;
 try{threeDUnlocked=localStorage.getItem('wake7-3d-unlocked')==='1';}catch(_){ }
@@ -2287,6 +2383,27 @@ clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;
 clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
 clearedSatoriStages=activeLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;
 secondLapActive=activeLap===2;
+// 速解きの段階解放を導入した直後だけ、旧実装が一括で保存してしまった
+// 解放フラグを、実際の一周目の到達状況から作り直す。
+if(storage.get(STORAGE_KEYS.speedUnlockModelVersion)!=='3'){
+  speedTrainingUnlocked=STAGES.every((_,i)=>lap1ClearedStages.has(i));
+  speedIntermediateUnlocked=lap1ClearedExtraStages.has(29);
+  speedMasteryUnlocked=EXTRA_STAGES.every((_,i)=>lap1ClearedExtraStages.has(i));
+  speedSatoriUnlocked=SATORI_STAGES.every((_,i)=>lap1ClearedSatoriStages.has(i));
+  // 旧仕様で既に関門より先へ進んでいた人は、新しい試験を通過済みとして扱う。
+  speedTrainingTrialCleared=speedTrainingTrialCleared||lap1ClearedExtraStages.size>0;
+  speedIntermediateTrialCleared=speedIntermediateTrialCleared||lap1ClearedExtraStages.has(30);
+  speedMasteryTrialCleared=speedMasteryTrialCleared||lap1ClearedSatoriStages.size>0;
+  syncSpeedUnlockFlag();
+  storage.set(STORAGE_KEYS.speedTrainingUnlocked,speedTrainingUnlocked?'1':'0');
+  storage.set(STORAGE_KEYS.speedIntermediateUnlocked,speedIntermediateUnlocked?'1':'0');
+  storage.set(STORAGE_KEYS.speedMasteryUnlocked,speedMasteryUnlocked?'1':'0');
+  storage.set(STORAGE_KEYS.speedSatoriUnlocked,speedSatoriUnlocked?'1':'0');
+  storage.set(STORAGE_KEYS.speedTrainingTrialCleared,speedTrainingTrialCleared?'1':'0');
+  storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,speedIntermediateTrialCleared?'1':'0');
+  storage.set(STORAGE_KEYS.speedMasteryTrialCleared,speedMasteryTrialCleared?'1':'0');
+  storage.set(STORAGE_KEYS.speedUnlockModelVersion,'3');
+}
 function persistLapProgress(){
   for(const [lap,primary,extra,satori] of [[1,lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages],[2,lap2ClearedStages,lap2ClearedExtraStages,lap2ClearedSatoriStages]]){
     storage.setJson('wake7-lap'+lap+'-primary-cleared',[...primary]);
@@ -2349,16 +2466,22 @@ if(activeLap===2)lap2ClearedSatoriStages=clearedSatoriStages;
 else lap1ClearedSatoriStages=clearedSatoriStages;
 const isMastered=()=>EXTRA_STAGES.every((_,i)=>clearedExtraStages.has(i));
 const isSatoriMastered=()=>SATORI_STAGES.every((_,i)=>clearedSatoriStages.has(i));
-const hasMasterReward=()=>isMastered()||masterGoldGranted;
+const canEnterThirdVolume=()=>activeLap===2||speedIntermediateTrialCleared;
+const canEnterSatori=()=>isMastered()&&(activeLap===2||speedMasteryTrialCleared);
+const hasMasterReward=()=>masterGoldGranted;
 const hasSatoriReward=()=>isSatoriMastered()||satoriDesignGranted;
+function grantMasterReward(){
+  if(masterGoldGranted)return;
+  masterGoldGranted=true;
+  boardTheme='gold';boardThemeChosen=false;
+  try{
+    localStorage.setItem(STORAGE_KEYS.masterGoldGranted,'1');
+    localStorage.removeItem(STORAGE_KEYS.boardThemeChosen);
+  }catch(_){ }
+}
 function updateMasterTheme(){
   document.body.classList.toggle('mastered',hasMasterReward());
   document.body.classList.toggle('satori-mastered',hasSatoriReward());
-  // 名人制覇の瞬間は、直前の手動選択より金の盤面を優先して褒美として見せる。
-  if(isMastered()&&!masterGoldGranted){
-    boardTheme='gold';masterGoldGranted=true;
-    try{localStorage.setItem('wake7-master-gold-granted','1');}catch(_){ }
-  }
   // 悟り制覇の瞬間は、白黒と縦配置をセットで新しい褒美として見せる。
   if(isSatoriMastered()&&!satoriDesignGranted){
     boardTheme='satori';boardLayout='tilted';satoriDesignGranted=true;
@@ -2454,30 +2577,97 @@ const isFourthVolume=()=>extraMode&&extraIndex>=45&&extraIndex<60;
 const SPEED_MODE_DEFINITIONS=Object.freeze({
   // 現行仕様。リファクタリング中はこの定義だけを実際の入口に使う。
   standard:{id:'standard',labelKey:'speedMode',order:'mixed',source:'satori',total:SATORI_STAGES.length,unlock:'speedRun'},
-  // 将来の段階解放用。まだメニューや出題には接続しない。
+  // 段階解放される派生モード。解放前は選択肢に表示しない。
   training9:{id:'training9',labelKey:'speedModeTraining',order:'shuffle',source:'twoMove',total:9,unlock:'primary'},
-  mastery15:{id:'mastery15',labelKey:'speedModeMastery',order:'sample',source:'all',total:15,unlock:'mastery'},
+  mastery15:{id:'mastery15',labelKey:'speedModeIntermediate',order:'sample',source:'threeMove',total:15,unlock:'intermediate'},
+  mastery24:{id:'mastery24',labelKey:'speedModeMastery',order:'sample',source:'all',total:24,unlock:'mastery'},
   satori73:{id:'satori73',labelKey:'speedModeSatori',order:'mixed',source:'satori',total:SATORI_STAGES.length,unlock:'satori'}
 });
 let speedVariant='standard';
 function activeSpeedDefinition(){return SPEED_MODE_DEFINITIONS[speedVariant]||SPEED_MODE_DEFINITIONS.standard;}
+const speedShowsRemaining=()=>speedMode&&['training9','mastery15'].includes(speedVariant);
 function speedStagePool(definition=activeSpeedDefinition()){
   if(definition.source==='twoMove')return SATORI_STAGES.filter(stage=>stage.par===2).slice(0,definition.total);
+  if(definition.source==='threeMove')return SATORI_STAGES.filter(stage=>stage.par===3);
   // 「全部から」の派生版も、同じ正規化済みの全パターンを母集団にする。
   return SATORI_STAGES;
 }
 function speedVariantUnlocked(id){
   const definition=SPEED_MODE_DEFINITIONS[id];
   if(!definition)return false;
-  if(id==='standard')return speedModeUnlocked;
-  if(definition.unlock==='primary')return allPrimaryCleared();
-  if(definition.unlock==='mastery')return isMastered();
-  if(definition.unlock==='satori')return isSatoriMastered();
+  if(id==='standard')return speedSatoriUnlocked;
+  if(id==='training9')return speedTrainingUnlocked;
+  if(id==='mastery15')return speedIntermediateUnlocked;
+  if(id==='mastery24')return speedMasteryUnlocked;
+  if(id==='satori73')return speedSatoriUnlocked;
   return false;
+}
+const SPEED_VARIANT_ORDER=['training9','mastery15','mastery24','satori73'];
+function speedVariantCopy(id){
+  const definition=SPEED_MODE_DEFINITIONS[id];
+  const labelKey=id==='training9'?'speedTrainingLabel':id==='mastery15'?'speedIntermediateLabel':id==='mastery24'?'speedMasteryLabel':'speedSatoriLabel';
+  const introKey=id==='training9'?'speedTrainingIntro':id==='mastery15'?'speedIntermediateIntro':id==='mastery24'?'speedMasteryIntro':'speedSatoriIntro';
+  return {label:tr(labelKey),intro:tr(introKey),definition};
+}
+function speedTabLabel(id){
+  const total=SPEED_MODE_DEFINITIONS[id]?.total||'';
+  const jaLabels={training9:'九番',mastery15:'十五番',mastery24:'二十四番',satori73:'七十三番'};
+  return currentLang==='ja'?(jaLabels[id]||total+'番'):String(total);
+}
+function firstUnlockedSpeedVariant(){
+  return SPEED_VARIANT_ORDER.find(speedVariantUnlocked)||'training9';
+}
+function preferredSpeedVariant(){
+  const available=SPEED_VARIANT_ORDER.filter(speedVariantUnlocked);
+  const newlyUnlocked=storage.get(SPEED_NEW_TAB_STORAGE_KEY);
+  if(available.includes(newlyUnlocked)){
+    storage.remove(SPEED_NEW_TAB_STORAGE_KEY);
+    return newlyUnlocked;
+  }
+  const lastTab=storage.get(SPEED_LAST_TAB_STORAGE_KEY);
+  if(available.includes(lastTab))return lastTab;
+  return available.includes(speedVariant)?speedVariant:(available[0]||'training9');
+}
+const unlockedSpeedVariants=()=>SPEED_VARIANT_ORDER.filter(speedVariantUnlocked);
+function renderSpeedModeOptions(){
+  const list=$('speedModeOptionsList');
+  if(!list)return;
+  list.innerHTML='';
+  const available=unlockedSpeedVariants();
+  list.style.gridTemplateColumns='repeat('+Math.max(1,available.length)+',minmax(0,1fr))';
+  available.forEach(id=>{
+    const copy=speedVariantCopy(id),button=document.createElement('button');
+    button.type='button';button.className='speed-mode-tab'+(id===speedVariant?' selected':'');
+    button.dataset.speedVariant=id;
+    button.setAttribute('role','tab');
+    button.setAttribute('aria-selected',String(id===speedVariant));
+    button.textContent=speedTabLabel(id);
+    button.addEventListener('click',()=>{
+      speedVariant=id;
+      storage.set(SPEED_LAST_TAB_STORAGE_KEY,id);
+      renderSpeedModeOptions();
+      renderMasterSpeedStats();
+      $('masterStart').textContent=readSpeedSession()?tr('speedResume'):tr('speedStart');
+    });
+    list.appendChild(button);
+  });
+  const copy=speedVariantCopy(speedVariant);
+  $('speedModeOptionsDetail').textContent=copy.intro;
+  $('speedModeOptions').hidden=available.length<=1;
+}
+function openSpeedPicker(){
+  if(!featureUnlocked('speedRun'))return;
+  speedVariant=preferredSpeedVariant();
+  storage.set(SPEED_LAST_TAB_STORAGE_KEY,speedVariant);
+  showMasterDialog('speedIntro');
 }
 const SPEED_SESSION_KEY=STORAGE_KEYS.speedSession;
 const SPEED_BEST_KEY=STORAGE_KEYS.speedBestMs;
 const SPEED_HISTORY_KEY=STORAGE_KEYS.speedHistory;
+function speedStorageKey(base,variant=speedVariant){return variant==='standard'?base:base+'-'+variant;}
+function speedSessionStorageKey(variant=speedVariant){return speedStorageKey(SPEED_SESSION_KEY,variant);}
+function speedBestStorageKey(variant=speedVariant){return speedStorageKey(SPEED_BEST_KEY,variant);}
+function speedHistoryStorageKey(variant=speedVariant){return speedStorageKey(SPEED_HISTORY_KEY,variant);}
 let speedSession=null,speedClockStarted=0,speedClockTimer=0,speedManuallyPaused=false;
 function shuffleCopy(values){
   const result=[...values];
@@ -2507,15 +2697,28 @@ function validSpeedSession(data){
 }
 function speedOptimalClears(session=speedSession){return Math.max(0,Math.min(Number(session?.total)||SATORI_STAGES.length,Number(session?.optimalClears)||0));}
 function readSpeedHistory(){
-  const entries=storage.json(SPEED_HISTORY_KEY,[]);
+  const entries=storage.json(speedHistoryStorageKey(),[]);
   return Array.isArray(entries)?entries.filter(entry=>Number.isFinite(entry?.elapsedMs)&&entry.elapsedMs>=0).slice(0,20):[];
 }
-function writeSpeedHistory(entries){storage.setJson(SPEED_HISTORY_KEY,entries.slice(0,20));}
-function readSpeedSession(){
-  const data=storage.json(SPEED_SESSION_KEY,null);
+function writeSpeedHistory(entries){storage.setJson(speedHistoryStorageKey(),entries.slice(0,20));}
+function readSpeedSession(variant=speedVariant){
+  const data=storage.json(speedSessionStorageKey(variant),null);
   if(!validSpeedSession(data))return null;
   if(!SPEED_MODE_DEFINITIONS[data.variant])data.variant='standard';
   return data;
+}
+function readActiveSpeedSession(){
+  const lastVariant=storage.get(STORAGE_KEYS.speedActiveVariant,'');
+  if(SPEED_MODE_DEFINITIONS[lastVariant]){
+    const saved=readSpeedSession(lastVariant);
+    if(saved)return saved;
+  }
+  // 旧保存形式との互換用。最後に見つかった未完走セッションを復帰候補にする。
+  for(const variant of Object.keys(SPEED_MODE_DEFINITIONS)){
+    const saved=readSpeedSession(variant);
+    if(saved)return saved;
+  }
+  return null;
 }
 function speedElapsedMs(){return (speedSession?.elapsedMs||0)+(speedClockStarted?performance.now()-speedClockStarted:0);}
 function formatSpeedTime(ms){
@@ -2526,7 +2729,11 @@ function formatSpeedClock(ms){
   const totalSeconds=Math.floor(ms/1000),minutes=Math.floor(totalSeconds/60),seconds=totalSeconds%60;
   return String(minutes).padStart(2,'0')+':'+String(seconds).padStart(2,'0');
 }
-function renderSpeedClock(){if(speedMode)$('stagePar').textContent=formatSpeedClock(speedElapsedMs());}
+function renderSpeedClock(){
+  if(!speedMode)return;
+  const text=formatSpeedClock(speedElapsedMs());
+  $('speedClockValue').textContent=text;
+}
 function startSpeedClock(){
   if(!speedMode||speedManuallyPaused||speedClockStarted||document.visibilityState==='hidden'||speedAwaitingStart())return;
   speedClockStarted=performance.now();clearInterval(speedClockTimer);speedClockTimer=setInterval(renderSpeedClock,100);renderSpeedClock();
@@ -2539,7 +2746,8 @@ function saveSpeedSession(){
   if(!speedSession)return;
   const elapsed=speedElapsedMs();
   const payload={...speedSession,variant:activeSpeedDefinition().id,elapsedMs:elapsed,board:speedMode?serializeActiveBoard():speedSession.board};
-  storage.setJson(SPEED_SESSION_KEY,payload);
+  storage.setJson(speedSessionStorageKey(),payload);
+  storage.set(STORAGE_KEYS.speedActiveVariant,payload.variant);
 }
 function pauseSpeedRun(){if(!speedMode)return;pauseSpeedClock();saveSpeedSession();}
 function openSpeedPauseDialog(){
@@ -2564,7 +2772,15 @@ function ensureSpeedBoardView(session){
   session.view='left60';
   return session;
 }
-function newSpeedSession(){const definition=activeSpeedDefinition();return {version:4,variant:definition.id,total:definition.total,view:'left60',order:makeSpeedOrder(definition.id),index:0,elapsedMs:0,board:null,completed:false,optimalClears:0,started:false};}
+function pendingSpeedTrial(variant=activeSpeedDefinition().id){
+  // 卒業試験は一周目だけ。二周目は各コースをそのまま進める。
+  if(activeLap===2)return null;
+  if(variant==='training9'&&!speedTrainingTrialCleared)return 'training9';
+  if(variant==='mastery15'&&!speedIntermediateTrialCleared)return 'mastery15';
+  if(variant==='mastery24'&&!speedMasteryTrialCleared)return 'mastery24';
+  return null;
+}
+function newSpeedSession(){const definition=activeSpeedDefinition();return {version:5,variant:definition.id,total:definition.total,view:'left60',order:makeSpeedOrder(definition.id),index:0,elapsedMs:0,board:null,completed:false,optimalClears:0,started:false,requiredTrial:pendingSpeedTrial(definition.id)};}
 // 1問目を始める前だけ、タイマーを止めた「スタート待ち」の状態にする。
 function speedAwaitingStart(){
   return !!(speedMode&&speedSession&&!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent);
@@ -2588,8 +2804,10 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
   extraMode=false;satoriMode=false;freeMode=false;customMode=false;editingBoard=false;speedMode=true;
   const pool=speedStagePool(activeSpeedDefinition());
   if(!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent){
-    // スタートを押すまでは、全員起きた状態でタイマーも止めておく。
-    setPosition(0,pool[speedSession.order[0]].par);
+    // スタート前にも最初の問題は見せる。タイマーだけを止めて、
+    // 「残り最短」が 0 手になる誤解を避ける。
+    const first=pool[speedSession.order[0]];
+    setPosition(transformStateBySymmetry(first.state,SPEED_BOARD_VIEW),first.par);
     renderStageNav();
     saveSpeedSession();
     return;
@@ -2607,9 +2825,10 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
 }
 function enterSpeedMode(forceNew=false){
   pauseSpeedRun();
+  const requestedVariant=speedVariant;
   const saved=forceNew?null:readSpeedSession();
   const isNew=forceNew||!saved;
-  speedVariant=saved?.variant&&SPEED_MODE_DEFINITIONS[saved.variant]?saved.variant:'standard';
+  speedVariant=saved?.variant&&SPEED_MODE_DEFINITIONS[saved.variant]?saved.variant:requestedVariant;
   speedSession=saved||newSpeedSession();
   ensureSpeedBoardView(speedSession);
   loadSpeedStage(!isNew,isNew);
@@ -2624,37 +2843,65 @@ function finishSpeedRun(){
   const elapsed=Math.round(speedSession.elapsedMs);
   const optimalClears=speedOptimalClears();
   let bestTime=0;
-  bestTime=Number(storage.get(SPEED_BEST_KEY,'0'))||0;
-  if(!bestTime||elapsed<bestTime){bestTime=elapsed;storage.set(SPEED_BEST_KEY,String(bestTime));}
+  bestTime=Number(storage.get(speedBestStorageKey(),'0'))||0;
+  if(!bestTime||elapsed<bestTime){bestTime=elapsed;storage.set(speedBestStorageKey(),String(bestTime));}
   const history=readSpeedHistory();
-  history.unshift({elapsedMs:elapsed,optimalClears,completedAt:Date.now()});
+  history.unshift({elapsedMs:elapsed,optimalClears,total:speedSession.total||activeSpeedDefinition().total,completedAt:Date.now()});
   writeSpeedHistory(history);
-  storage.remove(SPEED_SESSION_KEY);
-  const unlockedThreeD=!threeDUnlocked;
-  if(unlockedThreeD){
-    threeDUnlocked=true;
-    storage.set(STORAGE_KEYS.threeDUnlocked,'1');
-  }
-  speedSession={...speedSession,completed:true,elapsedMs:elapsed,bestMs:bestTime,optimalClears,runNumber:history.length,unlockedThreeD};
-  showMasterDialog('speedComplete');
+  storage.remove(speedSessionStorageKey());
+  storage.remove(STORAGE_KEYS.speedActiveVariant);
+  // 速解き自体の完走では報酬を付けない。3Dページは二周目制覇の報酬。
+  speedSession={...speedSession,completed:true,elapsedMs:elapsed,bestMs:bestTime,optimalClears,runNumber:history.length};
+  const trialVariant=speedSession.requiredTrial===true?'training9':speedSession.requiredTrial;
+  if(trialVariant){
+    // 卒業試験はタイムではなく、全問を最短手で解けたかだけを見る。
+    if(optimalClears===Number(speedSession.total||0)){
+      if(trialVariant==='training9'){
+        speedTrainingTrialCleared=true;
+        storage.set(STORAGE_KEYS.speedTrainingTrialCleared,'1');
+        unlockSpeedVariant('training9');
+        rememberSpecialMessage('primary');
+      }else if(trialVariant==='mastery15'){
+        speedIntermediateTrialCleared=true;
+        storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,'1');
+        unlockSpeedVariant('mastery15');
+        rememberSpecialMessage('volume');
+      }else if(trialVariant==='mastery24'){
+        speedMasteryTrialCleared=true;
+        storage.set(STORAGE_KEYS.speedMasteryTrialCleared,'1');
+        unlockSpeedVariant('mastery24');
+        grantMasterReward();
+        rememberSpecialMessage('mastery');
+      }
+      speedMode=false;
+      // 合格後に速解き最終盤の状態を残さない。元のコースの節目へ戻して、
+      // 既存のクリア演出・次の道への導線にそのまま合流させる。
+      if(trialVariant==='training9')loadStage(STAGES.length-1);
+      else if(trialVariant==='mastery15')loadExtraStage(29);
+      else loadExtraStage(EXTRA_STAGES.length-1);
+      // 合格後は、それぞれの道を終えたときの既存の昇格ダイアログに合流する。
+      showMasterDialog(trialVariant==='training9'?'primary':trialVariant==='mastery15'?'volume':'mastery');
+    }else showMasterDialog('speedTrialFailed');
+  }else showMasterDialog('speedComplete');
 }
 function speedStatsData(){
   const history=readSpeedHistory();
-  const storedBest=Number(storage.get(SPEED_BEST_KEY,'0'))||0;
+  const storedBest=Number(storage.get(speedBestStorageKey(),'0'))||0;
   const best=storedBest||(history.length?Math.min(...history.map(entry=>entry.elapsedMs)):0);
-  const optimal=history.reduce((max,entry)=>Math.max(max,Math.max(0,Math.min(SATORI_STAGES.length,Number(entry.optimalClears)||0))),0);
+  const total=speedSession?.total||activeSpeedDefinition().total;
+  const optimal=history.reduce((max,entry)=>Math.max(max,Math.max(0,Math.min(total,Number(entry.optimalClears)||0))),0);
   return {history,best,optimal};
 }
 function renderSpeedStatsList(list,history){
   if(!history.length){list.innerHTML='<p>'+tr('speedStatsEmpty')+'</p>';return;}
   list.innerHTML=[...history].sort((a,b)=>a.elapsedMs-b.elapsedMs).slice(0,3).map((entry,index)=>{
-    const rank=index+1,optimalClears=Math.max(0,Math.min(SATORI_STAGES.length,Number(entry.optimalClears)||0)),runNumber=history.length-history.indexOf(entry);
+    const rank=index+1,optimalClears=Math.max(0,Math.min(Number(entry.total)||activeSpeedDefinition().total,Number(entry.optimalClears)||0)),runNumber=history.length-history.indexOf(entry);
     return '<div class="speed-result" data-rank="'+rank+'"><span class="speed-result-medal" aria-label="'+tr('speedStatsPlace',{n:rank})+'"><span>'+rank+'</span></span><span><strong class="speed-result-time">'+formatSpeedTime(entry.elapsedMs)+'</strong><small class="speed-result-note">'+tr('speedStatsOptimal',{optimal:optimalClears})+' '+tr('speedStatsAttempt',{n:runNumber})+'</small></span></div>';
   }).join('');
 }
 function renderSpeedPauseStats(){
   const {history,best,optimal}=speedStatsData();
-  $('speedPauseProgress').textContent=tr('speedPauseProgress',{current:(speedSession?.index||0)+1,total:SATORI_STAGES.length,time:formatSpeedTime(speedElapsedMs())});
+  $('speedPauseProgress').textContent=tr('speedPauseProgress',{current:(speedSession?.index||0)+1,total:speedSession?.total||activeSpeedDefinition().total,time:formatSpeedTime(speedElapsedMs())});
   $('speedPauseStats').hidden=!history.length;
   if(!history.length)return;
   $('speedPauseStatsSummary').textContent=tr('speedStatsSummary',{runs:history.length,best:best?formatSpeedTime(best):'--:--.-',optimal});
@@ -2669,7 +2916,7 @@ function renderMasterSpeedStats(){
 }
 function advanceSpeedRun(){
   if(!speedMode||!speedSession)return;
-  if(speedSession.index>=SATORI_STAGES.length-1){finishSpeedRun();return;}
+  if(speedSession.index>=speedSession.total-1){finishSpeedRun();return;}
   speedSession.index++;speedSession.board=null;speedSession.movedCurrent=false;speedSession.restartedCurrent=false;loadSpeedStage(false,true);
 }
 function completeSpeedStage(){
@@ -2721,8 +2968,8 @@ function showMoves(value){
   el.classList.add('pulse');
 }
 function showRemaining(value,animate=true){
-  // 速解きでは同じ表示枠をタイマーに使う。スワイプ中の残り手数プレビューで上書きしない。
-  if(speedMode){renderSpeedClock();return;}
+  // 九番・十五番勝負では、タイマーと残り最短手数を並べて表示する。
+  if(speedMode&&!speedShowsRemaining()){renderSpeedClock();return;}
   const el=$('stagePar');
   if(displayedRemaining===value&&el.textContent===String(value))return;
   displayedRemaining=value;el.textContent=value;
@@ -2962,7 +3209,10 @@ function paint(){
   applyBoardTheme();
   showMoves(moves);
   if(!editingBoard&&!speedMode)showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]));
-  else if(speedMode)renderSpeedClock();
+  else if(speedMode){
+    if(speedShowsRemaining())showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]));
+    renderSpeedClock();
+  }
   if(speedMode&&isSolved()&&!clearShown&&speedSession&&!speedAwaitingStart()){
     completeSpeedStage();
     return;
@@ -3005,8 +3255,7 @@ function paint(){
       clearedExtraStages.add(extraIndex);
       persistLapProgress();
       rememberClearedMessage(true,extraIndex);
-      if(isMastered())pendingMasterThemeRefresh=true;
-      else updateMasterTheme();
+      updateMasterTheme();
       renderProgress();
     }else if(!freeMode&&!customMode){
       clearedStages.add(stageIndex);
@@ -3174,6 +3423,10 @@ function loadStage(index){
   if(stageIndex===0&&!hasMasterReward())scheduleStageOneTutorial();
 }
 function loadExtraStage(index){
+  // 一周目は九番勝負を終えるまで、名人への道を先に選べない。
+  if(activeLap===1&&!speedTrainingTrialCleared){showMasterDialog('primary');return;}
+  // 「破」を終えたら、離へ進む前に最短3手の見極めの関門を越える。
+  if(index>=30&&!canEnterThirdVolume()){showMasterDialog('intermediate');return;}
   if(speedMode)pauseSpeedRun();speedMode=false;
   extraMode=true;satoriMode=false;freeMode=false;customMode=false;editingBoard=false;
   nextStageAttention=false;
@@ -3186,7 +3439,10 @@ function loadExtraStage(index){
   trackStageView();
 }
 function loadSatoriStage(index){
-  if(!isMastered())return;
+  if(!canEnterSatori()){
+    if(activeLap===1&&isMastered())showMasterDialog('mastery');
+    return;
+  }
   if(speedMode)pauseSpeedRun();speedMode=false;
   extraMode=false;satoriMode=true;freeMode=false;customMode=false;editingBoard=false;
   nextStageAttention=false;
@@ -3206,7 +3462,7 @@ function restoreCurrentStage(){
   try{saved=JSON.parse(localStorage.getItem('wake7-current-stage')||'null');}catch(_){}
   if(saved&&(saved.lap===1||saved.lap===2))activateCampaignLap(saved.lap);
   if(saved&&saved.satori===true&&Number.isInteger(saved.index)
-    &&saved.index>=0&&saved.index<SATORI_STAGES.length&&isMastered()){
+    &&saved.index>=0&&saved.index<SATORI_STAGES.length&&canEnterSatori()){
     loadSatoriStage(saved.index);
   }else if(saved&&saved.extra===true&&Number.isInteger(saved.index)
     &&saved.index>=0&&saved.index<EXTRA_STAGES.length&&allPrimaryCleared()&&extraStageUnlocked(saved.index)){
@@ -3264,13 +3520,13 @@ function saveActiveSession(){
   try{localStorage.setItem('wake7-active-session',JSON.stringify(payload));}catch(_){ }
 }
 function restoreActiveSession(){
-  const savedSpeed=readSpeedSession();
-  if(speedModeUnlocked&&savedSpeed){speedSession=ensureSpeedBoardView(savedSpeed);loadSpeedStage(true);return;}
+  const savedSpeed=readActiveSpeedSession();
+  if(savedSpeed&&speedVariantUnlocked(savedSpeed.variant)){speedVariant=savedSpeed.variant;speedSession=ensureSpeedBoardView(savedSpeed);loadSpeedStage(true);return;}
   let saved=null;
   try{saved=JSON.parse(localStorage.getItem('wake7-active-session')||'null');}catch(_){ }
   if(!saved||!validSavedBoard(saved.board)){restoreCurrentStage();return;}
   if(saved.lap===1||saved.lap===2)activateCampaignLap(saved.lap);
-  const canRestoreSatori=saved.satori===true&&Number.isInteger(saved.index)&&saved.index>=0&&saved.index<SATORI_STAGES.length&&isMastered();
+  const canRestoreSatori=saved.satori===true&&Number.isInteger(saved.index)&&saved.index>=0&&saved.index<SATORI_STAGES.length&&canEnterSatori();
   const canRestoreExtra=saved.extra===true&&Number.isInteger(saved.index)&&saved.index>=0&&saved.index<EXTRA_STAGES.length&&allPrimaryCleared()&&extraStageUnlocked(saved.index);
   const canRestoreStage=saved.extra===false&&Number.isInteger(saved.index)&&saved.index>=0&&saved.index<STAGES.length&&primaryStageUnlocked(saved.index);
   if(saved.mode==='stage'||saved.mode==='satori'){
@@ -3517,10 +3773,11 @@ function animateUndoSwipe(target){
 function restartWithAnimation(){
   const beforeOri=Uint8Array.from(ori),beforeSpin=Int16Array.from(spin);
   // 速解きでは、一度動かしてからのやり直しは最短クリアとして数えない。
-  if(speedMode&&speedSession&&speedSession.movedCurrent){speedSession.restartedCurrent=true;saveSpeedSession();}
+  if(speedMode&&speedSession&&speedSession.movedCurrent)speedSession.restartedCurrent=true;
   // 極1〜9はやり直しで回復、極10〜12は使用回数を維持する。
   if(!fourthChecksSurviveRestart())renewFourthChecks();
   setPosition(currentInitialState,currentInitialPar);
+  if(speedMode&&speedSession)saveSpeedSession();
   renderStageNav();
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   busy=true;
@@ -3732,7 +3989,12 @@ $('undo').addEventListener('click',()=>{
   $('msg').classList.remove('show');
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
     ori=h.o;spin=h.s;tileEls=h.t;moves=h.m;paint();
-  }else animateUndoSwipe(h);
+    if(speedMode&&speedSession)saveSpeedSession();
+  }else{
+    animateUndoSwipe(h);
+    // アニメーション完了後の盤面を保存する。
+    if(speedMode&&speedSession)setTimeout(saveSpeedSession,460);
+  }
 });
 $('reset').addEventListener('click',()=>{
   if(busy)return;
@@ -3852,11 +4114,11 @@ function highestRankIndex(){
 }
 function rankIndexForProgress(primary,extra,satori,second=false){
   if(SATORI_STAGES.every((_,i)=>satori.has(i)))return second?(awakenedGranted?6:4):5;
-  if(EXTRA_STAGES.every((_,i)=>extra.has(i)))return 4;
+  if(EXTRA_STAGES.every((_,i)=>extra.has(i))&&(second||speedMasteryTrialCleared))return 4;
   if(extra.has(44))return 3;
-  if(extra.has(29))return 2;
+  if(extra.has(29)&&(second||speedIntermediateTrialCleared))return 2;
   if(extra.has(14))return 1;
-  return STAGES.every((_,i)=>primary.has(i))?0:-1;
+  return STAGES.every((_,i)=>primary.has(i))&&(second||speedTrainingTrialCleared)?0:-1;
 }
 const firstLapRankIndex=()=>rankIndexForProgress(lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages,false);
 const secondLapRankIndex=()=>rankIndexForProgress(lap2ClearedStages,lap2ClearedExtraStages,lap2ClearedSatoriStages,true);
@@ -3996,8 +4258,8 @@ function renderSatoriStagePicker(){
   const picker=$('stagePicker'),grid=$('stagePickerGrid');
   const pickerSatori=pickerLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;
   renderStagePickerRankBadge();
-  $('pickerSpeedMode').hidden=!speedModeUnlocked;
-  $('stagePickerActions').classList.toggle('two-actions',!speedModeUnlocked);
+  $('pickerSpeedMode').hidden=!featureUnlocked('speedRun');
+  $('stagePickerActions').classList.toggle('two-actions',!featureUnlocked('speedRun'));
   const pageSize=Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES);
   const start=satoriPickerPage*pageSize,end=Math.min(SATORI_STAGES.length,start+pageSize);
   picker.classList.add('satori-picker');
@@ -4022,7 +4284,10 @@ function renderSatoriStagePicker(){
   });
 }
 function openSatoriPicker(){
-  if(!isMastered())return;
+  if(!canEnterSatori()){
+    if(activeLap===1&&isMastered())showMasterDialog('mastery');
+    return;
+  }
   pickerLap=activeLap;
   pickerRound='satori';
   satoriPickerPage=satoriMode?Math.floor(satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0;
@@ -4032,20 +4297,27 @@ function openSatoriPicker(){
 function renderStagePicker(){
   if(pickerRound==='satori'){renderSatoriStagePicker();return;}
   renderStagePickerRankBadge();
-  $('pickerSpeedMode').hidden=!speedModeUnlocked;
-  $('stagePickerActions').classList.toggle('two-actions',!speedModeUnlocked);
+  $('pickerSpeedMode').hidden=!featureUnlocked('speedRun');
+  $('stagePickerActions').classList.toggle('two-actions',!featureUnlocked('speedRun'));
   $('stagePicker').classList.remove('satori-picker');
   const pickerPrimary=pickerLap===2?lap2ClearedStages:lap1ClearedStages;
   const pickerExtra=pickerLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
   const pickerPrimaryDone=STAGES.every((_,i)=>pickerPrimary.has(i));
   const pickerMastered=EXTRA_STAGES.every((_,i)=>pickerExtra.has(i));
   if(!pickerPrimaryDone&&pickerRound!==-1)pickerRound=-1;
-  const isPrimary=pickerRound===-1;
-  const canSeeMaster=pickerPrimaryDone;
+  const canSeeMaster=pickerPrimaryDone&& (pickerLap===2||speedTrainingTrialCleared);
+  const canSeeThird=pickerLap===2||speedIntermediateTrialCleared;
   // 悟りへの道は、名人への道を制覇してから初めて選択画面に現す。
-  const canSeeSatori=pickerMastered;
+  const canSeeSatori=pickerMastered&&(pickerLap===2||speedMasteryTrialCleared);
+  if(pickerRound>=2&&!canSeeThird)pickerRound=1;
+  const isPrimary=pickerRound===-1;
   const canNavigateRounds=canSeeMaster||pickerLap===2;
-  const canGoNext=canSeeMaster&&(pickerRound<EXTRA_ROUNDS-1||canSeeSatori);
+  const canGoNext=canSeeMaster&&(
+    pickerRound<1 ||
+    (pickerRound===1&&canSeeThird) ||
+    (pickerRound===2&&canSeeThird) ||
+    (pickerRound===3&&canSeeSatori)
+  );
   $('stagePickerTitle').textContent=tr('stagePicker');
   $('closeStagePicker').setAttribute('aria-label',tr('close'));
   $('stagePickerRound').hidden=!canNavigateRounds;
@@ -4062,9 +4334,9 @@ function renderStagePicker(){
     if(!stage)continue;
     const b=document.createElement('button');
     const cleared=isPrimary?pickerPrimary.has(index):pickerExtra.has(index);
-    b.disabled=isPrimary
+    b.disabled=(!isPrimary&&index>=30&&!canSeeThird)|| (isPrimary
       ?!(index===0||pickerPrimary.has(index)||pickerPrimary.has(index-1))
-      :!(index===0||pickerExtra.has(index)||pickerExtra.has(index-1));
+      :!(index===0||pickerExtra.has(index)||pickerExtra.has(index-1)));
     b.classList.toggle('cleared',cleared);
     if(!isPrimary)b.classList.add('extra-lap-'+pickerRound);
     b.classList.toggle('current',pickerLap===activeLap&&!speedMode&&(isPrimary?!extraMode&&!satoriMode&&stageIndex===index:extraMode&&extraIndex===index));
@@ -4134,10 +4406,10 @@ $('pickerCustomMode').addEventListener('click',()=>{
   if(!customMode)enterBoardMaker();
 });
 $('pickerSpeedMode').addEventListener('click',()=>{
-  if(!speedModeUnlocked)return;
+  if(!featureUnlocked('speedRun'))return;
   closeStagePicker();
   if(speedMode)return;
-  showMasterDialog('speedIntro');
+  openSpeedPicker();
 });
 
 function renderProgress(){
@@ -4177,8 +4449,12 @@ function renderProgress(){
   });
 }
 function renderStageNav(){
-  document.querySelector('.mode-row').classList.toggle('satori-mode',satoriMode);
-  document.querySelector('.mode-row').classList.toggle('speed-mode',speedMode);
+  $('speedClockInline').hidden=true;
+  const modeRow=document.querySelector('.mode-row');
+  modeRow.classList.toggle('satori-mode',satoriMode);
+  modeRow.classList.toggle('speed-mode',speedMode);
+  modeRow.classList.toggle('speed-training',speedShowsRemaining());
+  modeRow.classList.toggle('speed-with-remaining',speedShowsRemaining());
   $('stageProgress').hidden=satoriMode||speedMode||freeMode||customMode;
   $('stagePickerTrigger').classList.toggle('master-stage',extraMode||satoriMode);
   $('stageSubtitle').hidden=true;
@@ -4188,8 +4464,8 @@ function renderStageNav(){
   $('lapBadge').hidden=activeLap!==2||freeMode||customMode||speedMode;
   $('lapBadge').textContent=secondLapMark();
   $('shuffle').hidden=true;
-  $('undo').hidden=editingBoard||satoriMode||speedMode;
-  $('undo').disabled=editingBoard||satoriMode||speedMode||isFinalMasterPuzzle();
+  $('undo').hidden=editingBoard||satoriMode||(speedMode&&!speedShowsRemaining());
+  $('undo').disabled=editingBoard||satoriMode||(speedMode&&!speedShowsRemaining())||isFinalMasterPuzzle();
   $('hint').hidden=editingBoard||satoriMode||speedMode;
   if(isFourthVolume()){
     $('hint').textContent=tr('remainingCheck',{n:fourthChecksLeft()});
@@ -4199,9 +4475,12 @@ function renderStageNav(){
     $('hint').disabled=masterHintsDisabled();
   }
   $('debugTools').hidden=!DEBUG_MODE;
-  for(const id of ['debugReset','debugClear','debugAllClear','debugSecondAllClear','debugAlmost','debugMore','debugFar','debugSpeed71','debugSpeed72','debugUnlock14','debugExtra14','debugExtra29','debugExtra44','debugExtra59','debugSatori25','debugSatori72','debugSecondUnlock14','debugSecondExtra14','debugSecondExtra29','debugSecondExtra44','debugSecondExtra59','debugSecondSatori25','debugSecondSatori72'])$(id).hidden=!DEBUG_MODE;
-  $('reset').textContent=editingBoard?tr('resetAll'):speedMode?tr('speedPuzzleRestart'):tr('reset');
-  $('reset').hidden=satoriMode||speedMode;
+  for(const id of ['debugReset','debugClear','debugAllClear','debugSecondAllClear','debugAlmost','debugMore','debugFar','debugSpeedTraining8','debugSpeedMastery14','debugSpeedMastery23','debugSpeed72','debugUnlock14','debugExtra14','debugExtra29','debugExtra44','debugExtra59','debugSatori25','debugSatori72','debugSecondUnlock14','debugSecondExtra14','debugSecondExtra29','debugSecondExtra44','debugSecondExtra59','debugSecondSatori25','debugSecondSatori72'])$(id).hidden=!DEBUG_MODE;
+  const pauseButton=$('speedPause'),pauseInline=$('speedPauseInline'),playActions=document.querySelector('.play-actions');
+  if(speedMode&&!speedShowsRemaining())pauseInline.appendChild(pauseButton);
+  else playActions.insertBefore(pauseButton,$('speedGo'));
+  $('reset').textContent=editingBoard?tr('resetAll'):speedShowsRemaining()?tr('reset'):speedMode?tr('speedPuzzleRestart'):tr('reset');
+  $('reset').hidden=satoriMode||(speedMode&&!speedShowsRemaining());
   $('speedPause').hidden=!speedMode||speedAwaitingStart();
   $('speedGo').hidden=!speedAwaitingStart();
   const inSideMode=freeMode||customMode;
@@ -4216,7 +4495,7 @@ function renderStageNav(){
   $('nextStage').setAttribute('aria-label',nextLabel);
   $('nextStage').hidden=speedMode||(customMode&&!customPlaying);
   $('nextStage').disabled=customPlaying?false:customMode?true:freeMode?false:extraMode
-    ?(extraIndex===EXTRA_STAGES.length-1?!isMastered():!clearedExtraStages.has(extraIndex))
+    ?(extraIndex===EXTRA_STAGES.length-1?!canEnterSatori():extraIndex===29?!clearedExtraStages.has(extraIndex):!clearedExtraStages.has(extraIndex))
     :(stageIndex===STAGES.length-1?!allPrimaryCleared():!clearedStages.has(stageIndex));
   $('stageMode').classList.toggle('on',!freeMode&&!customMode&&!speedMode);
   $('freeMode').classList.toggle('on',freeMode);
@@ -4240,10 +4519,14 @@ function renderStageNav(){
     $('playCustomBoard').disabled=d===255||d===0;
   }
   if(speedMode){
-    $('stageKind').textContent=tr('speedMode');
-    $('stageNumber').textContent=(speedSession.index+1)+' / '+SATORI_STAGES.length;
-    $('shortestLabel').textContent=tr('timeLabel');
-    $('moveUnit').textContent='';
+    $('stageKind').textContent=speedVariantCopy(speedVariant).label;
+    $('stageNumber').textContent=(speedSession.index+1)+' / '+(speedSession.total||activeSpeedDefinition().total);
+    const showsRemaining=speedShowsRemaining();
+    $('shortestLabel').textContent=showsRemaining?tr('shortestDisplay'):'';
+    $('moveUnit').textContent=showsRemaining?tr('moveUnit'):'';
+    $('speedClockInline').hidden=false;
+    $('speedClockLabel').textContent='';
+    if(showsRemaining)showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
     renderSpeedClock();
   }else if(freeMode){
     $('stageKind').textContent=tr('freeKind');
@@ -4280,7 +4563,7 @@ function renderStageNav(){
     }
     showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
   }
-  if(!speedMode){$('shortestLabel').textContent=tr('shortest');$('moveUnit').textContent=tr('moveUnit');}
+  if(!speedMode){$('shortestLabel').textContent=tr('shortestDisplay');$('moveUnit').textContent=tr('moveUnit');}
   const showingCourseProgress=!freeMode&&!customMode&&!satoriMode&&!speedMode;
   $('primaryTotal').hidden=!showingCourseProgress;
   $('primaryTotalKind').hidden=!(extraMode||allPrimaryCleared());
@@ -4601,7 +4884,7 @@ function buildMessageReviewEntries(){
   const reviewSatoriMastered=SATORI_STAGES.every((_,i)=>reviewSatori.has(i));
   for(let i=0;i<STAGES.length;i++){
     if(!reviewPrimary.has(i))continue;
-    if(i===14){entries.push({master:'primary',extra:false,index:i});continue;}
+    if(i===14){if(speedTrainingTrialCleared)entries.push({master:'primary',extra:false,index:i});continue;}
     const text=stageClearTextAt(false,i);if(text)entries.push({extra:false,index:i,text,art:stageClearArtAt(false,i)});
     if(PRIMARY_QUIZ_STAGES[i]!==undefined)entries.push({extra:false,index:i,quiz:PRIMARY_QUIZ_STAGES[i],art:stageClearArtAt(false,i)});
   }
@@ -4612,12 +4895,16 @@ function buildMessageReviewEntries(){
   }
   for(let i=0;i<EXTRA_STAGES.length;i++){
     if(!reviewExtra.has(i))continue;
-    if((i+1)%STAGES.length===0){entries.push({master:i===EXTRA_STAGES.length-1?'mastery':'volume',extra:true,index:i});continue;}
+    if((i+1)%STAGES.length===0){
+      if(i===EXTRA_STAGES.length-1){if(speedMasteryTrialCleared)entries.push({master:'mastery',extra:true,index:i});}
+      else if(i!==29||speedIntermediateTrialCleared)entries.push({master:'volume',extra:true,index:i});
+      continue;
+    }
     const text=stageClearTextAt(true,i);if(text)entries.push({extra:true,index:i,text,art:stageClearArtAt(true,i)});
     if(BOARD_QUIZ_STAGES[i])entries.push({extra:true,index:i,boardQuiz:true});
     if(QUIZ_STAGES[i]!==undefined)entries.push({extra:true,index:i,quiz:QUIZ_STAGES[i],art:stageClearArtAt(true,i)});
   }
-  if(reviewMastered)entries.push({master:'satoriIntro',extra:true,index:EXTRA_STAGES.length-1});
+  if(reviewMastered&&speedMasteryTrialCleared)entries.push({master:'satoriIntro',extra:true,index:EXTRA_STAGES.length-1});
   if(reviewSatoriMastered||hasSatoriReward())entries.push({master:'satori',satori:true,index:SATORI_STAGES.length-1});
   if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});
   if(awakenedGranted)entries.push({master:'awakening',awakened:true,index:SATORI_STAGES.length-1});
@@ -4707,7 +4994,7 @@ function renderMessageReview(){
     }else if(entry.master==='satori'){
       $('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('satoriRank'),false,5);setSealColor(seal,5);seal.classList.add('rank-frame-seal');$('messageDialogTitle').textContent=tr('satoriTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));masterText.hidden=false;masterText.textContent=tr('satoriText');
     }else if(entry.master==='awakening'){
-      $('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('awakenedRank'),false,6);setSealColor(seal,6);seal.classList.add('rank-frame-seal');$('messageDialogTitle').textContent=tr('awakenedTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('awakenedRank'));masterText.hidden=false;masterText.textContent=tr('satoriThanks');boardNote.hidden=false;boardNote.textContent=tr('speedUnlocked');
+      $('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('awakenedRank'),false,6);setSealColor(seal,6);seal.classList.add('rank-frame-seal');$('messageDialogTitle').textContent=tr('awakenedTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('awakenedRank'));masterText.hidden=false;masterText.textContent=tr('satoriThanks');boardNote.hidden=false;boardNote.textContent=tr('threeDUnlockedText');
     }else if(entry.master==='satoriIntro'){
       seal.hidden=false;seal.classList.remove('rank-seal','rank-frame-seal','second-lap-mark');seal.tabIndex=-1;setSealColor(seal,5);$('messageMasterSealLabel').textContent='悟';$('messageDialogTitle').textContent=tr('satoriIntroTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr('satoriIntroText');
     }else if(entry.master==='secondLapIntro'){
@@ -5319,6 +5606,10 @@ function animateTwoMovePattern(boardIndex,angle=0,mirror=false){
 }
 function showMasterDialog(kind='primary'){
   masterDialogKind=kind;
+  $('masterStart').dataset.speedVariant='';
+  const needsMasteryTrial=kind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared;
+  const needsIntermediateTrial=(kind==='intermediate'||(kind==='volume'&&extraIndex===29))&&!secondLapActive&&!speedIntermediateTrialCleared;
+  if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
   if(kind==='mastery'&&secondLapActive&&!rainbowDarumaGranted){
     rainbowDarumaGranted=true;darumaColor='rainbow';darumaColorChosen=false;
     try{localStorage.setItem('wake7-rainbow-daruma-granted','1');localStorage.removeItem('wake7-daruma-color-chosen');}catch(_){ }
@@ -5326,36 +5617,45 @@ function showMasterDialog(kind='primary'){
   }
   if(kind==='awakening'&&!awakenedGranted){
     awakenedGranted=true;
-    speedModeUnlocked=true;
+    threeDUnlocked=true;
     try{
       localStorage.setItem('wake7-awakened-granted','1');
-      localStorage.setItem('wake7-speed-unlocked','1');
+      localStorage.setItem(STORAGE_KEYS.threeDUnlocked,'1');
     }catch(_){ }
     persistLapProgress();
     updateMasterTheme();
     renderStageNav();
     rememberSpecialMessage('awakening');
   }
-  if(kind==='mastery')$('menuAllPatterns').hidden=false;
+  if(kind==='mastery'&&!needsMasteryTrial)$('menuAllPatterns').hidden=false;
   const masteryBoardTheme=(kind==='mastery'&&secondLapActive)||['satori','awakening'].includes(kind)?'satori-tilted':'gold';
-  renderMasteryBoard('masteryBoard',['mastery','satori','awakening'].includes(kind),masteryBoardTheme);
+  renderMasteryBoard('masteryBoard',(kind==='mastery'&&!needsMasteryTrial)||['satori','awakening'].includes(kind),masteryBoardTheme);
   const seal=$('masterSeal');
   const rankText=$('masterRankText');
   const shareButton=$('masterShare');
   const allPatternsLink=$('masterAllPatterns');
   const threeDRewardBox=$('master3DRewardBox');
+  const speedUnlockBox=$('masterSpeedUnlockBox');
+  const trialFooter=$('masterTrialFooter');
   const finalThanks=$('masterFinalThanks');
   const speedStats=$('masterSpeedStats');
   const speedIntroArt=$('speedIntroArt');
+  const speedIntroNote=$('masterSpeedIntroNote');
+  const speedModeOptions=$('speedModeOptions');
   const boardNote=$('masterBoardNote');
   finalThanks.hidden=true;
   speedStats.hidden=true;
   speedIntroArt.hidden=true;
+  speedIntroNote.hidden=true;
+  speedModeOptions.hidden=true;
+  $('masterDialogText').hidden=false;
   boardNote.hidden=true;
   shareButton.hidden=!['primary','satori','awakening'].includes(kind);
   allPatternsLink.hidden=true;
   threeDRewardBox.hidden=true;
-  $('masterStart').hidden=['mastery','satori'].includes(kind);
+  speedUnlockBox.hidden=true;
+  trialFooter.hidden=true;
+  $('masterStart').hidden=['satori','awakening'].includes(kind)||(kind==='mastery'&&!needsMasteryTrial);
   shareButton.dataset.shareKind=kind==='primary'?'training':['satori','awakening'].includes(kind)?'satori':'mastery';
   $('masterShareLabel').textContent=tr('shareShort');
   rankText.hidden=true;
@@ -5371,11 +5671,25 @@ function showMasterDialog(kind='primary'){
     }else $('masterSealLabel').textContent=rank;
   };
   if(kind==='primary'){
-    showRankSeal(masterPath().ranks[0],0);
-    $('masterDialogTitle').textContent=tr('masterTitle');
-    rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[0]);
-    $('masterDialogText').textContent=tr('masterText');
-    $('masterStart').textContent=tr('masterStart');
+    const needsTrial=!secondLapActive&&!speedTrainingTrialCleared;
+    $('masterDialogTitle').textContent=needsTrial?tr('primaryTrialTitle'):tr('masterTitle');
+    if(needsTrial)shareButton.hidden=true;
+    if(needsTrial){
+      // まだ称号は渡さない。速解きモードと同じ印を、卒業試験の目印にする。
+      seal.hidden=true;
+      speedIntroArt.hidden=false;
+      $('masterStart').dataset.speedVariant='training9';
+      trialFooter.textContent=tr('primaryTrialFooter');
+      trialFooter.hidden=false;
+    }else showRankSeal(masterPath().ranks[0],0);
+    rankText.hidden=needsTrial;
+    rankText.textContent=needsTrial?'':rankEarnedText(masterPath().ranks[0]);
+    $('masterDialogText').textContent=needsTrial?tr('primaryTrialText'):tr('masterText');
+    if(needsTrial){
+      speedIntroNote.textContent=tr('primaryTrialNote');
+      speedIntroNote.hidden=false;
+    }
+    $('masterStart').textContent=needsTrial?tr('primaryTrialStart'):tr('masterStart');
   }else if(kind==='pathInfo'){
     $('masterSealLabel').textContent='道';
     $('masterDialogTitle').textContent=tr('pathInfoTitle');
@@ -5386,12 +5700,31 @@ function showMasterDialog(kind='primary'){
     const rank=rankForVolume(volume);
     showRankSeal(rank,volume);
     const clearName=currentLang==='ja'?'名人への道・'+volumeLabel(volume)+'　'+masterSubtitle(volume):volumeLabel(volume)+'　'+masterSubtitle(volume);
-    $('masterDialogTitle').textContent=tr('volumeClearTitle',{n:clearName});
+    $('masterDialogTitle').textContent=needsIntermediateTrial?tr('intermediateTrialTitle'):tr('volumeClearTitle',{n:clearName});
     const nextRules={ja:['「破」からは、ヒントが使えなくなります。','「離」では途中から最短4手の問題です。\nスワイプ中は残り最短手数が「？」になります。','「極」では残り最短手数が表示されません。\nかわりに回数限定で「残り手数」のボタンが使えますが、これも途中から使用回数が減っていきます。'],en:['Hints are unavailable from Volume 2.','Volume 3 introduces four-move puzzles.\nMoves left are hidden while swiping.','Volume 4 hides moves left.\nThe Moves Left button has limited uses, with fewer available later.']}[currentLang]||[];
-    const nextRule=nextRules[volume-1]||tr('volumeClearText');
-    rankText.hidden=false;rankText.textContent=rankEarnedText(rank);
+    const nextRule=needsIntermediateTrial?tr('intermediateTrialText'):(nextRules[volume-1]||tr('volumeClearText'));
+    if(needsIntermediateTrial){
+      seal.hidden=true;
+      speedIntroArt.hidden=false;
+      rankText.hidden=true;
+      speedIntroNote.textContent=tr('intermediateTrialNote');
+      speedIntroNote.hidden=false;
+      $('masterStart').dataset.speedVariant='mastery15';
+    }else{
+      rankText.hidden=false;
+      rankText.textContent=rankEarnedText(rank);
+    }
     $('masterDialogText').textContent=nextRule;
-    $('masterStart').textContent=currentLang==='ja'?'名人への道・'+volumeLabel(volume+1)+'　'+masterSubtitle(volume+1)+'へ →':tr('volumeStart');
+    $('masterStart').textContent=needsIntermediateTrial?tr('intermediateTrialStart'):(currentLang==='ja'?'名人への道・'+volumeLabel(volume+1)+'　'+masterSubtitle(volume+1)+'へ →':tr('volumeStart'));
+  }else if(kind==='intermediate'){
+    seal.hidden=true;
+    speedIntroArt.hidden=false;
+    $('masterDialogTitle').textContent=tr('intermediateTrialTitle');
+    $('masterDialogText').textContent=tr('intermediateTrialText');
+    speedIntroNote.textContent=tr('intermediateTrialNote');
+    speedIntroNote.hidden=false;
+    $('masterStart').dataset.speedVariant='mastery15';
+    $('masterStart').textContent=tr('intermediateTrialStart');
   }else if(kind==='satori'){
     $('masterSealLabel').innerHTML=rankFrameSvg(tr('satoriRank'),false,5);setSealColor(seal,5);
     seal.classList.add('rank-seal','rank-frame-seal');
@@ -5399,6 +5732,11 @@ function showMasterDialog(kind='primary'){
     rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));
     $('masterDialogText').textContent=tr('satoriText');
     $('masterStart').textContent=tr('satoriStart');
+    if(!secondLapActive){
+      $('masterSpeedUnlockText').textContent=tr('speedSatoriUnlockText');
+      $('masterSpeedUnlockStart').textContent=tr('speedSatoriUnlockStart');
+      speedUnlockBox.hidden=false;
+    }
   }else if(kind==='secondLapIntro'){
     seal.hidden=false;
     seal.classList.add('second-lap-mark');
@@ -5412,21 +5750,35 @@ function showMasterDialog(kind='primary'){
     $('masterDialogTitle').textContent=tr('awakenedTitle');
     rankText.hidden=false;rankText.textContent=rankEarnedText(tr('awakenedRank'));
     $('masterDialogText').textContent=tr('satoriThanks');
-    finalThanks.textContent=tr('speedUnlocked');
+    finalThanks.textContent=tr('threeDUnlockedText');
     finalThanks.hidden=false;
-    $('masterStart').textContent=tr('speedUnlockedStart');
+    $('masterStart').textContent=tr('close');
+    $('master3DReward').textContent=tr('threeDUnlockedText');
+    threeDRewardBox.hidden=false;
   }else if(kind==='speedIntro'){
     seal.hidden=true;
     $('masterDialogTitle').textContent=tr('speedTitle');
     speedIntroArt.hidden=false;
-    $('masterDialogText').textContent=tr('speedIntro');
+    if(!speedVariantUnlocked(speedVariant))speedVariant=preferredSpeedVariant();
+    const showSpeedTabs=unlockedSpeedVariants().length>1;
+    $('masterDialogText').textContent=speedVariantCopy(speedVariant).intro;
+    $('masterDialogText').hidden=showSpeedTabs;
+    renderSpeedModeOptions();
     renderMasterSpeedStats();
     speedStats.hidden=false;
     $('masterStart').textContent=readSpeedSession()?tr('speedResume'):tr('speedStart');
+  }else if(kind==='speedTrialFailed'){
+    const failedVariant=['training9','mastery15','mastery24'].includes(speedSession?.requiredTrial)?speedSession.requiredTrial:'training9';
+    seal.hidden=true;speedIntroArt.hidden=false;
+    $('masterDialogTitle').textContent=tr('speedTrialFailTitle');
+    $('masterDialogText').textContent=tr(failedVariant==='training9'?'speedTrainingTrialFailText':failedVariant==='mastery15'?'speedIntermediateTrialFailText':'speedMasteryTrialFailText');
+    $('masterStart').textContent=tr('speedTrialRetry');
+    renderMasterSpeedStats();
+    speedStats.hidden=false;
   }else if(kind==='speedComplete'){
     seal.hidden=false;$('masterSealLabel').textContent='速';setSealColor(seal,3);
     $('masterDialogTitle').textContent=tr('speedCompleteTitle');
-    $('masterDialogText').textContent=tr('speedComplete',{time:formatSpeedTime(speedSession.elapsedMs),optimal:speedOptimalClears(),attempt:tr('speedStatsAttempt',{n:speedSession.runNumber||1}),best:formatSpeedTime(speedSession.bestMs)});
+    $('masterDialogText').textContent=tr('speedComplete',{time:formatSpeedTime(speedSession.elapsedMs),optimal:speedOptimalClears(),total:speedSession.total||activeSpeedDefinition().total,attempt:tr('speedStatsAttempt',{n:speedSession.runNumber||1}),best:formatSpeedTime(speedSession.bestMs)});
     renderMasterSpeedStats();
     speedStats.hidden=false;
     if(speedSession.unlockedThreeD){
@@ -5440,13 +5792,24 @@ function showMasterDialog(kind='primary'){
     $('masterDialogText').textContent=tr('satoriIntroText');
     $('masterStart').textContent=tr('satoriIntroStart');
   }else{
-    showRankSeal(masterPath().ranks[4],4);
-    $('masterDialogTitle').textContent=secondLapActive?tr('secondMasteryTitle'):tr('masteryTitle');
-    rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[4]);
-    $('masterDialogText').textContent=secondLapActive?tr('secondMasteryReward'):tr('masteryText');
-    boardNote.hidden=secondLapActive;
-    if(!secondLapActive)boardNote.textContent=tr('masteryBoardNote');
-    $('masterStart').textContent=tr('satoriStart');
+    if(needsMasteryTrial){
+      seal.hidden=true;
+      speedIntroArt.hidden=false;
+      $('masterDialogTitle').textContent=tr('masteryTrialTitle');
+      $('masterDialogText').textContent=tr('masteryTrialText');
+      speedIntroNote.textContent=tr('masteryTrialNote');
+      speedIntroNote.hidden=false;
+      $('masterStart').dataset.speedVariant='mastery24';
+      $('masterStart').textContent=tr('masteryTrialStart');
+    }else{
+      showRankSeal(masterPath().ranks[4],4);
+      $('masterDialogTitle').textContent=secondLapActive?tr('secondMasteryTitle'):tr('masteryTitle');
+      rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[4]);
+      $('masterDialogText').textContent=secondLapActive?tr('secondMasteryReward'):tr('masteryText');
+      boardNote.hidden=secondLapActive;
+      if(!secondLapActive)boardNote.textContent=tr('masteryBoardNote');
+      $('masterStart').textContent=tr('satoriStart');
+    }
   }
   seal.tabIndex=seal.classList.contains('rank-seal')?0:-1;
   renderMasterRoadmap(kind);
@@ -5473,9 +5836,11 @@ function moveTwoMoveDetail(direction){
 function renderMasterRoadmap(kind){
   const roadmap=$('masterRoadmap');
   const roadmapNote=$('masterRoadmapNote');
-  roadmap.hidden=['mastery','satori','satoriIntro','secondLapIntro','awakening','speedIntro','speedComplete'].includes(kind);
+  const primaryNeedsTrial=kind==='primary'&&!secondLapActive&&!speedTrainingTrialCleared;
+  const intermediateNeedsTrial=kind==='volume'&&extraIndex===29&&!secondLapActive&&!speedIntermediateTrialCleared;
+  roadmap.hidden=primaryNeedsTrial||intermediateNeedsTrial||['intermediate','mastery','satori','satoriIntro','secondLapIntro','awakening','speedIntro','speedComplete','speedTrialFailed'].includes(kind);
   roadmapNote.hidden=true;
-  const rules=$('masterRules');rules.hidden=kind!=='primary';
+  const rules=$('masterRules');rules.hidden=kind!=='primary'||primaryNeedsTrial;
   if(roadmap.hidden)return;
   const current=kind==='primary'?2:kind==='volume'?Math.min(5,Math.ceil((extraIndex+1)/STAGES.length)+2):kind==='mastery'?6:(allPrimaryCleared()?2:1);
   roadmap.innerHTML=masterRoadmapMarkup(current);
@@ -5519,7 +5884,7 @@ $('nextStage').addEventListener('click',()=>{
     return;
   }
   if(extraMode){
-    if(extraIndex===EXTRA_STAGES.length-1&&isMastered())loadSatoriStage(0);
+    if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);
     else loadExtraStage(extraIndex+1);
   }
   else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);
@@ -5591,11 +5956,17 @@ function debugCompleteAll(secondLap=false){
   masterGoldGranted=true;
   satoriDesignGranted=true;
   awakenedGranted=secondLap;
-  speedModeUnlocked=secondLap||speedModeUnlocked;
+  speedTrainingUnlocked=true;speedIntermediateUnlocked=true;speedMasteryUnlocked=true;speedSatoriUnlocked=true;syncSpeedUnlockFlag();
+  speedTrainingTrialCleared=true;
+  speedIntermediateTrialCleared=true;
+  speedMasteryTrialCleared=true;
+  localStorage.setItem(STORAGE_KEYS.speedTrainingTrialCleared,'1');
+  localStorage.setItem(STORAGE_KEYS.speedIntermediateTrialCleared,'1');
+  localStorage.setItem(STORAGE_KEYS.speedMasteryTrialCleared,'1');
   if(secondLap)debugGrantRainbowDaruma();
   activateCampaignLap(secondLap?1:2);
   try{
-    if(secondLap){localStorage.setItem('wake7-awakened-granted','1');localStorage.setItem('wake7-rainbow-daruma-granted','1');localStorage.setItem('wake7-speed-unlocked','1');}
+    if(secondLap){localStorage.setItem('wake7-awakened-granted','1');localStorage.setItem('wake7-rainbow-daruma-granted','1');localStorage.setItem('wake7-speed-unlocked','1');localStorage.setItem(STORAGE_KEYS.speedTrainingUnlocked,'1');localStorage.setItem(STORAGE_KEYS.speedIntermediateUnlocked,'1');localStorage.setItem(STORAGE_KEYS.speedMasteryUnlocked,'1');localStorage.setItem(STORAGE_KEYS.speedSatoriUnlocked,'1');}
     else{localStorage.removeItem('wake7-awakened-granted');localStorage.removeItem('wake7-rainbow-daruma-granted');}
     localStorage.setItem('wake7-master-gold-granted','1');
     localStorage.setItem('wake7-satori-design-granted','1');
@@ -5632,7 +6003,7 @@ function debugPrepareSecondLapCheckpoint(){
   try{
     localStorage.setItem('wake7-second-lap-unlocked','1');
     localStorage.removeItem('wake7-awakened-granted');
-    localStorage.removeItem(SPEED_SESSION_KEY);
+    for(const variant of ['standard','training9','mastery15','mastery24','satori73'])localStorage.removeItem(speedSessionStorageKey(variant));
     localStorage.setItem('wake7-master-gold-granted','1');
     localStorage.setItem('wake7-satori-design-granted','1');
   }catch(_){ }
@@ -5647,10 +6018,18 @@ function debugPrepareFirstLapCheckpoint(){
   lap2ClearedSatoriStages.clear();
   secondLapUnlocked=false;
   awakenedGranted=false;
+  // 一周目の節目を検証するデバッグでは、卒業試験も未合格から始める。
+  speedTrainingTrialCleared=false;
+  speedIntermediateTrialCleared=false;
+  speedMasteryTrialCleared=false;
   try{
     localStorage.removeItem('wake7-second-lap-unlocked');
     localStorage.removeItem('wake7-second-lap-active');
     localStorage.removeItem('wake7-awakened-granted');
+  localStorage.removeItem(STORAGE_KEYS.speedTrainingTrialCleared);
+  localStorage.removeItem(STORAGE_KEYS.speedIntermediateTrialCleared);
+  localStorage.removeItem(STORAGE_KEYS.speedMasteryTrialCleared);
+    localStorage.setItem(STORAGE_KEYS.speedTrialModelVersion,'3');
   }catch(_){ }
   activateCampaignLap(1);
 }
@@ -5678,6 +6057,14 @@ function debugUnlockExtra(count,secondLap=false){
   else debugPrepareFirstLapCheckpoint();
   // 名人への道を直接検証するときも、前提の「だるま修行クリア」状態を再現する。
   STAGES.forEach((_,i)=>clearedStages.add(i));
+  if(!secondLap){
+    speedTrainingTrialCleared=true;
+    storage.set(STORAGE_KEYS.speedTrainingTrialCleared,'1');
+    if(count>30){
+      speedIntermediateTrialCleared=true;
+      storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,'1');
+    }
+  }
   for(let i=0;i<count;i++)clearedExtraStages.add(i);
   try{
     localStorage.setItem('wake7-cleared',JSON.stringify([...clearedStages]));
@@ -5702,6 +6089,14 @@ function debugUnlockSatori(count,secondLap=false){
   else debugPrepareFirstLapCheckpoint();
   STAGES.forEach((_,i)=>clearedStages.add(i));
   EXTRA_STAGES.forEach((_,i)=>clearedExtraStages.add(i));
+  if(!secondLap){
+    speedTrainingTrialCleared=true;
+    speedIntermediateTrialCleared=true;
+    speedMasteryTrialCleared=true;
+    storage.set(STORAGE_KEYS.speedTrainingTrialCleared,'1');
+    storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,'1');
+    storage.set(STORAGE_KEYS.speedMasteryTrialCleared,'1');
+  }
   for(let i=0;i<count;i++)clearedSatoriStages.add(i);
   try{
     localStorage.setItem('wake7-cleared',JSON.stringify([...clearedStages]));
@@ -5717,15 +6112,50 @@ $('debugSatori25').addEventListener('click',()=>debugUnlockSatori(25));
 $('debugSatori72').addEventListener('click',()=>debugUnlockSatori(72));
 function debugOpenSpeed(index){
   if(!DEBUG_MODE)return;
-  speedModeUnlocked=true;
+  speedSatoriUnlocked=true;syncSpeedUnlockFlag();
+  speedVariant='satori73';
   speedSession=newSpeedSession();
   speedSession.index=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
+  speedSession.optimalClears=speedSession.index;
   speedManuallyPaused=false;
-  try{localStorage.setItem('wake7-speed-unlocked','1');}catch(_){ }
+  try{localStorage.setItem(STORAGE_KEYS.speedSatoriUnlocked,'1');}catch(_){ }
   loadSpeedStage(false);
 }
-$('debugSpeed71').addEventListener('click',()=>debugOpenSpeed(71));
 $('debugSpeed72').addEventListener('click',()=>debugOpenSpeed(72));
+function debugOpenSpeedExam(variant,index){
+  if(!DEBUG_MODE)return;
+  if(variant==='training9')speedTrainingUnlocked=true;
+  if(variant==='mastery15')speedIntermediateUnlocked=true;
+  if(variant==='mastery24')speedMasteryUnlocked=true;
+  syncSpeedUnlockFlag();
+  speedVariant=variant;
+  if(variant==='training9'){
+    speedTrainingTrialCleared=false;
+    storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
+  }
+  if(variant==='mastery15'){
+    speedIntermediateTrialCleared=false;
+    storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
+  }
+  if(variant==='mastery24'){
+    speedMasteryTrialCleared=false;
+    storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
+  }
+  speedSession=newSpeedSession();
+  speedSession.index=Math.max(0,Math.min(speedSession.total-1,index));
+  speedSession.optimalClears=speedSession.index;
+  speedSession.requiredTrial=variant;
+  speedManuallyPaused=false;
+  try{
+    if(variant==='training9')localStorage.setItem(STORAGE_KEYS.speedTrainingUnlocked,'1');
+    if(variant==='mastery15')localStorage.setItem(STORAGE_KEYS.speedIntermediateUnlocked,'1');
+    if(variant==='mastery24')localStorage.setItem(STORAGE_KEYS.speedMasteryUnlocked,'1');
+  }catch(_){ }
+  loadSpeedStage(false);
+}
+$('debugSpeedTraining8').addEventListener('click',()=>debugOpenSpeedExam('training9',8));
+$('debugSpeedMastery14').addEventListener('click',()=>debugOpenSpeedExam('mastery15',14));
+$('debugSpeedMastery23').addEventListener('click',()=>debugOpenSpeedExam('mastery24',23));
 $('debugSecondSatori25').addEventListener('click',()=>debugUnlockSatori(25,true));
 $('debugSecondSatori72').addEventListener('click',()=>debugUnlockSatori(72,true));
 $('debugReset').addEventListener('click',()=>resetStoredProgress({resetIntro:true,showIntro:true}));
@@ -5758,8 +6188,8 @@ $('menuOpen3D').addEventListener('click',()=>{window.open('index_3D.html','_blan
 $('menuSatori').addEventListener('click',()=>{closeAppMenu();openSatoriPicker();});
 $('menuSpeed').addEventListener('click',()=>{
   closeAppMenu();
-  if(speedMode){pauseSpeedRun();showMasterDialog('speedIntro');return;}
-  showMasterDialog('speedIntro');
+  if(speedMode){pauseSpeedRun();openSpeedPicker();return;}
+  openSpeedPicker();
 });
 $('speedGo').addEventListener('click',beginSpeedRun);
 $('speedPause').addEventListener('click',()=>{
@@ -5785,7 +6215,7 @@ $('speedRestartCancel').addEventListener('click',()=>{
 $('speedRestartConfirm').addEventListener('click',()=>{
   $('speedRestartDialog').hidden=true;
   speedManuallyPaused=false;
-  try{localStorage.removeItem(SPEED_SESSION_KEY);}catch(_){ }
+  storage.remove(speedSessionStorageKey());
   enterSpeedMode(true);
 });
 $('speedPauseStageMode').addEventListener('click',()=>{
@@ -5893,12 +6323,12 @@ function beginSecondLap(){
   loadStage(0);
 }
 $('masterClose').addEventListener('click',()=>{
-  const openSatori=masterDialogKind==='mastery';
+  const openSatori=masterDialogKind==='mastery'&&(secondLapActive||speedMasteryTrialCleared);
   // 二周目を既に制覇していても、一周目をもう一度完走したら
   // 新しい二周目を始められるようにする。
   const startSecondLap=masterDialogKind==='satori'&&activeLap===1;
   const restartTraining=masterDialogKind==='awakening';
-  const leaveSpeed=masterDialogKind==='speedComplete';
+  const leaveSpeed=['speedComplete','speedTrialFailed'].includes(masterDialogKind);
   const resumeSpeed=masterDialogKind==='speedIntro'&&speedMode;
   hideGameDialogs();
   if(resumeSpeed){startSpeedClock();return;}
@@ -5965,16 +6395,38 @@ $('closeRankDialog').addEventListener('click',()=>{
   }else $('rankBadge').focus();
 });
 $('masterStart').addEventListener('click',()=>{
+  const speedTarget=$('masterStart').dataset.speedVariant;
   hideGameDialogs();
+  if(speedTarget){speedVariant=speedTarget;speedSession=null;enterSpeedMode(true);return;}
   if(masterDialogKind==='awakening'){enterSpeedMode(true);return;}
   if(masterDialogKind==='speedIntro'){enterSpeedMode(!readSpeedSession());return;}
+  if(masterDialogKind==='speedTrialFailed'){
+    speedVariant=['training9','mastery15','mastery24'].includes(speedSession?.requiredTrial)?speedSession.requiredTrial:'training9';
+    speedSession=null;enterSpeedMode(true);return;
+  }
   if(masterDialogKind==='speedComplete'){enterSpeedMode(true);return;}
-  if(masterDialogKind==='primary'||masterDialogKind==='pathInfo')loadExtraStage(0);
+  if(masterDialogKind==='primary'){
+    if(!secondLapActive&&!speedTrainingTrialCleared){speedVariant='training9';speedSession=null;enterSpeedMode(true);return;}
+    loadExtraStage(0);return;
+  }
+  if((masterDialogKind==='intermediate'||(masterDialogKind==='volume'&&extraIndex===29))&&!secondLapActive&&!speedIntermediateTrialCleared){
+    speedVariant='mastery15';speedSession=null;enterSpeedMode(true);return;
+  }
+  if(masterDialogKind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared){
+    speedVariant='mastery24';speedSession=null;enterSpeedMode(true);return;
+  }
+  if(masterDialogKind==='pathInfo')loadExtraStage(0);
   else if(masterDialogKind==='secondLapIntro')loadStage(0);
   else if(masterDialogKind==='satoriIntro')loadSatoriStage(0);
   else if(masterDialogKind==='satori')openSatoriPicker();
   else if(masterDialogKind==='mastery')openSatoriPicker();
   else loadExtraStage(extraIndex+1);
+});
+$('masterSpeedUnlockStart').addEventListener('click',()=>{
+  hideGameDialogs();
+  speedVariant='satori73';
+  speedSession=null;
+  enterSpeedMode(true);
 });
 $('introStart').addEventListener('click',()=>{
   clearInterval(introTimer);
@@ -6253,10 +6705,11 @@ function applyLanguage(lang){
   $('pickerFreeMode').textContent=tr('stagePickerFree');
   $('pickerCustomMode').textContent=tr('stagePickerCustom');
   $('pickerSpeedMode').textContent=tr('stagePickerSpeed');
+  if(!$('speedModeOptions').hidden)renderSpeedModeOptions();
   $('speedPauseStageMode').textContent=tr('stageModeReturn');
   $('speedPauseFreeMode').textContent=tr('stagePickerFree');
   $('speedPauseCustomMode').textContent=tr('stagePickerCustom');
-  $('shortestLabel').textContent=tr('shortest');
+  $('shortestLabel').textContent=tr('shortestDisplay');
   $('moveUnit').textContent=tr('moveUnit');
   $('movesLabel').textContent=tr('moves');
   $('stageMode').textContent=tr('stageMode');
@@ -6291,6 +6744,7 @@ function applyLanguage(lang){
   $('shuffle').textContent=tr('shuffle');
   $('undo').textContent=tr('undo');
   $('hint').textContent=tr('hint');
+  $('speedClockLabel').textContent=tr('timeLabel');
   $('speedPause').textContent=tr('speedPause');
   $('speedGo').textContent=tr('speedGo');
   $('speedPauseTitle').textContent=tr('speedPauseTitle');
@@ -6315,8 +6769,10 @@ function applyLanguage(lang){
   $('debugExtra59').textContent=tr('debugExtra59');
   $('debugSatori25').textContent=tr('debugSatori25');
   $('debugSatori72').textContent=tr('debugSatori72');
-  $('debugSpeed71').textContent=tr('debugSpeed71');
   $('debugSpeed72').textContent=tr('debugSpeed72');
+  $('debugSpeedTraining8').textContent=tr('debugSpeedTraining8');
+  $('debugSpeedMastery14').textContent=tr('debugSpeedMastery14');
+  $('debugSpeedMastery23').textContent=tr('debugSpeedMastery23');
   $('debugSecondUnlock14').textContent=tr('debugUnlock14');
   $('debugSecondExtra14').textContent=tr('debugExtra14');
   $('debugSecondExtra29').textContent=tr('debugExtra29');
@@ -6562,16 +7018,37 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
       localStorage.removeItem('wake7-satori-design-granted');
       localStorage.removeItem('wake7-rainbow-daruma-granted');
       localStorage.removeItem('wake7-speed-unlocked');
+      localStorage.removeItem(STORAGE_KEYS.speedTrainingUnlocked);
+      localStorage.removeItem(STORAGE_KEYS.speedIntermediateUnlocked);
+      localStorage.removeItem(STORAGE_KEYS.speedMasteryUnlocked);
+      localStorage.removeItem(STORAGE_KEYS.speedSatoriUnlocked);
+      localStorage.removeItem(STORAGE_KEYS.speedUnlockModelVersion);
+      localStorage.removeItem(STORAGE_KEYS.speedTrainingTrialCleared);
+      localStorage.removeItem(STORAGE_KEYS.speedIntermediateTrialCleared);
+      localStorage.removeItem(STORAGE_KEYS.speedMasteryTrialCleared);
+      localStorage.removeItem(STORAGE_KEYS.speedTrialModelVersion);
       localStorage.removeItem('wake7-3d-unlocked');
-      localStorage.removeItem(SPEED_SESSION_KEY);
-      localStorage.removeItem(SPEED_BEST_KEY);
-      localStorage.removeItem(SPEED_HISTORY_KEY);
+      for(const variant of ['standard','training9','mastery15','mastery24','satori73']){
+        localStorage.removeItem(speedSessionStorageKey(variant));
+        localStorage.removeItem(speedBestStorageKey(variant));
+        localStorage.removeItem(speedHistoryStorageKey(variant));
+      }
+      localStorage.removeItem(STORAGE_KEYS.speedActiveVariant);
     }
     localStorage.removeItem(FOURTH_CHECKS_STORAGE_KEY);
     localStorage.removeItem(MESSAGE_REVIEW_STORAGE_KEY);
     localStorage.removeItem(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY);
     if(resetIntro)localStorage.removeItem('wake7-intro-seen');
   }catch(_){}
+  // 盤面デザインや速解きの解放を残すリセットでも、卒業試験はコース進行
+  // に属するため新しい周回では未合格に戻す。
+  speedTrainingTrialCleared=false;
+  speedIntermediateTrialCleared=false;
+  speedMasteryTrialCleared=false;
+  storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
+  storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
+  storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
+  storage.set(STORAGE_KEYS.speedTrialModelVersion,'3');
   if(!preserveRewards){
     boardTheme='default';
     boardLayout='normal';
@@ -6583,6 +7060,10 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
     satoriDesignGranted=false;
     rainbowDarumaGranted=false;
     speedModeUnlocked=false;
+    speedTrainingUnlocked=false;
+    speedIntermediateUnlocked=false;
+    speedMasteryUnlocked=false;
+    speedSatoriUnlocked=false;
     threeDUnlocked=false;
   }
   secondLapActive=false;
