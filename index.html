@@ -329,6 +329,7 @@
   .two-move-lesson-dialog .game-dialog{width:min(100%,23.5rem)}
   .two-move-lesson-dialog p{margin:0.25rem 0 0;color:#B9E8F2;font-size:0.8125rem;font-weight:600;line-height:1.7;text-align:left;white-space:pre-line}
   .two-move-lesson-dialog .clear-tip-illustration{margin:0.5625rem 0 0}
+  #twoMoveLessonBoard,#clearTwoMoveLessonBoard,#messageTwoMoveLessonBoard{transition:opacity 90ms linear}
   .two-move-lesson-copy{display:grid;gap:0.375rem;margin:0.5625rem 0 0}
   .two-move-lesson-copy p{box-sizing:border-box;margin:0;padding:0.4375rem 0.5625rem;border:1px solid rgba(98,184,210,.28);border-radius:0.375rem;background:rgba(98,184,210,.075);color:#D4F3F8;font-size:0.75rem;font-weight:650;line-height:1.5;text-align:left}
   .clear-tip-illustration.move-graph{height:9.625rem;margin:0.875rem 0 -0.1875rem}
@@ -572,17 +573,18 @@
   .play-actions #speedPause{margin-left:0}
   .play-actions .chip:disabled{background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.07);color:#536276;opacity:.52;cursor:not-allowed}
   .board-guidance{
-    box-sizing:border-box;width:calc(100% - 1.5rem);max-width:24.5rem;min-height:3.125rem;margin:0.375rem auto -1.1875rem;
+    box-sizing:border-box;width:calc(100% - 1.5rem);max-width:24.5rem;min-height:3.125rem;margin:0.5rem auto -1rem;
     position:relative;z-index:5;display:flex;align-items:center;gap:0.375rem;padding:0;border:0;background:none;
   }
   .board-guidance[hidden]{display:none}
   body:has(#board.spinning) .board-guidance{z-index:1;opacity:.24;pointer-events:none}
-  .board-guidance-daruma{width:2.25rem;height:3.125rem;flex:none;overflow:visible}
+  .board-guidance-daruma{display:none}
   .board-guidance-tail{width:0.5rem;height:0.75rem;flex:none;margin-right:-0.4375rem;z-index:2;transform:translateX(-1px);overflow:visible}
   .board-guidance-text{position:relative;z-index:1;display:block;flex:1;min-width:0;padding:0.25rem 0.375rem;border:1px solid rgba(98,184,210,.45);border-left:0;border-radius:0;background:rgba(98,184,210,.085);color:#D4F3F8;font-size:clamp(10px,3.15vw,13.5px);font-weight:600;letter-spacing:.01em;line-height:1.32;text-align:left}
   .board-guidance-text::before,.board-guidance-text::after{content:"";position:absolute;left:0;width:1px;background:rgba(98,184,210,.45);pointer-events:none}
   .board-guidance-text::before{top:0;height:calc(50% - 0.3125rem)}
   .board-guidance-text::after{bottom:0;height:calc(50% - 0.3125rem)}
+  .board-guidance-text strong{font-weight:900;-webkit-text-stroke:0.2px currentColor;text-shadow:0.18px 0 currentColor,-0.18px 0 currentColor}
   .board-guidance-link{display:inline;margin:0 0 0 0.2rem;padding:0;border:0;background:none;color:#E4BD57;font:inherit;font-size:.86em;font-weight:700;text-decoration:underline;text-underline-offset:0.16em;white-space:nowrap;cursor:pointer}
   .debug-tools{width:100%;max-width:var(--content-max);display:flex;flex-direction:column;align-items:center;gap:0.3125rem;margin-top:0.875rem}
   /* 公開時は、デバッグ領域そのものをレイアウトから外す。 */
@@ -866,6 +868,7 @@
 <div class="game-dialog-backdrop two-move-lesson-dialog" id="twoMoveLessonDialog" hidden>
   <div class="game-dialog" role="dialog" aria-modal="true" aria-labelledby="twoMoveLessonTitle">
     <h2 id="twoMoveLessonTitle">最短2手のコツ</h2>
+    <div class="two-move-lesson-copy" id="twoMoveLessonRule"></div>
     <div class="clear-tip-illustration two-move-lesson-art"><svg id="twoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div>
     <div class="two-move-lesson-copy" id="twoMoveLessonText"></div>
     <div class="dialog-actions"><button class="chip on" id="closeTwoMoveLesson">OK</button></div>
@@ -874,6 +877,7 @@
 <div class="game-dialog-backdrop" id="clearDialog" hidden>
   <div class="game-dialog">
     <div class="clear-dialog-heading"><h2 id="clearDialogMessage"></h2><span class="clear-stage-context" id="clearStageContext"></span></div>
+    <div class="two-move-lesson-copy" id="clearTwoMoveLessonRule" hidden></div>
     <div class="clear-tip-illustration" id="clearTipIllustration" hidden></div>
     <div id="clearDialogText"><span id="clearDialogTextBody"></span><button class="clear-tip-link" id="clearTipLink" type="button" hidden></button></div>
     <div class="two-move-lesson-copy" id="clearTwoMoveLessonCopy" hidden></div>
@@ -899,6 +903,7 @@
     <div class="master-roadmap" id="messageRoadmap" hidden></div>
     <p class="master-roadmap-note" id="messageRoadmapNote" hidden></p>
     <p class="master-rules" id="messageRules" hidden></p>
+    <div class="two-move-lesson-copy" id="messageTwoMoveLessonRule" hidden></div>
     <div class="clear-tip-illustration" id="messageIllustration" hidden></div>
     <div id="messageDialogText"><span id="messageDialogTextBody"></span><button class="clear-tip-link" id="messageRankLink" type="button" hidden></button></div>
     <div class="two-move-lesson-copy" id="messageTwoMoveLessonCopy" hidden></div>
@@ -2322,7 +2327,14 @@ function renderMainBoardGuidance(){
   const text=$('boardGuidanceText');
   text.replaceChildren();
   if(!key)return;
-  text.append(document.createTextNode(tr(key)));
+  const message=tr(key),parts=message.split(/([12]枚)/g);
+  parts.forEach(part=>{
+    if(!part)return;
+    if(/^[12]枚$/.test(part)){
+      const strong=document.createElement('strong');
+      strong.textContent=part;text.append(strong);
+    }else text.append(document.createTextNode(part));
+  });
   const link=document.createElement('button');
   link.type='button';
   link.className='board-guidance-link';
@@ -3322,16 +3334,26 @@ function openIntroGuide(){
 const clearGuideTimers=new Map();
 function stopClearGuideBoard(id){clearInterval(clearGuideTimers.get(id));clearGuideTimers.delete(id);}
 function currentTwoMoveLessonVariant(){
-  return isMode('stage')&&stageIndex>=8&&stageIndex<12?'joinTwo':'joinOne';
+  // リロード直後でも、復元済みの画面案内と同じ解説を開く。
+  return mainBoardGuidance()==='basicGuideJoinTwo'?'joinTwo':'joinOne';
 }
 function lessonVariantFromArt(art){
   return art==='twoMoveLessonTwo'?'joinTwo':art==='twoMoveLesson'?'joinOne':null;
+}
+function renderTwoMoveLessonRule(id){
+  const root=$(id);
+  if(!root)return;
+  root.replaceChildren();
+  const line=document.createElement('p');
+  line.textContent=tr('twoMoveLessonRule');
+  root.appendChild(line);
+  root.hidden=false;
 }
 function renderTwoMoveLessonCopy(id,variant='joinOne'){
   const root=$(id);
   if(!root)return;
   root.replaceChildren();
-  const lines=variant==='joinTwo'?['twoMoveLessonSecond']:['twoMoveLessonRule','twoMoveLessonPractice'];
+  const lines=[variant==='joinTwo'?'twoMoveLessonSecond':'twoMoveLessonPractice'];
   lines.forEach(key=>{
     const line=document.createElement('p');
     line.textContent=tr(key);
@@ -3341,6 +3363,7 @@ function renderTwoMoveLessonCopy(id,variant='joinOne'){
 }
 function openTwoMoveLessonDialog(variant=currentTwoMoveLessonVariant()){
   $('twoMoveLessonTitle').textContent=tr('twoMoveLessonTitle');
+  renderTwoMoveLessonRule('twoMoveLessonRule');
   renderTwoMoveLessonCopy('twoMoveLessonText',variant);
   $('closeTwoMoveLesson').textContent=tr('twoMoveLessonClose');
   buildTwoMoveLessonBoard('twoMoveLessonBoard',variant);
@@ -3440,6 +3463,7 @@ function buildTwoMoveLessonBoard(id,variant='joinOne'){
   swipe.setAttribute('class','intro-swipe');swipe.setAttribute('cx',swipeStart.x.toFixed(2));swipe.setAttribute('cy',swipeStart.y.toFixed(2));swipe.setAttribute('r','6.5');guide.appendChild(swipe);
   const play=()=>{
     if(!guide.isConnected){stopClearGuideBoard(id);return;}
+    guide.style.opacity='1';
     tiles.splice(0,N,...initialTiles);
     initialTiles.forEach((tile,i)=>{
       tile.classList.remove('guide-happy');
@@ -3449,14 +3473,15 @@ function buildTwoMoveLessonBoard(id,variant='joinOne'){
     });
     grips.forEach(marker=>{marker.style.display='';guide.appendChild(marker);});
     swipe.style.display='none';guide.appendChild(swipe);
-    setTimeout(()=>{if(guide.isConnected)swipe.style.display='';},900);
+    // まず盤面を十分に観察してから、つかむ位置と回転を見せる。
+    setTimeout(()=>{if(guide.isConnected)swipe.style.display='';},1450);
     setTimeout(()=>{
       if(!guide.isConnected)return;
       grips.forEach(marker=>marker.style.display='none');
       const old=tiles.slice(),cells=t.cells,unit=document.createElementNS(NS_,'g'),rotation=document.createElementNS(NS_,'animateTransform');
       rotation.setAttribute('attributeName','transform');rotation.setAttribute('type','rotate');
       rotation.setAttribute('from','0 '+t.x+' '+t.y);rotation.setAttribute('to',move.dir*120+' '+t.x+' '+t.y);
-      rotation.setAttribute('dur','760ms');rotation.setAttribute('fill','freeze');rotation.setAttribute('calcMode','spline');rotation.setAttribute('keySplines','.2 .75 .2 1');
+      rotation.setAttribute('dur','400ms');rotation.setAttribute('fill','freeze');rotation.setAttribute('calcMode','spline');rotation.setAttribute('keySplines','.2 .75 .2 1');
       for(let i=0;i<3;i++){
         const from=move.dir>0?cells[i]:cells[(i+1)%3];
         unit.appendChild(old[from]);
@@ -3470,10 +3495,12 @@ function buildTwoMoveLessonBoard(id,variant='joinOne'){
           tile.setAttribute('class','tile '+(after[to]?'fallen':'stand'));tiles[to]=tile;guide.appendChild(tile);
         }
         unit.remove();swipe.setAttribute('cx',swipeStart.x.toFixed(2));swipe.setAttribute('cy',swipeStart.y.toFixed(2));guide.appendChild(swipe);swipe.style.display='none';
-      },760);
-    },1500);
+      },400);
+    },2450);
+    // 次の初期盤面へ戻す直前に短く消し、ループの切り替わりを明確にする。
+    setTimeout(()=>{if(guide.isConnected)guide.style.opacity='0';},3350);
   };
-  play();clearGuideTimers.set(id,setInterval(play,3300));
+  play();clearGuideTimers.set(id,setInterval(play,3600));
 }
 function paint(){
   for(let i=0;i<N;i++){
@@ -5188,6 +5215,7 @@ function renderClearTip(){
   const text=stageClearText(),art=stageClearArt(),illustration=$('clearTipIllustration');
   const twoMoveLesson=lessonVariantFromArt(art);
   const lessonCopy=$('clearTwoMoveLessonCopy');
+  const lessonRule=$('clearTwoMoveLessonRule');
   const twoMoveCard=extraMode?CLEAR_TWO_MOVE_CARDS[extraIndex]:undefined;
   const guideCard=extraMode?CLEAR_GUIDE_CARDS[extraIndex]:null;
   const rankLink=extraMode&&EXTRA_CLEAR_TIPS[extraIndex]==='extraClearRankCollection';
@@ -5219,13 +5247,20 @@ function renderClearTip(){
   if(twoMoveLesson)buildTwoMoveLessonBoard('clearTwoMoveLessonBoard',twoMoveLesson);
   illustration.hidden=!art;
   lessonCopy.hidden=!twoMoveLesson;
+  lessonRule.hidden=!twoMoveLesson;
   if(twoMoveLesson){
+    renderTwoMoveLessonRule('clearTwoMoveLessonRule');
     renderTwoMoveLessonCopy('clearTwoMoveLessonCopy',twoMoveLesson);
-    // 「次からは…」→ 実演 → 解説、の順で読めるようにする。
+    // 「次からは…」→ 鉄則 → 実演 → 具体策、の順で読めるようにする。
     $('clearDialogText').after(illustration);
+    illustration.before(lessonRule);
     illustration.after(lessonCopy);
+  }else{
+    // 節目以外のクリアでは、前回の最短2手レッスンを残さない。
+    lessonRule.replaceChildren();
+    lessonCopy.replaceChildren();
+    document.querySelector('#clearDialog .clear-dialog-heading').after(illustration);
   }
-  else document.querySelector('#clearDialog .clear-dialog-heading').after(illustration);
 }
 const MESSAGE_REVIEW_STORAGE_KEY='wake7-message-review';
 const MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY='wake7-message-review-last-clear';
@@ -5320,7 +5355,7 @@ function messageReviewStageContext(entry){
 }
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
-  const art=entry.art||'',twoMoveLesson=lessonVariantFromArt(art),illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
+  const art=entry.art||'',twoMoveLesson=lessonVariantFromArt(art),illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
   $('messagePrev').textContent='← '+tr('prev');
   $('messageNext').textContent=tr('next')+' →';
   $('closeMessages').textContent=tr('close');
@@ -5398,10 +5433,17 @@ function renderMessageReview(){
   if(twoMoveLesson)buildTwoMoveLessonBoard('messageTwoMoveLessonBoard',twoMoveLesson);
   illustration.hidden=!art;
   lessonCopy.hidden=!twoMoveLesson;
+  lessonRule.hidden=!twoMoveLesson;
   if(twoMoveLesson){
+    renderTwoMoveLessonRule('messageTwoMoveLessonRule');
     renderTwoMoveLessonCopy('messageTwoMoveLessonCopy',twoMoveLesson);
     $('messageDialogText').after(illustration);
+    illustration.before(lessonRule);
     illustration.after(lessonCopy);
+  }else{
+    // 一覧の再表示でも、節目以外に前回のレッスンを残さない。
+    lessonRule.replaceChildren();
+    lessonCopy.replaceChildren();
   }
   if(entry.master==='satoriIntro'||entry.master==='secondLapIntro'){
     seal.classList.remove('animate');
