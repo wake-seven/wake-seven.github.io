@@ -331,7 +331,8 @@
   .two-move-lesson-dialog .clear-tip-illustration{margin:0.5625rem 0 0}
   #twoMoveLessonBoard,#clearTwoMoveLessonBoard,#messageTwoMoveLessonBoard{transition:opacity 90ms linear}
   .two-move-lesson-copy{display:grid;gap:0.375rem;margin:0.5625rem 0 0}
-  .two-move-lesson-copy p{box-sizing:border-box;margin:0;padding:0.4375rem 0.5625rem;border:1px solid rgba(98,184,210,.28);border-radius:0.375rem;background:rgba(98,184,210,.075);color:#D4F3F8;font-size:0.75rem;font-weight:650;line-height:1.5;text-align:left}
+  .two-move-lesson-copy p{box-sizing:border-box;margin:0;padding:0.4375rem 0.5625rem;border:1px solid rgba(98,184,210,.28);border-radius:0.375rem;background:rgba(98,184,210,.075);color:#F7F1E5;font-size:0.75rem;font-weight:650;line-height:1.5;text-align:left}
+  .two-move-lesson-copy strong{color:#62D7F4;font-weight:900}
   .clear-tip-illustration.move-graph{height:9.625rem;margin:0.875rem 0 -0.1875rem}
   .clear-tip-illustration.move-graph svg{width:20.9375rem;height:9.625rem;transform:translateX(-20px)}
   .clear-tip-illustration.board-card{height:10.25rem;margin:0.75rem 0 -0.3125rem}
@@ -579,12 +580,9 @@
   .board-guidance[hidden]{display:none}
   body:has(#board.spinning) .board-guidance{z-index:1;opacity:.24;pointer-events:none}
   .board-guidance-daruma{display:none}
-  .board-guidance-tail{width:0.5rem;height:0.75rem;flex:none;margin-right:-0.4375rem;z-index:2;transform:translateX(-1px);overflow:visible}
-  .board-guidance-text{position:relative;z-index:1;display:block;flex:1;min-width:0;padding:0.25rem 0.375rem;border:1px solid rgba(98,184,210,.45);border-left:0;border-radius:0;background:rgba(98,184,210,.085);color:#D4F3F8;font-size:clamp(10px,3.15vw,13.5px);font-weight:600;letter-spacing:.01em;line-height:1.32;text-align:left}
-  .board-guidance-text::before,.board-guidance-text::after{content:"";position:absolute;left:0;width:1px;background:rgba(98,184,210,.45);pointer-events:none}
-  .board-guidance-text::before{top:0;height:calc(50% - 0.3125rem)}
-  .board-guidance-text::after{bottom:0;height:calc(50% - 0.3125rem)}
-  .board-guidance-text strong{font-weight:900;-webkit-text-stroke:0.2px currentColor;text-shadow:0.18px 0 currentColor,-0.18px 0 currentColor}
+  .board-guidance-tail{display:none}
+  .board-guidance-text{position:relative;z-index:1;display:block;flex:1;min-width:0;padding:0.25rem 0.375rem;border:1px solid rgba(98,184,210,.45);border-radius:0.25rem;background:rgba(98,184,210,.085);color:#F7F1E5;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;font-size:clamp(10px,3.15vw,13.5px);font-weight:600;letter-spacing:.01em;line-height:1.32;text-align:left}
+  .board-guidance-text strong{color:#62D7F4;font-size:inherit;font-weight:900}
   .board-guidance-link{display:inline;margin:0 0 0 0.2rem;padding:0;border:0;background:none;color:#E4BD57;font:inherit;font-size:.86em;font-weight:700;text-decoration:underline;text-underline-offset:0.16em;white-space:nowrap;cursor:pointer}
   .debug-tools{width:100%;max-width:var(--content-max);display:flex;flex-direction:column;align-items:center;gap:0.3125rem;margin-top:0.875rem}
   /* 公開時は、デバッグ領域そのものをレイアウトから外す。 */
@@ -1854,8 +1852,8 @@ Object.assign(UI_TEXT.zh,{soundOn:'音效开启',soundOff:'音效关闭'});
 Object.assign(UI_TEXT.ko,{soundOn:'효과음 켜짐',soundOff:'효과음 꺼짐'});
 // 基本編の盤面直前に出す、最短2手の探索条件。
 Object.assign(UI_TEXT.ja,{
-  basicGuideJoinOne:'外側の寝た2枚に1枚を合わせにいき、同時に残り2枚を起こすように回そう',
-  basicGuideJoinTwo:'外側の寝た1枚に2枚を合わせにいき、同時に残り1枚を起こすように回そう'
+  basicGuideJoinOne:'外側の寝た2枚に1枚を合わせにいき、残り2枚を同時に起こそう',
+  basicGuideJoinTwo:'外側の寝た1枚に2枚を合わせにいき、残り1枚を同時に起こそう'
 });
 Object.assign(UI_TEXT.en,{
   basicGuideJoinOne:'Match one to the two fallen outer daruma; wake the other two.',
@@ -1874,8 +1872,8 @@ Object.assign(UI_TEXT.ja,{
   twoMoveLessonLink:'詳しい解説を見る →',
   twoMoveLessonTitle:'最短2手のコツ',
   twoMoveLessonRule:'最短2手では、2枚が同じ向きで、もう1枚だけ別の向きの3枚を回すのが鉄則です。',
-  twoMoveLessonPractice:'基本問題の前半では、外側の寝た2枚に1枚を合わせにいき、同時に残り2枚を起こすように回そう。',
-  twoMoveLessonSecond:'基本問題の後半では、外側の寝た1枚に2枚を合わせにいき、同時に残り1枚を起こすように回そう。',
+  twoMoveLessonPractice:'基本問題の前半では、外側の寝た2枚に1枚を合わせにいき、残り2枚を同時に起こそう。',
+  twoMoveLessonSecond:'基本問題の後半では、外側の寝た1枚に2枚を合わせにいき、残り1枚を同時に起こそう。',
   twoMoveLessonClose:'OK',
   stageClear3:'次からは、最短2手の問題です。',
   stageClear8:'次からは、後半の基本問題です。'
@@ -2320,6 +2318,15 @@ const BASIC_LESSON_ASSISTS=Object.freeze({
   3:'arrow',4:'axis',8:'arrow',9:'axis'
 });
 function mainBoardGuidance(){return MAIN_BOARD_GUIDANCE[runtimeStageKey()]||null;}
+function appendMoveCountEmphasis(root,message){
+  message.split(/([12]枚)/g).forEach(part=>{
+    if(!part)return;
+    if(/^[12]枚$/.test(part)){
+      const strong=document.createElement('strong');
+      strong.textContent=part;root.append(strong);
+    }else root.append(document.createTextNode(part));
+  });
+}
 function renderMainBoardGuidance(){
   const key=mainBoardGuidance(),guide=$('boardGuidance');
   guide.hidden=!key;
@@ -2327,14 +2334,7 @@ function renderMainBoardGuidance(){
   const text=$('boardGuidanceText');
   text.replaceChildren();
   if(!key)return;
-  const message=tr(key),parts=message.split(/([12]枚)/g);
-  parts.forEach(part=>{
-    if(!part)return;
-    if(/^[12]枚$/.test(part)){
-      const strong=document.createElement('strong');
-      strong.textContent=part;text.append(strong);
-    }else text.append(document.createTextNode(part));
-  });
+  appendMoveCountEmphasis(text,tr(key));
   const link=document.createElement('button');
   link.type='button';
   link.className='board-guidance-link';
@@ -3345,7 +3345,7 @@ function renderTwoMoveLessonRule(id){
   if(!root)return;
   root.replaceChildren();
   const line=document.createElement('p');
-  line.textContent=tr('twoMoveLessonRule');
+  appendMoveCountEmphasis(line,tr('twoMoveLessonRule'));
   root.appendChild(line);
   root.hidden=false;
 }
@@ -3356,7 +3356,7 @@ function renderTwoMoveLessonCopy(id,variant='joinOne'){
   const lines=[variant==='joinTwo'?'twoMoveLessonSecond':'twoMoveLessonPractice'];
   lines.forEach(key=>{
     const line=document.createElement('p');
-    line.textContent=tr(key);
+    appendMoveCountEmphasis(line,tr(key));
     root.appendChild(line);
   });
   root.hidden=false;
