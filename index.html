@@ -572,7 +572,7 @@
   .play-actions #speedPause{margin-left:0}
   .play-actions .chip:disabled{background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.07);color:#536276;opacity:.52;cursor:not-allowed}
   .board-guidance{
-    box-sizing:border-box;width:calc(100% - 1.5rem);max-width:24.5rem;min-height:3.125rem;margin:0.1875rem auto -1.5rem;
+    box-sizing:border-box;width:calc(100% - 1.5rem);max-width:24.5rem;min-height:3.125rem;margin:0.375rem auto -1.1875rem;
     position:relative;z-index:5;display:flex;align-items:center;gap:0.375rem;padding:0;border:0;background:none;
   }
   .board-guidance[hidden]{display:none}
@@ -584,9 +584,6 @@
   .board-guidance-text::before{top:0;height:calc(50% - 0.3125rem)}
   .board-guidance-text::after{bottom:0;height:calc(50% - 0.3125rem)}
   .board-guidance-link{display:inline;margin:0 0 0 0.2rem;padding:0;border:0;background:none;color:#E4BD57;font:inherit;font-size:.86em;font-weight:700;text-decoration:underline;text-underline-offset:0.16em;white-space:nowrap;cursor:pointer}
-  body.board-guidance-active #rotateBoardBack,body.board-guidance-active #rotateBoard{padding:0.3125rem 0.25rem;font-size:0}
-  body.board-guidance-active #rotateBoardBack .transform-svg,body.board-guidance-active #rotateBoard .transform-svg{width:0.75rem;height:0.75rem;margin:0;vertical-align:0}
-  body.board-guidance-active .board-view-controls:not(.bottom){top:3.875rem}
   .debug-tools{width:100%;max-width:var(--content-max);display:flex;flex-direction:column;align-items:center;gap:0.3125rem;margin-top:0.875rem}
   /* 公開時は、デバッグ領域そのものをレイアウトから外す。 */
   .debug-tools[hidden]{display:none!important}
@@ -1852,8 +1849,8 @@ Object.assign(UI_TEXT.zh,{soundOn:'音效开启',soundOff:'音效关闭'});
 Object.assign(UI_TEXT.ko,{soundOn:'효과음 켜짐',soundOff:'효과음 꺼짐'});
 // 基本編の盤面直前に出す、最短2手の探索条件。
 Object.assign(UI_TEXT.ja,{
-  basicGuideJoinOne:'外側の寝た2枚に1枚を合わせにいき、残り2枚を起こすように回そう',
-  basicGuideJoinTwo:'外側の寝た1枚に2枚を合わせにいき、残り1枚を起こすように回そう'
+  basicGuideJoinOne:'外側の寝た2枚に1枚を合わせにいき、同時に残り2枚を起こすように回そう',
+  basicGuideJoinTwo:'外側の寝た1枚に2枚を合わせにいき、同時に残り1枚を起こすように回そう'
 });
 Object.assign(UI_TEXT.en,{
   basicGuideJoinOne:'Match one to the two fallen outer daruma; wake the other two.',
@@ -1872,8 +1869,8 @@ Object.assign(UI_TEXT.ja,{
   twoMoveLessonLink:'詳しい解説を見る →',
   twoMoveLessonTitle:'最短2手のコツ',
   twoMoveLessonRule:'最短2手では、2枚が同じ向きで、もう1枚だけ別の向きの3枚を回すのが鉄則です。',
-  twoMoveLessonPractice:'基本問題の前半では、外側の寝た2枚に1枚を合わせにいき、残り2枚を起こすように回そう。',
-  twoMoveLessonSecond:'基本問題の後半では、外側の寝た1枚に2枚を合わせにいき、残り1枚を起こすように回そう。',
+  twoMoveLessonPractice:'基本問題の前半では、外側の寝た2枚に1枚を合わせにいき、同時に残り2枚を起こすように回そう。',
+  twoMoveLessonSecond:'基本問題の後半では、外側の寝た1枚に2枚を合わせにいき、同時に残り1枚を起こすように回そう。',
   twoMoveLessonClose:'OK',
   stageClear3:'次からは、最短2手の問題です。',
   stageClear8:'次からは、後半の基本問題です。'
