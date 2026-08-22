@@ -2053,13 +2053,84 @@ let tileEls=[], baseTiles=[], drag=null, busy=false;
 let stageIndex=0,extraIndex=0,satoriIndex=0,extraMode=false,satoriMode=false,speedMode=false,freeMode=false,clearShown=false,clearTimer=0,nextStageAttention=false;
 let pendingMasterThemeRefresh=false;
 let lastAnalyticsStageKey='';
-function analyticsStageInfo(){
-  if(freeMode||customMode)return null;
+
+/* ---- 状態管理の境界 ----
+ * 盤面の描画や操作は歴史的にこのファイルへ段階的に追加されてきたため、
+ * モード判定と保存キーが各所に散らばりやすい。新しい解放要素・速解き派生
+ * モード・問題ごとの案内を追加するときは、まずここを経由する。
+ */
+const STORAGE_KEYS=Object.freeze({
+  language:'wake7-language',sound:'wake7-sound',
+  boardTheme:'wake7-board-theme',boardThemeChosen:'wake7-board-theme-chosen',
+  boardLayout:'wake7-board-layout',boardLayoutChosen:'wake7-board-layout-chosen',
+  darumaColor:'wake7-daruma-color',darumaColorChosen:'wake7-daruma-color-chosen',
+  cleared:'wake7-cleared',extraCleared:'wake7-extra-cleared',satoriCleared:'wake7-satori-cleared',
+  currentStage:'wake7-current-stage',activeSession:'wake7-active-session',activeLap:'wake7-active-lap',
+  introSeen:'wake7-intro-seen',messageReview:'wake7-message-review',messageReviewLast:'wake7-message-review-last-clear',
+  speedSession:'wake7-speed-session',speedBestMs:'wake7-speed-best-ms',speedHistory:'wake7-speed-history',
+  speedUnlocked:'wake7-speed-unlocked',threeDUnlocked:'wake7-3d-unlocked',
+  masterGoldGranted:'wake7-master-gold-granted',satoriDesignGranted:'wake7-satori-design-granted',
+  secondLapActive:'wake7-second-lap-active',secondLapUnlocked:'wake7-second-lap-unlocked',
+  rainbowDarumaGranted:'wake7-rainbow-daruma-granted',awakenedGranted:'wake7-awakened-granted',
+  satoriOrderVersion:'wake7-satori-order-version'
+});
+const storage={
+  get(key,fallback=null){try{const value=localStorage.getItem(key);return value===null?fallback:value;}catch(_){return fallback;}},
+  set(key,value){try{localStorage.setItem(key,value);return true;}catch(_){return false;}},
+  remove(key){try{localStorage.removeItem(key);return true;}catch(_){return false;}},
+  json(key,fallback=null){try{const raw=localStorage.getItem(key);return raw===null?fallback:JSON.parse(raw);}catch(_){return fallback;}},
+  setJson(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch(_){return false;}}
+};
+const COURSE_DEFINITIONS=Object.freeze({
+  primary:{id:'primary',total:STAGES.length,label:'training'},
+  mastery:{id:'mastery',total:EXTRA_STAGES.length,label:'mastery'},
+  satori:{id:'satori',total:SATORI_STAGES.length,label:'satori'},
+  speed:{id:'speed',total:SATORI_STAGES.length,label:'speed'},
+  free:{id:'free',total:null,label:'free'},custom:{id:'custom',total:null,label:'custom'}
+});
+function runtimeContext(){
+  if(customMode)return {mode:'custom',course:COURSE_DEFINITIONS.custom,index:null,position:null,total:null,lap:activeLap};
+  if(freeMode)return {mode:'free',course:COURSE_DEFINITIONS.free,index:null,position:null,total:null,lap:activeLap};
   if(speedMode){
+    const index=speedSession?.index||0;
+    return {mode:'speed',course:COURSE_DEFINITIONS.speed,index,position:index+1,total:SATORI_STAGES.length,lap:activeLap};
+  }
+  if(satoriMode)return {mode:'satori',course:COURSE_DEFINITIONS.satori,index:satoriIndex,position:satoriIndex+1,total:SATORI_STAGES.length,lap:activeLap};
+  if(extraMode)return {mode:'mastery',course:COURSE_DEFINITIONS.mastery,index:extraIndex,position:extraIndex+1,total:EXTRA_STAGES.length,lap:activeLap};
+  return {mode:'primary',course:COURSE_DEFINITIONS.primary,index:stageIndex,position:stageIndex+1,total:STAGES.length,lap:activeLap};
+}
+function runtimeStageKey(){
+  const ctx=runtimeContext();
+  return ctx.position===null?ctx.mode:ctx.mode+':'+ctx.index;
+}
+function activeProgressStore(course=runtimeContext().mode){
+  if(course==='primary')return {set:clearedStages,total:STAGES.length};
+  if(course==='mastery')return {set:clearedExtraStages,total:EXTRA_STAGES.length};
+  if(course==='satori')return {set:clearedSatoriStages,total:SATORI_STAGES.length};
+  return {set:null,total:null};
+}
+function isCampaignMode(){const mode=runtimeContext().mode;return mode==='primary'||mode==='mastery'||mode==='satori';}
+function featureUnlocked(feature){
+  switch(feature){
+    case 'speedRun':return speedModeUnlocked;
+    case 'genome':return hasMasterReward();
+    case 'boardTheme':return hasMasterReward();
+    case 'threeD':return threeDUnlocked;
+    default:return false;
+  }
+}
+// 問題ごとのメイン画面案内。値を追加するだけで描画側へ接続できる拡張点。
+// key は runtimeStageKey() の形式（例: primary:0, mastery:12）。
+const MAIN_BOARD_GUIDANCE=Object.freeze({});
+function mainBoardGuidance(){return MAIN_BOARD_GUIDANCE[runtimeStageKey()]||null;}
+function analyticsStageInfo(){
+  const context=runtimeContext();
+  if(context.mode==='free'||context.mode==='custom')return null;
+  if(context.mode==='speed'){
     const position=(speedSession?.index||0)+1;
     return {game_mode:'speed',course:'speed_run',stage_id:'speed_'+String(position).padStart(2,'0'),stage_number:position,stage_total:SATORI_STAGES.length,minimum_moves:best,level_name:'speed '+position};
   }
-  if(satoriMode){
+  if(context.mode==='satori'){
     const position=satoriIndex+1;
     return {
       game_mode:'satori',course:'satori',stage_id:'satori_'+String(position).padStart(2,'0'),
@@ -2067,7 +2138,7 @@ function analyticsStageInfo(){
       minimum_moves:best,level_name:'satori '+position
     };
   }
-  if(extraMode){
+  if(context.mode==='mastery'){
     const volume=Math.floor(extraIndex/STAGES.length)+1;
     const position=extraIndex%STAGES.length+1;
     const course=['mastery_jo','mastery_ha','mastery_ri','mastery_kiwami'][volume-1];
@@ -2184,10 +2255,9 @@ try{clearedExtraStages=new Set(JSON.parse(localStorage.getItem('wake7-extra-clea
 let clearedSatoriStages=new Set();
 try{clearedSatoriStages=new Set(JSON.parse(localStorage.getItem('wake7-satori-cleared')||'[]'));}catch(_){}
 function readLapProgress(lap,part){
-  try{
-    const raw=localStorage.getItem('wake7-lap'+lap+'-'+part+'-cleared');
-    return raw===null?null:new Set(JSON.parse(raw));
-  }catch(_){return null;}
+  const key='wake7-lap'+lap+'-'+part+'-cleared';
+  const value=storage.json(key,null);
+  return value===null?null:new Set(Array.isArray(value)?value:[]);
 }
 const fullStageSet=stages=>new Set(stages.map((_,i)=>i));
 let lap1ClearedStages=readLapProgress(1,'primary');
@@ -2218,21 +2288,19 @@ clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
 clearedSatoriStages=activeLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;
 secondLapActive=activeLap===2;
 function persistLapProgress(){
-  try{
-    for(const [lap,primary,extra,satori] of [[1,lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages],[2,lap2ClearedStages,lap2ClearedExtraStages,lap2ClearedSatoriStages]]){
-      localStorage.setItem('wake7-lap'+lap+'-primary-cleared',JSON.stringify([...primary]));
-      localStorage.setItem('wake7-lap'+lap+'-extra-cleared',JSON.stringify([...extra]));
-      localStorage.setItem('wake7-lap'+lap+'-satori-cleared',JSON.stringify([...satori]));
-    }
-    localStorage.setItem('wake7-cleared',JSON.stringify([...clearedStages]));
-    localStorage.setItem('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
-    localStorage.setItem('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));
-    localStorage.setItem('wake7-active-lap',String(activeLap));
-    if(secondLapUnlocked)localStorage.setItem('wake7-second-lap-unlocked','1');
-    else localStorage.removeItem('wake7-second-lap-unlocked');
-    if(activeLap===2)localStorage.setItem('wake7-second-lap-active','1');
-    else localStorage.removeItem('wake7-second-lap-active');
-  }catch(_){ }
+  for(const [lap,primary,extra,satori] of [[1,lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages],[2,lap2ClearedStages,lap2ClearedExtraStages,lap2ClearedSatoriStages]]){
+    storage.setJson('wake7-lap'+lap+'-primary-cleared',[...primary]);
+    storage.setJson('wake7-lap'+lap+'-extra-cleared',[...extra]);
+    storage.setJson('wake7-lap'+lap+'-satori-cleared',[...satori]);
+  }
+  storage.setJson(STORAGE_KEYS.cleared,[...clearedStages]);
+  storage.setJson(STORAGE_KEYS.extraCleared,[...clearedExtraStages]);
+  storage.setJson(STORAGE_KEYS.satoriCleared,[...clearedSatoriStages]);
+  storage.set(STORAGE_KEYS.activeLap,String(activeLap));
+  if(secondLapUnlocked)storage.set(STORAGE_KEYS.secondLapUnlocked,'1');
+  else storage.remove(STORAGE_KEYS.secondLapUnlocked);
+  if(activeLap===2)storage.set(STORAGE_KEYS.secondLapActive,'1');
+  else storage.remove(STORAGE_KEYS.secondLapActive);
 }
 function activateCampaignLap(lap){
   if(lap===2&&!secondLapUnlocked)return false;
@@ -2382,40 +2450,72 @@ const masterHintsDisabled=()=>masterVolume()>=2;
 const isThirdVolume=()=>extraMode&&extraIndex>=30&&extraIndex<45;
 const isFourthVolume=()=>extraMode&&extraIndex>=45&&extraIndex<60;
 
-const SPEED_SESSION_KEY='wake7-speed-session';
-const SPEED_BEST_KEY='wake7-speed-best-ms';
-const SPEED_HISTORY_KEY='wake7-speed-history';
+/* 速解きは同じセッション基盤で派生ルールを増やせるよう、モード定義を分離する。 */
+const SPEED_MODE_DEFINITIONS=Object.freeze({
+  // 現行仕様。リファクタリング中はこの定義だけを実際の入口に使う。
+  standard:{id:'standard',labelKey:'speedMode',order:'mixed',source:'satori',total:SATORI_STAGES.length,unlock:'speedRun'},
+  // 将来の段階解放用。まだメニューや出題には接続しない。
+  training9:{id:'training9',labelKey:'speedModeTraining',order:'shuffle',source:'twoMove',total:9,unlock:'primary'},
+  mastery15:{id:'mastery15',labelKey:'speedModeMastery',order:'sample',source:'all',total:15,unlock:'mastery'},
+  satori73:{id:'satori73',labelKey:'speedModeSatori',order:'mixed',source:'satori',total:SATORI_STAGES.length,unlock:'satori'}
+});
+let speedVariant='standard';
+function activeSpeedDefinition(){return SPEED_MODE_DEFINITIONS[speedVariant]||SPEED_MODE_DEFINITIONS.standard;}
+function speedStagePool(definition=activeSpeedDefinition()){
+  if(definition.source==='twoMove')return SATORI_STAGES.filter(stage=>stage.par===2).slice(0,definition.total);
+  // 「全部から」の派生版も、同じ正規化済みの全パターンを母集団にする。
+  return SATORI_STAGES;
+}
+function speedVariantUnlocked(id){
+  const definition=SPEED_MODE_DEFINITIONS[id];
+  if(!definition)return false;
+  if(id==='standard')return speedModeUnlocked;
+  if(definition.unlock==='primary')return allPrimaryCleared();
+  if(definition.unlock==='mastery')return isMastered();
+  if(definition.unlock==='satori')return isSatoriMastered();
+  return false;
+}
+const SPEED_SESSION_KEY=STORAGE_KEYS.speedSession;
+const SPEED_BEST_KEY=STORAGE_KEYS.speedBestMs;
+const SPEED_HISTORY_KEY=STORAGE_KEYS.speedHistory;
 let speedSession=null,speedClockStarted=0,speedClockTimer=0,speedManuallyPaused=false;
 function shuffleCopy(values){
   const result=[...values];
   for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]];}
   return result;
 }
-function makeSpeedOrder(){
+function makeSpeedOrder(variant=activeSpeedDefinition().id){
+  const definition=SPEED_MODE_DEFINITIONS[variant]||SPEED_MODE_DEFINITIONS.standard;
+  const pool=speedStagePool(definition),total=definition.total||pool.length;
+  if(definition.order==='shuffle')return shuffleCopy(Array.from({length:pool.length},(_,i)=>i)).slice(0,total);
+  if(definition.order==='sample')return shuffleCopy(Array.from({length:pool.length},(_,i)=>i)).slice(0,total);
   // 1手問題は先頭、2手問題はひとまとまり。以降は難易度の流れを保ちつつ5問ごとに入れ替える。
-  const order=[0,...shuffleCopy(Array.from({length:9},(_,i)=>i+1))];
-  for(let start=10;start<SATORI_STAGES.length;start+=5){
-    order.push(...shuffleCopy(Array.from({length:Math.min(5,SATORI_STAGES.length-start)},(_,i)=>start+i)));
+  const order=[0,...shuffleCopy(Array.from({length:Math.min(9,pool.length-1)},(_,i)=>i+1))];
+  for(let start=10;start<pool.length;start+=5){
+    order.push(...shuffleCopy(Array.from({length:Math.min(5,pool.length-start)},(_,i)=>start+i)));
   }
-  return order;
+  return order.slice(0,total);
 }
 function validSpeedSession(data){
-  return data&&Array.isArray(data.order)&&data.order.length===SATORI_STAGES.length
-    &&new Set(data.order).size===SATORI_STAGES.length
-    &&data.order.every(i=>Number.isInteger(i)&&i>=0&&i<SATORI_STAGES.length)
-    &&Number.isInteger(data.index)&&data.index>=0&&data.index<SATORI_STAGES.length
+  const definition=SPEED_MODE_DEFINITIONS[data?.variant]||SPEED_MODE_DEFINITIONS.standard;
+  const total=Number.isInteger(data?.total)?data.total:definition.total;
+  return data&&Array.isArray(data.order)&&data.order.length===total
+    &&new Set(data.order).size===total
+    &&data.order.every(i=>Number.isInteger(i)&&i>=0&&i<speedStagePool(definition).length)
+    &&Number.isInteger(data.index)&&data.index>=0&&data.index<total
     &&Number.isFinite(data.elapsedMs)&&data.elapsedMs>=0&&!data.completed;
 }
-function speedOptimalClears(session=speedSession){return Math.max(0,Math.min(SATORI_STAGES.length,Number(session?.optimalClears)||0));}
+function speedOptimalClears(session=speedSession){return Math.max(0,Math.min(Number(session?.total)||SATORI_STAGES.length,Number(session?.optimalClears)||0));}
 function readSpeedHistory(){
-  try{
-    const entries=JSON.parse(localStorage.getItem(SPEED_HISTORY_KEY)||'[]');
-    return Array.isArray(entries)?entries.filter(entry=>Number.isFinite(entry?.elapsedMs)&&entry.elapsedMs>=0).slice(0,20):[];
-  }catch(_){return [];}
+  const entries=storage.json(SPEED_HISTORY_KEY,[]);
+  return Array.isArray(entries)?entries.filter(entry=>Number.isFinite(entry?.elapsedMs)&&entry.elapsedMs>=0).slice(0,20):[];
 }
-function writeSpeedHistory(entries){try{localStorage.setItem(SPEED_HISTORY_KEY,JSON.stringify(entries.slice(0,20)));}catch(_){ }}
+function writeSpeedHistory(entries){storage.setJson(SPEED_HISTORY_KEY,entries.slice(0,20));}
 function readSpeedSession(){
-  try{const data=JSON.parse(localStorage.getItem(SPEED_SESSION_KEY)||'null');return validSpeedSession(data)?data:null;}catch(_){return null;}
+  const data=storage.json(SPEED_SESSION_KEY,null);
+  if(!validSpeedSession(data))return null;
+  if(!SPEED_MODE_DEFINITIONS[data.variant])data.variant='standard';
+  return data;
 }
 function speedElapsedMs(){return (speedSession?.elapsedMs||0)+(speedClockStarted?performance.now()-speedClockStarted:0);}
 function formatSpeedTime(ms){
@@ -2438,8 +2538,8 @@ function pauseSpeedClock(){
 function saveSpeedSession(){
   if(!speedSession)return;
   const elapsed=speedElapsedMs();
-  const payload={...speedSession,elapsedMs:elapsed,board:speedMode?serializeActiveBoard():speedSession.board};
-  try{localStorage.setItem(SPEED_SESSION_KEY,JSON.stringify(payload));}catch(_){ }
+  const payload={...speedSession,variant:activeSpeedDefinition().id,elapsedMs:elapsed,board:speedMode?serializeActiveBoard():speedSession.board};
+  storage.setJson(SPEED_SESSION_KEY,payload);
 }
 function pauseSpeedRun(){if(!speedMode)return;pauseSpeedClock();saveSpeedSession();}
 function openSpeedPauseDialog(){
@@ -2464,7 +2564,7 @@ function ensureSpeedBoardView(session){
   session.view='left60';
   return session;
 }
-function newSpeedSession(){return {version:3,view:'left60',order:makeSpeedOrder(),index:0,elapsedMs:0,board:null,completed:false,optimalClears:0,started:false};}
+function newSpeedSession(){const definition=activeSpeedDefinition();return {version:4,variant:definition.id,total:definition.total,view:'left60',order:makeSpeedOrder(definition.id),index:0,elapsedMs:0,board:null,completed:false,optimalClears:0,started:false};}
 // 1問目を始める前だけ、タイマーを止めた「スタート待ち」の状態にする。
 function speedAwaitingStart(){
   return !!(speedMode&&speedSession&&!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent);
@@ -2486,14 +2586,15 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
   if(!speedSession)return;
   speedManuallyPaused=false;
   extraMode=false;satoriMode=false;freeMode=false;customMode=false;editingBoard=false;speedMode=true;
+  const pool=speedStagePool(activeSpeedDefinition());
   if(!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent){
     // スタートを押すまでは、全員起きた状態でタイマーも止めておく。
-    setPosition(0,SATORI_STAGES[speedSession.order[0]].par);
+    setPosition(0,pool[speedSession.order[0]].par);
     renderStageNav();
     saveSpeedSession();
     return;
   }
-  const stage=SATORI_STAGES[speedSession.order[speedSession.index]];
+  const stage=pool[speedSession.order[speedSession.index]];
   setPosition(transformStateBySymmetry(stage.state,SPEED_BOARD_VIEW),stage.par);
   if(restoreBoard&&validSavedBoard(speedSession.board)){
     restoreSavedBoard(speedSession.board);
@@ -2508,6 +2609,7 @@ function enterSpeedMode(forceNew=false){
   pauseSpeedRun();
   const saved=forceNew?null:readSpeedSession();
   const isNew=forceNew||!saved;
+  speedVariant=saved?.variant&&SPEED_MODE_DEFINITIONS[saved.variant]?saved.variant:'standard';
   speedSession=saved||newSpeedSession();
   ensureSpeedBoardView(speedSession);
   loadSpeedStage(!isNew,isNew);
@@ -2522,22 +2624,23 @@ function finishSpeedRun(){
   const elapsed=Math.round(speedSession.elapsedMs);
   const optimalClears=speedOptimalClears();
   let bestTime=0;
-  try{bestTime=Number(localStorage.getItem(SPEED_BEST_KEY))||0;if(!bestTime||elapsed<bestTime){bestTime=elapsed;localStorage.setItem(SPEED_BEST_KEY,String(bestTime));}}catch(_){bestTime=elapsed;}
+  bestTime=Number(storage.get(SPEED_BEST_KEY,'0'))||0;
+  if(!bestTime||elapsed<bestTime){bestTime=elapsed;storage.set(SPEED_BEST_KEY,String(bestTime));}
   const history=readSpeedHistory();
   history.unshift({elapsedMs:elapsed,optimalClears,completedAt:Date.now()});
   writeSpeedHistory(history);
-  try{localStorage.removeItem(SPEED_SESSION_KEY);}catch(_){ }
+  storage.remove(SPEED_SESSION_KEY);
   const unlockedThreeD=!threeDUnlocked;
   if(unlockedThreeD){
     threeDUnlocked=true;
-    try{localStorage.setItem('wake7-3d-unlocked','1');}catch(_){ }
+    storage.set(STORAGE_KEYS.threeDUnlocked,'1');
   }
   speedSession={...speedSession,completed:true,elapsedMs:elapsed,bestMs:bestTime,optimalClears,runNumber:history.length,unlockedThreeD};
   showMasterDialog('speedComplete');
 }
 function speedStatsData(){
   const history=readSpeedHistory();
-  const storedBest=Number(localStorage.getItem(SPEED_BEST_KEY))||0;
+  const storedBest=Number(storage.get(SPEED_BEST_KEY,'0'))||0;
   const best=storedBest||(history.length?Math.min(...history.map(entry=>entry.elapsedMs)):0);
   const optimal=history.reduce((max,entry)=>Math.max(max,Math.max(0,Math.min(SATORI_STAGES.length,Number(entry.optimalClears)||0))),0);
   return {history,best,optimal};
@@ -4122,11 +4225,11 @@ function renderStageNav(){
   $('freeMode').setAttribute('aria-pressed',String(freeMode));
   $('stageModeReturn').hidden=true;
   $('menuRankList').hidden=highestRankIndex()<0;
-  $('menuAllPatterns').hidden=!hasMasterReward();
-  $('menuBoardTheme').hidden=!hasMasterReward();
+  $('menuAllPatterns').hidden=!featureUnlocked('genome');
+  $('menuBoardTheme').hidden=!featureUnlocked('boardTheme');
   $('menuSatori').hidden=true;
-  $('menuSpeed').hidden=!speedModeUnlocked;
-  $('menuOpen3D').hidden=!threeDUnlocked;
+  $('menuSpeed').hidden=!featureUnlocked('speedRun');
+  $('menuOpen3D').hidden=!featureUnlocked('threeD');
   $('customMode').textContent=tr('makeBoard');
   $('customMode').classList.remove('ready');
   $('customMode').hidden=false;
