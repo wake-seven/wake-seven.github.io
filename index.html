@@ -176,12 +176,6 @@
   html[lang=en] .stage-picker-trigger.master-stage #stageNumber{font-size:0.75rem}
   html[lang=en] .stage-picker-trigger.master-stage #stageKind{letter-spacing:0;white-space:nowrap}
   html[lang="en"] .stage-picker-trigger.master-stage #stageNumber{font-size:0.8125rem;letter-spacing:-.07em;white-space:nowrap}
-  .progress{
-    width:100%;max-width:var(--content-max);display:grid;grid-template-columns:repeat(15,1fr);
-    gap:0.3125rem;margin:0.375rem 0 0.1875rem;
-  }
-  /* 進捗はステージ選択で確認できるため、プレイ画面では盤面の余白を優先する。 */
-  #stageProgress,#primaryTotal{display:none!important}
   .stage-accent{
     width:8.25rem;height:0.1875rem;margin:0.4375rem 0 0;
     border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden;
@@ -192,29 +186,6 @@
     background:linear-gradient(90deg,#62B8D2,var(--kin));
     transition:width .3s ease;
   }
-  .primary-total{position:relative;top:0.3125rem;display:flex;justify-content:flex-end;gap:0.5625rem;width:100%;max-width:var(--content-max);height:0;margin:0;color:#8295AA;font-size:0.6875rem;line-height:0.875rem;letter-spacing:.08em;pointer-events:none}
-  .primary-total-kind{color:inherit;font-weight:400}
-  .primary-total[hidden]{display:none}
-  .progress button{
-    height:0.5rem;border:0;border-radius:999px;background:rgba(255,255,255,.13);
-    cursor:pointer;transition:.18s;padding:0;
-  }
-  .progress button.cleared{background:rgba(201,165,78,.55)}
-  .progress button.extra-lap-0{background:#62B8D2}
-  .progress button.extra-lap-1{background:#9A86D6}
-  .progress button.extra-lap-2{background:#72BF9A}
-  .progress button.extra-lap-3{background:#D4899A}
-  .progress button.current{box-shadow:0 0 0 2px var(--kin)}
-  .progress button.cleared.extra-lap-0.current,.progress button.cleared.extra-lap-1.current,.progress button.cleared.extra-lap-2.current,.progress button.cleared.extra-lap-3.current{box-shadow:0 0 0 2px var(--kin)}
-  .progress button:disabled{
-    background:rgba(255,255,255,.1);box-shadow:none;cursor:default;
-  }
-  .progress button.cleared:disabled{background:rgba(201,165,78,.55)}
-  .progress button.extra-lap-0:disabled{background:#62B8D2}
-  .progress button.extra-lap-1:disabled{background:#9A86D6}
-  .progress button.extra-lap-2:disabled{background:#72BF9A}
-  .progress button.extra-lap-3:disabled{background:#D4899A}
-  .progress button:focus-visible{outline:2px solid var(--washi);outline-offset:3px}
   .stage-picker-backdrop{
     position:fixed;z-index:60;inset:0;display:grid;place-items:center;padding:1.125rem;
     background:rgba(4,13,24,.72);backdrop-filter:blur(4px);
@@ -353,6 +324,13 @@
   .cheer-caption{margin:0.0625rem 0 0;color:#B9E8F2;font-size:0.75rem;font-weight:600;line-height:1.5;white-space:pre-line}
   .clear-tip-illustration.intro-guide-art{height:11.875rem;margin:0.5rem 0 -0.25rem}
   .clear-tip-illustration.intro-guide-art svg{width:11.25rem;height:auto}
+  .clear-tip-illustration.two-move-lesson-art{height:12.5rem;margin:0.875rem 0 0}
+  .clear-tip-illustration.two-move-lesson-art svg{width:12.125rem;height:auto}
+  .two-move-lesson-dialog .game-dialog{width:min(100%,23.5rem)}
+  .two-move-lesson-dialog p{margin:0.25rem 0 0;color:#B9E8F2;font-size:0.8125rem;font-weight:600;line-height:1.7;text-align:left;white-space:pre-line}
+  .two-move-lesson-dialog .clear-tip-illustration{margin:0.5625rem 0 0}
+  .two-move-lesson-copy{display:grid;gap:0.375rem;margin:0.5625rem 0 0}
+  .two-move-lesson-copy p{box-sizing:border-box;margin:0;padding:0.4375rem 0.5625rem;border:1px solid rgba(98,184,210,.28);border-radius:0.375rem;background:rgba(98,184,210,.075);color:#D4F3F8;font-size:0.75rem;font-weight:650;line-height:1.5;text-align:left}
   .clear-tip-illustration.move-graph{height:9.625rem;margin:0.875rem 0 -0.1875rem}
   .clear-tip-illustration.move-graph svg{width:20.9375rem;height:9.625rem;transform:translateX(-20px)}
   .clear-tip-illustration.board-card{height:10.25rem;margin:0.75rem 0 -0.3125rem}
@@ -457,9 +435,9 @@
   .master-share .share-mark{margin-right:0.25rem;transform:translateY(-1px)}
   .intro-board-wrap{position:relative;width:min(100%,16.25rem);margin:0.5rem auto -0.125rem}
   #introBoard{display:block;width:100%;height:auto}
-  #introBoard .intro-swipe,#clearGuideBoard .intro-swipe,#messageClearGuideBoard .intro-swipe{fill:#62B8D2;filter:drop-shadow(0 0 3px rgba(98,184,210,.8))}
-  #introBoard .guide-happy .open,#introBoard .guide-happy .shut,#clearGuideBoard .guide-happy .open,#clearGuideBoard .guide-happy .shut,#messageClearGuideBoard .guide-happy .open,#messageClearGuideBoard .guide-happy .shut{display:none}
-  #introBoard .guide-happy .happy,#clearGuideBoard .guide-happy .happy,#messageClearGuideBoard .guide-happy .happy{display:block}
+  #introBoard .intro-swipe,#clearGuideBoard .intro-swipe,#messageClearGuideBoard .intro-swipe,#clearTwoMoveLessonBoard .intro-swipe,#messageTwoMoveLessonBoard .intro-swipe,#twoMoveLessonBoard .intro-swipe{fill:#62B8D2;filter:drop-shadow(0 0 3px rgba(98,184,210,.8))}
+  #introBoard .guide-happy .open,#introBoard .guide-happy .shut,#clearGuideBoard .guide-happy .open,#clearGuideBoard .guide-happy .shut,#messageClearGuideBoard .guide-happy .open,#messageClearGuideBoard .guide-happy .shut,#clearTwoMoveLessonBoard .guide-happy .open,#clearTwoMoveLessonBoard .guide-happy .shut,#messageTwoMoveLessonBoard .guide-happy .open,#messageTwoMoveLessonBoard .guide-happy .shut,#twoMoveLessonBoard .guide-happy .open,#twoMoveLessonBoard .guide-happy .shut{display:none}
+  #introBoard .guide-happy .happy,#clearGuideBoard .guide-happy .happy,#messageClearGuideBoard .guide-happy .happy,#clearTwoMoveLessonBoard .guide-happy .happy,#messageTwoMoveLessonBoard .guide-happy .happy,#twoMoveLessonBoard .guide-happy .happy{display:block}
   .master-seal{position:relative;width:5.375rem;height:5.375rem;margin:0 auto 0.375rem;border:3px solid var(--kin);border-radius:50%;color:var(--kin);display:grid;place-items:center;font-size:1.6875rem}
   #masterDialog .master-seal.speed-seal{margin:1rem auto 1.25rem}
   .master-seal.second-lap-mark{margin:1rem auto 1.25rem;border-color:#62B8D2;color:#62B8D2;box-shadow:0 0 0 6px rgba(98,184,210,.07),0 0 22px rgba(98,184,210,.13);font-size:1.9375rem;font-weight:800}
@@ -593,6 +571,22 @@
   .play-actions .chip{flex:1;min-width:0;padding:0.5rem 0.3125rem;font-size:0.8125rem}
   .play-actions #speedPause{margin-left:0}
   .play-actions .chip:disabled{background:rgba(255,255,255,.025);border-color:rgba(255,255,255,.07);color:#536276;opacity:.52;cursor:not-allowed}
+  .board-guidance{
+    box-sizing:border-box;width:calc(100% - 1.5rem);max-width:24.5rem;min-height:3.125rem;margin:0.1875rem auto -1.5rem;
+    position:relative;z-index:5;display:flex;align-items:center;gap:0.375rem;padding:0;border:0;background:none;
+  }
+  .board-guidance[hidden]{display:none}
+  body:has(#board.spinning) .board-guidance{z-index:1;opacity:.24;pointer-events:none}
+  .board-guidance-daruma{width:2.25rem;height:3.125rem;flex:none;overflow:visible}
+  .board-guidance-tail{width:0.5rem;height:0.75rem;flex:none;margin-right:-0.4375rem;z-index:2;transform:translateX(-1px);overflow:visible}
+  .board-guidance-text{position:relative;z-index:1;display:block;flex:1;min-width:0;padding:0.25rem 0.375rem;border:1px solid rgba(98,184,210,.45);border-left:0;border-radius:0;background:rgba(98,184,210,.085);color:#D4F3F8;font-size:clamp(10px,3.15vw,13.5px);font-weight:600;letter-spacing:.01em;line-height:1.32;text-align:left}
+  .board-guidance-text::before,.board-guidance-text::after{content:"";position:absolute;left:0;width:1px;background:rgba(98,184,210,.45);pointer-events:none}
+  .board-guidance-text::before{top:0;height:calc(50% - 0.3125rem)}
+  .board-guidance-text::after{bottom:0;height:calc(50% - 0.3125rem)}
+  .board-guidance-link{display:inline;margin:0 0 0 0.2rem;padding:0;border:0;background:none;color:#E4BD57;font:inherit;font-size:.86em;font-weight:700;text-decoration:underline;text-underline-offset:0.16em;white-space:nowrap;cursor:pointer}
+  body.board-guidance-active #rotateBoardBack,body.board-guidance-active #rotateBoard{padding:0.3125rem 0.25rem;font-size:0}
+  body.board-guidance-active #rotateBoardBack .transform-svg,body.board-guidance-active #rotateBoard .transform-svg{width:0.75rem;height:0.75rem;margin:0;vertical-align:0}
+  body.board-guidance-active .board-view-controls:not(.bottom){top:3.875rem}
   .debug-tools{width:100%;max-width:var(--content-max);display:flex;flex-direction:column;align-items:center;gap:0.3125rem;margin-top:0.875rem}
   /* 公開時は、デバッグ領域そのものをレイアウトから外す。 */
   .debug-tools[hidden]{display:none!important}
@@ -795,8 +789,6 @@
   <button class="stage-title stage-picker-trigger" id="stagePickerTrigger" type="button" aria-label="ステージを選ぶ"><span class="stage-kind-line"><span class="lap-badge" id="lapBadge" hidden>二周目</span><span id="stageKind">問題</span></span><span class="stage-detail"><span class="stage-left"><b id="stageNumber">1 / 15</b><span class="stage-subtitle" id="stageSubtitle" hidden></span></span><b class="stage-count" id="stageCount" hidden></b></span></button>
   <button class="chip" id="nextStage" aria-label="次の問題">次へ →</button>
 </div>
-<div class="progress" id="stageProgress" aria-label="全15問の進捗"></div>
-<div class="primary-total" id="primaryTotal" aria-label="全体の進行状況"><span class="primary-total-kind" id="primaryTotalKind" hidden></span><span id="primaryTotalValue"></span></div>
 <div class="stage-accent" id="stageAccent" aria-hidden="true"><div class="stage-accent-fill" id="stageAccentFill"></div></div>
 <div class="mode-row">
   <div class="status-metric remaining"><span id="shortestLabel">残り最短</span><b id="stagePar">1</b><span id="moveUnit">手</span></div>
@@ -815,6 +807,12 @@
     <button class="chip" id="speedPause" hidden>一時停止</button>
     <button class="chip" id="hint">ヒント</button>
   </div>
+</div>
+
+<div class="board-guidance" id="boardGuidance" hidden>
+  <svg class="board-guidance-daruma" viewBox="0 0 48 70" aria-hidden="true"><g transform="translate(24 34) scale(.72)"><use href="#daruma-body"/><use href="#face-open"/></g></svg>
+  <svg class="board-guidance-tail" viewBox="0 0 12 20" aria-hidden="true"><path d="M12 2L0 10L12 18Z" fill="rgba(98,184,210,.085)"/><path d="M12 2L0 10L12 18" fill="none" stroke="rgba(98,184,210,.45)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span class="board-guidance-text" id="boardGuidanceText"></span>
 </div>
 
 <div class="board-wrap">
@@ -868,11 +866,20 @@
     <div class="dialog-actions"><button class="chip on" id="introStart">はじめる</button></div>
   </div>
 </div>
+<div class="game-dialog-backdrop two-move-lesson-dialog" id="twoMoveLessonDialog" hidden>
+  <div class="game-dialog" role="dialog" aria-modal="true" aria-labelledby="twoMoveLessonTitle">
+    <h2 id="twoMoveLessonTitle">最短2手のコツ</h2>
+    <div class="clear-tip-illustration two-move-lesson-art"><svg id="twoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div>
+    <div class="two-move-lesson-copy" id="twoMoveLessonText"></div>
+    <div class="dialog-actions"><button class="chip on" id="closeTwoMoveLesson">OK</button></div>
+  </div>
+</div>
 <div class="game-dialog-backdrop" id="clearDialog" hidden>
   <div class="game-dialog">
     <div class="clear-dialog-heading"><h2 id="clearDialogMessage"></h2><span class="clear-stage-context" id="clearStageContext"></span></div>
     <div class="clear-tip-illustration" id="clearTipIllustration" hidden></div>
     <div id="clearDialogText"><span id="clearDialogTextBody"></span><button class="clear-tip-link" id="clearTipLink" type="button" hidden></button></div>
+    <div class="two-move-lesson-copy" id="clearTwoMoveLessonCopy" hidden></div>
     <div id="clearQuiz" hidden>
       <div class="quiz-label" id="quizTitle">だるまクイズ</div>
       <p class="quiz-question" id="quizQuestion"></p>
@@ -897,6 +904,7 @@
     <p class="master-rules" id="messageRules" hidden></p>
     <div class="clear-tip-illustration" id="messageIllustration" hidden></div>
     <div id="messageDialogText"><span id="messageDialogTextBody"></span><button class="clear-tip-link" id="messageRankLink" type="button" hidden></button></div>
+    <div class="two-move-lesson-copy" id="messageTwoMoveLessonCopy" hidden></div>
     <div id="messageQuiz" hidden>
       <div class="quiz-label" id="messageQuizTitle">だるまクイズ</div>
       <p class="quiz-question" id="messageQuizQuestion"></p>
@@ -1205,6 +1213,13 @@ const STAGES=[
 ];
 // 一覧・解説は、比較しやすい基準の向きを保つ。
 const TWO_MOVE_STAGES=STAGES.filter(stage=>stage.par===2).map(stage=>({...stage}));
+// 基本編は、9つの型を単に並べるのではなく、二つの原理を段階的に覚える順。
+// 先頭5問は「外側の寝た2枚へ1枚を合わせる」、後半4問はその逆を学ぶ。
+// TWO_MOVE_STAGES 自体は一覧・解説の基準順なので、ここでは触らない。
+const BASIC_LESSON_PATTERN_ORDER=[1,3,2,4,0,5,6,8,7];
+BASIC_LESSON_PATTERN_ORDER.forEach((patternIndex,lessonIndex)=>{
+  STAGES[lessonIndex+3]={...TWO_MOVE_STAGES[patternIndex]};
+});
 // 名人への道の「巻・問題番号」から、内部の通し番号（0始まり）を作る。
 const masterStage=(volume,question)=>(volume-1)*STAGES.length+(question-1);
 // 覚えやすい順。番号は TWO_MOVE_STAGES 内での元の並び順（1 始まり）。
@@ -1290,10 +1305,11 @@ const EXTRA_CLEAR_TIPS={
 // クリア後の挿絵。上の EXTRA_CLEAR_TIPS と同じ問題番号を使う。
 const PRIMARY_CLEAR_ARTS={
   0:'introGuide',
+  2:'twoMoveLesson',
   3:'remaining',
   4:'controls',
   5:'theories',
-  7:'hintButton',
+  7:'twoMoveLessonTwo',
   8:'craft',
   9:'navigation',
   10:'red',
@@ -1834,6 +1850,67 @@ Object.assign(UI_TEXT.ja,{soundOn:'効果音ON',soundOff:'効果音OFF'});
 Object.assign(UI_TEXT.en,{soundOn:'Sound on',soundOff:'Sound off'});
 Object.assign(UI_TEXT.zh,{soundOn:'音效开启',soundOff:'音效关闭'});
 Object.assign(UI_TEXT.ko,{soundOn:'효과음 켜짐',soundOff:'효과음 꺼짐'});
+// 基本編の盤面直前に出す、最短2手の探索条件。
+Object.assign(UI_TEXT.ja,{
+  basicGuideJoinOne:'外側の寝た2枚に1枚を合わせにいき、残り2枚を起こすように回そう',
+  basicGuideJoinTwo:'外側の寝た1枚に2枚を合わせにいき、残り1枚を起こすように回そう'
+});
+Object.assign(UI_TEXT.en,{
+  basicGuideJoinOne:'Match one to the two fallen outer daruma; wake the other two.',
+  basicGuideJoinTwo:'Match two to the one fallen outer daruma; wake the other one.'
+});
+Object.assign(UI_TEXT.zh,{
+  basicGuideJoinOne:'让1个不倒翁与外圈倒下的2个对齐，同时叫醒另外2个。',
+  basicGuideJoinTwo:'让2个不倒翁与外圈倒下的1个对齐，同时叫醒另外1个。'
+});
+Object.assign(UI_TEXT.ko,{
+  basicGuideJoinOne:'바깥쪽에 누운 2개에 1개를 맞추고, 나머지 2개를 깨우세요.',
+  basicGuideJoinTwo:'바깥쪽에 누운 1개에 2개를 맞추고, 나머지 1개를 깨우세요.'
+});
+Object.assign(UI_TEXT.ja,{
+  hint:'次の1手を見る',
+  twoMoveLessonLink:'詳しい解説を見る →',
+  twoMoveLessonTitle:'最短2手のコツ',
+  twoMoveLessonRule:'最短2手では、2枚が同じ向きで、もう1枚だけ別の向きの3枚を回すのが鉄則です。',
+  twoMoveLessonPractice:'基本問題の前半では、外側の寝た2枚に1枚を合わせにいき、残り2枚を起こすように回そう。',
+  twoMoveLessonSecond:'基本問題の後半では、外側の寝た1枚に2枚を合わせにいき、残り1枚を起こすように回そう。',
+  twoMoveLessonClose:'OK',
+  stageClear3:'次からは、最短2手の問題です。',
+  stageClear8:'次からは、後半の基本問題です。'
+});
+Object.assign(UI_TEXT.en,{
+  hint:'See next move',
+  twoMoveLessonLink:'See the full explanation →',
+  twoMoveLessonTitle:'The 2-move idea',
+  twoMoveLessonRule:'For a 2-move solve, turn a triangle where two daruma face the same way and one faces differently.',
+  twoMoveLessonPractice:'In the first half, match one daruma to the two fallen outer daruma, while waking the other two.',
+  twoMoveLessonSecond:'In the second half, match two daruma to the one fallen outer daruma, while waking the other one.',
+  twoMoveLessonClose:'Got it',
+  stageClear3:'The next puzzles take two moves.',
+  stageClear8:'The next puzzles introduce the second basic idea.'
+});
+Object.assign(UI_TEXT.zh,{
+  hint:'查看下一步',
+  twoMoveLessonLink:'查看详细说明 →',
+  twoMoveLessonTitle:'最少2步的诀窍',
+  twoMoveLessonRule:'最少2步时，要转动“两个同向、另一个方向不同”的三个不倒翁组成的三角。',
+  twoMoveLessonPractice:'前半部分，把1个不倒翁与外圈倒下的2个对齐，同时叫醒另外2个。',
+  twoMoveLessonSecond:'后半部分，让2个不倒翁与外圈倒下的1个对齐，同时叫醒另外1个。',
+  twoMoveLessonClose:'明白了',
+  stageClear3:'从下一题开始，最少需要两步。',
+  stageClear8:'从下一题开始，进入后半段基本问题。'
+});
+Object.assign(UI_TEXT.ko,{
+  hint:'다음 수 보기',
+  twoMoveLessonLink:'자세한 해설 보기 →',
+  twoMoveLessonTitle:'최단 2수의 요령',
+  twoMoveLessonRule:'최단 2수에서는 두 개가 같은 방향이고 하나만 다른 방향인 세 다루마의 삼각형을 돌리는 것이 핵심입니다.',
+  twoMoveLessonPractice:'앞부분에서는 바깥쪽에 누운 2개에 1개를 맞추고, 나머지 2개를 깨우세요.',
+  twoMoveLessonSecond:'뒷부분에서는 바깥쪽에 누운 1개에 2개를 맞추고, 나머지 1개를 깨우세요.',
+  twoMoveLessonClose:'알겠어요',
+  stageClear3:'다음 문제부터는 최단 2수 문제입니다.',
+  stageClear8:'다음 문제부터는 후반 기본 문제입니다.'
+});
 Object.assign(UI_TEXT.ja,{roadmapNote:'・習：だるま修行の道（15問） ： クリア済\n・序～極：名人への道（各15問、計60問）'});
 Object.assign(UI_TEXT.en,{roadmapNote:'I: Daruma Training (15) / II–V: Path to Mastery (15 each, 60 total)'});
 Object.assign(UI_TEXT.zh,{roadmapNote:'习：不倒翁修行（15题）／序～极：名人之路（每卷15题，共60题）'});
@@ -2131,9 +2208,29 @@ document.body.classList.toggle('debug-mode',DEBUG_MODE);
 if(!DEBUG_MODE)document.addEventListener('copy',e=>e.preventDefault());
 let ori=new Uint8Array(N), spin=new Int16Array(N), history=[], moves=0, best=0;
 let tileEls=[], baseTiles=[], drag=null, busy=false;
-let stageIndex=0,extraIndex=0,satoriIndex=0,extraMode=false,satoriMode=false,speedMode=false,freeMode=false,clearShown=false,clearTimer=0,nextStageAttention=false;
+let stageIndex=0,extraIndex=0,satoriIndex=0,activeMode='stage',clearShown=false,clearTimer=0,nextStageAttention=false;
 let pendingMasterThemeRefresh=false;
 let lastAnalyticsStageKey='';
+
+/* モードはこの値だけを実体として持つ。既存コードに残る `xxxMode` は、
+ * 段階的な移行のため activeMode を読む／更新する互換アクセサにしている。 */
+const ACTIVE_MODES=Object.freeze(['stage','mastery','satori','speed','free','custom']);
+function setActiveMode(mode){
+  activeMode=ACTIVE_MODES.includes(mode)?mode:'stage';
+}
+const isMode=mode=>activeMode===mode;
+for(const [legacyName,mode] of Object.entries({
+  extraMode:'mastery',satoriMode:'satori',speedMode:'speed',freeMode:'free',customMode:'custom'
+})){
+  Object.defineProperty(window,legacyName,{
+    configurable:true,
+    get(){return activeMode===mode;},
+    set(value){
+      if(value)setActiveMode(mode);
+      else if(activeMode===mode)setActiveMode('stage');
+    }
+  });
+}
 
 /* ---- 状態管理の境界 ----
  * 盤面の描画や操作は歴史的にこのファイルへ段階的に追加されてきたため、
@@ -2172,14 +2269,14 @@ const COURSE_DEFINITIONS=Object.freeze({
   free:{id:'free',total:null,label:'free'},custom:{id:'custom',total:null,label:'custom'}
 });
 function runtimeContext(){
-  if(customMode)return {mode:'custom',course:COURSE_DEFINITIONS.custom,index:null,position:null,total:null,lap:activeLap};
-  if(freeMode)return {mode:'free',course:COURSE_DEFINITIONS.free,index:null,position:null,total:null,lap:activeLap};
-  if(speedMode){
+  if(isMode('custom'))return {mode:'custom',course:COURSE_DEFINITIONS.custom,index:null,position:null,total:null,lap:activeLap};
+  if(isMode('free'))return {mode:'free',course:COURSE_DEFINITIONS.free,index:null,position:null,total:null,lap:activeLap};
+  if(isMode('speed')){
     const index=speedSession?.index||0;
     return {mode:'speed',course:COURSE_DEFINITIONS.speed,index,position:index+1,total:SATORI_STAGES.length,lap:activeLap};
   }
-  if(satoriMode)return {mode:'satori',course:COURSE_DEFINITIONS.satori,index:satoriIndex,position:satoriIndex+1,total:SATORI_STAGES.length,lap:activeLap};
-  if(extraMode)return {mode:'mastery',course:COURSE_DEFINITIONS.mastery,index:extraIndex,position:extraIndex+1,total:EXTRA_STAGES.length,lap:activeLap};
+  if(isMode('satori'))return {mode:'satori',course:COURSE_DEFINITIONS.satori,index:satoriIndex,position:satoriIndex+1,total:SATORI_STAGES.length,lap:activeLap};
+  if(isMode('mastery'))return {mode:'mastery',course:COURSE_DEFINITIONS.mastery,index:extraIndex,position:extraIndex+1,total:EXTRA_STAGES.length,lap:activeLap};
   return {mode:'primary',course:COURSE_DEFINITIONS.primary,index:stageIndex,position:stageIndex+1,total:STAGES.length,lap:activeLap};
 }
 function runtimeStageKey(){
@@ -2204,8 +2301,38 @@ function featureUnlocked(feature){
 }
 // 問題ごとのメイン画面案内。値を追加するだけで描画側へ接続できる拡張点。
 // key は runtimeStageKey() の形式（例: primary:0, mastery:12）。
-const MAIN_BOARD_GUIDANCE=Object.freeze({});
+// 基本1〜5 / 基本6〜9は、同じ最短2手の原理を繰り返し見ながら学ぶ。
+const MAIN_BOARD_GUIDANCE=Object.freeze({
+  'primary:3':'basicGuideJoinOne',
+  'primary:4':'basicGuideJoinOne',
+  'primary:5':'basicGuideJoinOne',
+  'primary:6':'basicGuideJoinOne',
+  'primary:7':'basicGuideJoinOne',
+  'primary:8':'basicGuideJoinTwo',
+  'primary:9':'basicGuideJoinTwo',
+  'primary:10':'basicGuideJoinTwo',
+  'primary:11':'basicGuideJoinTwo'
+});
+// 初めて原理を見せる問題は矢印つき、次の問題は「回す3枚」だけを示す。
+const BASIC_LESSON_ASSISTS=Object.freeze({
+  3:'arrow',4:'axis',8:'arrow',9:'axis'
+});
 function mainBoardGuidance(){return MAIN_BOARD_GUIDANCE[runtimeStageKey()]||null;}
+function renderMainBoardGuidance(){
+  const key=mainBoardGuidance(),guide=$('boardGuidance');
+  guide.hidden=!key;
+  document.body.classList.toggle('board-guidance-active',!!key);
+  const text=$('boardGuidanceText');
+  text.replaceChildren();
+  if(!key)return;
+  text.append(document.createTextNode(tr(key)));
+  const link=document.createElement('button');
+  link.type='button';
+  link.className='board-guidance-link';
+  link.textContent=tr('twoMoveLessonLink');
+  link.addEventListener('click',openTwoMoveLessonDialog);
+  text.append(link);
+}
 function analyticsStageInfo(){
   const context=runtimeContext();
   if(context.mode==='free'||context.mode==='custom')return null;
@@ -2394,7 +2521,7 @@ try{
   if(savedLap===1||savedLap===2)activeLap=savedLap;
 }catch(_){ }
 let lastStageMode={extra:false,satori:false,index:0};
-let customMode=false,editingBoard=false;
+let editingBoard=false;
 let masterDialogKind='primary';
 let rankDialogReturn=null;
 let rankListLap=activeLap;
@@ -2862,7 +2989,7 @@ function animateBoardArrival(){
 function loadSpeedStage(restoreBoard=false,arriving=false){
   if(!speedSession)return;
   speedManuallyPaused=false;
-  extraMode=false;satoriMode=false;freeMode=false;customMode=false;editingBoard=false;speedMode=true;
+  setActiveMode('speed');editingBoard=false;
   const pool=speedStagePool(activeSpeedDefinition());
   if(!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent){
     // スタート前は問題を見せず、全員が起きたまっさらな盤面で開始を促す。
@@ -3197,6 +3324,36 @@ function openIntroGuide(){
 }
 const clearGuideTimers=new Map();
 function stopClearGuideBoard(id){clearInterval(clearGuideTimers.get(id));clearGuideTimers.delete(id);}
+function currentTwoMoveLessonVariant(){
+  return isMode('stage')&&stageIndex>=8&&stageIndex<12?'joinTwo':'joinOne';
+}
+function lessonVariantFromArt(art){
+  return art==='twoMoveLessonTwo'?'joinTwo':art==='twoMoveLesson'?'joinOne':null;
+}
+function renderTwoMoveLessonCopy(id,variant='joinOne'){
+  const root=$(id);
+  if(!root)return;
+  root.replaceChildren();
+  const lines=variant==='joinTwo'?['twoMoveLessonSecond']:['twoMoveLessonRule','twoMoveLessonPractice'];
+  lines.forEach(key=>{
+    const line=document.createElement('p');
+    line.textContent=tr(key);
+    root.appendChild(line);
+  });
+  root.hidden=false;
+}
+function openTwoMoveLessonDialog(variant=currentTwoMoveLessonVariant()){
+  $('twoMoveLessonTitle').textContent=tr('twoMoveLessonTitle');
+  renderTwoMoveLessonCopy('twoMoveLessonText',variant);
+  $('closeTwoMoveLesson').textContent=tr('twoMoveLessonClose');
+  buildTwoMoveLessonBoard('twoMoveLessonBoard',variant);
+  $('twoMoveLessonDialog').hidden=false;
+  $('closeTwoMoveLesson').focus();
+}
+function closeTwoMoveLessonDialog(){
+  stopClearGuideBoard('twoMoveLessonBoard');
+  $('twoMoveLessonDialog').hidden=true;
+}
 function buildClearGuideBoard(id){
   stopClearGuideBoard(id);
   const guide=$(id),NS_='http://www.w3.org/2000/svg';
@@ -3245,6 +3402,81 @@ function buildClearGuideBoard(id){
     },1750);
   };
   play();clearGuideTimers.set(id,setInterval(play,3500));
+}
+function lessonBestMove(state){
+  const board=dec(state),distance=SOLVER.dist[enc(board)];
+  for(let ti=0;ti<TRI.length;ti++)for(const dir of[-1,1]){
+    if(SOLVER.dist[enc(rollOnce(board,ti,dir))]===distance-1)return {ti,dir};
+  }
+  return null;
+}
+// 入門の最後に見せる「最短2手」の実演。
+// 基本1の実際の盤面を、一手回して最短1手になるところまでを繰り返す。
+function buildTwoMoveLessonBoard(id,variant='joinOne'){
+  stopClearGuideBoard(id);
+  const guide=$(id),NS_='http://www.w3.org/2000/svg';
+  if(!guide)return;
+  const initialState=STAGES[variant==='joinTwo'?8:3].state,move=lessonBestMove(initialState);
+  if(!move)return;
+  const start=dec(initialState),after=rollOnce(start,move.ti,move.dir),tiles=[];
+  guide.innerHTML='';
+  CELL.forEach((c,i)=>{
+    const g=document.createElementNS(NS_,'g');
+    g.setAttribute('class','tile '+(start[i]?'fallen':'stand'));
+    g.innerHTML='<path class="hex" d="'+hexPath(R)+'"/><use href="#daruma-body"/><g class="open"><use href="#face-open"/></g><g class="shut"><use href="#face-shut"/></g><g class="happy"><use href="#face-happy"/></g>';
+    g.style.transform=tileTransform(c.x,c.y,start[i]);guide.appendChild(g);tiles[i]=g;
+  });
+  const initialTiles=tiles.slice(),t=TRI[move.ti];
+  // 軸ごとに、盤面の外側からつかむ。本編チュートリアルの上側始点と同じ考え方。
+  const outerAngle=Math.atan2(t.y-CELL[3].y,t.x-CELL[3].x);
+  const swipeStart={x:t.x+40*Math.cos(outerAngle),y:t.y+40*Math.sin(outerAngle)};
+  const grips=[];
+  TRI.forEach(triangle=>{
+    const angle=Math.atan2(triangle.y-CELL[3].y,triangle.x-CELL[3].x)*180/Math.PI,q=angle*Math.PI/180,r=32;
+    const marker=document.createElementNS(NS_,'g');
+    marker.setAttribute('class','grip-marker');
+    marker.setAttribute('transform','translate('+(triangle.x+r*Math.cos(q)).toFixed(2)+' '+(triangle.y+r*Math.sin(q)).toFixed(2)+') rotate('+angle.toFixed(2)+')');
+    marker.innerHTML='<rect x="-13" y="-2.5" width="26" height="5" rx="2.5"/>';
+    guide.appendChild(marker);grips.push(marker);
+  });
+  const swipe=document.createElementNS(NS_,'circle');
+  swipe.setAttribute('class','intro-swipe');swipe.setAttribute('cx',swipeStart.x.toFixed(2));swipe.setAttribute('cy',swipeStart.y.toFixed(2));swipe.setAttribute('r','6.5');guide.appendChild(swipe);
+  const play=()=>{
+    if(!guide.isConnected){stopClearGuideBoard(id);return;}
+    tiles.splice(0,N,...initialTiles);
+    initialTiles.forEach((tile,i)=>{
+      tile.classList.remove('guide-happy');
+      tile.setAttribute('class','tile '+(start[i]?'fallen':'stand'));
+      tile.style.transform=tileTransform(CELL[i].x,CELL[i].y,start[i]);
+      guide.appendChild(tile);
+    });
+    grips.forEach(marker=>{marker.style.display='';guide.appendChild(marker);});
+    swipe.style.display='none';guide.appendChild(swipe);
+    setTimeout(()=>{if(guide.isConnected)swipe.style.display='';},900);
+    setTimeout(()=>{
+      if(!guide.isConnected)return;
+      grips.forEach(marker=>marker.style.display='none');
+      const old=tiles.slice(),cells=t.cells,unit=document.createElementNS(NS_,'g'),rotation=document.createElementNS(NS_,'animateTransform');
+      rotation.setAttribute('attributeName','transform');rotation.setAttribute('type','rotate');
+      rotation.setAttribute('from','0 '+t.x+' '+t.y);rotation.setAttribute('to',move.dir*120+' '+t.x+' '+t.y);
+      rotation.setAttribute('dur','760ms');rotation.setAttribute('fill','freeze');rotation.setAttribute('calcMode','spline');rotation.setAttribute('keySplines','.2 .75 .2 1');
+      for(let i=0;i<3;i++){
+        const from=move.dir>0?cells[i]:cells[(i+1)%3];
+        unit.appendChild(old[from]);
+      }
+      unit.appendChild(swipe);unit.appendChild(rotation);guide.appendChild(unit);rotation.beginElement();
+      setTimeout(()=>{
+        if(!guide.isConnected)return;
+        for(let i=0;i<3;i++){
+          const from=move.dir>0?cells[i]:cells[(i+1)%3],to=move.dir>0?cells[(i+1)%3]:cells[i],tile=old[from];
+          tile.style.transform=tileTransform(CELL[to].x,CELL[to].y,after[to]);
+          tile.setAttribute('class','tile '+(after[to]?'fallen':'stand'));tiles[to]=tile;guide.appendChild(tile);
+        }
+        unit.remove();swipe.setAttribute('cx',swipeStart.x.toFixed(2));swipe.setAttribute('cy',swipeStart.y.toFixed(2));guide.appendChild(swipe);swipe.style.display='none';
+      },760);
+    },1500);
+  };
+  play();clearGuideTimers.set(id,setInterval(play,3300));
 }
 function paint(){
   for(let i=0;i<N;i++){
@@ -3302,12 +3534,10 @@ function paint(){
       persistLapProgress();
       rememberClearedMessage(true,extraIndex);
       updateMasterTheme();
-      renderProgress();
     }else if(!freeMode&&!customMode){
       clearedStages.add(stageIndex);
       persistLapProgress();
       rememberClearedMessage(false,stageIndex);
-      renderProgress();
     }
     const m=$('msg');
     m.textContent='';
@@ -3457,7 +3687,7 @@ function setPosition(state,par){
 }
 function loadStage(index){
   if(speedMode)pauseSpeedRun();speedMode=false;
-  extraMode=false;satoriMode=false;freeMode=false;customMode=false;editingBoard=false;
+  setActiveMode('stage');editingBoard=false;
   nextStageAttention=false;
   stageIndex=Math.max(0,Math.min(STAGES.length-1,index));
   lastStageMode={extra:false,satori:false,index:stageIndex};
@@ -3468,14 +3698,15 @@ function loadStage(index){
   animateBoardArrival();
   trackStageView();
   if(stageIndex===0&&!hasMasterReward())scheduleStageOneTutorial();
+  else scheduleBasicLessonAssist();
 }
 function loadExtraStage(index){
   // 一周目は九番勝負を終えるまで、名人への道を先に選べない。
   if(activeLap===1&&!speedTrainingTrialCleared){showMasterDialog('primary');return;}
   // 「破」を終えたら、離へ進む前に最短3手の見極めの関門を越える。
   if(index>=30&&!canEnterThirdVolume()){showMasterDialog('intermediate');return;}
-  if(speedMode)pauseSpeedRun();speedMode=false;
-  extraMode=true;satoriMode=false;freeMode=false;customMode=false;editingBoard=false;
+  if(speedMode)pauseSpeedRun();
+  setActiveMode('mastery');editingBoard=false;
   nextStageAttention=false;
   extraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
   lastStageMode={extra:true,satori:false,index:extraIndex};
@@ -3491,8 +3722,8 @@ function loadSatoriStage(index){
     if(activeLap===1&&isMastered())showMasterDialog('mastery');
     return;
   }
-  if(speedMode)pauseSpeedRun();speedMode=false;
-  extraMode=false;satoriMode=true;freeMode=false;customMode=false;editingBoard=false;
+  if(speedMode)pauseSpeedRun();
+  setActiveMode('satori');editingBoard=false;
   nextStageAttention=false;
   satoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
   lastStageMode={extra:false,satori:true,index:satoriIndex};
@@ -3559,7 +3790,7 @@ function restoreSavedBoard(data){
   return true;
 }
 function saveActiveSession(){
-  if(speedMode){
+  if(isMode('speed')){
     // 速解きの保存盤だけでは「最後に遊んでいたモード」を判定しない。
     // 他モードへ戻った後に古い速解きセッションが残っていても、復元先を奪わないための印。
     saveSpeedSession();
@@ -3567,7 +3798,7 @@ function saveActiveSession(){
     return;
   }
   persistLapProgress();
-  const mode=customMode?'custom':freeMode?'free':satoriMode?'satori':'stage';
+  const mode=activeMode;
   const payload={
     mode,editingBoard,extra:extraMode,satori:satoriMode,index:satoriMode?satoriIndex:extraMode?extraIndex:stageIndex,lap:activeLap,
     lastStageMode,board:serializeActiveBoard()
@@ -3598,9 +3829,9 @@ function restoreActiveSession(){
     else if(canRestoreStage)loadStage(saved.index);
     else{restoreCurrentStage();return;}
   }else if(saved.mode==='free'){
-    extraMode=false;satoriMode=false;freeMode=true;customMode=false;editingBoard=false;
+    setActiveMode('free');editingBoard=false;
   }else if(saved.mode==='custom'){
-    extraMode=false;satoriMode=false;freeMode=false;customMode=true;editingBoard=!!saved.editingBoard;
+    setActiveMode('custom');editingBoard=!!saved.editingBoard;
   }else{restoreCurrentStage();return;}
   if(saved.lastStageMode&&typeof saved.lastStageMode.extra==='boolean'&&Number.isInteger(saved.lastStageMode.index)){
     lastStageMode={extra:saved.lastStageMode.extra,satori:!!saved.lastStageMode.satori,index:saved.lastStageMode.index};
@@ -3610,9 +3841,9 @@ function restoreActiveSession(){
   if(customMode&&editingBoard)showMakerMessage();
 }
 function startFree(){
-  if(speedMode)pauseSpeedRun();speedMode=false;
+  if(speedMode)pauseSpeedRun();
   savedFreeSession=null;
-  extraMode=false;satoriMode=false;freeMode=true;customMode=false;editingBoard=false;
+  setActiveMode('free');editingBoard=false;
   const pool=[...SOLVER.byDepth[2],...SOLVER.byDepth[3],...SOLVER.byDepth[4]];
   let state=pool[(Math.random()*pool.length)|0];
   if(pool.length>1)while(state===currentInitialState)state=pool[(Math.random()*pool.length)|0];
@@ -3628,9 +3859,9 @@ function revealFourthDistance(){
   renderStageNav();
 }
 function startFreeFromState(state){
-  if(speedMode)pauseSpeedRun();speedMode=false;
+  if(speedMode)pauseSpeedRun();
   savedFreeSession=null;
-  extraMode=false;satoriMode=false;freeMode=true;customMode=false;editingBoard=false;
+  setActiveMode('free');editingBoard=false;
   setPosition(state,SOLVER.dist[state]);
   renderStageNav();
 }
@@ -3645,14 +3876,14 @@ function saveFreeSession(){
   };
 }
 function restoreFreeSession(){
-  if(speedMode)pauseSpeedRun();speedMode=false;
+  if(speedMode)pauseSpeedRun();
   const s=savedFreeSession;
   if(!s){startFree();return;}
   cancelTileAnimations();
   clearHintVisuals();
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   clearTimeout(clearTimer);
-  extraMode=false;satoriMode=false;freeMode=true;customMode=false;editingBoard=false;
+  setActiveMode('free');editingBoard=false;
   resetFourthDistance();
   ori=Uint8Array.from(s.ori);spin=Int16Array.from(s.spin);
   tileEls=s.tileEls.slice();moves=s.moves;best=s.best;
@@ -3685,12 +3916,12 @@ function showMakerMessage(){
 }
 function enterBoardMaker(){
   if(busy)return;
-  if(speedMode)pauseSpeedRun();speedMode=false;
+  if(speedMode)pauseSpeedRun();
   if(freeMode)saveFreeSession();
   // 自作モードは常にまっさらな盤面から。直前の悟り／速解き盤面を
   // そのまま最短手数の確認に使えないようにする。
   const state=0;
-  extraMode=false;satoriMode=false;freeMode=false;customMode=true;editingBoard=true;
+  setActiveMode('custom');editingBoard=true;
   setPosition(state,0);
   clearShown=true;
   renderStageNav();
@@ -3699,7 +3930,7 @@ function enterBoardMaker(){
 function playCustomBoard(){
   const state=enc(ori),d=SOLVER.dist[state];
   if(d===255||d===0)return;
-  extraMode=false;satoriMode=false;editingBoard=false;customMode=true;freeMode=false;
+  setActiveMode('custom');editingBoard=false;
   setPosition(state,d);
   renderStageNav();
   animateBoardArrival();
@@ -4073,6 +4304,7 @@ $('shuffle').addEventListener('click',()=>{
   if(!busy&&freeMode)startFree();
 });
 function clearHintVisuals(preserveSelection=false){
+  clearAxisGuide();
   svg.querySelectorAll('.hint-arrow').forEach(el=>el.remove());
   svg.classList.remove('hinting');
   if(!preserveSelection)baseTiles.forEach(el=>el.classList.remove('selected'));
@@ -4143,9 +4375,31 @@ function showBestMoveHint(persistent=false){
     }
   }
 }
+function showBestMoveAxis(persistent=false){
+  if(busy||isSolved()||masterHintsDisabled())return;
+  const d=SOLVER.dist[enc(ori)];
+  for(let ti=0;ti<TRI.length;ti++){
+    for(const dir of [1,-1]){
+      if(SOLVER.dist[enc(rollOnce(ori,ti,dir))]!==d-1)continue;
+      clearHintVisuals();
+      svg.classList.add('hinting');
+      for(const cell of TRI[ti].cells)tileEls[cell].classList.add('selected');
+      const pivot=svg.querySelector('.pivot[data-tri="'+ti+'"]');
+      pivot.classList.add('hi');
+      showAxisGuide(TRI[ti]);
+      if(!persistent)setTimeout(()=>{
+        if(!svg.classList.contains('spinning')){
+          clearAxisGuide();clearHintVisuals();pivot.classList.remove('hi');
+        }
+      },1400);
+      return;
+    }
+  }
+}
 function cancelTutorialHint(preserveSelection=false){
   tutorialHintTimers.forEach(clearTimeout);
   tutorialHintTimers=[];
+  clearAxisGuide();
   clearHintVisuals(preserveSelection);
 }
 function scheduleStageOneTutorial(){
@@ -4155,7 +4409,21 @@ function scheduleStageOneTutorial(){
     if(stageIndex===0&&!freeMode&&!customMode&&!extraMode&&moves===0&&!busy)showBestMoveHint(true);
   },450));
 }
+function scheduleBasicLessonAssist(){
+  const assist=BASIC_LESSON_ASSISTS[stageIndex];
+  if(!assist||activeLap!==1||clearedStages.has(stageIndex))return;
+  cancelTutorialHint();
+  tutorialHintTimers.push(setTimeout(()=>{
+    if(activeMode!=='stage'||stageIndex<3||moves!==0||busy)return;
+    if(assist==='arrow')showBestMoveHint(true);
+    else showBestMoveAxis(true);
+  },450));
+}
 $('hint').addEventListener('click',()=>{
+  if(isMode('stage')&&stageIndex>=3&&stageIndex<12){
+    openTwoMoveLessonDialog();
+    return;
+  }
   cancelTutorialHint();
   if(isFourthVolume())revealFourthDistance();
   else showBestMoveHint();
@@ -4529,42 +4797,6 @@ $('pickerSpeedMode').addEventListener('click',()=>{
   openSpeedPicker();
 });
 
-function renderProgress(){
-  const progress=$('stageProgress');
-  if(!progress.children.length){
-    STAGES.forEach((stage,i)=>{
-      const b=document.createElement('button');
-      b.setAttribute('aria-label',tr('stageAria',{n:i+1,par:stage.par}));
-      b.addEventListener('click',()=>{
-        if(freeMode||customMode)return;
-        if(extraMode){
-          const target=Math.floor(extraIndex/STAGES.length)*STAGES.length+i;
-          if(extraStageUnlocked(target))loadExtraStage(target);
-        }else if(primaryStageUnlocked(i))loadStage(i);
-      });
-      progress.appendChild(b);
-    });
-  }
-  [...progress.children].forEach((b,i)=>{
-    b.classList.remove('cleared','extra-lap-0','extra-lap-1','extra-lap-2','extra-lap-3');
-    if(extraMode){
-      let latest=-1;
-      for(const cleared of clearedExtraStages)if(cleared%STAGES.length===i)latest=Math.max(latest,cleared);
-      b.classList.toggle('cleared',clearedStages.has(i));
-      if(latest>=0)b.classList.add('extra-lap-'+Math.floor(latest/STAGES.length));
-      b.setAttribute('aria-label',tr('extraStageAria',{n:i+1,total:STAGES.length}));
-      b.classList.toggle('current',i===extraIndex%STAGES.length);
-    }else{
-      b.setAttribute('aria-label',tr('stageAria',{n:i+1,par:STAGES[i].par}));
-      b.classList.toggle('cleared',clearedStages.has(i));
-      b.classList.toggle('current',!freeMode&&!customMode&&i===stageIndex);
-    }
-    const target=extraMode?Math.floor(extraIndex/STAGES.length)*STAGES.length+i:i;
-    b.disabled=freeMode||customMode||(extraMode?!extraStageUnlocked(target):!primaryStageUnlocked(target));
-    if((extraMode&&i===extraIndex%STAGES.length)||(!extraMode&&!freeMode&&!customMode&&i===stageIndex))b.setAttribute('aria-current','step');
-    else b.removeAttribute('aria-current');
-  });
-}
 function renderStageNav(){
   $('speedClockInline').hidden=true;
   // 進行ゲージの代わりのアクセント線は、全モード共通で表示する。
@@ -4574,7 +4806,6 @@ function renderStageNav(){
   modeRow.classList.toggle('speed-mode',speedMode);
   modeRow.classList.toggle('speed-training',speedShowsRemaining());
   modeRow.classList.toggle('speed-with-remaining',speedShowsRemaining());
-  $('stageProgress').hidden=satoriMode||speedMode||freeMode||customMode;
   $('stagePickerTrigger').classList.toggle('master-stage',extraMode||satoriMode);
   $('stageSubtitle').hidden=true;
   $('stageCount').hidden=true;
@@ -4692,18 +4923,7 @@ function renderStageNav(){
   else if(!freeMode&&!customMode)accentFrac=(stageIndex+1)/STAGES.length;
   $('stageAccentFill').style.width=(Math.max(0,Math.min(1,accentFrac))*100)+'%';
   if(!speedMode){$('shortestLabel').textContent=tr('shortestDisplay');$('moveUnit').textContent=tr('moveUnit');$('movesLabel').textContent=tr('moves');$('moves').textContent=moves;}
-  const showingCourseProgress=!freeMode&&!customMode&&!satoriMode&&!speedMode;
-  $('primaryTotal').hidden=!showingCourseProgress;
-  $('primaryTotalKind').hidden=!(extraMode||allPrimaryCleared());
-  if(extraMode){
-    $('primaryTotalKind').textContent=tr('allPatternsKind');
-    $('primaryTotalValue').textContent=(extraIndex+1)+' / '+EXTRA_STAGES.length;
-  }else if(showingCourseProgress){
-    if(allPrimaryCleared())$('primaryTotalKind').textContent=tr('primaryRound');
-    $('primaryTotalValue').textContent=(stageIndex+1)+' / '+STAGES.length;
-  }
   renderRankBadge();
-  renderProgress();
   if(speedMode){$('prevStage').hidden=false;$('nextStage').hidden=false;$('prevStage').disabled=true;$('nextStage').disabled=true;}
   else if(satoriMode){
     $('prevStage').hidden=false;$('nextStage').hidden=false;
@@ -4715,6 +4935,7 @@ function renderStageNav(){
   else{$('prevStage').hidden=false;$('nextStage').hidden=customMode&&!customPlaying;}
   const highlightNext=nextStageAttention&&!freeMode&&!customMode&&!$('nextStage').hidden&&!$('nextStage').disabled;
   $('nextStage').classList.toggle('next-attention',highlightNext);
+  renderMainBoardGuidance();
 }
 function celebrateClear(){
   svg.classList.add('celebrating');
@@ -4939,7 +5160,7 @@ function tipArt(key){
   if(key==='remaining')return tipSvg('<rect x="24" y="8" width="162" height="66" rx="8" fill="#173842" stroke="#62B8D2" stroke-width="1.6"/><text x="45" y="56" fill="#9BCBDD" font-family="sans-serif" font-size="11" font-weight="500" letter-spacing=".7">残り最短</text><text x="115" y="56" text-anchor="middle" fill="#62B8D2" font-family="sans-serif" font-size="34" font-weight="750">2</text><text x="142" y="56" text-anchor="middle" fill="#9BCBDD" font-family="sans-serif" font-size="11" font-weight="500" letter-spacing=".7">手</text>');
   switch(key){
     case 'controls':return tipSvg('<g font-family="A1 Gothic,Hiragino Kaku Gothic ProN,Yu Gothic,sans-serif" font-size="12" font-weight="400" text-anchor="middle"><rect x="5" y="25.5" width="100" height="35" rx="17.5" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.14)"/><text x="55" y="48.5" fill="#B9C6D6">やり直す</text><rect x="110" y="25.5" width="100" height="35" rx="17.5" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.14)"/><text x="160" y="48.5" fill="#B9C6D6">1手戻す</text></g>');
-    case 'hintButton':return tipSvg('<g font-family="A1 Gothic,Hiragino Kaku Gothic ProN,Yu Gothic,sans-serif" font-size="14" font-weight="400" text-anchor="middle"><rect x="54" y="25.5" width="102" height="35" rx="17.5" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.14)"/><text x="105" y="49.5" fill="#B9C6D6">ヒント</text></g>');
+    case 'hintButton':return tipSvg('<g font-family="A1 Gothic,Hiragino Kaku Gothic ProN,Yu Gothic,sans-serif" font-size="14" font-weight="400" text-anchor="middle"><rect x="54" y="25.5" width="102" height="35" rx="17.5" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.14)"/><text x="105" y="49.5" fill="#B9C6D6">'+tr('hint')+'</text></g>');
     case 'navigation':return tipSvg('<g font-family="A1 Gothic,Hiragino Kaku Gothic ProN,Yu Gothic,sans-serif" text-anchor="middle"><rect x="4" y="8" width="47" height="32" rx="16" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.14)"/><text x="27.5" y="28" fill="#B9C6D6" font-size="9">← 前へ</text><rect x="58" y="3" width="94" height="42" rx="7" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.14)"/><text x="105" y="20" fill="#9FB0C4" font-size="9">基本</text><text x="105" y="36" fill="#F3E8D5" font-size="14">7 / 9</text><rect x="159" y="8" width="47" height="32" rx="16" fill="rgba(255,255,255,.07)" stroke="rgba(255,255,255,.14)"/><text x="182.5" y="28" fill="#B9C6D6" font-size="9">次へ →</text><g fill="rgba(201,165,78,.55)">'+Array.from({length:10},(_,i)=>'<rect x="'+(12+i*19)+'" y="67" width="14" height="6" rx="3"/>').join('')+'</g></g>');
     case 'menuButtons':return tipSvg('<g font-family="A1 Gothic,Hiragino Kaku Gothic ProN,Yu Gothic,sans-serif" text-anchor="middle"><rect x="54" y="23" width="102" height="40" rx="20" fill="rgba(98,184,210,.055)"/><rect x="56" y="25" width="98" height="36" rx="18" fill="rgba(22,40,60,.76)" stroke="rgba(98,184,210,.58)"/><text x="105" y="48" fill="#B9E8F2" font-size="13" font-weight="700" letter-spacing=".06em">'+tr('menu')+'</text></g>');
     case 'unwritten':return tipSvg('<path d="M39 20Q105 6 171 20L166 39Q105 48 44 39Z" fill="#F3E8D5" opacity=".12" stroke="#B9E8F2" stroke-width="1.2"/><path d="M45 21Q105 13 165 21" fill="none" stroke="#F3E8D5" stroke-width="1" opacity=".45"/><text x="72" y="34" text-anchor="middle" fill="#B9E8F2" font-family="serif" font-size="18" opacity=".54">文</text><text x="105" y="34" text-anchor="middle" fill="#B9E8F2" font-family="serif" font-size="15" opacity=".3">・</text><text x="137" y="34" text-anchor="middle" fill="#B9E8F2" font-family="serif" font-size="12" opacity=".12">字</text><path d="M75 62Q105 51 135 62" fill="none" stroke="#62B8D2" stroke-width="1.7" stroke-linecap="round" opacity=".7"/><circle cx="105" cy="59" r="10" fill="#62B8D2" opacity=".1"/><circle cx="105" cy="59" r="4" fill="#C9A54E" opacity=".9"/>'+d(59,67,.35)+d(151,67,.35));
@@ -4968,6 +5189,8 @@ function tipArt(key){
 function clearBoardSvg(state){return miniBoardSvg(state).replace('viewBox="14 0 293 310"','viewBox="14 20 293 270"');}
 function renderClearTip(){
   const text=stageClearText(),art=stageClearArt(),illustration=$('clearTipIllustration');
+  const twoMoveLesson=lessonVariantFromArt(art);
+  const lessonCopy=$('clearTwoMoveLessonCopy');
   const twoMoveCard=extraMode?CLEAR_TWO_MOVE_CARDS[extraIndex]:undefined;
   const guideCard=extraMode?CLEAR_GUIDE_CARDS[extraIndex]:null;
   const rankLink=extraMode&&EXTRA_CLEAR_TIPS[extraIndex]==='extraClearRankCollection';
@@ -4989,10 +5212,23 @@ function renderClearTip(){
   illustration.classList.toggle('unwritten-art',art==='unwritten');
   illustration.classList.toggle('cheer-art',art==='cheer');
   illustration.classList.toggle('intro-guide-art',art==='introGuide');
+  illustration.classList.toggle('two-move-lesson-art',!!twoMoveLesson);
   stopClearGuideBoard('clearGuideBoard');
-  illustration.innerHTML=art==='introGuide'?'<svg id="clearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'';
+  stopClearGuideBoard('clearTwoMoveLessonBoard');
+  illustration.innerHTML=art==='introGuide'?'<svg id="clearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
+    :twoMoveLesson?'<svg id="clearTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
+    :art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'';
   if(art==='introGuide')buildClearGuideBoard('clearGuideBoard');
+  if(twoMoveLesson)buildTwoMoveLessonBoard('clearTwoMoveLessonBoard',twoMoveLesson);
   illustration.hidden=!art;
+  lessonCopy.hidden=!twoMoveLesson;
+  if(twoMoveLesson){
+    renderTwoMoveLessonCopy('clearTwoMoveLessonCopy',twoMoveLesson);
+    // 「次からは…」→ 実演 → 解説、の順で読めるようにする。
+    $('clearDialogText').after(illustration);
+    illustration.after(lessonCopy);
+  }
+  else document.querySelector('#clearDialog .clear-dialog-heading').after(illustration);
 }
 const MESSAGE_REVIEW_STORAGE_KEY='wake7-message-review';
 const MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY='wake7-message-review-last-clear';
@@ -5087,7 +5323,7 @@ function messageReviewStageContext(entry){
 }
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
-  const art=entry.art||'',illustration=$('messageIllustration'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
+  const art=entry.art||'',twoMoveLesson=lessonVariantFromArt(art),illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
   $('messagePrev').textContent='← '+tr('prev');
   $('messageNext').textContent=tr('next')+' →';
   $('closeMessages').textContent=tr('close');
@@ -5155,10 +5391,21 @@ function renderMessageReview(){
   illustration.classList.toggle('unwritten-art',art==='unwritten');
   illustration.classList.toggle('cheer-art',art==='cheer');
   illustration.classList.toggle('intro-guide-art',art==='introGuide');
+  illustration.classList.toggle('two-move-lesson-art',!!twoMoveLesson);
   stopClearGuideBoard('messageClearGuideBoard');
-  illustration.innerHTML=art==='introGuide'?'<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'';
+  stopClearGuideBoard('messageTwoMoveLessonBoard');
+  illustration.innerHTML=art==='introGuide'?'<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
+    :twoMoveLesson?'<svg id="messageTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
+    :art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'';
   if(art==='introGuide')buildClearGuideBoard('messageClearGuideBoard');
+  if(twoMoveLesson)buildTwoMoveLessonBoard('messageTwoMoveLessonBoard',twoMoveLesson);
   illustration.hidden=!art;
+  lessonCopy.hidden=!twoMoveLesson;
+  if(twoMoveLesson){
+    renderTwoMoveLessonCopy('messageTwoMoveLessonCopy',twoMoveLesson);
+    $('messageDialogText').after(illustration);
+    illustration.after(lessonCopy);
+  }
   if(entry.master==='satoriIntro'||entry.master==='secondLapIntro'){
     seal.classList.remove('animate');
     void seal.offsetWidth;
@@ -5236,6 +5483,11 @@ function volumeLabel(n){
   return (labels[currentLang]||labels.ja)[n-1]||String(n);
 }
 function hideGameDialogs(){
+  closeTwoMoveLessonDialog();
+  stopClearGuideBoard('clearGuideBoard');
+  stopClearGuideBoard('clearTwoMoveLessonBoard');
+  stopClearGuideBoard('messageClearGuideBoard');
+  stopClearGuideBoard('messageTwoMoveLessonBoard');
   $('clearDialog').hidden=true;
   $('messageDialog').hidden=true;
   messageDialogReturn=null;
@@ -6554,6 +6806,10 @@ $('introStart').addEventListener('click',()=>{
   $('introDialog').hidden=true;
   try{localStorage.setItem('wake7-intro-seen','1');}catch(_){}
 });
+$('closeTwoMoveLesson').addEventListener('click',closeTwoMoveLessonDialog);
+$('twoMoveLessonDialog').addEventListener('click',event=>{
+  if(event.target===$('twoMoveLessonDialog'))closeTwoMoveLessonDialog();
+});
 const PLAY_TIPS={
   ja:[
     '4体立ち：寝ダルマの小三角は最短1手、大三角は最短4手、ほかは最短3手',
@@ -6822,7 +7078,6 @@ function applyLanguage(lang){
   $('nextStage').textContent=tr('next')+' →';
   $('nextStage').setAttribute('aria-label',tr('next'));
   $('stagePickerTrigger').setAttribute('aria-label',tr('stagePicker'));
-  $('stageProgress').setAttribute('aria-label',tr('progress'));
   $('pickerFreeMode').textContent=tr('stagePickerFree');
   $('pickerCustomMode').textContent=tr('stagePickerCustom');
   $('pickerSpeedMode').textContent=tr('stagePickerSpeed');
@@ -6865,6 +7120,7 @@ function applyLanguage(lang){
   $('shuffle').textContent=tr('shuffle');
   $('undo').textContent=tr('undo');
   $('hint').textContent=tr('hint');
+  if(!$('twoMoveLessonDialog').hidden)openTwoMoveLessonDialog();
   $('speedClockLabel').textContent=tr('timeLabel');
   $('speedPause').textContent=tr('speedPause');
   $('speedBoardStart').textContent=tr('speedGo');
@@ -7241,7 +7497,6 @@ $('resetDialogAll').addEventListener('click',()=>{
 
 buildBoard();
 updateMasterTheme();
-renderProgress();
 restoreActiveSession();
 let savedLanguage='ja';
 try{
