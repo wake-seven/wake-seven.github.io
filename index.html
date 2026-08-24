@@ -355,6 +355,8 @@
   .clear-tip-illustration.two-move-lesson-art{height:12.5rem;margin:0.875rem 0 0}
   .clear-tip-illustration.two-move-lesson-art svg{width:12.125rem;height:auto}
   .two-move-lesson-dialog .game-dialog{width:min(100%,23.5rem)}
+  .two-move-lesson-dialog .clear-dialog-heading{min-height:0;padding-top:1.5rem;margin-bottom:0}
+  .two-move-lesson-nav{padding-left:0.75rem;padding-right:0.75rem;font-weight:800}
   .two-move-lesson-dialog p{margin:0.25rem 0 0;color:#B9E8F2;font-size:0.8125rem;font-weight:600;line-height:1.7;text-align:left;white-space:pre-line}
   .two-move-lesson-dialog .clear-tip-illustration{margin:0.5625rem 0 0}
   #twoMoveLessonBoard,#clearTwoMoveLessonBoard,#messageTwoMoveLessonBoard{transition:opacity 90ms linear}
@@ -511,7 +513,7 @@
   .mastery-board .tile .open,.mastery-board .tile .shut{display:none}
   .mastery-board .tile .happy{display:block}
   .mastery-board.pseudo-3d{overflow:visible;perspective:38rem}
-  .mastery-board.pseudo-3d svg{transform:rotateX(52deg) rotateZ(-6deg);transform-style:preserve-3d;filter:drop-shadow(0 1.625rem 1.25rem rgba(0,0,0,.5))}
+  .mastery-board.pseudo-3d svg{transform:rotateX(52deg) rotateZ(-6deg);transform-style:preserve-3d;filter:drop-shadow(0 0.25rem 0 rgba(150,130,95,.85)) drop-shadow(0 1.625rem 1.25rem rgba(0,0,0,.5))}
   .road-step{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 4.1875rem;align-items:center;min-height:2.1875rem;padding-left:1.5625rem;color:#586B80;text-align:left}
   .road-step::before{content:'';position:absolute;z-index:1;left:0.1875rem;top:0.625rem;width:0.625rem;height:0.625rem;border:2px solid currentColor;border-radius:50%;background:#1A3047}
   .road-step:not(:last-child)::after{content:'';position:absolute;left:0.5625rem;top:1.5rem;width:0.0625rem;height:1.3125rem;background:currentColor;opacity:.72}
@@ -562,6 +564,10 @@
   .master-3d-reward[hidden]{display:none}
   .master-3d-reward p{margin:0;color:#B9E8F2;font-size:0.75rem;font-weight:600;line-height:1.6;text-align:left;white-space:pre-line}
   .master-3d-reward .clear-tip-link{margin:0.5rem auto 0}
+  .master-3d-reward .mastery-board{height:9.5rem;margin:0.375rem 0}
+  .master-3d-reward .mastery-board[hidden]{display:none}
+  .master-3d-reward .mastery-board.pseudo-3d svg{transform:translateY(-1.625rem) rotateX(52deg) rotateZ(-6deg)}
+  #awakeningRewardBoard .tile.stand .hex{fill:var(--washi);stroke:#C0AC88}
   .master-speed-unlock{margin:0.875rem 0 0;padding:0.6875rem 0.8125rem;border:1px solid rgba(98,184,210,.24);border-radius:0.5625rem;background:rgba(98,184,210,.08)}
   .master-speed-unlock[hidden]{display:none}
   .master-speed-unlock p{margin:0;color:#B9E8F2;font-size:0.75rem;font-weight:600;line-height:1.6;text-align:left;white-space:pre-line}
@@ -646,9 +652,8 @@
     padding:2.5rem 1.25rem;text-align:center;
   }
   .grip-prompt:not([hidden]){display:grid}
-  /* チュートリアルでは、回す三枚と案内が重ならない側へ置く。 */
-  .grip-prompt.tutorial-prompt-top{place-items:center;padding:0 1.25rem 38%}
-  .grip-prompt.tutorial-prompt-bottom{place-items:center;padding:38% 1.25rem 0}
+  /* チュートリアルでは、回す三枚を下半分に寄せているので、案内は常に上部に置く。 */
+  .grip-prompt.tutorial-prompt-top{place-items:start center;padding:0.75rem 1.25rem 0}
   .grip-prompt span{
     display:block;padding:.6rem .8rem;border:1px solid rgba(98,215,244,.66);border-radius:.4rem;
     background:rgba(22,40,60,.86);color:#B9E8F2;font-size:clamp(1rem,4vw,1.25rem);font-weight:800;line-height:1.35;
@@ -975,7 +980,7 @@
 </div>
 <div class="game-dialog-backdrop two-move-lesson-dialog" id="twoMoveLessonDialog" hidden>
   <div class="game-dialog" role="dialog" aria-modal="true" aria-labelledby="twoMoveLessonTitle">
-    <h2 id="twoMoveLessonTitle">あと2くるりのコツ</h2>
+    <div class="clear-dialog-heading"><h2 id="twoMoveLessonTitle">あと2くるりのコツ</h2><span class="clear-stage-context" id="twoMoveLessonPosition"></span></div>
     <div class="two-move-lesson-copy" id="twoMoveLessonShape"></div>
     <div class="clear-tip-illustration two-move-lesson-art"><svg id="twoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div>
     <div class="two-move-lesson-tabs" id="twoMoveLessonTabs">
@@ -984,7 +989,7 @@
       <button class="chip" type="button" id="twoMoveLessonTab2" data-tip="2">コツ3</button>
     </div>
     <div class="two-move-lesson-copy" id="twoMoveLessonText"></div>
-    <div class="dialog-actions"><button class="chip on" id="retryTwoMoveLesson" hidden>再挑戦する</button><button class="chip on" id="closeTwoMoveLesson">OK</button></div>
+    <div class="dialog-actions"><button class="chip two-move-lesson-nav" type="button" id="twoMoveLessonPrev">←</button><button class="chip on" id="retryTwoMoveLesson" hidden>再挑戦する</button><button class="chip on" id="closeTwoMoveLesson">OK</button><button class="chip two-move-lesson-nav" type="button" id="twoMoveLessonNext">→</button></div>
   </div>
 </div>
 <div class="game-dialog-backdrop" id="clearDialog" hidden>
@@ -1061,6 +1066,7 @@
     <div class="speed-pause-stats master-speed-stats" id="masterSpeedStats" hidden><p id="masterSpeedStatsSummary"></p><strong class="speed-pause-stats-title" id="masterSpeedStatsTitle">ベスト3</strong><div class="rank-list speed-stats-list" id="masterSpeedStatsList"></div></div>
     <div class="master-3d-reward" id="master3DRewardBox" hidden>
       <p id="master3DReward"></p>
+      <div class="mastery-board" id="awakeningRewardBoard" hidden></div>
       <a class="clear-tip-link" id="master3DLink" href="index_3D.html" target="_blank" rel="noopener"></a>
     </div>
     <div class="dialog-actions"><button class="chip" id="masterClose">閉じる</button><a class="chip" id="masterAllPatterns" href="all-patterns.html" hidden>全パターン一覧を見る</a><button class="chip on" id="masterStart">名人への道へ →</button></div>
@@ -1349,11 +1355,13 @@ const tutorialTwoStepState=SOLVER.byDepth[2][0];
 // 最短2手の九パターンのうち、寝た五体が台形に並ぶ型。
 const TUTORIAL_TRAPEZOID_VIEW={permutation:makeBoardPermutation(120),flip:false};
 const tutorialTrapezoidState=transformStateBySymmetry(STAGES[4].state,TUTORIAL_TRAPEZOID_VIEW);
+// 案内メッセージは常に上部に置くため、回す対象が上半分に来る問題だけ回転して下半分へ寄せる。
+const TUTORIAL_LOWER_VIEW={permutation:makeBoardPermutation(-120),flip:false};
 const TUTORIAL_STEPS=[
-  {state:tutorialPool[0],par:1,cue:'grab'},
+  {state:transformStateBySymmetry(tutorialPool[0],TUTORIAL_LOWER_VIEW),par:1,cue:'grab'},
   {state:tutorialPool[tutorialPool.length-1],par:1,cue:'grab'},
   {state:tutorialSecondState,par:1,cue:'find'},
-  {state:tutorialTwoStepState,par:2,cue:'chain'},
+  {state:transformStateBySymmetry(tutorialTwoStepState,TUTORIAL_LOWER_VIEW),par:2,cue:'chain'},
   {state:tutorialTrapezoidState,par:2,cue:'chain-direction'}
 ];
 // 一覧・解説は、比較しやすい基準の向きを保つ。
@@ -1874,7 +1882,7 @@ const UI_TEXT={
     twoMoveLessonTab1:'コツ1',
     twoMoveLessonTab2:'コツ2',
     twoMoveLessonTab3:'コツ3',
-    twoMoveLessonRule:'2枚が同じ向きの三角を回そう',
+    twoMoveLessonRule:'2枚が同じ向きの三角を回そう(2くるり共通)',
     twoMoveLessonPractice:'外側の寝た2枚に、1枚を合わせにいこう',
     twoMoveLessonSecond:'外側の寝た1枚に、2枚を合わせにいこう',
     twoMoveLessonClose:'OK',
@@ -2241,7 +2249,7 @@ const UI_TEXT={
     twoMoveLessonTab1:'Tip 1',
     twoMoveLessonTab2:'Tip 2',
     twoMoveLessonTab3:'Tip 3',
-    twoMoveLessonRule:'Turn the triangle where two daruma face the same way.',
+    twoMoveLessonRule:'Turn the triangle where two daruma face the same way (true for every 2-move board).',
     twoMoveLessonPractice:'Match the one to the two fallen tiles on the outside.',
     twoMoveLessonSecond:'Match the two to the one fallen tile on the outside.',
     twoMoveLessonClose:'Got it',
@@ -2600,7 +2608,7 @@ const UI_TEXT={
     twoMoveLessonTab1:'诀窍1',
     twoMoveLessonTab2:'诀窍2',
     twoMoveLessonTab3:'诀窍3',
-    twoMoveLessonRule:'转动两个方向相同的三角',
+    twoMoveLessonRule:'转动两个方向相同的三角（两种情况通用）',
     twoMoveLessonPractice:'让1个不倒翁去对齐外圈倒下的2个',
     twoMoveLessonSecond:'让2个不倒翁去对齐外圈倒下的1个',
     twoMoveLessonClose:'明白了',
@@ -2956,7 +2964,7 @@ const UI_TEXT={
     twoMoveLessonTab1:'요령1',
     twoMoveLessonTab2:'요령2',
     twoMoveLessonTab3:'요령3',
-    twoMoveLessonRule:'두 개가 같은 방향인 삼각형을 돌리자',
+    twoMoveLessonRule:'두 개가 같은 방향인 삼각형을 돌리자 (두 경우 모두 공통)',
     twoMoveLessonPractice:'바깥쪽에 누운 2개에 1개를 맞추러 가자',
     twoMoveLessonSecond:'바깥쪽에 누운 1개에 2개를 맞추러 가자',
     twoMoveLessonClose:'알겠어요',
@@ -4638,15 +4646,28 @@ function renderTwoMoveLessonTip(){
   root.append(line);
   root.hidden=false;
 }
-function openTwoMoveLessonDialog(retry=false){
-  twoMoveLessonTipIndex=0;
-  twoMoveLessonContext=currentTwoMoveLessonContext();
-  for(let i=0;i<3;i++)$('twoMoveLessonTab'+i).textContent=tr('twoMoveLessonTab'+(i+1));
+function renderTwoMoveLessonPattern(){
   renderTwoMoveLessonShape();
   renderTwoMoveLessonTip();
+  $('twoMoveLessonPosition').textContent=twoMoveLessonContext.position+' / '+TWO_MOVE_STAGES.length;
+  buildTwoMoveLessonBoard('twoMoveLessonBoard',twoMoveLessonContext.group,twoMoveLessonContext.state);
+}
+function navigateTwoMoveLesson(delta){
+  const total=TWO_MOVE_STAGES.length;
+  const position=((twoMoveLessonContext.position-1+delta)%total+total)%total+1;
+  const state=transformStateBySymmetry(campaignStageState(STAGES[BASIC_STAGE_START+position-1].state),SECOND_LAP_BOARD_VIEW);
+  twoMoveLessonContext={state,position,group:position<=5?'joinOne':'joinTwo'};
+  renderTwoMoveLessonPattern();
+}
+function openTwoMoveLessonDialog(retry=false){
+  twoMoveLessonTipIndex=2;
+  twoMoveLessonContext=currentTwoMoveLessonContext();
+  for(let i=0;i<3;i++)$('twoMoveLessonTab'+i).textContent=tr('twoMoveLessonTab'+(i+1));
+  renderTwoMoveLessonPattern();
   $('closeTwoMoveLesson').textContent=tr('twoMoveLessonClose');
   $('retryTwoMoveLesson').textContent=tr('retryLesson');
-  buildTwoMoveLessonBoard('twoMoveLessonBoard',twoMoveLessonContext.group,twoMoveLessonContext.state);
+  $('twoMoveLessonPrev').setAttribute('aria-label',tr('prev'));
+  $('twoMoveLessonNext').setAttribute('aria-label',tr('next'));
   $('retryTwoMoveLesson').hidden=!retry;
   $('closeTwoMoveLesson').hidden=retry;
   $('twoMoveLessonDialog').hidden=false;
@@ -5011,7 +5032,7 @@ function setPosition(state,par){
   busy=false; drag=null; svg.classList.remove('spinning','selecting','clear-pending','celebrating','arriving');
   svg.classList.remove('tutorial-grab-step','tutorial-clear-step','invalid-grab');
   svg.querySelectorAll('.grip-marker.tutorial-target').forEach(marker=>marker.classList.remove('tutorial-target'));
-  $('gripPrompt').classList.remove('tutorial-prompt-top','tutorial-prompt-bottom');
+  $('gripPrompt').classList.remove('tutorial-prompt-top');
   $('gripPrompt').hidden=true;
   invalidGrabPointerId=null;
   baseTiles.forEach(el=>el.classList.remove('selected'));
@@ -5102,7 +5123,7 @@ function loadTutorialStep(index=0){
   storage.set(STORAGE_KEYS.tutorialStep,String(tutorialStep));
   const step=TUTORIAL_STEPS[tutorialStep];
   setPosition(step.state,step.par);
-  $('gripPrompt').classList.add(tutorialStep===0||tutorialStep===3?'tutorial-prompt-bottom':'tutorial-prompt-top');
+  $('gripPrompt').classList.add('tutorial-prompt-top');
   renderStageNav();
   animateBoardArrival();
   setTimeout(showTutorialCue,430);
@@ -7554,9 +7575,9 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   if(requireAnswer)$('clearNext').disabled=true;
 }
 // ===== クリア後フロー・最短2手ギャラリー・名人ダイアログ =====
-function masteryBoardSvg(tilted=false){
+function masteryBoardSvg(tilted=false,forceStandardColor=false){
   const tiles=CELL.map((cell,i)=>{
-    const color=darumaBodyColor(i);
+    const color=forceStandardColor?'':darumaBodyColor(i);
     return '<g class="tile stand mastery-tile" data-cell="'+i+'" style="'+(color?'--daruma-body:'+color+';':'')+'transform:'+tileTransform(cell.x,cell.y,0)+'">'
     +'<path class="hex" d="'+hexPath(R)+'"/><g class="mastery-daruma-shell"'+(tilted?' transform="rotate(30)"':'')+'><use href="#daruma-body"/><g class="open"><use href="#face-open"/></g><g class="shut"><use href="#face-shut"/></g><g class="happy"><use href="#face-happy"/></g></g></g>';
   }).join('');
@@ -7597,10 +7618,10 @@ function renderMasteryBoard(id,show,theme='gold',animate=true){
   masteryBoardRuns.set(id,(masteryBoardRuns.get(id)||0)+1);
   board.getAnimations?.({subtree:true}).forEach(animation=>animation.cancel());
   board.classList.toggle('satori-theme',show&&theme.startsWith('satori'));
-  board.classList.toggle('tilted-theme',show&&(theme==='satori-tilted'||theme==='satori-3d'));
-  board.classList.toggle('pseudo-3d',show&&theme==='satori-3d');
+  board.classList.toggle('tilted-theme',show&&(theme==='satori-tilted'||theme==='gold-3d'));
+  board.classList.toggle('pseudo-3d',show&&theme==='gold-3d');
   board.hidden=!show;
-  board.innerHTML=show?masteryBoardSvg(theme==='satori-tilted'||theme==='satori-3d'):'';
+  board.innerHTML=show?masteryBoardSvg(theme==='satori-tilted'||theme==='gold-3d',theme==='gold-3d'):'';
   if(show&&animate)animateMasteryBoard(id);
 }
 function renderTwoMovePatterns(){
@@ -7764,8 +7785,9 @@ function showMasterDialog(kind='primary'){
     rememberSpecialMessage('awakening');
   }
   if(kind==='mastery'&&!needsMasteryTrial)$('menuAllPatterns').hidden=false;
-  const masteryBoardTheme=kind==='awakening'?'satori-3d':(kind==='mastery'&&secondLapActive)||kind==='satori'?'satori-tilted':'gold';
-  renderMasteryBoard('masteryBoard',(kind==='mastery'&&!needsMasteryTrial)||['satori','awakening'].includes(kind),masteryBoardTheme,kind!=='awakening');
+  const masteryBoardTheme=kind==='awakening'?'gold-3d':(kind==='mastery'&&secondLapActive)||kind==='satori'?'satori-tilted':'gold';
+  renderMasteryBoard('masteryBoard',kind!=='awakening'&&((kind==='mastery'&&!needsMasteryTrial)||['satori','awakening'].includes(kind)),masteryBoardTheme,kind!=='awakening');
+  renderMasteryBoard('awakeningRewardBoard',kind==='awakening',masteryBoardTheme,false);
   const seal=$('masterSeal');
   const rankText=$('masterRankText');
   const shareButton=$('masterShare');
@@ -8582,6 +8604,8 @@ for(let i=0;i<3;i++)$('twoMoveLessonTab'+i).addEventListener('click',()=>{
   renderTwoMoveLessonTip();
 });
 $('twoMoveLessonOpen').addEventListener('click',()=>openTwoMoveLessonDialog());
+$('twoMoveLessonPrev').addEventListener('click',()=>navigateTwoMoveLesson(-1));
+$('twoMoveLessonNext').addEventListener('click',()=>navigateTwoMoveLesson(1));
 $('closeTwoMoveLesson').addEventListener('click',closeTwoMoveLessonDialog);
 $('retryTwoMoveLesson').addEventListener('click',()=>{
   closeTwoMoveLessonDialog();
