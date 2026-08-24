@@ -1204,6 +1204,7 @@
 </defs></svg>
 
 <script>
+// ===== 盤面ジオメトリ定数 =====
 const R=54, W=Math.sqrt(3)*R, H=1.5*R, OX=66.77, OY=74;
 const CELL=[[0.5,0],[1.5,0],[0,1],[1,1],[2,1],[0.5,2],[1.5,2]]
   .map(([cx,ry])=>({x:OX+cx*W, y:OY+ry*H}));
@@ -1246,6 +1247,7 @@ const VIEW_TILTED_FLIP_VERTICAL=makeBoardPermutation(-120,true);
 const SPEED_BOARD_VIEW={permutation:VIEW_ROTATE_MINUS60,flip:false};
 
 /* ---- 全探索ソルバ（向き3値・7マス = 3進7桁） ---- */
+// ===== ソルバーコア =====
 const P3=[1,3,9,27,81,243,729], NS=2187;
 const enc=o=>{let n=0;for(let i=0;i<N;i++)n+=o[i]*P3[i];return n;};
 const dec=n=>{const a=new Uint8Array(N);for(let i=0;i<N;i++){a[i]=n%3;n=(n/3)|0;}return a;};
@@ -1315,6 +1317,9 @@ const ACADEMY_STAGE_COUNT=PRACTICE_STAGE_START+PRACTICE_STAGE_COUNT;
 const TRAINING_STAGE_START=ACADEMY_STAGE_COUNT;
 const TRAINING_STAGE_COUNT=18;
 const MASTER_VOLUME_SIZE=15;
+// ===== ステージデータ構築パイプライン =====
+// 不可分ブロック: STAGES → ... → SATORI_STAGES の連鎖。STAGES.push/EXTRA_STAGES.push による
+// 2回のin-place mutationを含む厳密な順序依存ブロックのため、内部の並び替え禁止。
 const STAGES=[
   // 入門
   { state:31, par:1 },
@@ -1679,6 +1684,7 @@ const SATORI_STAGES=[...SATORI_MIXED_STAGES];
 const SATORI_ORDER_VERSION='mixed-depths-final-swap-10';
 const satoriStageIndexByState=new Map(SATORI_STAGES.map((stage,index)=>[stage.state,index]));
 let currentLang='ja';
+// ===== UI_TEXT(多言語辞書) =====
 const UI_TEXT={
   ja:{
     pageTitle:'だるまさんを起こして！ — WAKE SEVEN',
@@ -3114,6 +3120,7 @@ const UI_TEXT={
     flipVertical:'상하 반전'
   }
 };
+// ===== 共通ユーティリティ =====
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -3152,29 +3159,7 @@ async function shareWakeSeven(kind='game',button){
     window.prompt(tr('shareCopyPrompt'),data.url);
   }
 }
-/* クイズは見直すたびに選択肢の位置を変える。 */
-function shuffledIndices(length){
-  const order=Array.from({length},(_,index)=>index);
-  for(let index=order.length-1;index>0;index--){
-    const swap=Math.floor(Math.random()*(index+1));
-    [order[index],order[swap]]=[order[swap],order[index]];
-  }
-  return order;
-}
-function quizPresentation(quiz){
-  const order=shuffledIndices(quiz.a.length);
-  return {answers:order.map(index=>quiz.a[index]),correct:order.indexOf(quiz.correct)};
-}
-const BOARD_QUIZ_COPY={
-  ja:{title:'盤面クイズ',moves:'この盤面は最短何手？',choose:'最短2手の盤面を選んでね。',chooseThree:'どちらが最短3手？正解だと思う盤面を選択してね。',chooseTwo:'最短2手の盤面を、2つ選んでね。',selectMore:'あと{n}つ選んでね。',moveChoices:['最短1手','最短2手','最短3手','最短4手'],movesNote:'2体寝ていて片方が真ん中なら最短2手です。',diamond:'ひし形は、対角線のだるまが逆向きなら最短2手です。',caterpillar:'芋虫は、目玉同士・胴体同士がそれぞれ同じ向きなら最短2手です。',outer:'外周で隣り合う2体の向きまで合っていれば、最短2手です。',ribbon:'リボン型は、だるまの向きまで見分ける必要があります。',trapezoid:'台形型は、だるまの向きまで見分ける必要があります。',largeTriangle:'大三角が起きてる方は最短3手、寝てる方は最短4手です。'},
-  en:{title:'Board Quiz',moves:'What is this board’s shortest solution?',choose:'Which board takes only 2 moves?',notTwo:'Which board does not take 2 moves?',moveChoices:['1 move','2 moves','3 moves','4 moves'],movesNote:'This is pattern 1 of the nine 2-move boards.',diamond:'For a diamond, opposite corners must face opposite ways.',caterpillar:'For a caterpillar, the eyes match each other and the body pair match each other.',outer:'The two neighboring outer daruma must also have the right directions.',ribbon:'In a ribbon, the odd daruma’s direction is decisive.',trapezoid:'For a trapezoid, distinguish the odd daruma’s direction too.'},
-  zh:{title:'棋盘小测验',moves:'这个棋盘最少需要几步？',choose:'哪一个最少只要2步？',notTwo:'哪一个不是最少2步？',moveChoices:['最少1步','最少2步','最少3步','最少4步'],movesNote:'这是“最少2步的9种图案”中的第1种。',diamond:'菱形中，对角线上的不倒翁方向相反时才是最少2步。',caterpillar:'毛毛虫形中，眼睛彼此同向、身体彼此同向时才是最少2步。',outer:'外圈相邻的两个不倒翁方向也必须正确。',ribbon:'缎带形的关键是那个不同方向的不倒翁。',trapezoid:'梯形还需要辨认那个不同方向的不倒翁。'},
-  ko:{title:'보드 퀴즈',moves:'이 보드의 최단 수는?',choose:'어느 보드가 최단 2수일까요?',notTwo:'최단 2수가 아닌 것은?',moveChoices:['최단 1수','최단 2수','최단 3수','최단 4수'],movesNote:'최단 2수 9가지 패턴 중 1번입니다.',diamond:'마름모는 대각선 다루마가 서로 반대 방향이면 최단 2수입니다.',caterpillar:'애벌레는 눈끼리, 몸통끼리 각각 같은 방향이면 최단 2수입니다.',outer:'바깥쪽에서 이웃한 두 다루마의 방향도 맞아야 합니다.',ribbon:'리본형은 다른 하나의 다루마 방향이 핵심입니다.',trapezoid:'사다리꼴은 다른 하나의 다루마 방향도 구별해야 합니다.'}
-};
-Object.assign(BOARD_QUIZ_COPY.en,{chooseThree:'Which board takes 3 moves?',largeTriangle:'A large triangle of fallen daruma can take either 3 or 4 moves, depending on their directions.'});
-Object.assign(BOARD_QUIZ_COPY.zh,{chooseThree:'哪一个最少需要3步？',largeTriangle:'倒下的大三角形会因方向不同而需要3步或4步。'});
-Object.assign(BOARD_QUIZ_COPY.ko,{chooseThree:'어느 보드가 최단 3수일까요?',largeTriangle:'누운 다루마의 큰 삼각형은 방향에 따라 최단 3수 또는 4수가 됩니다.'});
-
+// ===== コア状態・モードシステム・進行状態管理 =====
 /* ---- 盤面 ---- */
 // iPadOS Safariは:hover付きの要素だと「1回目のタップはhoverだけ、2回目でclick」になることがある。
 // ダミーのtouchstartリスナーを一つ登録しておくと、その挙動を止められる（既知の回避策）。
@@ -3618,6 +3603,27 @@ function activateCampaignLap(lap){
   persistLapProgress();
   return true;
 }
+function beginSecondLap(){
+  // 一周目の達成状況は残し、二周目だけを新しい進行として開始する。
+  lap2ClearedStages.clear();
+  lap2ClearedExtraStages.clear();
+  lap2ClearedSatoriStages.clear();
+  fourthCheckUsage={};
+  secondLapUnlocked=true;
+  activateCampaignLap(2);
+  try{
+    localStorage.setItem('wake7-second-lap-unlocked','1');
+    localStorage.removeItem('wake7-current-stage');
+    localStorage.removeItem('wake7-active-session');
+    localStorage.removeItem(FOURTH_CHECKS_STORAGE_KEY);
+    localStorage.removeItem(MESSAGE_REVIEW_STORAGE_KEY);
+    localStorage.removeItem(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY);
+  }catch(_){ }
+  lastStageMode={extra:false,satori:false,index:0};
+  persistLapProgress();
+  updateMasterTheme();
+  loadStage(0);
+}
 function migrateSatoriOrder(){
   let version='';
   try{version=localStorage.getItem('wake7-satori-order-version')||'';}catch(_){}
@@ -3750,10 +3756,6 @@ function openBoardThemeDialog(){
 const mod3=v=>((v%3)+3)%3;
 const isSolved=()=>SOLVER.dist[enc(ori)]===0;
 let displayedMoves=null,displayedRemaining=null;
-const FOURTH_CHECKS_STORAGE_KEY='wake7-fourth-checks';
-let fourthCheckUsage={};
-try{fourthCheckUsage=JSON.parse(localStorage.getItem(FOURTH_CHECKS_STORAGE_KEY)||'{}')||{};}catch(_){fourthCheckUsage={};}
-let fourthHintPreview=false,fourthDistanceRevealed=false,fourthHintDistance=null,fourthChecksUsed=0;
 const masterVolume=()=>extraMode?Math.floor(extraIndex/MASTER_VOLUME_SIZE)+1:0;
 const isFinalMasterPuzzle=()=>extraMode&&extraIndex===EXTRA_STAGES.length-1;
 const isGuidedBasicStage=()=>activeLap===1&&isMode('stage')&&!extraMode&&!satoriMode
@@ -3811,6 +3813,7 @@ const isThirdVolume=()=>extraMode&&extraIndex>=30&&extraIndex<45;
 const isFourthVolume=()=>isThirdVolume();
 
 /* 速解きは同じセッション基盤で派生ルールを増やせるよう、モード定義を分離する。 */
+// ===== スピードラン(速解き)モード =====
 const SPEED_MODE_DEFINITIONS=Object.freeze({
   // 現行仕様。リファクタリング中はこの定義だけを実際の入口に使う。
   standard:{id:'standard',labelKey:'speedMode',order:'mixed',source:'satori',total:SATORI_STAGES.length,unlock:'speedRun'},
@@ -4159,6 +4162,11 @@ function completeSpeedStage(){
   const delay=celebrateClear();
   clearTimer=setTimeout(advanceSpeedRun,delay+120);
 }
+// ===== 残り手数チェック(第四巻) =====
+const FOURTH_CHECKS_STORAGE_KEY='wake7-fourth-checks';
+let fourthCheckUsage={};
+try{fourthCheckUsage=JSON.parse(localStorage.getItem(FOURTH_CHECKS_STORAGE_KEY)||'{}')||{};}catch(_){fourthCheckUsage={};}
+let fourthHintPreview=false,fourthDistanceRevealed=false,fourthHintDistance=null,fourthChecksUsed=0;
 const fourthCheckLimit=()=>!isFourthVolume()?0:(extraIndex%MASTER_VOLUME_SIZE<6?2:extraIndex%MASTER_VOLUME_SIZE<12?1:0);
 // 極1〜12では、戻す操作で残り手数の使用回数を復活させない。
 // 手数オーバーで全員起きた場合だけ、再挑戦用に回数を戻す。
@@ -4217,6 +4225,7 @@ function haptic(pattern){
   if(document.hidden||typeof navigator==='undefined'||typeof navigator.vibrate!=='function')return;
   try{navigator.vibrate(pattern);}catch(_){ }
 }
+// ===== HUD・サウンド =====
 function playTone(frequency,duration=.06,volume=.028,delay=0){
   if(!soundEnabled||document.hidden)return;
   try{
@@ -4272,6 +4281,7 @@ function hexPath(r){
   }
   return p+'Z';
 }
+// ===== 盤面SVG構築・入門/学園ダイアログ・最短2手レッスン =====
 function buildBoard(){
   svg.innerHTML='';
   const NS_='http://www.w3.org/2000/svg';
@@ -4778,6 +4788,7 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
   };
   play();clearGuideTimers.set(id,setInterval(play,3600));
 }
+// ===== 描画・座標変換・スワイプアニメーション =====
 function paint(){
   for(let i=0;i<N;i++){
     const up=mod3(spin[i])===0;
@@ -5110,6 +5121,7 @@ function advanceTutorial(){
   loadStage(0);
   setTimeout(openAcademyWelcome,260);
 }
+// ===== チュートリアル・ステージ読込・セッション復元・フリーモード =====
 function loadStage(index){
   if(index>=TRAINING_STAGE_START&&!canEnterTraining()){
     showMasterDialog('primary');
@@ -5624,6 +5636,7 @@ function showAxisGuide(t){
   g.appendChild(ring);
   svg.appendChild(g);
 }
+// ===== ドラッグ/スワイプ操作(ポインタイベント) =====
 svg.addEventListener('pointerdown',e=>{
   if(busy||svg.classList.contains('arriving')||(e.pointerType==='mouse'&&e.button!==0)) return;
   if(isMode('tutorial')&&clearShown)return;
@@ -5939,6 +5952,7 @@ $('tutorialReset').addEventListener('click',()=>{
 $('shuffle').addEventListener('click',()=>{
   if(!busy&&freeMode)startFree();
 });
+// ===== ヒントシステム・段位・名人ロードマップ =====
 function clearHintVisuals(preserveSelection=false){
   clearAxisGuide();
   svg.querySelectorAll('.hint-arrow').forEach(el=>el.remove());
@@ -6444,6 +6458,7 @@ $('pickerSpeedMode').addEventListener('click',()=>{
   openSpeedPicker();
 });
 
+// ===== ステージナビゲーション描画・クリア演出・メッセージ履歴 =====
 function renderStageNav(){
   const tutorialMode=isMode('tutorial');
   const assistedLearning=isAssistedLearningStage();
@@ -7127,6 +7142,29 @@ function renderMessageReview(){
   $('messageNext').disabled=messageReviewIndex===messageReviewEntries.length-1;
   try{localStorage.setItem(MESSAGE_REVIEW_STORAGE_KEY,messageReviewEntryKey(entry));}catch(_){}
 }
+// ===== クイズシステム =====
+/* クイズは見直すたびに選択肢の位置を変える。 */
+function shuffledIndices(length){
+  const order=Array.from({length},(_,index)=>index);
+  for(let index=order.length-1;index>0;index--){
+    const swap=Math.floor(Math.random()*(index+1));
+    [order[index],order[swap]]=[order[swap],order[index]];
+  }
+  return order;
+}
+function quizPresentation(quiz){
+  const order=shuffledIndices(quiz.a.length);
+  return {answers:order.map(index=>quiz.a[index]),correct:order.indexOf(quiz.correct)};
+}
+const BOARD_QUIZ_COPY={
+  ja:{title:'盤面クイズ',moves:'この盤面は最短何手？',choose:'最短2手の盤面を選んでね。',chooseThree:'どちらが最短3手？正解だと思う盤面を選択してね。',chooseTwo:'最短2手の盤面を、2つ選んでね。',selectMore:'あと{n}つ選んでね。',moveChoices:['最短1手','最短2手','最短3手','最短4手'],movesNote:'2体寝ていて片方が真ん中なら最短2手です。',diamond:'ひし形は、対角線のだるまが逆向きなら最短2手です。',caterpillar:'芋虫は、目玉同士・胴体同士がそれぞれ同じ向きなら最短2手です。',outer:'外周で隣り合う2体の向きまで合っていれば、最短2手です。',ribbon:'リボン型は、だるまの向きまで見分ける必要があります。',trapezoid:'台形型は、だるまの向きまで見分ける必要があります。',largeTriangle:'大三角が起きてる方は最短3手、寝てる方は最短4手です。'},
+  en:{title:'Board Quiz',moves:'What is this board’s shortest solution?',choose:'Which board takes only 2 moves?',notTwo:'Which board does not take 2 moves?',moveChoices:['1 move','2 moves','3 moves','4 moves'],movesNote:'This is pattern 1 of the nine 2-move boards.',diamond:'For a diamond, opposite corners must face opposite ways.',caterpillar:'For a caterpillar, the eyes match each other and the body pair match each other.',outer:'The two neighboring outer daruma must also have the right directions.',ribbon:'In a ribbon, the odd daruma’s direction is decisive.',trapezoid:'For a trapezoid, distinguish the odd daruma’s direction too.'},
+  zh:{title:'棋盘小测验',moves:'这个棋盘最少需要几步？',choose:'哪一个最少只要2步？',notTwo:'哪一个不是最少2步？',moveChoices:['最少1步','最少2步','最少3步','最少4步'],movesNote:'这是“最少2步的9种图案”中的第1种。',diamond:'菱形中，对角线上的不倒翁方向相反时才是最少2步。',caterpillar:'毛毛虫形中，眼睛彼此同向、身体彼此同向时才是最少2步。',outer:'外圈相邻的两个不倒翁方向也必须正确。',ribbon:'缎带形的关键是那个不同方向的不倒翁。',trapezoid:'梯形还需要辨认那个不同方向的不倒翁。'},
+  ko:{title:'보드 퀴즈',moves:'이 보드의 최단 수는?',choose:'어느 보드가 최단 2수일까요?',notTwo:'최단 2수가 아닌 것은?',moveChoices:['최단 1수','최단 2수','최단 3수','최단 4수'],movesNote:'최단 2수 9가지 패턴 중 1번입니다.',diamond:'마름모는 대각선 다루마가 서로 반대 방향이면 최단 2수입니다.',caterpillar:'애벌레는 눈끼리, 몸통끼리 각각 같은 방향이면 최단 2수입니다.',outer:'바깥쪽에서 이웃한 두 다루마의 방향도 맞아야 합니다.',ribbon:'리본형은 다른 하나의 다루마 방향이 핵심입니다.',trapezoid:'사다리꼴은 다른 하나의 다루마 방향도 구별해야 합니다.'}
+};
+Object.assign(BOARD_QUIZ_COPY.en,{chooseThree:'Which board takes 3 moves?',largeTriangle:'A large triangle of fallen daruma can take either 3 or 4 moves, depending on their directions.'});
+Object.assign(BOARD_QUIZ_COPY.zh,{chooseThree:'哪一个最少需要3步？',largeTriangle:'倒下的大三角形会因方向不同而需要3步或4步。'});
+Object.assign(BOARD_QUIZ_COPY.ko,{chooseThree:'어느 보드가 최단 3수일까요?',largeTriangle:'누운 다루마의 큰 삼각형은 방향에 따라 최단 3수 또는 4수가 됩니다.'});
 function celebrateQuiz(root){
   root.classList.remove('quiz-success');
   void root.offsetWidth;
@@ -7515,6 +7553,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   }));
   if(requireAnswer)$('clearNext').disabled=true;
 }
+// ===== クリア後フロー・最短2手ギャラリー・名人ダイアログ =====
 function masteryBoardSvg(tilted=false){
   const tiles=CELL.map((cell,i)=>{
     const color=darumaBodyColor(i);
@@ -8020,6 +8059,7 @@ $('freeMode').addEventListener('click',()=>{
   if(busy||freeMode)return;
   restoreFreeSession();
 });
+// ===== デバッグツール =====
 function debugClearCurrent(extraMoves=0){
   if(!DEBUG_MODE||busy||editingBoard)return;
   extraMoves=Number.isInteger(extraMoves)?extraMoves:0;
@@ -8272,6 +8312,7 @@ function debugSkipTutorial(){
 $('debugSkipTutorial').addEventListener('click',debugSkipTutorial);
 $('tutorialDebugSkip').addEventListener('click',debugSkipTutorial);
 $('debugReset').addEventListener('click',()=>resetStoredProgress({resetIntro:true,showIntro:true}));
+// ===== イベントリスナー群A =====
 $('clearNext').addEventListener('click',()=>{
   hideGameDialogs();
   advanceAfterClear();
@@ -8415,27 +8456,6 @@ $('clearTipLink').addEventListener('click',()=>{
     $('closeTipGuide').textContent=tr('backToClear');
   }
 });
-function beginSecondLap(){
-  // 一周目の達成状況は残し、二周目だけを新しい進行として開始する。
-  lap2ClearedStages.clear();
-  lap2ClearedExtraStages.clear();
-  lap2ClearedSatoriStages.clear();
-  fourthCheckUsage={};
-  secondLapUnlocked=true;
-  activateCampaignLap(2);
-  try{
-    localStorage.setItem('wake7-second-lap-unlocked','1');
-    localStorage.removeItem('wake7-current-stage');
-    localStorage.removeItem('wake7-active-session');
-    localStorage.removeItem(FOURTH_CHECKS_STORAGE_KEY);
-    localStorage.removeItem(MESSAGE_REVIEW_STORAGE_KEY);
-    localStorage.removeItem(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY);
-  }catch(_){ }
-  lastStageMode={extra:false,satori:false,index:0};
-  persistLapProgress();
-  updateMasterTheme();
-  loadStage(0);
-}
 $('masterClose').addEventListener('click',()=>{
   const openSatori=masterDialogKind==='mastery'&&(secondLapActive||speedMasteryTrialCleared);
   // 二周目を既に制覇していても、一周目をもう一度完走したら
@@ -8570,6 +8590,7 @@ $('retryTwoMoveLesson').addEventListener('click',()=>{
 $('twoMoveLessonDialog').addEventListener('click',event=>{
   if(event.target===$('twoMoveLessonDialog'))closeTwoMoveLessonDialog();
 });
+// ===== ヒントガイド(攻略のコツ・ミニ講座カルーセル) =====
 const PLAY_TIPS={
   ja:[
     '4体立ち：寝ダルマの小三角は最短1手、大三角は最短4手、ほかは最短3手',
@@ -8814,6 +8835,7 @@ $('tipGuidePlay').addEventListener('click',event=>{
 });
 $('closeTipGuide').addEventListener('click',closeTipGuide);
 $('tipGuideDialog').addEventListener('click',event=>{if(event.target===$('tipGuideDialog'))closeTipGuide();});
+// ===== 言語切替・アプリメニュー・盤面テーマ(イベント配線群B) =====
 function applyLanguage(lang){
   if(!UI_TEXT[lang])return;
   currentLang=lang;
@@ -9160,6 +9182,7 @@ document.addEventListener('click',e=>{
     tip.style.left=left+'px';
   }
 });
+// ===== 進捗リセット・チュートリアル移行・起動シーケンス =====
 function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=false}={}){
   if(speedMode)pauseSpeedRun();
   lap1ClearedStages=new Set();lap1ClearedExtraStages=new Set();lap1ClearedSatoriStages=new Set();
