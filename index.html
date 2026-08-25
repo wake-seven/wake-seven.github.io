@@ -969,7 +969,7 @@
     <button class="chip" id="debugTrainingDeparture" hidden aria-label="だるま修行・旅立ち">旅</button>
     <button class="chip" id="debugTrainingUpper" hidden aria-label="だるま修行・上巻">上</button>
     <button class="chip" id="debugTrainingLower" hidden aria-label="だるま修行・下巻">下</button>
-    <button class="chip" id="debugSpeedIntermediate17" hidden aria-label="速解き二十三番勝負23">23</button>
+    <button class="chip" id="debugSpeedIntermediate17" hidden aria-label="速解き十八番勝負18">18</button>
     <button class="chip" id="debugExtra14" hidden aria-label="序14">序</button>
     <button class="chip" id="debugExtra29" hidden aria-label="破14">破</button>
     <button class="chip" id="debugExtra44" hidden aria-label="急14">急</button>
@@ -1645,6 +1645,8 @@ const TRAINING_LOWER_GOAL_SHAPES=['OuterNeighbor','Diamond','Caterpillar','Trape
 const TRAINING_LOWER_GOAL_STATES=[5,52,150,148,372];
 const TRAINING_STAGES=[...TRAINING_DEPARTURE_STAGES,...TRAINING_UPPER_STAGES,...TRAINING_LOWER_STAGES];
 STAGES.push(...TRAINING_STAGES);
+// 修了試験「速解き十八番勝負」の出題範囲: 上巻・下巻の18問のみ(旅立ちの5問は補助輪付きなので含めない)。
+const TRAINING_EXAM_STAGES=[...TRAINING_UPPER_STAGES,...TRAINING_LOWER_STAGES];
 const EXTRA_STAGES=ALL_THREE_MOVE_STAGES.filter(stage=>!trainingStateSet.has(stage.state)).map(stage=>({...stage}));
 const FOUR_MOVE_STAGES=[];
 {
@@ -2033,7 +2035,7 @@ const UI_TEXT={
     debugTrainingDeparture:'旅',
     debugTrainingUpper:'上',
     debugTrainingLower:'下',
-    debugSpeedIntermediate17:'23',
+    debugSpeedIntermediate17:'18',
     debugSpeedMastery26:'27',
     debugSatori72:'悟',
     secondLapTitle:'ここから二周目へ',
@@ -2077,8 +2079,8 @@ const UI_TEXT={
     speedOpen:'速解きモードへ →',
     speedTrainingLabel:'速解き九番勝負',
     speedTrainingIntro:'だるま学園の卒業試験 「速解き九番勝負」\n出題範囲：2くるりの全9パターン',
-    speedIntermediateLabel:'速解き二十三番勝負',
-    speedIntermediateIntro:'だるま修行の修了試験 「速解き二十三番勝負」\n出題範囲：だるま修行 3くるりの23問',
+    speedIntermediateLabel:'速解き十八番勝負',
+    speedIntermediateIntro:'だるま修行の修了試験 「速解き十八番勝負」\n出題範囲：上巻・下巻 3くるりの18問',
     speedMasteryLabel:'速解き二十七番勝負',
     speedMasteryIntro:'名人への道の皆伝試験 「速解き二十七番勝負」\n出題範囲：全73の盤面からランダムで選ばれた27問',
     speedSatoriLabel:'速解き七十三番勝負',
@@ -2089,9 +2091,9 @@ const UI_TEXT={
     primaryTrialStart:'卒業試験 速解き九番勝負へ →',
     primaryTrialFooter:'メニューに「速解きモード」が追加されました。\n繰り返し挑戦して最短記録の更新を目指そう。',
     intermediateTrialTitle:'だるま修行 修了試験へ',
-    intermediateTrialText:'だるま修行の仕上げに、修了試験「速解き二十三番勝負」に挑戦します。',
-    intermediateTrialNote:'速解き二十三番勝負では、だるま修行に出てきた最短3手の23問が出題されます。',
-    intermediateTrialStart:'修了試験 速解き二十三番勝負へ →',
+    intermediateTrialText:'だるま修行の仕上げに、修了試験「速解き十八番勝負」に挑戦します。',
+    intermediateTrialNote:'速解き十八番勝負では、上巻・下巻に出てきた最短3手の18問が出題されます。',
+    intermediateTrialStart:'修了試験 速解き十八番勝負へ →',
     masteryTrialTitle:'名人への道 皆伝試験へ',
     masteryTrialText:'さぁ、名人になるための皆伝試験「速解き二十七番勝負」に挑戦しましょう！',
     masteryTrialNote:'速解き二十七番勝負では、全73の盤面からランダムに27問が出題されます。',
@@ -2102,7 +2104,7 @@ const UI_TEXT={
     speedMasteryTrialFailText:'全27問を最短手数で解くと、悟りへの道が開かれます。',
     speedTrialRetry:'試験に再挑戦する',
     speedExamBadgePrimary:'修了試験\n速解き九番勝負\n合格',
-    speedExamBadgeIntermediate:'修行卒業試験\n速解き二十三番勝負\n突破',
+    speedExamBadgeIntermediate:'修行卒業試験\n速解き十八番勝負\n突破',
     speedExamBadgeMastery:'免許皆伝\n速解き二十七番勝負\n制覇',
     speedExamBadgeSatori:'速解き七十三番勝負\n完遂',
     speedSatoriUnlockText:'速解き七十三番勝負が解禁されました。\n73の盤面を駆け抜け、自己ベストに挑戦できます。',
@@ -2426,7 +2428,7 @@ const UI_TEXT={
     debugTrainingDeparture:'旅',
     debugTrainingUpper:'上',
     debugTrainingLower:'下',
-    debugSpeedIntermediate17:'23',
+    debugSpeedIntermediate17:'18',
     debugSpeedMastery26:'27',
     debugSatori72:'悟',
     secondLapTitle:'The Second Journey',
@@ -2470,16 +2472,16 @@ const UI_TEXT={
     speedOpen:'Open speed run →',
     speedTrainingLabel:'Speed Run: Nine',
     speedTrainingIntro:'Graduation trial for Daruma Training: race through nine two-move patterns.',
-    speedIntermediateLabel:'Speed Run: Twenty-three',
-    speedIntermediateIntro:'Graduation trial for Daruma Training: "Speed Run: Twenty-three"\nCoverage: 23 three-turn boards from Daruma Training',
+    speedIntermediateLabel:'Speed Run: Eighteen',
+    speedIntermediateIntro:'Graduation trial for Daruma Training: "Speed Run: Eighteen"\nCoverage: 18 three-turn boards from Volumes 1 and 2',
     speedMasteryLabel:'Speed Run: Twenty-Seven',
     speedMasteryIntro:'Mastery trial for the Path to Mastery: "Speed Run: Twenty-Seven"\nCoverage: 27 boards randomly chosen from all 73',
     speedSatoriLabel:'Speed Run: Seventy-Three',
     speedSatoriIntro:'A reward for the Path to Satori: race through all 73 boards.',
     primaryTrialText:'Daruma Training is complete.\nBefore the Path to Mastery opens, pass the graduation trial: Speed Run: Nine.',
     primaryTrialStart:'Speed Run: Nine →',
-    intermediateTrialText:'As the finishing touch of Daruma Training, take on the graduation trial: Speed Run: Twenty-three.',
-    intermediateTrialStart:'Graduation Trial: Speed Run: Twenty-three →',
+    intermediateTrialText:'As the finishing touch of Daruma Training, take on the graduation trial: Speed Run: Eighteen.',
+    intermediateTrialStart:'Graduation Trial: Speed Run: Eighteen →',
     masteryTrialText:'Now, take on the mastery trial to become a true master: Speed Run: Twenty-Seven!',
     masteryTrialStart:'Mastery Trial: Speed Run: Twenty-Seven →',
     speedTrialFailTitle:'Retry the graduation trial',
@@ -2488,7 +2490,7 @@ const UI_TEXT={
     speedMasteryTrialFailText:'Clear every board in its minimum moves to open the Path to Satori.',
     speedTrialRetry:'Retry graduation trial',
     speedExamBadgePrimary:'Graduation Trial\nSpeed Run: Nine\nPassed',
-    speedExamBadgeIntermediate:'Training Graduation\nSpeed Run: Twenty-three\nCleared',
+    speedExamBadgeIntermediate:'Training Graduation\nSpeed Run: Eighteen\nCleared',
     speedExamBadgeMastery:'Full Transmission\nSpeed Run: Twenty-Seven\nMastered',
     speedExamBadgeSatori:'Speed Run: Seventy-Three\nCompleted',
     speedSatoriUnlockText:'Speed Run: Seventy-Three is now unlocked.\nRace through all 73 boards and set a new personal best.',
@@ -2817,7 +2819,7 @@ const UI_TEXT={
     debugTrainingDeparture:'旅',
     debugTrainingUpper:'上',
     debugTrainingLower:'下',
-    debugSpeedIntermediate17:'23',
+    debugSpeedIntermediate17:'18',
     debugSpeedMastery26:'27',
     debugSatori72:'悟',
     secondLapTitle:'第二周目',
@@ -2871,15 +2873,15 @@ const UI_TEXT={
     speedMasteryTrialFailText:'以最少步数完成所有棋盘，即可开启悟道之路。',
     speedTrialRetry:'再次挑战毕业考试',
     speedExamBadgePrimary:'毕业考试\n速解九番胜负\n合格',
-    speedExamBadgeIntermediate:'修行毕业试炼\n速解二十三番胜负\n突破',
+    speedExamBadgeIntermediate:'修行毕业试炼\n速解十八番胜负\n突破',
     speedExamBadgeMastery:'免许皆传\n速解二十七番胜负\n制霸',
     speedExamBadgeSatori:'速解七十三番胜负\n完成',
     speedSatoriUnlockText:'速解七十三番胜负已解锁。\n挑战全部73种棋盘，刷新最佳记录吧。',
     speedSatoriUnlockStart:'前往速解七十三番胜负 →',
-    speedIntermediateLabel:'速解二十三番胜负',
-    speedIntermediateIntro:'达摩修行的毕业考试 "速解二十三番胜负"\n出题范围：达摩修行 最少3转的23题',
-    intermediateTrialText:'作为达摩修行的收尾，请挑战毕业考试"速解二十三番胜负"。',
-    intermediateTrialStart:'毕业考试 速解二十三番胜负 →',
+    speedIntermediateLabel:'速解十八番胜负',
+    speedIntermediateIntro:'达摩修行的毕业考试 "速解十八番胜负"\n出题范围：上卷、下卷 最少3转的18题',
+    intermediateTrialText:'作为达摩修行的收尾，请挑战毕业考试"速解十八番胜负"。',
+    intermediateTrialStart:'毕业考试 速解十八番胜负 →',
     speedIntermediateTrialFailText:'以最少3步完成所有棋盘，即可开启名人之路·离。',
     darumaTraining:'不倒翁修行',
     trainingDeparture:'不倒翁修行·启程',
@@ -3205,7 +3207,7 @@ const UI_TEXT={
     debugTrainingDeparture:'旅',
     debugTrainingUpper:'上',
     debugTrainingLower:'下',
-    debugSpeedIntermediate17:'23',
+    debugSpeedIntermediate17:'18',
     debugSpeedMastery26:'27',
     debugSatori72:'悟',
     secondLapTitle:'두 번째 여정',
@@ -3259,15 +3261,15 @@ const UI_TEXT={
     speedMasteryTrialFailText:'모든 보드를 최단 수로 풀면 깨달음의 길이 열립니다.',
     speedTrialRetry:'졸업 시험 다시 도전',
     speedExamBadgePrimary:'졸업 시험\n속도전 아홉 판\n합격',
-    speedExamBadgeIntermediate:'수행 졸업 시험\n속도전 스물세 판\n돌파',
+    speedExamBadgeIntermediate:'수행 졸업 시험\n속도전 열여덟 판\n돌파',
     speedExamBadgeMastery:'면허개전\n속도전 스물일곱 판\n제패',
     speedExamBadgeSatori:'속도전 일흔세 판\n완주',
     speedSatoriUnlockText:'속도전 일흔세 판이 열렸습니다.\n73개 보드를 달려 최고 기록에 도전하세요.',
     speedSatoriUnlockStart:'속도전 일흔세 판으로 →',
-    speedIntermediateLabel:'속도전 스물세 판',
-    speedIntermediateIntro:'다루마 수행의 수료 시험 "속도전 스물세 판"\n출제 범위: 다루마 수행 3회전의 23문제',
-    intermediateTrialText:'다루마 수행의 마무리로, 수료 시험 "속도전 스물세 판"에 도전합니다.',
-    intermediateTrialStart:'수료 시험 속도전 스물세 판으로 →',
+    speedIntermediateLabel:'속도전 열여덟 판',
+    speedIntermediateIntro:'다루마 수행의 수료 시험 "속도전 열여덟 판"\n출제 범위: 상권·하권 3회전의 18문제',
+    intermediateTrialText:'다루마 수행의 마무리로, 수료 시험 "속도전 열여덟 판"에 도전합니다.',
+    intermediateTrialStart:'수료 시험 속도전 열여덟 판으로 →',
     speedIntermediateTrialFailText:'모든 보드를 최단 3수로 풀면 명인의 길·리가 열립니다.',
     darumaTraining:'다루마 수행',
     trainingDeparture:'다루마 수행·출발',
@@ -4057,7 +4059,7 @@ const SPEED_MODE_DEFINITIONS=Object.freeze({
   standard:{id:'standard',labelKey:'speedMode',order:'mixed',source:'satori',total:SATORI_STAGES.length,unlock:'speedRun'},
   // 段階解放される派生モード。解放前は選択肢に表示しない。
   training9:{id:'training9',labelKey:'speedModeTraining',order:'shuffle',source:'twoMove',total:9,unlock:'primary'},
-  mastery15:{id:'mastery15',labelKey:'speedModeIntermediate',order:'shuffle',source:'training',total:TRAINING_STAGE_COUNT,unlock:'intermediate'},
+  mastery15:{id:'mastery15',labelKey:'speedModeIntermediate',order:'shuffle',source:'training',total:TRAINING_UPPER_COUNT+TRAINING_LOWER_COUNT,unlock:'intermediate'},
   mastery24:{id:'mastery24',labelKey:'speedModeMastery',order:'sample',source:'satori',total:27,unlock:'mastery'},
   satori73:{id:'satori73',labelKey:'speedModeSatori',order:'mixed',source:'satori',total:SATORI_STAGES.length,unlock:'satori'}
 });
@@ -4066,7 +4068,7 @@ function activeSpeedDefinition(){return SPEED_MODE_DEFINITIONS[speedVariant]||SP
 const speedShowsRemaining=()=>speedMode&&['training9','mastery15'].includes(speedVariant);
 function speedStagePool(definition=activeSpeedDefinition()){
   if(definition.source==='twoMove')return SATORI_STAGES.filter(stage=>stage.par===2).slice(0,definition.total);
-  if(definition.source==='training')return TRAINING_STAGES;
+  if(definition.source==='training')return TRAINING_EXAM_STAGES;
   if(definition.source==='mastery')return EXTRA_STAGES;
   if(definition.source==='threeMove')return SATORI_STAGES.filter(stage=>stage.par===3);
   // 「全部から」の派生版も、同じ正規化済みの全パターンを母集団にする。
@@ -4091,7 +4093,7 @@ function speedVariantCopy(id){
 }
 function speedTabLabel(id){
   const total=SPEED_MODE_DEFINITIONS[id]?.total||'';
-  const jaLabels={training9:'九番',mastery15:'二十三番',mastery24:'二十七番',satori73:'七十三番'};
+  const jaLabels={training9:'九番',mastery15:'十八番',mastery24:'二十七番',satori73:'七十三番'};
   return currentLang==='ja'?(jaLabels[id]||total+'番'):String(total);
 }
 function preferredSpeedVariant(){
@@ -8893,7 +8895,7 @@ function debugOpenSpeedExam(variant,index){
   loadSpeedStage(false);
 }
 $('debugSpeedTraining8').addEventListener('click',()=>debugOpenSpeedExam('training9',8));
-$('debugSpeedIntermediate17').addEventListener('click',()=>debugOpenSpeedExam('mastery15',22));
+$('debugSpeedIntermediate17').addEventListener('click',()=>debugOpenSpeedExam('mastery15',17));
 $('debugSpeedMastery26').addEventListener('click',()=>debugOpenSpeedExam('mastery24',26));
 $('debugSecondSatori72').addEventListener('click',()=>debugUnlockSatori(72,true));
 function debugSkipTutorial(){
