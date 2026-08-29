@@ -3522,8 +3522,29 @@ const DEBUG_MODE=new URLSearchParams(location.search).get('debug')==='1'
   &&(location.protocol==='file:'||['localhost','127.0.0.1','::1'].includes(location.hostname));
 document.body.classList.toggle('debug-mode',DEBUG_MODE);
 if(!DEBUG_MODE)document.addEventListener('copy',e=>e.preventDefault());
+// LINEアプリ内ブラウザ等、手元で再現できない環境でのスワイプ競合調査用。
+// ?debug=touch を付けた時だけ、画面隅にタッチ/スクロール系イベントを表示する
+// (本番環境でも動作させたいため、上のDEBUG_MODEのlocalhost限定とは別枠にする)。
+if(new URLSearchParams(location.search).get('debug')==='touch'){
+  const touchHud=document.createElement('div');
+  touchHud.style.cssText='position:fixed;left:4px;top:4px;z-index:99999;max-width:94vw;max-height:40vh;overflow:hidden;padding:6px 8px;background:rgba(0,0,0,.78);color:#7CFC7C;font:10px/1.45 monospace;white-space:pre-wrap;pointer-events:none;';
+  document.addEventListener('DOMContentLoaded',()=>document.body.appendChild(touchHud));
+  let touchHudLines=[];
+  const touchHudLog=line=>{
+    touchHudLines.unshift(line);
+    if(touchHudLines.length>8)touchHudLines.length=8;
+    const vv=window.visualViewport;
+    touchHud.textContent='scrollY:'+window.scrollY+' vvTop:'+(vv?vv.offsetTop.toFixed(1):'-')+' vvH:'+(vv?vv.height.toFixed(0):'-')+'\n'+touchHudLines.join('\n');
+  };
+  ['pointerdown','pointermove','pointerup','pointercancel'].forEach(type=>{
+    document.addEventListener(type,e=>touchHudLog(type+' prevented:'+e.defaultPrevented),{capture:true});
+  });
+  document.addEventListener('touchmove',e=>touchHudLog('touchmove prevented:'+e.defaultPrevented+' n:'+e.touches.length),{capture:true,passive:true});
+  window.addEventListener('scroll',()=>touchHudLog('scroll y:'+window.scrollY),{passive:true});
+  if(window.visualViewport)window.visualViewport.addEventListener('resize',()=>touchHudLog('viewport-resize'));
+}
 let ori=new Uint8Array(N), spin=new Int16Array(N), history=[], moves=0, best=0;
-let tileEls=[], baseTiles=[], drag=null, busy=false;
+let tileEls=[], baseTiles=[], drag=null, busy=false, boardTouchActive=false;
 let stageIndex=0,extraIndex=0,satoriIndex=0,tutorialStep=0,activeMode='stage',clearShown=false,clearTimer=0,nextStageAttention=false;
 let tutorialAdvanceTimer=0,boardArrivalTimer=0;
 let pendingMasterThemeRefresh=false;
@@ -5885,7 +5906,7 @@ function setPosition(state,par){
   tileEls=baseTiles.slice();
   best=par; moves=0; history=[]; clearShown=false;
   clearTimeout(boardArrivalTimer);
-  busy=false; drag=null; svg.classList.remove('spinning','selecting','clear-pending','celebrating','arriving');
+  busy=false; drag=null;boardTouchActive=false; svg.classList.remove('spinning','selecting','clear-pending','celebrating','arriving');
   svg.classList.remove('tutorial-grab-step','tutorial-clear-step','invalid-grab');
   svg.querySelectorAll('.grip-marker.tutorial-target').forEach(marker=>marker.classList.remove('tutorial-target'));
   $('gripPrompt').classList.remove('tutorial-prompt-top');
@@ -6097,7 +6118,7 @@ function restoreSavedBoard(data){
   clearShown=!!data.clearShown||isSolved();
   loadFourthChecks();
   fourthDistanceRevealed=!!data.fourthDistanceRevealed;
-  fourthHintPreview=false;fourthHintDistance=null;busy=false;drag=null;
+  fourthHintPreview=false;fourthHintDistance=null;busy=false;drag=null;boardTouchActive=false;
   svg.classList.remove('spinning','selecting','clear-pending','celebrating');
   svg.classList.toggle('clear-pending',clearShown&&isSolved());
   baseTiles.forEach(el=>el.classList.remove('selected'));
@@ -6214,7 +6235,7 @@ function restoreFreeSession(){
   tileEls=s.tileEls.slice();moves=s.moves;best=s.best;
   history=s.history.map(cloneHistoryEntry);
   currentInitialState=s.initialState;currentInitialPar=s.initialPar;clearShown=s.clearShown;
-  busy=false;drag=null;svg.classList.remove('spinning','selecting','clear-pending','celebrating');
+  busy=false;drag=null;boardTouchActive=false;svg.classList.remove('spinning','selecting','clear-pending','celebrating');
   baseTiles.forEach(el=>el.classList.remove('selected'));
   svg.querySelectorAll('.pivot.active').forEach(el=>el.classList.remove('active'));
   $('msg').textContent='';
@@ -6286,8 +6307,8 @@ function gripAt(p){
     const along=dx*Math.cos(grip.angle)+dy*Math.sin(grip.angle);
     const across=-dx*Math.sin(grip.angle)+dy*Math.cos(grip.angle);
     // 見えている水色の棒（36×8）よりかなり広く、指でもつかみやすい当たり判定にする。
-    if(Math.abs(along)>40||Math.abs(across)>26)return;
-    const score=(along/40)**2+(across/26)**2;
+    if(Math.abs(along)>46||Math.abs(across)>30)return;
+    const score=(along/46)**2+(across/30)**2;
     if(score<best){best=score;hit={ti,t,grip};}
   });
   return hit;
@@ -6516,6 +6537,8 @@ function showAxisGuide(t){
 // ===== ドラッグ/スワイプ操作(ポインタイベント) =====
 svg.addEventListener('pointerdown',e=>{
   if(busy||svg.classList.contains('arriving')||(e.pointerType==='mouse'&&e.button!==0)) return;
+  // 棒をつかめたかどうかに関わらず、盤面上で始まったタッチはページスワイプに奪われたくない。
+  boardTouchActive=true;
   if(isMode('tutorial')&&clearShown)return;
   if(editingBoard){
     cancelTutorialHint();
@@ -6590,6 +6613,8 @@ svg.addEventListener('pointerdown',e=>{
 svg.addEventListener('pointermove',e=>{
   if(!drag||e.pointerId!==drag.id){
     if(!drag&&e.pointerType==='mouse')svg.classList.toggle('grip-hover',!!gripAt(toView(e)));
+    // 棒をつかめていなくても、盤面上で始まったタッチならページスワイプに奪われないようにする。
+    if(!drag&&boardTouchActive&&e.pointerType!=='mouse')e.preventDefault();
     return;
   }
   // touch-action:none が効かない一部のアプリ内ブラウザ向けに、ドラッグ中は明示的にスクロール等を止める。
@@ -6665,7 +6690,7 @@ function resumeTutorialCue(){
 }
 function finishDrag(e,cancel=false,forcedTurns=null){
   if(!drag||(e&&e.pointerId!==drag.id)) return;
-  const dg=drag; drag=null; clearAxisGuide(); svg.classList.remove('spinning');
+  const dg=drag; drag=null;boardTouchActive=false; clearAxisGuide(); svg.classList.remove('spinning');
   svg.classList.remove('selecting');
   for(const item of dg.items) item.el.classList.remove('selected');
   svg.querySelectorAll('.pivot.active').forEach(el=>el.classList.remove('active'));
@@ -6830,6 +6855,9 @@ function animateGuidedBasicRewind(dg){
 }
 svg.addEventListener('pointerup',e=>{if(!clearInvalidGrab(e))finishDrag(e);});
 svg.addEventListener('pointercancel',e=>{if(!clearInvalidGrab(e))finishDrag(e,true);});
+// pointermoveのpreventDefault()だけではスワイプ操作を吸収しきれないアプリ内ブラウザ(LINE等の
+// WebView)向けに、生のtouchmoveでも盤面ドラッグ中だけ明示的に止める。passive:falseが必須。
+svg.addEventListener('touchmove',e=>{if(boardTouchActive)e.preventDefault();},{passive:false});
 
 $('undo').addEventListener('click',()=>{
   if(busy||isFinalMasterPuzzle()||!history.length) return;
