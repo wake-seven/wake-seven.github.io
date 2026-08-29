@@ -607,7 +607,7 @@
   body.academy-metric-mode .status-metric.remaining #moveUnit{font-size:19px;font-weight:700}
   /* だるま学園だけ、「あと○くるり」の右に「でクリア」を白文字で添える。 */
   .academy-clear-suffix{display:none}
-  body.academy-metric-mode .academy-clear-suffix{display:inline;color:var(--washi);font-size:0.9375rem}
+  body.academy-metric-mode .academy-clear-suffix{display:inline;color:var(--washi)}
   .status-metric.moves b{color:var(--washi);font-size:1.875rem}
   .status-separator{color:rgba(255,255,255,.26);font-size:1.4375rem;font-weight:300}
   .rank-badge{width:5.375rem;height:2.1875rem;margin-left:auto;padding:0;border:0;background:transparent;color:var(--kin);cursor:pointer}
@@ -978,7 +978,7 @@
 </div>
 <div class="stage-accent" id="stageAccent" aria-hidden="true"><div class="stage-accent-fill" id="stageAccentFill"></div></div>
 <div class="mode-row">
-  <div class="status-metric remaining"><span id="shortestLabel">あと</span><b id="stagePar">1</b><span id="moveUnit">くるり</span><span class="academy-clear-suffix" id="academyClearSuffix">でクリア</span></div>
+  <div class="status-metric remaining"><span id="shortestLabel">あと</span><b id="stagePar">1</b><span id="moveUnit">くるり</span><span class="academy-clear-suffix" id="academyClearSuffix"></span></div>
   <span class="status-separator">/</span>
   <div class="status-metric moves"><span id="movesLabel">いま</span><b id="moves">0</b><span id="movesUnit">くるり</span></div>
   <div class="speed-clock-inline" id="speedClockInline" hidden><span id="speedClockLabel">タイム</span><b id="speedClockValue">00:00</b></div>
@@ -1911,6 +1911,7 @@ const UI_TEXT={
     shortest:'あと',
     shortestDisplay:'あと',
     moveUnit:'くるり',
+    academyClearSuffix:'でクリア',
     moves:'いま',
     stageMode:'ステージモード',
     freeMode:'フリーモード',
@@ -2300,6 +2301,7 @@ const UI_TEXT={
     shortest:'Left',
     shortestDisplay:'Left',
     moveUnit:'turns',
+    academyClearSuffix:'to clear',
     moves:'Now',
     stageMode:'Puzzles',
     freeMode:'Free Play',
@@ -2674,6 +2676,7 @@ const UI_TEXT={
     shortest:'还差',
     shortestDisplay:'还差',
     moveUnit:'转',
+    academyClearSuffix:'就能过关',
     moves:'现在',
     stageMode:'关卡模式',
     freeMode:'自由模式',
@@ -3051,6 +3054,7 @@ const UI_TEXT={
     shortest:'앞으로',
     shortestDisplay:'앞으로',
     moveUnit:'번',
+    academyClearSuffix:'이면 클리어',
     moves:'지금',
     stageMode:'문제 모드',
     freeMode:'자유 모드',
@@ -7383,6 +7387,7 @@ function renderStageNav(){
       const showsRemaining=speedShowsRemaining();
       $('shortestLabel').textContent=showsRemaining?tr('shortestDisplay'):'';
       $('moveUnit').textContent=showsRemaining?tr('moveUnit'):'';
+      $('academyClearSuffix').textContent=showsRemaining?tr('academyClearSuffix'):'';
       $('speedClockInline').hidden=false;
       $('speedClockLabel').textContent='';
       $('movesLabel').textContent=tr('moves');$('moves').textContent=moves;$('movesUnit').textContent=tr('moveUnit');
@@ -7434,7 +7439,7 @@ function renderStageNav(){
     else if(extraMode)accentFrac=(extraIndex+1)/EXTRA_STAGES.length;
     else if(!freeMode&&!customMode)accentFrac=stageIndex<ACADEMY_STAGE_COUNT?(stageIndex+1)/ACADEMY_STAGE_COUNT:(stageIndex-ACADEMY_STAGE_COUNT+1)/TRAINING_STAGE_COUNT;
     $('stageAccentFill').style.width=(Math.max(0,Math.min(1,accentFrac))*100)+'%';
-    if(!speedMode){$('shortestLabel').textContent=tr('shortestDisplay');$('moveUnit').textContent=tr('moveUnit');$('movesLabel').textContent=tr('moves');$('moves').textContent=moves;$('movesUnit').textContent=tr('moveUnit');}
+    if(!speedMode){$('shortestLabel').textContent=tr('shortestDisplay');$('moveUnit').textContent=tr('moveUnit');$('academyClearSuffix').textContent=tr('academyClearSuffix');$('movesLabel').textContent=tr('moves');$('moves').textContent=moves;$('movesUnit').textContent=tr('moveUnit');}
     renderRankBadge();
   }
   function renderStageNavPrevNext(){
@@ -9701,7 +9706,7 @@ const LANGUAGE_TEXT_TARGETS=[
   ['stagePickerTrigger','stagePicker','aria-label'],
   ['pickerFreeMode','stagePickerFree'],['pickerCustomMode','stagePickerCustom'],['pickerSpeedMode','stagePickerSpeed'],
   ['speedPauseStageMode','stageModeReturn'],['speedPauseFreeMode','stagePickerFree'],['speedPauseCustomMode','stagePickerCustom'],
-  ['shortestLabel','shortestDisplay'],['moveUnit','moveUnit'],['movesLabel','moves'],['movesUnit','moveUnit'],
+  ['shortestLabel','shortestDisplay'],['moveUnit','moveUnit'],['academyClearSuffix','academyClearSuffix'],['movesLabel','moves'],['movesUnit','moveUnit'],
   ['stageMode','stageMode'],['freeMode','freeMode'],
   ['menuStagePicker','stagePicker'],['menuRankList','rankListMenu'],['menuAbout','menuAbout'],
   ['aboutDialogTitle','menuAbout'],['aboutDialogCloseBtn','close'],
