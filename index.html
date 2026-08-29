@@ -4678,10 +4678,11 @@ function buildIntroBoard(){
       // 本編と同じく、3体をひとつの塊として軸のまわりに回す。
       grips.forEach(marker=>marker.style.display='none');
       const unit=rotationUnit;
+      const rotateDuration=1200;
       for(let i=0;i<3;i++)unit.appendChild(old[c[(i+1)%3]]);
       unit.appendChild(swipe);
       unit.animate([{transform:'rotate(0deg)'},{transform:'rotate(-120deg)'}],
-        {duration:760,easing:'cubic-bezier(.2,.75,.2,1)',fill:'forwards'});
+        {duration:rotateDuration,easing:'cubic-bezier(.2,.75,.2,1)',fill:'forwards'});
       setTimeout(()=>{
         for(let i=0;i<3;i++){
           const from=c[(i+1)%3],to=c[i],el=old[from];
@@ -4695,7 +4696,7 @@ function buildIntroBoard(){
         intro.appendChild(swipe);
         tiles.forEach(el=>el.classList.add('guide-happy'));
         swipe.style.display='none';
-      },760);
+      },rotateDuration);
     },1750);
   };
   play();clearInterval(introTimer);introTimer=setInterval(play,3500);
@@ -5283,6 +5284,11 @@ function buildClearGuideBoard(id){
   const swipe=document.createElementNS(NS_,'circle');
   swipe.setAttribute('class','intro-swipe');swipe.setAttribute('cx',TRI[0].x);swipe.setAttribute('cy',TRI[0].y-40);swipe.setAttribute('r','6.5');guide.appendChild(swipe);
   grips.forEach(marker=>guide.appendChild(marker));
+  // 回転をまとめる<g>は毎回作り直さず使い回す(iOSで初回フレームの描画がずれる対策)。
+  const rotationUnit=document.createElementNS(NS_,'g');
+  rotationUnit.style.transformBox='view-box';rotationUnit.style.transformOrigin=TRI[0].x+'px '+TRI[0].y+'px';
+  rotationUnit.style.willChange='transform';
+  guide.appendChild(rotationUnit);
   const play=()=>{
     if(!guide.isConnected){stopClearGuideBoard(id);return;}
     swipe.style.display='none';guide.appendChild(swipe);grips.forEach(marker=>{marker.style.display='';guide.appendChild(marker);});
@@ -5292,17 +5298,18 @@ function buildClearGuideBoard(id){
     setTimeout(()=>{
       if(!guide.isConnected)return;
       grips.forEach(marker=>marker.style.display='none');
-      const unit=document.createElementNS(NS_,'g'),rotation=document.createElementNS(NS_,'animateTransform');
-      rotation.setAttribute('attributeName','transform');rotation.setAttribute('type','rotate');rotation.setAttribute('from','0 '+TRI[0].x+' '+TRI[0].y);rotation.setAttribute('to','-120 '+TRI[0].x+' '+TRI[0].y);rotation.setAttribute('dur','760ms');rotation.setAttribute('fill','freeze');rotation.setAttribute('calcMode','spline');rotation.setAttribute('keySplines','.2 .75 .2 1');
+      const unit=rotationUnit;
       for(let i=0;i<3;i++)unit.appendChild(old[cells[(i+1)%3]]);
-      unit.appendChild(swipe);unit.appendChild(rotation);guide.appendChild(unit);rotation.beginElement();
+      unit.appendChild(swipe);
+      unit.animate([{transform:'rotate(0deg)'},{transform:'rotate(-120deg)'}],
+        {duration:760,easing:'cubic-bezier(.2,.75,.2,1)',fill:'forwards'});
       setTimeout(()=>{
         if(!guide.isConnected)return;
         for(let i=0;i<3;i++){
           const from=cells[(i+1)%3],to=cells[i],el=old[from];
           el.style.transform=tileTransform(CELL[to].x,CELL[to].y,0);el.setAttribute('class','tile stand');tiles[to]=el;guide.appendChild(el);
         }
-        unit.remove();swipe.setAttribute('cx',TRI[0].x);swipe.setAttribute('cy',TRI[0].y-40);guide.appendChild(swipe);tiles.forEach(el=>el.classList.add('guide-happy'));swipe.style.display='none';
+        swipe.setAttribute('cx',TRI[0].x);swipe.setAttribute('cy',TRI[0].y-40);guide.appendChild(swipe);tiles.forEach(el=>el.classList.add('guide-happy'));swipe.style.display='none';
       },760);
     },1750);
   };
@@ -5352,6 +5359,11 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
   });
   const swipe=document.createElementNS(NS_,'circle');
   swipe.setAttribute('class','intro-swipe');swipe.setAttribute('cx',swipeStart.x.toFixed(2));swipe.setAttribute('cy',swipeStart.y.toFixed(2));swipe.setAttribute('r','6.5');guide.appendChild(swipe);
+  // 回転をまとめる<g>は毎回作り直さず使い回す(iOSで初回フレームの描画がずれる対策)。
+  const rotationUnit=document.createElementNS(NS_,'g');
+  rotationUnit.style.transformBox='view-box';rotationUnit.style.transformOrigin=t.x+'px '+t.y+'px';
+  rotationUnit.style.willChange='transform';
+  guide.appendChild(rotationUnit);
   const play=()=>{
     if(!isCurrent())return;
     if(!guide.isConnected){stopClearGuideBoard(id);return;}
@@ -5370,15 +5382,14 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
     setTimeout(()=>{
       if(!isCurrent()||!guide.isConnected)return;
       grips.forEach(marker=>marker.style.display='none');
-      const old=tiles.slice(),cells=t.cells,unit=document.createElementNS(NS_,'g'),rotation=document.createElementNS(NS_,'animateTransform');
-      rotation.setAttribute('attributeName','transform');rotation.setAttribute('type','rotate');
-      rotation.setAttribute('from','0 '+t.x+' '+t.y);rotation.setAttribute('to',move.dir*120+' '+t.x+' '+t.y);
-      rotation.setAttribute('dur','400ms');rotation.setAttribute('fill','freeze');rotation.setAttribute('calcMode','spline');rotation.setAttribute('keySplines','.2 .75 .2 1');
+      const old=tiles.slice(),cells=t.cells,unit=rotationUnit;
       for(let i=0;i<3;i++){
         const from=move.dir>0?cells[i]:cells[(i+1)%3];
         unit.appendChild(old[from]);
       }
-      unit.appendChild(swipe);unit.appendChild(rotation);guide.appendChild(unit);rotation.beginElement();
+      unit.appendChild(swipe);
+      unit.animate([{transform:'rotate(0deg)'},{transform:'rotate('+(move.dir*120)+'deg)'}],
+        {duration:400,easing:'cubic-bezier(.2,.75,.2,1)',fill:'forwards'});
       setTimeout(()=>{
         if(!isCurrent()||!guide.isConnected)return;
         for(let i=0;i<3;i++){
@@ -5386,7 +5397,7 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
           tile.style.transform=tileTransform(CELL[to].x,CELL[to].y,after[to]);
           tile.setAttribute('class','tile '+(after[to]?'fallen':'stand'));tiles[to]=tile;guide.appendChild(tile);
         }
-        unit.remove();swipe.setAttribute('cx',swipeStart.x.toFixed(2));swipe.setAttribute('cy',swipeStart.y.toFixed(2));guide.appendChild(swipe);swipe.style.display='none';
+        swipe.setAttribute('cx',swipeStart.x.toFixed(2));swipe.setAttribute('cy',swipeStart.y.toFixed(2));guide.appendChild(swipe);swipe.style.display='none';
       },400);
     },2450);
     // 次の初期盤面へ戻す直前に短く消し、ループの切り替わりを明確にする。
