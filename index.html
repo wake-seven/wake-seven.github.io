@@ -4761,6 +4761,13 @@ function buildAcademyWelcomeBoard(variant='enroll'){
   const touch=document.createElementNS(NS_,'circle');
   touch.setAttribute('class','intro-swipe');touch.setAttribute('r','6.5');
   touch.setAttribute('cx',gripX);touch.setAttribute('cy',gripY);board.appendChild(touch);
+  // 回転をまとめる<g>は毎回作り直さず使い回す。ダイアログを開いた時点からwill-changeを
+  // 効かせておき、実際に回転が始まるまでの950ms(leadDelay)をレイヤー確保の猶予にする
+  // (iOSで、生成直後の要素をtransformすると初回フレームだけ描画がずれることがある対策)。
+  const rotationUnit=document.createElementNS(NS_,'g');
+  rotationUnit.style.transformBox='view-box';rotationUnit.style.transformOrigin=t.x+'px '+t.y+'px';
+  rotationUnit.style.willChange='transform';
+  board.appendChild(rotationUnit);
   const counterLabel=document.createElementNS(NS_,'text');
   // 盤面の上に専用の余白を取り、本編と同じ「あと / 大きな数字 / くるり」の見え方にする。
   counterLabel.setAttribute('x','36');counterLabel.setAttribute('y','-17');counterLabel.setAttribute('fill','#9BCBDD');counterLabel.setAttribute('font-size','11');counterLabel.setAttribute('font-weight','700');
@@ -4793,26 +4800,21 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       marker.style.display='none';
       // 水色の持ち手をつかんだ瞬間、回る3枚を本編と同じ見え方で強調する。
       t.cells.forEach(index=>cycleTiles[index].classList.add('welcome-selected'));
-      const unit=document.createElementNS(NS_,'g');
+      const unit=rotationUnit;
       // 指で少し行き過ぎてから離し、次の120°位置へぴたりと収まる感覚を再現する。
       const overshootAmount=8;
       const turn=move.dir>0?120:-120,overshoot=move.dir>0?120+overshootAmount:-(120+overshootAmount),undershoot=move.dir>0?114:-114;
       // SMILのanimateTransform+beginElement()は、iOS Safariで挿入直後に最終フレームが
       // 一瞬先に描かれてから巻き戻る不具合が出たため、Web Animations API(他の演出でも
-      // 使っている書き方)に統一する。回転軸はCSSのtransform-origin(view-box基準)で指定する。
-      unit.style.transformBox='view-box';unit.style.transformOrigin=t.x+'px '+t.y+'px';unit.style.willChange='transform';
+      // 使っている書き方)に統一する。
       for(const index of t.cells)unit.appendChild(cycleTiles[index]);
-      unit.appendChild(touch);board.appendChild(unit);
-      // will-changeだけを先に効かせるため、実際にtransformを動かし始めるのは次のフレームにする。
-      requestAnimationFrame(()=>{
-        if(!alive())return;
-        unit.animate([
-          {transform:'rotate(0deg)',offset:0},
-          {transform:'rotate('+overshoot+'deg)',offset:Number(overshootFrac)},
-          {transform:'rotate('+undershoot+'deg)',offset:Number(settleFrac)},
-          {transform:'rotate('+turn+'deg)',offset:1}
-        ],{duration:rotateDur,easing:'cubic-bezier(.33,0,.67,1)',fill:'forwards'});
-      });
+      unit.appendChild(touch);
+      unit.animate([
+        {transform:'rotate(0deg)',offset:0},
+        {transform:'rotate('+overshoot+'deg)',offset:Number(overshootFrac)},
+        {transform:'rotate('+undershoot+'deg)',offset:Number(settleFrac)},
+        {transform:'rotate('+turn+'deg)',offset:1}
+      ],{duration:rotateDur,easing:'cubic-bezier(.33,0,.67,1)',fill:'forwards'});
       // 本編のpreviewWakeと同じ非対称なしきい値で、だるまの起き伏せ（パネル色）を切り替える。
       // 寝る（起立→伏せ）のは22°動いた時点、起きる（伏せ→起立）のは120°中98°まで進んでから、と判定が厳しい。
       // rollOnce は位置ごとの値ではなく「隣の位置から回ってくる値」を返すため、
@@ -4842,7 +4844,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       },wakeHappens?wakeDelay:Math.round(overshootDuration*(22/overshootAngle)));
       setTimeout(()=>{
         if(!alive())return;
-        unit.remove();
+        // unitは使い回すので削除しない(中身だけ全部board直下へ戻す)。
         // 回転後は全7枚を描き直す。中心の1枚を含めて必ず残るよう、移動中のDOM順に依存しない。
         baseWelcomeTiles.forEach((tile,i)=>{
           tile.setAttribute('class','tile '+(after[i]?'fallen':'stand'));
