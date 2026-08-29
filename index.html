@@ -228,9 +228,8 @@
   .stage-picker-round[hidden]{display:none}
   .stage-picker-round button{border:0;background:none;color:#62B8D2;font:inherit;font-size:1rem;cursor:pointer;padding:0.1875rem 0.5rem}
   .stage-picker-round button:disabled{color:#53667B;cursor:default}
-  .stage-picker-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0.4375rem}
-  .stage-picker-section-label{grid-column:1/-1;margin:0.3125rem 0 -0.0625rem;color:#B9E8F2;font-size:0.6875rem;font-weight:750;letter-spacing:.08em;text-align:left}
-  .stage-picker-section-label:first-child{margin-top:0}
+  /* 名人への道(1巻15問=3段)の高さに、だるま学園・だるま修行の各ページも揃える。 */
+  .stage-picker-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0.4375rem;align-content:start;min-height:9.6875rem}
   .stage-picker-grid button{min-height:2.9375rem;border:1px solid rgba(255,255,255,.13);border-radius:0.4375rem;background:rgba(255,255,255,.05);color:var(--washi);font:inherit;font-weight:700;font-size:0.8125rem;line-height:1;cursor:pointer}
   .stage-picker-grid button span{display:block;margin-top:0.25rem;color:#9FB0C4;font-size:0.5625rem;font-weight:500}
   .stage-picker-grid button.cleared{border-color:rgba(201,165,78,.8);color:var(--kin)}
@@ -303,6 +302,8 @@
   .clear-stage-context{position:absolute;top:0;right:0;color:#8EA4B8;font-size:0.75rem;font-weight:700;letter-spacing:.025em;line-height:1.3;text-align:right;white-space:nowrap}
   #messageDialogPlace{display:none}
   .game-dialog p{margin-top:0.5625rem;color:#A8B6C7;font-size:0.8125rem;line-height:1.65;white-space:pre-line}
+  #introText{font-size:1.0625rem;line-height:1.6}
+  #introStart{font-size:1.1875rem;padding:0.875rem 2rem}
   #resetDialog .game-dialog{position:relative}
   .reset-dialog-close{position:absolute;top:0.5625rem;right:0.625rem;width:1.75rem;height:1.75rem;border:0;background:transparent;color:#A8B6C7;font:300 1.5625rem/1 system-ui;cursor:pointer}
   .reset-dialog-close:hover{color:var(--washi)}
@@ -501,9 +502,9 @@
   .training-shape-callout-line2{fill:#F7F1E5;font:800 25px sans-serif}
   #chainDialogText.chain-text-highlight{margin:0.125rem 0 0.4375rem;color:var(--kin);font-size:1.0625rem;font-weight:800;line-height:1.55}
   #introBoard,#academyWelcomeBoard,#clearAcademyWelcomeBoard{display:block;width:100%;height:auto}
-  #academyWelcomeBoard,#clearAcademyWelcomeBoard,#trainingUpperSpinBoard{transition:opacity .18s ease}
-  #academyWelcomeBoard.welcome-cycle-fade,#clearAcademyWelcomeBoard.welcome-cycle-fade,#trainingUpperSpinBoard.welcome-cycle-fade{opacity:0}
-  #introBoard .intro-swipe,#academyWelcomeBoard .intro-swipe,#clearGuideBoard .intro-swipe,#messageClearGuideBoard .intro-swipe,#clearTwoMoveLessonBoard .intro-swipe,#messageTwoMoveLessonBoard .intro-swipe,#twoMoveLessonBoard .intro-swipe,#trainingUpperSpinBoard .intro-swipe{fill:#62B8D2;filter:drop-shadow(0 0 3px rgba(98,184,210,.8))}
+  #academyWelcomeBoard,#clearAcademyWelcomeBoard,#trainingMiddleSpinBoard{transition:opacity .18s ease}
+  #academyWelcomeBoard.welcome-cycle-fade,#clearAcademyWelcomeBoard.welcome-cycle-fade,#trainingMiddleSpinBoard.welcome-cycle-fade{opacity:0}
+  #introBoard .intro-swipe,#academyWelcomeBoard .intro-swipe,#clearGuideBoard .intro-swipe,#messageClearGuideBoard .intro-swipe,#clearTwoMoveLessonBoard .intro-swipe,#messageTwoMoveLessonBoard .intro-swipe,#twoMoveLessonBoard .intro-swipe,#trainingMiddleSpinBoard .intro-swipe{fill:#62B8D2;filter:drop-shadow(0 0 3px rgba(98,184,210,.8))}
   #introBoard .guide-happy .open,#introBoard .guide-happy .shut,#clearGuideBoard .guide-happy .open,#clearGuideBoard .guide-happy .shut,#messageClearGuideBoard .guide-happy .open,#messageClearGuideBoard .guide-happy .shut,#clearTwoMoveLessonBoard .guide-happy .open,#clearTwoMoveLessonBoard .guide-happy .shut,#messageTwoMoveLessonBoard .guide-happy .open,#messageTwoMoveLessonBoard .guide-happy .shut,#twoMoveLessonBoard .guide-happy .open,#twoMoveLessonBoard .guide-happy .shut{display:none}
   #introBoard .guide-happy .happy,#clearGuideBoard .guide-happy .happy,#messageClearGuideBoard .guide-happy .happy,#clearTwoMoveLessonBoard .guide-happy .happy,#messageTwoMoveLessonBoard .guide-happy .happy,#twoMoveLessonBoard .guide-happy .happy{display:block}
   .master-seal{position:relative;width:5.375rem;height:5.375rem;margin:0 auto 0.375rem;border:3px solid var(--kin);border-radius:50%;color:var(--kin);display:grid;place-items:center;font-size:1.6875rem}
@@ -739,8 +740,8 @@
     filter:drop-shadow(0 0 7px rgba(98,215,244,.98));
   }
   /* 入学案内でも、本編で持ち手をつかんだときと同じく回る3枚を強調する。 */
-  #academyWelcomeBoard .tile.welcome-selected,#trainingUpperSpinBoard .tile.welcome-selected{filter:drop-shadow(0 6px 6px rgba(0,0,0,.24)) brightness(1.08)}
-  #academyWelcomeBoard .tile.welcome-selected .hex,#trainingUpperSpinBoard .tile.welcome-selected .hex{stroke:#8BE8FA;stroke-width:4.5;stroke-linejoin:round;filter:drop-shadow(0 0 7px rgba(98,215,244,.98))}
+  #academyWelcomeBoard .tile.welcome-selected,#trainingMiddleSpinBoard .tile.welcome-selected{filter:drop-shadow(0 6px 6px rgba(0,0,0,.24)) brightness(1.08)}
+  #academyWelcomeBoard .tile.welcome-selected .hex,#trainingMiddleSpinBoard .tile.welcome-selected .hex{stroke:#8BE8FA;stroke-width:4.5;stroke-linejoin:round;filter:drop-shadow(0 0 7px rgba(98,215,244,.98))}
   #academyWelcomeBoard .welcome-counter-pulse{transform-box:fill-box;transform-origin:center;animation:welcomeCounterPulse .34s cubic-bezier(.2,.8,.25,1)}
   @keyframes welcomeCounterPulse{
     0%{transform:scale(1);filter:drop-shadow(0 0 2px rgba(98,184,210,.2))}
@@ -773,7 +774,7 @@
   /* 盤面が着地してから持ち手を見せる。 */
   #board.arriving .grip-marker{opacity:0!important}
   /* 基本クラスでは、つかめる棒をあらかじめ1〜3本だけに絞って見せる。 */
-  .grip-marker.narrow-hidden{opacity:0!important;pointer-events:none}
+  .grip-marker.narrow-hidden{opacity:0!important;pointer-events:none;transition:opacity .35s ease}
   #board.tutorial-clear-step .grip-marker{opacity:0!important}
   #board.tutorial-grab-step:not(.spinning):not(.selecting) .grip-marker{opacity:0}
   #board.tutorial-grab-step:not(.spinning):not(.selecting) .grip-marker.tutorial-target{
@@ -793,11 +794,27 @@
   #board.spinning .pivot{opacity:0}
   .hint-arrow{pointer-events:none;animation:hintArrow 1.35s ease both}
   .hint-arrow.tutorial{animation:none;opacity:1}
+  /* 棒(grip-marker)の縁取りと同じ色で、弧にも枠を付けて存在感を強める。 */
+  .hint-arrow .arc-border{fill:none;stroke:#3E9BC2;stroke-width:8.5;stroke-linecap:round}
   .hint-arrow .arc{
     fill:none;stroke:#62B8D2;stroke-width:5.5;stroke-linecap:round;
     filter:drop-shadow(0 0 3px rgba(22,40,60,.9));
   }
-  .hint-arrow .head{fill:#62B8D2;filter:drop-shadow(0 0 3px rgba(22,40,60,.9))}
+  .hint-arrow .head{
+    fill:#62B8D2;stroke:#BFF0FF;stroke-width:1.5;stroke-linejoin:round;
+    filter:drop-shadow(0 0 3px rgba(22,40,60,.9));
+  }
+  /* 棒(grip-marker)の縁取りと同じく、矢印の先端にも枠を付けて存在感を強める。 */
+  .hint-arrow.tutorial .head{animation:tutorialGripPulse 1.2s ease-in-out infinite}
+  @media (prefers-reduced-motion: reduce){.hint-arrow.tutorial .head{animation:none}}
+  /* 弧の上を1つの光の粒が流れ続けるように見せ、回す方向をより伝わりやすくする。 */
+  .hint-arrow .arc-glow{
+    fill:none;stroke:#CFF3FF;stroke-width:5.5;stroke-linecap:round;
+    stroke-dasharray:14 86;filter:drop-shadow(0 0 5px rgba(191,240,255,.95));
+  }
+  .hint-arrow.tutorial .arc-glow{animation:hintArrowFlow 1.1s linear infinite}
+  @media (prefers-reduced-motion: reduce){.hint-arrow.tutorial .arc-glow{animation:none;opacity:0}}
+  @keyframes hintArrowFlow{0%{stroke-dashoffset:0}100%{stroke-dashoffset:-100}}
   .axis-guide{pointer-events:none}
   .axis-guide .ray{fill:none;stroke:#62B8D2;stroke-linecap:round}
   .axis-guide .ray{stroke-width:2;opacity:.48;stroke-dasharray:3 5}
@@ -964,11 +981,11 @@
   <div class="debug-row">
     <button class="chip" id="debugIntro2" hidden aria-label="入門3">入</button>
     <button class="chip" id="debugBasic11" hidden aria-label="基本クラス9">基</button>
-    <button class="chip" id="debugAcademy20" hidden aria-label="実践クラス9">実</button>
+    <button class="chip" id="debugAcademy20" hidden aria-label="発展クラス8">発</button>
     <button class="chip" id="debugSpeedTraining8" hidden aria-label="速解き九番勝負9">９</button>
-    <button class="chip" id="debugTrainingDeparture" hidden aria-label="だるま修行・旅立ち">旅</button>
-    <button class="chip" id="debugTrainingUpper" hidden aria-label="だるま修行・上巻">上</button>
-    <button class="chip" id="debugTrainingLower" hidden aria-label="だるま修行・下巻">下</button>
+    <button class="chip" id="debugTrainingUpper" hidden aria-label="だるま修行・上巻9">上</button>
+    <button class="chip" id="debugTrainingMiddle" hidden aria-label="だるま修行・中巻9">中</button>
+    <button class="chip" id="debugTrainingLower" hidden aria-label="だるま修行・下巻9">下</button>
     <button class="chip" id="debugSpeedIntermediate17" hidden aria-label="速解き十八番勝負18">18</button>
     <button class="chip" id="debugExtra14" hidden aria-label="序14">序</button>
     <button class="chip" id="debugExtra29" hidden aria-label="破14">破</button>
@@ -979,9 +996,9 @@
   <div class="debug-row">
     <button class="chip" id="debugSecondIntro2" hidden aria-label="二周目・入門3">入</button>
     <button class="chip" id="debugSecondBasic11" hidden aria-label="二周目・基本クラス9">基</button>
-    <button class="chip" id="debugSecondAcademy20" hidden aria-label="二周目・だるま学園21">学</button>
-    <button class="chip" id="debugSecondTrainingDeparture" hidden aria-label="二周目・だるま修行・旅立ち">旅</button>
+    <button class="chip" id="debugSecondAcademy20" hidden aria-label="二周目・だるま学園20">学</button>
     <button class="chip" id="debugSecondTrainingUpper" hidden aria-label="二周目・だるま修行・上巻">上</button>
+    <button class="chip" id="debugSecondTrainingMiddle" hidden aria-label="二周目・だるま修行・中巻">中</button>
     <button class="chip" id="debugSecondTrainingLower" hidden aria-label="二周目・だるま修行・下巻">下</button>
     <button class="chip" id="debugSecondExtra14" hidden aria-label="序14">序</button>
     <button class="chip" id="debugSecondExtra29" hidden aria-label="破14">破</button>
@@ -1353,15 +1370,20 @@ function buildSolver(kind){
 const SOLVER=buildSolver('roll');
 const INTRO_STAGE_COUNT=3;
 const BASIC_STAGE_COUNT=9;
-const PRACTICE_STAGE_COUNT=9;
 const BASIC_STAGE_START=INTRO_STAGE_COUNT;
-const PRACTICE_STAGE_START=BASIC_STAGE_START+BASIC_STAGE_COUNT;
-const ACADEMY_STAGE_COUNT=PRACTICE_STAGE_START+PRACTICE_STAGE_COUNT;
+// 発展クラス: 3くるり5問+4くるり3問。補助なし2くるりはだるま修行・上巻で扱う
+// (修行の入口にする方が学習導線として自然なため)。
+const DEVELOPMENT_THREE_COUNT=5;
+const DEVELOPMENT_FOUR_COUNT=3;
+const DEVELOPMENT_STAGE_COUNT=DEVELOPMENT_THREE_COUNT+DEVELOPMENT_FOUR_COUNT;
+const DEVELOPMENT_STAGE_START=BASIC_STAGE_START+BASIC_STAGE_COUNT;
+const ACADEMY_STAGE_COUNT=DEVELOPMENT_STAGE_START+DEVELOPMENT_STAGE_COUNT;
 const TRAINING_STAGE_START=ACADEMY_STAGE_COUNT;
-const TRAINING_DEPARTURE_COUNT=5;
+// だるま修行: 上巻=2くるり9(補助なし)/中巻=3くるり9(補助なし)/下巻=4くるり9(補助なし)。
 const TRAINING_UPPER_COUNT=9;
+const TRAINING_MIDDLE_COUNT=9;
 const TRAINING_LOWER_COUNT=9;
-const TRAINING_STAGE_COUNT=TRAINING_DEPARTURE_COUNT+TRAINING_UPPER_COUNT+TRAINING_LOWER_COUNT;
+const TRAINING_STAGE_COUNT=TRAINING_UPPER_COUNT+TRAINING_MIDDLE_COUNT+TRAINING_LOWER_COUNT;
 const MASTER_VOLUME_SIZE=15;
 // ===== ステージデータ構築パイプライン =====
 // 不可分ブロック: STAGES → ... → SATORI_STAGES の連鎖。STAGES.push/EXTRA_STAGES.push による
@@ -1385,15 +1407,17 @@ const STAGES=[
 // 本編へ入る前の補助輪付き3問。最短1手盤面のうち、本編の入門とは別の向きを使う。
 const tutorialCandidates=SOLVER.byDepth[1].filter(state=>!STAGES.slice(0,3).some(stage=>stage.state===state));
 const tutorialPool=tutorialCandidates.length>=3?tutorialCandidates:SOLVER.byDepth[1];
-// 3問目は画面右下の三枚を回す盤面に固定する。
+// 3問目は画面右下の三枚を、逆向き(-1)に回す盤面に固定する。
+// 条件(この棒・この向きで最短1手)を満たす盤面は本編の入門3問目と同じ1つしかないため、
+// ここだけは例外的に本編と同じ盤面を使う。
 const tutorialRightLowerTri=TRI.findIndex(t=>t.cells.length===3&&t.cells.includes(3)&&t.cells.includes(4)&&t.cells.includes(6));
-const tutorialSecondState=tutorialPool.find(state=>{
+const tutorialSecondState=SOLVER.byDepth[1].find(state=>{
   const board=dec(state);
-  return tutorialRightLowerTri>=0&&[1,-1].some(dir=>SOLVER.dist[enc(rollOnce(board,tutorialRightLowerTri,dir))]===0);
+  return tutorialRightLowerTri>=0&&SOLVER.dist[enc(rollOnce(board,tutorialRightLowerTri,-1))]===0;
 })??tutorialPool[Math.floor(tutorialPool.length/2)];
 const tutorialTwoStepState=SOLVER.byDepth[2][0];
 // 最短2手の九パターンのうち、寝た五体が台形に並ぶ型。
-const TUTORIAL_TRAPEZOID_VIEW={permutation:makeBoardPermutation(120),flip:false};
+const TUTORIAL_TRAPEZOID_VIEW={permutation:makeBoardPermutation(120,true),flip:true};
 const tutorialTrapezoidState=transformStateBySymmetry(STAGES[4].state,TUTORIAL_TRAPEZOID_VIEW);
 // 案内メッセージは常に上部に置くため、回す対象が上半分に来る問題だけ回転して下半分へ寄せる。
 const TUTORIAL_LOWER_VIEW={permutation:makeBoardPermutation(-120),flip:false};
@@ -1406,7 +1430,7 @@ const TUTORIAL_STEPS=[
 ];
 // 一覧・解説は、比較しやすい基準の向きを保つ。
 const TWO_MOVE_STAGES=STAGES.filter(stage=>stage.par===2).map(stage=>({...stage}));
-// 基本編と実践編は、9つの型を単に並べるのではなく、二つの原理を段階的に覚える順。
+// 基本編とだるま修行・上巻は、9つの型を単に並べるのではなく、二つの原理を段階的に覚える順。
 // 先頭5問は「外側の寝た2枚へ1枚を合わせる」、後半4問はその逆を学ぶ。
 // TWO_MOVE_STAGES 自体は一覧・解説の基準順なので、ここでは触らない。
 const BASIC_LESSON_PATTERN_ORDER=[1,3,2,4,0,5,6,8,7];
@@ -1434,16 +1458,17 @@ const CLEAR_CONTENT={
   academy2_4:{tip:{ja:'回転したら3体のだるまがどの向きになるか、想像しながら回してみよう。',en:'Before you turn, try to picture which way the three daruma will face.',zh:'转动前，试着想象三个不倒翁会朝向哪里。',ko:'돌리기 전에 세 다루마가 어느 방향을 볼지 상상해 보세요.'}},
   academy2_6:{tip:{ja:'高崎だるまは、群馬県ふるさと伝統工芸品に指定されています。1859年に赤い顔料が輸入されると、だるまづくりは盛んになりました。',en:'Takasaki daruma are designated Gunma traditional crafts. Production flourished after red pigment began to be imported in 1859.',zh:'高崎不倒翁被指定为群马县传统工艺品。1859年红色颜料开始进口后，高崎不倒翁的制作兴盛起来。',ko:'다카사키 다루마는 군마현 전통 공예품으로 지정되어 있습니다. 1859년 붉은 안료가 수입되며 제작도 활발해졌습니다.'},art:'craft'},
   academy2_8:{art:'red',quiz:{ja:{q:'だるまの赤は、何を表す色？',a:['まよけや生命力','お祝いごとの華やかさ','火のあたたかさ','秋のもみじ'],correct:0,note:'だるまの赤は、まよけや生命力を表す色です。'},en:{q:'What does daruma red represent?',a:['Protection and vitality','Celebration','The warmth of fire','Autumn leaves'],correct:0,note:'Daruma red represents protection and vitality.'},zh:{q:'不倒翁的红色象征什么？',a:['避邪与生命力','喜庆热闹','火的温暖','秋天的红叶'],correct:0,note:'不倒翁的红色象征避邪与生命力。'},ko:{q:'다루마의 붉은색은 무엇을 뜻할까?',a:['액막이와 생명력','축하의 화려함','불의 따뜻함','가을 단풍'],correct:0,note:'다루마의 붉은색은 액막이와 생명력을 뜻합니다.'}}},
-  // 実践
-  academy3_2:{tip:{ja:'「やり直す」ボタンで盤面を最初に戻せます\n「1手戻す」ボタンで一つ前の手に戻れます',en:'Restart returns to the starting board. Undo takes back your last move.',zh:'“重新开始”会回到初始棋盘。“撤销一步”会回到上一步。',ko:'다시 시작은 처음 보드로 돌아갑니다. 한 수 되돌리기는 바로 전 수로 돌아갑니다.'},art:'controls'},
-  academy3_5:{tip:{ja:'次からは、後半の基本問題です。',en:'The next puzzles introduce the second basic idea.',zh:'从下一题开始，进入后半段基本问题。',ko:'다음 문제부터는 후반 기본 문제입니다.'},art:'twoMoveLessonTwo'},
-  academy3_7:{tip:{ja:'一度クリアした問題は、「← 前へ」「次へ →」と、その真ん中のボタンでいつでも戻れます。',en:'Use Previous, Next, or the button between them to revisit cleared puzzles at any time.',zh:'已通过的关卡可随时用“上一题”“下一题”或中间的按钮返回。',ko:'성공한 문제는 이전, 다음 또는 그 사이의 버튼으로 언제든 다시 갈 수 있어요.'},art:'navigation'},
-  academy3_9:{tip:{ja:'次からは、最短3くるりの問題です。',en:'The next puzzles take three turns.',zh:'接下来是最少3转的问题。',ko:'다음부터는 최단 3번 문제입니다.'}},
-  // だるま修行
-  // だるま学園卒業→だるま修行の間に挟む案内ダイアログ。stageIndexで言えばacademy3_9とtraining1_1の境目。
+  // 発展
+  academy3_6:{tip:{ja:'次からは、最短4くるりの問題です。棒を選ぶのも自分で考えてみよう。',en:'The next puzzles take four turns. This time, try choosing the rod yourself.',zh:'接下来是最少4转的问题。这次也自己想想该选哪根棒吧。',ko:'다음부터는 최단 4번 문제예요. 이번엔 막대도 직접 골라 보세요.'}},
+  // だるま修行・上巻
+  training1_2:{tip:{ja:'「やり直す」ボタンで盤面を最初に戻せます\n「1手戻す」ボタンで一つ前の手に戻れます',en:'Restart returns to the starting board. Undo takes back your last move.',zh:'“重新开始”会回到初始棋盘。“撤销一步”会回到上一步。',ko:'다시 시작은 처음 보드로 돌아갑니다. 한 수 되돌리기는 바로 전 수로 돌아갑니다.'},art:'controls'},
+  training1_5:{tip:{ja:'次からは、後半の基本問題です。',en:'The next puzzles introduce the second basic idea.',zh:'从下一题开始，进入后半段基本问题。',ko:'다음 문제부터는 후반 기본 문제입니다.'},art:'twoMoveLessonTwo'},
+  training1_7:{tip:{ja:'一度クリアした問題は、「← 前へ」「次へ →」と、その真ん中のボタンでいつでも戻れます。',en:'Use Previous, Next, or the button between them to revisit cleared puzzles at any time.',zh:'已通过的关卡可随时用“上一题”“下一题”或中间的按钮返回。',ko:'성공한 문제는 이전, 다음 또는 그 사이의 버튼으로 언제든 다시 갈 수 있어요.'},art:'navigation'},
+  training1_9:{tip:{ja:'次からは、最短3くるりの問題です。',en:'The next puzzles take three turns.',zh:'接下来是最少3转的问题。',ko:'다음부터는 최단 3번 문제입니다.'}},
+  // だるま学園卒業→だるま修行の間に挟む案内ダイアログ。stageIndexで言えばacademy3_8とtraining1_1の境目。
   training1_1before:{dialog:'trainingWelcome'},
-  // 旅立ち完了→上巻開始の間に挟む案内ダイアログ。
-  training2_1before:{dialog:'trainingUpperSpin'},
+  // 上巻完了→中巻開始の間に挟む案内ダイアログ。
+  training2_1before:{dialog:'trainingMiddleSpin'},
   training3_1before:{dialog:'trainingLowerGoal'},
   training3_1:{tip:{ja:'だるまは縁起物なので、お菓子もいろんな種類があります。特に「だるま最中」が定番ですね。',en:'As lucky charms, daruma also appear in many kinds of sweets. Daruma-shaped monaka are especially classic.',zh:'不倒翁是吉祥物，也有许多点心。达摩形最中尤其经典。',ko:'다루마는 길상물이라 여러 과자가 있어요. 다루마 모나카가 특히 대표적입니다.'},art:'monaka'},
   training3_2:{art:'menuButtons'},
@@ -1494,21 +1519,6 @@ const CLEAR_CONTENT={
   mastery3_12:{boardQuiz:{kind:'choose',pattern:7,topic:'ribbon',correct:0}},
   mastery3_13:{tip:{ja:'メニューの「最短2手の9パターン」と「攻略のコツ」では、盤面をスワイプするとゲーム中の盤面と並べて見比べられます。',en:'In “2-move boards” and “Quick tips” in the Menu, swipe a board to compare it side by side with the game board.',zh:'在菜单的“最少2步棋盘”和“攻略提示”中，滑动棋盘可与游戏中的棋盘并排比较。',ko:'메뉴의 “최단 2수 보드”와 “공략 팁”에서는 보드를 스와이프해 게임 보드와 나란히 비교할 수 있어요.'}},
   mastery3_14:{quiz:{ja:{q:'達磨大師が開いたとされる仏教の宗派は？',a:['禅宗','浄土宗','真言宗','日蓮宗'],correct:0,note:'達磨大師は、中国禅宗の開祖とされています。'},en:{q:'Which Buddhist school is Bodhidharma said to have founded?',a:['Zen','Pure Land','Shingon','Nichiren'],correct:0,note:'Bodhidharma is regarded as the founder of Chinese Zen Buddhism.'},zh:{q:'达摩大师被认为开创了哪个佛教宗派？',a:['禅宗','净土宗','真言宗','日莲宗'],correct:0,note:'达摩大师被视为中国禅宗的开祖。'},ko:{q:'달마대사가 열었다고 전해지는 불교 종파는?',a:['선종','정토종','진언종','일련종'],correct:0,note:'달마대사는 중국 선종의 개조로 여겨집니다.'}}},
-  // ?
-  mastery4_1:{tip:{ja:'サンスクリット語「dharma」は、仏が説いた教えやこの世の真理のこと。「達磨大師」の「達磨」も、だるまの名前も、この言葉に由来します。',en:'The name “daruma” comes from Bodhidharma, the master’s name. Its “dharma” is Sanskrit for teaching or law.',zh:'“不倒翁”这个名字来自达摩大师的名字“菩提达摩”。其中“达摩”来自梵语 dharma，意为教义或法。',ko:'“다루마”라는 이름은 가르침 또는 법을 뜻하는 산스크리트어 dharma에서 왔습니다.'},art:'dharma'},
-  mastery4_2:{guideCard:{state:[1,1,1,0,1,1,1],text:{ja:'6体寝て、中央だけ立っている形は最短4手',en:'Six fallen, with only the center standing: four moves.',zh:'6个倒下、只有中央站立时最少4步。',ko:'6개가 누워 있고 중앙만 서 있으면 최단 4수예요.'},page:2}},
-  mastery4_3:{tip:{ja:'だるまには、願いを込めて片目を入れ、かなったらもう片方も描く風習があります。',en:'A daruma often receives one eye with a wish, then the other when it comes true.',zh:'不倒翁常在许愿时画上一只眼，实现愿望后再画另一只。',ko:'다루마는 소원을 빌며 한쪽 눈을 그리고, 이루어지면 다른 눈도 그리는 풍습이 있습니다.'},art:'eyes'},
-  mastery4_4:{boardQuiz:{kind:'choose-two',patterns:[8,9],topic:'trapezoid',correct:[0,3],outerOddOnly:true}},
-  mastery4_5:{quiz:{ja:{q:'役目を終えただるまは、どうするのが一般的？',a:['川に流す','お寺で供養して焼く','土に埋める','売り戻す'],correct:1,note:'だるま供養。年末年始に寺社へ納め、感謝とともにお焚き上げしてもらいます。'},en:{q:'What is commonly done with a daruma that has fulfilled its role?',a:['Float it down a river','Return it to a temple for a memorial burning','Bury it','Sell it back'],correct:1,note:'This is daruma kuyō. Around the New Year, daruma are returned to a temple or shrine and ritually burned with gratitude.'},zh:{q:'完成使命的不倒翁，一般怎么处理？',a:['放进河里','送到寺院供养焚烧','埋进土里','卖回去'],correct:1,note:'这叫不倒翁供养。年末年初送到寺社，带着感谢进行焚烧仪式。'},ko:{q:'역할을 마친 다루마는 보통 어떻게 할까?',a:['강에 띄운다','절에서 공양하고 태운다','땅에 묻는다','되판다'],correct:1,note:'다루마 공양입니다. 연말연시에 절이나 신사에 돌려드리고, 감사와 함께 태워 올립니다.'}}},
-  mastery4_6:{tip:{ja:'次から「残り手数」ボタンが使えるのは1回限りです。',en:'From the next puzzle, Moves Left can be checked only once.',zh:'从下一题起，“剩余步数”只能查看一次。',ko:'다음 문제부터 남은 수는 한 번만 확인할 수 있어요.'}},
-  mastery4_7:{tip:{ja:'だるま落としは江戸時代から親しまれてきたおもちゃです。ハンマーで胴体をたたいて、だるまの顔を倒さないように落とすゲームです。',en:'Daruma otoshi has been a beloved toy since the Edo period. Hit the body blocks with a hammer, without knocking over the daruma head.',zh:'达摩落是自江户时代以来深受喜爱的玩具。用小锤敲击身体的木块，同时不能让最上面的达摩脸倒下。',ko:'다루마오토시는 에도 시대부터 사랑받은 장난감이에요. 망치로 몸통 블록을 쳐서, 맨 위 다루마 얼굴을 넘어뜨리지 않고 빼냅니다.'},art:'darumaOtoshi'},
-  mastery4_8:{guideCard:{state:[0,2,2,1,0,0,1],text:{ja:'外周に1つおきに3体立っている形は最短3手',en:'Three standing at every other outer position: three moves.',zh:'外圈每隔一个站立3个时最少3步。',ko:'바깥쪽에 하나씩 건너 3개가 서 있으면 최단 3수예요.'},page:1}},
-  mastery4_9:{tip:{ja:'次からは「残り手数」ボタンの使用回数が、「元に戻す」などで復活しません。\n(手数オーバーで全員起きた場合にのみ復活)',en:'From the next puzzle, Moves Left uses do not return after restarting, undoing, or similar actions.\n(They return only if everyone wakes up over par.)',zh:'从下一题起，“剩余步数”的使用次数不会因重新开始、撤销等操作而恢复。\n（只有超过最少步数叫醒全部不倒翁时才会恢复。）',ko:'다음 문제부터 남은 수 사용 횟수는 다시 시작이나 되돌리기 등을 해도 돌아오지 않아요.\n(최단 수보다 많이 써서 모두 깨우면 다시 돌아옵니다.)'},art:'cheer'},
-  mastery4_10:{tip:{ja:'最初からやり直したいときは、メニューの「進行状況をリセット」を使えます。集めた称号も消えるので注意。',en:'To start again from the beginning, choose “Reset progress” from the Menu. Your collected titles will also be erased.',zh:'想从头再来时，可从菜单选择“重置进度”。已获得的称号也会被删除，请注意。',ko:'처음부터 다시 하려면 메뉴의 “진행 상황 초기화”를 사용하세요. 모은 칭호도 함께 사라지니 주의하세요.'}},
-  mastery4_11:{quiz:{ja:{q:'だるまの生産量が日本一の県は？',a:['京都府','群馬県','愛知県','福島県'],correct:1,note:'群馬県高崎市。少林山達磨寺のふもとで作られてきた高崎だるまが、全国の大半を占めています。'},en:{q:'Which prefecture produces the most daruma in Japan?',a:['Kyoto','Gunma','Aichi','Fukushima'],correct:1,note:'Takasaki, Gunma. Takasaki daruma, made near Shōrinzan Daruma Temple, account for the majority nationwide.'},zh:{q:'日本不倒翁产量第一的县是？',a:['京都府','群马县','爱知县','福岛县'],correct:1,note:'群马县高崎市。少林山达磨寺附近制作的高崎不倒翁占全国大部分产量。'},ko:{q:'일본에서 다루마 생산량이 가장 많은 현은?',a:['교토부','군마현','아이치현','후쿠시마현'],correct:1,note:'군마현 다카사키시입니다. 소린잔 다루마사 근처에서 만들어진 다카사키 다루마가 전국 대다수를 차지합니다.'}}},
-  mastery4_12:{tip:{ja:'とうとうここまで来ました。\n次からは残り手数のボタンが使えません。\nいよいよ正念場です。',en:'You have come a long way.\nFrom the next puzzle, the Moves Left button is unavailable.\nThis is the true critical moment.',zh:'你已经走到这里了。\n从下一题起，不能再使用“剩余步数”按钮。\n真正的关键时刻到了。',ko:'여기까지 정말 잘 왔어요.\n다음 문제부터는 남은 수 버튼을 쓸 수 없습니다.\n이제부터가 진짜 고비예요.'}},
-  mastery4_13:{boardQuiz:{kind:'choose',options:[{state:[0,1,1,0,0,0,1],distance:4},{state:[1,0,0,1,1,1,0],distance:3}],topic:'largeTriangle',questionKey:'chooseThree',correct:1,guidePages:[1,3]}},
-  mastery4_14:{tip:{ja:'名人まであと1問！\n「1手戻す」が使えません。',en:'The next puzzle is the last one.\nWho rises last: the daruma, or you?\nUndo is unavailable in the final puzzle.',zh:'下一题就是最后一题。\n最后站起来的是不倒翁，还是你？\n最后一题不能撤销。',ko:'다음 문제가 마지막 문제예요.\n마지막에 일어나는 것은 다루마일까요, 당신일까요?\n마지막 문제에서는 되돌리기를 쓸 수 없습니다.'}}
 };
 // stageIndex/extraIndex から CLEAR_CONTENT のキーへ変換する。
 function clearContentKey(mode,index){
@@ -1517,17 +1527,58 @@ function clearContentKey(mode,index){
     return 'mastery'+vol+'_'+q;
   }
   if(index<INTRO_STAGE_COUNT)return 'academy1_'+(index+1);
-  if(index<PRACTICE_STAGE_START)return 'academy2_'+(index-BASIC_STAGE_START+1);
-  if(index<TRAINING_STAGE_START)return 'academy3_'+(index-PRACTICE_STAGE_START+1);
-  if(index<TRAINING_STAGE_START+TRAINING_DEPARTURE_COUNT)return 'training1_'+(index-TRAINING_STAGE_START+1);
-  if(index<TRAINING_STAGE_START+TRAINING_DEPARTURE_COUNT+TRAINING_UPPER_COUNT)return 'training2_'+(index-TRAINING_STAGE_START-TRAINING_DEPARTURE_COUNT+1);
-  return 'training3_'+(index-TRAINING_STAGE_START-TRAINING_DEPARTURE_COUNT-TRAINING_UPPER_COUNT+1);
+  if(index<DEVELOPMENT_STAGE_START)return 'academy2_'+(index-BASIC_STAGE_START+1);
+  if(index<TRAINING_STAGE_START)return 'academy3_'+(index-DEVELOPMENT_STAGE_START+1);
+  if(index<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)return 'training1_'+(index-TRAINING_STAGE_START+1);
+  if(index<TRAINING_STAGE_START+TRAINING_UPPER_COUNT+TRAINING_MIDDLE_COUNT)return 'training2_'+(index-TRAINING_STAGE_START-TRAINING_UPPER_COUNT+1);
+  return 'training3_'+(index-TRAINING_STAGE_START-TRAINING_UPPER_COUNT-TRAINING_MIDDLE_COUNT+1);
 }
 function clearContentAt(mode,index){return CLEAR_CONTENT[clearContentKey(mode,index)];}
 // その問題が始まる直前/終わった直後に、追加でダイアログを挟みたい場合に使う。
 function clearContentBefore(mode,index){return CLEAR_CONTENT[clearContentKey(mode,index)+'before'];}
 // 埋め込み済みの{ja,en,zh,ko}オブジェクトから、現在の言語(なければ日本語)を解決する。
 function resolveLocaleText(obj){return obj?(obj[currentLang]||obj.ja):"";}
+// ===== 未使用の下書き置き場 =====
+// ここに集めた2つの配列は、tr()やCLEAR_CONTENTから一切参照されない下書きコンテンツです。
+// かつてstageClear*/extraClear*/extraAdvice*/mastery4_*などのキーで用意されていましたが、
+// 出題範囲の変更で参照先を失いました。配列+連番というだけの形にしてあるのは、
+// 「academyN_M」「masteryN_M」のような本編の命名規則と紐づいて見えないようにするためです。
+// 将来また使うかもしれない下書きとして残しているだけなので、未使用だからと消さないこと。
+const UNUSED_DRAFT_TRIVIA=[
+  {ja:'次からは、最短2手の問題です。',en:'The next puzzles take two turns.',zh:'从下一题开始，最少需要转2次。',ko:'다음 문제부터는 최단 2번 문제입니다.'},
+  {ja:'だるまの赤は、まよけや生命力を表す色です。諸説ありますが、達磨大師（だるまだいし）の赤い法衣にちなむとされます。',en:'Daruma red represents protection and vitality.',zh:'不倒翁的红色象征避邪与生命力。',ko:'다루마의 붉은색은 액막이와 생명력을 뜻합니다.'},
+  {ja:'次からは実践編です。今度は、最短2手の9パターンを補助なしで解いてみよう。',en:'Next comes Practice. Solve the nine 2-turn patterns without the training wheels.',zh:'接下来是实践篇。请不依靠辅助，解开9种最少2转的图案。',ko:'다음은 실전입니다. 최단 2번의 9가지 패턴을 도움 없이 풀어 보세요.'},
+  {ja:'高崎のだるまづくりは、1859年に赤い顔料が輸入されると盛んになりました。',en:'Takasaki daruma production grew after red pigment began to be imported in 1859.',zh:'1859年开始进口红色颜料后，高崎不倒翁的制作兴盛起来。',ko:'1859년 붉은 안료가 수입되며 다카사키 다루마 제작이 활발해졌습니다.'},
+  {ja:'名人への道では、「急」の途中まで最短3手の問題が続きます。',en:'Path to Mastery continues with three-move puzzles through the middle of Volume 3.',zh:'名人之路会持续出现最少3步的题目，直到第三卷中途。',ko:'명인의 길에서는 3권 중간까지 최단 3수 문제가 이어집니다.'},
+  {ja:'メニューの「最短2手の9パターンを見る」から、9種類の盤面を一覧で見られます。',en:'Open “View 2-move boards” from the Menu to see all nine patterns at once.',zh:'从菜单打开“查看最少2步棋盘”，即可一次查看全部9种图案。',ko:'메뉴의 “최단 2수 보드 보기”에서 9가지 패턴을 한눈에 볼 수 있어요.'},
+  {ja:'名人への道の終盤では、残り最短手数が表示されません。\n「ヒント」ボタンで表示されるので、困ったら押してください',en:'In Volume 4, moves left are shown as “?”.\nWhile a Hint arrow is visible, you see the moves left after following it.\nWhen it disappears, the current moves left are shown; move the board to return to “?”.',zh:'第四卷中，最少步数会显示为“？”。\n按下“提示”后，箭头出现期间会显示照着走一步后的剩余步数。\n箭头消失后会显示当前剩余步数；移动棋盘后会再次变为“？”。',ko:'4권에서는 남은 최단 수가 “?”로 표시됩니다.\n힌트 화살표가 보이는 동안에는 그 수를 둔 뒤의 남은 수가 보입니다.\n화살표가 사라지면 현재 남은 수가 표시되고, 보드를 움직이면 다시 “?”가 됩니다.'},
+  {ja:'4体立ち：寝ダルマの小三角は最短1手',en:'Four standing: the small triangle of fallen daruma takes one move.',zh:'4个站立：倒下小三角形最少1步。',ko:'4개가 서 있을 때: 누운 다루마의 작은 삼각형은 최단 1수예요.'},
+  {ja:'最短2手の盤面は、だるまの形だけでなく向きも大事です。少しずつ覚えやすいものから覚えていこう。',en:'Two-move boards depend not only on the daruma shapes but also on their directions. Learn the easier ones little by little.',zh:'最少2步的棋盘不仅形状重要，不倒翁的朝向也很重要。先从容易记住的开始，一点点记下来吧。',ko:'최단 2수 보드에서는 다루마의 모양뿐 아니라 방향도 중요해요. 외우기 쉬운 것부터 조금씩 익혀 보세요.'},
+  {ja:'ヒントなしでは、回す前に「次は何手になりそうか」を想像してみよう。',en:'Without hints, try to imagine how many moves the next board might take before you turn.',zh:'没有提示时，试着在转动前想象下一盘大概需要几步。',ko:'힌트 없이 돌리기 전, 다음 보드가 몇 수쯤 될지 상상해 보세요.'},
+  {ja:'迷ったら、寝ているだるまの形と向きを、いったん別々に見てみよう。',en:'When stuck, look at the shape of the fallen daruma and their directions separately.',zh:'迷茫时，把倒下不倒翁的形状和朝向分开来看。',ko:'막히면 누운 다루마의 모양과 방향을 따로 살펴보세요.'},
+  {ja:'盤面を回すと景色は変わる。でも、だるまたちの向きも一緒に変わります。',en:'Turning the board changes the view—but the daruma directions turn with it.',zh:'转动棋盘会改变眼前的景色，但不倒翁的朝向也会一起转动。',ko:'보드를 돌리면 풍경은 바뀌지만, 다루마의 방향도 함께 돌아갑니다.'},
+  {ja:'最短4手では、まず最短3手になる一手を探すのが近道です。',en:'On a four-move board, first look for a turn that reaches three moves.',zh:'最少4步时，先寻找能变成最少3步的一手。',ko:'최단 4수에서는 먼저 최단 3수가 되는 수를 찾는 것이 지름길이에요.'},
+  {ja:'次の形が最短2手に近づくなら、大きな前進です。',en:'If the next board gets closer to two moves, that is real progress.',zh:'如果下一盘更接近最少2步，就是很大的前进。',ko:'다음 보드가 최단 2수에 가까워진다면 큰 전진이에요.'},
+  {ja:'三手先を全部読むより、最短2手の形に近づくかを見てみよう。',en:'Rather than reading three moves ahead, look for a board approaching a two-move shape.',zh:'与其读完三步之后，不如看看能否接近最少2步的形状。',ko:'세 수 앞을 모두 읽기보다 최단 2수 모양에 가까워지는지 살펴보세요.'},
+  {ja:'ここまで来たら、答えを探す目はもう自分の中にあります。',en:'By now, the eye that finds the answer is already within you.',zh:'走到这里，寻找答案的眼睛已经在你心中了。',ko:'여기까지 왔다면 답을 찾는 눈은 이미 당신 안에 있어요.'},
+  {ja:'もう一度チャレンジしよう。',en:'Try again.',zh:'再挑战一次吧。',ko:'다시 도전해 보세요.'}
+];
+const UNUSED_DRAFT_CLEAR_ENTRIES=[
+  {tip:{ja:'サンスクリット語「dharma」は、仏が説いた教えやこの世の真理のこと。「達磨大師」の「達磨」も、だるまの名前も、この言葉に由来します。',en:'The name “daruma” comes from Bodhidharma, the master’s name. Its “dharma” is Sanskrit for teaching or law.',zh:'“不倒翁”这个名字来自达摩大师的名字“菩提达摩”。其中“达摩”来自梵语 dharma，意为教义或法。',ko:'“다루마”라는 이름은 가르침 또는 법을 뜻하는 산스크리트어 dharma에서 왔습니다.'},art:'dharma'},
+  {guideCard:{state:[1,1,1,0,1,1,1],text:{ja:'6体寝て、中央だけ立っている形は最短4手',en:'Six fallen, with only the center standing: four moves.',zh:'6个倒下、只有中央站立时最少4步。',ko:'6개가 누워 있고 중앙만 서 있으면 최단 4수예요.'},page:2}},
+  {tip:{ja:'だるまには、願いを込めて片目を入れ、かなったらもう片方も描く風習があります。',en:'A daruma often receives one eye with a wish, then the other when it comes true.',zh:'不倒翁常在许愿时画上一只眼，实现愿望后再画另一只。',ko:'다루마는 소원을 빌며 한쪽 눈을 그리고, 이루어지면 다른 눈도 그리는 풍습이 있습니다.'},art:'eyes'},
+  {boardQuiz:{kind:'choose-two',patterns:[8,9],topic:'trapezoid',correct:[0,3],outerOddOnly:true}},
+  {quiz:{ja:{q:'役目を終えただるまは、どうするのが一般的？',a:['川に流す','お寺で供養して焼く','土に埋める','売り戻す'],correct:1,note:'だるま供養。年末年始に寺社へ納め、感謝とともにお焚き上げしてもらいます。'},en:{q:'What is commonly done with a daruma that has fulfilled its role?',a:['Float it down a river','Return it to a temple for a memorial burning','Bury it','Sell it back'],correct:1,note:'This is daruma kuyō. Around the New Year, daruma are returned to a temple or shrine and ritually burned with gratitude.'},zh:{q:'完成使命的不倒翁，一般怎么处理？',a:['放进河里','送到寺院供养焚烧','埋进土里','卖回去'],correct:1,note:'这叫不倒翁供养。年末年初送到寺社，带着感谢进行焚烧仪式。'},ko:{q:'역할을 마친 다루마는 보통 어떻게 할까?',a:['강에 띄운다','절에서 공양하고 태운다','땅에 묻는다','되판다'],correct:1,note:'다루마 공양입니다. 연말연시에 절이나 신사에 돌려드리고, 감사와 함께 태워 올립니다.'}}},
+  {tip:{ja:'次から「残り手数」ボタンが使えるのは1回限りです。',en:'From the next puzzle, Moves Left can be checked only once.',zh:'从下一题起，“剩余步数”只能查看一次。',ko:'다음 문제부터 남은 수는 한 번만 확인할 수 있어요.'}},
+  {tip:{ja:'だるま落としは江戸時代から親しまれてきたおもちゃです。ハンマーで胴体をたたいて、だるまの顔を倒さないように落とすゲームです。',en:'Daruma otoshi has been a beloved toy since the Edo period. Hit the body blocks with a hammer, without knocking over the daruma head.',zh:'达摩落是自江户时代以来深受喜爱的玩具。用小锤敲击身体的木块，同时不能让最上面的达摩脸倒下。',ko:'다루마오토시는 에도 시대부터 사랑받은 장난감이에요. 망치로 몸통 블록을 쳐서, 맨 위 다루마 얼굴을 넘어뜨리지 않고 빼냅니다.'},art:'darumaOtoshi'},
+  {guideCard:{state:[0,2,2,1,0,0,1],text:{ja:'外周に1つおきに3体立っている形は最短3手',en:'Three standing at every other outer position: three moves.',zh:'外圈每隔一个站立3个时最少3步。',ko:'바깥쪽에 하나씩 건너 3개가 서 있으면 최단 3수예요.'},page:1}},
+  {tip:{ja:'次からは「残り手数」ボタンの使用回数が、「元に戻す」などで復活しません。\n(手数オーバーで全員起きた場合にのみ復活)',en:'From the next puzzle, Moves Left uses do not return after restarting, undoing, or similar actions.\n(They return only if everyone wakes up over par.)',zh:'从下一题起，“剩余步数”的使用次数不会因重新开始、撤销等操作而恢复。\n（只有超过最少步数叫醒全部不倒翁时才会恢复。）',ko:'다음 문제부터 남은 수 사용 횟수는 다시 시작이나 되돌리기 등을 해도 돌아오지 않아요.\n(최단 수보다 많이 써서 모두 깨우면 다시 돌아옵니다.)'},art:'cheer'},
+  {tip:{ja:'最初からやり直したいときは、メニューの「進行状況をリセット」を使えます。集めた称号も消えるので注意。',en:'To start again from the beginning, choose “Reset progress” from the Menu. Your collected titles will also be erased.',zh:'想从头再来时，可从菜单选择“重置进度”。已获得的称号也会被删除，请注意。',ko:'처음부터 다시 하려면 메뉴의 “진행 상황 초기화”를 사용하세요. 모은 칭호도 함께 사라지니 주의하세요.'}},
+  {quiz:{ja:{q:'だるまの生産量が日本一の県は？',a:['京都府','群馬県','愛知県','福島県'],correct:1,note:'群馬県高崎市。少林山達磨寺のふもとで作られてきた高崎だるまが、全国の大半を占めています。'},en:{q:'Which prefecture produces the most daruma in Japan?',a:['Kyoto','Gunma','Aichi','Fukushima'],correct:1,note:'Takasaki, Gunma. Takasaki daruma, made near Shōrinzan Daruma Temple, account for the majority nationwide.'},zh:{q:'日本不倒翁产量第一的县是？',a:['京都府','群马县','爱知县','福岛县'],correct:1,note:'群马县高崎市。少林山达磨寺附近制作的高崎不倒翁占全国大部分产量。'},ko:{q:'일본에서 다루마 생산량이 가장 많은 현은?',a:['교토부','군마현','아이치현','후쿠시마현'],correct:1,note:'군마현 다카사키시입니다. 소린잔 다루마사 근처에서 만들어진 다카사키 다루마가 전국 대다수를 차지합니다.'}}},
+  {tip:{ja:'とうとうここまで来ました。\n次からは残り手数のボタンが使えません。\nいよいよ正念場です。',en:'You have come a long way.\nFrom the next puzzle, the Moves Left button is unavailable.\nThis is the true critical moment.',zh:'你已经走到这里了。\n从下一题起，不能再使用“剩余步数”按钮。\n真正的关键时刻到了。',ko:'여기까지 정말 잘 왔어요.\n다음 문제부터는 남은 수 버튼을 쓸 수 없습니다.\n이제부터가 진짜 고비예요.'}},
+  {boardQuiz:{kind:'choose',options:[{state:[0,1,1,0,0,0,1],distance:4},{state:[1,0,0,1,1,1,0],distance:3}],topic:'largeTriangle',questionKey:'chooseThree',correct:1,guidePages:[1,3]}},
+  {tip:{ja:'名人まであと1問！\n「1手戻す」が使えません。',en:'The next puzzle is the last one.\nWho rises last: the daruma, or you?\nUndo is unavailable in the final puzzle.',zh:'下一题就是最后一题。\n最后站起来的是不倒翁，还是你？\n最后一题不能撤销。',ko:'다음 문제가 마지막 문제예요.\n마지막에 일어나는 것은 다루마일까요, 당신일까요?\n마지막 문제에서는 되돌리기를 쓸 수 없습니다.'}}
+];
 const SYMMETRIES=Array.from({length:6},(_,k)=>[
   {permutation:makeBoardPermutation(k*60),flip:false},
   {permutation:makeBoardPermutation(k*60,true),flip:true}
@@ -1539,8 +1590,8 @@ function transformStateBySymmetry(state,symmetry){
   }
   return enc(next);
 }
-// 実践編は、基本編と同じ型を異なる見え方で解く。
-const PRACTICE_STAGE_VIEWS=[
+// だるま修行・上巻(補助なし2くるり)は、基本編と同じ型を異なる見え方で解く。
+const TRAINING_UPPER_VIEWS=[
   {permutation:makeBoardPermutation(60),flip:false},
   {permutation:makeBoardPermutation(120),flip:false},
   {permutation:makeBoardPermutation(180),flip:false},
@@ -1551,13 +1602,15 @@ const PRACTICE_STAGE_VIEWS=[
   {permutation:makeBoardPermutation(60),flip:false},
   {permutation:makeBoardPermutation(120),flip:false}
 ];
-PRACTICE_STAGE_VIEWS.forEach((view,index)=>{
+TRAINING_UPPER_VIEWS.forEach((view,index)=>{
   if(view)STAGES[index+3].state=transformStateBySymmetry(STAGES[index+3].state,view);
 });
-// 新しい基本編は、9つの型を基準の向きで学ぶ補助輪付き区間。
-// 従来の基本編は、見え方を変えた同じ9つの型を自力で解く実践編として後ろへ移す。
+// 基本編は、9つの型を基準の向きで学ぶ補助輪付き区間。
+// だるま修行・上巻は、見え方を変えた同じ9つの型を自力で解く区間。
 const GUIDED_BASIC_STAGES=BASIC_LESSON_PATTERN_ORDER.map(patternIndex=>({...TWO_MOVE_STAGES[patternIndex]}));
 STAGES.splice(BASIC_STAGE_START,0,...GUIDED_BASIC_STAGES);
+// 別視点に変えた基礎と同じ9つの型(補助なしで解く)を抜き出し、だるま修行・上巻の素材にする。
+const TRAINING_UPPER_STAGES=STAGES.splice(DEVELOPMENT_STAGE_START,TRAINING_UPPER_VIEWS.length);
 // 二周目は全コースを180°回した見え方で出題する。
 // 回転対称なので、盤面の最短手数や解法そのものは変わらない。
 const SECOND_LAP_BOARD_VIEW={permutation:makeBoardPermutation(180),flip:false};
@@ -1605,48 +1658,58 @@ ALL_THREE_MOVE_STAGES.sort((a,b)=>{
   const ae=progressOptionCounts(a),be=progressOptionCounts(b);
   return be.progress-ae.progress||ae.worse-be.worse;
 });
-// ゲノムの形分類から選んだ「だるま修行」の素材18問(上巻=新規の3くるり形/下巻=既知の2くるり形と
-// 同じ見た目だが向き違い、に自然分割できることを確認済み)。
+// ゲノムの形分類から選んだ「だるま修行・中巻」の素材18問のうち後半9問(前半9問は発展クラスの
+// 4くるり3問+だるま修行・下巻9問の新規状態に置き換わったため、この配列自体は中巻専用になった)。
 // 外隣り、ひし形、芋虫、台形、リボン、猫の耳、両岸、お皿、
 // ネックレス、直角三角形、直線、手裏剣の順に並べる。
 const TRAINING_THREE_MOVE_STATE_IDS=[
   5,52,150,132,148,122,202,372,390,21,15,99,13,39,93,91,117,380
 ];
 const threeMoveStageByState=new Map(ALL_THREE_MOVE_STAGES.map(stage=>[stage.state,stage]));
+// 前半9はカリキュラムのどこからも使われないが、名人への道を綺麗な45問(15問×3巻)に
+// 保つため、中巻で使う後半9とあわせて18問とも除外しておく。
 const trainingStateSet=new Set(TRAINING_THREE_MOVE_STATE_IDS);
 function threeMoveStage(state){
   const stage=threeMoveStageByState.get(state);
   if(!stage)throw new Error('Missing three-move training pattern: '+state);
   return {...stage};
 }
-// 旅立ち編: 棒を1本(soloRod)だけ表示し、soloDir方向へ回すと真ん中が倒れて
+// 発展クラス・3くるり5問: 棒を1本(soloRod)だけ正解として保証し、soloDir方向へ回すと真ん中が倒れて
 // 既知の「あと2くるり」5形(中と外/ひし形/いも虫/リボン/台形の順)に着地する。
 // りぼん(4/5)だけは名人への道「序6」の盤面を流用(長方形型の3くるり)。
-// 使う盤面はEXTRA_STAGES側の取り分に影響しない(trainingStateSetは既存18問のIDsのみで決まるため)。
-const TRAINING_DEPARTURE_STAGES=[
-  {state:39,soloRod:0,soloDir:-1},
-  {state:21,soloRod:0,soloDir:1},
-  {state:93,soloRod:3,soloDir:-1},
-  {state:420,soloRod:4,soloDir:1},
-  {state:91,soloRod:0,soloDir:1}
-].map(({state,soloRod,soloDir})=>({...threeMoveStage(state),soloRod,soloDir}));
-// 旅立ち編の出発ダイアログで見せる5形プレビュー用: 唯一の正解方向へ回した後の「あと2くるり」到達盤面。
-const TRAINING_DEPARTURE_SHAPES=['CenterOuter','Diamond','Caterpillar','Ribbon','Trapezoid'];
-const TRAINING_DEPARTURE_GOAL_STATES=TRAINING_DEPARTURE_STAGES.map(stage=>enc(rollOnce(dec(stage.state),stage.soloRod,stage.soloDir)));
-// 上巻: 見た目だけでは知っている2くるり形と分からない、新規の3くるり盤面(素材の後半9問)。
-const TRAINING_UPPER_STAGES=TRAINING_THREE_MOVE_STATE_IDS.slice(9,18).map(threeMoveStage);
-// 上巻開始ダイアログで見せる7形プレビュー用(9問中7問は、形だけで「あと3くるり」と分かる)。
-const TRAINING_UPPER_GOAL_SHAPES=['CatEars','BothBanks','Plate','Necklace','RightTriangle','StraightLine','Shuriken'];
-const TRAINING_UPPER_GOAL_STATES=[21,99,13,39,93,117,380];
-// 下巻: 学園で見た2くるり形と同じシルエットだが、向きが違うため実は3くるりの盤面(素材の前半9問)。
-const TRAINING_LOWER_STAGES=TRAINING_THREE_MOVE_STATE_IDS.slice(0,9).map(threeMoveStage);
-// 下巻開始ダイアログで見せる5形プレビュー用: 9問の見た目が、既知の「あと2くるり」5形のどれかと同じシルエットになる代表盤面。
-const TRAINING_LOWER_GOAL_SHAPES=['OuterNeighbor','Diamond','Caterpillar','Trapezoid','Ribbon'];
-const TRAINING_LOWER_GOAL_STATES=[5,52,150,148,372];
-const TRAINING_STAGES=[...TRAINING_DEPARTURE_STAGES,...TRAINING_UPPER_STAGES,...TRAINING_LOWER_STAGES];
-STAGES.push(...TRAINING_STAGES);
-// 修了試験「速解き十八番勝負」の出題範囲: 上巻・下巻の18問のみ(旅立ちの5問は補助輪付きなので含めない)。
-const TRAINING_EXAM_STAGES=[...TRAINING_UPPER_STAGES,...TRAINING_LOWER_STAGES];
+// initialRodCountは問題ごとに増える初期候補本数(1→2→3→4→6)。間違えた棒はその都度落ちる。
+const DEVELOPMENT_THREE_STAGES=[
+  {state:39,soloRod:0,soloDir:-1,initialRodCount:1},
+  {state:21,soloRod:0,soloDir:1,initialRodCount:2},
+  {state:93,soloRod:3,soloDir:-1,initialRodCount:3},
+  {state:420,soloRod:4,soloDir:1,initialRodCount:4},
+  {state:91,soloRod:0,soloDir:1,initialRodCount:6}
+].map(({state,soloRod,soloDir,initialRodCount})=>({...threeMoveStage(state),soloRod,soloDir,initialRodCount}));
+// 発展クラスの案内ダイアログで見せる5形プレビュー用: 唯一の正解方向へ回した後の「あと2くるり」到達盤面。
+const DEVELOPMENT_THREE_SHAPES=['CenterOuter','Diamond','Caterpillar','Ribbon','Trapezoid'];
+const DEVELOPMENT_THREE_GOAL_STATES=DEVELOPMENT_THREE_STAGES.map(stage=>enc(rollOnce(dec(stage.state),stage.soloRod,stage.soloDir)));
+// 発展クラス・4くるり3問: 「あと2くるり」9形のうち単独状態の3つ(王冠/弓矢/大三角)だけを使う。
+// 残り6状態(長方形×2/気球×2/いも虫×2)はだるま修行・下巻専用に温存し、ここではネタバレしない。
+// 特定の着地形を保証する必要はないので、正解棒は自動判定(computeGuidedBasicCandidateTis相当)に任せる。
+const DEVELOPMENT_FOUR_STAGES=[
+  {state:104,initialRodCount:3},
+  {state:358,initialRodCount:4},
+  {state:325,initialRodCount:6}
+].map(({state,initialRodCount})=>({state,par:4,initialRodCount}));
+const DEVELOPMENT_STAGES=[...DEVELOPMENT_THREE_STAGES,...DEVELOPMENT_FOUR_STAGES];
+// だるま修行・中巻: 見た目だけでは知っている2くるり形と分からない、3くるり盤面。
+const TRAINING_MIDDLE_STAGES=TRAINING_THREE_MOVE_STATE_IDS.slice(9,18).map(threeMoveStage);
+// 中巻開始ダイアログで見せる7形プレビュー用(9問中7問は、形だけで「あと3くるり」と分かる)。
+const TRAINING_MIDDLE_GOAL_SHAPES=['CatEars','BothBanks','Plate','Necklace','RightTriangle','StraightLine','Shuriken'];
+const TRAINING_MIDDLE_GOAL_STATES=[21,99,13,39,93,117,380];
+// だるま修行・下巻: 4くるり9問(新規)。王冠/弓矢/長方形×2/気球×2/大三角/いも虫×2。
+const TRAINING_LOWER_STAGES=[104,358,426,582,332,344,325,146,200].map(state=>({state,par:4}));
+// 下巻開始ダイアログで見せる6形プレビュー用: 9問の代表(長方形/気球/いも虫はそれぞれ2状態のうち1つ)。
+const TRAINING_LOWER_GOAL_SHAPES=['Crown','BowArrow','Rectangle','Balloon','LargeTriangle','Caterpillar'];
+const TRAINING_LOWER_GOAL_STATES=[104,358,426,332,325,146];
+STAGES.push(...DEVELOPMENT_STAGES,...TRAINING_UPPER_STAGES,...TRAINING_MIDDLE_STAGES,...TRAINING_LOWER_STAGES);
+// 修了試験「速解き十八番勝負」の出題範囲: 上巻9(2くるり)+中巻9(3くるり)=18問。4くるりの下巻は含めない。
+const TRAINING_EXAM_STAGES=[...TRAINING_UPPER_STAGES,...TRAINING_MIDDLE_STAGES];
 const EXTRA_STAGES=ALL_THREE_MOVE_STAGES.filter(stage=>!trainingStateSet.has(stage.state)).map(stage=>({...stage}));
 const FOUR_MOVE_STAGES=[];
 {
@@ -1770,10 +1833,12 @@ const SATORI_ORDER_VERSION='mixed-depths-final-swap-10';
 const satoriStageIndexByState=new Map(SATORI_STAGES.map((stage,index)=>[stage.state,index]));
 let currentLang='ja';
 // ===== UI_TEXT(多言語辞書) =====
-// 現在tr()から呼ばれていないキーが一定数ある(2026年時点で399キー中42キー、
-// stageClear*/extraClear*/masteryStart/satoriUnlock/speedUnlocked系など)。
+// 現在tr()から呼ばれていないキーが一定数ある(2026年時点で384キー中20キー、
+// makerKind/customKind/speedModeSelect/speedUnlockedStart系など)。
 // 今後のステージ・演出追加で使う予定の下書き文言なので、「未使用だから」という理由だけで
 // 削除しないこと。
+// (雑学・クイズ・クリア後メッセージの下書きは、CLEAR_CONTENT付近のUNUSED_DRAFT_TRIVIA/
+// UNUSED_DRAFT_CLEAR_ENTRIESにまとめてあるので、そちらを参照)
 const UI_TEXT={
   ja:{
     pageTitle:'だるまさんを起こして！ — WAKE SEVEN',
@@ -1816,7 +1881,7 @@ const UI_TEXT={
     stage:'問題',
     intro:'入門',
     basic:'基本',
-    practice:'実践',
+    development:'発展',
     challenge:'挑戦',
     academyClassSuffix:'クラス',
     freePlay:'フリーモード',
@@ -1849,7 +1914,7 @@ const UI_TEXT={
     makerStatus:'ダルマをタップして向きを変更　現在の最短は{n}手',
     resetConfirm:'進行状況と、集めた称号がすべて消えます。最初からやり直しますか？',
     introTitle:'だるまさんを起こして！',
-    introText:'くるりと3体をまわして、みんな起こそう。',
+    introText:'くるりと3体をまわして、みんな起こそう',
     introStart:'はじめる',
     tutorialReset:'リセット',
     tutorialFreedom:'ここからは、自由に回してみよう。',
@@ -1892,10 +1957,6 @@ const UI_TEXT={
     pathInfoStart:'序を始める →',
     breakthroughSeal:'突破',
     masterySeal:'名人',
-    stageClear3:'次からは、最短2手の問題です。',
-    stageClear11:'だるまの赤は、まよけや生命力を表す色です。諸説ありますが、達磨大師（だるまだいし）の赤い法衣にちなむとされます。',
-    stageClear12:'次からは実践編です。今度は、最短2手の9パターンを補助なしで解いてみよう。',
-    extraClear23:'高崎のだるまづくりは、1859年に赤い顔料が輸入されると盛んになりました。',
     secondMasteryTitle:'二周目 名人への道 制覇！',
     menu:'メニュー',
     clearMessages:'クリア後のメッセージ',
@@ -1917,26 +1978,14 @@ const UI_TEXT={
     stageModeReturn:'ステージモードへ',
     tipGuideTitle:'攻略のコツを見る',
     playThisBoard:'この盤面で遊ぶ →',
-    extraClear1:'名人への道では、「急」の途中まで最短3手の問題が続きます。',
-    extraClear46:'メニューの「最短2手の9パターンを見る」から、9種類の盤面を一覧で見られます。',
-    extraClear45:'名人への道の終盤では、残り最短手数が表示されません。\n「ヒント」ボタンで表示されるので、困ったら押してください',
     twoMoveDiscovery:'最短2手の9パターン　{n} / 9\nこの形と向きを、そのまま覚えておこう。',
     detailsLink:'詳しい解説はこちら →',
     backToClear:'戻る',
-    guideCardSmall:'4体立ち：寝ダルマの小三角は最短1手',
     speedStatsTop:'ベスト3',
     speedStatsEntry:'{num}回目　{time}　最短 {optimal} / {total}',
     speedStatsPlace:'{n}位',
     speedStatsOptimal:'最短 {optimal} / 73',
     speedStatsAttempt:'（{n}回目）',
-    extraAdviceTwoMove:'最短2手の盤面は、だるまの形だけでなく向きも大事です。少しずつ覚えやすいものから覚えていこう。',
-    extraAdviceImagine:'ヒントなしでは、回す前に「次は何手になりそうか」を想像してみよう。',
-    extraAdviceSeparate:'迷ったら、寝ているだるまの形と向きを、いったん別々に見てみよう。',
-    extraAdviceTurn:'盤面を回すと景色は変わる。でも、だるまたちの向きも一緒に変わります。',
-    extraAdviceFourToThree:'最短4手では、まず最短3手になる一手を探すのが近道です。',
-    extraAdviceAdvance:'次の形が最短2手に近づくなら、大きな前進です。',
-    extraAdviceNearTwo:'三手先を全部読むより、最短2手の形に近づくかを見てみよう。',
-    extraAdviceInnerEye:'ここまで来たら、答えを探す目はもう自分の中にあります。',
     resetConfirmEarly:'進行状況がすべて消えます。最初からやり直しますか？',
     resetConfirmKeepRewards:'「進行状況をリセット」では、盤面のデザインと「全パターン一覧」を残して最初から始めます。\n「全てリセット」では、それらも含めてすべて消去します。',
     resetEverything:'全てリセット',
@@ -2023,17 +2072,16 @@ const UI_TEXT={
     satoriFailResult:'この問題の最短手数は{best}手です。',
     satoriSecondFailTitle:'最短手数ではありません。',
     satoriSecondFailRule:'悟りへの道では、最短手数で全員を起こそう。\n（二周目では最短手数はここにも表示されません）',
-    satoriSecondFailEncourage:'もう一度チャレンジしよう。',
     satoriIntroTitle:'悟りへの道',
     satoriIntroText:'名人となったあなたに、悟りへの道が開かれました。\n全73パターンを最短手数で見抜く道です。\nメニューから行ける「全パターン一覧」も参考に。',
     satoriIntroStart:'第一問へ →',
     debugSkipTutorial:'飛',
     debugIntro2:'入',
     debugBasic11:'基',
-    debugAcademy20:'実',
+    debugAcademy20:'発',
     debugSpeedTraining8:'９',
-    debugTrainingDeparture:'旅',
     debugTrainingUpper:'上',
+    debugTrainingMiddle:'中',
     debugTrainingLower:'下',
     debugSpeedIntermediate17:'18',
     debugSpeedMastery26:'27',
@@ -2110,11 +2158,10 @@ const UI_TEXT={
     speedSatoriUnlockText:'速解き七十三番勝負が解禁されました。\n73の盤面を駆け抜け、自己ベストに挑戦できます。',
     speedSatoriUnlockStart:'速解き七十三番勝負へ →',
     darumaTraining:'だるま修行',
-    trainingDeparture:'だるま修行・旅立ち',
     trainingUpper:'だるま修行・上巻',
+    trainingMiddle:'だるま修行・中巻',
     trainingLower:'だるま修行・下巻',
     academyPickerRound:'だるま学園',
-    trainingPickerRound:'だるま修行',
     academyEnrollTitle:'だるま学園 入学おめでとう！',
     academyWelcomeTitle:'はじめは入門クラスだよ！',
     academyWelcomeText:'最初はゆっくりまわそう',
@@ -2124,23 +2171,21 @@ const UI_TEXT={
     basicWelcomeTitle:'基本クラスへようこそ！',
     basicWelcomeText:'あと○くるりが減ったら、指をはなそう',
     basicWelcomeStart:'はじめる',
-    practiceWelcomeTitle:'実践クラス 開始！',
-    practiceWelcomeText:'今までと同じ「2くるり」の問題だよ',
-    practiceWelcomeStart:'はじめる',
+    developmentWelcomeTitle:'発展クラス 開始！',
+    developmentWelcomeText:'3くるり・4くるりにも、棒を選びながら挑戦しよう',
+    developmentWelcomeStart:'はじめる',
     academyCompleteTitle:'だるま学園 卒業！',
-    academyCompleteText:'だるま学園を卒業し、だるま修行の旅に出ます。\nここから「3くるり」にチャレンジしよう。',
+    academyCompleteText:'だるま学園を卒業し、だるま修行の旅に出ます。\nここからは補助なしで「2くるり」にチャレンジしよう。',
     academyCompleteStart:'だるま修行へ →',
     trainingWelcomeTitle:'だるま修行 出発！',
-    trainingWelcomeText:'1回まわして「あと2くるり」を目指そう',
+    trainingWelcomeText:'ここからは補助なし。自分の力で解いてみよう',
     trainingWelcomeNext:'つぎへ',
-    trainingWelcomeStart:'旅立つ',
-    trainingDepartureGoalTitle:'まん中を寝かせて「あと2くるり」を作ろう',
-    trainingDepartureGoalLabel:'目指すのはこの5つの形',
-    trainingUpperGoalKind:'だるま修行・上巻 開始',
-    trainingUpperGoalTitle:'上巻ではこんな形が登場するよ',
-    trainingUpperGoalStart:'はじめる',
+    trainingWelcomeStart:'はじめる',
+    trainingMiddleGoalKind:'だるま修行・中巻 開始',
+    trainingMiddleGoalTitle:'中巻ではこんな形が登場するよ',
+    trainingMiddleGoalStart:'はじめる',
     trainingLowerGoalKind:'だるま修行・下巻 開始',
-    trainingLowerGoalTitle:'「あと2くるり」でも出てきた形だよ',
+    trainingLowerGoalTitle:'下巻ではこんな形が登場するよ',
     trainingLowerGoalStart:'はじめる',
     shapeNameCatEars:'猫の耳',
     shapeNameBothBanks:'両岸',
@@ -2149,8 +2194,14 @@ const UI_TEXT={
     shapeNameRightTriangle:'直角三角形',
     shapeNameStraightLine:'一直線',
     shapeNameShuriken:'手裏剣',
+    shapeNameCrown:'王冠',
+    shapeNameBowArrow:'弓矢',
+    shapeNameRectangle:'長方形',
+    shapeNameBalloon:'気球',
+    shapeNameLargeTriangle:'大三角',
+    shapeNameCaterpillar:'いも虫',
     trainingTwoMoreLabel:'あと2くるり',
-    trainingUpperSpinTitle:'くるくる回して「あと2くるり」になったら指をはなそう。',
+    trainingMiddleSpinTitle:'くるくる回して「あと2くるり」になったら指をはなそう。',
     trainingCompleteTitle:'だるま修行 修了！',
     trainingCompleteText:'だるま修行を終え、名人への道が開かれました。',
     trainingCompleteStart:'名人への道・序　七転八起へ →',
@@ -2216,7 +2267,7 @@ const UI_TEXT={
     stage:'Puzzle',
     intro:'INTRO',
     basic:'BASIC',
-    practice:'PRACTICE',
+    development:'DEVELOPMENT',
     challenge:'CHALLENGE',
     freePlay:'Free Play',
     academyClassSuffix:' Class',
@@ -2292,10 +2343,6 @@ const UI_TEXT={
     pathInfoStart:'Begin Volume 1 →',
     breakthroughSeal:'PASS',
     masterySeal:'MASTER',
-    stageClear3:'The next puzzles take two turns.',
-    stageClear11:'Daruma red represents protection and vitality.',
-    stageClear12:'Next comes Practice. Solve the nine 2-turn patterns without the training wheels.',
-    extraClear23:'Takasaki daruma production grew after red pigment began to be imported in 1859.',
     menu:'Menu',
     clearMessages:'Clear messages',
     messageDialogTitle:'Clear messages',
@@ -2316,26 +2363,14 @@ const UI_TEXT={
     stageModeReturn:'Back to puzzles',
     tipGuideTitle:'Quick tips',
     playThisBoard:'Play this board →',
-    extraClear1:'Path to Mastery continues with three-move puzzles through the middle of Volume 3.',
-    extraClear46:'Open “View 2-move boards” from the Menu to see all nine patterns at once.',
-    extraClear45:'In Volume 4, moves left are shown as “?”.\nWhile a Hint arrow is visible, you see the moves left after following it.\nWhen it disappears, the current moves left are shown; move the board to return to “?”.',
     twoMoveDiscovery:'Two-move board {n} / 9\nRemember this exact shape and orientation.',
     detailsLink:'See the full explanation →',
     backToClear:'Back',
-    guideCardSmall:'Four standing: the small triangle of fallen daruma takes one move.',
     speedStatsTop:'Top 3',
     speedStatsEntry:'Run {num} · {time} · Optimal {optimal} / {total}',
     speedStatsPlace:'Rank {n}',
     speedStatsOptimal:'Optimal {optimal} / 73',
     speedStatsAttempt:'(Run {n})',
-    extraAdviceTwoMove:'Two-move boards depend not only on the daruma shapes but also on their directions. Learn the easier ones little by little.',
-    extraAdviceImagine:'Without hints, try to imagine how many moves the next board might take before you turn.',
-    extraAdviceSeparate:'When stuck, look at the shape of the fallen daruma and their directions separately.',
-    extraAdviceTurn:'Turning the board changes the view—but the daruma directions turn with it.',
-    extraAdviceFourToThree:'On a four-move board, first look for a turn that reaches three moves.',
-    extraAdviceAdvance:'If the next board gets closer to two moves, that is real progress.',
-    extraAdviceNearTwo:'Rather than reading three moves ahead, look for a board approaching a two-move shape.',
-    extraAdviceInnerEye:'By now, the eye that finds the answer is already within you.',
     resetConfirmEarly:'This will erase all progress. Start again from the beginning?',
     resetConfirmKeepRewards:'“Reset progress” keeps your board design and All Patterns access.\n“Reset everything” erases those as well.',
     resetEverything:'Reset everything',
@@ -2416,17 +2451,16 @@ const UI_TEXT={
     satoriFailResult:'The fewest solution is {best} moves.',
     satoriSecondFailTitle:'That was not the fewest path.',
     satoriSecondFailRule:'On the Path to Awakening, wake everyone in the fewest moves.',
-    satoriSecondFailEncourage:'Try again.',
     satoriIntroTitle:'Path to Awakening',
     satoriIntroText:'Recognize all 73 patterns in the fewest moves.\nThere are no hints and no moves-left display.\nStudy the Genome, then begin.',
     satoriIntroStart:'First puzzle →',
     debugSkipTutorial:'飛',
     debugIntro2:'入',
     debugBasic11:'基',
-    debugAcademy20:'実',
+    debugAcademy20:'発',
     debugSpeedTraining8:'９',
-    debugTrainingDeparture:'旅',
     debugTrainingUpper:'上',
+    debugTrainingMiddle:'中',
     debugTrainingLower:'下',
     debugSpeedIntermediate17:'18',
     debugSpeedMastery26:'27',
@@ -2496,11 +2530,10 @@ const UI_TEXT={
     speedSatoriUnlockText:'Speed Run: Seventy-Three is now unlocked.\nRace through all 73 boards and set a new personal best.',
     speedSatoriUnlockStart:'Speed Run: Seventy-Three →',
     darumaTraining:'DARUMA TRAINING',
-    trainingDeparture:'DARUMA TRAINING · DEPARTURE',
     trainingUpper:'DARUMA TRAINING · VOL. 1',
-    trainingLower:'DARUMA TRAINING · VOL. 2',
+    trainingMiddle:'DARUMA TRAINING · VOL. 2',
+    trainingLower:'DARUMA TRAINING · VOL. 3',
     academyPickerRound:'DARUMA ACADEMY',
-    trainingPickerRound:'DARUMA TRAINING',
     academyEnrollTitle:'Welcome to Daruma Academy!',
     academyWelcomeTitle:'First up: the Intro Class!',
     academyWelcomeText:'Start by turning it slowly.',
@@ -2511,16 +2544,14 @@ const UI_TEXT={
     academyCompleteText:'You graduated from Daruma Academy. Daruma Training is now open.',
     academyCompleteStart:'Begin Daruma Training →',
     trainingWelcomeTitle:'Daruma Training Begins!',
-    trainingWelcomeText:'Make one turn and aim for "two turns left."',
+    trainingWelcomeText:'No more assists from here — solve it on your own.',
     trainingWelcomeNext:'Next',
-    trainingWelcomeStart:'Set Off',
-    trainingDepartureGoalTitle:'Lay the center down to reach "two turns left"',
-    trainingDepartureGoalLabel:'Aim for these five shapes',
-    trainingUpperGoalKind:'DARUMA TRAINING · VOL. 1 START',
-    trainingUpperGoalTitle:'Here are the shapes you\'ll see in Volume 1',
-    trainingUpperGoalStart:'Start',
-    trainingLowerGoalKind:'DARUMA TRAINING · VOL. 2 START',
-    trainingLowerGoalTitle:'These shapes also showed up in "two turns to go"',
+    trainingWelcomeStart:'Start',
+    trainingMiddleGoalKind:'DARUMA TRAINING · VOL. 2 START',
+    trainingMiddleGoalTitle:'Here are the shapes you\'ll see in Volume 2',
+    trainingMiddleGoalStart:'Start',
+    trainingLowerGoalKind:'DARUMA TRAINING · VOL. 3 START',
+    trainingLowerGoalTitle:'Here are the shapes you\'ll see in Volume 3',
     trainingLowerGoalStart:'Start',
     shapeNameCatEars:'Cat ears',
     shapeNameBothBanks:'Two banks',
@@ -2529,8 +2560,14 @@ const UI_TEXT={
     shapeNameRightTriangle:'Right triangle',
     shapeNameStraightLine:'Straight line',
     shapeNameShuriken:'Shuriken',
+    shapeNameCrown:'Crown',
+    shapeNameBowArrow:'Bow and arrow',
+    shapeNameRectangle:'Rectangle',
+    shapeNameBalloon:'Balloon',
+    shapeNameLargeTriangle:'Large triangle',
+    shapeNameCaterpillar:'Caterpillar',
     trainingTwoMoreLabel:'Two turns left',
-    trainingUpperSpinTitle:'Keep turning — let go once it becomes "two turns left."',
+    trainingMiddleSpinTitle:'Keep turning — let go once it becomes "two turns left."',
     trainingCompleteTitle:'Daruma Training complete!',
     trainingCompleteText:'The Path to Mastery is now open.',
     trainingCompleteStart:'Begin the Path to Mastery →',
@@ -2538,9 +2575,9 @@ const UI_TEXT={
     basicWelcomeTitle:'Welcome to Basic Class!',
     basicWelcomeText:'Release when the turns left go down.',
     basicWelcomeStart:'Start',
-    practiceWelcomeTitle:'Practice Class Start!',
-    practiceWelcomeText:'Practice Class has the same puzzles as Basic Class.',
-    practiceWelcomeStart:'Start',
+    developmentWelcomeTitle:'Development Class Start!',
+    developmentWelcomeText:'Try three- and four-turn boards, choosing your rod as you go.',
+    developmentWelcomeStart:'Start',
     threeDMenu:'View in 3D',
     threeDUnlockedText:'As a reward for completing the second lap, a special 3D page has been unlocked. Play on a realistic board.',
     threeDOpen:'Open the 3D page →',
@@ -2601,7 +2638,7 @@ const UI_TEXT={
     stage:'关卡',
     intro:'入门',
     basic:'基础',
-    practice:'实践',
+    development:'发展',
     challenge:'挑战',
     freePlay:'自由模式',
     academyClassSuffix:'班',
@@ -2677,10 +2714,6 @@ const UI_TEXT={
     pathInfoStart:'开始第一卷 →',
     breakthroughSeal:'突破',
     masterySeal:'名人',
-    stageClear3:'从下一题开始，最少需要转2次。',
-    stageClear11:'不倒翁的红色象征避邪与生命力。',
-    stageClear12:'接下来是实践篇。请不依靠辅助，解开9种最少2转的图案。',
-    extraClear23:'1859年开始进口红色颜料后，高崎不倒翁的制作兴盛起来。',
     menu:'菜单',
     clearMessages:'通关后消息',
     messageDialogTitle:'通关后消息',
@@ -2701,13 +2734,9 @@ const UI_TEXT={
     stageModeReturn:'返回关卡模式',
     tipGuideTitle:'攻略提示',
     playThisBoard:'玩这个棋盘 →',
-    extraClear1:'名人之路会持续出现最少3步的题目，直到第三卷中途。',
-    extraClear46:'从菜单打开“查看最少2步棋盘”，即可一次查看全部9种图案。',
-    extraClear45:'第四卷中，最少步数会显示为“？”。\n按下“提示”后，箭头出现期间会显示照着走一步后的剩余步数。\n箭头消失后会显示当前剩余步数；移动棋盘后会再次变为“？”。',
     twoMoveDiscovery:'最少2步棋盘 {n} / 9\n记住这个形状和朝向。',
     detailsLink:'查看详细说明 →',
     backToClear:'返回',
-    guideCardSmall:'4个站立：倒下小三角形最少1步。',
     speedRetry:'再挑战',
     speedPauseProgress:'当前：{current} / {total}　{time}',
     speedStats:'速解成绩',
@@ -2719,14 +2748,6 @@ const UI_TEXT={
     speedStatsPlace:'第{n}名',
     speedStatsOptimal:'最短 {optimal} / 73',
     speedStatsAttempt:'（第{n}次）',
-    extraAdviceTwoMove:'最少2步的棋盘不仅形状重要，不倒翁的朝向也很重要。先从容易记住的开始，一点点记下来吧。',
-    extraAdviceImagine:'没有提示时，试着在转动前想象下一盘大概需要几步。',
-    extraAdviceSeparate:'迷茫时，把倒下不倒翁的形状和朝向分开来看。',
-    extraAdviceTurn:'转动棋盘会改变眼前的景色，但不倒翁的朝向也会一起转动。',
-    extraAdviceFourToThree:'最少4步时，先寻找能变成最少3步的一手。',
-    extraAdviceAdvance:'如果下一盘更接近最少2步，就是很大的前进。',
-    extraAdviceNearTwo:'与其读完三步之后，不如看看能否接近最少2步的形状。',
-    extraAdviceInnerEye:'走到这里，寻找答案的眼睛已经在你心中了。',
     resetConfirmEarly:'进度都会被删除。要从头再来吗？',
     resetConfirmKeepRewards:'“重置进度”会保留棋盘设计和全部图案页面。\n“全部重置”也会删除它们。',
     resetEverything:'全部重置',
@@ -2807,17 +2828,16 @@ const UI_TEXT={
     satoriFailResult:'这题最少需要{best}步。',
     satoriSecondFailTitle:'这不是最少步数。',
     satoriSecondFailRule:'悟道之路要用最少步数叫醒全部不倒翁。',
-    satoriSecondFailEncourage:'再挑战一次吧。',
     satoriIntroTitle:'悟道之路',
     satoriIntroText:'用最少步数看穿全部73种图案。\n没有提示，也不显示剩余步数。\n看着图鉴来挑战吧。',
     satoriIntroStart:'第一题 →',
     debugSkipTutorial:'飛',
     debugIntro2:'入',
     debugBasic11:'基',
-    debugAcademy20:'実',
+    debugAcademy20:'発',
     debugSpeedTraining8:'９',
-    debugTrainingDeparture:'旅',
     debugTrainingUpper:'上',
+    debugTrainingMiddle:'中',
     debugTrainingLower:'下',
     debugSpeedIntermediate17:'18',
     debugSpeedMastery26:'27',
@@ -2884,11 +2904,10 @@ const UI_TEXT={
     intermediateTrialStart:'毕业考试 速解十八番胜负 →',
     speedIntermediateTrialFailText:'以最少3步完成所有棋盘，即可开启名人之路·离。',
     darumaTraining:'不倒翁修行',
-    trainingDeparture:'不倒翁修行·启程',
     trainingUpper:'不倒翁修行·上卷',
+    trainingMiddle:'不倒翁修行·中卷',
     trainingLower:'不倒翁修行·下卷',
     academyPickerRound:'不倒翁学园',
-    trainingPickerRound:'不倒翁修行',
     academyEnrollTitle:'欢迎来到不倒翁学园！',
     academyWelcomeTitle:'首先是入门班！',
     academyWelcomeText:'一开始先慢慢转动吧',
@@ -2899,16 +2918,14 @@ const UI_TEXT={
     academyCompleteText:'不倒翁修行现已开启。',
     academyCompleteStart:'前往不倒翁修行 →',
     trainingWelcomeTitle:'不倒翁修行 启程！',
-    trainingWelcomeText:'转一次，向「还差2圈」迈进。',
+    trainingWelcomeText:'从这里开始没有辅助，靠自己解开吧。',
     trainingWelcomeNext:'下一步',
-    trainingWelcomeStart:'启程',
-    trainingDepartureGoalTitle:'把中间的放倒，做出「还差2圈」',
-    trainingDepartureGoalLabel:'目标是这5种形状',
-    trainingUpperGoalKind:'不倒翁修行·上卷 开始',
-    trainingUpperGoalTitle:'上卷会出现这样的形状哦',
-    trainingUpperGoalStart:'开始',
+    trainingWelcomeStart:'开始',
+    trainingMiddleGoalKind:'不倒翁修行·中卷 开始',
+    trainingMiddleGoalTitle:'中卷会出现这样的形状哦',
+    trainingMiddleGoalStart:'开始',
     trainingLowerGoalKind:'不倒翁修行·下卷 开始',
-    trainingLowerGoalTitle:'这些形状在"还差2转"时也出现过哦',
+    trainingLowerGoalTitle:'下卷会出现这样的形状哦',
     trainingLowerGoalStart:'开始',
     shapeNameCatEars:'猫耳',
     shapeNameBothBanks:'两岸',
@@ -2917,8 +2934,14 @@ const UI_TEXT={
     shapeNameRightTriangle:'直角三角',
     shapeNameStraightLine:'一字',
     shapeNameShuriken:'手里剑',
+    shapeNameCrown:'王冠',
+    shapeNameBowArrow:'弓箭',
+    shapeNameRectangle:'长方形',
+    shapeNameBalloon:'气球',
+    shapeNameLargeTriangle:'大三角',
+    shapeNameCaterpillar:'毛毛虫',
     trainingTwoMoreLabel:'还差2圈',
-    trainingUpperSpinTitle:'不断转动，变成「还差2圈」时就松手吧。',
+    trainingMiddleSpinTitle:'不断转动，变成「还差2圈」时就松手吧。',
     trainingCompleteTitle:'不倒翁修行完成！',
     trainingCompleteText:'名人之路现已开启。',
     trainingCompleteStart:'前往名人之路 →',
@@ -2926,9 +2949,9 @@ const UI_TEXT={
     basicWelcomeTitle:'欢迎来到基础班！',
     basicWelcomeText:'还差的转数减少时，就松手。',
     basicWelcomeStart:'开始',
-    practiceWelcomeTitle:'实践班开始！',
-    practiceWelcomeText:'实践班和基础班是相同的题目',
-    practiceWelcomeStart:'开始',
+    developmentWelcomeTitle:'发展班开始！',
+    developmentWelcomeText:'挑战3转、4转的题目，自己选择转动的棒吧',
+    developmentWelcomeStart:'开始',
     threeDMenu:'查看3D效果',
     threeDUnlockedText:'作为二周目通关的奖励，解锁了特别的3D页面。可以在逼真的棋盘上畅玩。',
     threeDOpen:'打开3D页面 →',
@@ -2989,7 +3012,7 @@ const UI_TEXT={
     stage:'문제',
     intro:'입문',
     basic:'기본',
-    practice:'실전',
+    development:'발전',
     challenge:'도전',
     freePlay:'자유 모드',
     academyClassSuffix:'반',
@@ -3065,10 +3088,6 @@ const UI_TEXT={
     pathInfoStart:'1권 시작 →',
     breakthroughSeal:'돌파',
     masterySeal:'명인',
-    stageClear3:'다음 문제부터는 최단 2번 문제입니다.',
-    stageClear11:'다루마의 붉은색은 액막이와 생명력을 뜻합니다.',
-    stageClear12:'다음은 실전입니다. 최단 2번의 9가지 패턴을 도움 없이 풀어 보세요.',
-    extraClear23:'1859년 붉은 안료가 수입되며 다카사키 다루마 제작이 활발해졌습니다.',
     menu:'메뉴',
     clearMessages:'클리어 메시지',
     messageDialogTitle:'클리어 메시지',
@@ -3089,13 +3108,9 @@ const UI_TEXT={
     stageModeReturn:'문제 모드로',
     tipGuideTitle:'공략 팁',
     playThisBoard:'이 보드로 하기 →',
-    extraClear1:'명인의 길에서는 3권 중간까지 최단 3수 문제가 이어집니다.',
-    extraClear46:'메뉴의 “최단 2수 보드 보기”에서 9가지 패턴을 한눈에 볼 수 있어요.',
-    extraClear45:'4권에서는 남은 최단 수가 “?”로 표시됩니다.\n힌트 화살표가 보이는 동안에는 그 수를 둔 뒤의 남은 수가 보입니다.\n화살표가 사라지면 현재 남은 수가 표시되고, 보드를 움직이면 다시 “?”가 됩니다.',
     twoMoveDiscovery:'최단 2수 보드 {n} / 9\n이 모양과 방향을 그대로 기억해 보세요.',
     detailsLink:'자세한 설명 보기 →',
     backToClear:'돌아가기',
-    guideCardSmall:'4개가 서 있을 때: 누운 다루마의 작은 삼각형은 최단 1수예요.',
     speedRetry:'다시 도전',
     speedPauseProgress:'현재: {current} / {total} · {time}',
     speedStats:'속도전 기록',
@@ -3107,14 +3122,6 @@ const UI_TEXT={
     speedStatsPlace:'{n}위',
     speedStatsOptimal:'최단 {optimal} / 73',
     speedStatsAttempt:'({n}회차)',
-    extraAdviceTwoMove:'최단 2수 보드에서는 다루마의 모양뿐 아니라 방향도 중요해요. 외우기 쉬운 것부터 조금씩 익혀 보세요.',
-    extraAdviceImagine:'힌트 없이 돌리기 전, 다음 보드가 몇 수쯤 될지 상상해 보세요.',
-    extraAdviceSeparate:'막히면 누운 다루마의 모양과 방향을 따로 살펴보세요.',
-    extraAdviceTurn:'보드를 돌리면 풍경은 바뀌지만, 다루마의 방향도 함께 돌아갑니다.',
-    extraAdviceFourToThree:'최단 4수에서는 먼저 최단 3수가 되는 수를 찾는 것이 지름길이에요.',
-    extraAdviceAdvance:'다음 보드가 최단 2수에 가까워진다면 큰 전진이에요.',
-    extraAdviceNearTwo:'세 수 앞을 모두 읽기보다 최단 2수 모양에 가까워지는지 살펴보세요.',
-    extraAdviceInnerEye:'여기까지 왔다면 답을 찾는 눈은 이미 당신 안에 있어요.',
     resetConfirmEarly:'진행 상황이 모두 사라집니다. 처음부터 다시 시작할까요?',
     resetConfirmKeepRewards:'“진행 상황 초기화”는 보드 디자인과 모든 패턴 목록을 유지합니다.\n“모두 초기화”는 이것들도 삭제합니다.',
     resetEverything:'모두 초기화',
@@ -3195,17 +3202,16 @@ const UI_TEXT={
     satoriFailResult:'이 문제의 최단 수는 {best}수입니다.',
     satoriSecondFailTitle:'최단 수가 아닙니다.',
     satoriSecondFailRule:'깨달음의 길에서는 최단 수로 모두 깨워야 합니다.',
-    satoriSecondFailEncourage:'다시 도전해 보세요.',
     satoriIntroTitle:'깨달음의 길',
     satoriIntroText:'73가지 패턴을 최단 수로 꿰뚫어 보세요.\n힌트와 남은 수 표시는 없습니다.\n게놈을 보며 도전하세요.',
     satoriIntroStart:'첫 문제 →',
     debugSkipTutorial:'飛',
     debugIntro2:'入',
     debugBasic11:'基',
-    debugAcademy20:'実',
+    debugAcademy20:'発',
     debugSpeedTraining8:'９',
-    debugTrainingDeparture:'旅',
     debugTrainingUpper:'上',
+    debugTrainingMiddle:'中',
     debugTrainingLower:'下',
     debugSpeedIntermediate17:'18',
     debugSpeedMastery26:'27',
@@ -3272,11 +3278,10 @@ const UI_TEXT={
     intermediateTrialStart:'수료 시험 속도전 열여덟 판으로 →',
     speedIntermediateTrialFailText:'모든 보드를 최단 3수로 풀면 명인의 길·리가 열립니다.',
     darumaTraining:'다루마 수행',
-    trainingDeparture:'다루마 수행·출발',
     trainingUpper:'다루마 수행·상권',
+    trainingMiddle:'다루마 수행·중권',
     trainingLower:'다루마 수행·하권',
     academyPickerRound:'다루마 학원',
-    trainingPickerRound:'다루마 수행',
     academyEnrollTitle:'다루마 학원 입학을 축하합니다!',
     academyWelcomeTitle:'먼저 입문 클래스야!',
     academyWelcomeText:'처음에는 천천히 돌려 보세요',
@@ -3287,16 +3292,14 @@ const UI_TEXT={
     academyCompleteText:'다루마 수행이 열렸습니다.',
     academyCompleteStart:'다루마 수행으로 →',
     trainingWelcomeTitle:'다루마 수행 출발!',
-    trainingWelcomeText:'한 번 돌려서 "앞으로 2바퀴"를 노리자',
+    trainingWelcomeText:'여기서부터는 보조 없이 스스로 풀어 보자',
     trainingWelcomeNext:'다음으로',
-    trainingWelcomeStart:'출발',
-    trainingDepartureGoalTitle:'가운데를 눕혀서 "앞으로 2바퀴"를 만들자',
-    trainingDepartureGoalLabel:'목표는 이 5가지 모양',
-    trainingUpperGoalKind:'다루마 수행·상권 시작',
-    trainingUpperGoalTitle:'상권에는 이런 모양이 나와',
-    trainingUpperGoalStart:'시작',
+    trainingWelcomeStart:'시작',
+    trainingMiddleGoalKind:'다루마 수행·중권 시작',
+    trainingMiddleGoalTitle:'중권에는 이런 모양이 나와',
+    trainingMiddleGoalStart:'시작',
     trainingLowerGoalKind:'다루마 수행·하권 시작',
-    trainingLowerGoalTitle:'"앞으로 2바퀴"에도 나왔던 모양이야',
+    trainingLowerGoalTitle:'하권에는 이런 모양이 나와',
     trainingLowerGoalStart:'시작',
     shapeNameCatEars:'고양이 귀',
     shapeNameBothBanks:'양쪽 둑',
@@ -3305,8 +3308,14 @@ const UI_TEXT={
     shapeNameRightTriangle:'직각삼각형',
     shapeNameStraightLine:'일자',
     shapeNameShuriken:'수리검',
+    shapeNameCrown:'왕관',
+    shapeNameBowArrow:'활과 화살',
+    shapeNameRectangle:'직사각형',
+    shapeNameBalloon:'풍선',
+    shapeNameLargeTriangle:'큰 삼각형',
+    shapeNameCaterpillar:'애벌레',
     trainingTwoMoreLabel:'앞으로 2바퀴',
-    trainingUpperSpinTitle:'계속 돌리다가 "앞으로 2바퀴"가 되면 손을 떼자.',
+    trainingMiddleSpinTitle:'계속 돌리다가 "앞으로 2바퀴"가 되면 손을 떼자.',
     trainingCompleteTitle:'다루마 수행 완료!',
     trainingCompleteText:'명인의 길이 열렸습니다.',
     trainingCompleteStart:'명인의 길로 →',
@@ -3314,9 +3323,9 @@ const UI_TEXT={
     basicWelcomeTitle:'기본반에 오신 것을 환영합니다!',
     basicWelcomeText:'남은 회전 수가 줄면 손을 놓으세요.',
     basicWelcomeStart:'시작하기',
-    practiceWelcomeTitle:'실전반 시작!',
-    practiceWelcomeText:'실전반도 기본반과 같은 문제예요',
-    practiceWelcomeStart:'시작하기',
+    developmentWelcomeTitle:'발전반 시작!',
+    developmentWelcomeText:'3바퀴·4바퀴에도 막대를 직접 골라 도전해 보자',
+    developmentWelcomeStart:'시작하기',
     threeDMenu:'3D로 보기',
     threeDUnlockedText:'2회차 클리어 보상으로 특별한 3D 페이지가 열렸습니다. 리얼한 보드에서 플레이할 수 있습니다.',
     threeDOpen:'3D 페이지 열기 →',
@@ -3427,7 +3436,7 @@ const STORAGE_KEYS=Object.freeze({
   currentStage:'wake7-current-stage',activeSession:'wake7-active-session',activeLap:'wake7-active-lap',
   introSeen:'wake7-intro-seen',tutorialComplete:'wake7-tutorial-complete',tutorialStep:'wake7-tutorial-step',messageReview:'wake7-message-review',messageReviewLast:'wake7-message-review-last-clear',
   speedSession:'wake7-speed-session',speedActiveVariant:'wake7-speed-active-variant',speedBestMs:'wake7-speed-best-ms',speedHistory:'wake7-speed-history',
-  speedUnlocked:'wake7-speed-unlocked',speedTrainingUnlocked:'wake7-speed-training-unlocked',speedIntermediateUnlocked:'wake7-speed-intermediate-unlocked',speedMasteryUnlocked:'wake7-speed-mastery-unlocked',speedSatoriUnlocked:'wake7-speed-satori-unlocked',speedUnlockModelVersion:'wake7-speed-unlock-model-version',speedTrainingTrialCleared:'wake7-speed-training-trial-cleared',speedIntermediateTrialCleared:'wake7-speed-intermediate-trial-cleared',speedMasteryTrialCleared:'wake7-speed-mastery-trial-cleared',speedTrialModelVersion:'wake7-speed-trial-model-version',threeDUnlocked:'wake7-3d-unlocked',
+  speedUnlocked:'wake7-speed-unlocked',speedTrainingUnlocked:'wake7-speed-training-unlocked',speedIntermediateUnlocked:'wake7-speed-intermediate-unlocked',speedMasteryUnlocked:'wake7-speed-mastery-unlocked',speedSatoriUnlocked:'wake7-speed-satori-unlocked',speedUnlockModelVersion:'wake7-speed-unlock-model-version',speedTrainingTrialCleared:'wake7-speed-training-trial-cleared',speedIntermediateTrialCleared:'wake7-speed-intermediate-trial-cleared',speedMasteryTrialCleared:'wake7-speed-mastery-trial-cleared',speedTrialModelVersion:'wake7-speed-trial-model-version',stagesLayoutVersion:'wake7-stages-layout-version',threeDUnlocked:'wake7-3d-unlocked',
   masterGoldGranted:'wake7-master-gold-granted',satoriDesignGranted:'wake7-satori-design-granted',
   secondLapActive:'wake7-second-lap-active',secondLapUnlocked:'wake7-second-lap-unlocked',
   rainbowDarumaGranted:'wake7-rainbow-daruma-granted',awakenedGranted:'wake7-awakened-granted',
@@ -3453,10 +3462,10 @@ const COURSE_DEFINITIONS=Object.freeze({
 const PRIMARY_SECTIONS=Object.freeze([
   {id:'intro',labelKey:'intro',start:0,total:INTRO_STAGE_COUNT,analytics:'training_intro'},
   {id:'basic',labelKey:'basic',start:BASIC_STAGE_START,total:BASIC_STAGE_COUNT,analytics:'training_basic'},
-  {id:'practice',labelKey:'practice',start:PRACTICE_STAGE_START,total:PRACTICE_STAGE_COUNT,analytics:'training_practice'},
-  {id:'trainingDeparture',labelKey:'trainingDeparture',start:TRAINING_STAGE_START,total:TRAINING_DEPARTURE_COUNT,analytics:'daruma_training_departure'},
-  {id:'trainingUpper',labelKey:'trainingUpper',start:TRAINING_STAGE_START+TRAINING_DEPARTURE_COUNT,total:TRAINING_UPPER_COUNT,analytics:'daruma_training_upper'},
-  {id:'trainingLower',labelKey:'trainingLower',start:TRAINING_STAGE_START+TRAINING_DEPARTURE_COUNT+TRAINING_UPPER_COUNT,total:TRAINING_LOWER_COUNT,analytics:'daruma_training_lower'}
+  {id:'development',labelKey:'development',start:DEVELOPMENT_STAGE_START,total:DEVELOPMENT_STAGE_COUNT,analytics:'training_development'},
+  {id:'trainingUpper',labelKey:'trainingUpper',start:TRAINING_STAGE_START,total:TRAINING_UPPER_COUNT,analytics:'daruma_training_upper'},
+  {id:'trainingMiddle',labelKey:'trainingMiddle',start:TRAINING_STAGE_START+TRAINING_UPPER_COUNT,total:TRAINING_MIDDLE_COUNT,analytics:'daruma_training_middle'},
+  {id:'trainingLower',labelKey:'trainingLower',start:TRAINING_STAGE_START+TRAINING_UPPER_COUNT+TRAINING_MIDDLE_COUNT,total:TRAINING_LOWER_COUNT,analytics:'daruma_training_lower'}
 ]);
 function primarySection(index=stageIndex){
   return PRIMARY_SECTIONS.find(section=>index>=section.start&&index<section.start+section.total)||PRIMARY_SECTIONS[0];
@@ -3465,6 +3474,13 @@ function primarySectionPosition(index=stageIndex){
   const section=primarySection(index);
   return {section,position:index-section.start+1};
 }
+// ステージ選択ダイアログでは、だるま学園・だるま修行もPRIMARY_SECTIONSの6区分をそれぞれ1ページとして見せる。
+// pickerRoundは負の数(-6〜-1)でこの6区分を表し、0以上は名人への道の巻、'satori'は悟りへの道のページ。
+const PRIMARY_PICKER_SECTION_COUNT=PRIMARY_SECTIONS.length;
+const pickerRoundToSection=round=>PRIMARY_SECTIONS[round+PRIMARY_PICKER_SECTION_COUNT];
+const PICKER_ACADEMY_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='development')-PRIMARY_PICKER_SECTION_COUNT;
+const PICKER_TRAINING_FIRST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingUpper')-PRIMARY_PICKER_SECTION_COUNT;
+const PICKER_TRAINING_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingLower')-PRIMARY_PICKER_SECTION_COUNT;
 function runtimeContext(){
   if(isMode('tutorial'))return {mode:'tutorial',course:COURSE_DEFINITIONS.tutorial,index:tutorialStep,position:tutorialStep+1,total:TUTORIAL_STEPS.length,lap:1};
   if(isMode('custom'))return {mode:'custom',course:COURSE_DEFINITIONS.custom,index:null,position:null,total:null,lap:activeLap};
@@ -3778,6 +3794,25 @@ clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;
 clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
 clearedSatoriStages=activeLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;
 secondLapActive=activeLap===2;
+// STAGES(だるま学園・だるま修行)の構成を変えた際、既存プレイヤーの位置ベース進行データ
+// (clearedStages系・現在地・修了試験の合格フラグ)が新しい問題を指してしまわないよう、
+// レイアウトを識別するバージョンが一致しない場合だけ、それらだけをリセットする。
+// clearedExtraStages/clearedSatoriStagesやコスメティック系のフラグは対象外。
+const STAGES_LAYOUT_VERSION='2026-08-development-class';
+if(storage.get(STORAGE_KEYS.stagesLayoutVersion)!==STAGES_LAYOUT_VERSION){
+  lap1ClearedStages=new Set();lap2ClearedStages=new Set();
+  clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;
+  speedTrainingTrialCleared=false;speedIntermediateTrialCleared=false;
+  try{
+    localStorage.removeItem(STORAGE_KEYS.cleared);
+    localStorage.removeItem('wake7-lap1-primary-cleared');
+    localStorage.removeItem('wake7-lap2-primary-cleared');
+    localStorage.removeItem(STORAGE_KEYS.currentStage);
+    localStorage.setItem(STORAGE_KEYS.speedTrainingTrialCleared,'0');
+    localStorage.setItem(STORAGE_KEYS.speedIntermediateTrialCleared,'0');
+  }catch(_){}
+  storage.set(STORAGE_KEYS.stagesLayoutVersion,STAGES_LAYOUT_VERSION);
+}
 // 速解きの段階解放を導入した直後だけ、旧実装が一括で保存してしまった
 // 解放フラグを、実際の一周目の到達状況から作り直す。
 if(storage.get(STORAGE_KEYS.speedUnlockModelVersion)!=='3'){
@@ -3980,16 +4015,19 @@ let displayedMoves=null,displayedRemaining=null;
 const masterVolume=()=>extraMode?Math.floor(extraIndex/MASTER_VOLUME_SIZE)+1:0;
 const isFinalMasterPuzzle=()=>extraMode&&extraIndex===EXTRA_STAGES.length-1;
 const isGuidedBasicStage=()=>activeLap===1&&isMode('stage')&&!extraMode&&!satoriMode
-  &&stageIndex<PRACTICE_STAGE_START;
-// 入門・基本・だるま修行の旅立ちは周回を問わず、余計な操作や現在手数を見せない学習区間。
-const isAssistedLearningStage=()=>isMode('stage')&&(stageIndex<PRACTICE_STAGE_START
-  ||(stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_DEPARTURE_COUNT));
+  &&stageIndex<DEVELOPMENT_STAGE_START;
+// 入門・基本・だるま学園の発展クラスは周回を問わず、余計な操作や現在手数を見せない学習区間。
+const isAssistedLearningStage=()=>isMode('stage')&&stageIndex<ACADEMY_STAGE_COUNT;
 // 基本クラス（入門は含まない）だけ、つかめる水色の棒を1〜3本に絞る。
 const isNarrowedBasicStage=()=>isGuidedBasicStage()&&stageIndex>=BASIC_STAGE_START;
-// だるま修行・旅立ち編: 最初の1手だけ、指定された1本しかつかめないようにする。
-const isDepartureTrainingStage=()=>activeLap===1&&isMode('stage')&&!extraMode&&!satoriMode
-  &&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_DEPARTURE_COUNT;
-// だるま修行(旅立ち・上巻・下巻)全体: 「あと2くるり」に到達した瞬間、形の名前を演出する対象区間。
+// だるま学園・発展クラス: 初期候補本数(stage.initialRodCount)だけ棒を絞り込み、間違えた棒はその都度落ちる。
+const isDevelopmentStage=()=>activeLap===1&&isMode('stage')&&!extraMode&&!satoriMode
+  &&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_STAGE_COUNT;
+// 速解き九番勝負: 棒を6本とも見せ、間違えた棒はその都度落ちる(発展クラスと同じ仕組み、絞り込みなし)。
+const isSpeedFallingRodStage=()=>speedMode&&speedVariant==='training9';
+// 発展クラス・速解き九番勝負のどちらでも、間違えた棒を落として二度と選べなくする対象区間。
+const isFallingRodStage=()=>isDevelopmentStage()||isSpeedFallingRodStage();
+// だるま修行(上巻・中巻・下巻)全体: 「あと2くるり」に到達した瞬間、形の名前を演出する対象区間。
 const isTrainingRangeStage=()=>isMode('stage')&&!extraMode&&!satoriMode
   &&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_STAGE_COUNT;
 let guidedBasicCandidateTis=null,guidedBasicCandidateSignature=null;
@@ -4015,15 +4053,48 @@ function computeGuidedBasicCandidateTis(){
   const decoyPool=[...safeDecoyPool,...fallbackDecoyPool];
   return new Set([primary,...decoyPool.slice(0,count-1)]);
 }
+// 発展クラス用: stage.soloRodがあれば必ず候補に含め(3くるり5問の保証された正解棒)、
+// なければ距離を縮められる棒からランダムに1本を軸候補にする(4くるり3問)。
+// ダミーは、たまたま正解になってしまう軸を避けて選ぶ。本数はstage.initialRodCountに従う。
+function computeDevelopmentCandidateTis(){
+  const stage=STAGES[stageIndex];
+  const correctTis=[];
+  for(let ti=0;ti<TRI.length;ti++){
+    for(const dir of [1,-1]){
+      if(SOLVER.dist[enc(rollOnce(ori,ti,dir))]===SOLVER.dist[enc(ori)]-1){correctTis.push(ti);break;}
+    }
+  }
+  if(!correctTis.length)return null;
+  const primary=stage.soloRod!==undefined&&correctTis.includes(stage.soloRod)?stage.soloRod:correctTis[Math.floor(Math.random()*correctTis.length)];
+  const shuffle=arr=>{for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;};
+  const safeDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&!correctTis.includes(i)));
+  const fallbackDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&correctTis.includes(i)));
+  const decoyPool=[...safeDecoyPool,...fallbackDecoyPool];
+  const count=Math.min(TRI.length,stage.initialRodCount||TRI.length);
+  return new Set([primary,...decoyPool.slice(0,count-1)]);
+}
 function refreshGuidedBasicCandidates(){
-  if(isDepartureTrainingStage()){
-    // 最初の1手(3くるり→2くるり)だけ絞り込み、その後は学園で習った2くるりの解き方に任せる。
-    if(isSolved()||SOLVER.dist[enc(ori)]<3){
+  if(isDevelopmentStage()){
+    const stage=STAGES[stageIndex];
+    // 3くるり5問は最初の1手(3くるり→2くるり)だけ絞り込み、その後は学園で習った2くるりの解き方に任せる。
+    if(isSolved()||(stage.soloRod!==undefined&&SOLVER.dist[enc(ori)]<3)){
       guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;
     }else{
-      const signature=stageIndex+':departure';
+      const signature=stageIndex+':'+moves+':'+enc(ori);
       if(signature!==guidedBasicCandidateSignature){
-        guidedBasicCandidateTis=new Set([STAGES[stageIndex].soloRod]);
+        guidedBasicCandidateTis=computeDevelopmentCandidateTis();
+        guidedBasicCandidateSignature=signature;
+      }
+    }
+  }
+  else if(isSpeedFallingRodStage()){
+    if(isSolved()){
+      guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;
+    }else{
+      const signature='speedFalling:'+moves+':'+enc(ori);
+      if(signature!==guidedBasicCandidateSignature){
+        // 絞り込みはせず6本全部を候補にする。間違えた棒は落ちて二度と選べなくなる。
+        guidedBasicCandidateTis=new Set(Array.from({length:TRI.length},(_,i)=>i));
         guidedBasicCandidateSignature=signature;
       }
     }
@@ -4059,13 +4130,15 @@ const SPEED_MODE_DEFINITIONS=Object.freeze({
   standard:{id:'standard',labelKey:'speedMode',order:'mixed',source:'satori',total:SATORI_STAGES.length,unlock:'speedRun'},
   // 段階解放される派生モード。解放前は選択肢に表示しない。
   training9:{id:'training9',labelKey:'speedModeTraining',order:'shuffle',source:'twoMove',total:9,unlock:'primary'},
-  mastery15:{id:'mastery15',labelKey:'speedModeIntermediate',order:'shuffle',source:'training',total:TRAINING_UPPER_COUNT+TRAINING_LOWER_COUNT,unlock:'intermediate'},
+  mastery15:{id:'mastery15',labelKey:'speedModeIntermediate',order:'shuffle',source:'training',total:TRAINING_EXAM_STAGES.length,unlock:'intermediate'},
   mastery24:{id:'mastery24',labelKey:'speedModeMastery',order:'sample',source:'satori',total:27,unlock:'mastery'},
   satori73:{id:'satori73',labelKey:'speedModeSatori',order:'mixed',source:'satori',total:SATORI_STAGES.length,unlock:'satori'}
 });
 let speedVariant='standard';
 function activeSpeedDefinition(){return SPEED_MODE_DEFINITIONS[speedVariant]||SPEED_MODE_DEFINITIONS.standard;}
 const speedShowsRemaining=()=>speedMode&&['training9','mastery15'].includes(speedVariant);
+// 元に戻すボタンは、あと○くるり表示のある九番・十八番に加えて、二十七番でも使える(七十三番だけ使えない)。
+const speedAllowsUndo=()=>speedMode&&['training9','mastery15','mastery24'].includes(speedVariant);
 function speedStagePool(definition=activeSpeedDefinition()){
   if(definition.source==='twoMove')return SATORI_STAGES.filter(stage=>stage.par===2).slice(0,definition.total);
   if(definition.source==='training')return TRAINING_EXAM_STAGES;
@@ -4658,7 +4731,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
   frame.setAttribute('rx','0');frame.setAttribute('fill','rgba(255,255,255,.025)');frame.setAttribute('stroke','rgba(159,176,196,.4)');frame.setAttribute('stroke-width','1');
   board.appendChild(frame);
   // 入学は最短1手（あと1くるり）、基本クラスは最短2手（あと2くるり）のデモ盤面を使う。
-  const initialState=(variant==='basic'||variant==='practice'?STAGES[BASIC_STAGE_START]:STAGES[0]).state,start=dec(initialState);
+  const initialState=(variant==='basic'||variant==='development'?STAGES[BASIC_STAGE_START]:STAGES[0]).state,start=dec(initialState);
   const startDistance=SOLVER.dist[enc(start)];
   let move=null,after=null;
   for(let ti=0;ti<TRI.length&&!move;ti++)for(const dir of [1,-1]){
@@ -4726,7 +4799,10 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       rotation.setAttribute('values','0 '+t.x+' '+t.y+';'+overshoot+' '+t.x+' '+t.y+';'+undershoot+' '+t.x+' '+t.y+';'+turn+' '+t.x+' '+t.y);
       rotation.setAttribute('keyTimes','0;'+overshootFrac+';'+settleFrac+';1');rotation.setAttribute('dur',rotateDur+'ms');rotation.setAttribute('fill','freeze');rotation.setAttribute('calcMode','spline');rotation.setAttribute('keySplines','.33 0 .67 1;.33 0 .67 1;.33 0 .67 1');
       for(const index of t.cells)unit.appendChild(cycleTiles[index]);
-      unit.appendChild(touch);unit.appendChild(rotation);board.appendChild(unit);rotation.beginElement();
+      unit.appendChild(touch);unit.appendChild(rotation);board.appendChild(unit);
+      // iOSでは挿入直後にbeginElement()すると、初期フレームが一瞬ずれた角度で描かれることがある。
+      // 1フレーム待ってレイアウトを確定させてから開始する。
+      requestAnimationFrame(()=>{if(alive())rotation.beginElement();});
       // 本編のpreviewWakeと同じ非対称なしきい値で、だるまの起き伏せ（パネル色）を切り替える。
       // 寝る（起立→伏せ）のは22°動いた時点、起きる（伏せ→起立）のは120°中98°まで進んでから、と判定が厳しい。
       // rollOnce は位置ごとの値ではなく「隣の位置から回ってくる値」を返すため、
@@ -4890,41 +4966,36 @@ const CHAIN_STEPS={
   },
   academyWelcome:academyBoardStep('enroll','academyWelcomeTitle','academyWelcomeText','academyWelcomeStart',()=>{}),
   basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),
-  practiceWelcome:academyBoardStep('practice','practiceWelcomeTitle','practiceWelcomeText','practiceWelcomeStart',()=>loadStage(stageIndex+1)),
+  developmentWelcome:academyBoardStep('development','developmentWelcomeTitle','developmentWelcomeText','developmentWelcomeStart',()=>loadStage(stageIndex+1)),
   trainingWelcome:{
-    wide:true, titleKey:'trainingWelcomeTitle', actionKey:'trainingWelcomeNext',
+    wide:true, titleKey:'trainingWelcomeTitle', actionKey:'trainingWelcomeStart',
     render(body){
       body.innerHTML='<div class="training-welcome-art-wrap">'+TRAINING_WELCOME_ART_SVG+'</div><p class="chain-text-left" id="chainDialogText"></p>';
       $('chainDialogText').textContent=tr('trainingWelcomeText');
     },
-    onAction(){openChainedDialog('trainingDepartureGoal');}
-  },
-  trainingDepartureGoal:{
-    wide:true, titleKey:'trainingDepartureGoalTitle', titleClass:'chain-title-compact', actionKey:'trainingWelcomeStart',
-    render:shapeGridRenderer(TRAINING_DEPARTURE_GOAL_STATES,TRAINING_DEPARTURE_SHAPES,s=>'twoMoveTip3'+s+'Name','trainingDepartureGoalLabel'),
     onAction(){loadStage(TRAINING_STAGE_START);}
   },
-  trainingUpperSpin:{
-    kindKey:'trainingUpperGoalKind', titleKey:'trainingUpperSpinTitle', actionKey:'trainingWelcomeNext',
+  trainingMiddleSpin:{
+    kindKey:'trainingMiddleGoalKind', titleKey:'trainingMiddleSpinTitle', actionKey:'trainingWelcomeNext',
     render(body){
-      body.innerHTML='<div class="status-metric remaining training-spin-counter" id="trainingUpperSpinCounter"><span id="trainingUpperSpinCounterLabel"></span><b id="trainingUpperSpinCounterNumber"></b><span id="trainingUpperSpinCounterUnit"></span></div>'
-        +'<div class="two-move-detail-board-area"><div class="two-move-detail-board" id="trainingUpperSpinBoardWrap"><svg id="trainingUpperSpinBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>';
-      $('trainingUpperSpinCounterLabel').textContent=tr('shortestDisplay');
-      $('trainingUpperSpinCounterUnit').textContent=tr('moveUnit');
-      buildTrainingUpperSpinBoard('trainingUpperSpinBoard','trainingUpperSpinCounter');
-      return ()=>stopClearGuideBoard('trainingUpperSpinBoard');
+      body.innerHTML='<div class="status-metric remaining training-spin-counter" id="trainingMiddleSpinCounter"><span id="trainingMiddleSpinCounterLabel"></span><b id="trainingMiddleSpinCounterNumber"></b><span id="trainingMiddleSpinCounterUnit"></span></div>'
+        +'<div class="two-move-detail-board-area"><div class="two-move-detail-board" id="trainingMiddleSpinBoardWrap"><svg id="trainingMiddleSpinBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>';
+      $('trainingMiddleSpinCounterLabel').textContent=tr('shortestDisplay');
+      $('trainingMiddleSpinCounterUnit').textContent=tr('moveUnit');
+      buildTrainingMiddleSpinBoard('trainingMiddleSpinBoard','trainingMiddleSpinCounter');
+      return ()=>stopClearGuideBoard('trainingMiddleSpinBoard');
     },
-    onAction(){openChainedDialog('trainingUpperGoal');}
+    onAction(){openChainedDialog('trainingMiddleGoal');}
   },
-  trainingUpperGoal:{
-    kindKey:'trainingUpperGoalKind', titleKey:'trainingUpperGoalTitle', actionKey:'trainingUpperGoalStart',
-    render:shapeGridRenderer(TRAINING_UPPER_GOAL_STATES,TRAINING_UPPER_GOAL_SHAPES,s=>'shapeName'+s),
-    onAction(){loadStage(TRAINING_STAGE_START+TRAINING_DEPARTURE_COUNT);}
+  trainingMiddleGoal:{
+    kindKey:'trainingMiddleGoalKind', titleKey:'trainingMiddleGoalTitle', actionKey:'trainingMiddleGoalStart',
+    render:shapeGridRenderer(TRAINING_MIDDLE_GOAL_STATES,TRAINING_MIDDLE_GOAL_SHAPES,s=>'shapeName'+s),
+    onAction(){loadStage(TRAINING_STAGE_START+TRAINING_UPPER_COUNT);}
   },
   trainingLowerGoal:{
     kindKey:'trainingLowerGoalKind', titleKey:'trainingLowerGoalTitle', actionKey:'trainingLowerGoalStart',
-    render:shapeGridRenderer(TRAINING_LOWER_GOAL_STATES,TRAINING_LOWER_GOAL_SHAPES,s=>'twoMoveTip3'+s+'Name'),
-    onAction(){loadStage(TRAINING_STAGE_START+TRAINING_DEPARTURE_COUNT+TRAINING_UPPER_COUNT);}
+    render:shapeGridRenderer(TRAINING_LOWER_GOAL_STATES,TRAINING_LOWER_GOAL_SHAPES,s=>'shapeName'+s),
+    onAction(){loadStage(TRAINING_STAGE_START+TRAINING_UPPER_COUNT+TRAINING_MIDDLE_COUNT);}
   },
 };
 let chainCleanup=null, chainActiveStep=null, chainActiveName=null;
@@ -4959,13 +5030,13 @@ function stopClearGuideBoard(id){
 }
 // 上巻開始: 1本の棒を連続で(途切れず)回し続け、「あと3くるり」⇄「あと2くるり」が
 // 実際のドラッグ中と同じ表情切り替え(previewWake)で移り変わり、正解の位置でなめらかに確定するループ。
-function buildTrainingUpperSpinBoard(boardId,counterId){
+function buildTrainingMiddleSpinBoard(boardId,counterId){
   stopClearGuideBoard(boardId);
   const guide=$(boardId),NS_='http://www.w3.org/2000/svg';
   if(!guide)return;
   const run=clearGuideRuns.get(boardId);
   const isCurrent=()=>run===clearGuideRuns.get(boardId);
-  const startState=TRAINING_UPPER_GOAL_STATES[0];
+  const startState=TRAINING_MIDDLE_GOAL_STATES[0];
   const startBoard=dec(startState);
   // 同じ棒を1手ぶん(120°)回すと「あと2くるり」、さらに1手(240°)で「あと3くるり」に戻る組を探す。
   let target=null;
@@ -4987,7 +5058,7 @@ function buildTrainingUpperSpinBoard(boardId,counterId){
     g.style.transform=tileTransform(c.x,c.y,startBoard[i]);
     guide.appendChild(g);tiles[i]=g;
   });
-  // 実践クラス開始と同じく、回っている3枚を枠で強調し、つかんでいる指の点も表示する。
+  // 学園のクラス開始ダイアログ(buildAcademyWelcomeBoard)と同じく、回っている3枚を枠で強調し、つかんでいる指の点も表示する。
   cells.forEach(c=>tiles[c].classList.add('welcome-selected'));
   const spinItems=cells.map(c=>({el:tiles[c],turn:startBoard[c]}));
   const group=document.createElementNS(NS_,'g');
@@ -5011,7 +5082,7 @@ function buildTrainingUpperSpinBoard(boardId,counterId){
     numberEl.classList.add('distance-pulse');
   };
   // 120°で「あと2くるり」を通過し、240°より少し先(258°)まで回してから「あと3くるり」→
-  // そこからは止まらずゆっくり折り返し、最後は「実践クラス 開始！」の着地演出と同じように
+  // そこからは止まらずゆっくり折り返し、最後は学園のクラス開始ダイアログの着地演出と同じように
   // 小さく行き過ぎてから(114°)、120°(あと2くるり)へすっと収まる。
   const waypoints=[0,258,114,120],durations=[1800,2100,500];
   // 指でなぞっている想定なので、途中で急加速・急減速しない緩やかなイージングにする。
@@ -5066,8 +5137,8 @@ function buildTrainingUpperSpinBoard(boardId,counterId){
 }
 function currentTwoMoveLessonVariant(){
   // リロード直後でも、復元済みの画面案内と同じ解説を開く。
-  if(isMode('stage')&&stageIndex>=PRACTICE_STAGE_START&&stageIndex<TRAINING_STAGE_START)
-    return stageIndex-PRACTICE_STAGE_START<5?'joinOne':'joinTwo';
+  if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)
+    return stageIndex-TRAINING_STAGE_START<5?'joinOne':'joinTwo';
   return mainBoardGuidance()==='basicGuideJoinTwo'?'joinTwo':'joinOne';
 }
 function lessonVariantFromArt(art){
@@ -5097,13 +5168,14 @@ function renderTwoMoveLessonCopy(id,variant='joinOne'){
 const TWO_MOVE_TIP3_SHAPES={1:'Trapezoid',3:'Trapezoid',5:'Ribbon',2:'Caterpillar',4:'Caterpillar',6:'Diamond',7:'Diamond',8:'OuterNeighbor',9:'CenterOuter'};
 // コツ3の文言は型ごとに長さが違うため、一行表示を保てる最小限の字間だけを個別に詰める。
 const TWO_MOVE_TIP3_LETTER_SPACING={Trapezoid:'-0.06em',Ribbon:'-0.06em',Caterpillar:'0',Diamond:'0',OuterNeighbor:'0',CenterOuter:'0'};
-const isTwoMoveLessonStage=()=>isMode('stage')&&stageIndex>=BASIC_STAGE_START&&stageIndex<PRACTICE_STAGE_START+PRACTICE_STAGE_COUNT;
+const isTwoMoveLessonStage=()=>isMode('stage')&&((stageIndex>=BASIC_STAGE_START&&stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT)
+  ||(stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT));
 // 盤面の向きに関係なく型を判定できるよう、9パターンの正規化済み状態から出題順(1〜9)を逆引きする。
 const TWO_MOVE_CANONICAL_POSITION=new Map(TWO_MOVE_STAGES.map((stage,patternIndex)=>[canonicalState(stage.state),BASIC_LESSON_PATTERN_ORDER.indexOf(patternIndex)+1]));
 const isTwoMoveLessonSpeedStage=()=>speedMode&&speedVariant==='training9';
 function currentTwoMoveLessonContext(){
   if(isTwoMoveLessonStage()){
-    const base=stageIndex<PRACTICE_STAGE_START?BASIC_STAGE_START:PRACTICE_STAGE_START;
+    const base=stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT?BASIC_STAGE_START:TRAINING_STAGE_START;
     // 型の名前は、基本編の出題順（問題1〜9）で対応させる。TWO_MOVE_PATTERN_ORDER の「覚えやすい順」とは別物。
     const position=stageIndex-base+1;
     // 出題そのものの型は見せるが、盤面をそのまま答えにしないよう180°回した見え方にする。
@@ -5503,9 +5575,9 @@ function applySwipe(ti,dir,save=true,playEffects=true){
     spin[to]=oldSpin[from]+dir;
   }
   moves++;
-  if(save&&activeLap===1&&isMode('stage')&&stageIndex>=PRACTICE_STAGE_START&&stageIndex<TRAINING_STAGE_START&&moves===5&&SOLVER.dist[enc(ori)]!==0){
+  if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){
     setTimeout(()=>{
-      if(isMode('stage')&&stageIndex>=PRACTICE_STAGE_START&&stageIndex<TRAINING_STAGE_START&&moves>=5&&!isSolved())
+      if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves>=5&&!isSolved())
         openTwoMoveLessonDialog(true);
     },520);
   }
@@ -6378,11 +6450,13 @@ function finishDrag(e,cancel=false,forcedTurns=null){
     setTimeout(showTutorialCue,120);
     return;
   }
-  if((isGuidedBasicStage()||isDepartureTrainingStage())&&dir){
+  if((isGuidedBasicStage()||isFallingRodStage())&&dir){
     const before=SOLVER.dist[enc(ori)];
     const after=SOLVER.dist[enc(rollOnce(ori,dg.ti,dir))];
     if(after!==before-1){
       const correctPlace=[1,-1].some(candidate=>SOLVER.dist[enc(rollOnce(ori,dg.ti,candidate))]===before-1);
+      // 発展クラス・速解き九番勝負で棒そのものが違った場合は、その棒を候補から落として二度と選べなくする。
+      if(isFallingRodStage()&&!correctPlace&&guidedBasicCandidateTis)guidedBasicCandidateTis.delete(dg.ti);
       $('gripPromptText').textContent=tr(correctPlace?'assistedWrongDirection':'assistedWrongPlace');
       $('gripPrompt').hidden=false;
       animateGuidedBasicRewind(dg);
@@ -6565,10 +6639,13 @@ function showHintArrow(ti,dir,both=false,persistent=false){
       +' L '+sw1.x.toFixed(2)+' '+sw1.y.toFixed(2)
       +' L '+sw2.x.toFixed(2)+' '+sw2.y.toFixed(2)+' Z"/>';
   }
+  const arcD='M '+start.x.toFixed(2)+' '+start.y.toFixed(2)
+    +' A '+r+' '+r+' 0 0 '+(dir>0?1:0)+' '+base.x.toFixed(2)+' '+base.y.toFixed(2);
   const g=document.createElementNS(NS_,'g');
   g.setAttribute('class','hint-arrow'+(persistent?' tutorial':''));
-  g.innerHTML='<path class="arc" d="M '+start.x.toFixed(2)+' '+start.y.toFixed(2)
-    +' A '+r+' '+r+' 0 0 '+(dir>0?1:0)+' '+base.x.toFixed(2)+' '+base.y.toFixed(2)+'"/>'
+  g.innerHTML=(persistent?'<path class="arc-border" d="'+arcD+'"/>':'')
+    +'<path class="arc" pathLength="100" d="'+arcD+'"/>'
+    +(persistent?'<path class="arc-glow" pathLength="100" d="'+arcD+'"/>':'')
     +'<path class="head" d="M '+tip.x.toFixed(2)+' '+tip.y.toFixed(2)
     +' L '+w1.x.toFixed(2)+' '+w1.y.toFixed(2)
     +' L '+w2.x.toFixed(2)+' '+w2.y.toFixed(2)+' Z"/>'+secondHead;
@@ -6890,22 +6967,24 @@ function renderStagePicker(){
   const canSeeMaster=pickerPrimaryDone&&(pickerLap===2||speedIntermediateTrialCleared);
   // 悟りへの道は、名人への道を制覇してから初めて選択画面に現す。
   const canSeeSatori=pickerMastered&&(pickerLap===2||speedMasteryTrialCleared);
-  if(!canSeeTraining&&pickerRound!==-2)pickerRound=-2;
-  else if(!canSeeMaster&&typeof pickerRound==='number'&&pickerRound>=0)pickerRound=-1;
+  const onAcademyPage=round=>typeof round==='number'&&round>=-PRIMARY_PICKER_SECTION_COUNT&&round<=PICKER_ACADEMY_LAST_ROUND;
+  if(!canSeeTraining&&!onAcademyPage(pickerRound))pickerRound=-PRIMARY_PICKER_SECTION_COUNT;
+  else if(!canSeeMaster&&typeof pickerRound==='number'&&pickerRound>=0)pickerRound=PICKER_TRAINING_FIRST_ROUND;
   if(pickerRound>=EXTRA_ROUNDS)pickerRound=EXTRA_ROUNDS-1;
-  const isAcademy=pickerRound===-2;
-  const isTraining=pickerRound===-1;
-  const isPrimary=isAcademy||isTraining;
-  const canGoPrev=!(isAcademy&&pickerLap===1);
-  const canGoNext=isAcademy?canSeeTraining
-    :isTraining?canSeeMaster
+  const isPrimary=typeof pickerRound==='number'&&pickerRound<0;
+  const section=isPrimary?pickerRoundToSection(pickerRound):null;
+  const isAcademy=isPrimary&&onAcademyPage(pickerRound);
+  const isTraining=isPrimary&&!isAcademy;
+  const canGoPrev=!(pickerRound===-PRIMARY_PICKER_SECTION_COUNT&&pickerLap===1);
+  const canGoNext=isAcademy?(pickerRound===PICKER_ACADEMY_LAST_ROUND?canSeeTraining:true)
+    :isTraining?(pickerRound===PICKER_TRAINING_LAST_ROUND?canSeeMaster:true)
     :pickerRound<EXTRA_ROUNDS-1||canSeeSatori;
   const canNavigateRounds=canGoPrev||canGoNext;
   $('stagePickerTitle').textContent=tr('stagePicker');
   $('closeStagePicker').setAttribute('aria-label',tr('close'));
   $('stagePickerRound').hidden=!canNavigateRounds;
-  const roundName=isAcademy?tr('academyPickerRound')
-    :isTraining?tr('trainingPickerRound')
+  const roundName=isAcademy?tr(section.labelKey)+tr('academyClassSuffix')
+    :isTraining?tr(section.labelKey)
     :tr('patternRound',{n:extraRoundLabel(pickerRound)});
   $('pickerRoundLabel').textContent=(pickerLap===2?tr('secondLapBadge')+'　':'')+roundName;
   $('pickerPrevRound').hidden=!canNavigateRounds;
@@ -6914,21 +6993,12 @@ function renderStagePicker(){
   $('pickerNextRound').disabled=!canGoNext;
   const grid=$('stagePickerGrid');
   grid.innerHTML='';
-  const primaryStart=isAcademy?0:TRAINING_STAGE_START;
-  const pageSize=isAcademy?ACADEMY_STAGE_COUNT:isTraining?TRAINING_STAGE_COUNT:MASTER_VOLUME_SIZE;
+  const primaryStart=isPrimary?section.start:0;
+  const pageSize=isPrimary?section.total:MASTER_VOLUME_SIZE;
   for(let i=0;i<pageSize;i++){
     const index=isPrimary?primaryStart+i:pickerRound*MASTER_VOLUME_SIZE+i;
     const stage=isPrimary?STAGES[index]:EXTRA_STAGES[index];
     if(!stage)continue;
-    if(isAcademy||isTraining){
-      const section=primarySection(index);
-      if(index===section.start){
-        const heading=document.createElement('div');
-        heading.className='stage-picker-section-label';
-        heading.textContent=tr(section.labelKey)+'　'+section.total;
-        grid.appendChild(heading);
-      }
-    }
     const b=document.createElement('button');
     const cleared=isPrimary?pickerPrimary.has(index):pickerExtra.has(index);
     b.disabled=(isPrimary
@@ -6953,7 +7023,7 @@ function openStagePicker(){
   if(satoriMode||((freeMode||customMode)&&lastStageMode.satori)){openSatoriPicker();return;}
   const showingExtra=extraMode||((freeMode||customMode)&&lastStageMode.extra);
   const showingIndex=extraMode?extraIndex:lastStageMode.index;
-  pickerRound=showingExtra?Math.floor(showingIndex/MASTER_VOLUME_SIZE):(showingIndex>=TRAINING_STAGE_START?-1:-2);
+  pickerRound=showingExtra?Math.floor(showingIndex/MASTER_VOLUME_SIZE):PRIMARY_SECTIONS.indexOf(primarySection(showingIndex))-PRIMARY_PICKER_SECTION_COUNT;
   renderStagePicker();
   $('stagePicker').hidden=false;
 }
@@ -6963,7 +7033,7 @@ function openStagePickerForRank(rankIndex){
   $('resetDialog').hidden=true;
   // 称号一覧で選択した周（activeLap）を、そのまま問題選択にも引き継ぐ。
   pickerLap=activeLap;
-  pickerRound=rankIndex===0?-2:rankIndex===1?-1:rankIndex-2;
+  pickerRound=rankIndex===0?-PRIMARY_PICKER_SECTION_COUNT:rankIndex===1?PICKER_TRAINING_FIRST_ROUND:rankIndex-2;
   renderStagePicker();
   $('stagePicker').hidden=false;
 }
@@ -6978,7 +7048,7 @@ $('stagePicker').addEventListener('click',e=>{if(e.target===$('stagePicker'))clo
 $('pickerPrevRound').addEventListener('click',()=>{
   if(pickerRound==='satori'&&satoriPickerPage>0)satoriPickerPage--;
   else if(pickerRound==='satori')pickerRound=EXTRA_ROUNDS-1;
-  else if(pickerRound===-2&&pickerLap===2){pickerLap=1;pickerRound='satori';satoriPickerPage=SATORI_PICKER_PAGES-1;}
+  else if(pickerRound===-PRIMARY_PICKER_SECTION_COUNT&&pickerLap===2){pickerLap=1;pickerRound='satori';satoriPickerPage=SATORI_PICKER_PAGES-1;}
   else pickerRound--;
   renderStagePicker();
 });
@@ -6989,11 +7059,11 @@ $('pickerNextRound').addEventListener('click',()=>{
   const pickerPrimaryDone=STAGES.every((_,i)=>pickerPrimary.has(i));
   const pickerMastered=EXTRA_STAGES.every((_,i)=>pickerExtra.has(i));
   if(pickerRound==='satori'&&satoriPickerPage<SATORI_PICKER_PAGES-1)satoriPickerPage++;
-  else if(pickerRound==='satori'&&pickerLap===1&&secondLapUnlocked){pickerLap=2;pickerRound=-2;satoriPickerPage=0;}
+  else if(pickerRound==='satori'&&pickerLap===1&&secondLapUnlocked){pickerLap=2;pickerRound=-PRIMARY_PICKER_SECTION_COUNT;satoriPickerPage=0;}
   else if(pickerRound===EXTRA_ROUNDS-1&&pickerMastered){pickerRound='satori';satoriPickerPage=0;}
-  else if(pickerRound===-2&&pickerAcademyDone&&(pickerLap===2||speedTrainingTrialCleared))pickerRound=-1;
-  else if(pickerRound===-1&&pickerPrimaryDone&&(pickerLap===2||speedIntermediateTrialCleared))pickerRound=0;
-  else if(typeof pickerRound==='number'&&pickerRound>=0)pickerRound++;
+  else if(pickerRound===PICKER_ACADEMY_LAST_ROUND&&pickerAcademyDone&&(pickerLap===2||speedTrainingTrialCleared))pickerRound=PICKER_TRAINING_FIRST_ROUND;
+  else if(pickerRound===PICKER_TRAINING_LAST_ROUND&&pickerPrimaryDone&&(pickerLap===2||speedIntermediateTrialCleared))pickerRound=0;
+  else if(typeof pickerRound==='number')pickerRound++;
   renderStagePicker();
 });
 $('pickerFreeMode').addEventListener('click',()=>{
@@ -7054,8 +7124,8 @@ function renderStageNav(){
     $('lapBadge').hidden=activeLap!==2||freeMode||customMode||speedMode;
     $('lapBadge').textContent=secondLapMark();
     $('shuffle').hidden=true;
-    $('undo').hidden=hideLearningControls||editingBoard||satoriMode||(speedMode&&!speedShowsRemaining());
-    $('undo').disabled=hideLearningControls||editingBoard||satoriMode||(speedMode&&!speedShowsRemaining())||isFinalMasterPuzzle();
+    $('undo').hidden=hideLearningControls||editingBoard||satoriMode||(speedMode&&!speedAllowsUndo());
+    $('undo').disabled=hideLearningControls||editingBoard||satoriMode||(speedMode&&!speedAllowsUndo())||isFinalMasterPuzzle();
     $('hint').hidden=hideLearningControls||editingBoard||satoriMode||speedMode;
     if(isFourthVolume()){
       $('hint').textContent=tr('remainingCheck',{n:fourthChecksLeft()});
@@ -7065,7 +7135,7 @@ function renderStageNav(){
       $('hint').disabled=masterHintsDisabled();
     }
     $('debugTools').hidden=!DEBUG_MODE;
-    for(const id of ['debugReset','debugClear','debugSpeedJumpFinish','debugAlmost','debugMore','debugFar','debugSkipTutorial','debugIntro2','debugBasic11','debugAcademy20','debugSpeedTraining8','debugTrainingDeparture','debugTrainingUpper','debugTrainingLower','debugSpeedIntermediate17','debugExtra14','debugExtra29','debugExtra44','debugSpeedMastery26','debugSatori72','debugSecondIntro2','debugSecondBasic11','debugSecondAcademy20','debugSecondTrainingDeparture','debugSecondTrainingUpper','debugSecondTrainingLower','debugSecondExtra14','debugSecondExtra29','debugSecondExtra44','debugSecondSatori72'])$(id).hidden=!DEBUG_MODE;
+    for(const id of ['debugReset','debugClear','debugSpeedJumpFinish','debugAlmost','debugMore','debugFar','debugSkipTutorial','debugIntro2','debugBasic11','debugAcademy20','debugSpeedTraining8','debugTrainingUpper','debugTrainingMiddle','debugTrainingLower','debugSpeedIntermediate17','debugExtra14','debugExtra29','debugExtra44','debugSpeedMastery26','debugSatori72','debugSecondIntro2','debugSecondBasic11','debugSecondAcademy20','debugSecondTrainingUpper','debugSecondTrainingMiddle','debugSecondTrainingLower','debugSecondExtra14','debugSecondExtra29','debugSecondExtra44','debugSecondSatori72'])$(id).hidden=!DEBUG_MODE;
     const pauseButton=$('speedPause'),pauseInline=$('speedPauseInline'),playActions=document.querySelector('.play-actions');
     const awaitingSpeedStart=speedMode&&speedAwaitingStart();
     if(speedMode&&!speedShowsRemaining())pauseInline.appendChild(pauseButton);
@@ -7075,9 +7145,9 @@ function renderStageNav(){
     $('speedPause').hidden=!speedMode;
     $('speedStartOverlay').hidden=!awaitingSpeedStart;
     $('playbar').hidden=hideLearningControls||(awaitingSpeedStart&&!speedShowsRemaining());
-    const hideBoardViewControls=assistedLearning||speedMode||(isMode('stage')&&stageIndex>=PRACTICE_STAGE_START&&stageIndex<TRAINING_STAGE_START);
+    const hideBoardViewControls=assistedLearning||speedMode||(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT);
     for(const id of ['rotateBoardBack','rotateBoard','mirrorBoard','flipBoardVertical'])$(id).hidden=hideBoardViewControls;
-    $('twoMoveLessonOpen').hidden=!((isMode('stage')&&stageIndex>=PRACTICE_STAGE_START&&stageIndex<PRACTICE_STAGE_START+PRACTICE_STAGE_COUNT)||isTwoMoveLessonSpeedStage());
+    $('twoMoveLessonOpen').hidden=!((isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)||isTwoMoveLessonSpeedStage());
     $('twoMoveLessonOpen').textContent=tr('twoMoveLessonOpen');
   }
   function renderStageNavModeButtons(){
@@ -7154,7 +7224,7 @@ function renderStageNav(){
       showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
     }else{
       const {section,position}=primarySectionPosition(stageIndex);
-      const isAcademySection=['intro','basic','practice'].includes(section.id);
+      const isAcademySection=['intro','basic','development'].includes(section.id);
       if(isAcademySection){
         $('stageKind').textContent=tr('academyPickerRound');
         $('stageNumber').textContent=tr(section.labelKey)+tr('academyClassSuffix');
@@ -7245,7 +7315,7 @@ function renderClearStageContext(){
     return;
   }
   context.hidden=false;
-  const showsCount=extraMode||(!satoriMode&&!speedMode&&['intro','basic','practice'].includes(primarySectionPosition(stageIndex).section.id));
+  const showsCount=extraMode||(!satoriMode&&!speedMode&&['intro','basic','development'].includes(primarySectionPosition(stageIndex).section.id));
   context.textContent=showsCount
     ?$('stageKind').textContent+'　'+$('stageNumber').textContent+' '+$('stageCount').textContent
     :$('stageKind').textContent+' '+$('stageNumber').textContent;
@@ -7275,9 +7345,9 @@ function showClearDialog(){
     openChainedDialog('basicWelcome');
     return;
   }
-  // 基本クラス最終問題のクリアも、同じ演出で「実践クラス開始」を毎回そのまま見せる。
-  if(!freeMode&&!customMode&&!extraMode&&!satoriMode&&stageIndex===PRACTICE_STAGE_START-1){
-    openChainedDialog('practiceWelcome');
+  // 基本クラス最終問題のクリアも、同じ演出で「発展クラス開始」を毎回そのまま見せる。
+  if(!freeMode&&!customMode&&!extraMode&&!satoriMode&&stageIndex===DEVELOPMENT_STAGE_START-1){
+    openChainedDialog('developmentWelcome');
     return;
   }
   if(!freeMode&&!customMode&&!extraMode&&!satoriMode&&stageIndex===STAGES.length-1&&allPrimaryCleared()){
@@ -7461,12 +7531,12 @@ function renderClearTip(){
   detailLink.hidden=twoMoveCard===undefined&&!guideCard&&!rankLink&&!messagesLink&&!tipsLink&&!patternsLink;
   detailLink.dataset.target=rankLink?'rank':messagesLink?'messages':tipsLink?'tips':patternsLink?'patterns':'details';
   detailLink.textContent=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatternsLink')+' →':tr(rankLink?'rankLink':messagesLink?'clearMessagesLink':'detailsLink');
-  const departureIndex=!extraMode&&!satoriMode&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_DEPARTURE_COUNT?stageIndex-TRAINING_STAGE_START:-1;
-  $('clearShapeRuleWrap').hidden=departureIndex<0;
-  if(departureIndex>=0){
+  const developmentIndex=!extraMode&&!satoriMode&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;
+  $('clearShapeRuleWrap').hidden=developmentIndex<0;
+  if(developmentIndex>=0){
     clearShapeRuleGuard.reset();
-    clearShapeRuleIndex=departureIndex;
-    clearShapeRuleState=TRAINING_DEPARTURE_GOAL_STATES[departureIndex];
+    clearShapeRuleIndex=developmentIndex;
+    clearShapeRuleState=DEVELOPMENT_THREE_GOAL_STATES[developmentIndex];
     renderClearShapeRule();
   }
   illustration.classList.toggle('move-graph',art==='moveGraph');
@@ -7865,7 +7935,7 @@ function advanceAfterClear(){
   else if(stageIndex===STAGES.length-1&&allPrimaryCleared()) showMasterDialog('intermediate');
   else if(stageIndex===STAGES.length-1) restoreFreeSession();
   else{
-    // 節目(旅立ち完了→上巻開始など)は、CLEAR_CONTENTの`○○before`キーで案内ダイアログを挟む。
+    // 節目(上巻完了→中巻開始など)は、CLEAR_CONTENTの`○○before`キーで案内ダイアログを挟む。
     const before=clearContentBefore(false,stageIndex+1);
     if(before?.dialog){openChainedDialog(before.dialog);return;}
     loadStage(stageIndex+1);
@@ -8283,7 +8353,7 @@ function animateTwoMoveDetail(angle=0,mirror=false){
     renderTwoMoveDetail();
   });
 }
-// 旅立ちの各ステージ完全クリア時、クリアダイアログの中に対象の「あと2くるり」形を
+// 発展クラス・3くるり5問の各ステージ完全クリア時、クリアダイアログの中に対象の「あと2くるり」形を
 // 大きな条件文つきでそのまま表示する(別ダイアログへのリンクは挟まない)。
 // 「今このアニメはまだ有効か」を守る小さいガード。busy中は新しい操作を弾き、
 // タイマー発火時にcommitコールバックを呼んでからbusyを解除する。
@@ -8300,7 +8370,7 @@ function createAnimGuard(){
 let clearShapeRuleState=null,clearShapeRuleIndex=-1;
 const clearShapeRuleGuard=createAnimGuard();
 function renderClearShapeRule(){
-  const shape=TRAINING_DEPARTURE_SHAPES[clearShapeRuleIndex];
+  const shape=DEVELOPMENT_THREE_SHAPES[clearShapeRuleIndex];
   $('clearShapeRuleIntro').textContent=tr('trainingShapeRuleIntro');
   $('clearShapeRuleName').textContent=tr('twoMoveTip3'+shape+'Name');
   $('clearShapeRuleBoard').innerHTML=miniBoardSvg(clearShapeRuleState,{outline:true});
@@ -8789,16 +8859,16 @@ function debugUnlockStageCheckpoint(index,secondLap=false){
   loadStage(index);
 }
 $('debugIntro2').addEventListener('click',()=>debugUnlockStageCheckpoint(INTRO_STAGE_COUNT-1));
-$('debugBasic11').addEventListener('click',()=>debugUnlockStageCheckpoint(PRACTICE_STAGE_START-1));
+$('debugBasic11').addEventListener('click',()=>debugUnlockStageCheckpoint(DEVELOPMENT_STAGE_START-1));
 $('debugAcademy20').addEventListener('click',()=>debugUnlockStageCheckpoint(ACADEMY_STAGE_COUNT-1));
-$('debugTrainingDeparture').addEventListener('click',()=>debugUnlockStageCheckpoint(TRAINING_STAGE_START+TRAINING_DEPARTURE_COUNT-1));
-$('debugTrainingUpper').addEventListener('click',()=>debugUnlockStageCheckpoint(TRAINING_STAGE_START+TRAINING_DEPARTURE_COUNT+TRAINING_UPPER_COUNT-1));
+$('debugTrainingUpper').addEventListener('click',()=>debugUnlockStageCheckpoint(TRAINING_STAGE_START+TRAINING_UPPER_COUNT-1));
+$('debugTrainingMiddle').addEventListener('click',()=>debugUnlockStageCheckpoint(TRAINING_STAGE_START+TRAINING_UPPER_COUNT+TRAINING_MIDDLE_COUNT-1));
 $('debugTrainingLower').addEventListener('click',()=>debugUnlockStageCheckpoint(STAGES.length-1));
 $('debugSecondIntro2').addEventListener('click',()=>debugUnlockStageCheckpoint(INTRO_STAGE_COUNT-1,true));
-$('debugSecondBasic11').addEventListener('click',()=>debugUnlockStageCheckpoint(PRACTICE_STAGE_START-1,true));
+$('debugSecondBasic11').addEventListener('click',()=>debugUnlockStageCheckpoint(DEVELOPMENT_STAGE_START-1,true));
 $('debugSecondAcademy20').addEventListener('click',()=>debugUnlockStageCheckpoint(ACADEMY_STAGE_COUNT-1,true));
-$('debugSecondTrainingDeparture').addEventListener('click',()=>debugUnlockStageCheckpoint(TRAINING_STAGE_START+TRAINING_DEPARTURE_COUNT-1,true));
-$('debugSecondTrainingUpper').addEventListener('click',()=>debugUnlockStageCheckpoint(TRAINING_STAGE_START+TRAINING_DEPARTURE_COUNT+TRAINING_UPPER_COUNT-1,true));
+$('debugSecondTrainingUpper').addEventListener('click',()=>debugUnlockStageCheckpoint(TRAINING_STAGE_START+TRAINING_UPPER_COUNT-1,true));
+$('debugSecondTrainingMiddle').addEventListener('click',()=>debugUnlockStageCheckpoint(TRAINING_STAGE_START+TRAINING_UPPER_COUNT+TRAINING_MIDDLE_COUNT-1,true));
 $('debugSecondTrainingLower').addEventListener('click',()=>debugUnlockStageCheckpoint(STAGES.length-1,true));
 function debugUnlockExtra(count,secondLap=false){
   if(!DEBUG_MODE)return;
@@ -9455,11 +9525,11 @@ const LANGUAGE_TEXT_TARGETS=[
   ['debugReset','debugReset'],['debugClear','debugClear'],['debugSpeedJumpFinish','debugSpeedJumpFinish'],
   ['debugAlmost','debugAlmost'],['debugMore','debugMore'],['debugFar','debugFar'],['debugSkipTutorial','debugSkipTutorial'],
   ['debugIntro2','debugIntro2'],['debugBasic11','debugBasic11'],['debugAcademy20','debugAcademy20'],
-  ['debugTrainingDeparture','debugTrainingDeparture'],['debugTrainingUpper','debugTrainingUpper'],['debugTrainingLower','debugTrainingLower'],
+  ['debugTrainingUpper','debugTrainingUpper'],['debugTrainingMiddle','debugTrainingMiddle'],['debugTrainingLower','debugTrainingLower'],
   ['debugExtra14','debugExtra14'],['debugExtra29','debugExtra29'],['debugExtra44','debugExtra44'],['debugSatori72','debugSatori72'],
   ['debugSpeedTraining8','debugSpeedTraining8'],['debugSpeedIntermediate17','debugSpeedIntermediate17'],['debugSpeedMastery26','debugSpeedMastery26'],
   ['debugSecondIntro2','debugIntro2'],['debugSecondBasic11','debugBasic11'],['debugSecondAcademy20','debugAcademy20'],
-  ['debugSecondTrainingDeparture','debugTrainingDeparture'],['debugSecondTrainingUpper','debugTrainingUpper'],['debugSecondTrainingLower','debugTrainingLower'],
+  ['debugSecondTrainingUpper','debugTrainingUpper'],['debugSecondTrainingMiddle','debugTrainingMiddle'],['debugSecondTrainingLower','debugTrainingLower'],
   ['debugSecondExtra14','debugExtra14'],['debugSecondExtra29','debugExtra29'],['debugSecondExtra44','debugExtra44'],['debugSecondSatori72','debugSatori72'],
   ['board','boardLabel','aria-label'],['showTip','tips'],
   ['resetProgress','resetProgress'],['resetDialogTitle','resetProgress'],['resetDialogText','resetConfirm'],
