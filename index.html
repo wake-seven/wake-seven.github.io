@@ -4798,15 +4798,16 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       const turn=move.dir>0?120:-120,overshoot=move.dir>0?120+overshootAmount:-(120+overshootAmount),undershoot=move.dir>0?114:-114;
       rotation.setAttribute('values','0 '+t.x+' '+t.y+';'+overshoot+' '+t.x+' '+t.y+';'+undershoot+' '+t.x+' '+t.y+';'+turn+' '+t.x+' '+t.y);
       rotation.setAttribute('keyTimes','0;'+overshootFrac+';'+settleFrac+';1');rotation.setAttribute('dur',rotateDur+'ms');rotation.setAttribute('fill','freeze');rotation.setAttribute('calcMode','spline');rotation.setAttribute('keySplines','.33 0 .67 1;.33 0 .67 1;.33 0 .67 1');
+      // begin=indefinitedeにしないと、挿入した時点で暗黙のbegin=0(文書開始時刻)が
+      // 既に過ぎているとみなされ、fill=freezeの効果で最終フレームが一瞬先に描かれてから
+      // beginElement()でframe 0へ巻き戻る(iOS Safariで顕著)。明示的に「まだ開始していない」
+      // 状態にしてから、beginElement()で開始する。
+      rotation.setAttribute('begin','indefinite');
       // 挿入直後は必ず0度(先頭キーフレームと同じ値)を明示しておき、開始前に不定な状態を作らない。
       unit.setAttribute('transform','rotate(0 '+t.x+' '+t.y+')');
       for(const index of t.cells)unit.appendChild(cycleTiles[index]);
       unit.appendChild(touch);unit.appendChild(rotation);board.appendChild(unit);
-      // iOSでは挿入直後にbeginElement()すると、レイアウト確定前にサンプリングされ、
-      // 初期フレームが一瞬ずれた角度で描かれることがある。強制的にレイアウトを確定させてから、
-      // 1フレームより長く待って(rAF単独では不十分だったため)開始する。
-      void unit.getBoundingClientRect();
-      setTimeout(()=>{if(alive())rotation.beginElement();},30);
+      rotation.beginElement();
       // 本編のpreviewWakeと同じ非対称なしきい値で、だるまの起き伏せ（パネル色）を切り替える。
       // 寝る（起立→伏せ）のは22°動いた時点、起きる（伏せ→起立）のは120°中98°まで進んでから、と判定が厳しい。
       // rollOnce は位置ごとの値ではなく「隣の位置から回ってくる値」を返すため、
