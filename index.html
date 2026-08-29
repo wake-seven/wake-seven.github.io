@@ -138,6 +138,8 @@
   body.tutorial-mode .board-view-controls,
   body.tutorial-mode footer{display:none!important}
   body.tutorial-mode .board-wrap{margin-top:.75rem}
+  /* 案内メッセージ(grip-prompt)の位置は変えず、盤面(SVG)だけを少し下げる。 */
+  body.tutorial-mode #board{margin-top:2.5rem}
   .language-menu button:hover{background:rgba(98,184,210,.1);color:var(--washi)}
   .language-menu button[aria-checked="true"]{background:#183952;color:#62B8D2}
   /* 盤面を最優先に見せるため、縦方向の間隔は全画面サイズで揃えて詰める。
@@ -1467,7 +1469,7 @@ const tutorialTrapezoidState=transformStateBySymmetry(STAGES[4].state,TUTORIAL_T
 const TUTORIAL_LOWER_VIEW={permutation:makeBoardPermutation(-120),flip:false};
 // 4問目(chain)は、下中央の棒を右向きに回す配置だと右手スワイプの指で矢印が隠れてしまうため、
 // 下半分のうち左側の棒になるよう別の向きを使う。
-const TUTORIAL_CHAIN_VIEW={permutation:makeBoardPermutation(300),flip:false};
+const TUTORIAL_CHAIN_VIEW={permutation:makeBoardPermutation(180,true),flip:true};
 const TUTORIAL_STEPS=[
   {state:transformStateBySymmetry(tutorialPool[0],TUTORIAL_LOWER_VIEW),par:1,cue:'grab'},
   {state:tutorialPool[tutorialPool.length-1],par:1,cue:'grab'},
