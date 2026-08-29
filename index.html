@@ -482,7 +482,7 @@
   .master-share[hidden]{display:none}
   .master-share:hover{color:var(--kin)}
   .master-share .share-mark{margin-right:0.25rem;transform:translateY(-1px)}
-  .intro-board-wrap{position:relative;width:min(100%,16.25rem);margin:0.5rem auto -0.125rem}
+  .intro-board-wrap{position:relative;z-index:2;width:min(100%,16.25rem);margin:0.5rem auto -0.125rem}
   .academy-welcome-board-wrap{width:min(100%,17.5rem);margin:0.75rem auto 0.125rem}
   .chain-wide .game-dialog{width:min(100%,24.375rem)}
   .training-welcome-art-wrap{width:100%;margin:0.75rem 0 0.875rem;border-radius:0.75rem;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35)}
@@ -517,7 +517,7 @@
     padding:.85rem 1.25rem .8rem;
   }
   /* 左上の「あと○くるり」と同じ配色・フォントで揃える(色は#status-metric.remainingと同じ)。 */
-  .academy-remaining-callout-label,.academy-remaining-callout-unit{color:#9BCBDD;font-size:15px;font-weight:700;transform:translateY(.5rem)}
+  .academy-remaining-callout-label,.academy-remaining-callout-unit{color:#9BCBDD;font-size:19px;font-weight:700;transform:translateY(.5rem)}
   .academy-remaining-callout-number{
     color:#62B8D2;font-size:60px;font-weight:750;line-height:1;
     text-shadow:0 0 10px rgba(98,184,210,.24);
@@ -603,6 +603,11 @@
     100%{transform:scale(1.7);text-shadow:0 0 10px rgba(98,184,210,.24)}
   }
   body.academy-metric-mode .status-metric.remaining b.distance-pulse{animation-name:academyDistancePulse}
+  body.academy-metric-mode .status-metric.remaining #shortestLabel,
+  body.academy-metric-mode .status-metric.remaining #moveUnit{font-size:19px;font-weight:700}
+  /* だるま学園だけ、「あと○くるり」の右に「でクリア」を白文字で添える。 */
+  .academy-clear-suffix{display:none}
+  body.academy-metric-mode .academy-clear-suffix{display:inline;color:var(--washi);font-size:0.9375rem}
   .status-metric.moves b{color:var(--washi);font-size:1.875rem}
   .status-separator{color:rgba(255,255,255,.26);font-size:1.4375rem;font-weight:300}
   .rank-badge{width:5.375rem;height:2.1875rem;margin-left:auto;padding:0;border:0;background:transparent;color:var(--kin);cursor:pointer}
@@ -973,7 +978,7 @@
 </div>
 <div class="stage-accent" id="stageAccent" aria-hidden="true"><div class="stage-accent-fill" id="stageAccentFill"></div></div>
 <div class="mode-row">
-  <div class="status-metric remaining"><span id="shortestLabel">あと</span><b id="stagePar">1</b><span id="moveUnit">くるり</span></div>
+  <div class="status-metric remaining"><span id="shortestLabel">あと</span><b id="stagePar">1</b><span id="moveUnit">くるり</span><span class="academy-clear-suffix" id="academyClearSuffix">でクリア</span></div>
   <span class="status-separator">/</span>
   <div class="status-metric moves"><span id="movesLabel">いま</span><b id="moves">0</b><span id="movesUnit">くるり</span></div>
   <div class="speed-clock-inline" id="speedClockInline" hidden><span id="speedClockLabel">タイム</span><b id="speedClockValue">00:00</b></div>
@@ -1464,7 +1469,9 @@ const tutorialSecondState=SOLVER.byDepth[1].find(state=>{
 const tutorialTwoStepState=SOLVER.byDepth[2][0];
 // 最短2手の九パターンのうち、寝た五体が台形に並ぶ型。
 const TUTORIAL_TRAPEZOID_VIEW={permutation:makeBoardPermutation(120,true),flip:true};
-const tutorialTrapezoidState=transformStateBySymmetry(STAGES[4].state,TUTORIAL_TRAPEZOID_VIEW);
+// 上方の棒を回すと指が下の盤面を隠して見にくいため、下半分の棒になるようもう一段回転させる。
+const TUTORIAL_TRAPEZOID_FIX_VIEW={permutation:makeBoardPermutation(120),flip:false};
+const tutorialTrapezoidState=transformStateBySymmetry(transformStateBySymmetry(STAGES[4].state,TUTORIAL_TRAPEZOID_VIEW),TUTORIAL_TRAPEZOID_FIX_VIEW);
 // 案内メッセージは常に上部に置くため、回す対象が上半分に来る問題だけ回転して下半分へ寄せる。
 const TUTORIAL_LOWER_VIEW={permutation:makeBoardPermutation(-120),flip:false};
 // 4問目(chain)は、下中央の棒を右向きに回す配置だと右手スワイプの指で矢印が隠れてしまうため、
@@ -1486,6 +1493,11 @@ const BASIC_LESSON_PATTERN_ORDER=[1,3,2,4,0,5,6,8,7];
 BASIC_LESSON_PATTERN_ORDER.forEach((patternIndex,lessonIndex)=>{
   STAGES[lessonIndex+3]={...TWO_MOVE_STAGES[patternIndex]};
 });
+// だるま修行・上巻の開始時に見せる「こんな形が登場するよ」用: TWO_MOVE_TIP3_SHAPES(後方で定義)の
+// 6種類それぞれの代表出題順(初出位置)から、実際の盤面状態を引く。
+const TRAINING_UPPER_GOAL_SHAPES=['Trapezoid','Caterpillar','Ribbon','Diamond','OuterNeighbor','CenterOuter'];
+const TRAINING_UPPER_GOAL_POSITIONS=[1,2,5,6,8,9];
+const TRAINING_UPPER_GOAL_STATES=TRAINING_UPPER_GOAL_POSITIONS.map(p=>TWO_MOVE_STAGES[BASIC_LESSON_PATTERN_ORDER[p-1]].state);
 // 覚えやすい順。番号は TWO_MOVE_STAGES 内での元の並び順（1 始まり）。
 const TWO_MOVE_PATTERN_ORDER=[7,6,5,4,3,8,0,2,1];
 const TWO_MOVE_PATTERN_POSITION=Object.fromEntries(TWO_MOVE_PATTERN_ORDER.map((pattern,position)=>[pattern,position+1]));
@@ -2230,6 +2242,9 @@ const UI_TEXT={
     trainingWelcomeText:'ここからは補助なし。自分の力で解いてみよう',
     trainingWelcomeNext:'つぎへ',
     trainingWelcomeStart:'はじめる',
+    trainingUpperGoalKind:'だるま修行・上巻 開始',
+    trainingUpperGoalTitle:'上巻ではこんな形が登場するよ',
+    trainingUpperGoalStart:'はじめる',
     trainingMiddleGoalKind:'だるま修行・中巻 開始',
     trainingMiddleGoalTitle:'中巻ではこんな形が登場するよ',
     trainingMiddleGoalStart:'はじめる',
@@ -2596,6 +2611,9 @@ const UI_TEXT={
     trainingWelcomeText:'No more assists from here — solve it on your own.',
     trainingWelcomeNext:'Next',
     trainingWelcomeStart:'Start',
+    trainingUpperGoalKind:'DARUMA TRAINING · VOL. 1 START',
+    trainingUpperGoalTitle:'Here are the shapes you\'ll see in Volume 1',
+    trainingUpperGoalStart:'Start',
     trainingMiddleGoalKind:'DARUMA TRAINING · VOL. 2 START',
     trainingMiddleGoalTitle:'Here are the shapes you\'ll see in Volume 2',
     trainingMiddleGoalStart:'Start',
@@ -2970,6 +2988,9 @@ const UI_TEXT={
     trainingWelcomeText:'从这里开始没有辅助，靠自己解开吧。',
     trainingWelcomeNext:'下一步',
     trainingWelcomeStart:'开始',
+    trainingUpperGoalKind:'不倒翁修行·上卷 开始',
+    trainingUpperGoalTitle:'上卷会出现这样的形状哦',
+    trainingUpperGoalStart:'开始',
     trainingMiddleGoalKind:'不倒翁修行·中卷 开始',
     trainingMiddleGoalTitle:'中卷会出现这样的形状哦',
     trainingMiddleGoalStart:'开始',
@@ -3344,6 +3365,9 @@ const UI_TEXT={
     trainingWelcomeText:'여기서부터는 보조 없이 스스로 풀어 보자',
     trainingWelcomeNext:'다음으로',
     trainingWelcomeStart:'시작',
+    trainingUpperGoalKind:'다루마 수행·상권 시작',
+    trainingUpperGoalTitle:'상권에는 이런 모양이 나와',
+    trainingUpperGoalStart:'시작',
     trainingMiddleGoalKind:'다루마 수행·중권 시작',
     trainingMiddleGoalTitle:'중권에는 이런 모양이 나와',
     trainingMiddleGoalStart:'시작',
@@ -5073,6 +5097,11 @@ const CHAIN_STEPS={
       body.innerHTML='<div class="training-welcome-art-wrap">'+TRAINING_WELCOME_ART_SVG+'</div><p class="chain-text-left" id="chainDialogText"></p>';
       $('chainDialogText').textContent=tr('trainingWelcomeText');
     },
+    onAction(){openChainedDialog('trainingUpperGoal');}
+  },
+  trainingUpperGoal:{
+    kindKey:'trainingUpperGoalKind', titleKey:'trainingUpperGoalTitle', actionKey:'trainingUpperGoalStart',
+    render:shapeGridRenderer(TRAINING_UPPER_GOAL_STATES,TRAINING_UPPER_GOAL_SHAPES,s=>'twoMoveTip3'+s+'Name'),
     onAction(){loadStage(TRAINING_STAGE_START);}
   },
   trainingMiddleSpin:{
