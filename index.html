@@ -723,6 +723,9 @@
   }
   .tile.stand{filter:brightness(1.04)}
   .tile.fallen{filter:none}
+  /* ミニ盤面(比較カード等)の回転アニメでも、本編の.tileと同じくレイヤーを先に確保しておく。
+     iOSで、新しい要素をtransformすると初回フレームだけ描画がずれることがある対策。 */
+  .mini-tile,.mini-daruma,.tip-guide-tile,.tip-guide-daruma{transform-box:view-box;transform-origin:0 0;will-change:transform}
   #board.selecting .tile{opacity:.58;filter:saturate(.72) brightness(.82)}
   #board.selecting .tile.selected{
     opacity:1;filter:drop-shadow(0 6px 6px rgba(0,0,0,.24)) brightness(1.04)
@@ -4797,15 +4800,19 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       // SMILのanimateTransform+beginElement()は、iOS Safariで挿入直後に最終フレームが
       // 一瞬先に描かれてから巻き戻る不具合が出たため、Web Animations API(他の演出でも
       // 使っている書き方)に統一する。回転軸はCSSのtransform-origin(view-box基準)で指定する。
-      unit.style.transformBox='view-box';unit.style.transformOrigin=t.x+'px '+t.y+'px';
+      unit.style.transformBox='view-box';unit.style.transformOrigin=t.x+'px '+t.y+'px';unit.style.willChange='transform';
       for(const index of t.cells)unit.appendChild(cycleTiles[index]);
       unit.appendChild(touch);board.appendChild(unit);
-      unit.animate([
-        {transform:'rotate(0deg)',offset:0},
-        {transform:'rotate('+overshoot+'deg)',offset:Number(overshootFrac)},
-        {transform:'rotate('+undershoot+'deg)',offset:Number(settleFrac)},
-        {transform:'rotate('+turn+'deg)',offset:1}
-      ],{duration:rotateDur,easing:'cubic-bezier(.33,0,.67,1)',fill:'forwards'});
+      // will-changeだけを先に効かせるため、実際にtransformを動かし始めるのは次のフレームにする。
+      requestAnimationFrame(()=>{
+        if(!alive())return;
+        unit.animate([
+          {transform:'rotate(0deg)',offset:0},
+          {transform:'rotate('+overshoot+'deg)',offset:Number(overshootFrac)},
+          {transform:'rotate('+undershoot+'deg)',offset:Number(settleFrac)},
+          {transform:'rotate('+turn+'deg)',offset:1}
+        ],{duration:rotateDur,easing:'cubic-bezier(.33,0,.67,1)',fill:'forwards'});
+      });
       // 本編のpreviewWakeと同じ非対称なしきい値で、だるまの起き伏せ（パネル色）を切り替える。
       // 寝る（起立→伏せ）のは22°動いた時点、起きる（伏せ→起立）のは120°中98°まで進んでから、と判定が厳しい。
       // rollOnce は位置ごとの値ではなく「隣の位置から回ってくる値」を返すため、
