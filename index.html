@@ -1753,9 +1753,9 @@ const TRAINING_THREE_MOVE_STATE_IDS=[
   5,52,150,132,148,122,202,372,390,21,15,99,13,39,93,91,117,380
 ];
 const threeMoveStageByState=new Map(ALL_THREE_MOVE_STAGES.map(stage=>[stage.state,stage]));
-// 前半9はカリキュラムのどこからも使われないが、名人への道を綺麗な45問(15問×3巻)に
-// 保つため、中巻で使う後半9とあわせて18問とも除外しておく。
-const trainingStateSet=new Set(TRAINING_THREE_MOVE_STATE_IDS);
+// 中巻で使う後半9だけを名人への道から除外する。前半9は名人・3くるり30問側へ回す
+// (3くるり30問+4くるり15問=45問で名人への道の巻数は変わらない)。
+const trainingStateSet=new Set(TRAINING_THREE_MOVE_STATE_IDS.slice(9));
 function threeMoveStage(state){
   const stage=threeMoveStageByState.get(state);
   if(!stage)throw new Error('Missing three-move training pattern: '+state);
@@ -1825,13 +1825,13 @@ FOUR_MOVE_STAGES.sort((a,b)=>{
   const ae=fourMoveEase(a),be=fourMoveEase(b);
   return be.progress-ae.progress||be.followup-ae.followup;
 });
-/* 極：確認2回→1回→なしと情報を減らす。最後は最も解きやすい最短4手盤面。 */
+// 名人への道の4くるりは、全24canonical状態のうち「寝静まり/ひづめ/亀/リング」形の15個だけを使う
+// (王冠/弓矢/長方形/気球/いも虫/大三角の9個はだるま修行・下巻専用に温存し、ネタバレしない)。
+const MASTER_FOUR_MOVE_STATE_IDS=new Set([1097,1121,1183,340,346,418,364,401,403,455,1066,1079,1157,1159,1391]);
+const MASTER_FOUR_MOVE_STAGES=FOUR_MOVE_STAGES.filter(stage=>MASTER_FOUR_MOVE_STATE_IDS.has(stage.state));
+/* 確認2回→1回→なしと情報を減らす。難しい順に並べ、易しくなるほど確認回数を減らす。 */
 EXTRA_STAGES.push(
-  ...FOUR_MOVE_STAGES.slice(15),  /* 三の巻後半：難しい9問 */
-  ...FOUR_MOVE_STAGES.slice(9,15),/* 極 1〜6：確認2回 */
-  ...FOUR_MOVE_STAGES.slice(6,9), /* 極 7〜9：確認1回 */
-  ...FOUR_MOVE_STAGES.slice(3,6), /* 極 10〜12：確認なし（易しい3問） */
-  FOUR_MOVE_STAGES[2],FOUR_MOVE_STAGES[1],FOUR_MOVE_STAGES[0] /* 最後3問：難→易 */
+  ...MASTER_FOUR_MOVE_STAGES.slice().reverse()
 );
 // 悟りへの道：対称な盤面をひとつと数えた73種を集める。
 function satoriStagesAtDepth(depth){
@@ -3924,16 +3924,22 @@ secondLapActive=activeLap===2;
 // STAGES(だるま学園・だるま修行)の構成を変えた際、既存プレイヤーの位置ベース進行データ
 // (clearedStages系・現在地・修了試験の合格フラグ)が新しい問題を指してしまわないよう、
 // レイアウトを識別するバージョンが一致しない場合だけ、それらだけをリセットする。
-// clearedExtraStages/clearedSatoriStagesやコスメティック系のフラグは対象外。
-const STAGES_LAYOUT_VERSION='2026-08-development-class';
+// clearedSatoriStagesやコスメティック系のフラグは対象外。
+// 名人への道の45問構成(3くるり30+4くるり15)も組み替えたため、clearedExtraStages系も対象に含める。
+const STAGES_LAYOUT_VERSION='2026-08-master-path-reshuffle';
 if(storage.get(STORAGE_KEYS.stagesLayoutVersion)!==STAGES_LAYOUT_VERSION){
   lap1ClearedStages=new Set();lap2ClearedStages=new Set();
   clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;
+  lap1ClearedExtraStages=new Set();lap2ClearedExtraStages=new Set();
+  clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
   speedTrainingTrialCleared=false;speedIntermediateTrialCleared=false;
   try{
     localStorage.removeItem(STORAGE_KEYS.cleared);
     localStorage.removeItem('wake7-lap1-primary-cleared');
     localStorage.removeItem('wake7-lap2-primary-cleared');
+    localStorage.removeItem(STORAGE_KEYS.extraCleared);
+    localStorage.removeItem('wake7-lap1-extra-cleared');
+    localStorage.removeItem('wake7-lap2-extra-cleared');
     localStorage.removeItem(STORAGE_KEYS.currentStage);
     localStorage.setItem(STORAGE_KEYS.speedTrainingTrialCleared,'0');
     localStorage.setItem(STORAGE_KEYS.speedIntermediateTrialCleared,'0');
@@ -6739,6 +6745,11 @@ function animateTutorialRewind(dg,target,dir){
   const group=document.createElementNS(NS_,'g');
   group.setAttribute('class','auto-swipe-group');
   svg.appendChild(group);
+  // 元のDOM位置(水色の棒より前)を覚えておき、終了後に同じ位置へ戻す。末尾に付け直すと
+  // 棒(grip-marker)より後ろになってしまい、棒が裏に隠れて見えなくなるため。
+  const domOrder=[...svg.children];
+  const sortedItems=[...dg.items].sort((a,b)=>domOrder.indexOf(a.el)-domOrder.indexOf(b.el));
+  const restoreAnchor=sortedItems[sortedItems.length-1].el.nextSibling;
   for(const item of dg.items){
     item.el.style.transform=orbitTransform(item,0,dg.kc);
     group.appendChild(item.el);
@@ -6761,8 +6772,8 @@ function animateTutorialRewind(dg,target,dir){
     {transform:'rotate(0deg)',offset:1}
   ],{duration,easing:'cubic-bezier(.2,.72,.24,1)'});
   animation.onfinish=animation.oncancel=()=>{
-    for(const item of dg.items){
-      svg.appendChild(item.el);
+    for(const item of sortedItems){
+      svg.insertBefore(item.el,restoreAnchor);
       item.el.style.transform='';
     }
     group.remove();
