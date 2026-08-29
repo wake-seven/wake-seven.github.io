@@ -392,7 +392,7 @@
   .transform-corners{position:absolute;z-index:2;inset:0;display:block!important;margin:0!important;pointer-events:none}
   .transform-corners .chip{position:absolute;pointer-events:auto}
   .transform-corners .chip:nth-child(1){top:0;left:0}.transform-corners .chip:nth-child(2){top:0;right:0}.transform-corners .chip:nth-child(3){bottom:0;left:0}.transform-corners .chip:nth-child(4){right:0;bottom:0}
-  .two-move-board-area,.two-move-detail-board-area,.tip-guide-board-area{position:relative;perspective:820px}
+  .two-move-board-area,.two-move-detail-board-area,.tip-guide-board-area{position:relative;z-index:2;perspective:820px}
   .two-move-board-area{margin-top:0.75rem;padding:0.1875rem 0}
   .two-move-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.4375rem;margin:0}
   .two-move-card{position:relative;padding:0.1875rem;border:1px solid rgba(255,255,255,.12);border-radius:0.5rem;background:rgba(255,255,255,.04);color:inherit;font:inherit}
@@ -423,6 +423,16 @@
   .training-shape-rule-intro{margin:0.75rem 0 0!important;color:#A8B6C7!important;font-size:1rem!important;text-align:center}
   .training-upper-goal-kind{margin:0 0 0.5rem!important;color:#8BCDE0!important;font-size:1.125rem!important;font-weight:800;letter-spacing:.04em;text-align:center}
   .training-spin-counter{margin:0 0 0.75rem}
+  /* メイン画面の「あと○くるり」と同じく数字を大きくする(こちらは常時適用、学園限定ではない)。
+     .status-metric.remaining b(3クラス)より詳細度で確実に勝つよう、id指定で上書きする。 */
+  .training-spin-counter{align-items:flex-end}
+  #developmentWelcomeSpinCounterNumber,#trainingMiddleSpinCounterNumber{display:inline-block;transform:translateY(0.3125rem) scale(1.7);transform-origin:center bottom;margin:0 0.3125rem}
+  #developmentWelcomeSpinCounterNumber.distance-pulse,#trainingMiddleSpinCounterNumber.distance-pulse{animation-name:trainingSpinCounterPulse}
+  @keyframes trainingSpinCounterPulse{
+    0%{transform:translateY(0.3125rem) scale(1.7);text-shadow:0 0 10px rgba(98,184,210,.24)}
+    45%{transform:translateY(0.3125rem) scale(2.108);color:#B9E8F2;text-shadow:0 0 15px rgba(98,184,210,.7)}
+    100%{transform:translateY(0.3125rem) scale(1.7);text-shadow:0 0 10px rgba(98,184,210,.24)}
+  }
   .training-shape-rule-frame{margin:0.75rem 0 0;padding:0.9375rem 0.8125rem 1rem;border:1px solid rgba(98,184,210,.28);border-radius:0.75rem;background:rgba(98,184,210,.05)}
   .training-shape-rule-name{margin:0!important;color:var(--kin)!important;font-size:1.75rem!important;font-weight:800;text-align:center}
   .training-shape-rule-box{margin:1rem 0 0;padding:0.75rem 0.75rem 0.875rem;border-radius:0.5625rem;background:rgba(98,184,210,.1)}
@@ -488,8 +498,15 @@
   .training-welcome-art-wrap{width:100%;margin:0.75rem 0 0.875rem;border-radius:0.75rem;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.35)}
   .training-welcome-art-wrap svg{display:block;width:100%;height:auto}
   #chainDialogText.chain-text-left{margin:0;color:#D9E4EC;font-size:0.9375rem;font-weight:650;line-height:1.65;text-align:left}
+  #developmentWelcomeSpinHint{position:relative;z-index:0;margin:0;color:var(--kin);font-size:1.0625rem;font-weight:800;line-height:1.5;text-align:left}
+  /* perspectiveを持つ祖先はSafariで兄弟要素との重なり順が崩れることがあるため、
+     3D演出を使わないこのダイアログでは無効化して積み重ね順を素直にする。 */
+  .development-welcome-frame .two-move-detail-board-area{perspective:none;isolation:isolate;margin-top:-0.625rem}
+  .development-welcome-frame + #chainDialogText.chain-text-left{margin-top:0.625rem}
   #chainDialogTitle.chain-title-compact{margin:0;font-size:0.9375rem;line-height:1.55;letter-spacing:-0.02em}
   .training-departure-goal-frame{margin:0.9375rem 0 0;padding:0.75rem 0.6875rem 0.8125rem;border:1px solid rgba(98,184,210,.28);border-radius:0.625rem;background:rgba(98,184,210,.06)}
+  .development-welcome-frame{margin:0.625rem 0 0;padding:0.75rem 0.6875rem 0.5rem;border:1px solid rgba(98,184,210,.28);border-radius:0.625rem;background:rgba(98,184,210,.06)}
+  .development-welcome-frame .training-spin-counter{margin:0.875rem 0 0.375rem}
   #chainDialogBody .chain-label{margin:0 0 0.625rem;color:#8BCDE0;font-size:1.0625rem;font-weight:700;letter-spacing:.02em;text-align:center}
   .training-departure-goal-boards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0.625rem}
   .training-departure-goal-card{display:flex;flex-direction:column;align-items:center;gap:0.3125rem}
@@ -592,22 +609,32 @@
   }
   .status-metric.remaining b.distance-pulse{animation:distancePulse .34s cubic-bezier(.2,.8,.25,1)}
   /* だるま学園では「あと○くるり」を少し下げて数字を大きく見せる(左寄せは維持)。
-     transformはレイアウトの高さに影響しないため、盤面や他要素の位置は変わらない。 */
-  body.academy-metric-mode .status-metric.remaining{transform:translateY(1.1rem);gap:0.4375rem}
-  body.academy-metric-mode .status-metric.remaining b{display:inline-block;transform:scale(1.7);transform-origin:center;margin:0 0.125rem}
+     transformはレイアウトの高さに影響しないため、盤面や他要素の位置は変わらない。
+     .training-spin-counter(発展クラス開始ダイアログ等の小さいミニ表示)は対象外にするため、
+     必ず.mode-row配下(実際の画面上部HUD)だけに限定する。 */
+  body.academy-metric-mode .mode-row .status-metric.remaining{transform:translateY(1.1rem);gap:0.4375rem}
+  body.academy-metric-mode .mode-row .status-metric.remaining{align-items:flex-end}
+  body.academy-metric-mode .mode-row .status-metric.remaining b{display:inline-block;transform:translateY(0.1875rem) scale(1.7);transform-origin:center bottom;margin:0 0.1875rem 0 0.3125rem}
   /* distancePulseはscale(1)基準のため、そのままだと数字変化時に1.7倍→1倍へ一瞬縮んでから
-     跳ねるように見えてしまう。scale(1.7)を基準にした専用のパルスへ差し替える。 */
+     跳ねるように見えてしまう。scale(1.7)を基準にした専用のパルスへ差し替える。
+     メイン画面のHUDだけtranslateYで少し下げているため、ミニ表示(academyDistancePulse)とは
+     別のキーフレームにして、ミニ表示側にtranslateYが混ざらないようにする。 */
   @keyframes academyDistancePulse{
     0%{transform:scale(1.7);text-shadow:0 0 10px rgba(98,184,210,.24)}
     45%{transform:scale(2.108);color:#B9E8F2;text-shadow:0 0 15px rgba(98,184,210,.7)}
     100%{transform:scale(1.7);text-shadow:0 0 10px rgba(98,184,210,.24)}
   }
-  body.academy-metric-mode .status-metric.remaining b.distance-pulse{animation-name:academyDistancePulse}
-  body.academy-metric-mode .status-metric.remaining #shortestLabel,
-  body.academy-metric-mode .status-metric.remaining #moveUnit{font-size:19px;font-weight:700}
+  @keyframes academyHudDistancePulse{
+    0%{transform:translateY(0.1875rem) scale(1.7);text-shadow:0 0 10px rgba(98,184,210,.24)}
+    45%{transform:translateY(0.1875rem) scale(2.108);color:#B9E8F2;text-shadow:0 0 15px rgba(98,184,210,.7)}
+    100%{transform:translateY(0.1875rem) scale(1.7);text-shadow:0 0 10px rgba(98,184,210,.24)}
+  }
+  body.academy-metric-mode .mode-row .status-metric.remaining b.distance-pulse{animation-name:academyHudDistancePulse}
+  body.academy-metric-mode .mode-row .status-metric.remaining #shortestLabel,
+  body.academy-metric-mode .mode-row .status-metric.remaining #moveUnit{font-size:19px;font-weight:700}
   /* だるま学園だけ、「あと○くるり」の右に「でクリア」を白文字で添える。 */
   .academy-clear-suffix{display:none}
-  body.academy-metric-mode .academy-clear-suffix{display:inline;color:var(--washi)}
+  body.academy-metric-mode .academy-clear-suffix{display:inline-block;color:var(--washi);align-self:flex-end;transform:translate(-0.1875rem,-0.1875rem)}
   .status-metric.moves b{color:var(--washi);font-size:1.875rem}
   .status-separator{color:rgba(255,255,255,.26);font-size:1.4375rem;font-weight:300}
   .rank-badge{width:5.375rem;height:2.1875rem;margin-left:auto;padding:0;border:0;background:transparent;color:var(--kin);cursor:pointer}
@@ -782,8 +809,7 @@
     filter:drop-shadow(0 0 7px rgba(98,215,244,.98));
   }
   /* 入学案内でも、本編で持ち手をつかんだときと同じく回る3枚を強調する。 */
-  #academyWelcomeBoard .tile.welcome-selected,#trainingMiddleSpinBoard .tile.welcome-selected,#developmentWelcomeSpinBoard .tile.welcome-selected{filter:drop-shadow(0 6px 6px rgba(0,0,0,.24)) brightness(1.08)}
-  #academyWelcomeBoard .tile.welcome-selected .hex,#trainingMiddleSpinBoard .tile.welcome-selected .hex,#developmentWelcomeSpinBoard .tile.welcome-selected .hex{stroke:#8BE8FA;stroke-width:4.5;stroke-linejoin:round;filter:drop-shadow(0 0 7px rgba(98,215,244,.98))}
+  #academyWelcomeBoard .tile.welcome-selected .hex,#trainingMiddleSpinBoard .tile.welcome-selected .hex,#developmentWelcomeSpinBoard .tile.welcome-selected .hex{stroke:#8BE8FA;stroke-width:4.5;stroke-linejoin:round}
   #academyWelcomeBoard .welcome-counter-pulse{transform-box:fill-box;transform-origin:center;animation:welcomeCounterPulse .34s cubic-bezier(.2,.8,.25,1)}
   @keyframes welcomeCounterPulse{
     0%{transform:scale(1);filter:drop-shadow(0 0 2px rgba(98,184,210,.2))}
@@ -1097,7 +1123,7 @@
       <div class="training-shape-rule-frame">
         <p class="training-shape-rule-name" id="clearShapeRuleName"></p>
         <div class="two-move-detail-board-area" id="clearShapeRuleArea"><div class="two-move-detail-board" id="clearShapeRuleBoard"></div><div class="two-move-controls transform-icons transform-corners"><button class="chip" id="clearShapeRuleRotateBack" aria-label="60°逆回転">↺</button><button class="chip" id="clearShapeRuleRotate" aria-label="60°回転">↻</button><button class="chip" id="clearShapeRuleMirror" aria-label="左右反転">↔</button><button class="chip" id="clearShapeRuleFlipVertical" aria-label="上下反転">↕</button></div></div>
-        <div class="training-shape-rule-box">
+        <div class="training-shape-rule-box" id="clearShapeRuleBox">
           <p class="training-shape-rule-heading" id="clearShapeRuleHeading"></p>
           <p class="training-shape-rule-condition" id="clearShapeRuleCondition"></p>
         </div>
@@ -1520,7 +1546,7 @@ const CLEAR_CONTENT={
   academy2_6:{tip:{ja:'高崎だるまは、群馬県ふるさと伝統工芸品に指定されています。1859年に赤い顔料が輸入されると、だるまづくりは盛んになりました。',en:'Takasaki daruma are designated Gunma traditional crafts. Production flourished after red pigment began to be imported in 1859.',zh:'高崎不倒翁被指定为群马县传统工艺品。1859年红色颜料开始进口后，高崎不倒翁的制作兴盛起来。',ko:'다카사키 다루마는 군마현 전통 공예품으로 지정되어 있습니다. 1859년 붉은 안료가 수입되며 제작도 활발해졌습니다.'},art:'craft'},
   academy2_8:{art:'red',quiz:{ja:{q:'だるまの赤は、何を表す色？',a:['まよけや生命力','お祝いごとの華やかさ','火のあたたかさ','秋のもみじ'],correct:0,note:'だるまの赤は、まよけや生命力を表す色です。'},en:{q:'What does daruma red represent?',a:['Protection and vitality','Celebration','The warmth of fire','Autumn leaves'],correct:0,note:'Daruma red represents protection and vitality.'},zh:{q:'不倒翁的红色象征什么？',a:['避邪与生命力','喜庆热闹','火的温暖','秋天的红叶'],correct:0,note:'不倒翁的红色象征避邪与生命力。'},ko:{q:'다루마의 붉은색은 무엇을 뜻할까?',a:['액막이와 생명력','축하의 화려함','불의 따뜻함','가을 단풍'],correct:0,note:'다루마의 붉은색은 액막이와 생명력을 뜻합니다.'}}},
   // 発展
-  academy3_6:{tip:{ja:'次からは、最短4くるりの問題です。棒を選ぶのも自分で考えてみよう。',en:'The next puzzles take four turns. This time, try choosing the rod yourself.',zh:'接下来是最少4转的问题。这次也自己想想该选哪根棒吧。',ko:'다음부터는 최단 4번 문제예요. 이번엔 막대도 직접 골라 보세요.'}},
+  academy3_6before:{dialog:'developmentFourStart'},
   // だるま修行・上巻
   training1_2:{tip:{ja:'「やり直す」ボタンで盤面を最初に戻せます\n「1手戻す」ボタンで一つ前の手に戻れます',en:'Restart returns to the starting board. Undo takes back your last move.',zh:'“重新开始”会回到初始棋盘。“撤销一步”会回到上一步。',ko:'다시 시작은 처음 보드로 돌아갑니다. 한 수 되돌리기는 바로 전 수로 돌아갑니다.'},art:'controls'},
   training1_5:{tip:{ja:'次からは、後半の基本問題です。',en:'The next puzzles introduce the second basic idea.',zh:'从下一题开始，进入后半段基本问题。',ko:'다음 문제부터는 후반 기본 문제입니다.'},art:'twoMoveLessonTwo'},
@@ -1746,16 +1772,16 @@ const DEVELOPMENT_THREE_STAGES=[
   {state:420,soloRod:4,soloDir:1,initialRodCount:4},
   {state:91,soloRod:0,soloDir:1,initialRodCount:5}
 ].map(({state,soloRod,soloDir,initialRodCount})=>({...threeMoveStage(state),soloRod,soloDir,initialRodCount}));
-// 発展クラスの案内ダイアログで見せる5形プレビュー用: 唯一の正解方向へ回した後の「あと2くるり」到達盤面。
-const DEVELOPMENT_THREE_SHAPES=['CenterOuter','Diamond','Caterpillar','Ribbon','Trapezoid'];
-const DEVELOPMENT_THREE_GOAL_STATES=DEVELOPMENT_THREE_STAGES.map(stage=>enc(rollOnce(dec(stage.state),stage.soloRod,stage.soloDir)));
-// 発展クラス・4くるり3問: 「あと2くるり」9形のうち単独状態の3つ(王冠/弓矢/大三角)だけを使う。
-// 残り6状態(長方形×2/気球×2/いも虫×2)はだるま修行・下巻専用に温存し、ここではネタバレしない。
-// 特定の着地形を保証する必要はないので、正解棒は自動判定(computeGuidedBasicCandidateTis相当)に任せる。
+// 発展クラスのクリア時にも中巻と同じ「あと2くるり形を覚えよう」を出す。唯一の正解方向へ
+// 回した後の到達盤面から、形名の判定はTWO_MOVE_CANONICAL_POSITION側で汎用的に行う。
+const DEVELOPMENT_THREE_CLEAR_SHAPE_STATES=DEVELOPMENT_THREE_STAGES.map(stage=>enc(rollOnce(dec(stage.state),stage.soloRod,stage.soloDir)));
+// 発展クラス・4くるり3問: 名人への道の4くるり15問(寝静まり/ひづめ/亀/リング)のうち、
+// fourMoveEase(進みやすさ)が最も高い=易しい3状態を採用。発展編は他と重複してもよいため、
+// 名人への道の出題プールとは独立にここで直接指定する(正解棒は自動判定に任せる)。
 const DEVELOPMENT_FOUR_STAGES=[
-  {state:104,initialRodCount:1},
-  {state:358,initialRodCount:3},
-  {state:325,initialRodCount:6}
+  {state:364,initialRodCount:1},
+  {state:1121,initialRodCount:3},
+  {state:1391,initialRodCount:6}
 ].map(({state,initialRodCount})=>({state,par:4,initialRodCount}));
 const DEVELOPMENT_STAGES=[...DEVELOPMENT_THREE_STAGES,...DEVELOPMENT_FOUR_STAGES];
 // だるま修行・中巻: 見た目だけでは知っている2くるり形と分からない、3くるり盤面。
@@ -1763,6 +1789,19 @@ const TRAINING_MIDDLE_STAGES=TRAINING_THREE_MOVE_STATE_IDS.slice(9,18).map(three
 // 中巻開始ダイアログで見せる7形プレビュー用(9問中7問は、形だけで「あと3くるり」と分かる)。
 const TRAINING_MIDDLE_GOAL_SHAPES=['CatEars','BothBanks','Plate','Necklace','RightTriangle','StraightLine','Shuriken'];
 const TRAINING_MIDDLE_GOAL_STATES=[21,99,13,39,93,117,380];
+// 中巻クリア時「あと2くるりの形を覚えよう」用: 各ステージで最短の1手を進めた後の
+// 「あと2くるり」状態を求めておく(形名の判定はTWO_MOVE_CANONICAL_POSITION側で行う)。
+const TRAINING_MIDDLE_CLEAR_SHAPE_STATES=TRAINING_MIDDLE_STAGES.map(stage=>{
+  const board=dec(stage.state);
+  for(let ti=0;ti<TRI.length;ti++)for(const dir of[1,-1]){
+    const next=rollOnce(board,ti,dir);
+    if(SOLVER.dist[enc(next)]===2)return enc(next);
+  }
+  return null;
+});
+// 「あと2くるり」の6形のうち、外隣り(OuterNeighbor)だけはtrainingShapeRule*Condition訳文が
+// 無いため、対象形がこれに当たるステージではこの機能自体を出さない(表示のグレースフルな省略)。
+const TRAINING_SHAPE_RULE_SUPPORTED_SHAPES=new Set(['Trapezoid','Caterpillar','Ribbon','Diamond','CenterOuter']);
 // だるま修行・下巻: 4くるり9問(新規)。王冠/弓矢/長方形×2/気球×2/大三角/いも虫×2。
 const TRAINING_LOWER_STAGES=[104,358,426,582,332,344,325,146,200].map(state=>({state,par:4}));
 // 下巻開始ダイアログで見せる6形プレビュー用: 9問の代表(長方形/気球/いも虫はそれぞれ2状態のうち1つ)。
@@ -2095,6 +2134,7 @@ const UI_TEXT={
     twoMoveTip3CenterOuterText:'真ん中と外側で寝ている',
     twoMoveTip3CenterOuterHint:'外側で寝ている隣で起きているだるまの、奥の棒を選ぼう',
     trainingShapeRuleIntro:'「あと2くるり」の形と向きを覚えよう',
+    developmentShapeRuleIntro:'今とおった「あと2くるり」の形だよ',
     trainingShapeRuleHeading:'「あと2くるり」となる条件',
     trainingShapeRuleTrapezoidCondition:'同じ向きの三角を除き、時計回りに遅れてる方が左向き',
     trainingShapeRuleCaterpillarCondition:'目玉同士・体同士が同じ向き',
@@ -2234,8 +2274,12 @@ const UI_TEXT={
     basicWelcomeText:'あと○くるりが減ったら、指をはなそう',
     basicWelcomeStart:'はじめる',
     developmentWelcomeTitle:'発展クラス 開始！',
-    developmentWelcomeText:'「あと3くるり」「あと4くるり」が出るよ',
+    developmentWelcomeText:'発展クラスでは「あと3くるり」「あと4くるり」にも挑戦するよ！',
+    developmentWelcomeSpinHint:'くるくる回して、「あと○くるり」が減ったら指をはなそう',
     developmentWelcomeStart:'はじめる',
+    developmentFourStartTitle:'次は4くるり！',
+    developmentFourStartText:'次からは、「あと4くるり」の問題です。',
+    developmentFourStartStart:'はじめる',
     academyCompleteTitle:'だるま学園 卒業！',
     academyCompleteText:'だるま学園を卒業し、だるま修行の旅に出ます。\nここからは補助なしで「2くるり」にチャレンジしよう。',
     academyCompleteStart:'だるま修行へ →',
@@ -2484,6 +2528,7 @@ const UI_TEXT={
     twoMoveTip3CenterOuterText:'One lies in the center, one on the outside.',
     twoMoveTip3CenterOuterHint:'Choose the bar beyond the center tile\'s head or tail.',
     trainingShapeRuleIntro:'Memorize the shape and orientation of "two turns left"',
+    developmentShapeRuleIntro:'That\'s the "two turns left" shape you just passed through!',
     trainingShapeRuleHeading:'Condition for "two turns left"',
     trainingShapeRuleTrapezoidCondition:'Ignore the matching pair — the one lagging clockwise faces left.',
     trainingShapeRuleCaterpillarCondition:'The eyes-pair and the body-pair each face the same way.',
@@ -2645,7 +2690,8 @@ const UI_TEXT={
     basicWelcomeText:'Release when the turns left go down.',
     basicWelcomeStart:'Start',
     developmentWelcomeTitle:'Development Class Start!',
-    developmentWelcomeText:'Try three- and four-turn boards, choosing your rod as you go.',
+    developmentWelcomeText:'You\'ll see puzzles marked "3 turns left" and "4 turns left"!',
+    developmentWelcomeSpinHint:'Give it a spin — once "turns left" drops, let go!',
     developmentWelcomeStart:'Start',
     threeDMenu:'View in 3D',
     threeDUnlockedText:'As a reward for completing the second lap, a special 3D page has been unlocked. Play on a realistic board.',
@@ -2865,6 +2911,7 @@ const UI_TEXT={
     twoMoveTip3CenterOuterText:'中间和外侧各有1个倒下',
     twoMoveTip3CenterOuterHint:'选择中间不倒翁头部或尾部方向的那根轴',
     trainingShapeRuleIntro:'一起记住「还差2圈」的形状和朝向吧',
+    developmentShapeRuleIntro:'刚刚经过的就是这个「还差2圈」的形状！',
     trainingShapeRuleHeading:'「还差2圈」的判断条件',
     trainingShapeRuleTrapezoidCondition:'排除同向的一对，顺时针落后的那个朝左',
     trainingShapeRuleCaterpillarCondition:'眼睛一对、身体一对，各自方向相同',
@@ -3023,7 +3070,8 @@ const UI_TEXT={
     basicWelcomeText:'还差的转数减少时，就松手。',
     basicWelcomeStart:'开始',
     developmentWelcomeTitle:'发展班开始！',
-    developmentWelcomeText:'挑战3转、4转的题目，自己选择转动的棒吧',
+    developmentWelcomeText:'会出现"还差3转""还差4转"的题目哦',
+    developmentWelcomeSpinHint:'转一转，"还差○转"变少了就松开手指吧',
     developmentWelcomeStart:'开始',
     threeDMenu:'查看3D效果',
     threeDUnlockedText:'作为二周目通关的奖励，解锁了特别的3D页面。可以在逼真的棋盘上畅玩。',
@@ -3243,6 +3291,7 @@ const UI_TEXT={
     twoMoveTip3CenterOuterText:'가운데와 바깥쪽에 하나씩 누워 있어요',
     twoMoveTip3CenterOuterHint:'가운데 다루마의 머리나 꼬리 쪽에 있는 축을 고르자',
     trainingShapeRuleIntro:'"앞으로 2바퀴"의 모양과 방향을 기억해두자',
+    developmentShapeRuleIntro:'방금 지나온 "앞으로 2바퀴" 모양이에요!',
     trainingShapeRuleHeading:'"앞으로 2바퀴"가 되는 조건',
     trainingShapeRuleTrapezoidCondition:'같은 방향인 것을 제외하고, 시계 방향으로 뒤처진 쪽이 왼쪽을 향함',
     trainingShapeRuleCaterpillarCondition:'눈끼리·몸통끼리 같은 방향',
@@ -3401,7 +3450,8 @@ const UI_TEXT={
     basicWelcomeText:'남은 회전 수가 줄면 손을 놓으세요.',
     basicWelcomeStart:'시작하기',
     developmentWelcomeTitle:'발전반 시작!',
-    developmentWelcomeText:'3바퀴·4바퀴에도 막대를 직접 골라 도전해 보자',
+    developmentWelcomeText:'"앞으로 3바퀴", "앞으로 4바퀴" 문제가 나와요!',
+    developmentWelcomeSpinHint:'빙글빙글 돌리다가 "앞으로 ○바퀴"가 줄어들면 손을 떼세요',
     developmentWelcomeStart:'시작하기',
     threeDMenu:'3D로 보기',
     threeDUnlockedText:'2회차 클리어 보상으로 특별한 3D 페이지가 열렸습니다. 리얼한 보드에서 플레이할 수 있습니다.',
@@ -4870,13 +4920,13 @@ function buildAcademyWelcomeBoard(variant='enroll'){
   board.appendChild(rotationUnit);
   const counterLabel=document.createElementNS(NS_,'text');
   // 盤面の上に専用の余白を取り、本編と同じ「あと / 大きな数字 / くるり」の見え方にする。
-  counterLabel.setAttribute('x','36');counterLabel.setAttribute('y','-17');counterLabel.setAttribute('fill','#9BCBDD');counterLabel.setAttribute('font-size','11');counterLabel.setAttribute('font-weight','700');
+  counterLabel.setAttribute('x','34');counterLabel.setAttribute('y','4');counterLabel.setAttribute('fill','#9BCBDD');counterLabel.setAttribute('font-size','11');counterLabel.setAttribute('font-weight','700');
   counterLabel.textContent=tr('shortestDisplay');board.appendChild(counterLabel);
   const counterNumber=document.createElementNS(NS_,'text');
-  counterNumber.setAttribute('x','76');counterNumber.setAttribute('y','-11');counterNumber.setAttribute('fill','#62B8D2');counterNumber.setAttribute('font-size','34');counterNumber.setAttribute('font-weight','750');counterNumber.setAttribute('text-anchor','middle');
+  counterNumber.setAttribute('x','76');counterNumber.setAttribute('y','6');counterNumber.setAttribute('fill','#62B8D2');counterNumber.setAttribute('font-size','48');counterNumber.setAttribute('font-weight','750');counterNumber.setAttribute('text-anchor','middle');
   board.appendChild(counterNumber);
   const counterUnit=document.createElementNS(NS_,'text');
-  counterUnit.setAttribute('x','91');counterUnit.setAttribute('y','-17');counterUnit.setAttribute('fill','#9BCBDD');counterUnit.setAttribute('font-size','11');counterUnit.setAttribute('font-weight','700');
+  counterUnit.setAttribute('x','96');counterUnit.setAttribute('y','4');counterUnit.setAttribute('fill','#9BCBDD');counterUnit.setAttribute('font-size','11');counterUnit.setAttribute('font-weight','700');
   counterUnit.textContent=tr('moveUnit');board.appendChild(counterUnit);
   const release=document.createElementNS(NS_,'text');
   release.setAttribute('x','160');release.setAttribute('y','5');release.setAttribute('text-anchor','middle');
@@ -5083,15 +5133,27 @@ const CHAIN_STEPS={
   developmentWelcome:{
     titleKey:'developmentWelcomeTitle', actionKey:'developmentWelcomeStart',
     render(body){
-      body.innerHTML='<div class="status-metric remaining training-spin-counter" id="developmentWelcomeSpinCounter"><span id="developmentWelcomeSpinCounterLabel"></span><b id="developmentWelcomeSpinCounterNumber"></b><span id="developmentWelcomeSpinCounterUnit"></span></div>'
+      body.innerHTML='<p class="chain-text-left" id="developmentWelcomeSpinHint"></p>'
+        +'<div class="development-welcome-frame">'
+        +'<div class="status-metric remaining training-spin-counter" id="developmentWelcomeSpinCounter"><span id="developmentWelcomeSpinCounterLabel"></span><b id="developmentWelcomeSpinCounterNumber"></b><span id="developmentWelcomeSpinCounterUnit"></span></div>'
         +'<div class="two-move-detail-board-area"><div class="two-move-detail-board" id="developmentWelcomeSpinBoardWrap"><svg id="developmentWelcomeSpinBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>'
+        +'</div>'
         +'<p class="chain-text-left" id="chainDialogText"></p>';
       $('developmentWelcomeSpinCounterLabel').textContent=tr('shortestDisplay');
       $('developmentWelcomeSpinCounterUnit').textContent=tr('moveUnit');
       $('chainDialogText').textContent=tr('developmentWelcomeText');
+      $('developmentWelcomeSpinHint').textContent=tr('developmentWelcomeSpinHint');
       // 修行・中巻開始と同じ「240°まで行き過ぎてから120°へ戻る」スピンを、発展クラスの最初でも見せる。
       buildTrainingMiddleSpinBoard('developmentWelcomeSpinBoard','developmentWelcomeSpinCounter',DEVELOPMENT_THREE_STAGES[0].state);
       return ()=>stopClearGuideBoard('developmentWelcomeSpinBoard');
+    },
+    onAction(){loadStage(stageIndex+1);}
+  },
+  developmentFourStart:{
+    titleKey:'developmentFourStartTitle', actionKey:'developmentFourStartStart',
+    render(body){
+      body.innerHTML='<p class="chain-text-left" id="chainDialogText"></p>';
+      $('chainDialogText').textContent=tr('developmentFourStartText');
     },
     onAction(){loadStage(stageIndex+1);}
   },
@@ -5171,12 +5233,15 @@ function buildTrainingMiddleSpinBoard(boardId,counterId,startState=TRAINING_MIDD
   const isCurrent=()=>run===clearGuideRuns.get(boardId);
   const startBoard=dec(startState);
   // 同じ棒を1手ぶん(120°)回すと「あと2くるり」、さらに1手(240°)で「あと3くるり」に戻る組を探す。
-  let target=null;
-  for(let ti=0;ti<TRI.length&&!target;ti++)for(const dir of[1,-1]){
+  // 258°まで回り込むため、盤面上部で回すと案内文と干渉しやすい。候補の中から
+  // 回転の軸(t.y)が最も下にあるものを選び、上部と重ならないようにする。
+  const candidates=[];
+  for(let ti=0;ti<TRI.length;ti++)for(const dir of[1,-1]){
     const s1=rollOnce(startBoard,ti,dir);
-    if(SOLVER.dist[enc(s1)]===2&&SOLVER.dist[enc(rollOnce(s1,ti,dir))]===3){target={ti,dir};break;}
+    if(SOLVER.dist[enc(s1)]===2&&SOLVER.dist[enc(rollOnce(s1,ti,dir))]===3)candidates.push({ti,dir});
   }
-  if(!target)return;
+  if(!candidates.length)return;
+  const target=candidates.reduce((best,c)=>TRI[c.ti].y>TRI[best.ti].y?c:best,candidates[0]);
   const{ti,dir}=target,t=TRI[ti],cells=t.cells;
   const cycleStates=[startState,0,0];
   cycleStates[1]=enc(rollOnce(dec(cycleStates[0]),ti,dir));
@@ -5257,6 +5322,9 @@ function buildTrainingMiddleSpinBoard(boardId,counterId,startState=TRAINING_MIDD
     guide.classList.remove('welcome-cycle-fade');
     await wait(500);
     if(!isCurrent()||!guide.isConnected)return;
+    // 回転する3枚のgroupを毎周、必ず最後の子要素に付け直す。iOS Safariでは早い段階で
+    // 挿入した要素がその後追加された兄弟より背面に描画されることがあるための対策。
+    guide.appendChild(group);
     await spinOnce();
     if(!isCurrent()||!guide.isConnected)return;
     await wait(1500);
@@ -6745,7 +6813,7 @@ function animateGuidedBasicRewind(dg){
     for(const{item} of clones)item.el.style.visibility='';
     group.remove();
     busy=false;svg.classList.remove('spinning');paint();
-    setTimeout(()=>{if(isAssistedLearningStage())$('gripPrompt').hidden=true;},650);
+    setTimeout(()=>{if(isAssistedLearningStage()||isFallingRodStage())$('gripPrompt').hidden=true;},450);
   };
   requestAnimationFrame(frame);
 }
@@ -7730,12 +7798,18 @@ function renderClearTip(){
   detailLink.hidden=twoMoveCard===undefined&&!guideCard&&!rankLink&&!messagesLink&&!tipsLink&&!patternsLink;
   detailLink.dataset.target=rankLink?'rank':messagesLink?'messages':tipsLink?'tips':patternsLink?'patterns':'details';
   detailLink.textContent=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatternsLink')+' →':tr(rankLink?'rankLink':messagesLink?'clearMessagesLink':'detailsLink');
+  const middleStart=TRAINING_STAGE_START+TRAINING_UPPER_COUNT;
+  const middleIndex=!extraMode&&!satoriMode&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;
   const developmentIndex=!extraMode&&!satoriMode&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;
-  $('clearShapeRuleWrap').hidden=developmentIndex<0;
-  if(developmentIndex>=0){
+  const shapeState=middleIndex>=0?TRAINING_MIDDLE_CLEAR_SHAPE_STATES[middleIndex]:developmentIndex>=0?DEVELOPMENT_THREE_CLEAR_SHAPE_STATES[developmentIndex]:null;
+  const shapeName=shapeState!=null?TWO_MOVE_TIP3_SHAPES[TWO_MOVE_CANONICAL_POSITION.get(canonicalState(shapeState))]:null;
+  const showShapeRule=!!shapeName&&TRAINING_SHAPE_RULE_SUPPORTED_SHAPES.has(shapeName);
+  $('clearShapeRuleWrap').hidden=!showShapeRule;
+  if(showShapeRule){
     clearShapeRuleGuard.reset();
-    clearShapeRuleIndex=developmentIndex;
-    clearShapeRuleState=DEVELOPMENT_THREE_GOAL_STATES[developmentIndex];
+    clearShapeRuleShape=shapeName;
+    clearShapeRuleState=shapeState;
+    clearShapeRuleIsDevelopment=developmentIndex>=0;
     renderClearShapeRule();
   }
   illustration.classList.toggle('move-graph',art==='moveGraph');
@@ -8552,8 +8626,9 @@ function animateTwoMoveDetail(angle=0,mirror=false){
     renderTwoMoveDetail();
   });
 }
-// 発展クラス・3くるり5問の各ステージ完全クリア時、クリアダイアログの中に対象の「あと2くるり」形を
-// 大きな条件文つきでそのまま表示する(別ダイアログへのリンクは挟まない)。
+// だるま修行・中巻と発展クラスの各ステージクリア時、クリアダイアログの中に到達した
+// 「あと2くるり」形を大きな条件文つきでそのまま表示する(別ダイアログへのリンクは挟まない)。
+// 中巻の3くるり盤面は見た目だけでは形が分からないため、クリア後にここで答え合わせする。
 // 「今このアニメはまだ有効か」を守る小さいガード。busy中は新しい操作を弾き、
 // タイマー発火時にcommitコールバックを呼んでからbusyを解除する。
 function createAnimGuard(){
@@ -8566,15 +8641,19 @@ function createAnimGuard(){
     reset(){clearTimeout(timer);busy=false;}
   };
 }
-let clearShapeRuleState=null,clearShapeRuleIndex=-1;
+let clearShapeRuleState=null,clearShapeRuleShape=null,clearShapeRuleIsDevelopment=false;
 const clearShapeRuleGuard=createAnimGuard();
 function renderClearShapeRule(){
-  const shape=DEVELOPMENT_THREE_SHAPES[clearShapeRuleIndex];
-  $('clearShapeRuleIntro').textContent=tr('trainingShapeRuleIntro');
+  const shape=clearShapeRuleShape;
+  $('clearShapeRuleIntro').textContent=tr(clearShapeRuleIsDevelopment?'developmentShapeRuleIntro':'trainingShapeRuleIntro');
   $('clearShapeRuleName').textContent=tr('twoMoveTip3'+shape+'Name');
   $('clearShapeRuleBoard').innerHTML=miniBoardSvg(clearShapeRuleState,{outline:true});
-  $('clearShapeRuleHeading').textContent=tr('trainingShapeRuleHeading');
-  $('clearShapeRuleCondition').textContent=tr('trainingShapeRule'+shape+'Condition');
+  // 発展クラスでは、条件の解説エリア(見出し+条件文)ごと出さない。
+  $('clearShapeRuleBox').hidden=clearShapeRuleIsDevelopment;
+  if(!clearShapeRuleIsDevelopment){
+    $('clearShapeRuleHeading').textContent=tr('trainingShapeRuleHeading');
+    $('clearShapeRuleCondition').textContent=tr('trainingShapeRule'+shape+'Condition');
+  }
 }
 function transformClearShapeRule(angle=0,mirror=false){
   if(clearShapeRuleGuard.isBusy())return;
@@ -9266,6 +9345,11 @@ document.addEventListener('keydown',event=>{
     event.preventDefault();
     closeAppMenu();
     openTwoMovePatterns();
+    return;
+  }
+  if(!typing&&DEBUG_MODE&&event.key.toLowerCase()==='c'&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&!dialogOpen){
+    event.preventDefault();
+    debugClearCurrent(0);
     return;
   }
   if(!typing&&event.key.toLowerCase()==='m'&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&$('messageDialog').hidden){
