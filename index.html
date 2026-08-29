@@ -502,8 +502,8 @@
   .training-shape-callout-line2{fill:#F7F1E5;font:800 25px sans-serif}
   #chainDialogText.chain-text-highlight{margin:0.125rem 0 0.4375rem;color:var(--kin);font-size:1.0625rem;font-weight:800;line-height:1.55}
   #introBoard,#academyWelcomeBoard,#clearAcademyWelcomeBoard{display:block;width:100%;height:auto}
-  #academyWelcomeBoard,#clearAcademyWelcomeBoard,#trainingMiddleSpinBoard{transition:opacity .18s ease}
-  #academyWelcomeBoard.welcome-cycle-fade,#clearAcademyWelcomeBoard.welcome-cycle-fade,#trainingMiddleSpinBoard.welcome-cycle-fade{opacity:0}
+  #introBoard,#academyWelcomeBoard,#clearAcademyWelcomeBoard,#trainingMiddleSpinBoard{transition:opacity .18s ease}
+  #introBoard.welcome-cycle-fade,#academyWelcomeBoard.welcome-cycle-fade,#clearAcademyWelcomeBoard.welcome-cycle-fade,#trainingMiddleSpinBoard.welcome-cycle-fade{opacity:0}
   #introBoard .intro-swipe,#academyWelcomeBoard .intro-swipe,#clearGuideBoard .intro-swipe,#messageClearGuideBoard .intro-swipe,#clearTwoMoveLessonBoard .intro-swipe,#messageTwoMoveLessonBoard .intro-swipe,#twoMoveLessonBoard .intro-swipe,#trainingMiddleSpinBoard .intro-swipe{fill:#62B8D2;filter:drop-shadow(0 0 3px rgba(98,184,210,.8))}
   #introBoard .guide-happy .open,#introBoard .guide-happy .shut,#clearGuideBoard .guide-happy .open,#clearGuideBoard .guide-happy .shut,#messageClearGuideBoard .guide-happy .open,#messageClearGuideBoard .guide-happy .shut,#clearTwoMoveLessonBoard .guide-happy .open,#clearTwoMoveLessonBoard .guide-happy .shut,#messageTwoMoveLessonBoard .guide-happy .open,#messageTwoMoveLessonBoard .guide-happy .shut,#twoMoveLessonBoard .guide-happy .open,#twoMoveLessonBoard .guide-happy .shut{display:none}
   #introBoard .guide-happy .happy,#clearGuideBoard .guide-happy .happy,#messageClearGuideBoard .guide-happy .happy,#clearTwoMoveLessonBoard .guide-happy .happy,#messageTwoMoveLessonBoard .guide-happy .happy,#twoMoveLessonBoard .guide-happy .happy{display:block}
@@ -4664,6 +4664,7 @@ function buildIntroBoard(){
   rotationUnit.style.willChange='transform';
   intro.appendChild(rotationUnit);
   const play=()=>{
+    intro.classList.remove('welcome-cycle-fade');
     swipe.style.display='none';
     intro.appendChild(swipe);
     grips.forEach(marker=>{marker.style.display='';intro.appendChild(marker);});
@@ -4673,16 +4674,18 @@ function buildIntroBoard(){
       g.style.transform=tileTransform(CELL[i].x,CELL[i].y,start[i]);
     });
     const c=TRI[0].cells,old=tiles.slice();
-    setTimeout(()=>{swipe.style.display='';},1050);
+    const rotateDuration=2000;
+    // 指の水色の点が触れた瞬間に、6本の棒を消す(どれを回すか、もう決まったことを伝える)。
+    setTimeout(()=>{swipe.style.display='';grips.forEach(marker=>marker.style.display='none');},1050);
     setTimeout(()=>{
       // 本編と同じく、3体をひとつの塊として軸のまわりに回す。
-      grips.forEach(marker=>marker.style.display='none');
       const unit=rotationUnit;
-      const rotateDuration=1200;
       for(let i=0;i<3;i++)unit.appendChild(old[c[(i+1)%3]]);
       unit.appendChild(swipe);
+      // 使い回すunitは先に挿入済みのため、最前面に出すには回転開始のたびに一度前面へ出し直す。
+      intro.appendChild(unit);
       unit.animate([{transform:'rotate(0deg)'},{transform:'rotate(-120deg)'}],
-        {duration:rotateDuration,easing:'cubic-bezier(.2,.75,.2,1)',fill:'forwards'});
+        {duration:rotateDuration,easing:'cubic-bezier(.33,0,.67,1)',fill:'forwards'});
       setTimeout(()=>{
         for(let i=0;i<3;i++){
           const from=c[(i+1)%3],to=c[i],el=old[from];
@@ -4696,10 +4699,14 @@ function buildIntroBoard(){
         intro.appendChild(swipe);
         tiles.forEach(el=>el.classList.add('guide-happy'));
         swipe.style.display='none';
+        // 本編で全員起きた瞬間と同じ演出(タイルの揺れ+金色のバースト)を再現する。
+        playWakeCelebrationEffect(intro,tiles);
       },rotateDuration);
     },1750);
+    // 次のサイクルへ戻る直前だけ、盤面全体を短くフェードアウトして切替を見せる。
+    setTimeout(()=>{intro.classList.add('welcome-cycle-fade');},1750+rotateDuration+820+400);
   };
-  play();clearInterval(introTimer);introTimer=setInterval(play,3500);
+  play();clearInterval(introTimer);introTimer=setInterval(play,5400);
 }
 function openIntroGuide(){
   buildIntroBoard();
@@ -4808,6 +4815,8 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       // 使っている書き方)に統一する。
       for(const index of t.cells)unit.appendChild(cycleTiles[index]);
       unit.appendChild(touch);
+      // 使い回すunitは先に挿入済みのため、最前面に出すには回転開始のたびに一度前面へ出し直す。
+      board.appendChild(unit);
       unit.animate([
         {transform:'rotate(0deg)',offset:0},
         {transform:'rotate('+overshoot+'deg)',offset:Number(overshootFrac)},
@@ -5301,6 +5310,8 @@ function buildClearGuideBoard(id){
       const unit=rotationUnit;
       for(let i=0;i<3;i++)unit.appendChild(old[cells[(i+1)%3]]);
       unit.appendChild(swipe);
+      // 使い回すunitは先に挿入済みのため、最前面に出すには回転開始のたびに一度前面へ出し直す。
+      guide.appendChild(unit);
       unit.animate([{transform:'rotate(0deg)'},{transform:'rotate(-120deg)'}],
         {duration:760,easing:'cubic-bezier(.2,.75,.2,1)',fill:'forwards'});
       setTimeout(()=>{
@@ -5388,6 +5399,8 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
         unit.appendChild(old[from]);
       }
       unit.appendChild(swipe);
+      // 使い回すunitは先に挿入済みのため、最前面に出すには回転開始のたびに一度前面へ出し直す。
+      guide.appendChild(unit);
       unit.animate([{transform:'rotate(0deg)'},{transform:'rotate('+(move.dir*120)+'deg)'}],
         {duration:400,easing:'cubic-bezier(.2,.75,.2,1)',fill:'forwards'});
       setTimeout(()=>{
@@ -5420,6 +5433,9 @@ function paint(){
       clearShown=true;
       cancelTutorialHint(true);
       svg.classList.add('tutorial-clear-step');
+      // 本編の全員起きた瞬間と同じく、笑顔にして揺れ+バーストの演出を見せる。
+      svg.classList.add('celebrating');
+      playWakeCelebrationEffect(svg,tileEls);
       clearTimeout(tutorialAdvanceTimer);
       $('gripPromptText').textContent=tutorialPrompt('clear');
       $('gripPrompt').hidden=false;
@@ -7294,11 +7310,10 @@ function renderStageNav(){
   renderStageNavPrevNext();
   renderStageNavGuidance();
 }
-function celebrateClear(){
-  svg.classList.add('celebrating');
-  playClearSound(clearSoundKind());
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return 0;
-  tileEls.forEach((el,i)=>{
+// 全員起きた瞬間の演出(タイルの揺れ+金色のバースト)。本編のクリアと、各所のデモ盤面で共用する。
+function playWakeCelebrationEffect(targetSvg,tilesArr){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  tilesArr.forEach((el,i)=>{
     const base=el.style.transform;
     el.animate([
       {transform:base},
@@ -7316,13 +7331,19 @@ function celebrateClear(){
     +'<circle cx="'+CELL[3].x+'" cy="'+CELL[3].y+'" r="58" fill="none" stroke="#F3E8D5" stroke-width="1.5" opacity=".7"/>';
   burst.style.transformOrigin=CELL[3].x+'px '+CELL[3].y+'px';
   burst.style.transformBox='view-box';
-  svg.appendChild(burst);
+  targetSvg.appendChild(burst);
   const a=burst.animate([
     {transform:'scale(.55)',opacity:0},
     {transform:'scale(.8)',opacity:1,offset:.2},
     {transform:'scale(2.45)',opacity:0}
   ],{duration:820,easing:'cubic-bezier(.15,.7,.2,1)'});
   a.onfinish=a.oncancel=()=>burst.remove();
+}
+function celebrateClear(){
+  svg.classList.add('celebrating');
+  playClearSound(clearSoundKind());
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return 0;
+  playWakeCelebrationEffect(svg,tileEls);
   return 650;
 }
 function showClearActions(){
