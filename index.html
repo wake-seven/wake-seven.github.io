@@ -512,10 +512,14 @@
   .academy-remaining-callout-badge{
     display:inline-flex;align-items:center;gap:.25rem;
     background:rgba(15,35,52,.85);border:2px solid #29A8CE;border-radius:999px;
-    padding:.6rem 1.25rem 1.1rem;
+    padding:.85rem 1.25rem .8rem;
   }
-  .academy-remaining-callout-label,.academy-remaining-callout-unit{color:#8BCDE0;font:700 15px sans-serif}
-  .academy-remaining-callout-number{color:#F7F1E5;font:800 44px sans-serif;line-height:1}
+  /* 左上の「あと○くるり」と同じ配色・フォントで揃える(色は#status-metric.remainingと同じ)。 */
+  .academy-remaining-callout-label,.academy-remaining-callout-unit{color:#9BCBDD;font-size:15px;font-weight:700;transform:translateY(.5rem)}
+  .academy-remaining-callout-number{
+    color:#62B8D2;font-size:60px;font-weight:750;line-height:1;
+    text-shadow:0 0 10px rgba(98,184,210,.24);
+  }
   #chainDialogText.chain-text-highlight{margin:0.125rem 0 0.4375rem;color:var(--kin);font-size:1.0625rem;font-weight:800;line-height:1.55}
   #introBoard,#academyWelcomeBoard,#clearAcademyWelcomeBoard{display:block;width:100%;height:auto}
   #introBoard,#academyWelcomeBoard,#clearAcademyWelcomeBoard,#trainingMiddleSpinBoard,#developmentWelcomeSpinBoard{transition:opacity .18s ease}
@@ -585,6 +589,18 @@
     color:#62B8D2;font-size:2.125rem;text-shadow:0 0 10px rgba(98,184,210,.24)
   }
   .status-metric.remaining b.distance-pulse{animation:distancePulse .34s cubic-bezier(.2,.8,.25,1)}
+  /* だるま学園では「あと○くるり」を少し下げて数字を大きく見せる(左寄せは維持)。
+     transformはレイアウトの高さに影響しないため、盤面や他要素の位置は変わらない。 */
+  body.academy-metric-mode .status-metric.remaining{transform:translateY(1.1rem);gap:0.4375rem}
+  body.academy-metric-mode .status-metric.remaining b{display:inline-block;transform:scale(1.7);transform-origin:center;margin:0 0.125rem}
+  /* distancePulseはscale(1)基準のため、そのままだと数字変化時に1.7倍→1倍へ一瞬縮んでから
+     跳ねるように見えてしまう。scale(1.7)を基準にした専用のパルスへ差し替える。 */
+  @keyframes academyDistancePulse{
+    0%{transform:scale(1.7);text-shadow:0 0 10px rgba(98,184,210,.24)}
+    45%{transform:scale(2.108);color:#B9E8F2;text-shadow:0 0 15px rgba(98,184,210,.7)}
+    100%{transform:scale(1.7);text-shadow:0 0 10px rgba(98,184,210,.24)}
+  }
+  body.academy-metric-mode .status-metric.remaining b.distance-pulse{animation-name:academyDistancePulse}
   .status-metric.moves b{color:var(--washi);font-size:1.875rem}
   .status-separator{color:rgba(255,255,255,.26);font-size:1.4375rem;font-weight:300}
   .rank-badge{width:5.375rem;height:2.1875rem;margin-left:auto;padding:0;border:0;background:transparent;color:var(--kin);cursor:pointer}
@@ -821,8 +837,8 @@
   #board.spinning .pivot{opacity:0}
   .hint-arrow{pointer-events:none;animation:hintArrow 1.35s ease both}
   .hint-arrow.tutorial{animation:none;opacity:1}
-  /* 棒(grip-marker)の縁取りと同じ色で、弧にも枠を付けて存在感を強める。 */
-  .hint-arrow .arc-border{fill:none;stroke:#3E9BC2;stroke-width:8.5;stroke-linecap:round}
+  /* 矢印の先端(head)と同じ白い枠を、弧にも付けて存在感を強める。 */
+  .hint-arrow .arc-border{fill:none;stroke:#BFF0FF;stroke-width:8.5;stroke-linecap:round}
   .hint-arrow .arc{
     fill:none;stroke:#62B8D2;stroke-width:5.5;stroke-linecap:round;
     filter:drop-shadow(0 0 3px rgba(22,40,60,.9));
@@ -1449,11 +1465,14 @@ const TUTORIAL_TRAPEZOID_VIEW={permutation:makeBoardPermutation(120,true),flip:t
 const tutorialTrapezoidState=transformStateBySymmetry(STAGES[4].state,TUTORIAL_TRAPEZOID_VIEW);
 // 案内メッセージは常に上部に置くため、回す対象が上半分に来る問題だけ回転して下半分へ寄せる。
 const TUTORIAL_LOWER_VIEW={permutation:makeBoardPermutation(-120),flip:false};
+// 4問目(chain)は、下中央の棒を右向きに回す配置だと右手スワイプの指で矢印が隠れてしまうため、
+// 下半分のうち左側の棒になるよう別の向きを使う。
+const TUTORIAL_CHAIN_VIEW={permutation:makeBoardPermutation(300),flip:false};
 const TUTORIAL_STEPS=[
   {state:transformStateBySymmetry(tutorialPool[0],TUTORIAL_LOWER_VIEW),par:1,cue:'grab'},
   {state:tutorialPool[tutorialPool.length-1],par:1,cue:'grab'},
   {state:tutorialSecondState,par:1,cue:'find'},
-  {state:transformStateBySymmetry(tutorialTwoStepState,TUTORIAL_LOWER_VIEW),par:2,cue:'chain'},
+  {state:transformStateBySymmetry(tutorialTwoStepState,TUTORIAL_CHAIN_VIEW),par:2,cue:'chain'},
   {state:tutorialTrapezoidState,par:2,cue:'chain-direction'}
 ];
 // 一覧・解説は、比較しやすい基準の向きを保つ。
@@ -6158,8 +6177,8 @@ function gripAt(p){
     const along=dx*Math.cos(grip.angle)+dy*Math.sin(grip.angle);
     const across=-dx*Math.sin(grip.angle)+dy*Math.cos(grip.angle);
     // 見えている水色の棒（36×8）よりかなり広く、指でもつかみやすい当たり判定にする。
-    if(Math.abs(along)>32||Math.abs(across)>20)return;
-    const score=(along/32)**2+(across/20)**2;
+    if(Math.abs(along)>40||Math.abs(across)>26)return;
+    const score=(along/40)**2+(across/26)**2;
     if(score<best){best=score;hit={ti,t,grip};}
   });
   return hit;
@@ -6574,6 +6593,15 @@ function finishDrag(e,cancel=false,forcedTurns=null){
         guidedBasicCandidateTis.delete(dg.ti);
         fallenRodTis.add(dg.ti);
       }
+      // 棒は合っていたが向きが違った場合は、その棒が正解だと分かった合図として
+      // 他の候補棒は全てグレーアウトし、残す棒を一本に絞る。
+      if(correctPlace&&guidedBasicCandidateTis){
+        for(const ti of guidedBasicCandidateTis){
+          if(ti!==dg.ti)fallenRodTis.add(ti);
+        }
+        guidedBasicCandidateTis.clear();
+        guidedBasicCandidateTis.add(dg.ti);
+      }
       $('gripPromptText').textContent=tr(correctPlace?'assistedWrongDirection':'assistedWrongPlace');
       $('gripPrompt').hidden=false;
       animateGuidedBasicRewind(dg);
@@ -6602,6 +6630,16 @@ function animateTutorialRewind(dg,target,dir){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){paint();setTimeout(showTutorialCue,520);return;}
   busy=true;
   const duration=720;
+  // 3枚を個別にanimate()すると僅かなずれでばらばらに見えるため、1つのgroupへ一時的に
+  // まとめて入れ、group側の回転を1つだけ再生することで常に揃って動くようにする。
+  const NS_='http://www.w3.org/2000/svg';
+  const group=document.createElementNS(NS_,'g');
+  group.setAttribute('class','auto-swipe-group');
+  svg.appendChild(group);
+  for(const item of dg.items){
+    item.el.style.transform=orbitTransform(item,0,dg.kc);
+    group.appendChild(item.el);
+  }
   setTimeout(()=>{
     if(!isMode('tutorial'))return;
     for(const item of dg.items)item.el.setAttribute('class','tile '+(mod3(item.turn+dir)===0?'stand':'fallen'));
@@ -6612,19 +6650,21 @@ function animateTutorialRewind(dg,target,dir){
     for(const item of dg.items)item.el.setAttribute('class','tile '+(mod3(item.turn)===0?'stand':'fallen'));
     applyBoardTheme();
   },440);
-  let done=0;
-  for(const item of dg.items){
-    const animation=item.el.animate([
-      {transform:orbitTransform(item,dg.deg,dg.kc),offset:0},
-      {transform:orbitTransform(item,target,dg.kc),offset:.36},
-      {transform:orbitTransform(item,target,dg.kc),offset:.56},
-      {transform:orbitTransform(item,0,dg.kc),offset:1}
-    ],{duration,easing:'cubic-bezier(.2,.72,.24,1)'});
-    animation.onfinish=animation.oncancel=()=>{
-      if(++done!==3)return;
-      busy=false;paint();setTimeout(showTutorialCue,150);
-    };
-  }
+  group.style.transformOrigin=dg.kc.x+'px '+dg.kc.y+'px';
+  const animation=group.animate([
+    {transform:'rotate('+dg.deg+'deg)',offset:0},
+    {transform:'rotate('+target+'deg)',offset:.36},
+    {transform:'rotate('+target+'deg)',offset:.56},
+    {transform:'rotate(0deg)',offset:1}
+  ],{duration,easing:'cubic-bezier(.2,.72,.24,1)'});
+  animation.onfinish=animation.oncancel=()=>{
+    for(const item of dg.items){
+      svg.appendChild(item.el);
+      item.el.style.transform='';
+    }
+    group.remove();
+    busy=false;paint();setTimeout(showTutorialCue,150);
+  };
 }
 function animateGuidedBasicRewind(dg){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
@@ -7208,6 +7248,7 @@ function renderStageNav(){
   // 「やり直す／1手戻す／次の1手を見る」と現在手数は表示しない。
   const hideLearningControls=assistedLearning;
   document.body.classList.toggle('tutorial-mode',tutorialMode);
+  document.body.classList.toggle('academy-metric-mode',assistedLearning);
   $('tutorialReset').hidden=!tutorialMode;
   $('tutorialDebugSkip').hidden=!tutorialMode||!DEBUG_MODE;
   if(tutorialMode){
