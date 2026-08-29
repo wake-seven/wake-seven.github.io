@@ -500,11 +500,27 @@
   .training-shape-callout-text{text-anchor:middle}
   .training-shape-callout-line1{fill:#8BCDE0;font:700 13px sans-serif;letter-spacing:.02em}
   .training-shape-callout-line2{fill:#F7F1E5;font:800 25px sans-serif}
+  /* だるま学園: 手を進めるたびに、盤面中央へ大きく「あと○くるり」を短時間表示する。
+     SVGのdominant-baseline/em単位はブラウザ・フォントで解釈が揺れて上下の余白が偏るため、
+     grip-promptと同じくHTMLのgrid中央寄せで組む(こちらはフォント非依存で確実に均等になる)。 */
+  .academy-remaining-callout{
+    position:absolute;z-index:11;inset:0;display:none;place-items:center;pointer-events:none;
+  }
+  .academy-remaining-callout:not([hidden]){display:grid}
+  .academy-remaining-callout{opacity:0;transition:opacity .22s ease}
+  .academy-remaining-callout.show{opacity:1}
+  .academy-remaining-callout-badge{
+    display:inline-flex;align-items:center;gap:.25rem;
+    background:rgba(15,35,52,.85);border:2px solid #29A8CE;border-radius:999px;
+    padding:.6rem 1.25rem 1.1rem;
+  }
+  .academy-remaining-callout-label,.academy-remaining-callout-unit{color:#8BCDE0;font:700 15px sans-serif}
+  .academy-remaining-callout-number{color:#F7F1E5;font:800 44px sans-serif;line-height:1}
   #chainDialogText.chain-text-highlight{margin:0.125rem 0 0.4375rem;color:var(--kin);font-size:1.0625rem;font-weight:800;line-height:1.55}
   #introBoard,#academyWelcomeBoard,#clearAcademyWelcomeBoard{display:block;width:100%;height:auto}
-  #introBoard,#academyWelcomeBoard,#clearAcademyWelcomeBoard,#trainingMiddleSpinBoard{transition:opacity .18s ease}
-  #introBoard.welcome-cycle-fade,#academyWelcomeBoard.welcome-cycle-fade,#clearAcademyWelcomeBoard.welcome-cycle-fade,#trainingMiddleSpinBoard.welcome-cycle-fade{opacity:0}
-  #introBoard .intro-swipe,#academyWelcomeBoard .intro-swipe,#clearGuideBoard .intro-swipe,#messageClearGuideBoard .intro-swipe,#clearTwoMoveLessonBoard .intro-swipe,#messageTwoMoveLessonBoard .intro-swipe,#twoMoveLessonBoard .intro-swipe,#trainingMiddleSpinBoard .intro-swipe{fill:#62B8D2;filter:drop-shadow(0 0 3px rgba(98,184,210,.8))}
+  #introBoard,#academyWelcomeBoard,#clearAcademyWelcomeBoard,#trainingMiddleSpinBoard,#developmentWelcomeSpinBoard{transition:opacity .18s ease}
+  #introBoard.welcome-cycle-fade,#academyWelcomeBoard.welcome-cycle-fade,#clearAcademyWelcomeBoard.welcome-cycle-fade,#trainingMiddleSpinBoard.welcome-cycle-fade,#developmentWelcomeSpinBoard.welcome-cycle-fade{opacity:0}
+  #introBoard .intro-swipe,#academyWelcomeBoard .intro-swipe,#clearGuideBoard .intro-swipe,#messageClearGuideBoard .intro-swipe,#clearTwoMoveLessonBoard .intro-swipe,#messageTwoMoveLessonBoard .intro-swipe,#twoMoveLessonBoard .intro-swipe,#trainingMiddleSpinBoard .intro-swipe,#developmentWelcomeSpinBoard .intro-swipe{fill:#62B8D2;filter:drop-shadow(0 0 3px rgba(98,184,210,.8))}
   #introBoard .guide-happy .open,#introBoard .guide-happy .shut,#clearGuideBoard .guide-happy .open,#clearGuideBoard .guide-happy .shut,#messageClearGuideBoard .guide-happy .open,#messageClearGuideBoard .guide-happy .shut,#clearTwoMoveLessonBoard .guide-happy .open,#clearTwoMoveLessonBoard .guide-happy .shut,#messageTwoMoveLessonBoard .guide-happy .open,#messageTwoMoveLessonBoard .guide-happy .shut,#twoMoveLessonBoard .guide-happy .open,#twoMoveLessonBoard .guide-happy .shut{display:none}
   #introBoard .guide-happy .happy,#clearGuideBoard .guide-happy .happy,#messageClearGuideBoard .guide-happy .happy,#clearTwoMoveLessonBoard .guide-happy .happy,#messageTwoMoveLessonBoard .guide-happy .happy,#twoMoveLessonBoard .guide-happy .happy{display:block}
   .master-seal{position:relative;width:5.375rem;height:5.375rem;margin:0 auto 0.375rem;border:3px solid var(--kin);border-radius:50%;color:var(--kin);display:grid;place-items:center;font-size:1.6875rem}
@@ -743,8 +759,8 @@
     filter:drop-shadow(0 0 7px rgba(98,215,244,.98));
   }
   /* 入学案内でも、本編で持ち手をつかんだときと同じく回る3枚を強調する。 */
-  #academyWelcomeBoard .tile.welcome-selected,#trainingMiddleSpinBoard .tile.welcome-selected{filter:drop-shadow(0 6px 6px rgba(0,0,0,.24)) brightness(1.08)}
-  #academyWelcomeBoard .tile.welcome-selected .hex,#trainingMiddleSpinBoard .tile.welcome-selected .hex{stroke:#8BE8FA;stroke-width:4.5;stroke-linejoin:round;filter:drop-shadow(0 0 7px rgba(98,215,244,.98))}
+  #academyWelcomeBoard .tile.welcome-selected,#trainingMiddleSpinBoard .tile.welcome-selected,#developmentWelcomeSpinBoard .tile.welcome-selected{filter:drop-shadow(0 6px 6px rgba(0,0,0,.24)) brightness(1.08)}
+  #academyWelcomeBoard .tile.welcome-selected .hex,#trainingMiddleSpinBoard .tile.welcome-selected .hex,#developmentWelcomeSpinBoard .tile.welcome-selected .hex{stroke:#8BE8FA;stroke-width:4.5;stroke-linejoin:round;filter:drop-shadow(0 0 7px rgba(98,215,244,.98))}
   #academyWelcomeBoard .welcome-counter-pulse{transform-box:fill-box;transform-origin:center;animation:welcomeCounterPulse .34s cubic-bezier(.2,.8,.25,1)}
   @keyframes welcomeCounterPulse{
     0%{transform:scale(1);filter:drop-shadow(0 0 2px rgba(98,184,210,.2))}
@@ -778,6 +794,14 @@
   #board.arriving .grip-marker{opacity:0!important}
   /* 基本クラスでは、つかめる棒をあらかじめ1〜3本だけに絞って見せる。 */
   .grip-marker.narrow-hidden{opacity:0!important;pointer-events:none;transition:opacity .35s ease}
+  /* 発展クラス・速解き九番勝負で間違えた棒は、消さずにグレーアウトして残す。 */
+  .grip-marker.eliminated{
+    opacity:.55!important;pointer-events:none;filter:grayscale(1) brightness(.75);
+    transition:opacity .35s ease,filter .35s ease;
+  }
+  .grip-marker.eliminated rect{fill:#8A96A3;stroke:#5B6673}
+  /* 回転中は、グレーアウトした棒も他の棒と同じく見えなくする。 */
+  #board.selecting .grip-marker.eliminated,#board.hinting .grip-marker.eliminated,#board.clear-pending .grip-marker.eliminated,#board.celebrating .grip-marker.eliminated,#board.spinning .grip-marker.eliminated{opacity:0!important}
   #board.tutorial-clear-step .grip-marker{opacity:0!important}
   #board.tutorial-grab-step:not(.spinning):not(.selecting) .grip-marker{opacity:0}
   #board.tutorial-grab-step:not(.spinning):not(.selecting) .grip-marker.tutorial-target{
@@ -963,6 +987,7 @@
   </div>
   <svg id="board" viewBox="14 0 293 310" aria-label="七枚のだるま盤"></svg>
   <div class="grip-prompt" id="gripPrompt" hidden><span id="gripPromptText">水色の棒をつかんで回そう</span></div>
+  <div class="academy-remaining-callout" id="academyRemainingCallout" hidden><span class="academy-remaining-callout-badge"><span class="academy-remaining-callout-label"></span><span class="academy-remaining-callout-number" id="academyRemainingCalloutNumber"></span><span class="academy-remaining-callout-unit"></span></span></div>
   <div class="speed-start-overlay" id="speedStartOverlay" hidden><button class="chip" id="speedBoardStart" type="button">スタート</button></div>
   <div class="board-view-controls bottom">
     <button class="view-button" id="mirrorBoard">左右反転</button>
@@ -1686,7 +1711,7 @@ const DEVELOPMENT_THREE_STAGES=[
   {state:21,soloRod:0,soloDir:1,initialRodCount:2},
   {state:93,soloRod:3,soloDir:-1,initialRodCount:3},
   {state:420,soloRod:4,soloDir:1,initialRodCount:4},
-  {state:91,soloRod:0,soloDir:1,initialRodCount:6}
+  {state:91,soloRod:0,soloDir:1,initialRodCount:5}
 ].map(({state,soloRod,soloDir,initialRodCount})=>({...threeMoveStage(state),soloRod,soloDir,initialRodCount}));
 // 発展クラスの案内ダイアログで見せる5形プレビュー用: 唯一の正解方向へ回した後の「あと2くるり」到達盤面。
 const DEVELOPMENT_THREE_SHAPES=['CenterOuter','Diamond','Caterpillar','Ribbon','Trapezoid'];
@@ -1695,8 +1720,8 @@ const DEVELOPMENT_THREE_GOAL_STATES=DEVELOPMENT_THREE_STAGES.map(stage=>enc(roll
 // 残り6状態(長方形×2/気球×2/いも虫×2)はだるま修行・下巻専用に温存し、ここではネタバレしない。
 // 特定の着地形を保証する必要はないので、正解棒は自動判定(computeGuidedBasicCandidateTis相当)に任せる。
 const DEVELOPMENT_FOUR_STAGES=[
-  {state:104,initialRodCount:3},
-  {state:358,initialRodCount:4},
+  {state:104,initialRodCount:1},
+  {state:358,initialRodCount:3},
   {state:325,initialRodCount:6}
 ].map(({state,initialRodCount})=>({state,par:4,initialRodCount}));
 const DEVELOPMENT_STAGES=[...DEVELOPMENT_THREE_STAGES,...DEVELOPMENT_FOUR_STAGES];
@@ -4034,6 +4059,8 @@ const isFallingRodStage=()=>isDevelopmentStage()||isSpeedFallingRodStage();
 const isTrainingRangeStage=()=>isMode('stage')&&!extraMode&&!satoriMode
   &&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_STAGE_COUNT;
 let guidedBasicCandidateTis=null,guidedBasicCandidateSignature=null;
+// 基本クラス・発展クラス・速解き九番勝負で、間違えて落ちた棒(消すのではなくグレーアウトして残す)。
+let fallenRodTis=new Set();
 // 中央の右上に来る軸（右上・中段右のペア）。「定石」として基本6/9で固定表示するのに使う。
 const TOP_RIGHT_TI=TRI.findIndex(t=>t.cells.includes(1)&&t.cells.includes(4));
 function computeGuidedBasicCandidateTis(){
@@ -4047,8 +4074,8 @@ function computeGuidedBasicCandidateTis(){
   // 基本6/9だけは、定石として右上の軸を必ず正解として見せる。
   const forceTopRight=stageIndex===BASIC_STAGE_START+5&&correctTis.includes(TOP_RIGHT_TI);
   const primary=forceTopRight?TOP_RIGHT_TI:correctTis[Math.floor(Math.random()*correctTis.length)];
-  const groupIndex=Math.floor((stageIndex-BASIC_STAGE_START)/3);
-  const count=Math.min(TRI.length,groupIndex+1);
+  // 最初の2問(0,1)は棒1本、そこから1問ごとに1本ずつ増え、6本になったら残りはずっと6本。
+  const count=Math.min(TRI.length,Math.max(1,stageIndex-BASIC_STAGE_START));
   // ダミーは、たまたま正解になってしまう軸を避けて選ぶ（それぞれの候補内だけをシャッフルする）。
   const shuffle=arr=>{for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;};
   const safeDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&!correctTis.includes(i)));
@@ -4077,15 +4104,21 @@ function computeDevelopmentCandidateTis(){
   return new Set([primary,...decoyPool.slice(0,count-1)]);
 }
 function refreshGuidedBasicCandidates(){
+  // だるま学園(入門・基本・発展)と速解き九番勝負では、絞り込みが効かない場面でも
+  // 「6本全部が候補」として扱う(nullにはしない)。これにより、どの盤面・何くるりでも
+  // 間違えた棒を選んだ場合はその場でグレーアウトする挙動を、学園全体で統一できる。
+  const fullSet=()=>new Set(Array.from({length:TRI.length},(_,i)=>i));
   if(isDevelopmentStage()){
     const stage=STAGES[stageIndex];
-    // 3くるり5問は最初の1手(3くるり→2くるり)だけ絞り込み、その後は学園で習った2くるりの解き方に任せる。
-    if(isSolved()||(stage.soloRod!==undefined&&SOLVER.dist[enc(ori)]<3)){
+    if(isSolved()){
       guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;
     }else{
       const signature=stageIndex+':'+moves+':'+enc(ori);
       if(signature!==guidedBasicCandidateSignature){
-        guidedBasicCandidateTis=computeDevelopmentCandidateTis();
+        fallenRodTis.clear();
+        // 絞り込みは最初の1手(3くるり5問なら3→2、4くるり3問なら4→3)だけ。
+        // 一度でも進んだら(あと3くるり・2くるりになったら)6本全部を候補にする。
+        guidedBasicCandidateTis=(SOLVER.dist[enc(ori)]<stage.par)?fullSet():computeDevelopmentCandidateTis();
         guidedBasicCandidateSignature=signature;
       }
     }
@@ -4096,25 +4129,37 @@ function refreshGuidedBasicCandidates(){
     }else{
       const signature='speedFalling:'+moves+':'+enc(ori);
       if(signature!==guidedBasicCandidateSignature){
-        // 絞り込みはせず6本全部を候補にする。間違えた棒は落ちて二度と選べなくなる。
-        guidedBasicCandidateTis=new Set(Array.from({length:TRI.length},(_,i)=>i));
+        fallenRodTis.clear();
+        guidedBasicCandidateTis=fullSet();
         guidedBasicCandidateSignature=signature;
       }
     }
   }
-  // 残り1手になったら絞り込みをやめて、6本とも自由に選べるようにする。
-  else if(!isNarrowedBasicStage()||isSolved()||SOLVER.dist[enc(ori)]<=1){
-    guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;
-  }else{
-    const signature=stageIndex+':'+moves+':'+enc(ori);
-    if(signature!==guidedBasicCandidateSignature){
-      guidedBasicCandidateTis=computeGuidedBasicCandidateTis();
-      guidedBasicCandidateSignature=signature;
+  else if(isGuidedBasicStage()){
+    if(isSolved()){
+      guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;
+    }else{
+      const signature=stageIndex+':'+moves+':'+enc(ori);
+      if(signature!==guidedBasicCandidateSignature){
+        fallenRodTis.clear();
+        // 基本クラスは1〜9本まで段階的に絞り込む。残り1手や入門はまだ絞り込みが無いので6本全部。
+        guidedBasicCandidateTis=(isNarrowedBasicStage()&&SOLVER.dist[enc(ori)]>1)?computeGuidedBasicCandidateTis():fullSet();
+        guidedBasicCandidateSignature=signature;
+      }
     }
   }
+  else{
+    guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;
+  }
   svg.querySelectorAll('.grip-marker').forEach(marker=>{
+    const ti=Number(marker.dataset.tri);
     const restrict=guidedBasicCandidateTis!==null;
-    marker.classList.toggle('narrow-hidden',restrict&&!guidedBasicCandidateTis.has(Number(marker.dataset.tri)));
+    const isOut=restrict&&!guidedBasicCandidateTis.has(ti);
+    const isFallen=isOut&&fallenRodTis.has(ti);
+    // 一度も候補に出てこなかった棒は本編の基本クラスと同じく完全に隠す。
+    // 候補として出た後に間違えて落ちた棒は、消すのではなくグレーアウトして残す。
+    marker.classList.toggle('narrow-hidden',isOut&&!isFallen);
+    marker.classList.toggle('eliminated',isFallen);
   });
 }
 // 補助輪中も盤面全体を見比べられるよう、選択外の4枚は暗転させない。
@@ -4986,7 +5031,21 @@ const CHAIN_STEPS={
   },
   academyWelcome:academyBoardStep('enroll','academyWelcomeTitle','academyWelcomeText','academyWelcomeStart',()=>{}),
   basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),
-  developmentWelcome:academyBoardStep('development','developmentWelcomeTitle','developmentWelcomeText','developmentWelcomeStart',()=>loadStage(stageIndex+1)),
+  developmentWelcome:{
+    titleKey:'developmentWelcomeTitle', actionKey:'developmentWelcomeStart',
+    render(body){
+      body.innerHTML='<div class="status-metric remaining training-spin-counter" id="developmentWelcomeSpinCounter"><span id="developmentWelcomeSpinCounterLabel"></span><b id="developmentWelcomeSpinCounterNumber"></b><span id="developmentWelcomeSpinCounterUnit"></span></div>'
+        +'<div class="two-move-detail-board-area"><div class="two-move-detail-board" id="developmentWelcomeSpinBoardWrap"><svg id="developmentWelcomeSpinBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>'
+        +'<p class="chain-text-left" id="chainDialogText"></p>';
+      $('developmentWelcomeSpinCounterLabel').textContent=tr('shortestDisplay');
+      $('developmentWelcomeSpinCounterUnit').textContent=tr('moveUnit');
+      $('chainDialogText').textContent=tr('developmentWelcomeText');
+      // 修行・中巻開始と同じ「240°まで行き過ぎてから120°へ戻る」スピンを、発展クラスの最初でも見せる。
+      buildTrainingMiddleSpinBoard('developmentWelcomeSpinBoard','developmentWelcomeSpinCounter',DEVELOPMENT_THREE_STAGES[0].state);
+      return ()=>stopClearGuideBoard('developmentWelcomeSpinBoard');
+    },
+    onAction(){loadStage(stageIndex+1);}
+  },
   trainingWelcome:{
     wide:true, titleKey:'trainingWelcomeTitle', actionKey:'trainingWelcomeStart',
     render(body){
@@ -5050,13 +5109,12 @@ function stopClearGuideBoard(id){
 }
 // 上巻開始: 1本の棒を連続で(途切れず)回し続け、「あと3くるり」⇄「あと2くるり」が
 // 実際のドラッグ中と同じ表情切り替え(previewWake)で移り変わり、正解の位置でなめらかに確定するループ。
-function buildTrainingMiddleSpinBoard(boardId,counterId){
+function buildTrainingMiddleSpinBoard(boardId,counterId,startState=TRAINING_MIDDLE_GOAL_STATES[0]){
   stopClearGuideBoard(boardId);
   const guide=$(boardId),NS_='http://www.w3.org/2000/svg';
   if(!guide)return;
   const run=clearGuideRuns.get(boardId);
   const isCurrent=()=>run===clearGuideRuns.get(boardId);
-  const startState=TRAINING_MIDDLE_GOAL_STATES[0];
   const startBoard=dec(startState);
   // 同じ棒を1手ぶん(120°)回すと「あと2くるり」、さらに1手(240°)で「あと3くるり」に戻る組を探す。
   let target=null;
@@ -5619,6 +5677,7 @@ function applySwipe(ti,dir,save=true,playEffects=true){
     },520);
   }
   if(!speedMode&&isTrainingRangeStage()&&SOLVER.dist[enc(ori)]===2)showTrainingShapeCallout();
+  if(!speedMode&&isAssistedLearningStage()&&!isSolved())showAcademyRemainingCallout();
   if(speedMode&&speedSession){
     if(save)speedSession.movedCurrent=true;
     saveSpeedSession();
@@ -5666,6 +5725,21 @@ function showTrainingShapeCallout(){
     g.classList.remove('show');
     setTimeout(()=>g.remove(),260);
   },1000);
+}
+let academyRemainingCalloutTimer=null;
+// だるま学園(入門・基本・発展)では、手を進めるたびに盤面中央へ大きく「あと○くるり」を短時間表示する。
+function showAcademyRemainingCallout(){
+  clearTimeout(academyRemainingCalloutTimer);
+  const el=$('academyRemainingCallout');
+  el.querySelector('.academy-remaining-callout-label').textContent=tr('shortestDisplay');
+  $('academyRemainingCalloutNumber').textContent=String(remainingForDisplay(SOLVER.dist[enc(ori)]));
+  el.querySelector('.academy-remaining-callout-unit').textContent=tr('moveUnit');
+  el.hidden=false;
+  requestAnimationFrame(()=>el.classList.add('show'));
+  academyRemainingCalloutTimer=setTimeout(()=>{
+    el.classList.remove('show');
+    setTimeout(()=>{el.hidden=true;},260);
+  },700);
 }
 function setPosition(state,par){
   loadFourthChecks();
@@ -6492,8 +6566,14 @@ function finishDrag(e,cancel=false,forcedTurns=null){
     const after=SOLVER.dist[enc(rollOnce(ori,dg.ti,dir))];
     if(after!==before-1){
       const correctPlace=[1,-1].some(candidate=>SOLVER.dist[enc(rollOnce(ori,dg.ti,candidate))]===before-1);
-      // 発展クラス・速解き九番勝負で棒そのものが違った場合は、その棒を候補から落として二度と選べなくする。
-      if(isFallingRodStage()&&!correctPlace&&guidedBasicCandidateTis)guidedBasicCandidateTis.delete(dg.ti);
+      // 棒そのものが違った場合は、その棒を候補から落として同じ手の間は選べなくする
+      // (消すのではなくグレーアウトして残すため、fallenRodTisにも記録しておく)。
+      // guidedBasicCandidateTisは学園・速解き九番勝負では常に非nullなので、ここが実質的に
+      // 「学園のどの場面でも、棒選択を間違えたらグレーアウトする」という統一ルールになる。
+      if(!correctPlace&&guidedBasicCandidateTis){
+        guidedBasicCandidateTis.delete(dg.ti);
+        fallenRodTis.add(dg.ti);
+      }
       $('gripPromptText').textContent=tr(correctPlace?'assistedWrongDirection':'assistedWrongPlace');
       $('gripPrompt').hidden=false;
       animateGuidedBasicRewind(dg);
