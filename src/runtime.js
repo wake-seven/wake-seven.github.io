@@ -211,11 +211,12 @@ const MAIN_BOARD_GUIDANCE=Object.freeze({
   'primary:10':'basicGuideJoinTwo',
   'primary:11':'basicGuideJoinTwo'
 });
+Object.assign(MESSAGE_CATALOG.guidance,MAIN_BOARD_GUIDANCE);
 // 初めて原理を見せる問題は矢印つき、次の問題は「回す3枚」だけを示す。
 const BASIC_LESSON_ASSISTS=Object.freeze({
   3:'arrow',4:'axis',8:'arrow',9:'axis'
 });
-function mainBoardGuidance(){return MAIN_BOARD_GUIDANCE[runtimeStageKey()]||null;}
+function mainBoardGuidance(){return messageDefinition('guidance',runtimeStageKey());}
 function appendMoveCountEmphasis(root,message){
   message.split(/([12]枚)/g).forEach(part=>{
     if(!part)return;
