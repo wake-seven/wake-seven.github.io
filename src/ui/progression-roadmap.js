@@ -24,7 +24,8 @@ function masterRoadmapFragment(current){
     const rank=earned?masterPath().ranks[i]:'？';
     const examBadge=earned&&speedExamClearedForRank(i);
     const step=template.content.cloneNode(true).firstElementChild;
-    step.classList.add(i+1<current?'done':i+1===current?'current':'');
+    const stateClass=i+1<current?'done':i+1===current?'current':'';
+    if(stateClass)step.classList.add(stateClass);
     setText(step.querySelector('[data-road-name]'),label);
     setText(step.querySelector('[data-road-detail]'),detail);
     const rankElement=step.querySelector('[data-road-rank]');

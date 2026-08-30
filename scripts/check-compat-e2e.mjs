@@ -89,6 +89,7 @@ assert.match(sources.get('src/ui/progression-ui.js'), /two-move-card-template/);
 assert.match(sources.get('src/ui/progression-ui.js'), /clearedMasteryIndex/);
 assert.match(sources.get('src/ui/progression-ui.js'), /currentLapPrimaryComplete/);
 assert.match(sources.get('src/runtime/speed.js'), /const trialVariant=\(speedSession\?\.requiredTrial/);
+assert.match(sources.get('src/ui/progression-roadmap.js'), /if\(stateClass\)step\.classList\.add\(stateClass\)/);
 for (const id of ['chain-template-training-middle-spin', 'chain-template-development-welcome-spin']) {
   assert.match(template, new RegExp(`<template[^>]+id=["']${id}["']`, 'i'), `Spin dialog template is missing: ${id}`);
 }
