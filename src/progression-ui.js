@@ -1151,36 +1151,6 @@ function renderQuizInto(ids,quiz){
     options.appendChild(button);
   });
 }
-function openMessageReview({resume=false,returnTarget=null}={}){
-  messageDialogReturn=returnTarget;
-  messageReviewEntries=buildMessageReviewEntries();
-  if(resume){
-    let lastKey='',lastClearKey='';
-    try{
-      lastKey=storage.get(MESSAGE_REVIEW_STORAGE_KEY)||'';
-      lastClearKey=storage.get(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY)||'';
-    }catch(_){}
-    // 以前の保存データには「最後にクリアした問題」がないため、悟り制覇済みなら一度だけ制覇メッセージへ移行する。
-    if(!lastClearKey&&isSatoriMastered()){
-      const satoriEntry=messageReviewEntries.findIndex(entry=>entry.satori);
-      if(satoriEntry>=0){
-        messageReviewIndex=satoriEntry;
-        const key=messageReviewEntryKey(messageReviewEntries[satoriEntry]);
-        try{storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);}catch(_){}
-      }else messageReviewIndex=0;
-    }else{
-      const saved=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===lastKey);
-      messageReviewIndex=saved>=0?saved:0;
-    }
-  }else{
-    const currentExtra=isMode('mastery'),currentIndex=isMode('mastery')?extraIndex:stageIndex;
-    const exact=messageReviewEntries.findIndex(entry=>entry.extra===currentExtra&&entry.index===currentIndex);
-    messageReviewIndex=exact>=0?exact:0;
-  }
-  renderMessageReview();
-  $('messageDialog').hidden=false;
-  $('closeMessages').focus();
-}
 function volumeLabel(n){
   const labels={
     ja:['序','破','急'],
