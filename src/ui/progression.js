@@ -1044,7 +1044,15 @@ function renderTwoMovePatterns(){
   const controls=[['rotateBack','rotateCcw'],['rotate','rotateCw'],['mirror','mirror'],['vertical','flipVertical']];
   const cardTemplate=document.getElementById('two-move-card-template');
   $('twoMoveGrid').innerHTML=twoMoveDisplayStates.map((state,index)=>{
-    const buttons=controls.map(([transform,label])=>'<button class="chip" type="button" data-two-move-transform="'+transform+'" aria-label="'+tr(label)+'">'+transformIcon(transform)+'</button>').join('');
+    const buttonTemplate=document.getElementById('two-move-transform-button-template');
+    const buttons=controls.map(([transform,label])=>{
+      if(!buttonTemplate)return '<button class="chip" type="button" data-two-move-transform="'+transform+'" aria-label="'+tr(label)+'">'+transformIcon(transform)+'</button>';
+      const button=buttonTemplate.content.cloneNode(true).firstElementChild;
+      button.dataset.twoMoveTransform=transform;
+      button.setAttribute('aria-label',tr(label));
+      button.querySelector('[data-transform-art]').insertAdjacentHTML('afterbegin',transformIcon(transform));
+      return button.outerHTML;
+    }).join('');
     if(!cardTemplate)return '<article class="two-move-card" data-state="'+state+'" data-pattern="'+twoMoveDisplayPatterns[index]+'" data-board-index="'+index+'"><div class="two-move-card-tools">'+buttons+'</div><button class="two-move-card-open" type="button">'+miniBoardSvg(state)+'</button></article>';
     const card=cardTemplate.content.cloneNode(true).firstElementChild;
     card.dataset.state=String(state);card.dataset.pattern=String(twoMoveDisplayPatterns[index]);card.dataset.boardIndex=String(index);

@@ -47,6 +47,9 @@ for (const id of ['introDialog', 'introStart', 'tutorialReset', 'board', 'boardG
 for (const id of ['clearNext', 'speedBoardStart', 'masterStart', 'speedPause']) {
   assert.match(template, new RegExp(`id=["']${id}["']`), `Completion/speed DOM contract is missing: ${id}`);
 }
+for (const id of ['rankBadge', 'stagePickerRankBadge', 'master-road-step-template', 'chain-template-academy-board', 'chain-template-training-welcome']) {
+  assert.match(template, new RegExp(`(?:id|id)=?["']${id}["']`), `Rank/dialog template contract is missing: ${id}`);
+}
 assert.match(template, /<template[^>]+id=["']chain-template-development-four-start["']/i, 'Milestone dialog template is missing.');
 assert.match(sources.get('src/ui/board.js'), /chain-template-development-four-start/);
 assert.match(sources.get('src/ui/board.js'), /content\.cloneNode\(true\)/);
@@ -61,6 +64,11 @@ assert.match(sources.get('src/ui/rank.js'), /rank-list-row-template/);
 assert.match(sources.get('src/ui/rank.js'), /content\.cloneNode\(true\)/);
 assert.match(template, /<template[^>]+id=["']message-cheer-caption-template["']/i, 'Message illustration template is missing.');
 assert.match(sources.get('src/ui/message.js'), /message-cheer-caption-template/);
+for (const id of ['message-intro-guide-frame-template', 'message-two-move-lesson-frame-template']) {
+  assert.match(template, new RegExp(`<template[^>]+id=["']${id}["']`, 'i'), `Message board frame template is missing: ${id}`);
+}
+assert.match(sources.get('src/ui/message.js'), /message-intro-guide-frame-template/);
+assert.match(sources.get('src/ui/message.js'), /message-two-move-lesson-frame-template/);
 for (const id of ['stage-picker-row-template', 'two-move-card-template']) {
   assert.match(template, new RegExp(`<template[^>]+id=["']${id}["']`, 'i'), `List template is missing: ${id}`);
 }

@@ -1120,12 +1120,19 @@
 <template id="message-cheer-caption-template">
   <p class="cheer-caption" data-cheer-caption></p>
 </template>
+<template id="message-intro-guide-frame-template">
+  <svg data-message-guide-board viewBox="14 0 293 310" aria-hidden="true"></svg>
+</template>
+<template id="message-two-move-lesson-frame-template">
+  <svg data-message-lesson-board viewBox="14 0 293 310" aria-hidden="true"></svg>
+</template>
 <template id="stage-picker-row-template">
   <button type="button"><span data-picker-number></span><span data-picker-detail></span></button>
 </template>
 <template id="two-move-card-template">
   <article class="two-move-card"><div class="two-move-card-tools" data-two-move-tools></div><button class="two-move-card-open" type="button" data-two-move-open></button></article>
 </template>
+<template id="two-move-transform-button-template"><button class="chip" type="button" data-two-move-transform><span data-transform-art aria-hidden="true"></span></button></template>
 <template id="chain-template-training-middle-spin">
   <div class="status-metric remaining training-spin-counter" data-spin-counter><span data-spin-label></span><b data-spin-number></b><span data-spin-unit></span></div>
   <div class="two-move-detail-board-area"><div class="two-move-detail-board" data-spin-board-wrap><svg data-spin-board viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>
@@ -7812,7 +7819,7 @@ function configureMilestoneHeader(entry,title){$('messageDialogTitle').textConte
 function prepareMessageReview(entry){const art=messageReviewArt(entry),twoMoveLesson=lessonVariantFromArt(art),messageClearEntry=configureMessageReviewType(entry);configureMessageReviewLinks(entry,messageClearEntry);return {art,twoMoveLesson,messageClearEntry};}
 function milestoneRenderer(entry){return MILESTONE_RENDERERS[entry.master]||MILESTONE_RENDERERS.volume;}
 function messageReviewRenderer(entry){if(entry.quiz!==undefined)return MESSAGE_RENDERERS.quiz;if(entry.boardQuiz)return MESSAGE_RENDERERS.boardQuiz;return MESSAGE_RENDERERS.text;}
-function renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule){const classByArt={'move-graph':art==='moveGraph','board-card':art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'),'controls-art':art==='controls','navigation-art':art==='navigation','menu-art':art==='menuButtons','rank-badge-art':art==='rankBadgeArt','unwritten-art':art==='unwritten','cheer-art':art==='cheer','intro-guide-art':art==='introGuide','two-move-lesson-art':!!twoMoveLesson};Object.entries(classByArt).forEach(([className,enabled])=>illustration.classList.toggle(className,enabled));stopClearGuideBoard('messageClearGuideBoard');stopClearGuideBoard('messageTwoMoveLessonBoard');illustration.innerHTML=art==='introGuide'?'<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':twoMoveLesson?'<svg id="messageTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':art?tipArt(art):'';if(art==='cheer'){const template=document.getElementById('message-cheer-caption-template');if(template){const caption=template.content.cloneNode(true);caption.querySelector('[data-cheer-caption]').textContent=tr('cheerCaption');illustration.append(caption);}}if(art==='introGuide')buildClearGuideBoard('messageClearGuideBoard');if(twoMoveLesson)buildTwoMoveLessonBoard('messageTwoMoveLessonBoard',twoMoveLesson);illustration.hidden=!art;lessonCopy.hidden=!twoMoveLesson;lessonRule.hidden=!twoMoveLesson;}
+function renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule){const classByArt={'move-graph':art==='moveGraph','board-card':art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'),'controls-art':art==='controls','navigation-art':art==='navigation','menu-art':art==='menuButtons','rank-badge-art':art==='rankBadgeArt','unwritten-art':art==='unwritten','cheer-art':art==='cheer','intro-guide-art':art==='introGuide','two-move-lesson-art':!!twoMoveLesson};Object.entries(classByArt).forEach(([className,enabled])=>illustration.classList.toggle(className,enabled));stopClearGuideBoard('messageClearGuideBoard');stopClearGuideBoard('messageTwoMoveLessonBoard');illustration.replaceChildren();if(art==='introGuide'){const template=document.getElementById('message-intro-guide-frame-template');if(template){const board=template.content.cloneNode(true).firstElementChild;board.id='messageClearGuideBoard';illustration.append(board);}else illustration.innerHTML='<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>';}else if(twoMoveLesson){const template=document.getElementById('message-two-move-lesson-frame-template');if(template){const board=template.content.cloneNode(true).firstElementChild;board.id='messageTwoMoveLessonBoard';illustration.append(board);}else illustration.innerHTML='<svg id="messageTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>';}else if(art)illustration.innerHTML=tipArt(art);if(art==='cheer'){const template=document.getElementById('message-cheer-caption-template');if(template){const caption=template.content.cloneNode(true);caption.querySelector('[data-cheer-caption]').textContent=tr('cheerCaption');illustration.append(caption);}}if(art==='introGuide')buildClearGuideBoard('messageClearGuideBoard');if(twoMoveLesson)buildTwoMoveLessonBoard('messageTwoMoveLessonBoard',twoMoveLesson);illustration.hidden=!art;lessonCopy.hidden=!twoMoveLesson;lessonRule.hidden=!twoMoveLesson;}
 function renderMessageLesson(twoMoveLesson,illustration,lessonCopy,lessonRule){if(twoMoveLesson){renderTwoMoveLessonRule('messageTwoMoveLessonRule');renderTwoMoveLessonCopy('messageTwoMoveLessonCopy',twoMoveLesson);$('messageDialogText').after(illustration);illustration.before(lessonRule);illustration.after(lessonCopy);}else{lessonRule.replaceChildren();lessonCopy.replaceChildren();}}
 function renderMessageQuiz(quiz){renderQuizInto({root:'messageQuiz',options:'messageQuizOptions',note:'messageQuizNote',title:'messageQuizTitle',question:'messageQuizQuestion'},quiz);}
 function openMessageReview({resume=false,returnTarget=null}={}){messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries();if(resume){let lastKey='',lastClearKey='';try{lastKey=storage.get(MESSAGE_REVIEW_STORAGE_KEY)||'';lastClearKey=storage.get(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY)||'';}catch(_){}if(!lastClearKey&&isSatoriMastered()){const satoriEntry=messageReviewEntries.findIndex(entry=>entry.satori);if(satoriEntry>=0){messageReviewIndex=satoriEntry;const key=messageReviewEntryKey(messageReviewEntries[satoriEntry]);try{storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);}catch(_){}}else messageReviewIndex=0;}else{const saved=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===lastKey);messageReviewIndex=saved>=0?saved:0;}}else{const currentExtra=isMode('mastery'),currentIndex=isMode('mastery')?extraIndex:stageIndex;const exact=messageReviewEntries.findIndex(entry=>entry.extra===currentExtra&&entry.index===currentIndex);messageReviewIndex=exact>=0?exact:0;}renderMessageReview();$('messageDialog').hidden=false;$('closeMessages').focus();}
@@ -8926,7 +8933,15 @@ function renderTwoMovePatterns(){
   const controls=[['rotateBack','rotateCcw'],['rotate','rotateCw'],['mirror','mirror'],['vertical','flipVertical']];
   const cardTemplate=document.getElementById('two-move-card-template');
   $('twoMoveGrid').innerHTML=twoMoveDisplayStates.map((state,index)=>{
-    const buttons=controls.map(([transform,label])=>'<button class="chip" type="button" data-two-move-transform="'+transform+'" aria-label="'+tr(label)+'">'+transformIcon(transform)+'</button>').join('');
+    const buttonTemplate=document.getElementById('two-move-transform-button-template');
+    const buttons=controls.map(([transform,label])=>{
+      if(!buttonTemplate)return '<button class="chip" type="button" data-two-move-transform="'+transform+'" aria-label="'+tr(label)+'">'+transformIcon(transform)+'</button>';
+      const button=buttonTemplate.content.cloneNode(true).firstElementChild;
+      button.dataset.twoMoveTransform=transform;
+      button.setAttribute('aria-label',tr(label));
+      button.querySelector('[data-transform-art]').insertAdjacentHTML('afterbegin',transformIcon(transform));
+      return button.outerHTML;
+    }).join('');
     if(!cardTemplate)return '<article class="two-move-card" data-state="'+state+'" data-pattern="'+twoMoveDisplayPatterns[index]+'" data-board-index="'+index+'"><div class="two-move-card-tools">'+buttons+'</div><button class="two-move-card-open" type="button">'+miniBoardSvg(state)+'</button></article>';
     const card=cardTemplate.content.cloneNode(true).firstElementChild;
     card.dataset.state=String(state);card.dataset.pattern=String(twoMoveDisplayPatterns[index]);card.dataset.boardIndex=String(index);
