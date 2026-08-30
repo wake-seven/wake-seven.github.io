@@ -557,8 +557,11 @@ function showClearDialog(){
     showMasterDialog('intermediate');
     return;
   }
-  if(isMode('mastery')&&(extraIndex+1)%MASTER_VOLUME_SIZE===0){
-    showMasterDialog(extraIndex===EXTRA_STAGES.length-1?'mastery':'volume');
+  const clearedMasteryIndex=isMode('mastery')&&Number.isInteger(extraIndex)
+    ?extraIndex
+    :(isMode('mastery')&&Number.isInteger(lastStageMode?.index)?lastStageMode.index:-1);
+  if(clearedMasteryIndex>=0&&(clearedMasteryIndex+1)%MASTER_VOLUME_SIZE===0){
+    showMasterDialog(clearedMasteryIndex===EXTRA_STAGES.length-1?'mastery':'volume');
     return;
   }
   const action=$('clearNext');
