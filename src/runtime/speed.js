@@ -295,12 +295,8 @@ function finishSpeedRun(){
     else if(trialVariant==='training18')rememberSpecialMessage('volume');
     else if(trialVariant==='mastery27'){grantMasterReward();rememberSpecialMessage('mastery');}
     setActiveMode('stage');
-    // 合格後に速解き最終盤の状態を残さない。元のコースの節目へ戻して、
-    // 既存のクリア演出・次の道への導線にそのまま合流させる。
-    if(trialVariant==='training9')loadStage(ACADEMY_STAGE_COUNT-1);
-    else if(trialVariant==='training18')loadStage(STAGES.length-1);
-    else loadExtraStage(EXTRA_STAGES.length-1);
-    // 合格後は、それぞれの道を終えたときの既存の昇格ダイアログに合流する。
+    // 合格後は元コースの最終盤面を再ロードせず、節目ダイアログへ直接合流する。
+    // 先に下巻などをロードすると、描画更新でダイアログが閉じたまま残る経路がある。
     showMasterDialog(trialVariant==='training9'?'primary':trialVariant==='training18'?'intermediate':'mastery');
   }else showMasterDialog('speedComplete');
 }
