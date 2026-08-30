@@ -1480,13 +1480,16 @@ function grantMasterDialogRewards(kind){
 function showMasterDialog(kind='primary'){
   masterDialogKind=kind;
   $('masterStart').dataset.speedVariant='';
-  const needsMasteryTrial=kind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared;
-  const needsIntermediateTrial=kind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared;
+  const trialState=masterDialogTrialState(kind);
+  const needsMasteryTrial=trialState.mastery;
+  const needsIntermediateTrial=trialState.intermediate;
+  const dialogVisibility=masterDialogVisibility(kind,needsMasteryTrial);
   grantMasterDialogRewards(kind);
   if(kind==='mastery'&&!needsMasteryTrial)$('menuAllPatterns').hidden=false;
-  const masteryBoardTheme=kind==='awakening'?'gold-3d':(kind==='mastery'&&secondLapActive)||kind==='satori'?'satori-tilted':'gold';
-  renderMasteryBoard('masteryBoard',kind!=='awakening'&&((kind==='mastery'&&!needsMasteryTrial)||['satori','awakening'].includes(kind)),masteryBoardTheme,kind!=='awakening');
-  renderMasteryBoard('awakeningRewardBoard',kind==='awakening',masteryBoardTheme,false);
+  const masteryBoardTheme=masterDialogBoardTheme(kind);
+  const boardOptions=masterDialogBoardOptions(kind,needsMasteryTrial,masteryBoardTheme);
+  renderMasteryBoard('masteryBoard',...boardOptions.mastery);
+  renderMasteryBoard('awakeningRewardBoard',...boardOptions.awakening);
   const seal=$('masterSeal');
   const rankText=$('masterRankText');
   const shareButton=$('masterShare');
@@ -1507,13 +1510,13 @@ function showMasterDialog(kind='primary'){
   speedModeOptions.hidden=true;
   $('masterDialogText').hidden=false;
   boardNote.hidden=true;
-  shareButton.hidden=!['primary','satori','awakening'].includes(kind);
+  shareButton.hidden=dialogVisibility.share;
   allPatternsLink.hidden=true;
   threeDRewardBox.hidden=true;
   speedUnlockBox.hidden=true;
   trialFooter.hidden=true;
-  $('masterStart').hidden=['satori','awakening'].includes(kind)||(kind==='mastery'&&!needsMasteryTrial);
-  shareButton.dataset.shareKind=kind==='primary'?'training':['satori','awakening'].includes(kind)?'satori':'mastery';
+  $('masterStart').hidden=dialogVisibility.start;
+  shareButton.dataset.shareKind=masterDialogShareKind(kind);
   $('masterShareLabel').textContent=tr('shareShort');
   rankText.hidden=true;
   seal.hidden=false;

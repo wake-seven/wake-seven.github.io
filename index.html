@@ -7524,6 +7524,36 @@ function renderStageNavAccent(){
   renderRankBadge();
 }
 
+// ===== 節目ダイアログ =====
+// 節目ダイアログの表示条件をまとめる。報酬付与や遷移は progression-ui.js 側が担当する。
+function masterDialogTrialState(kind){
+  return {
+    mastery:kind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared,
+    intermediate:kind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared,
+    primary:kind==='primary'&&!secondLapActive&&!speedTrainingTrialCleared
+  };
+}
+function masterDialogBoardTheme(kind){
+  if(kind==='awakening')return 'gold-3d';
+  if((kind==='mastery'&&secondLapActive)||kind==='satori')return 'satori-tilted';
+  return 'gold';
+}
+function masterDialogBoardOptions(kind,needsMasteryTrial,theme){
+  return {
+    mastery:[kind!=='awakening'&&((kind==='mastery'&&!needsMasteryTrial)||['satori','awakening'].includes(kind)),theme,kind!=='awakening'],
+    awakening:[kind==='awakening',theme,false]
+  };
+}
+function masterDialogShareKind(kind){
+  return kind==='primary'?'training':['satori','awakening'].includes(kind)?'satori':'mastery';
+}
+function masterDialogVisibility(kind,needsMasteryTrial){
+  return {
+    share:!['primary','satori','awakening'].includes(kind),
+    start:['satori','awakening'].includes(kind)||(kind==='mastery'&&!needsMasteryTrial)
+  };
+}
+
 // ===== 進行UI =====
 // ===== ヒントシステム・段位・名人ロードマップ =====
 function clearHintVisuals(preserveSelection=false){
@@ -9007,13 +9037,16 @@ function grantMasterDialogRewards(kind){
 function showMasterDialog(kind='primary'){
   masterDialogKind=kind;
   $('masterStart').dataset.speedVariant='';
-  const needsMasteryTrial=kind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared;
-  const needsIntermediateTrial=kind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared;
+  const trialState=masterDialogTrialState(kind);
+  const needsMasteryTrial=trialState.mastery;
+  const needsIntermediateTrial=trialState.intermediate;
+  const dialogVisibility=masterDialogVisibility(kind,needsMasteryTrial);
   grantMasterDialogRewards(kind);
   if(kind==='mastery'&&!needsMasteryTrial)$('menuAllPatterns').hidden=false;
-  const masteryBoardTheme=kind==='awakening'?'gold-3d':(kind==='mastery'&&secondLapActive)||kind==='satori'?'satori-tilted':'gold';
-  renderMasteryBoard('masteryBoard',kind!=='awakening'&&((kind==='mastery'&&!needsMasteryTrial)||['satori','awakening'].includes(kind)),masteryBoardTheme,kind!=='awakening');
-  renderMasteryBoard('awakeningRewardBoard',kind==='awakening',masteryBoardTheme,false);
+  const masteryBoardTheme=masterDialogBoardTheme(kind);
+  const boardOptions=masterDialogBoardOptions(kind,needsMasteryTrial,masteryBoardTheme);
+  renderMasteryBoard('masteryBoard',...boardOptions.mastery);
+  renderMasteryBoard('awakeningRewardBoard',...boardOptions.awakening);
   const seal=$('masterSeal');
   const rankText=$('masterRankText');
   const shareButton=$('masterShare');
@@ -9034,13 +9067,13 @@ function showMasterDialog(kind='primary'){
   speedModeOptions.hidden=true;
   $('masterDialogText').hidden=false;
   boardNote.hidden=true;
-  shareButton.hidden=!['primary','satori','awakening'].includes(kind);
+  shareButton.hidden=dialogVisibility.share;
   allPatternsLink.hidden=true;
   threeDRewardBox.hidden=true;
   speedUnlockBox.hidden=true;
   trialFooter.hidden=true;
-  $('masterStart').hidden=['satori','awakening'].includes(kind)||(kind==='mastery'&&!needsMasteryTrial);
-  shareButton.dataset.shareKind=kind==='primary'?'training':['satori','awakening'].includes(kind)?'satori':'mastery';
+  $('masterStart').hidden=dialogVisibility.start;
+  shareButton.dataset.shareKind=masterDialogShareKind(kind);
   $('masterShareLabel').textContent=tr('shareShort');
   rankText.hidden=true;
   seal.hidden=false;

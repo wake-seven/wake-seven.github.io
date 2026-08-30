@@ -6,7 +6,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const templatePath = join(root, 'src', 'index.template.html');
 const stateModulePath = join(root, 'src', 'game-state.js');
 const progressionModulePath = join(root, 'src', 'progression-policy.js');
-const appModuleFiles = ['data-clear-content.js', 'core-data.js', 'data-satori.js', 'data-ui-text.js', 'data-board-quiz.js', 'data-assets.js', 'runtime.js', 'speed-runtime.js', 'board-animation.js', 'board-ui.js', 'quiz-ui.js', 'clear-flow.js', 'message-ui.js', 'progression-render.js', 'progression-ui.js', 'app-events.js'];
+const appModuleFiles = ['data-clear-content.js', 'core-data.js', 'data-satori.js', 'data-ui-text.js', 'data-board-quiz.js', 'data-assets.js', 'runtime.js', 'speed-runtime.js', 'board-animation.js', 'board-ui.js', 'quiz-ui.js', 'clear-flow.js', 'message-ui.js', 'progression-render.js', 'master-dialog.js', 'progression-ui.js', 'app-events.js'];
 const outputPath = join(root, 'index.html');
 const start = '<!-- WAKE7:STATE-MODULE:START -->';
 const end = '<!-- WAKE7:STATE-MODULE:END -->';
@@ -29,7 +29,7 @@ function inject(source,startMarker,endMarker,module,name) {
 }
 const withState = inject(template,start,end,stateModule,'State-module');
 const withProgression = inject(withState,progressionStart,progressionEnd,progressionModule,'Progression-policy');
-const moduleLabels = ['クリア後メッセージデータ', '基礎データ', '悟り出題データ', '多言語UIテキスト', '盤面クイズデータ', '固定挿絵・SVGデータ', '実行状態', 'スピードランランタイム', '盤面アニメーション補助', '盤面UI', 'クイズUI', 'クリアフロー', 'メッセージUI', '進行表示', '進行UI', 'イベントと起動'];
+const moduleLabels = ['クリア後メッセージデータ', '基礎データ', '悟り出題データ', '多言語UIテキスト', '盤面クイズデータ', '固定挿絵・SVGデータ', '実行状態', 'スピードランランタイム', '盤面アニメーション補助', '盤面UI', 'クイズUI', 'クリアフロー', 'メッセージUI', '進行表示', '節目ダイアログ', '進行UI', 'イベントと起動'];
 const generated = inject(
   withProgression,
   appStart,

@@ -45,6 +45,7 @@ const moduleMarkers = [
   '// ===== クリアフロー =====',
   '// ===== メッセージUI =====',
   '// ===== 進行表示 =====',
+  '// ===== 節目ダイアログ =====',
   '// ===== 進行UI =====',
   '// ===== イベントと起動 ====='
 ];
@@ -116,6 +117,7 @@ const sourceModules = [
   ['src/clear-flow.js', ['stageClearTextAt', 'clearEntryForCurrent', 'stageClearArtAt']],
   ['src/message-ui.js', ['buildMessageReviewEntries', 'openMessageReview', 'moveMessageReview']],
   ['src/progression-render.js', ['renderStageNavAccent']],
+  ['src/master-dialog.js', ['masterDialogTrialState', 'masterDialogBoardTheme', 'masterDialogBoardOptions']],
   ['src/progression-ui.js', ['showClearDialog', 'renderClearTip']]
 ];
 for (const [moduleName, names] of sourceModules) {
