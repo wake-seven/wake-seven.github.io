@@ -5983,7 +5983,7 @@ function reorientBoard(permutation,flip=false,rotationDeg=0){
   if(usesHiddenRemaining())resetFourthDistance();
   const applyTransform=()=>{
     const transformed=transformPosition(ori,spin,tileEls,permutation,flip);
-    ori=transformed.o;spin=transformed.s;tileEls=transformed.t;
+    replaceBoardState({ori:transformed.o,spin:transformed.s,tiles:transformed.t});
     history=history.map(h=>{
       const next=transformPosition(h.o,h.s,h.t,permutation,flip);
       return {o:next.o,s:next.s,t:next.t,m:h.m};
@@ -6347,7 +6347,7 @@ function validSavedBoard(data){
 function restoreSavedBoard(data){
   if(!validSavedBoard(data))return false;
   cancelTileAnimations();clearHintVisuals();clearTimeout(clearTimer);
-  ori=Uint8Array.from(data.o);spin=Int16Array.from(data.s);tileEls=data.t.map(i=>baseTiles[i]);
+  replaceBoardState({ori:Uint8Array.from(data.o),spin:Int16Array.from(data.s),tiles:data.t.map(i=>baseTiles[i])});
   moves=Number.isInteger(data.m)&&data.m>=0?data.m:0;
   best=Number.isInteger(data.best)&&data.best>=0?data.best:SOLVER.dist[enc(ori)];
   currentInitialState=Number.isInteger(data.initialState)?data.initialState:enc(ori);
@@ -6475,7 +6475,7 @@ function restoreFreeSession(){
   clearTimeout(clearTimer);
   setActiveMode('free');editingBoard=false;
   resetFourthDistance();
-  ori=Uint8Array.from(s.ori);spin=Int16Array.from(s.spin);
+    replaceBoardState({ori:Uint8Array.from(s.ori),spin:Int16Array.from(s.spin)});
   tileEls=s.tileEls.slice();moves=s.moves;best=s.best;
   history=s.history.map(cloneHistoryEntry);
   currentInitialState=s.initialState;currentInitialPar=s.initialPar;clearShown=s.clearShown;
@@ -6655,7 +6655,7 @@ function findSwipeThatReached(beforeState,afterState){
 function animateUndoSwipe(target){
   const move=findSwipeThatReached(enc(target.o),enc(ori));
   if(!move){
-    ori=target.o;spin=target.s;tileEls=target.t;moves=target.m;paint();
+    replaceBoardState({ori:target.o,spin:target.s,tiles:target.t,moves:target.m},{paintNow:true});
     return;
   }
   const c=TRI[move.ti].cells;
@@ -6699,7 +6699,7 @@ function animateUndoSwipe(target){
     if(progress<1){requestAnimationFrame(frame);return;}
     group.remove();
     for(const item of items)item.el.style.visibility='';
-    ori=target.o;spin=target.s;tileEls=target.t;moves=target.m;
+    replaceBoardState({ori:target.o,spin:target.s,tiles:target.t,moves:target.m});
     busy=false;paint();
     haptic(7);playRotateSound(reverseDir);
   };
