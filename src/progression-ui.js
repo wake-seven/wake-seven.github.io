@@ -1166,20 +1166,6 @@ function transformButtonText(kind){
   const label={rotateBack:'rotateCcw',rotate:'rotateCw',mirror:'mirror',vertical:'flipVertical'}[kind]||kind;
   return transformIcon(kind)+' '+tr(label);
 }
-function boardQuizSameShapeState(state,shapeState){
-  const shape=dec(shapeState);
-  for(const symmetry of SYMMETRIES){
-    const transformed=transformStateBySymmetry(state,symmetry),board=dec(transformed);
-    if(board.every((value,index)=>(value===0)===(shape[index]===0)))return transformed;
-  }
-  return state;
-}
-function boardQuizCenterIsNotOdd(board){
-  if(board[3]===0)return true;
-  const count=[0,0,0];
-  board.forEach(value=>{if(value!==0)count[value]++;});
-  return count[board[3]]===Math.max(...count);
-}
 function boardQuizConfigForCurrent(){return isMode('mastery')?(clearContentAt(true,extraIndex)?.boardQuiz||null):null;}
 function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
