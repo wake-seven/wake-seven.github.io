@@ -51,3 +51,25 @@ function boardQuizMarkup(config,states,moveChoiceOrder,copy,rootId,detailPattern
   const detailLinks=detailPatterns.map(pattern=>'<button class="clear-tip-link" id="'+rootId+'Patterns'+pattern+'" type="button" data-board-patterns data-board-pattern="'+pattern+'" hidden>'+(detailPatterns.length>1?'最短2手の9パターン　'+pattern+' / 9 →':tr('detailsLink'))+'</button>').join('');
   return {boardMarkup,detailLinks};
 }
+function bindBoardQuizAnswerEvents(root,{config,correct,states,copy,note,noteKey,requireAnswer=false,isAnimating=()=>false}){
+  const required=correct.length,selected=[];
+  root.querySelectorAll('[data-board-answer]').forEach(button=>button.addEventListener('click',()=>{
+    if(isAnimating()||button.disabled)return;
+    const index=Number(button.dataset.boardAnswer);
+    const selectedAt=selected.indexOf(index);
+    if(selectedAt>=0){selected.splice(selectedAt,1);button.classList.remove('selected');}
+    else if(selected.length<required){selected.push(index);button.classList.add('selected');}
+    if(selected.length<required){
+      note.textContent=required>1?(copy.selectMore||'Choose one more.').replace('{n}',required-selected.length):'';
+      return;
+    }
+    root.querySelectorAll('[data-board-answer]').forEach(item=>item.disabled=true);
+    correct.forEach(rightIndex=>root.querySelector('[data-board-answer="'+rightIndex+'"]').classList.add('correct'));
+    selected.filter(selectedIndex=>!correct.includes(selectedIndex)).forEach(wrongIndex=>root.querySelector('[data-board-answer="'+wrongIndex+'"]').classList.add('wrong'));
+    const passed=selected.length===correct.length&&selected.every(selectedIndex=>correct.includes(selectedIndex));
+    note.textContent=(passed?tr('quizCorrect'):tr('quizWrong'))+'　'+copy[noteKey];
+    if(passed)celebrateQuiz(root);
+    root.querySelectorAll('[data-board-patterns],[data-guide-page]').forEach(link=>link.hidden=false);
+    if(requireAnswer)$('clearNext').disabled=false;
+  }));
+}
