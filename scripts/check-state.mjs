@@ -28,6 +28,7 @@ const missing = required.filter(token => !html.includes(token));
 if (missing.length) throw new Error(`index.html is missing: ${missing.join(', ')}`);
 
 const moduleMarkers = [
+  '// ===== クリア後メッセージデータ =====',
   '// ===== 基礎データ =====',
   '// ===== 実行状態 =====',
   '// ===== スピードラン(速解き)ランタイム =====',
@@ -57,6 +58,7 @@ for (const name of [
 const sourceModules = [
   ['src/quiz-ui.js', ['boardQuizPatternState', 'boardQuizPresentation', 'boardQuizMarkup', 'bindBoardQuizAnswerEvents']],
   ['src/message-ui.js', ['buildMessageReviewEntries', 'openMessageReview', 'moveMessageReview']],
+  ['src/progression-render.js', ['renderStageNavAccent']],
   ['src/progression-ui.js', ['showClearDialog', 'renderClearTip']]
 ];
 for (const [moduleName, names] of sourceModules) {
