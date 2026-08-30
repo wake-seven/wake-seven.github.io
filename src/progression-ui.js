@@ -1039,15 +1039,6 @@ function buildMessageReviewEntries(){
   if(awakenedGranted)entries.push({master:'awakening',awakened:true,index:SATORI_STAGES.length-1});
   return finalize(entries);
 }
-function rememberClearedMessage(extra,index,satori=false){
-  const entry=buildMessageReviewEntries().find(item=>!!item.satori===satori&&!!item.extra===extra&&item.index===index);
-  if(!entry)return;
-  const key=messageReviewEntryKey(entry);
-  try{
-    storage.set(MESSAGE_REVIEW_STORAGE_KEY,key);
-    storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);
-  }catch(_){}
-}
 function configureMessageReviewHeader(entry){
   $('messageDialogTitle').textContent=tr('clear');
   $('messageDialogPlace').textContent=messageReviewPlace(entry);
