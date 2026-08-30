@@ -44,7 +44,7 @@ function debugPrepareSecondLapCheckpoint(){
   try{
     storage.set('wake7-second-lap-unlocked','1');
     storage.remove('wake7-awakened-granted');
-    for(const variant of ['standard','training9','mastery15','mastery24','satori73'])storage.remove(speedSessionStorageKey(variant));
+    for(const variant of ['standard','training9','mastery15','mastery24','satori73'])clearSpeedSession(variant);
     storage.set('wake7-master-gold-granted','1');
     storage.set('wake7-satori-design-granted','1');
   }catch(_){ }
@@ -300,7 +300,7 @@ function resumeSpeedRun(){
 function confirmSpeedRestart(){
   $('speedRestartDialog').hidden=true;
   speedManuallyPaused=false;
-  storage.remove(speedSessionStorageKey());
+  clearSpeedSession();
   enterSpeedMode(true);
 }
 function bindSpeedEvents(){
@@ -1079,7 +1079,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
       storage.remove(STORAGE_KEYS.speedTrialModelVersion);
       storage.remove('wake7-3d-unlocked');
       for(const variant of ['standard','training9','mastery15','mastery24','satori73']){
-        storage.remove(speedSessionStorageKey(variant));
+        clearSpeedSession(variant);
         storage.remove(speedBestStorageKey(variant));
         storage.remove(speedHistoryStorageKey(variant));
       }

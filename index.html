@@ -4932,18 +4932,20 @@ function pauseSpeedClock(){
   if(speedClockStarted){if(speedSession)speedSession.elapsedMs+=performance.now()-speedClockStarted;speedClockStarted=0;}
   clearInterval(speedClockTimer);speedClockTimer=0;renderSpeedClock();
 }
-function saveSpeedSession(){
+// 速解きセッションの永続化境界。経過時間と現在盤面をここで保存する。
+function persistSpeedSession(){
   if(!speedSession)return;
   const elapsed=speedElapsedMs();
   const payload={...speedSession,variant:activeSpeedDefinition().id,elapsedMs:elapsed,board:isMode('speed')?serializeActiveBoard():speedSession.board};
   storage.setJson(speedSessionStorageKey(),payload);
   storage.set(STORAGE_KEYS.speedActiveVariant,payload.variant);
 }
-function pauseSpeedRun(){if(!isMode('speed'))return;pauseSpeedClock();saveSpeedSession();}
+function clearSpeedSession(variant=speedVariant){storage.remove(speedSessionStorageKey(variant));}
+function pauseSpeedRun(){if(!isMode('speed'))return;pauseSpeedClock();persistSpeedSession();}
 function openSpeedPauseDialog(){
   if(!isMode('speed'))return;
   speedManuallyPaused=true;
-  pauseSpeedClock();saveSpeedSession();
+  pauseSpeedClock();persistSpeedSession();
   renderSpeedPauseStats();
   $('speedPauseDialog').hidden=false;
 }
@@ -5005,7 +5007,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
     // スタート前は問題を見せず、全員が起きたまっさらな盤面で開始を促す。
     setPosition(0,0);
     renderStageNav();
-    saveSpeedSession();saveActiveSession();
+    persistSpeedSession();saveActiveSession();
     return;
   }
   const stage=pool[speedSession.order[speedSession.index]];
@@ -5017,7 +5019,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
   }
   renderStageNav();
   if(arriving)animateBoardArrival();
-  saveSpeedSession();saveActiveSession();startSpeedClock();
+  persistSpeedSession();saveActiveSession();startSpeedClock();
 }
 function enterSpeedMode(forceNew=false){
   pauseSpeedRun();
@@ -5044,7 +5046,7 @@ function finishSpeedRun(){
   const history=readSpeedHistory();
   history.unshift({elapsedMs:elapsed,optimalClears,total:speedSession.total||activeSpeedDefinition().total,completedAt:Date.now()});
   writeSpeedHistory(history);
-  storage.remove(speedSessionStorageKey());
+  clearSpeedSession();
   storage.remove(STORAGE_KEYS.speedActiveVariant);
   // 速解き自体の完走では報酬を付けない。3Dページは二周目制覇の報酬。
   speedSession={...speedSession,completed:true,elapsedMs:elapsed,bestMs:bestTime,optimalClears,runNumber:history.length};
@@ -5103,7 +5105,7 @@ function advanceSpeedRun(){
 function completeSpeedStage(){
   clearShown=true;
   if(speedSession&&moves===best&&!speedSession.restartedCurrent) speedSession.optimalClears=speedOptimalClears()+1;
-  pauseSpeedClock();saveSpeedSession();
+  pauseSpeedClock();persistSpeedSession();
   const delay=celebrateClear();
   clearTimer=setTimeout(advanceSpeedRun,delay+120);
 }
@@ -6208,7 +6210,7 @@ function applySwipe(ti,dir,save=true,playEffects=true){
   if(!isMode('speed')&&isAssistedLearningStage()&&!isSolved())showAcademyRemainingCallout();
   if(isMode('speed')&&speedSession){
     if(save)speedSession.movedCurrent=true;
-    saveSpeedSession();
+    persistSpeedSession();
   }
   if(playEffects){
     haptic(SOLVER.dist[enc(ori)]===0?[20,32,42]:10);
@@ -6523,7 +6525,7 @@ function saveActiveSession(){
   if(isMode('speed')){
     // 速解きの保存盤だけでは「最後に遊んでいたモード」を判定しない。
     // 他モードへ戻った後に古い速解きセッションが残っていても、復元先を奪わないための印。
-    saveSpeedSession();
+    persistSpeedSession();
     const payload={mode:'speed',variant:speedVariant,lap:activeLap};
     syncGameState(payload);
     try{storage.set(STORAGE_KEYS.activeSession,JSON.stringify(payload));}catch(_){ }
@@ -6817,7 +6819,7 @@ function restartWithAnimation(){
   // 極1〜9はやり直しで回復、極10〜12は使用回数を維持する。
   if(!fourthChecksSurviveRestart())renewFourthChecks();
   setPosition(currentInitialState,currentInitialPar);
-  if(isMode('speed')&&speedSession)saveSpeedSession();
+  if(isMode('speed')&&speedSession)persistSpeedSession();
   renderStageNav();
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   busy=true;
@@ -7226,11 +7228,11 @@ $('undo').addEventListener('click',()=>{
   $('msg').classList.remove('show');
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
     replaceBoardState({ori:h.o,spin:h.s,tiles:h.t,moves:h.m},{paintNow:true});
-    if(isMode('speed')&&speedSession)saveSpeedSession();
+    if(isMode('speed')&&speedSession)persistSpeedSession();
   }else{
     animateUndoSwipe(h);
     // アニメーション完了後の盤面を保存する。
-    if(isMode('speed')&&speedSession)setTimeout(saveSpeedSession,460);
+    if(isMode('speed')&&speedSession)setTimeout(persistSpeedSession,460);
   }
 });
 $('reset').addEventListener('click',()=>{
@@ -9322,7 +9324,7 @@ function debugPrepareSecondLapCheckpoint(){
   try{
     storage.set('wake7-second-lap-unlocked','1');
     storage.remove('wake7-awakened-granted');
-    for(const variant of ['standard','training9','mastery15','mastery24','satori73'])storage.remove(speedSessionStorageKey(variant));
+    for(const variant of ['standard','training9','mastery15','mastery24','satori73'])clearSpeedSession(variant);
     storage.set('wake7-master-gold-granted','1');
     storage.set('wake7-satori-design-granted','1');
   }catch(_){ }
@@ -9578,7 +9580,7 @@ function resumeSpeedRun(){
 function confirmSpeedRestart(){
   $('speedRestartDialog').hidden=true;
   speedManuallyPaused=false;
-  storage.remove(speedSessionStorageKey());
+  clearSpeedSession();
   enterSpeedMode(true);
 }
 function bindSpeedEvents(){
@@ -10357,7 +10359,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
       storage.remove(STORAGE_KEYS.speedTrialModelVersion);
       storage.remove('wake7-3d-unlocked');
       for(const variant of ['standard','training9','mastery15','mastery24','satori73']){
-        storage.remove(speedSessionStorageKey(variant));
+        clearSpeedSession(variant);
         storage.remove(speedBestStorageKey(variant));
         storage.remove(speedHistoryStorageKey(variant));
       }

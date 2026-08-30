@@ -1062,7 +1062,7 @@ function applySwipe(ti,dir,save=true,playEffects=true){
   if(!isMode('speed')&&isAssistedLearningStage()&&!isSolved())showAcademyRemainingCallout();
   if(isMode('speed')&&speedSession){
     if(save)speedSession.movedCurrent=true;
-    saveSpeedSession();
+    persistSpeedSession();
   }
   if(playEffects){
     haptic(SOLVER.dist[enc(ori)]===0?[20,32,42]:10);
@@ -1377,7 +1377,7 @@ function saveActiveSession(){
   if(isMode('speed')){
     // 速解きの保存盤だけでは「最後に遊んでいたモード」を判定しない。
     // 他モードへ戻った後に古い速解きセッションが残っていても、復元先を奪わないための印。
-    saveSpeedSession();
+    persistSpeedSession();
     const payload={mode:'speed',variant:speedVariant,lap:activeLap};
     syncGameState(payload);
     try{storage.set(STORAGE_KEYS.activeSession,JSON.stringify(payload));}catch(_){ }
@@ -1671,7 +1671,7 @@ function restartWithAnimation(){
   // 極1〜9はやり直しで回復、極10〜12は使用回数を維持する。
   if(!fourthChecksSurviveRestart())renewFourthChecks();
   setPosition(currentInitialState,currentInitialPar);
-  if(isMode('speed')&&speedSession)saveSpeedSession();
+  if(isMode('speed')&&speedSession)persistSpeedSession();
   renderStageNav();
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   busy=true;
@@ -2080,11 +2080,11 @@ $('undo').addEventListener('click',()=>{
   $('msg').classList.remove('show');
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
     replaceBoardState({ori:h.o,spin:h.s,tiles:h.t,moves:h.m},{paintNow:true});
-    if(isMode('speed')&&speedSession)saveSpeedSession();
+    if(isMode('speed')&&speedSession)persistSpeedSession();
   }else{
     animateUndoSwipe(h);
     // アニメーション完了後の盤面を保存する。
-    if(isMode('speed')&&speedSession)setTimeout(saveSpeedSession,460);
+    if(isMode('speed')&&speedSession)setTimeout(persistSpeedSession,460);
   }
 });
 $('reset').addEventListener('click',()=>{

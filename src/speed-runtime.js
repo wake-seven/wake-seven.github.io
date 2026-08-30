@@ -157,18 +157,20 @@ function pauseSpeedClock(){
   if(speedClockStarted){if(speedSession)speedSession.elapsedMs+=performance.now()-speedClockStarted;speedClockStarted=0;}
   clearInterval(speedClockTimer);speedClockTimer=0;renderSpeedClock();
 }
-function saveSpeedSession(){
+// 速解きセッションの永続化境界。経過時間と現在盤面をここで保存する。
+function persistSpeedSession(){
   if(!speedSession)return;
   const elapsed=speedElapsedMs();
   const payload={...speedSession,variant:activeSpeedDefinition().id,elapsedMs:elapsed,board:isMode('speed')?serializeActiveBoard():speedSession.board};
   storage.setJson(speedSessionStorageKey(),payload);
   storage.set(STORAGE_KEYS.speedActiveVariant,payload.variant);
 }
-function pauseSpeedRun(){if(!isMode('speed'))return;pauseSpeedClock();saveSpeedSession();}
+function clearSpeedSession(variant=speedVariant){storage.remove(speedSessionStorageKey(variant));}
+function pauseSpeedRun(){if(!isMode('speed'))return;pauseSpeedClock();persistSpeedSession();}
 function openSpeedPauseDialog(){
   if(!isMode('speed'))return;
   speedManuallyPaused=true;
-  pauseSpeedClock();saveSpeedSession();
+  pauseSpeedClock();persistSpeedSession();
   renderSpeedPauseStats();
   $('speedPauseDialog').hidden=false;
 }
@@ -230,7 +232,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
     // スタート前は問題を見せず、全員が起きたまっさらな盤面で開始を促す。
     setPosition(0,0);
     renderStageNav();
-    saveSpeedSession();saveActiveSession();
+    persistSpeedSession();saveActiveSession();
     return;
   }
   const stage=pool[speedSession.order[speedSession.index]];
@@ -242,7 +244,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
   }
   renderStageNav();
   if(arriving)animateBoardArrival();
-  saveSpeedSession();saveActiveSession();startSpeedClock();
+  persistSpeedSession();saveActiveSession();startSpeedClock();
 }
 function enterSpeedMode(forceNew=false){
   pauseSpeedRun();
@@ -269,7 +271,7 @@ function finishSpeedRun(){
   const history=readSpeedHistory();
   history.unshift({elapsedMs:elapsed,optimalClears,total:speedSession.total||activeSpeedDefinition().total,completedAt:Date.now()});
   writeSpeedHistory(history);
-  storage.remove(speedSessionStorageKey());
+  clearSpeedSession();
   storage.remove(STORAGE_KEYS.speedActiveVariant);
   // 速解き自体の完走では報酬を付けない。3Dページは二周目制覇の報酬。
   speedSession={...speedSession,completed:true,elapsedMs:elapsed,bestMs:bestTime,optimalClears,runNumber:history.length};
@@ -328,7 +330,7 @@ function advanceSpeedRun(){
 function completeSpeedStage(){
   clearShown=true;
   if(speedSession&&moves===best&&!speedSession.restartedCurrent) speedSession.optimalClears=speedOptimalClears()+1;
-  pauseSpeedClock();saveSpeedSession();
+  pauseSpeedClock();persistSpeedSession();
   const delay=celebrateClear();
   clearTimer=setTimeout(advanceSpeedRun,delay+120);
 }
