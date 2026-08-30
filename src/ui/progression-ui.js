@@ -1277,6 +1277,10 @@ function grantMasterDialogRewards(kind){
   }
 }
 function showMasterDialog(kind='primary'){
+  const masterDialog=$('masterDialog');
+  // 同じ節目ダイアログを状態更新のために再描画することがあるが、
+  // そのたびに称号アニメーションを再開すると「称号が二度出る」ように見える。
+  const shouldAnimate=masterDialog.hidden||masterDialogKind!==kind;
   masterDialogKind=kind;
   $('masterStart').dataset.speedVariant='';
   const trialState=masterDialogTrialState(kind);
@@ -1495,7 +1499,11 @@ function showMasterDialog(kind='primary'){
   (kindRenderers[kind]||kindRenderers.mastery)();
   seal.tabIndex=seal.classList.contains('rank-seal')?0:-1;
   renderMasterRoadmap(kind);
-  $('masterDialog').hidden=false;
+  masterDialog.hidden=false;
+  if(!shouldAnimate){
+    seal.classList.remove('animate');
+    return;
+  }
   seal.classList.remove('animate');
   void seal.offsetWidth;
   seal.classList.add('animate');
