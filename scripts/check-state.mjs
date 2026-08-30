@@ -9,6 +9,7 @@ const stateModule = await readFile(join(root, 'src', 'game-state.js'), 'utf8');
 const progressionModule = await readFile(join(root, 'src', 'progression-policy.js'), 'utf8');
 const coreDataModule = await readFile(join(root, 'src', 'core-data.js'), 'utf8');
 const runtimeModule = await readFile(join(root, 'src', 'runtime.js'), 'utf8');
+const compatCleanupDoc = await readFile(join(root, 'src', 'compat-cleanup.md'), 'utf8');
 const required = [
   'WAKE7:STATE-MODULE:START',
   'WAKE7:PROGRESSION-POLICY:START',
@@ -34,6 +35,18 @@ const required = [
 ];
 const missing = required.filter(token => !html.includes(token));
 if (missing.length) throw new Error(`index.html is missing: ${missing.join(', ')}`);
+const compatSections = [
+  '# 互換層の段階的削除計画',
+  '## 判定基準',
+  '## 互換モード名・フラグ',
+  '## 保存形式',
+  '## 未使用データ・翻訳',
+  '## 削除前チェックリスト'
+];
+const missingCompatSections = compatSections.filter(token => !compatCleanupDoc.includes(token));
+if (missingCompatSections.length) {
+  throw new Error(`Compatibility cleanup inventory is incomplete: ${missingCompatSections.join(', ')}`);
+}
 
 const moduleMarkers = [
   '// ===== クリア後メッセージデータ =====',
