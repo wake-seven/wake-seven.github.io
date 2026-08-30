@@ -291,6 +291,18 @@ function bindMenuEvents(){
     GameNavigation.speedPicker();
   });
 }
+// 速解きの再開・再スタートは、イベントから直接状態を書き換えず操作単位へ集約する。
+function resumeSpeedRun(){
+  $('speedPauseDialog').hidden=true;
+  speedManuallyPaused=false;
+  startSpeedClock();
+}
+function confirmSpeedRestart(){
+  $('speedRestartDialog').hidden=true;
+  speedManuallyPaused=false;
+  storage.remove(speedSessionStorageKey());
+  enterSpeedMode(true);
+}
 function bindSpeedEvents(){
   $('speedBoardStart').addEventListener('click',beginSpeedRun);
   $('speedPause').addEventListener('click',()=>{
@@ -298,11 +310,7 @@ function bindSpeedEvents(){
     openSpeedPauseDialog();
     $('speedResume').focus();
   });
-  $('speedResume').addEventListener('click',()=>{
-    $('speedPauseDialog').hidden=true;
-    speedManuallyPaused=false;
-    startSpeedClock();
-  });
+  $('speedResume').addEventListener('click',resumeSpeedRun);
   $('speedRestart').addEventListener('click',()=>{
     $('speedPauseDialog').hidden=true;
     $('speedRestartDialog').hidden=false;
@@ -313,12 +321,7 @@ function bindSpeedEvents(){
     $('speedPauseDialog').hidden=false;
     $('speedResume').focus();
   });
-  $('speedRestartConfirm').addEventListener('click',()=>{
-    $('speedRestartDialog').hidden=true;
-    speedManuallyPaused=false;
-    storage.remove(speedSessionStorageKey());
-    enterSpeedMode(true);
-  });
+  $('speedRestartConfirm').addEventListener('click',confirmSpeedRestart);
   $('speedPauseStageMode').addEventListener('click',()=>{
     $('speedPauseDialog').hidden=true;
     pauseSpeedRun();GameNavigation.stageMenu();
