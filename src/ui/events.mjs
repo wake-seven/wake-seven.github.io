@@ -27,5 +27,7 @@ export function createEventBinder({ target, handlers = {} } = {}) {
     bound = false;
     return count;
   };
-  return Object.freeze({ bind, bindAll, unbindAll, get size() { return bindings.length; } });
+  const attach = () => { bindAll(); return unbindAll; };
+  const detach = () => unbindAll();
+  return Object.freeze({ bind, bindAll, unbindAll, attach, detach, get size() { return bindings.length; } });
 }

@@ -3,11 +3,15 @@
  * 既存の個別レンダラーは互換のため残し、画面全体を更新する入口だけを
  * ここへ集約していく。
  */
+const WakeSevenRendererRegistry=Object.freeze({
+  create(renderers={}){const entries=new Map(Object.entries(renderers).filter(([,render])=>typeof render==='function').map(([name,render])=>[name,Object.freeze({render})]));return Object.freeze({get:name=>entries.get(name)||null,names:()=>[...entries.keys()]});}
+});
 function renderCurrentView(model={},context={}){
   const {includeBoard=false,includePicker=true}=model;
-  if(includeBoard)paint(context);
-  renderStageNav();
-  if(includePicker&&!$('stagePicker').hidden)renderStagePicker();
+  const renderers=WakeSevenRendererRegistry.create({board:()=>includeBoard&&paint(context),navigation:()=>renderStageNav(),picker:()=>includePicker&&!$('stagePicker').hidden&&renderStagePicker()});
+  renderers.get('board').render();
+  renderers.get('navigation').render();
+  renderers.get('picker').render();
 }
 // 動的コンテナ更新の共通境界。既存rendererのmarkup生成は維持する。
 function replaceRenderedContent(root,markup=''){return svgMount(root,markup);}
