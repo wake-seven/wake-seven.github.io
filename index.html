@@ -9778,7 +9778,7 @@ function svgClear(root){return svgMount(root,'');}
 function svgSetIcon(root,markup=''){return svgMount(root,markup);}
 export {};
 
-// ===== 公開API名前空間 =====
+// ===== 起動・ライフサイクル =====
 /* ---- 画面描画の境界 ----
  * 進行状態を変更する処理と、現在の状態を画面へ反映する処理を分ける。
  * 既存の個別レンダラーは互換のため残し、画面全体を更新する入口だけを
@@ -9801,7 +9801,7 @@ function replaceRenderedContent(root,markup=''){return svgMount(root,markup);}
 // 公開native moduleの構文境界。
 export {};
 
-// ===== runtime/event-bindings.js =====
+// ===== 公開API名前空間 =====
 // DOMイベント登録の共通境界。イベント配線から要素検索の細部を分離する。
 const WakeSevenEventBindings=Object.freeze({
   click(id,handler){
@@ -10999,12 +10999,18 @@ $('resetDialogAll').addEventListener('click',()=>{
   resetStoredProgress({resetIntro:true,showIntro:true});
 });
 
+// 公開native moduleの構文境界。
+export {};
+
+// ===== runtime/app-bootstrap.js =====
+// 起動・復元・ページライフサイクル。画面イベントの定義とは分離する。
 function migrateTutorialState(){
   if(storage.get(STORAGE_KEYS.tutorialComplete)!==null||storage.get(STORAGE_KEYS.introSeen)!=='1')return;
   if(storage.json(STORAGE_KEYS.activeSession,null)?.mode==='tutorial')return;
   const progressKeys=[STORAGE_KEYS.cleared,STORAGE_KEYS.extraCleared,STORAGE_KEYS.satoriCleared,STORAGE_KEYS.currentStage,STORAGE_KEYS.activeSession];
   if(progressKeys.some(key=>storage.get(key)!==null))storage.set(STORAGE_KEYS.tutorialComplete,'1');
 }
+
 migrateTutorialState();
 buildBoard();
 updateMasterTheme();

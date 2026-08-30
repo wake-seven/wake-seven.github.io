@@ -9,7 +9,7 @@ export const applicationModuleFiles = [
   'ui/board-animation.js', 'ui/board-geometry.js', 'ui/board.js', 'commands/board.js', 'commands/progression.js',
   'ui/quiz.js', 'ui/clear-flow.js', 'ui/message.js', 'ui/progression-render.js',
   'ui/master-dialog.js', 'ui/progression.js', 'ui/progression-commands.js', 'ui/progression-roadmap.js', 'ui/progression-hints.js', 'ui/progression-clear-flow.js', 'ui/progression-navigation.js', 'ui/rank.js', 'ui/svg.js', 'ui/render.js',
-  'runtime/event-bindings.js', 'runtime/app-events.js', 'runtime/namespace.js', 'ui/dom.js', 'ui/template.js'
+  'runtime/event-bindings.js', 'runtime/app-events.js', 'runtime/app-bootstrap.js', 'runtime/namespace.js', 'ui/dom.js', 'ui/template.js'
 ];
 
 export const publishedSourceFiles = Object.freeze([

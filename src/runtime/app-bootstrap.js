@@ -1,0 +1,58 @@
+// 起動・復元・ページライフサイクル。画面イベントの定義とは分離する。
+function migrateTutorialState(){
+  if(storage.get(STORAGE_KEYS.tutorialComplete)!==null||storage.get(STORAGE_KEYS.introSeen)!=='1')return;
+  if(storage.json(STORAGE_KEYS.activeSession,null)?.mode==='tutorial')return;
+  const progressKeys=[STORAGE_KEYS.cleared,STORAGE_KEYS.extraCleared,STORAGE_KEYS.satoriCleared,STORAGE_KEYS.currentStage,STORAGE_KEYS.activeSession];
+  if(progressKeys.some(key=>storage.get(key)!==null))storage.set(STORAGE_KEYS.tutorialComplete,'1');
+}
+
+migrateTutorialState();
+buildBoard();
+updateMasterTheme();
+restoreActiveSession();
+let savedLanguage=UI_TEXT[gameState.settings.language]?gameState.settings.language:'ja';
+applyLanguage(savedLanguage);
+if(storage.get(STORAGE_KEYS.introSeen)!=='1')setTimeout(openIntroGuide,350);
+else if(storage.get(STORAGE_KEYS.tutorialComplete)!=='1'&&!isMode('tutorial'))setTimeout(startTutorial,80);
+window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();persistActiveSession();});
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='hidden'){if(isMode('speed'))pauseSpeedClock();persistActiveSession();}
+  else if(isMode('speed')&&!speedAwaitingStart()){
+    if(isSolved()&&speedSession){
+      // 非表示の間にクリア演出や、その後の次の問題へ進む処理が止まってしまうことがある
+      // (裏に回った端末がタイマーの発火を止める・遅らせる等)。
+      // 復帰時にクリア済みの盤面が残っていたら、保留中のタイマーは捨てて即座に確定させる。
+      clearTimeout(clearTimer);
+      if(!clearShown)completeSpeedStage();else WakeSevenProgressionCommands.advanceSpeedRun();
+    }
+    // 非表示から戻った時はタイマーを黙って再開せず、一時停止ダイアログを出して本人の操作で再開させる。
+    else if($('speedPauseDialog').hidden)openSpeedPauseDialog();
+  }
+});
+
+if(document.documentElement.classList.contains('embed')&&window.parent!==window){
+  const embedContentEnd=document.querySelector('.debug-tools');
+  const reportEmbedHeight=()=>{
+    requestAnimationFrame(()=>{
+      const bodyStyle=getComputedStyle(document.body);
+      const height=embedContentEnd.getBoundingClientRect().bottom+
+        window.scrollY+parseFloat(bodyStyle.paddingBottom);
+      window.parent.postMessage({
+        type:'wake7:height',
+        height:Math.ceil(height)
+      },location.origin==='null'?'*':location.origin);
+    });
+  };
+  window.reportWake7EmbedHeight=reportEmbedHeight;
+  if(window.ResizeObserver){
+    const embedResizeObserver=new ResizeObserver(reportEmbedHeight);
+    embedResizeObserver.observe(document.body);
+    embedResizeObserver.observe(embedContentEnd);
+  }
+  window.addEventListener('resize',reportEmbedHeight);
+  window.addEventListener('load',reportEmbedHeight);
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(reportEmbedHeight);
+  reportEmbedHeight();
+}
+// 公開native moduleの構文境界。
+export {};
