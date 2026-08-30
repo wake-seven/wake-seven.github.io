@@ -86,6 +86,8 @@ assert.match(sources.get('src/ui/progression.js'), /two-move-card-template/);
 for (const id of ['chain-template-training-middle-spin', 'chain-template-development-welcome-spin']) {
   assert.match(template, new RegExp(`<template[^>]+id=["']${id}["']`, 'i'), `Spin dialog template is missing: ${id}`);
 }
+assert.match(template, /<template[^>]+id=["']chain-template-academy-enroll["']/i, 'Academy enroll template is missing.');
+assert.match(sources.get('src/ui/board.js'), /chain-template-academy-enroll/);
 for (const token of ['startTutorial', 'rollOnce', 'tutorialStep', 'paint()']) {
   assert.match(all, new RegExp(token.replace(/[()]/g, '\\$&')), `Main flow implementation token is missing: ${token}`);
 }

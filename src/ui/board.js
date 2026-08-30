@@ -359,7 +359,8 @@ const CHAIN_STEPS={
   academyEnroll:{
     titleKey:'academyEnrollTitle', actionKey:'trainingWelcomeNext',
     render(body){
-      body.innerHTML='<div class="clear-tip-illustration academy-welcome-art" id="academyEnrollArt"></div>';
+      cloneDialogTemplate(body,'chain-template-academy-enroll','<div class="clear-tip-illustration academy-welcome-art" id="academyEnrollArt"></div>');
+      body.querySelector('[data-academy-enroll-art]')?.setAttribute('id','academyEnrollArt');
       $('academyEnrollArt').innerHTML=academyEnrollArtSvg();
     },
     onAction(){openChainedDialog('academyWelcome');}
