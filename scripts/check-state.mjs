@@ -27,6 +27,44 @@ const required = [
 const missing = required.filter(token => !html.includes(token));
 if (missing.length) throw new Error(`index.html is missing: ${missing.join(', ')}`);
 
+const moduleMarkers = [
+  '// ===== 基礎データ =====',
+  '// ===== 実行状態 =====',
+  '// ===== 盤面UI =====',
+  '// ===== クイズUI =====',
+  '// ===== メッセージUI =====',
+  '// ===== 進行UI =====',
+  '// ===== イベントと起動 ====='
+];
+const markerPositions = moduleMarkers.map(marker => html.indexOf(marker));
+if (markerPositions.some(position => position < 0)
+  || markerPositions.some((position, index) => index > 0 && position <= markerPositions[index - 1])) {
+  throw new Error('Application modules are missing or out of order in generated index.html.');
+}
+
+const countDefinitions = (source, name) => {
+  const matches = source.match(new RegExp(`function\\s+${name}\\s*\\(`, 'g')) || [];
+  if (matches.length !== 1) throw new Error(`${name} must have exactly one function definition, found ${matches.length}.`);
+};
+for (const name of [
+  'showClearDialog', 'renderClearTip', 'buildMessageReviewEntries', 'openMessageReview', 'moveMessageReview',
+  'boardQuizPatternState', 'boardQuizPresentation', 'boardQuizMarkup', 'bindBoardQuizAnswerEvents'
+]) countDefinitions(html, name);
+
+const sourceModules = [
+  ['src/quiz-ui.js', ['boardQuizPatternState', 'boardQuizPresentation', 'boardQuizMarkup', 'bindBoardQuizAnswerEvents']],
+  ['src/message-ui.js', ['buildMessageReviewEntries', 'openMessageReview', 'moveMessageReview']],
+  ['src/progression-ui.js', ['showClearDialog', 'renderClearTip']]
+];
+for (const [moduleName, names] of sourceModules) {
+  const moduleSource = await readFile(join(root, moduleName), 'utf8');
+  for (const name of names) {
+    if (!moduleSource.includes(`function ${name}(`)) {
+      throw new Error(`${moduleName} is missing ${name}().`);
+    }
+  }
+}
+
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[1]);
 for (const script of inlineScripts) new Function(script);
 
