@@ -1093,16 +1093,6 @@ function messageReviewStageContext(entry){
   const path=currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume);
   return path+'　'+masterSubtitle(volume)+' '+(entry.index%MASTER_VOLUME_SIZE+1)+' / '+MASTER_VOLUME_SIZE;
 }
-const MILESTONE_RENDERERS=Object.freeze({
-  primary:(entry,view)=>renderPrimaryMilestone(entry,view),
-  mastery:(entry,view)=>renderMasteryMilestone(entry,view),
-  satori:(entry,view)=>renderSatoriMilestone(entry,view),
-  awakening:(entry,view)=>renderAwakeningMilestone(entry,view),
-  satoriIntro:(entry,view)=>renderIntroMilestone(entry,view),
-  secondLapIntro:(entry,view)=>renderIntroMilestone(entry,view),
-  trainingWelcome:(entry,view)=>renderIntroMilestone(entry,view),
-  volume:(entry,view,volume)=>renderVolumeMilestone(entry,volume,view)
-});
 function configureMessageReviewHeader(entry){
   $('messageDialogTitle').textContent=tr('clear');
   $('messageDialogPlace').textContent=messageReviewPlace(entry);
