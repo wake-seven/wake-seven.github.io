@@ -4603,6 +4603,130 @@ const isThirdVolume=()=>isMode('mastery')&&extraIndex>=30&&extraIndex<45;
 // 三巻構成では最後の「不立文字」に、従来の終盤ルールをまとめる。
 const isFourthVolume=()=>isThirdVolume();
 
+// 速解きランタイムは src/speed-runtime.js に分離しています。
+
+// ===== 残り手数チェック(第四巻) =====
+const FOURTH_CHECKS_STORAGE_KEY=STORAGE_KEYS.fourthChecks;
+let fourthCheckUsage={};
+try{fourthCheckUsage=JSON.parse(storage.get(FOURTH_CHECKS_STORAGE_KEY)||'{}')||{};}catch(_){fourthCheckUsage={};}
+let fourthHintPreview=false,fourthDistanceRevealed=false,fourthHintDistance=null,fourthChecksUsed=0;
+const fourthCheckLimit=()=>!isFourthVolume()?0:(extraIndex%MASTER_VOLUME_SIZE<6?2:extraIndex%MASTER_VOLUME_SIZE<12?1:0);
+// 極1〜12では、戻す操作で残り手数の使用回数を復活させない。
+// 手数オーバーで全員起きた場合だけ、再挑戦用に回数を戻す。
+const fourthChecksPersist=()=>isFourthVolume()&&extraIndex%MASTER_VOLUME_SIZE<12;
+// 極10〜12だけは、「やり直す」でも残り手数を復活させない。
+const fourthChecksSurviveRestart=()=>isFourthVolume()&&extraIndex%MASTER_VOLUME_SIZE>=9&&extraIndex%MASTER_VOLUME_SIZE<12;
+const fourthChecksLeft=()=>Math.max(0,fourthCheckLimit()-fourthChecksUsed);
+const usesHiddenRemaining=()=>isMode('satori')||isMode('free')||isFourthVolume();
+function persistFourthChecks(){
+  if(!fourthChecksPersist())return;
+  fourthCheckUsage[extraIndex]=fourthChecksUsed;
+  try{storage.set(FOURTH_CHECKS_STORAGE_KEY,JSON.stringify(fourthCheckUsage));}catch(_){ }
+}
+function loadFourthChecks(){
+  fourthChecksUsed=fourthChecksPersist()&&Number.isInteger(fourthCheckUsage[extraIndex])?fourthCheckUsage[extraIndex]:0;
+}
+function renewFourthChecks(){
+  if(!isFourthVolume())return;
+  fourthChecksUsed=0;
+  delete fourthCheckUsage[extraIndex];
+  try{storage.set(FOURTH_CHECKS_STORAGE_KEY,JSON.stringify(fourthCheckUsage));}catch(_){ }
+}
+function resetFourthDistance(){
+  fourthHintPreview=false;fourthDistanceRevealed=false;fourthHintDistance=null;
+  if(isFourthVolume())renderStageNav();
+}
+function remainingForDisplay(actual){
+  if(isFourthVolume())return fourthDistanceRevealed?actual:'?';
+  if(isThirdVolume()&&drag)return '?';
+  if(!usesHiddenRemaining())return actual;
+  if(fourthHintPreview&&fourthHintDistance!==null)return fourthHintDistance;
+  return fourthDistanceRevealed?actual:'?';
+}
+function showMoves(value){
+  const el=$('moves');
+  if(displayedMoves===value)return;
+  displayedMoves=value; el.textContent=value;
+  el.classList.remove('pulse');
+  void el.getBoundingClientRect();
+  el.classList.add('pulse');
+}
+function showRemaining(value,animate=true){
+  // 九番・十五番勝負では、タイマーと残り最短手数を並べて表示する。
+  if(isMode('speed')&&!speedShowsRemaining()){renderSpeedClock();return;}
+  const el=$('stagePar');
+  if(displayedRemaining===value&&el.textContent===String(value))return;
+  displayedRemaining=value;el.textContent=value;
+  el.classList.remove('distance-pulse');
+  if(animate){
+    void el.getBoundingClientRect();
+    el.classList.add('distance-pulse');
+  }
+}
+// Android 系ブラウザなど、Vibration API 対応端末だけで軽い手触りを添える。
+function haptic(pattern){
+  if(document.hidden||typeof navigator==='undefined'||typeof navigator.vibrate!=='function')return;
+  try{navigator.vibrate(pattern);}catch(_){ }
+}
+// ===== HUD・サウンド =====
+function playTone(frequency,duration=.06,volume=.028,delay=0){
+  if(!soundEnabled||document.hidden)return;
+  try{
+    const AudioCtor=window.AudioContext||window.webkitAudioContext;
+    if(!AudioCtor)return;
+    if(!audioContext)audioContext=new AudioCtor();
+    if(audioContext.state==='suspended')audioContext.resume().catch(()=>{});
+    const start=audioContext.currentTime+delay;
+    const oscillator=audioContext.createOscillator();
+    const gain=audioContext.createGain();
+    oscillator.type='sine';
+    oscillator.frequency.setValueAtTime(frequency,start);
+    gain.gain.setValueAtTime(.0001,start);
+    gain.gain.exponentialRampToValueAtTime(volume,start+.008);
+    gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
+    oscillator.connect(gain).connect(audioContext.destination);
+    oscillator.start(start);oscillator.stop(start+duration+.02);
+  }catch(_){ }
+}
+function playRotateSound(direction){playTone(direction>0?392:349,.055,.022);}
+function playClearSound(kind='normal'){
+  const tunes={
+    normal:[[523,0],[659,.075],[784,.15]],
+    volume:[[440,0],[554,.08],[659,.16],[880,.26]],
+    training:[[440,0],[554,.07],[659,.14],[880,.23],[1109,.33]],
+    mastery:[[392,0],[523,.08],[659,.16],[784,.24],[1047,.34],[1319,.47]],
+    // 悟りの制覇は名人クリアよりさらに一段高い、C7 まで届く上昇音にする。
+    satori:[[392,0],[523,.075],[659,.15],[784,.225],[1047,.31],[1319,.405],[1568,.51],[2093,.64]]
+  };
+  (tunes[kind]||tunes.normal).forEach(([tone,delay])=>playTone(tone,.18,.032,delay));
+}
+function clearSoundKind(){
+  if(isMode('free')||isMode('custom')||isMode('speed'))return 'normal';
+  if(isMode('satori')&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';
+  if(!isMode('mastery')&&stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
+  if(isMode('mastery')&&(extraIndex+1)%MASTER_VOLUME_SIZE===0)return extraIndex===EXTRA_STAGES.length-1?'mastery':'volume';
+  return 'normal';
+}
+function updateSoundToggle(){
+  const button=$('soundToggle');
+  button.setAttribute('aria-label',tr(soundEnabled?'soundOn':'soundOff'));
+  button.setAttribute('aria-pressed',String(soundEnabled));
+  button.innerHTML=soundEnabled
+    ?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M16 9.5a4 4 0 0 1 0 5M18.5 7a7.5 7.5 0 0 1 0 10"/></svg>'
+    :'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="m4 4 16 16"/></svg>';
+}
+
+function hexPath(r){
+  let p='';
+  for(let i=0;i<6;i++){
+    const a=Math.PI/180*(90+60*i);
+    p+=(i?'L':'M')+(r*Math.cos(a)).toFixed(2)+' '+(-r*Math.sin(a)).toFixed(2);
+  }
+  return p+'Z';
+}
+
+// ===== スピードランランタイム =====
+// ===== スピードラン(速解き)ランタイム =====
 /* 速解きは同じセッション基盤で派生ルールを増やせるよう、モード定義を分離する。 */
 // ===== スピードラン(速解き)モード =====
 const SPEED_MODE_DEFINITIONS=PROGRESSION.speedModes;
@@ -4935,125 +5059,6 @@ function completeSpeedStage(){
   pauseSpeedClock();saveSpeedSession();
   const delay=celebrateClear();
   clearTimer=setTimeout(advanceSpeedRun,delay+120);
-}
-// ===== 残り手数チェック(第四巻) =====
-const FOURTH_CHECKS_STORAGE_KEY=STORAGE_KEYS.fourthChecks;
-let fourthCheckUsage={};
-try{fourthCheckUsage=JSON.parse(storage.get(FOURTH_CHECKS_STORAGE_KEY)||'{}')||{};}catch(_){fourthCheckUsage={};}
-let fourthHintPreview=false,fourthDistanceRevealed=false,fourthHintDistance=null,fourthChecksUsed=0;
-const fourthCheckLimit=()=>!isFourthVolume()?0:(extraIndex%MASTER_VOLUME_SIZE<6?2:extraIndex%MASTER_VOLUME_SIZE<12?1:0);
-// 極1〜12では、戻す操作で残り手数の使用回数を復活させない。
-// 手数オーバーで全員起きた場合だけ、再挑戦用に回数を戻す。
-const fourthChecksPersist=()=>isFourthVolume()&&extraIndex%MASTER_VOLUME_SIZE<12;
-// 極10〜12だけは、「やり直す」でも残り手数を復活させない。
-const fourthChecksSurviveRestart=()=>isFourthVolume()&&extraIndex%MASTER_VOLUME_SIZE>=9&&extraIndex%MASTER_VOLUME_SIZE<12;
-const fourthChecksLeft=()=>Math.max(0,fourthCheckLimit()-fourthChecksUsed);
-const usesHiddenRemaining=()=>isMode('satori')||isMode('free')||isFourthVolume();
-function persistFourthChecks(){
-  if(!fourthChecksPersist())return;
-  fourthCheckUsage[extraIndex]=fourthChecksUsed;
-  try{storage.set(FOURTH_CHECKS_STORAGE_KEY,JSON.stringify(fourthCheckUsage));}catch(_){ }
-}
-function loadFourthChecks(){
-  fourthChecksUsed=fourthChecksPersist()&&Number.isInteger(fourthCheckUsage[extraIndex])?fourthCheckUsage[extraIndex]:0;
-}
-function renewFourthChecks(){
-  if(!isFourthVolume())return;
-  fourthChecksUsed=0;
-  delete fourthCheckUsage[extraIndex];
-  try{storage.set(FOURTH_CHECKS_STORAGE_KEY,JSON.stringify(fourthCheckUsage));}catch(_){ }
-}
-function resetFourthDistance(){
-  fourthHintPreview=false;fourthDistanceRevealed=false;fourthHintDistance=null;
-  if(isFourthVolume())renderStageNav();
-}
-function remainingForDisplay(actual){
-  if(isFourthVolume())return fourthDistanceRevealed?actual:'?';
-  if(isThirdVolume()&&drag)return '?';
-  if(!usesHiddenRemaining())return actual;
-  if(fourthHintPreview&&fourthHintDistance!==null)return fourthHintDistance;
-  return fourthDistanceRevealed?actual:'?';
-}
-function showMoves(value){
-  const el=$('moves');
-  if(displayedMoves===value)return;
-  displayedMoves=value; el.textContent=value;
-  el.classList.remove('pulse');
-  void el.getBoundingClientRect();
-  el.classList.add('pulse');
-}
-function showRemaining(value,animate=true){
-  // 九番・十五番勝負では、タイマーと残り最短手数を並べて表示する。
-  if(isMode('speed')&&!speedShowsRemaining()){renderSpeedClock();return;}
-  const el=$('stagePar');
-  if(displayedRemaining===value&&el.textContent===String(value))return;
-  displayedRemaining=value;el.textContent=value;
-  el.classList.remove('distance-pulse');
-  if(animate){
-    void el.getBoundingClientRect();
-    el.classList.add('distance-pulse');
-  }
-}
-// Android 系ブラウザなど、Vibration API 対応端末だけで軽い手触りを添える。
-function haptic(pattern){
-  if(document.hidden||typeof navigator==='undefined'||typeof navigator.vibrate!=='function')return;
-  try{navigator.vibrate(pattern);}catch(_){ }
-}
-// ===== HUD・サウンド =====
-function playTone(frequency,duration=.06,volume=.028,delay=0){
-  if(!soundEnabled||document.hidden)return;
-  try{
-    const AudioCtor=window.AudioContext||window.webkitAudioContext;
-    if(!AudioCtor)return;
-    if(!audioContext)audioContext=new AudioCtor();
-    if(audioContext.state==='suspended')audioContext.resume().catch(()=>{});
-    const start=audioContext.currentTime+delay;
-    const oscillator=audioContext.createOscillator();
-    const gain=audioContext.createGain();
-    oscillator.type='sine';
-    oscillator.frequency.setValueAtTime(frequency,start);
-    gain.gain.setValueAtTime(.0001,start);
-    gain.gain.exponentialRampToValueAtTime(volume,start+.008);
-    gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
-    oscillator.connect(gain).connect(audioContext.destination);
-    oscillator.start(start);oscillator.stop(start+duration+.02);
-  }catch(_){ }
-}
-function playRotateSound(direction){playTone(direction>0?392:349,.055,.022);}
-function playClearSound(kind='normal'){
-  const tunes={
-    normal:[[523,0],[659,.075],[784,.15]],
-    volume:[[440,0],[554,.08],[659,.16],[880,.26]],
-    training:[[440,0],[554,.07],[659,.14],[880,.23],[1109,.33]],
-    mastery:[[392,0],[523,.08],[659,.16],[784,.24],[1047,.34],[1319,.47]],
-    // 悟りの制覇は名人クリアよりさらに一段高い、C7 まで届く上昇音にする。
-    satori:[[392,0],[523,.075],[659,.15],[784,.225],[1047,.31],[1319,.405],[1568,.51],[2093,.64]]
-  };
-  (tunes[kind]||tunes.normal).forEach(([tone,delay])=>playTone(tone,.18,.032,delay));
-}
-function clearSoundKind(){
-  if(isMode('free')||isMode('custom')||isMode('speed'))return 'normal';
-  if(isMode('satori')&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';
-  if(!isMode('mastery')&&stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
-  if(isMode('mastery')&&(extraIndex+1)%MASTER_VOLUME_SIZE===0)return extraIndex===EXTRA_STAGES.length-1?'mastery':'volume';
-  return 'normal';
-}
-function updateSoundToggle(){
-  const button=$('soundToggle');
-  button.setAttribute('aria-label',tr(soundEnabled?'soundOn':'soundOff'));
-  button.setAttribute('aria-pressed',String(soundEnabled));
-  button.innerHTML=soundEnabled
-    ?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M16 9.5a4 4 0 0 1 0 5M18.5 7a7.5 7.5 0 0 1 0 10"/></svg>'
-    :'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="m4 4 16 16"/></svg>';
-}
-
-function hexPath(r){
-  let p='';
-  for(let i=0;i<6;i++){
-    const a=Math.PI/180*(90+60*i);
-    p+=(i?'L':'M')+(r*Math.cos(a)).toFixed(2)+' '+(-r*Math.sin(a)).toFixed(2);
-  }
-  return p+'Z';
 }
 
 // ===== 盤面アニメーション補助 =====
