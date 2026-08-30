@@ -149,6 +149,7 @@ function openSatoriPicker(){
 }
 function renderStagePicker(){
   if(pickerRound==='satori'){renderSatoriStagePicker();return;}
+  const pickerRefs=createRefs(['stagePickerTitle','closeStagePicker','stagePickerRound','pickerRoundLabel','pickerPrevRound','pickerNextRound','stagePickerGrid']);
   renderStagePickerRankBadge();
   $('pickerSpeedMode').hidden=!featureUnlocked('speedRun');
   $('stagePickerActions').classList.toggle('two-actions',!featureUnlocked('speedRun'));
@@ -175,18 +176,18 @@ function renderStagePicker(){
     :isTraining?(pickerRound===PICKER_TRAINING_LAST_ROUND?canSeeMaster:true)
     :pickerRound<EXTRA_ROUNDS-1||canSeeSatori;
   const canNavigateRounds=canGoPrev||canGoNext;
-  $('stagePickerTitle').textContent=tr('stagePicker');
-  $('closeStagePicker').setAttribute('aria-label',tr('close'));
-  $('stagePickerRound').hidden=!canNavigateRounds;
+  setText(pickerRefs.stagePickerTitle,tr('stagePicker'));
+  setAttribute(pickerRefs.closeStagePicker,'aria-label',tr('close'));
+  setVisible(pickerRefs.stagePickerRound,canNavigateRounds);
   const roundName=isAcademy?tr(section.labelKey)+tr('academyClassSuffix')
     :isTraining?tr(section.labelKey)
     :tr('patternRound',{n:extraRoundLabel(pickerRound)});
-  $('pickerRoundLabel').textContent=(pickerLap===2?tr('secondLapBadge')+'　':'')+roundName;
-  $('pickerPrevRound').hidden=!canNavigateRounds;
-  $('pickerNextRound').hidden=!canGoNext;
-  $('pickerPrevRound').disabled=!canGoPrev;
-  $('pickerNextRound').disabled=!canGoNext;
-  const grid=$('stagePickerGrid');
+  setText(pickerRefs.pickerRoundLabel,(pickerLap===2?tr('secondLapBadge')+'　':'')+roundName);
+  setVisible(pickerRefs.pickerPrevRound,canNavigateRounds);
+  setVisible(pickerRefs.pickerNextRound,canGoNext);
+  setDisabled(pickerRefs.pickerPrevRound,!canGoPrev);
+  setDisabled(pickerRefs.pickerNextRound,!canGoNext);
+  const grid=pickerRefs.stagePickerGrid;
   grid.replaceChildren();
   const primaryStart=isPrimary?section.start:0;
   const pageSize=isPrimary?section.total:MASTER_VOLUME_SIZE;
@@ -883,8 +884,6 @@ function transformIcon(kind){
   };
   return '<svg class="transform-svg" viewBox="0 0 24 24" aria-hidden="true">'+paths[kind]+'</svg>';
 }
-// transformIconは固定のrenderer出力だけを受け付けるため、挿入境界をここへ集約する。
-function insertTransformIcon(target,kind){svgSetIcon(target,transformIcon(kind));}
 function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
   root.classList.remove('quiz-success');
@@ -1048,7 +1047,7 @@ function renderTwoMovePatterns(){
       const button=buttonTemplate.content.cloneNode(true).firstElementChild;
       button.dataset.twoMoveTransform=transform;
       button.setAttribute('aria-label',tr(label));
-      insertTransformIcon(button.querySelector('[data-transform-art]'),transform);
+      svgSetIcon(button.querySelector('[data-transform-art]'),transformIcon(transform));
       return button.outerHTML;
     }).join('');
     if(!cardTemplate)return '<article class="two-move-card" data-state="'+state+'" data-pattern="'+twoMoveDisplayPatterns[index]+'" data-board-index="'+index+'"><div class="two-move-card-tools">'+buttons+'</div><button class="two-move-card-open" type="button">'+miniBoardSvg(state)+'</button></article>';

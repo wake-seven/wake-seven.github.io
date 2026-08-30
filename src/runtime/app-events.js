@@ -848,10 +848,10 @@ function applyLanguage(lang){
   updateSoundToggle();
   if(!$('twoMoveLessonDialog').hidden)openTwoMoveLessonDialog();
   if(!$('speedPauseDialog').hidden)renderSpeedPauseStats();
-  [['mirrorBoard','mirror','mirror'],['flipBoardVertical','vertical','flipVertical'],['rotateBoardBack','rotateBack','rotateCcw'],['rotateBoard','rotate','rotateCw']].forEach(([id,icon,label])=>{const button=$(id);insertTransformIcon(button.querySelector('[data-transform-icon]'),icon);button.querySelector('[data-transform-label]').textContent=tr(label);});
+  [['mirrorBoard','mirror','mirror'],['flipBoardVertical','vertical','flipVertical'],['rotateBoardBack','rotateBack','rotateCcw'],['rotateBoard','rotate','rotateCw']].forEach(([id,icon,label])=>{const button=$(id);svgSetIcon(button.querySelector('[data-transform-icon]'),transformIcon(icon));button.querySelector('[data-transform-label]').textContent=tr(label);});
   [
     ['twoMoveDetailRotateBack','rotateBack','rotateCcw'],['twoMoveDetailRotate','rotate','rotateCw'],['twoMoveDetailMirror','mirror','mirror'],['twoMoveDetailFlipVertical','vertical','flipVertical']
-  ].forEach(([id,icon,label])=>{insertTransformIcon($(id),icon);$(id).setAttribute('aria-label',tr(label));});
+  ].forEach(([id,icon,label])=>{svgSetIcon($(id),transformIcon(icon));$(id).setAttribute('aria-label',tr(label));});
   if(!$('chainDialog').hidden&&chainActiveName)openChainedDialog(chainActiveName);
   $('tutorialReset').textContent='↻ '+tr('tutorialReset');
   $('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');
