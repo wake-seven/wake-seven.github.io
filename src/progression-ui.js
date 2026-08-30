@@ -1121,7 +1121,6 @@ function configureMessageReviewLinks(entry,messageClearEntry){
 }
 function isMilestoneMessage(entry){return !!entry?.master;}
 function milestoneVolume(entry){return entry?.master==='primary'?0:Math.ceil((entry.index+1)/MASTER_VOLUME_SIZE);}
-function messageReviewView(){return {seal:$('messageMasterSeal'),rankText:$('messageRankText'),masterText:$('messageMasterText'),boardNote:$('messageMasterBoardNote'),rules:$('messageRules'),roadmap:$('messageRoadmap'),roadmapNote:$('messageRoadmapNote'),illustration:$('messageIllustration'),lessonCopy:$('messageTwoMoveLessonCopy'),lessonRule:$('messageTwoMoveLessonRule')};}
 function resetMessageReviewView(entry,view){
   const {roadmap,roadmapNote}=view;
   $('messagePrev').textContent='← '+tr('prev');
