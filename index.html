@@ -6121,6 +6121,15 @@ function showAcademyRemainingCallout(){
     setTimeout(()=>{el.hidden=true;},260);
   },700);
 }
+function replaceBoardState(next,{paintNow=false}={}){
+  if(next.ori)ori=next.ori;
+  if(next.spin)spin=next.spin;
+  if(next.tiles)tileEls=next.tiles;
+  if(Number.isInteger(next.moves))moves=next.moves;
+  if(Number.isInteger(next.best))best=next.best;
+  if(next.history)history=next.history;
+  if(paintNow)paint();
+}
 function setPosition(state,par){
   loadFourthChecks();
   resetFourthDistance();
@@ -6132,10 +6141,8 @@ function setPosition(state,par){
   svg.querySelectorAll('.training-shape-callout').forEach(el=>el.remove());
   clearTimeout(trainingShapeCalloutTimer);
   currentInitialState=state; currentInitialPar=par;
-  ori=dec(state);
-  spin=Int16Array.from(ori);
-  tileEls=baseTiles.slice();
-  best=par; moves=0; history=[]; clearShown=false;
+  const nextOri=dec(state);
+  replaceBoardState({ori:nextOri,spin:Int16Array.from(nextOri),tiles:baseTiles.slice(),best:par,moves:0,history:[]}); clearShown=false;
   clearTimeout(boardArrivalTimer);
   busy=false; drag=null;boardTouchActive=false; svg.classList.remove('spinning','selecting','clear-pending','celebrating','arriving');
   svg.classList.remove('tutorial-grab-step','tutorial-clear-step','invalid-grab');
@@ -7107,7 +7114,7 @@ $('undo').addEventListener('click',()=>{
   if(usesHiddenRemaining())resetFourthDistance();
   $('msg').classList.remove('show');
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
-    ori=h.o;spin=h.s;tileEls=h.t;moves=h.m;paint();
+    replaceBoardState({ori:h.o,spin:h.s,tiles:h.t,moves:h.m},{paintNow:true});
     if(isMode('speed')&&speedSession)saveSpeedSession();
   }else{
     animateUndoSwipe(h);
