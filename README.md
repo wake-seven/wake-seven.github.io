@@ -19,6 +19,7 @@
 - `index.html` — ゲーム本体
 - `src/index.template.html` — `index.html` の保守用テンプレート
 - `src/game-state.js` — バージョン付き統合ゲーム状態と旧保存データ移行
+- `src/progression-policy.js` — コース解放・速解き・学習用 UI の宣言ポリシー
 - `scripts/build-index.mjs` — 単体HTMLを生成するスクリプト
 - `all-patterns.html` — クリア後に楽しめる盤面一覧
 

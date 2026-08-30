@@ -1486,6 +1486,66 @@
 })(window);
 </script>
 <!-- WAKE7:STATE-MODULE:END -->
+<!-- WAKE7:PROGRESSION-POLICY:START -->
+<script>
+/* Declarative campaign and speed-run policy. Injected into the single-file build. */
+(function attachWakeSevenProgression(global) {
+  'use strict';
+
+  const SPEED_BLUEPRINTS = Object.freeze([
+    {id:'standard',visible:false,labelKey:'speedMode',introKey:'speedSatoriIntro',jaLabel:null,order:'mixed',source:'satori',total:'satori',unlockKey:'speedSatori',showsRemaining:false,allowsUndo:false},
+    {id:'training9',visible:true,labelKey:'speedTrainingLabel',introKey:'speedTrainingIntro',jaLabel:'九番',order:'shuffle',source:'twoMove',total:9,unlockKey:'speedTraining',showsRemaining:true,allowsUndo:true,trial:'training'},
+    {id:'mastery15',visible:true,labelKey:'speedIntermediateLabel',introKey:'speedIntermediateIntro',jaLabel:'十八番',order:'shuffle',source:'training',total:'trainingExam',unlockKey:'speedIntermediate',showsRemaining:true,allowsUndo:true,trial:'intermediate'},
+    {id:'mastery24',visible:true,labelKey:'speedMasteryLabel',introKey:'speedMasteryIntro',jaLabel:'二十七番',order:'sample',source:'satori',total:27,unlockKey:'speedMastery',showsRemaining:false,allowsUndo:true,trial:'mastery'},
+    {id:'satori73',visible:true,labelKey:'speedSatoriLabel',introKey:'speedSatoriIntro',jaLabel:'七十三番',order:'mixed',source:'satori',total:'satori',unlockKey:'speedSatori',showsRemaining:false,allowsUndo:false}
+  ]);
+
+  const GATE_BLUEPRINTS = Object.freeze({
+    training:{trial:'training'},
+    mastery:{trial:'intermediate'},
+    satori:{trial:'mastery',requiresMastery:true}
+  });
+
+  function create({satoriTotal,trainingExamTotal,academyTotal,developmentStart,developmentTotal,trainingStart,trainingTotal,basicStart}) {
+    const totalFor = value => value === 'satori' ? satoriTotal : value === 'trainingExam' ? trainingExamTotal : value;
+    const speedModes = Object.freeze(Object.fromEntries(SPEED_BLUEPRINTS.map(blueprint => {
+      const definition = Object.freeze({...blueprint,total:totalFor(blueprint.total)});
+      return [definition.id,definition];
+    })));
+    const publicSpeedIds = Object.freeze(SPEED_BLUEPRINTS.filter(definition => definition.visible).map(definition => definition.id));
+
+    return Object.freeze({
+      speedModes,
+      publicSpeedIds,
+      canEnter(target,{lap,mastered,trials}) {
+        const gate = GATE_BLUEPRINTS[target];
+        if(!gate)return false;
+        if(gate.requiresMastery&&!mastered)return false;
+        return lap === 2 || !!trials?.[gate.trial];
+      },
+      speedUnlocked(id,unlocks) {
+        const definition = speedModes[id];
+        return !!definition && !!unlocks?.[definition.unlockKey];
+      },
+      uiPolicy({mode,lap,stageIndex,speedVariant}) {
+        if(mode === 'tutorial') return {id:'tutorial',assisted:true};
+        if(mode === 'speed' && speedVariant === 'training9') return {id:'speed-training9',eliminateWrongRods:true,speedFalling:true};
+        if(mode !== 'stage') return {id:'standard'};
+        if(stageIndex < academyTotal) {
+          if(stageIndex >= developmentStart) return {id:'development',assisted:true,development:lap === 1,eliminateWrongRods:lap === 1};
+          if(stageIndex >= basicStart) return {id:'basic',assisted:true,guidedBasic:lap === 1,narrowRods:lap === 1};
+          return {id:'intro',assisted:true,guidedBasic:lap === 1};
+        }
+        if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};
+        return {id:'standard'};
+      }
+    });
+  }
+
+  global.WakeSevenProgression = Object.freeze({create});
+})(window);
+</script>
+<!-- WAKE7:PROGRESSION-POLICY:END -->
 
 <script>
 // ===== 盤面ジオメトリ定数 =====
@@ -4244,9 +4304,10 @@ else lap1ClearedSatoriStages=clearedSatoriStages;
 const isMastered=()=>EXTRA_STAGES.every((_,i)=>clearedExtraStages.has(i));
 const isSatoriMastered=()=>SATORI_STAGES.every((_,i)=>clearedSatoriStages.has(i));
 const academyCleared=()=>Array.from({length:ACADEMY_STAGE_COUNT},(_,i)=>i).every(i=>clearedStages.has(i));
-const canEnterTraining=()=>activeLap===2||speedTrainingTrialCleared;
-const canEnterMastery=()=>activeLap===2||speedIntermediateTrialCleared;
-const canEnterSatori=()=>isMastered()&&(activeLap===2||speedMasteryTrialCleared);
+const progressionTrials=()=>({training:speedTrainingTrialCleared,intermediate:speedIntermediateTrialCleared,mastery:speedMasteryTrialCleared});
+const canEnterTraining=()=>PROGRESSION.canEnter('training',{lap:activeLap,trials:progressionTrials()});
+const canEnterMastery=()=>PROGRESSION.canEnter('mastery',{lap:activeLap,trials:progressionTrials()});
+const canEnterSatori=()=>PROGRESSION.canEnter('satori',{lap:activeLap,mastered:isMastered(),trials:progressionTrials()});
 const hasMasterReward=()=>masterGoldGranted;
 const hasSatoriReward=()=>isSatoriMastered()||satoriDesignGranted;
 function grantMasterReward(){
@@ -4340,22 +4401,30 @@ const isSolved=()=>SOLVER.dist[enc(ori)]===0;
 let displayedMoves=null,displayedRemaining=null;
 const masterVolume=()=>extraMode?Math.floor(extraIndex/MASTER_VOLUME_SIZE)+1:0;
 const isFinalMasterPuzzle=()=>extraMode&&extraIndex===EXTRA_STAGES.length-1;
-const isGuidedBasicStage=()=>activeLap===1&&isMode('stage')&&!extraMode&&!satoriMode
-  &&stageIndex<DEVELOPMENT_STAGE_START;
+const PROGRESSION=window.WakeSevenProgression.create({
+  satoriTotal:SATORI_STAGES.length,
+  trainingExamTotal:TRAINING_EXAM_STAGES.length,
+  academyTotal:ACADEMY_STAGE_COUNT,
+  developmentStart:DEVELOPMENT_STAGE_START,
+  developmentTotal:DEVELOPMENT_STAGE_COUNT,
+  trainingStart:TRAINING_STAGE_START,
+  trainingTotal:TRAINING_STAGE_COUNT,
+  basicStart:BASIC_STAGE_START
+});
+const currentUiPolicy=()=>PROGRESSION.uiPolicy({mode:activeMode,lap:activeLap,stageIndex,speedVariant:speedMode?speedVariant:null});
+const isGuidedBasicStage=()=>currentUiPolicy().guidedBasic===true;
 // 入門・基本・だるま学園の発展クラスは周回を問わず、余計な操作や現在手数を見せない学習区間。
-const isAssistedLearningStage=()=>isMode('stage')&&stageIndex<ACADEMY_STAGE_COUNT;
+const isAssistedLearningStage=()=>currentUiPolicy().assisted===true;
 // 基本クラス（入門は含まない）だけ、つかめる水色の棒を1〜3本に絞る。
-const isNarrowedBasicStage=()=>isGuidedBasicStage()&&stageIndex>=BASIC_STAGE_START;
+const isNarrowedBasicStage=()=>currentUiPolicy().narrowRods===true;
 // だるま学園・発展クラス: 初期候補本数(stage.initialRodCount)だけ棒を絞り込み、間違えた棒はその都度落ちる。
-const isDevelopmentStage=()=>activeLap===1&&isMode('stage')&&!extraMode&&!satoriMode
-  &&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_STAGE_COUNT;
+const isDevelopmentStage=()=>currentUiPolicy().development===true;
 // 速解き九番勝負: 棒を6本とも見せ、間違えた棒はその都度落ちる(発展クラスと同じ仕組み、絞り込みなし)。
-const isSpeedFallingRodStage=()=>speedMode&&speedVariant==='training9';
+const isSpeedFallingRodStage=()=>currentUiPolicy().speedFalling===true;
 // 発展クラス・速解き九番勝負のどちらでも、間違えた棒を落として二度と選べなくする対象区間。
-const isFallingRodStage=()=>isDevelopmentStage()||isSpeedFallingRodStage();
+const isFallingRodStage=()=>currentUiPolicy().eliminateWrongRods===true;
 // だるま修行(上巻・中巻・下巻)全体: 「あと2くるり」に到達した瞬間、形の名前を演出する対象区間。
-const isTrainingRangeStage=()=>isMode('stage')&&!extraMode&&!satoriMode
-  &&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_STAGE_COUNT;
+const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;
 let guidedBasicCandidateTis=null,guidedBasicCandidateSignature=null;
 // 基本クラス・発展クラス・速解き九番勝負で、間違えて落ちた棒(消すのではなくグレーアウトして残す)。
 let fallenRodTis=new Set();
@@ -4471,20 +4540,11 @@ const isFourthVolume=()=>isThirdVolume();
 
 /* 速解きは同じセッション基盤で派生ルールを増やせるよう、モード定義を分離する。 */
 // ===== スピードラン(速解き)モード =====
-const SPEED_MODE_DEFINITIONS=Object.freeze({
-  // 現行仕様。リファクタリング中はこの定義だけを実際の入口に使う。
-  standard:{id:'standard',labelKey:'speedMode',order:'mixed',source:'satori',total:SATORI_STAGES.length,unlock:'speedRun'},
-  // 段階解放される派生モード。解放前は選択肢に表示しない。
-  training9:{id:'training9',labelKey:'speedModeTraining',order:'shuffle',source:'twoMove',total:9,unlock:'primary'},
-  mastery15:{id:'mastery15',labelKey:'speedModeIntermediate',order:'shuffle',source:'training',total:TRAINING_EXAM_STAGES.length,unlock:'intermediate'},
-  mastery24:{id:'mastery24',labelKey:'speedModeMastery',order:'sample',source:'satori',total:27,unlock:'mastery'},
-  satori73:{id:'satori73',labelKey:'speedModeSatori',order:'mixed',source:'satori',total:SATORI_STAGES.length,unlock:'satori'}
-});
+const SPEED_MODE_DEFINITIONS=PROGRESSION.speedModes;
 let speedVariant='standard';
 function activeSpeedDefinition(){return SPEED_MODE_DEFINITIONS[speedVariant]||SPEED_MODE_DEFINITIONS.standard;}
-const speedShowsRemaining=()=>speedMode&&['training9','mastery15'].includes(speedVariant);
-// 元に戻すボタンは、あと○くるり表示のある九番・十八番に加えて、二十七番でも使える(七十三番だけ使えない)。
-const speedAllowsUndo=()=>speedMode&&['training9','mastery15','mastery24'].includes(speedVariant);
+const speedShowsRemaining=()=>speedMode&&activeSpeedDefinition().showsRemaining;
+const speedAllowsUndo=()=>speedMode&&activeSpeedDefinition().allowsUndo;
 function speedStagePool(definition=activeSpeedDefinition()){
   if(definition.source==='twoMove')return SATORI_STAGES.filter(stage=>stage.par===2).slice(0,definition.total);
   if(definition.source==='training')return TRAINING_EXAM_STAGES;
@@ -4494,26 +4554,19 @@ function speedStagePool(definition=activeSpeedDefinition()){
   return SATORI_STAGES;
 }
 function speedVariantUnlocked(id){
-  const definition=SPEED_MODE_DEFINITIONS[id];
-  if(!definition)return false;
-  if(id==='standard')return speedSatoriUnlocked;
-  if(id==='training9')return speedTrainingUnlocked;
-  if(id==='mastery15')return speedIntermediateUnlocked;
-  if(id==='mastery24')return speedMasteryUnlocked;
-  if(id==='satori73')return speedSatoriUnlocked;
-  return false;
+  return PROGRESSION.speedUnlocked(id,{
+    speedTraining:speedTrainingUnlocked,speedIntermediate:speedIntermediateUnlocked,
+    speedMastery:speedMasteryUnlocked,speedSatori:speedSatoriUnlocked
+  });
 }
-const SPEED_VARIANT_ORDER=['training9','mastery15','mastery24','satori73'];
+const SPEED_VARIANT_ORDER=PROGRESSION.publicSpeedIds;
 function speedVariantCopy(id){
   const definition=SPEED_MODE_DEFINITIONS[id];
-  const labelKey=id==='training9'?'speedTrainingLabel':id==='mastery15'?'speedIntermediateLabel':id==='mastery24'?'speedMasteryLabel':'speedSatoriLabel';
-  const introKey=id==='training9'?'speedTrainingIntro':id==='mastery15'?'speedIntermediateIntro':id==='mastery24'?'speedMasteryIntro':'speedSatoriIntro';
-  return {label:tr(labelKey),intro:tr(introKey),definition};
+  return {label:tr(definition.labelKey),intro:tr(definition.introKey),definition};
 }
 function speedTabLabel(id){
-  const total=SPEED_MODE_DEFINITIONS[id]?.total||'';
-  const jaLabels={training9:'九番',mastery15:'十八番',mastery24:'二十七番',satori73:'七十三番'};
-  return currentLang==='ja'?(jaLabels[id]||total+'番'):String(total);
+  const definition=SPEED_MODE_DEFINITIONS[id];
+  return currentLang==='ja'?(definition?.jaLabel||definition?.total+'番'):String(definition?.total||'');
 }
 function preferredSpeedVariant(){
   const available=SPEED_VARIANT_ORDER.filter(speedVariantUnlocked);

@@ -5,21 +5,25 @@ import { dirname, join } from 'node:path';
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const templatePath = join(root, 'src', 'index.template.html');
 const stateModulePath = join(root, 'src', 'game-state.js');
+const progressionModulePath = join(root, 'src', 'progression-policy.js');
 const outputPath = join(root, 'index.html');
 const start = '<!-- WAKE7:STATE-MODULE:START -->';
 const end = '<!-- WAKE7:STATE-MODULE:END -->';
+const progressionStart = '<!-- WAKE7:PROGRESSION-POLICY:START -->';
+const progressionEnd = '<!-- WAKE7:PROGRESSION-POLICY:END -->';
 
-const [template, stateModule] = await Promise.all([
+const [template, stateModule, progressionModule] = await Promise.all([
   readFile(templatePath, 'utf8'),
-  readFile(stateModulePath, 'utf8')
+  readFile(stateModulePath, 'utf8'),
+  readFile(progressionModulePath, 'utf8')
 ]);
-
-const startAt = template.indexOf(start);
-const endAt = template.indexOf(end);
-if (startAt < 0 || endAt < 0 || endAt <= startAt) {
-  throw new Error('State-module markers are missing from src/index.template.html.');
+function inject(source,startMarker,endMarker,module,name) {
+  const startAt = source.indexOf(startMarker);
+  const endAt = source.indexOf(endMarker);
+  if(startAt < 0 || endAt < 0 || endAt <= startAt) throw new Error(`${name} markers are missing from src/index.template.html.`);
+  return `${source.slice(0,startAt + startMarker.length)}\n<script>\n${module.trim()}\n</script>\n${source.slice(endAt)}`;
 }
-
-const generated = `${template.slice(0, startAt + start.length)}\n<script>\n${stateModule.trim()}\n</script>\n${template.slice(endAt)}`;
+const withState = inject(template,start,end,stateModule,'State-module');
+const generated = inject(withState,progressionStart,progressionEnd,progressionModule,'Progression-policy');
 await writeFile(outputPath, generated, 'utf8');
 console.log('Built index.html from src/index.template.html');

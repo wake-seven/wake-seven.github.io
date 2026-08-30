@@ -6,9 +6,12 @@ import { dirname, join } from 'node:path';
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const html = await readFile(join(root, 'index.html'), 'utf8');
 const stateModule = await readFile(join(root, 'src', 'game-state.js'), 'utf8');
+const progressionModule = await readFile(join(root, 'src', 'progression-policy.js'), 'utf8');
 const required = [
   'WAKE7:STATE-MODULE:START',
+  'WAKE7:PROGRESSION-POLICY:START',
   'wake7-state-vnext',
+  'WakeSevenProgression',
   'const ACTIVE_MODES=',
   'const SPEED_MODE_DEFINITIONS=',
   'function restoreActiveSession()'
@@ -35,6 +38,7 @@ const localStorage = {
 const context = {window:{localStorage}, JSON};
 context.window.window = context.window;
 vm.runInNewContext(stateModule, context, {filename:'src/game-state.js'});
+vm.runInNewContext(progressionModule, context, {filename:'src/progression-policy.js'});
 const migrated = context.window.WakeSevenState.migrateLegacy(localStorage);
 if (migrated.navigation.mode !== 'mastery' || migrated.navigation.masteryIndex !== 3 || migrated.navigation.lap !== 2) {
   throw new Error('Legacy navigation migration failed.');
@@ -43,5 +47,23 @@ if (migrated.settings.language !== 'en' || migrated.settings.sound !== false || 
   throw new Error('Legacy settings or progress migration failed.');
 }
 if (!data.has('wake7-state-vnext')) throw new Error('Migration did not write wake7-state-vnext.');
+
+const progression = context.window.WakeSevenProgression.create({
+  satoriTotal:73,trainingExamTotal:18,
+  academyTotal:20,developmentStart:12,developmentTotal:8,
+  trainingStart:20,trainingTotal:27,basicStart:3
+});
+if (progression.speedModes.mastery15.total !== 18 || progression.speedModes.satori73.allowsUndo !== false) {
+  throw new Error('Speed policy generation failed.');
+}
+if (!progression.canEnter('training',{lap:1,trials:{training:true}}) || progression.canEnter('satori',{lap:1,mastered:false,trials:{mastery:true}})) {
+  throw new Error('Course gate policy failed.');
+}
+if (!progression.uiPolicy({mode:'stage',lap:1,stageIndex:3}).narrowRods
+  || !progression.uiPolicy({mode:'stage',lap:1,stageIndex:12}).eliminateWrongRods
+  || progression.uiPolicy({mode:'stage',lap:2,stageIndex:12}).eliminateWrongRods
+  || !progression.uiPolicy({mode:'speed',lap:1,stageIndex:0,speedVariant:'training9'}).speedFalling) {
+  throw new Error('Learning UI policy failed.');
+}
 
 console.log(`Validated ${inlineScripts.length} inline scripts and a legacy-to-vNext state migration.`);
