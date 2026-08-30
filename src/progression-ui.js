@@ -1000,10 +1000,7 @@ function buildMessageReviewEntries(){
     return finalizeMessageReviewEntries(entries);
   }
   entries.push(...collectExtraMessageReviewEntries(reviewExtra));
-  if(reviewMastered&&speedMasteryTrialCleared)entries.push({master:'satoriIntro',extra:true,index:EXTRA_STAGES.length-1});
-  if(reviewSatoriMastered||hasSatoriReward())entries.push({master:'satori',satori:true,index:SATORI_STAGES.length-1});
-  if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});
-  if(awakenedGranted)entries.push({master:'awakening',awakened:true,index:SATORI_STAGES.length-1});
+  entries.push(...collectMessageReviewMilestones(reviewMastered,reviewSatoriMastered));
   return finalizeMessageReviewEntries(entries);
 }
 function configureMessageReviewHeader(entry){
