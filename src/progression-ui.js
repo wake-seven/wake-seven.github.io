@@ -1108,7 +1108,8 @@ function renderMessageReview(){
   seal.tabIndex=0;
   rankText.hidden=true;masterText.hidden=true;
   $('messageDialogText').hidden=!!entry.master||entry.quiz!==undefined||!!entry.boardQuiz;
-  const messageClearEntry=entry.extra?clearContentAt(true,entry.index):null;
+  const normalizedContent=entry.message?.kind==='clear'?entry.message.content:null;
+  const messageClearEntry=normalizedContent||(entry.extra?clearContentAt(true,entry.index):null);
   const twoMoveCard=messageClearEntry?messageClearEntry.twoMoveCard:undefined;
   const guideCard=messageClearEntry?messageClearEntry.guideCard:null;
   const rankLink=!!messageClearEntry&&messageClearEntry.link==='rank';
