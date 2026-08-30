@@ -1323,10 +1323,11 @@ function showMasterDialog(kind='primary'){
   $('masterShareLabel').textContent=tr('shareShort');
   rankText.hidden=true;
   seal.hidden=false;
-  seal.classList.remove('rank-seal','rank-frame-seal','second-lap-mark');
+  seal.classList.remove('rank-seal','rank-frame-seal','second-lap-mark','rank-index-0','rank-index-1','rank-index-2','rank-index-3','rank-index-4','rank-index-5','rank-index-6');
   seal.classList.toggle('speed-seal',kind==='speedComplete');
   const showRankSeal=(rank,index)=>{
     setSealColor(seal,index);
+    seal.classList.add('rank-index-'+index);
     seal.classList.add('rank-seal');
     if(secondLapActive){
       $('masterSealLabel').innerHTML=rankFrameSvg(rank,false,index,true,true);
@@ -1403,7 +1404,7 @@ function showMasterDialog(kind='primary'){
       }
     },
     satori(){
-      $('masterSealLabel').innerHTML=rankFrameSvg(tr('satoriRank'),false,5);setSealColor(seal,5);
+      $('masterSealLabel').innerHTML=rankFrameSvg(tr('satoriRank'),false,5);setSealColor(seal,5);seal.classList.add('rank-index-5');
       seal.classList.add('rank-seal','rank-frame-seal');
       $('masterDialogTitle').textContent=tr('satoriTitle');
       rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));
@@ -1424,7 +1425,7 @@ function showMasterDialog(kind='primary'){
       $('masterStart').textContent=tr('secondLapStart');
     },
     awakening(){
-      $('masterSealLabel').innerHTML=rankFrameSvg(tr('awakenedRank'),false,6);setSealColor(seal,6);
+      $('masterSealLabel').innerHTML=rankFrameSvg(tr('awakenedRank'),false,6);setSealColor(seal,6);seal.classList.add('rank-index-6');
       seal.classList.add('rank-seal','rank-frame-seal');
       $('masterDialogTitle').textContent=tr('awakenedTitle');
       rankText.hidden=false;rankText.textContent=rankEarnedText(tr('awakenedRank'));
