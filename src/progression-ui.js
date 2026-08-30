@@ -1166,20 +1166,6 @@ function transformButtonText(kind){
   const label={rotateBack:'rotateCcw',rotate:'rotateCw',mirror:'mirror',vertical:'flipVertical'}[kind]||kind;
   return transformIcon(kind)+' '+tr(label);
 }
-function boardQuizMatchingStates(state,match,limit=Infinity,accept=()=>true){
-  const target=dec(state),candidates=[];
-  for(let next=0;next<NS;next++){
-    const distance=SOLVER.dist[next];
-    if(distance===255||!match(distance))continue;
-    const board=dec(next);
-    if(board.some((value,index)=>(value===0)!==(target[index]===0))||!accept(board))continue;
-    let changes=0;
-    board.forEach((value,index)=>{if(value!==0&&value!==target[index])changes++;});
-    candidates.push({state:next,distance,changes});
-  }
-  candidates.sort((a,b)=>a.distance-b.distance||a.changes-b.changes||a.state-b.state);
-  return candidates.slice(0,limit).map(candidate=>candidate.state);
-}
 function boardQuizSameShapeState(state,shapeState){
   const shape=dec(shapeState);
   for(const symmetry of SYMMETRIES){
