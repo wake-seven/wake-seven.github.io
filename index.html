@@ -8312,10 +8312,14 @@ const MILESTONE_RENDERERS=Object.freeze({
   trainingWelcome:(entry,view)=>renderIntroMilestone(entry,view),
   volume:(entry,view,volume)=>renderVolumeMilestone(entry,volume,view)
 });
+function configureMessageReviewHeader(entry){
+  $('messageDialogTitle').textContent=tr('clear');
+  $('messageDialogPlace').textContent=messageReviewPlace(entry);
+}
 const MESSAGE_RENDERERS=Object.freeze({
-  quiz:entry=>{ $('messageDialogTitle').textContent=tr('clear');$('messageDialogPlace').textContent=messageReviewPlace(entry);renderMessageQuiz(entry.quiz); },
-  boardQuiz:entry=>{ $('messageDialogTitle').textContent=tr('clear');$('messageDialogPlace').textContent=messageReviewPlace(entry);renderBoardQuiz('messageBoardQuiz',clearContentAt(true,entry.index).boardQuiz); },
-  text:entry=>{ $('messageDialogText').hidden=false;$('messageDialogTitle').textContent=tr('clear');$('messageDialogPlace').textContent=messageReviewPlace(entry);$('messageDialogTextBody').textContent=entry.text; }
+  quiz:entry=>{ configureMessageReviewHeader(entry); renderMessageQuiz(entry.quiz); },
+  boardQuiz:entry=>{ configureMessageReviewHeader(entry); renderBoardQuiz('messageBoardQuiz',clearContentAt(true,entry.index).boardQuiz); },
+  text:entry=>{ $('messageDialogText').hidden=false; configureMessageReviewHeader(entry); $('messageDialogTextBody').textContent=entry.text; }
 });
 function renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule){
   illustration.classList.toggle('move-graph',art==='moveGraph'); illustration.classList.toggle('board-card',art.startsWith('twoMoveCard:')||art.startsWith('guideCard:')); illustration.classList.toggle('controls-art',art==='controls'); illustration.classList.toggle('navigation-art',art==='navigation'); illustration.classList.toggle('menu-art',art==='menuButtons'); illustration.classList.toggle('rank-badge-art',art==='rankBadgeArt'); illustration.classList.toggle('unwritten-art',art==='unwritten'); illustration.classList.toggle('cheer-art',art==='cheer'); illustration.classList.toggle('intro-guide-art',art==='introGuide'); illustration.classList.toggle('two-move-lesson-art',!!twoMoveLesson);
