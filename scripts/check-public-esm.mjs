@@ -32,7 +32,10 @@ assert.deepEqual(duplicateIds, [], `Generated HTML contains duplicate ids: ${dup
 const declarations = [...applicationScript[0].matchAll(/^function\s+([A-Za-z_$][\w$]*)\s*\(/gm)].map(([, name]) => name);
 const duplicateDeclarations = [...new Set(declarations.filter((name, index) => declarations.indexOf(name) !== index))];
 const moduleBytes = Buffer.byteLength(applicationScript[0], 'utf8');
+const commentBytes = Buffer.byteLength((applicationScript[0].match(/\/\/[^\r\n]*|\/\*[\s\S]*?\*\//g) || []).join('\n'), 'utf8');
+const blankLines = (applicationScript[0].match(/\n\s*\n/g) || []).length;
 console.log(`Generated application payload: ${(moduleBytes / 1024).toFixed(1)} KiB; duplicate function declarations: ${duplicateDeclarations.length}.`);
+console.log(`Formatting measurement: comments ${(commentBytes / 1024).toFixed(1)} KiB, blank-line boundaries ${blankLines}.`);
 if (duplicateDeclarations.length) console.log(`Duplicate declarations (review only): ${duplicateDeclarations.slice(0, 20).join(', ')}`);
 
 for (const api of [

@@ -1,6 +1,6 @@
 /** Minimal DOM-independent board view facade for development tooling. */
 export function createBoardView({ document, root, cells = [], triangles = [], renderCell, renderTriangle } = {}) {
-  const requireDocument = () => document ?? globalThis.document;
+  const requireDocument = () => document;
   const build = () => {
     const doc = requireDocument();
     if (!doc || !root) return false;

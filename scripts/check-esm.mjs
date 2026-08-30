@@ -73,6 +73,14 @@ assert.equal(navigation.setMode('tutorial', { tutorialStep: 2 }).ok, true);
 assert.equal(runtime.store.state.navigation.mode, 'tutorial');
 assert.equal(runtime.commands.progression.navigate({ mode: 'stage', stageIndex: 3 }).ok, true);
 assert.equal(runtime.store.state.navigation.stageIndex, 3);
+for (const stageIndex of [0, 1, 2, 3]) {
+  const result = runtime.commands.progression.navigate({ mode: 'stage', stageIndex });
+  assert.equal(result.ok, true);
+  assert.equal(runtime.store.state.navigation.stageIndex, stageIndex);
+}
+assert.equal(runtime.commands.progression.navigate({ mode: 'speed', stageIndex: 0 }).ok, true);
+assert.equal(runtime.store.state.navigation.mode, 'speed');
+assert.equal(runtime.commands.progression.navigate({ mode: 'stage', stageIndex: 0 }).ok, true);
 let renderCount = 0;
 const renderer = createRenderCoordinator({ store: runtime.store, renderers: { navigation: () => { renderCount++; } } });
 assert.equal(renderer.render().ok, true);

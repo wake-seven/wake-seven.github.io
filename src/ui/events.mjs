@@ -3,7 +3,7 @@
  * Event targets and handlers are injected; no game globals or DOM selectors
  * are owned by this module.
  */
-export function createEventBinder({ target = globalThis.document, handlers = {} } = {}) {
+export function createEventBinder({ target, handlers = {} } = {}) {
   const bindings = [];
   const bind = (type, listener, options) => {
     if (!target || typeof target.addEventListener !== 'function' || typeof listener !== 'function') return false;

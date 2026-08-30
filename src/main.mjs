@@ -44,7 +44,7 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
     progression: createProgressionCommands({ navigate: navigation.go, ...commands.progression })
   });
   const uiApi = Object.freeze({
-    board: options => createBoardView(options),
+    board: options => createBoardView({ document: browserDocument, ...options }),
     events: options => createEventBinder(options),
     lifecycle: options => createUiLifecycle(options),
     stateView: options => createUiStateView({ store, ...options }),
