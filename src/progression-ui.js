@@ -1166,9 +1166,6 @@ function transformButtonText(kind){
   const label={rotateBack:'rotateCcw',rotate:'rotateCw',mirror:'mirror',vertical:'flipVertical'}[kind]||kind;
   return transformIcon(kind)+' '+tr(label);
 }
-function boardQuizPatternState(position){
-  return TWO_MOVE_STAGES[TWO_MOVE_PATTERN_ORDER[position-1]].state;
-}
 function boardQuizMatchingStates(state,match,limit=Infinity,accept=()=>true){
   const target=dec(state),candidates=[];
   for(let next=0;next<NS;next++){
