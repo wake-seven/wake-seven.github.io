@@ -47,6 +47,9 @@ for (const id of ['introDialog', 'introStart', 'tutorialReset', 'board', 'boardG
 for (const id of ['clearNext', 'speedBoardStart', 'masterStart', 'speedPause']) {
   assert.match(template, new RegExp(`id=["']${id}["']`), `Completion/speed DOM contract is missing: ${id}`);
 }
+assert.match(template, /<template[^>]+id=["']chain-template-development-four-start["']/i, 'Milestone dialog template is missing.');
+assert.match(sources.get('src/ui/board.js'), /chain-template-development-four-start/);
+assert.match(sources.get('src/ui/board.js'), /content\.cloneNode\(true\)/);
 for (const token of ['startTutorial', 'rollOnce', 'tutorialStep', 'paint()']) {
   assert.match(all, new RegExp(token.replace(/[()]/g, '\\$&')), `Main flow implementation token is missing: ${token}`);
 }

@@ -29,7 +29,7 @@ function inject(source,startMarker,endMarker,module,name) {
   // are concatenated directly so CSP can forbid eval/Function entirely.
   return `${source.slice(0,startAt + startMarker.length)}\n<script type="module">\n${module.trim()}\n</script>\n${source.slice(endAt)}`;
 }
-const moduleLabels = ['盤面ドメイン', 'クリア後メッセージデータ', '基礎データ', '悟り出題データ', '多言語UIテキスト', '盤面クイズデータ', '固定挿絵・SVGデータ', '実行設定', 'サウンド', '速解き解放状態', '実行状態', 'スピードランランタイム', '盤面アニメーション補助', '盤面座標変換', '盤面UI', '盤面コマンド', '進行コマンド', 'クイズUI', 'クリアフロー', 'メッセージUI', '進行表示', '節目ダイアログ', '進行UI', 'ヒント表示', 'クリア後遷移', '進行ナビゲーション', '画面描画境界', 'イベントと起動', '公開API名前空間'];
+const moduleLabels = ['盤面ドメイン', 'クリア後メッセージデータ', '基礎データ', '悟り出題データ', '多言語UIテキスト', '盤面クイズデータ', '固定挿絵・SVGデータ', '実行設定', 'サウンド', '速解き解放状態', '実行状態', 'スピードランランタイム', '盤面アニメーション補助', '盤面座標変換', '盤面UI', '盤面コマンド', '進行コマンド', 'クイズUI', 'クリアフロー', 'メッセージUI', '進行表示', '節目ダイアログ', '進行UI', 'ロードマップ表示', 'ヒント表示', 'クリア後遷移', '進行ナビゲーション', '画面描画境界', 'イベントと起動', '公開API名前空間'];
 const applicationModule = appModules
   .map((module,index) => `// ===== ${moduleLabels[index] || applicationModuleFiles[index]} =====\n${module.trim()}`)
   .join('\n\n');

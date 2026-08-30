@@ -381,7 +381,9 @@ const CHAIN_STEPS={
   developmentFourStart:{
     titleKey:'developmentFourStartTitle', actionKey:'developmentFourStartStart',
     render(body){
-      body.innerHTML='<p class="chain-text-left" id="chainDialogText"></p>';
+      const template=document.getElementById('chain-template-development-four-start');
+      if(template)body.append(template.content.cloneNode(true));
+      else body.innerHTML='<p class="chain-text-left" id="chainDialogText"></p>';
       $('chainDialogText').textContent=tr('developmentFourStartText');
     },
     onAction(){loadStage(stageIndex+1);}

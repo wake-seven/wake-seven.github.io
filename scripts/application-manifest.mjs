@@ -8,7 +8,7 @@ export const applicationModuleFiles = [
   'runtime/audio.js', 'runtime/progression.js', 'runtime/runtime.js', 'runtime/speed.js',
   'ui/board-animation.js', 'ui/board-geometry.js', 'ui/board.js', 'commands/board.js', 'commands/progression.js',
   'ui/quiz.js', 'ui/clear-flow.js', 'ui/message.js', 'ui/progression-render.js',
-  'ui/master-dialog.js', 'ui/progression.js', 'ui/progression-hints.js', 'ui/progression-clear-flow.js', 'ui/progression-navigation.js', 'ui/rank.js', 'ui/render.js',
+  'ui/master-dialog.js', 'ui/progression.js', 'ui/progression-roadmap.js', 'ui/progression-hints.js', 'ui/progression-clear-flow.js', 'ui/progression-navigation.js', 'ui/rank.js', 'ui/render.js',
   'runtime/app-events.js', 'runtime/namespace.js'
 ];
 

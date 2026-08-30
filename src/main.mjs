@@ -8,7 +8,7 @@ import { createSatoriCatalog } from './data/satori.mjs';
 import { createBoardCommands } from './commands/board-commands.mjs';
 import { createProgressionCommands } from './commands/progression-commands.mjs';
 import { createBoardView } from './ui/board.mjs';
-import { createMessagePresenter } from './ui/messages.mjs';
+import { createMessagePresenter, createClearMessageModel } from './ui/messages.mjs';
 import { createRuntimeSettings, DEFAULT_SETTING_KEYS } from './runtime/settings.mjs';
 import { createAudioService } from './runtime/audio.mjs';
 import { createSessionService } from './runtime/session.mjs';
@@ -54,7 +54,8 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
     stateView: options => createUiStateView({ store, ...options }),
     navigation,
     render: options => createRenderCoordinator({ store, ...options }),
-    messages: options => createMessagePresenter({ catalog: createMessageCatalog(data.clearContent), ...ui.messages, ...options })
+    messages: options => createMessagePresenter({ catalog: createMessageCatalog(data.clearContent), ...ui.messages, ...options }),
+    messageModel: createClearMessageModel
   });
   return Object.freeze({ board, progression, store, persistence, session, settings, audio, speedUnlocks, application, commands: commandApi, ui: uiApi, data: Object.freeze({
     messages: createMessageCatalog(data.clearContent),
