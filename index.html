@@ -5217,7 +5217,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
   if(restoreBoard&&validSavedBoard(speedSession.board)){
     restoreSavedBoard(speedSession.board);
     // クリア演出中に閉じた場合は、同じ問題を重ねて出さず次へ進める。
-    if(isSolved()){clearShown=false;advanceSpeedRun();return;}
+    if(isSolved()){clearShown=false;WakeSevenProgressionCommands.advanceSpeedRun();return;}
   }
   renderStageNav();
   if(arriving)animateBoardArrival();
@@ -5309,7 +5309,7 @@ function completeSpeedStage(){
   if(speedSession&&moves===best&&!speedSession.restartedCurrent) speedSession.optimalClears=speedOptimalClears()+1;
   pauseSpeedClock();persistSpeedSession();
   const delay=celebrateClear();
-  clearTimer=setTimeout(advanceSpeedRun,delay+120);
+  clearTimer=setTimeout(WakeSevenProgressionCommands.advanceSpeedRun,delay+120);
 }
 
 // ===== 盤面アニメーション補助 =====
@@ -7440,6 +7440,15 @@ const GameBoard=Object.freeze({
 const WakeSevenBoardCommands=Object.freeze({
   applySwipe:(ti,dir,options={})=>applySwipe(ti,dir,options.save??true,options.playEffects??true),
   undo:()=>undoLastMove()
+});
+
+// ===== 進行コマンド =====
+// 進行操作のコマンド入口。実装本体は既存ランタイムに残し、
+// イベントや他モジュールからの呼び出し経路だけをここへ集約する。
+// 将来の状態ストア移行時も、呼び出し側はこのAPIを維持できる。
+const WakeSevenProgressionCommands=Object.freeze({
+  startSpeedRun:()=>beginSpeedRun(),
+  advanceSpeedRun:()=>advanceSpeedRun()
 });
 
 // ===== クイズUI =====
@@ -9785,7 +9794,7 @@ function confirmSpeedRestart(){
   enterSpeedMode(true);
 }
 function bindSpeedEvents(){
-  $('speedBoardStart').addEventListener('click',beginSpeedRun);
+  $('speedBoardStart').addEventListener('click',WakeSevenProgressionCommands.startSpeedRun);
   $('speedPause').addEventListener('click',()=>{
     if(!isMode('speed'))return;
     openSpeedPauseDialog();
@@ -10656,7 +10665,7 @@ document.addEventListener('visibilitychange',()=>{
       // (裏に回った端末がタイマーの発火を止める・遅らせる等)。
       // 復帰時にクリア済みの盤面が残っていたら、保留中のタイマーは捨てて即座に確定させる。
       clearTimeout(clearTimer);
-      if(!clearShown)completeSpeedStage();else advanceSpeedRun();
+      if(!clearShown)completeSpeedStage();else WakeSevenProgressionCommands.advanceSpeedRun();
     }
     // 非表示から戻った時はタイマーを黙って再開せず、一時停止ダイアログを出して本人の操作で再開させる。
     else if($('speedPauseDialog').hidden)openSpeedPauseDialog();

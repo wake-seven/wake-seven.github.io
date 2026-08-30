@@ -63,6 +63,7 @@ const moduleMarkers = [
   '// ===== 盤面アニメーション補助 =====',
   '// ===== 盤面UI =====',
   '// ===== 盤面コマンド =====',
+  '// ===== 進行コマンド =====',
   '// ===== クイズUI =====',
   '// ===== クリアフロー =====',
   '// ===== メッセージUI =====',
@@ -136,6 +137,11 @@ if (!html.includes('const WakeSevenBoardCommands=Object.freeze(')
   || !html.includes('WakeSevenBoardCommands.undo()')) {
   throw new Error('Board input handlers must use WakeSevenBoardCommands.');
 }
+if (!html.includes('const WakeSevenProgressionCommands=Object.freeze(')
+  || !html.includes('WakeSevenProgressionCommands.startSpeedRun')
+  || !html.includes('WakeSevenProgressionCommands.advanceSpeedRun')) {
+  throw new Error('Progression input handlers must use WakeSevenProgressionCommands.');
+}
 
 const sourceModules = [
   ['src/domain-board.js', ['const WakeSevenBoardDomain=']],
@@ -146,6 +152,7 @@ const sourceModules = [
   ['src/runtime-audio.js', ['playTone', 'playClearSound']],
   ['src/quiz-ui.js', ['boardQuizPatternState', 'boardQuizPresentation', 'boardQuizMarkup', 'bindBoardQuizAnswerEvents']],
   ['src/commands-board.js', ['const WakeSevenBoardCommands=Object.freeze(']],
+  ['src/commands-progression.js', ['const WakeSevenProgressionCommands=Object.freeze(']],
   ['src/clear-flow.js', ['stageClearTextAt', 'clearEntryForCurrent', 'stageClearArtAt']],
   ['src/message-ui.js', ['buildMessageReviewEntries', 'openMessageReview', 'moveMessageReview']],
   ['src/progression-render.js', ['renderStageNavAccent']],

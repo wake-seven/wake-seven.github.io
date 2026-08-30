@@ -240,7 +240,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
   if(restoreBoard&&validSavedBoard(speedSession.board)){
     restoreSavedBoard(speedSession.board);
     // クリア演出中に閉じた場合は、同じ問題を重ねて出さず次へ進める。
-    if(isSolved()){clearShown=false;advanceSpeedRun();return;}
+    if(isSolved()){clearShown=false;WakeSevenProgressionCommands.advanceSpeedRun();return;}
   }
   renderStageNav();
   if(arriving)animateBoardArrival();
@@ -332,5 +332,5 @@ function completeSpeedStage(){
   if(speedSession&&moves===best&&!speedSession.restartedCurrent) speedSession.optimalClears=speedOptimalClears()+1;
   pauseSpeedClock();persistSpeedSession();
   const delay=celebrateClear();
-  clearTimer=setTimeout(advanceSpeedRun,delay+120);
+  clearTimer=setTimeout(WakeSevenProgressionCommands.advanceSpeedRun,delay+120);
 }

@@ -304,7 +304,7 @@ function confirmSpeedRestart(){
   enterSpeedMode(true);
 }
 function bindSpeedEvents(){
-  $('speedBoardStart').addEventListener('click',beginSpeedRun);
+  $('speedBoardStart').addEventListener('click',WakeSevenProgressionCommands.startSpeedRun);
   $('speedPause').addEventListener('click',()=>{
     if(!isMode('speed'))return;
     openSpeedPauseDialog();
@@ -1175,7 +1175,7 @@ document.addEventListener('visibilitychange',()=>{
       // (裏に回った端末がタイマーの発火を止める・遅らせる等)。
       // 復帰時にクリア済みの盤面が残っていたら、保留中のタイマーは捨てて即座に確定させる。
       clearTimeout(clearTimer);
-      if(!clearShown)completeSpeedStage();else advanceSpeedRun();
+      if(!clearShown)completeSpeedStage();else WakeSevenProgressionCommands.advanceSpeedRun();
     }
     // 非表示から戻った時はタイマーを黙って再開せず、一時停止ダイアログを出して本人の操作で再開させる。
     else if($('speedPauseDialog').hidden)openSpeedPauseDialog();
