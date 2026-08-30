@@ -1110,6 +1110,9 @@
   <div class="training-welcome-art-wrap" data-training-welcome-art></div>
   <p class="chain-text-left" data-chain-dialog-text></p>
 </template>
+<template id="master-road-step-template">
+  <div class="road-step"><span class="road-dot"><b class="road-name" data-road-name></b><small data-road-detail></small></span><span class="road-rank" data-road-rank></span></div>
+</template>
 <div class="game-dialog-backdrop two-move-lesson-dialog" id="twoMoveLessonDialog" hidden>
   <div class="game-dialog" role="dialog" aria-modal="true" aria-labelledby="twoMoveLessonTitle">
     <div class="clear-dialog-heading"><h2 id="twoMoveLessonTitle">あと2くるりのコツ</h2><span class="clear-stage-context" id="twoMoveLessonPosition"></span></div>
@@ -1148,6 +1151,7 @@
       <p class="quiz-note" id="quizNote"></p>
     </div>
     <div class="board-quiz" id="boardQuiz" hidden></div>
+    <template id="boardQuizCardTemplate"><div class="board-quiz-card"><button class="board-quiz-option" type="button"><span class="board-quiz-board"></span></button><div class="board-quiz-tools"><button type="button" data-board-transform="rotateBack" aria-label="60°逆回転"></button><button type="button" data-board-transform="rotate" aria-label="60°回転"></button><button type="button" data-board-transform="mirror" aria-label="左右反転"></button><button type="button" data-board-transform="vertical" aria-label="上下反転"></button></div></div></template>
     <div class="dialog-actions"><button class="chip" id="clearClose">閉じる</button><button class="chip on" id="clearNext" hidden>次の問題へ →</button></div>
   </div>
 </div>
