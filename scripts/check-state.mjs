@@ -32,6 +32,7 @@ if (missing.length) throw new Error(`index.html is missing: ${missing.join(', ')
 const moduleMarkers = [
   '// ===== クリア後メッセージデータ =====',
   '// ===== 基礎データ =====',
+  '// ===== 多言語UIテキスト =====',
   '// ===== 実行状態 =====',
   '// ===== スピードラン(速解き)ランタイム =====',
   '// ===== 盤面アニメーション補助 =====',
