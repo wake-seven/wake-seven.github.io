@@ -1135,7 +1135,11 @@ const MILESTONE_RENDERERS=Object.freeze({
   primary:(entry,view)=>renderPrimaryMilestone(entry,view),
   mastery:(entry,view)=>renderMasteryMilestone(entry,view),
   satori:(entry,view)=>renderSatoriMilestone(entry,view),
-  awakening:(entry,view)=>renderAwakeningMilestone(entry,view)
+  awakening:(entry,view)=>renderAwakeningMilestone(entry,view),
+  satoriIntro:(entry,view)=>renderIntroMilestone(entry,view),
+  secondLapIntro:(entry,view)=>renderIntroMilestone(entry,view),
+  trainingWelcome:(entry,view)=>renderIntroMilestone(entry,view),
+  volume:(entry,view,volume)=>renderVolumeMilestone(entry,volume,view)
 });
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
@@ -1169,13 +1173,13 @@ function renderMessageReview(){
     }else if(entry.master==='awakening'){
       MILESTONE_RENDERERS.awakening(entry,view);
     }else if(entry.master==='satoriIntro'){
-      renderIntroMilestone(entry,view);
+      MILESTONE_RENDERERS[entry.master](entry,view);
     }else if(entry.master==='secondLapIntro'){
-      renderIntroMilestone(entry,view);
+      MILESTONE_RENDERERS[entry.master](entry,view);
     }else if(entry.master==='trainingWelcome'){
-      renderIntroMilestone(entry,view);
+      MILESTONE_RENDERERS[entry.master](entry,view);
     }else{
-      renderVolumeMilestone(entry,volume,view);
+      MILESTONE_RENDERERS.volume(entry,view,volume);
     }
   }else if(entry.quiz!==undefined){
   $('messageDialogTitle').textContent=tr('clear');
