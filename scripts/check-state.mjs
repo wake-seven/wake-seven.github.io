@@ -37,6 +37,7 @@ const moduleMarkers = [
   '// ===== 盤面アニメーション補助 =====',
   '// ===== 盤面UI =====',
   '// ===== クイズUI =====',
+  '// ===== クリアフロー =====',
   '// ===== メッセージUI =====',
   '// ===== 進行表示 =====',
   '// ===== 進行UI =====',
@@ -104,6 +105,7 @@ for (const name of [
 
 const sourceModules = [
   ['src/quiz-ui.js', ['boardQuizPatternState', 'boardQuizPresentation', 'boardQuizMarkup', 'bindBoardQuizAnswerEvents']],
+  ['src/clear-flow.js', ['stageClearTextAt', 'clearEntryForCurrent', 'stageClearArtAt']],
   ['src/message-ui.js', ['buildMessageReviewEntries', 'openMessageReview', 'moveMessageReview']],
   ['src/progression-render.js', ['renderStageNavAccent']],
   ['src/progression-ui.js', ['showClearDialog', 'renderClearTip']]
