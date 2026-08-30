@@ -999,18 +999,7 @@ function buildMessageReviewEntries(){
     if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});
     return finalizeMessageReviewEntries(entries);
   }
-  for(let i=0;i<EXTRA_STAGES.length;i++){
-    if(!reviewExtra.has(i))continue;
-    if((i+1)%MASTER_VOLUME_SIZE===0){
-      if(i===EXTRA_STAGES.length-1){if(speedMasteryTrialCleared)entries.push({master:'mastery',extra:true,index:i});}
-      else if(i!==29||speedIntermediateTrialCleared)entries.push({master:'volume',extra:true,index:i});
-      continue;
-    }
-    const text=stageClearTextAt(true,i);if(text)entries.push({extra:true,index:i,text,art:stageClearArtAt(true,i)});
-    const extraEntry=clearContentAt(true,i);
-    if(extraEntry&&extraEntry.boardQuiz)entries.push({extra:true,index:i,boardQuiz:true});
-    if(extraEntry&&extraEntry.quiz)entries.push({extra:true,index:i,quiz:resolveLocaleText(extraEntry.quiz),art:stageClearArtAt(true,i)});
-  }
+  entries.push(...collectExtraMessageReviewEntries(reviewExtra));
   if(reviewMastered&&speedMasteryTrialCleared)entries.push({master:'satoriIntro',extra:true,index:EXTRA_STAGES.length-1});
   if(reviewSatoriMastered||hasSatoriReward())entries.push({master:'satori',satori:true,index:SATORI_STAGES.length-1});
   if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});
