@@ -35,6 +35,7 @@ const moduleMarkers = [
   '// ===== 基礎データ =====',
   '// ===== 多言語UIテキスト =====',
   '// ===== 盤面クイズデータ =====',
+  '// ===== 固定挿絵・SVGデータ =====',
   '// ===== 実行状態 =====',
   '// ===== スピードラン(速解き)ランタイム =====',
   '// ===== 盤面アニメーション補助 =====',
@@ -108,6 +109,7 @@ for (const name of [
 
 const sourceModules = [
   ['src/data-board-quiz.js', ['const BOARD_QUIZ_COPY=']],
+  ['src/data-assets.js', ['academyEnrollArtSvg']],
   ['src/quiz-ui.js', ['boardQuizPatternState', 'boardQuizPresentation', 'boardQuizMarkup', 'bindBoardQuizAnswerEvents']],
   ['src/clear-flow.js', ['stageClearTextAt', 'clearEntryForCurrent', 'stageClearArtAt']],
   ['src/message-ui.js', ['buildMessageReviewEntries', 'openMessageReview', 'moveMessageReview']],

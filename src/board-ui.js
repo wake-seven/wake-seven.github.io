@@ -273,7 +273,8 @@ function buildAcademyWelcomeBoard(variant='enroll'){
   play();
   academyWelcomeTimer=setInterval(play,leadDelay+rotateDur+holdAfter+240);
 }
-function academyEnrollArtSvg(){
+// Legacy copy retained temporarily while generated HTML consumers migrate.
+function academyEnrollArtSvgLegacy(){
   const sakura=(x,y,scale=1)=>{
     let petals='';
     for(let i=0;i<5;i++)petals+='<ellipse cx="0" cy="-3.6" rx="2.6" ry="4.2" fill="#F4BFD1" stroke="#E191AC" stroke-width=".4" transform="rotate('+i*72+')"/>';
@@ -347,38 +348,6 @@ function academyBoardStep(variant,titleKey,textKey,actionKey,onAction){
     onAction
   };
 }
-const TRAINING_WELCOME_ART_SVG=`<svg id="trainingWelcomeArt" viewBox="0 0 320 220" aria-hidden="true">
-  <defs>
-    <linearGradient id="twSky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#16283C"/>
-      <stop offset=".58" stop-color="#3E4F63"/>
-      <stop offset="1" stop-color="#C98A57"/>
-    </linearGradient>
-    <radialGradient id="twSun" cx="50%" cy="50%" r="50%">
-      <stop offset="0" stop-color="#FCE7B0"/>
-      <stop offset=".55" stop-color="#F2C063" stop-opacity=".8"/>
-      <stop offset="1" stop-color="#E0985A" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <rect x="0" y="0" width="320" height="220" fill="url(#twSky)"/>
-  <circle cx="238" cy="122" r="48" fill="url(#twSun)"/>
-  <circle cx="238" cy="122" r="21" fill="#F6D68A"/>
-  <path d="M0,158 L35,116 L70,146 L108,103 L150,150 L195,113 L235,148 L280,108 L320,153 L320,220 L0,220 Z" fill="#4C6478" opacity=".5"/>
-  <path d="M-10,168 L40,110 L85,158 L135,95 L190,163 L245,113 L300,158 L330,166 L330,220 L-10,220 Z" fill="#233549"/>
-  <path d="M0,178 Q160,152 320,180 L320,220 L0,220 Z" fill="#332821"/>
-  <path d="M160,220 C150,196 182,182 168,160 C158,148 172,140 165,128" fill="none" stroke="#C9A54E" stroke-width="6" stroke-linecap="round" stroke-dasharray="1.5 11" opacity=".55"/>
-  <path d="M54,58 q6,-8 12,0 q6,-8 12,0" fill="none" stroke="#8FB9CC" stroke-width="2" stroke-linecap="round" opacity=".8"/>
-  <path d="M96,76 q5,-7 10,0 q5,-7 10,0" fill="none" stroke="#8FB9CC" stroke-width="1.8" stroke-linecap="round" opacity=".7"/>
-  <ellipse cx="163" cy="200" rx="32" ry="6" fill="#000" opacity=".26"/>
-  <line x1="193" y1="196" x2="206" y2="100" stroke="#8A6A3C" stroke-width="4" stroke-linecap="round"/>
-  <path d="M197,104 Q189,89 204,85 Q217,89 210,102 Q203,109 197,104Z" fill="#62B8D2" stroke="#1B2A3A" stroke-width="2"/>
-  <g transform="translate(163,160) scale(1.05)">
-    <use href="#daruma-body"/>
-    <use href="#face-happy"/>
-    <path d="M-30,-36 Q0,-64 30,-36 Q0,-46 -30,-36 Z" fill="#D9B67A" stroke="#241D1A" stroke-width="2.2"/>
-    <ellipse cx="0" cy="-36" rx="32" ry="6.5" fill="#E4C88F" stroke="#241D1A" stroke-width="2.2"/>
-  </g>
-</svg>`;
 const CHAIN_STEPS={
   academyEnroll:{
     titleKey:'academyEnrollTitle', actionKey:'trainingWelcomeNext',
