@@ -57,11 +57,11 @@ function renderRankList(){
   const sequence=second?[0,1,2,3,4,6]:[0,1,2,3,4,5];
   const earnedCount=second?(awakenedGranted?sequence.length:Math.max(0,highest+1)):Math.max(0,highest+1);
   const list=$('rankList');
-  $('rankDialogTitle').textContent=tr('rankDialogTitle');
-  $('closeRankDialog').textContent=tr('close');
-  $('rankLapSwitch').hidden=!secondLapUnlocked;
-  $('rankLap1').textContent=tr('firstLapLabel');
-  $('rankLap2').textContent=tr('secondLapLabel');
+  setText('rankDialogTitle',tr('rankDialogTitle'));
+  setText('closeRankDialog',tr('close'));
+  setVisible('rankLapSwitch',secondLapUnlocked);
+  setText('rankLap1',tr('firstLapLabel'));
+  setText('rankLap2',tr('secondLapLabel'));
   $('rankLap1').classList.toggle('on',!second);
   $('rankLap2').classList.toggle('on',second);
   list.replaceChildren();

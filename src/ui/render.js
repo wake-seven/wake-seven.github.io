@@ -3,8 +3,9 @@
  * 既存の個別レンダラーは互換のため残し、画面全体を更新する入口だけを
  * ここへ集約していく。
  */
-function renderCurrentView({includeBoard=false,includePicker=true}={}){
-  if(includeBoard)paint();
+function renderCurrentView(model={},context={}){
+  const {includeBoard=false,includePicker=true}=model;
+  if(includeBoard)paint(context);
   renderStageNav();
   if(includePicker&&!$('stagePicker').hidden)renderStagePicker();
 }

@@ -5,6 +5,7 @@
  */
 export function createEventBinder({ target, handlers = {} } = {}) {
   const bindings = [];
+  let bound = false;
   const bind = (type, listener, options) => {
     if (!target || typeof target.addEventListener !== 'function' || typeof listener !== 'function') return false;
     target.addEventListener(type, listener, options);
@@ -12,7 +13,9 @@ export function createEventBinder({ target, handlers = {} } = {}) {
     return true;
   };
   const bindAll = () => {
+    if (bound) return bindings.length;
     for (const [type, listener] of Object.entries(handlers)) bind(type, listener);
+    bound = true;
     return bindings.length;
   };
   const unbindAll = () => {
@@ -21,6 +24,7 @@ export function createEventBinder({ target, handlers = {} } = {}) {
     }
     const count = bindings.length;
     bindings.length = 0;
+    bound = false;
     return count;
   };
   return Object.freeze({ bind, bindAll, unbindAll, get size() { return bindings.length; } });
