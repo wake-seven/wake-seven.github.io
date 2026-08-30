@@ -1178,23 +1178,8 @@ function renderMessageReview(){
     const volume=milestoneVolume(entry);
     const current=entry.master==='primary'?2:entry.master==='mastery'?6:Math.min(5,volume+2);
     if(entry.master!=='mastery')roadmap.innerHTML=masterRoadmapMarkup(current);
-    if(entry.master==='primary'){
-      MILESTONE_RENDERERS.primary(entry,view);
-    }else if(entry.master==='mastery'){
-      MILESTONE_RENDERERS.mastery(entry,view);
-    }else if(entry.master==='satori'){
-      MILESTONE_RENDERERS.satori(entry,view);
-    }else if(entry.master==='awakening'){
-      MILESTONE_RENDERERS.awakening(entry,view);
-    }else if(entry.master==='satoriIntro'){
-      MILESTONE_RENDERERS[entry.master](entry,view);
-    }else if(entry.master==='secondLapIntro'){
-      MILESTONE_RENDERERS[entry.master](entry,view);
-    }else if(entry.master==='trainingWelcome'){
-      MILESTONE_RENDERERS[entry.master](entry,view);
-    }else{
-      MILESTONE_RENDERERS.volume(entry,view,volume);
-    }
+    const renderer=MILESTONE_RENDERERS[entry.master]||MILESTONE_RENDERERS.volume;
+    renderer(entry,view,volume);
   }else{
     const type=entry.quiz!==undefined?'quiz':entry.boardQuiz?'boardQuiz':'text';
     MESSAGE_RENDERERS[type](entry);
