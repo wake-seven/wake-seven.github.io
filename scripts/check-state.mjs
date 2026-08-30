@@ -22,6 +22,20 @@ if (missing.length) throw new Error(`index.html is missing: ${missing.join(', ')
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[1]);
 for (const script of inlineScripts) new Function(script);
 
+const modeBoundary = html.indexOf('const isMode=mode=>activeMode===mode;');
+const gameCode = modeBoundary >= 0 ? html.slice(modeBoundary) : '';
+const legacyModeRefs = gameCode.match(/(?<!['"])\b(?:extraMode|satoriMode|speedMode|freeMode|customMode)\b(?!['"])/g) || [];
+if (legacyModeRefs.length) {
+  throw new Error(`Legacy mode flags remain in game code: ${legacyModeRefs.join(', ')}`);
+}
+if (/isMode\('[^']+'\)\s*=/.test(gameCode)) {
+  throw new Error('A mode predicate is being assigned to instead of using setActiveMode().');
+}
+const directStorageUses = html.match(/localStorage\.(?:getItem|setItem|removeItem)/g) || [];
+if (directStorageUses.length !== 5) {
+  throw new Error(`Expected only the five storage-boundary calls, found ${directStorageUses.length}.`);
+}
+
 const data = new Map([
   ['wake7-language', 'en'],
   ['wake7-sound', 'off'],
