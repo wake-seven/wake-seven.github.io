@@ -1,5 +1,5 @@
 /** Browser audio service. No game globals are required. */
-export function createAudioService({ enabled = true, documentRef = globalThis.document, windowRef = globalThis } = {}) {
+export function createAudioService({ enabled = true, documentRef, windowRef } = {}) {
   let soundEnabled = enabled !== false;
   let audioContext = null;
   const playTone = (frequency, duration = 0.06, volume = 0.028, delay = 0) => {

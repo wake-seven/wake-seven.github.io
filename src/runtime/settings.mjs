@@ -3,7 +3,7 @@ const THEMES = new Set(['default', 'gold', 'satori']);
 const LAYOUTS = new Set(['normal', 'tilted']);
 const COLORS = new Set(['red', 'rainbow']);
 export const DEFAULT_SETTING_KEYS = Object.freeze({ boardTheme: 'wake7-board-theme', boardLayout: 'wake7-board-layout', darumaColor: 'wake7-daruma-color', boardThemeChosen: 'wake7-board-theme-chosen', boardLayoutChosen: 'wake7-board-layout-chosen', darumaColorChosen: 'wake7-daruma-color-chosen' });
-export function createRuntimeSettings({ state = {}, storage = globalThis.localStorage, keys = DEFAULT_SETTING_KEYS } = {}) {
+export function createRuntimeSettings({ state = {}, storage, keys = DEFAULT_SETTING_KEYS } = {}) {
   let current = { sound: state.sound !== false, boardTheme: 'default', boardLayout: 'normal', darumaColor: 'red' };
   const read = key => { try { return storage?.getItem(key); } catch { return null; } };
   const initialize = nextState => {

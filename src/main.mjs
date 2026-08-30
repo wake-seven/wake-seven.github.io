@@ -16,6 +16,7 @@ import { createNavigationController } from './ui/navigation.mjs';
 import { createRenderCoordinator } from './ui/render.mjs';
 import { createEventBinder } from './ui/events.mjs';
 import { createUiLifecycle } from './ui/lifecycle.mjs';
+import { createUiStateView } from './ui/state-view.mjs';
 import { createSpeedUnlockService, DEFAULT_SPEED_UNLOCK_KEYS } from './runtime/progression.mjs';
 
 /** Development ESM entry point. The published build still uses index.html. */
@@ -27,14 +28,17 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
     store,
     normalize: progression.normalizeNavigation
   });
+  const browserWindow = typeof window === 'undefined' ? undefined : window;
+  const browserDocument = typeof document === 'undefined' ? undefined : document;
+  const browserStorage = browserWindow?.localStorage;
   const persistence = createPersistence({
-    storage: globalThis.localStorage,
+    storage: browserStorage,
     create: value => value
   });
-  const settings = createRuntimeSettings({ state: store.state, storage: globalThis.localStorage, keys: DEFAULT_SETTING_KEYS });
-  const audio = createAudioService({ enabled: store.state.settings?.sound });
+  const settings = createRuntimeSettings({ state: store.state, storage: browserStorage, keys: DEFAULT_SETTING_KEYS });
+  const audio = createAudioService({ enabled: store.state.settings?.sound, documentRef: browserDocument, windowRef: browserWindow });
   const session = createSessionService({ persistence });
-  const speedUnlocks = createSpeedUnlockService({ storage: globalThis.localStorage, storageKeys: DEFAULT_SPEED_UNLOCK_KEYS });
+  const speedUnlocks = createSpeedUnlockService({ storage: browserStorage, storageKeys: DEFAULT_SPEED_UNLOCK_KEYS });
   const commandApi = Object.freeze({
     board: createBoardCommands(commands.board),
     progression: createProgressionCommands({ navigate: navigation.go, ...commands.progression })
@@ -43,6 +47,7 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
     board: options => createBoardView(options),
     events: options => createEventBinder(options),
     lifecycle: options => createUiLifecycle(options),
+    stateView: options => createUiStateView({ store, ...options }),
     navigation,
     render: options => createRenderCoordinator({ store, ...options }),
     messages: options => createMessagePresenter({ catalog: createMessageCatalog(data.clearContent), ...ui.messages, ...options })
