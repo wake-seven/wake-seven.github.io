@@ -1594,18 +1594,7 @@ function orbitTransform(item,deg,kc){
   return tileTransformDeg(x,y,item.turn*120+deg);
 }
 function animateGroupedSwipe(dg,target,dir,waking){
-  const group=document.createElementNS('http://www.w3.org/2000/svg','g');
-  group.setAttribute('class','auto-swipe-group');
-  const clones=[];
-  for(const item of dg.items){
-    const clone=item.el.cloneNode(true);
-    clone.style.transform=orbitTransform(item,0,dg.kc);
-    clone.setAttribute('class','tile '+(mod3(item.turn)===0?'stand':'fallen'));
-    item.el.style.visibility='hidden';
-    group.appendChild(clone);
-    clones.push({item,clone,hex:clone.querySelector('.hex')});
-  }
-  svg.appendChild(group);
+  const {group,clones}=createAutoSwipePreview(dg.items,dg.kc);
   busy=true;
   const duration=Math.max(190,Math.min(620,Math.abs(target-dg.deg)*4.65));
   const previewState=rollOnce(ori,dg.ti,dir);
@@ -1618,21 +1607,10 @@ function animateGroupedSwipe(dg,target,dir,waking){
     const progress=Math.min(1,(now-start)/duration);
     const deg=dg.deg+(target-dg.deg)*ease(progress);
     group.setAttribute('transform','rotate('+deg+' '+dg.kc.x+' '+dg.kc.y+')');
-    for(const {item,clone,hex} of clones){
-      // 自動回転では半分を越えた時点で次の状態へ切り替える。
-      // 終端付近まで古い表情が残り、回転後に遅れて変わるように見えるのを防ぐ。
-      const turnProgress=Math.abs(target-dg.deg)<.001?1:Math.abs(deg-dg.deg)/Math.abs(target-dg.deg);
-      const turn=turnProgress>=.5?item.turn+dir:item.turn;
-      const state=mod3(turn)===0?'stand':'fallen';
-      clone.setAttribute('class','tile '+state);
-      // 金色・白黒テーマは六角形にインライン色を持つため、
-      // class だけでなく複製パネルの色も同じフレームで更新する。
-      if(hex){
-        const tone=BOARD_THEME_TONES[boardTheme]?.[state];
-        hex.style.fill=tone?.fill||'';
-        hex.style.stroke=tone?.stroke||'';
-      }
-    }
+    // 自動回転では半分を越えた時点で次の状態へ切り替える。
+    // 終端付近まで古い表情が残り、回転後に遅れて変わるように見えるのを防ぐ。
+    const turnProgress=Math.abs(target-dg.deg)<.001?1:Math.abs(deg-dg.deg)/Math.abs(target-dg.deg);
+    updateAutoSwipePreview(clones,turnProgress,dir);
     if(progress<1){requestAnimationFrame(frame);return;}
     // 効果音や振動より先に、盤面の見た目を確定する。
     applySwipe(dg.ti,dir,true,false);
@@ -1666,18 +1644,7 @@ function animateUndoSwipe(target){
     const el=tileEls[cell];
     return {el,cell,turn:spin[cell],dx:CELL[cell].x-pivot.x,dy:CELL[cell].y-pivot.y};
   });
-  const group=document.createElementNS('http://www.w3.org/2000/svg','g');
-  group.setAttribute('class','auto-swipe-group');
-  const clones=[];
-  for(const item of items){
-    const clone=item.el.cloneNode(true);
-    clone.style.transform=orbitTransform(item,0,pivot);
-    clone.setAttribute('class','tile '+(mod3(item.turn)===0?'stand':'fallen'));
-    item.el.style.visibility='hidden';
-    group.appendChild(clone);
-    clones.push({item,clone,hex:clone.querySelector('.hex')});
-  }
-  svg.appendChild(group);
+  const {group,clones}=createAutoSwipePreview(items,pivot);
   busy=true;
   const duration=420;
   let started=null;
@@ -1687,16 +1654,7 @@ function animateUndoSwipe(target){
     const progress=Math.min(1,(now-started)/duration);
     const deg=reverseDir*120*ease(progress);
     group.setAttribute('transform','rotate('+deg+' '+pivot.x+' '+pivot.y+')');
-    for(const {item,clone,hex} of clones){
-      const turn=progress>=.5?item.turn+reverseDir:item.turn;
-      const state=mod3(turn)===0?'stand':'fallen';
-      clone.setAttribute('class','tile '+state);
-      if(hex){
-        const tone=BOARD_THEME_TONES[boardTheme]?.[state];
-        hex.style.fill=tone?.fill||'';
-        hex.style.stroke=tone?.stroke||'';
-      }
-    }
+    updateAutoSwipePreview(clones,progress,reverseDir);
     if(progress<1){requestAnimationFrame(frame);return;}
     group.remove();
     for(const item of items)item.el.style.visibility='';
