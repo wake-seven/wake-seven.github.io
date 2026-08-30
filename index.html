@@ -7180,6 +7180,7 @@ const VOLUME_NEXT_RULES=Object.freeze({
 });
 function messageReviewEntryKey(entry){const kind=entry.awakened?'master:awakening':entry.satori?'satori':entry.master?'master:'+entry.master:entry.boardQuiz?'board-quiz':entry.quiz!==undefined?'quiz':'text';return (entry.awakened||entry.satori?'satori':entry.extra?'extra':'primary')+':'+entry.index+':'+kind;}
 function messageReviewPlace(entry){if(entry.awakened)return tr('awakenedTitle');if(entry.satori)return currentLang==='ja'?'悟りへの道・第'+(entry.index+1)+'問 クリア':tr('satoriTitle');if(entry.master==='satoriIntro')return currentLang==='ja'?'悟りへの道の案内':tr('satoriIntroTitle');if(entry.master==='secondLapIntro')return currentLang==='ja'?'二周目の案内':tr('secondLapTitle');if(entry.master==='trainingWelcome')return currentLang==='ja'?'だるま修行の案内':tr('trainingWelcomeTitle');if(!entry.extra){if(currentLang!=='ja')return tr('stageAria',{n:entry.index+1,par:STAGES[entry.index].par});const {section,position}=primarySectionPosition(entry.index);return tr(section.labelKey)+' 第'+position+'問 クリア';}const volume=Math.floor(entry.index/MASTER_VOLUME_SIZE)+1;return currentLang==='ja'?'名人への道 '+volumeLabel(volume)+'・第'+(entry.index%MASTER_VOLUME_SIZE+1)+'問 クリア':tr('extraStageAria',{n:entry.index+1,total:EXTRA_STAGES.length});}
+function messageReviewStageContext(entry){if(entry.awakened)return tr('secondLapPath');if(entry.satori)return tr('satori')+' '+(entry.index+1)+' / '+SATORI_STAGES.length;if(entry.master==='satoriIntro')return tr('satori');if(entry.master==='secondLapIntro')return tr('secondLapPath');if(entry.master==='trainingWelcome')return tr('darumaTraining');if(!entry.extra){const {section,position:number}=primarySectionPosition(entry.index);return tr(section.labelKey)+' '+number+' / '+section.total;}const volume=Math.floor(entry.index/MASTER_VOLUME_SIZE)+1;const path=currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume);return path+'　'+masterSubtitle(volume)+' '+(entry.index%MASTER_VOLUME_SIZE+1)+' / '+MASTER_VOLUME_SIZE;}
 function messageReviewView(){return {seal:$('messageMasterSeal'),rankText:$('messageRankText'),masterText:$('messageMasterText'),boardNote:$('messageMasterBoardNote'),rules:$('messageRules'),roadmap:$('messageRoadmap'),roadmapNote:$('messageRoadmapNote'),illustration:$('messageIllustration'),lessonCopy:$('messageTwoMoveLessonCopy'),lessonRule:$('messageTwoMoveLessonRule')};}
 function messageReviewContent(entry){return entry?.message?.content||null;}
 function messageReviewArt(entry){const content=messageReviewContent(entry);return entry?.art||content?.art||'';}
@@ -8271,22 +8272,6 @@ function rememberSpecialMessage(master){
     storage.set(MESSAGE_REVIEW_STORAGE_KEY,key);
     storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);
   }catch(_){ }
-}
-function messageReviewStageContext(entry){
-  if(entry.awakened)return tr('secondLapPath');
-  if(entry.satori)return tr('satori')+' '+(entry.index+1)+' / '+SATORI_STAGES.length;
-  if(entry.master==='satoriIntro')return tr('satori');
-  if(entry.master==='secondLapIntro')return tr('secondLapPath');
-  if(entry.master==='trainingWelcome')return tr('darumaTraining');
-  if(!entry.extra){
-    const {section,position:number}=primarySectionPosition(entry.index);
-    const group=tr(section.labelKey);
-    const total=section.total;
-    return group+' '+number+' / '+total;
-  }
-  const volume=Math.floor(entry.index/MASTER_VOLUME_SIZE)+1;
-  const path=currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume);
-  return path+'　'+masterSubtitle(volume)+' '+(entry.index%MASTER_VOLUME_SIZE+1)+' / '+MASTER_VOLUME_SIZE;
 }
 function configureMessageReviewHeader(entry){
   $('messageDialogTitle').textContent=tr('clear');

@@ -1057,22 +1057,6 @@ function rememberSpecialMessage(master){
     storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);
   }catch(_){ }
 }
-function messageReviewStageContext(entry){
-  if(entry.awakened)return tr('secondLapPath');
-  if(entry.satori)return tr('satori')+' '+(entry.index+1)+' / '+SATORI_STAGES.length;
-  if(entry.master==='satoriIntro')return tr('satori');
-  if(entry.master==='secondLapIntro')return tr('secondLapPath');
-  if(entry.master==='trainingWelcome')return tr('darumaTraining');
-  if(!entry.extra){
-    const {section,position:number}=primarySectionPosition(entry.index);
-    const group=tr(section.labelKey);
-    const total=section.total;
-    return group+' '+number+' / '+total;
-  }
-  const volume=Math.floor(entry.index/MASTER_VOLUME_SIZE)+1;
-  const path=currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume);
-  return path+'　'+masterSubtitle(volume)+' '+(entry.index%MASTER_VOLUME_SIZE+1)+' / '+MASTER_VOLUME_SIZE;
-}
 function configureMessageReviewHeader(entry){
   $('messageDialogTitle').textContent=tr('clear');
   $('messageDialogPlace').textContent=messageReviewPlace(entry);
