@@ -28,7 +28,7 @@ const jsFiles = files.filter(path => extname(path) === '.js');
 const classic = [];
 for (const path of jsFiles) {
   const source = await readFile(path, 'utf8');
-  if (!/\b(?:import|export)\b/.test(source)) classic.push(relative(srcRoot, path).replaceAll('\\', '/'));
+  if (!/^\s*(?:import|export)\s/m.test(source)) classic.push(relative(srcRoot, path).replaceAll('\\', '/'));
 }
 
 // classic実装の残存は移行課題として可視化する。公開ビルド対象外の漏れだけを失敗にする。

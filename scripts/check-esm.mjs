@@ -9,11 +9,14 @@ import { createProgressionCommands } from '../src/commands/progression-commands.
 import { createBoardView } from '../src/ui/board.mjs';
 import { createMessagePresenter } from '../src/ui/messages.mjs';
 import { createNavigationController } from '../src/ui/navigation.mjs';
+import { createRenderCoordinator } from '../src/ui/render.mjs';
+import { createSpeedUnlockService } from '../src/runtime/progression.mjs';
 
 const runtime = createDevelopmentRuntime({ triangles: [{ cells: [0, 1, 2] }] });
 assert.equal(runtime.board.stateCount, 2187);
 assert.equal(typeof runtime.settings.initialize, 'function');
 assert.equal(typeof runtime.audio.playTone, 'function');
+assert.equal(typeof runtime.speedUnlocks.initialize, 'function');
 const board = Uint8Array.from([0, 1, 2, 0, 1, 2, 1]);
 assert.deepEqual(Array.from(runtime.board.decode(runtime.board.encode(board))), Array.from(board));
 assert.deepEqual(Array.from(runtime.board.roll(runtime.board.roll(board, 0, 1), 0, -1)), Array.from(board));
@@ -63,4 +66,11 @@ assert.equal(navigation.setMode('tutorial', { tutorialStep: 2 }).ok, true);
 assert.equal(runtime.store.state.navigation.mode, 'tutorial');
 assert.equal(runtime.commands.progression.navigate({ mode: 'stage', stageIndex: 3 }).ok, true);
 assert.equal(runtime.store.state.navigation.stageIndex, 3);
+let renderCount = 0;
+const renderer = createRenderCoordinator({ store: runtime.store, renderers: { navigation: () => { renderCount++; } } });
+assert.equal(renderer.render().ok, true);
+const disconnect = renderer.connect();
+runtime.store.updateSection('navigation', { stageIndex: 4 });
+disconnect();
+assert.equal(renderCount, 2);
 console.log('Validated development ES module entry point.');

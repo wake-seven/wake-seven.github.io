@@ -21,11 +21,11 @@ export const publishedSourceFiles = Object.freeze([
 // 開発用ESM入口からのみ参照されるモジュール。公開版へは直接連結しない。
 export const developmentSourceFiles = [
   'main.mjs', 'domain/board.mjs', 'domain/progression.mjs',
-  'runtime/settings.mjs', 'runtime/audio.mjs',
+  'runtime/settings.mjs', 'runtime/audio.mjs', 'runtime/progression.mjs',
   'state/store.mjs', 'state/persistence.mjs',
   'data/messages.mjs', 'data/satori.mjs', 'data/board-quiz.mjs',
   'commands/board-commands.mjs', 'commands/progression-commands.mjs',
-  'ui/board.mjs', 'ui/messages.mjs', 'ui/navigation.mjs'
+  'ui/board.mjs', 'ui/messages.mjs', 'ui/navigation.mjs', 'ui/render.mjs'
 ];
 
 export const trackedSourceFiles = Object.freeze([...publishedSourceFiles, ...developmentSourceFiles]);

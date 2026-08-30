@@ -12,6 +12,8 @@ import { createMessagePresenter } from './ui/messages.mjs';
 import { createRuntimeSettings } from './runtime/settings.mjs';
 import { createAudioService } from './runtime/audio.mjs';
 import { createNavigationController } from './ui/navigation.mjs';
+import { createRenderCoordinator } from './ui/render.mjs';
+import { createSpeedUnlockService } from './runtime/progression.mjs';
 
 /** Development ESM entry point. The published build still uses index.html. */
 export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data = {}, commands = {}, ui = {} } = {}) {
@@ -28,6 +30,7 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
   });
   const settings = createRuntimeSettings({ state: store.state, storage: globalThis.localStorage });
   const audio = createAudioService({ enabled: store.state.settings?.sound });
+  const speedUnlocks = createSpeedUnlockService({ storage: globalThis.localStorage });
   const commandApi = Object.freeze({
     board: createBoardCommands(commands.board),
     progression: createProgressionCommands({ navigate: navigation.go, ...commands.progression })
@@ -35,9 +38,10 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
   const uiApi = Object.freeze({
     board: options => createBoardView(options),
     navigation,
+    render: options => createRenderCoordinator({ store, ...options }),
     messages: options => createMessagePresenter({ catalog: createMessageCatalog(data.clearContent), ...ui.messages, ...options })
   });
-  return Object.freeze({ board, progression, store, persistence, settings, audio, commands: commandApi, ui: uiApi, data: Object.freeze({
+  return Object.freeze({ board, progression, store, persistence, settings, audio, speedUnlocks, commands: commandApi, ui: uiApi, data: Object.freeze({
     messages: createMessageCatalog(data.clearContent),
     satori: createSatoriCatalog(data.satoriStages),
     boardQuiz: createBoardQuizCatalog(data.boardQuizCopy)
