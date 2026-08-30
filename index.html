@@ -3857,13 +3857,19 @@ function syncGameState(legacySession=null){
 const SPEED_LAST_TAB_STORAGE_KEY=STORAGE_KEYS.speedLastTab;
 const SPEED_NEW_TAB_STORAGE_KEY=STORAGE_KEYS.speedNewTab;
 const COURSE_DEFINITIONS=Object.freeze({
-  tutorial:{id:'tutorial',total:TUTORIAL_STEPS.length,label:'tutorial'},
-  primary:{id:'primary',total:STAGES.length,label:'training'},
-  mastery:{id:'mastery',total:EXTRA_STAGES.length,label:'mastery'},
-  satori:{id:'satori',total:SATORI_STAGES.length,label:'satori'},
-  speed:{id:'speed',total:SATORI_STAGES.length,label:'speed'},
-  free:{id:'free',total:null,label:'free'},custom:{id:'custom',total:null,label:'custom'}
+  tutorial:{id:'tutorial',total:TUTORIAL_STEPS.length,label:'tutorial',indexKey:'tutorialStep'},
+  primary:{id:'primary',total:STAGES.length,label:'training',indexKey:'stageIndex'},
+  mastery:{id:'mastery',total:EXTRA_STAGES.length,label:'mastery',indexKey:'masteryIndex'},
+  satori:{id:'satori',total:SATORI_STAGES.length,label:'satori',indexKey:'satoriIndex'},
+  speed:{id:'speed',total:SATORI_STAGES.length,label:'speed',indexKey:'speedIndex'},
+  free:{id:'free',total:null,label:'free',indexKey:null},
+  custom:{id:'custom',total:null,label:'custom',indexKey:null}
 });
+const COURSE_MODE_ALIASES=Object.freeze({stage:'primary'});
+function courseDefinitionForMode(mode=activeMode){
+  return COURSE_DEFINITIONS[COURSE_MODE_ALIASES[mode]||mode]||COURSE_DEFINITIONS.primary;
+}
+const isSideCourseMode=()=>isMode('free')||isMode('custom');
 const PRIMARY_SECTIONS=Object.freeze([
   {id:'intro',labelKey:'intro',start:0,total:INTRO_STAGE_COUNT,analytics:'training_intro'},
   {id:'basic',labelKey:'basic',start:BASIC_STAGE_START,total:BASIC_STAGE_COUNT,analytics:'training_basic'},
@@ -3887,16 +3893,15 @@ const PICKER_ACADEMY_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='developmen
 const PICKER_TRAINING_FIRST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingUpper')-PRIMARY_PICKER_SECTION_COUNT;
 const PICKER_TRAINING_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingLower')-PRIMARY_PICKER_SECTION_COUNT;
 function runtimeContext(){
-  if(isMode('tutorial'))return {mode:'tutorial',course:COURSE_DEFINITIONS.tutorial,index:tutorialStep,position:tutorialStep+1,total:TUTORIAL_STEPS.length,lap:1};
-  if(isMode('custom'))return {mode:'custom',course:COURSE_DEFINITIONS.custom,index:null,position:null,total:null,lap:activeLap};
-  if(isMode('free'))return {mode:'free',course:COURSE_DEFINITIONS.free,index:null,position:null,total:null,lap:activeLap};
+  if(isMode('tutorial'))return {mode:'tutorial',course:courseDefinitionForMode(),index:tutorialStep,position:tutorialStep+1,total:TUTORIAL_STEPS.length,lap:1};
+  if(isSideCourseMode())return {mode:activeMode,course:courseDefinitionForMode(),index:null,position:null,total:null,lap:activeLap};
   if(isMode('speed')){
     const index=speedSession?.index||0;
-    return {mode:'speed',course:COURSE_DEFINITIONS.speed,index,position:index+1,total:SATORI_STAGES.length,lap:activeLap};
+    return {mode:'speed',course:courseDefinitionForMode(),index,position:index+1,total:SATORI_STAGES.length,lap:activeLap};
   }
-  if(isMode('satori'))return {mode:'satori',course:COURSE_DEFINITIONS.satori,index:satoriIndex,position:satoriIndex+1,total:SATORI_STAGES.length,lap:activeLap};
-  if(isMode('mastery'))return {mode:'mastery',course:COURSE_DEFINITIONS.mastery,index:extraIndex,position:extraIndex+1,total:EXTRA_STAGES.length,lap:activeLap};
-  return {mode:'primary',course:COURSE_DEFINITIONS.primary,index:stageIndex,position:stageIndex+1,total:STAGES.length,lap:activeLap};
+  if(isMode('satori'))return {mode:'satori',course:courseDefinitionForMode(),index:satoriIndex,position:satoriIndex+1,total:SATORI_STAGES.length,lap:activeLap};
+  if(isMode('mastery'))return {mode:'mastery',course:courseDefinitionForMode(),index:extraIndex,position:extraIndex+1,total:EXTRA_STAGES.length,lap:activeLap};
+  return {mode:'primary',course:courseDefinitionForMode('stage'),index:stageIndex,position:stageIndex+1,total:STAGES.length,lap:activeLap};
 }
 function runtimeStageKey(){
   const ctx=runtimeContext();
@@ -4558,7 +4563,7 @@ function refreshGuidedBasicCandidates(){
 }
 // 補助輪中も盤面全体を見比べられるよう、選択外の4枚は暗転させない。
 const usesSwipeDimming=()=>false;
-const usesSecondLapSwipe=()=>secondLapActive&&!isMode('free')&&!isMode('custom')&&!isMode('speed');
+const usesSecondLapSwipe=()=>secondLapActive&&!isSideCourseMode()&&!isMode('speed');
 const requiresOptimalClear=()=>isMode('mastery')||isMode('satori');
 const masterHintsDisabled=()=>masterVolume()>=2;
 const isThirdVolume=()=>isMode('mastery')&&extraIndex>=30&&extraIndex<45;
