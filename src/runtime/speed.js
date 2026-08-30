@@ -145,9 +145,10 @@ function formatSpeedClock(ms){
   return String(minutes).padStart(2,'0')+':'+String(seconds).padStart(2,'0');
 }
 let speedViewRefs=null;
-function renderSpeedClock(){
-  if(!isMode('speed'))return;
-  const text=formatSpeedClock(speedElapsedMs());
+function renderSpeedClock(model={}){
+  if(!isMode('speed')&&!model.force)return;
+  const elapsed=Number.isFinite(model.elapsedMs)?model.elapsedMs:speedElapsedMs();
+  const text=formatSpeedClock(elapsed);
   speedViewRefs??=createRefs(['speedClockValue']);
   setText(speedViewRefs.speedClockValue,text);
 }
