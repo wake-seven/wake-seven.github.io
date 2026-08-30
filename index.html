@@ -8285,6 +8285,9 @@ function configureMessageReviewLinks(entry,messageClearEntry){
 function isMilestoneMessage(entry){return !!entry?.master;}
 function milestoneVolume(entry){return entry?.master==='primary'?0:Math.ceil((entry.index+1)/MASTER_VOLUME_SIZE);}
 function messageReviewView(){return {seal:$('messageMasterSeal'),rankText:$('messageRankText'),masterText:$('messageMasterText'),boardNote:$('messageMasterBoardNote'),rules:$('messageRules')};}
+const MESSAGE_ROADMAP_MASTERS=Object.freeze(['primary','mastery','satori','satoriIntro','secondLapIntro','awakening','trainingWelcome']);
+const MESSAGE_MASTERY_BOARD_MASTERS=Object.freeze(['mastery','satori','awakening']);
+const MESSAGE_TILTED_BOARD_MASTERS=Object.freeze(['satori','awakening']);
 function resetMessageReviewView(entry,view){
   const roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote');
   $('messagePrev').textContent='← '+tr('prev');
@@ -8292,8 +8295,8 @@ function resetMessageReviewView(entry,view){
   $('closeMessages').textContent=tr('close');
   $('messageStageContext').textContent=messageReviewStageContext(entry);
   $('messageDialogPlace').hidden=true;
-  renderMasteryBoard('messageMasteryBoard',['mastery','satori','awakening'].includes(entry.master),['satori','awakening'].includes(entry.master)?'satori-tilted':'gold');
-  roadmap.hidden=!entry.master||['primary','mastery','satori','satoriIntro','secondLapIntro','awakening','trainingWelcome'].includes(entry.master);
+  renderMasteryBoard('messageMasteryBoard',MESSAGE_MASTERY_BOARD_MASTERS.includes(entry.master),MESSAGE_TILTED_BOARD_MASTERS.includes(entry.master)?'satori-tilted':'gold');
+  roadmap.hidden=!entry.master||!MESSAGE_ROADMAP_MASTERS.includes(entry.master);
   roadmapNote.hidden=true;view.boardNote.hidden=true;view.rules.hidden=true;
   view.seal.hidden=!entry.master;
   view.seal.classList.add('rank-seal');
