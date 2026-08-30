@@ -1141,6 +1141,11 @@ const MILESTONE_RENDERERS=Object.freeze({
   trainingWelcome:(entry,view)=>renderIntroMilestone(entry,view),
   volume:(entry,view,volume)=>renderVolumeMilestone(entry,volume,view)
 });
+const MESSAGE_RENDERERS=Object.freeze({
+  quiz:entry=>{ $('messageDialogTitle').textContent=tr('clear');$('messageDialogPlace').textContent=messageReviewPlace(entry);renderMessageQuiz(entry.quiz); },
+  boardQuiz:entry=>{ $('messageDialogTitle').textContent=tr('clear');$('messageDialogPlace').textContent=messageReviewPlace(entry);renderBoardQuiz('messageBoardQuiz',clearContentAt(true,entry.index).boardQuiz); },
+  text:entry=>{ $('messageDialogText').hidden=false;$('messageDialogTitle').textContent=tr('clear');$('messageDialogPlace').textContent=messageReviewPlace(entry);$('messageDialogTextBody').textContent=entry.text; }
+});
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
   const art=messageReviewArt(entry),twoMoveLesson=lessonVariantFromArt(art),illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
@@ -1181,19 +1186,9 @@ function renderMessageReview(){
     }else{
       MILESTONE_RENDERERS.volume(entry,view,volume);
     }
-  }else if(entry.quiz!==undefined){
-  $('messageDialogTitle').textContent=tr('clear');
-  $('messageDialogPlace').textContent=messageReviewPlace(entry);
-  renderMessageQuiz(entry.quiz);
-  }else if(entry.boardQuiz){
-  $('messageDialogTitle').textContent=tr('clear');
-  $('messageDialogPlace').textContent=messageReviewPlace(entry);
-  renderBoardQuiz('messageBoardQuiz',clearContentAt(true,entry.index).boardQuiz);
   }else{
-  $('messageDialogText').hidden=false;
-  $('messageDialogTitle').textContent=tr('clear');
-  $('messageDialogPlace').textContent=messageReviewPlace(entry);
-  $('messageDialogTextBody').textContent=entry.text;
+    const type=entry.quiz!==undefined?'quiz':entry.boardQuiz?'boardQuiz':'text';
+    MESSAGE_RENDERERS[type](entry);
   }
   illustration.classList.toggle('move-graph',art==='moveGraph');
   illustration.classList.toggle('board-card',art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'));
