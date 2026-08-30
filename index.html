@@ -8377,6 +8377,18 @@ function renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRu
   Object.entries(classByArt).forEach(([className,enabled])=>illustration.classList.toggle(className,enabled));
   stopClearGuideBoard('messageClearGuideBoard');stopClearGuideBoard('messageTwoMoveLessonBoard'); illustration.innerHTML=art==='introGuide'?'<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':twoMoveLesson?'<svg id="messageTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):''; if(art==='introGuide')buildClearGuideBoard('messageClearGuideBoard');if(twoMoveLesson)buildTwoMoveLessonBoard('messageTwoMoveLessonBoard',twoMoveLesson);illustration.hidden=!art;lessonCopy.hidden=!twoMoveLesson;lessonRule.hidden=!twoMoveLesson;
 }
+function renderMessageLesson(twoMoveLesson,illustration,lessonCopy,lessonRule){
+  if(twoMoveLesson){
+    renderTwoMoveLessonRule('messageTwoMoveLessonRule');
+    renderTwoMoveLessonCopy('messageTwoMoveLessonCopy',twoMoveLesson);
+    $('messageDialogText').after(illustration);
+    illustration.before(lessonRule);
+    illustration.after(lessonCopy);
+  }else{
+    lessonRule.replaceChildren();
+    lessonCopy.replaceChildren();
+  }
+}
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
   const {art,twoMoveLesson}=prepareMessageReview(entry);
@@ -8394,17 +8406,7 @@ function renderMessageReview(){
     MESSAGE_RENDERERS[type](entry);
   }
   renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule);
-  if(twoMoveLesson){
-    renderTwoMoveLessonRule('messageTwoMoveLessonRule');
-    renderTwoMoveLessonCopy('messageTwoMoveLessonCopy',twoMoveLesson);
-    $('messageDialogText').after(illustration);
-    illustration.before(lessonRule);
-    illustration.after(lessonCopy);
-  }else{
-    // 一覧の再表示でも、節目以外に前回のレッスンを残さない。
-    lessonRule.replaceChildren();
-    lessonCopy.replaceChildren();
-  }
+  renderMessageLesson(twoMoveLesson,illustration,lessonCopy,lessonRule);
   if(entry.master==='satoriIntro'||entry.master==='secondLapIntro'){
     seal.classList.remove('animate');
     void seal.offsetWidth;
