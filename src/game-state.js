@@ -1,9 +1,9 @@
 /*
- * WAKE SEVEN state foundation.
+ * WAKE SEVEN 統合状態の基盤。
  *
  * The public build in index.html is intentionally self-contained.  This file
  * is injected as an inline script by scripts/build-index.mjs so it remains
- * available on GitHub Pages without a bundler or extra runtime requests.
+ * ビルドなしでGitHub Pagesから利用できるよう、公開版へインライン埋め込みする。
  */
 (function attachWakeSevenState(global) {
   'use strict';
@@ -11,6 +11,34 @@
   const STORAGE_KEY = 'wake7-state-vnext';
   const VERSION = 1;
   const MODES = Object.freeze(['tutorial', 'stage', 'mastery', 'satori', 'speed', 'free', 'custom']);
+  const STORAGE_KEYS = Object.freeze({
+    language: 'wake7-language', sound: 'wake7-sound',
+    boardTheme: 'wake7-board-theme', boardThemeChosen: 'wake7-board-theme-chosen',
+    boardLayout: 'wake7-board-layout', boardLayoutChosen: 'wake7-board-layout-chosen',
+    darumaColor: 'wake7-daruma-color', darumaColorChosen: 'wake7-daruma-color-chosen',
+    cleared: 'wake7-cleared', extraCleared: 'wake7-extra-cleared', satoriCleared: 'wake7-satori-cleared',
+    currentStage: 'wake7-current-stage', activeSession: 'wake7-active-session', activeLap: 'wake7-active-lap',
+    introSeen: 'wake7-intro-seen', tutorialComplete: 'wake7-tutorial-complete', tutorialStep: 'wake7-tutorial-step',
+    messageReview: 'wake7-message-review', messageReviewLast: 'wake7-message-review-last-clear',
+    speedSession: 'wake7-speed-session', speedActiveVariant: 'wake7-speed-active-variant', speedBestMs: 'wake7-speed-best-ms', speedHistory: 'wake7-speed-history',
+    speedUnlocked: 'wake7-speed-unlocked', speedTrainingUnlocked: 'wake7-speed-training-unlocked', speedIntermediateUnlocked: 'wake7-speed-intermediate-unlocked',
+    speedMasteryUnlocked: 'wake7-speed-mastery-unlocked', speedSatoriUnlocked: 'wake7-speed-satori-unlocked', speedUnlockModelVersion: 'wake7-speed-unlock-model-version',
+    speedTrainingTrialCleared: 'wake7-speed-training-trial-cleared', speedIntermediateTrialCleared: 'wake7-speed-intermediate-trial-cleared',
+    speedMasteryTrialCleared: 'wake7-speed-mastery-trial-cleared', speedTrialModelVersion: 'wake7-speed-trial-model-version',
+    stagesLayoutVersion: 'wake7-stages-layout-version', threeDUnlocked: 'wake7-3d-unlocked',
+    masterGoldGranted: 'wake7-master-gold-granted', satoriDesignGranted: 'wake7-satori-design-granted',
+    secondLapActive: 'wake7-second-lap-active', secondLapUnlocked: 'wake7-second-lap-unlocked',
+    rainbowDarumaGranted: 'wake7-rainbow-daruma-granted', awakenedGranted: 'wake7-awakened-granted',
+    satoriOrderVersion: 'wake7-satori-order-version', speedLastTab: 'wake7-speed-last-tab', speedNewTab: 'wake7-speed-new-tab',
+    fourthChecks: 'wake7-fourth-checks'
+  });
+  const storage = {
+    get(key, fallback = null) { try { const value = global.localStorage.getItem(key); return value === null ? fallback : value; } catch (_) { return fallback; } },
+    set(key, value) { try { global.localStorage.setItem(key, value); return true; } catch (_) { return false; } },
+    remove(key) { try { global.localStorage.removeItem(key); return true; } catch (_) { return false; } },
+    json(key, fallback = null) { try { const raw = global.localStorage.getItem(key); return raw === null ? fallback : JSON.parse(raw); } catch (_) { return fallback; } },
+    setJson(key, value) { try { global.localStorage.setItem(key, JSON.stringify(value)); return true; } catch (_) { return false; } }
+  };
 
   const clone = value => JSON.parse(JSON.stringify(value));
   const asArray = value => Array.isArray(value) ? value : [];
@@ -40,8 +68,7 @@
         sessions: seed.speed?.sessions && typeof seed.speed.sessions === 'object' ? clone(seed.speed.sessions) : {}
       },
       ui: seed.ui && typeof seed.ui === 'object' ? clone(seed.ui) : {},
-      // Keeping the exact legacy payload makes the migration reversible while
-      // the rest of the UI is incrementally moved to this canonical shape.
+      // 旧データを保持しておくことで、段階移行中も旧版へ戻せるようにする。
       legacySession: seed.legacySession && typeof seed.legacySession === 'object' ? clone(seed.legacySession) : null
     };
     return state;
@@ -116,11 +143,11 @@
       },
       unlocks: {
         secondLap: storage.getItem('wake7-second-lap-unlocked') === '1',
-        awakened: storage.getItem('wake7-awakened-granted') === '1',
+        awakened: storage.getItem(STORAGE_KEYS.awakenedGranted) === '1',
         threeD: storage.getItem('wake7-3d-unlocked') === '1',
-        masterGoldGranted: storage.getItem('wake7-master-gold-granted') === '1',
-        satoriDesignGranted: storage.getItem('wake7-satori-design-granted') === '1',
-        rainbowDarumaGranted: storage.getItem('wake7-rainbow-daruma-granted') === '1',
+        masterGoldGranted: storage.getItem(STORAGE_KEYS.masterGoldGranted) === '1',
+        satoriDesignGranted: storage.getItem(STORAGE_KEYS.satoriDesignGranted) === '1',
+        rainbowDarumaGranted: storage.getItem(STORAGE_KEYS.rainbowDarumaGranted) === '1',
         speedTraining: storage.getItem('wake7-speed-training-unlocked') === '1',
         speedIntermediate: storage.getItem('wake7-speed-intermediate-unlocked') === '1',
         speedMastery: storage.getItem('wake7-speed-mastery-unlocked') === '1',
@@ -136,13 +163,80 @@
     return state;
   }
 
+  // ナビゲーションは小さな読み取り専用ビューとして公開する。
+  // 状態移行中は実行側が現在値を保持していても、利用側が保存形式を
+  // 意識せずに済むようにする。
+  function navigationView(state) {
+    const navigation = state?.navigation || {};
+    return {
+      mode: MODES.includes(navigation.mode) ? navigation.mode : 'stage',
+      lap: asLap(navigation.lap),
+      stageIndex: asIndex(navigation.stageIndex),
+      masteryIndex: asIndex(navigation.masteryIndex),
+      satoriIndex: asIndex(navigation.satoriIndex),
+      tutorialStep: asIndex(navigation.tutorialStep)
+    };
+  }
+
+  function navigationIndex(navigation, mode = navigation?.mode) {
+    const view = navigation?.navigation ? navigationView(navigation) : navigationView({ navigation });
+    switch (mode) {
+      case 'tutorial': return view.tutorialStep;
+      case 'mastery': return view.masteryIndex;
+      case 'satori': return view.satoriIndex;
+      case 'stage': return view.stageIndex;
+      default: return null;
+    }
+  }
+
+  // 状態の読み取りと同じ境界で、書き込みも正規化して受け付ける。
+  // 呼び出し側は保存形式や許容値を意識せず、変更したい項目だけ渡せる。
+  function updateNavigation(state, patch = {}) {
+    if (!state || typeof state !== 'object') return null;
+    const current = navigationView(state);
+    const next = { ...current, ...(patch && typeof patch === 'object' ? patch : {}) };
+    state.navigation = {
+      mode: MODES.includes(next.mode) ? next.mode : current.mode,
+      lap: asLap(next.lap),
+      stageIndex: asIndex(next.stageIndex),
+      masteryIndex: asIndex(next.masteryIndex),
+      satoriIndex: asIndex(next.satoriIndex),
+      tutorialStep: asIndex(next.tutorialStep)
+    };
+    return state.navigation;
+  }
+
+  function updateSettings(state, patch = {}) {
+    if (!state || typeof state !== 'object') return null;
+    const next = patch && typeof patch === 'object' ? patch : {};
+    state.settings = { ...(state.settings && typeof state.settings === 'object' ? state.settings : {}), ...clone(next) };
+    return state.settings;
+  }
+
+  function updateProgress(state, patch = {}) {
+    if (!state || typeof state !== 'object') return null;
+    const next = patch && typeof patch === 'object' ? patch : {};
+    state.progress = {
+      lap1: normalizeProgress(next.lap1 || state.progress?.lap1),
+      lap2: normalizeProgress(next.lap2 || state.progress?.lap2)
+    };
+    return state.progress;
+  }
+
   global.WakeSevenState = Object.freeze({
     STORAGE_KEY,
+    STORAGE_KEYS,
     VERSION,
     MODES,
+    storage,
     create,
     read,
     write,
-    migrateLegacy
+    migrateLegacy,
+    navigationView,
+    navigationIndex,
+    updateNavigation,
+    updateSettings,
+    updateProgress
   });
 })(window);

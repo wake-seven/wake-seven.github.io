@@ -10,7 +10,7 @@ function debugClearCurrent(extraMoves=0){
   svg.classList.remove('clear-pending','celebrating');
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   $('clearNext').hidden=true;
-  paint();
+  GameBoard.repaint();
   // 即クリアでも、通常操作と同じくメッセージ一覧の開始位置を更新する。
   if(extraMoves===0&&!isMode('satori')&&!isMode('free')&&!isMode('custom')){
     rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);
@@ -22,7 +22,7 @@ function debugGrantRainbowDaruma(){
   darumaColor='rainbow';
   darumaColorChosen=false;
   try{
-    storage.set('wake7-rainbow-daruma-granted','1');
+    storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');
     storage.set('wake7-daruma-color','rainbow');
     storage.remove('wake7-daruma-color-chosen');
   }catch(_){ }
@@ -43,10 +43,10 @@ function debugPrepareSecondLapCheckpoint(){
   satoriDesignGranted=setUnlock('satoriDesignGranted',true);
   try{
     storage.set('wake7-second-lap-unlocked','1');
-    storage.remove('wake7-awakened-granted');
-    for(const variant of ['standard','training9','mastery15','mastery24','satori73'])storage.remove(speedSessionStorageKey(variant));
-    storage.set('wake7-master-gold-granted','1');
-    storage.set('wake7-satori-design-granted','1');
+    storage.remove(STORAGE_KEYS.awakenedGranted);
+    for(const variant of ['standard','training9','mastery15','mastery24','satori73'])clearSpeedSession(variant);
+    storage.set(STORAGE_KEYS.masterGoldGranted,'1');
+    storage.set(STORAGE_KEYS.satoriDesignGranted,'1');
   }catch(_){ }
   activateCampaignLap(2);
 }
@@ -65,8 +65,8 @@ function debugPrepareFirstLapCheckpoint(){
   speedMasteryTrialCleared=false;
   try{
     storage.remove('wake7-second-lap-unlocked');
-    storage.remove('wake7-second-lap-active');
-    storage.remove('wake7-awakened-granted');
+    storage.remove(STORAGE_KEYS.secondLapActive);
+    storage.remove(STORAGE_KEYS.awakenedGranted);
   storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
   storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
   storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
@@ -90,7 +90,7 @@ function debugUnlockStageCheckpoint(index,secondLap=false){
   }catch(_){}
   persistLapProgress();updateMasterTheme();
   if(index>0)rememberClearedMessage(false,index-1);
-  loadStage(index);
+  GameNavigation.stage(index);
 }
 $('debugIntro2').addEventListener('click',()=>debugUnlockStageCheckpoint(INTRO_STAGE_COUNT-1));
 $('debugBasic11').addEventListener('click',()=>debugUnlockStageCheckpoint(DEVELOPMENT_STAGE_START-1));
@@ -119,7 +119,7 @@ function debugUnlockExtra(count,secondLap=false){
   }catch(_){}
   persistLapProgress();updateMasterTheme();
   if(count>0)rememberClearedMessage(true,count-1);
-  loadExtraStage(Math.min(count,EXTRA_STAGES.length-1));
+  GameNavigation.mastery(Math.min(count,EXTRA_STAGES.length-1));
 }
 $('debugExtra14').addEventListener('click',()=>debugUnlockExtra(14));
 $('debugExtra29').addEventListener('click',()=>debugUnlockExtra(29));
@@ -142,7 +142,7 @@ function debugUnlockSatori(count,secondLap=false){
   persistLapProgress();updateMasterTheme();
   if(secondLap){debugGrantRainbowDaruma();updateMasterTheme();}
   rememberClearedMessage(true,EXTRA_STAGES.length-1);
-  loadSatoriStage(Math.min(count,SATORI_STAGES.length-1));
+  GameNavigation.satori(Math.min(count,SATORI_STAGES.length-1));
 }
 $('debugSatori72').addEventListener('click',()=>debugUnlockSatori(72));
 // 現在アクティブな速解きセッション（メニューから選んだもの）を、そのまま最終問題まで進める。
@@ -207,128 +207,22 @@ function debugSkipTutorial(){
   storage.set(STORAGE_KEYS.introSeen,'1');
   storage.set(STORAGE_KEYS.tutorialComplete,'1');
   storage.remove(STORAGE_KEYS.tutorialStep);
-  loadStage(0);
+  GameNavigation.stage(0);
   setTimeout(()=>openChainedDialog('academyEnroll'),260);
 }
 $('debugSkipTutorial').addEventListener('click',debugSkipTutorial);
 $('tutorialDebugSkip').addEventListener('click',debugSkipTutorial);
 $('debugReset').addEventListener('click',()=>resetStoredProgress({resetIntro:true,showIntro:true}));
 // ===== イベントリスナー群A =====
-$('clearNext').addEventListener('click',()=>{
-  hideGameDialogs();
-  advanceAfterClear();
-});
-$('clearClose').addEventListener('click',()=>{
-  hideGameDialogs();
-  nextStageAttention=!isMode('free')&&!isMode('custom')&&!editingBoard;
-  renderStageNav();
-});
-$('optimalRetry').addEventListener('click',()=>{
-  $('optimalFailDialog').hidden=true;
-  setPosition(currentInitialState,currentInitialPar);
-  renderStageNav();
-});
-$('clearMessages').addEventListener('click',()=>openMessageReview({resume:true}));
-$('menuStagePicker').addEventListener('click',()=>{closeAppMenu();openStagePicker();});
-$('menuRankList').addEventListener('click',()=>{closeAppMenu();openRankDialog();});
-$('menuAbout').addEventListener('click',()=>{
-  closeAppMenu();
-  $('aboutDialog').hidden=false;
-  $('aboutDialogCloseBtn').focus();
-});
-$('aboutDialogCloseBtn').addEventListener('click',()=>{$('aboutDialog').hidden=true;});
-$('aboutDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)$('aboutDialog').hidden=true;});
-$('menuAllPatterns').addEventListener('click',()=>{window.open('all-patterns.html','_blank','noopener');});
-$('menuOpen3D').addEventListener('click',()=>{window.open('index_3D.html','_blank','noopener');});
-$('menuSatori').addEventListener('click',()=>{closeAppMenu();openSatoriPicker();});
-$('menuSpeed').addEventListener('click',()=>{
-  closeAppMenu();
-  if(isMode('speed')){pauseSpeedRun();openSpeedPicker();return;}
-  openSpeedPicker();
-});
-$('speedBoardStart').addEventListener('click',beginSpeedRun);
-$('speedPause').addEventListener('click',()=>{
-  if(!isMode('speed'))return;
-  openSpeedPauseDialog();
-  $('speedResume').focus();
-});
-$('speedResume').addEventListener('click',()=>{
-  $('speedPauseDialog').hidden=true;
-  speedManuallyPaused=false;
-  startSpeedClock();
-});
-$('speedRestart').addEventListener('click',()=>{
-  $('speedPauseDialog').hidden=true;
-  $('speedRestartDialog').hidden=false;
-  $('speedRestartCancel').focus();
-});
-$('speedRestartCancel').addEventListener('click',()=>{
-  $('speedRestartDialog').hidden=true;
-  $('speedPauseDialog').hidden=false;
-  $('speedResume').focus();
-});
-$('speedRestartConfirm').addEventListener('click',()=>{
-  $('speedRestartDialog').hidden=true;
-  speedManuallyPaused=false;
-  storage.remove(speedSessionStorageKey());
-  enterSpeedMode(true);
-});
-$('speedPauseStageMode').addEventListener('click',()=>{
-  $('speedPauseDialog').hidden=true;
-  pauseSpeedRun();returnToStageMode();
-});
-$('speedPauseFreeMode').addEventListener('click',()=>{
-  $('speedPauseDialog').hidden=true;
-  if(!isMode('free'))restoreFreeSession();
-});
-$('speedPauseCustomMode').addEventListener('click',()=>{
-  $('speedPauseDialog').hidden=true;
-  if(!isMode('custom'))enterBoardMaker();
-});
-$('closeMessages').addEventListener('click',()=>{
-  const returnTarget=messageDialogReturn;
-  messageDialogReturn=null;
-  $('messageDialog').hidden=true;
-  focusReturnTarget(returnTarget);
-});
-$('messagePrev').addEventListener('click',()=>{if(messageReviewIndex>0){messageReviewIndex--;renderMessageReview();}});
-$('messageNext').addEventListener('click',()=>{if(messageReviewIndex<messageReviewEntries.length-1){messageReviewIndex++;renderMessageReview();}});
-document.addEventListener('keydown',event=>{
-  const target=event.target;
-  const typing=target instanceof HTMLElement&&target.matches('input, textarea, select, [contenteditable]');
-  const dialogOpen=[...document.querySelectorAll('.game-dialog-backdrop')].some(dialog=>!dialog.hidden);
-  if(!typing&&event.key.toLowerCase()==='p'&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&!dialogOpen){
-    event.preventDefault();
-    closeAppMenu();
-    openTwoMovePatterns();
-    return;
-  }
-  if(!typing&&DEBUG_MODE&&event.key.toLowerCase()==='c'&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&!dialogOpen){
-    event.preventDefault();
-    debugClearCurrent(0);
-    return;
-  }
-  if(!typing&&event.key.toLowerCase()==='m'&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&$('messageDialog').hidden){
-    if(!dialogOpen&&buildMessageReviewEntries().length){
-      event.preventDefault();
-      closeAppMenu();
-      openMessageReview({resume:true});
-      return;
-    }
-  }
-  if($('messageDialog').hidden)return;
-  if(event.key==='ArrowLeft'&&messageReviewIndex>0){event.preventDefault();messageReviewIndex--;renderMessageReview();}
-  if(event.key==='ArrowRight'&&messageReviewIndex<messageReviewEntries.length-1){event.preventDefault();messageReviewIndex++;renderMessageReview();}
-});
-$('clearTipLink').addEventListener('click',()=>{
+function handleClearTipLink(){
   if($('clearTipLink').dataset.target==='rank'){
     $('clearDialog').hidden=true;
-    openRankDialog({dialogId:'clearDialog',focusId:'clearTipLink'});
+    GameDialogs.ranks({dialogId:'clearDialog',focusId:'clearTipLink'});
     return;
   }
   if($('clearTipLink').dataset.target==='messages'){
     $('clearDialog').hidden=true;
-    openMessageReview({resume:true,returnTarget:{dialogId:'clearDialog',focusId:'clearTipLink'}});
+    GameDialogs.messages({resume:true,returnTarget:{dialogId:'clearDialog',focusId:'clearTipLink'}});
     return;
   }
   if($('clearTipLink').dataset.target==='tips'){
@@ -358,7 +252,129 @@ $('clearTipLink').addEventListener('click',()=>{
     renderTipGuide();
     $('closeTipGuide').textContent=tr('backToClear');
   }
-});
+}
+function bindClearDialogEvents(){
+  $('clearNext').addEventListener('click',()=>{
+    hideGameDialogs();
+    advanceAfterClear();
+  });
+  $('clearClose').addEventListener('click',()=>{
+    hideGameDialogs();
+    nextStageAttention=isCampaignMode()&&!editingBoard;
+    renderStageNav();
+  });
+  $('optimalRetry').addEventListener('click',()=>{
+    $('optimalFailDialog').hidden=true;
+    GameBoard.reset(currentInitialState,currentInitialPar);
+    renderStageNav();
+  });
+  $('clearMessages').addEventListener('click',()=>GameDialogs.messages({resume:true}));
+  $('clearTipLink').addEventListener('click',handleClearTipLink);
+}
+bindClearDialogEvents();
+function bindMenuEvents(){
+  $('menuStagePicker').addEventListener('click',()=>{closeAppMenu();openStagePicker();});
+  $('menuRankList').addEventListener('click',()=>{closeAppMenu();GameDialogs.ranks();});
+  $('menuAbout').addEventListener('click',()=>{
+    closeAppMenu();
+    $('aboutDialog').hidden=false;
+    $('aboutDialogCloseBtn').focus();
+  });
+  $('aboutDialogCloseBtn').addEventListener('click',()=>{$('aboutDialog').hidden=true;});
+  $('aboutDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)$('aboutDialog').hidden=true;});
+  $('menuAllPatterns').addEventListener('click',()=>{window.open('all-patterns.html','_blank','noopener');});
+  $('menuOpen3D').addEventListener('click',()=>{window.open('index_3D.html','_blank','noopener');});
+  $('menuSatori').addEventListener('click',()=>{closeAppMenu();openSatoriPicker();});
+  $('menuSpeed').addEventListener('click',()=>{
+    closeAppMenu();
+    if(isMode('speed')){pauseSpeedRun();GameNavigation.speedPicker();return;}
+    GameNavigation.speedPicker();
+  });
+}
+// 速解きの再開・再スタートは、イベントから直接状態を書き換えず操作単位へ集約する。
+function resumeSpeedRun(){
+  $('speedPauseDialog').hidden=true;
+  speedManuallyPaused=false;
+  startSpeedClock();
+}
+function confirmSpeedRestart(){
+  $('speedRestartDialog').hidden=true;
+  speedManuallyPaused=false;
+  clearSpeedSession();
+  enterSpeedMode(true);
+}
+function bindSpeedEvents(){
+  $('speedBoardStart').addEventListener('click',beginSpeedRun);
+  $('speedPause').addEventListener('click',()=>{
+    if(!isMode('speed'))return;
+    openSpeedPauseDialog();
+    $('speedResume').focus();
+  });
+  $('speedResume').addEventListener('click',resumeSpeedRun);
+  $('speedRestart').addEventListener('click',()=>{
+    $('speedPauseDialog').hidden=true;
+    $('speedRestartDialog').hidden=false;
+    $('speedRestartCancel').focus();
+  });
+  $('speedRestartCancel').addEventListener('click',()=>{
+    $('speedRestartDialog').hidden=true;
+    $('speedPauseDialog').hidden=false;
+    $('speedResume').focus();
+  });
+  $('speedRestartConfirm').addEventListener('click',confirmSpeedRestart);
+  $('speedPauseStageMode').addEventListener('click',()=>{
+    $('speedPauseDialog').hidden=true;
+    pauseSpeedRun();GameNavigation.stageMenu();
+  });
+  $('speedPauseFreeMode').addEventListener('click',()=>{
+    $('speedPauseDialog').hidden=true;
+    if(!isMode('free'))restoreFreeSession();
+  });
+  $('speedPauseCustomMode').addEventListener('click',()=>{
+    $('speedPauseDialog').hidden=true;
+    if(!isMode('custom'))GameNavigation.maker();
+  });
+}
+function bindMessageReviewEvents(){
+  $('closeMessages').addEventListener('click',()=>{
+    const returnTarget=messageDialogReturn;
+    messageDialogReturn=null;
+    $('messageDialog').hidden=true;
+    focusReturnTarget(returnTarget);
+  });
+  $('messagePrev').addEventListener('click',()=>moveMessageReview(-1));
+  $('messageNext').addEventListener('click',()=>moveMessageReview(1));
+  document.addEventListener('keydown',event=>{
+  const target=event.target;
+  const typing=target instanceof HTMLElement&&target.matches('input, textarea, select, [contenteditable]');
+  const dialogOpen=[...document.querySelectorAll('.game-dialog-backdrop')].some(dialog=>!dialog.hidden);
+  if(!typing&&event.key.toLowerCase()==='p'&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&!dialogOpen){
+    event.preventDefault();
+    closeAppMenu();
+    openTwoMovePatterns();
+    return;
+  }
+  if(!typing&&DEBUG_MODE&&event.key.toLowerCase()==='c'&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&!dialogOpen){
+    event.preventDefault();
+    debugClearCurrent(0);
+    return;
+  }
+  if(!typing&&event.key.toLowerCase()==='m'&&!event.altKey&&!event.ctrlKey&&!event.metaKey&&$('messageDialog').hidden){
+    if(!dialogOpen&&buildMessageReviewEntries().length){
+      event.preventDefault();
+      closeAppMenu();
+      GameDialogs.messages({resume:true});
+      return;
+    }
+  }
+  if($('messageDialog').hidden)return;
+  if(event.key==='ArrowLeft'&&moveMessageReview(-1))event.preventDefault();
+  if(event.key==='ArrowRight'&&moveMessageReview(1))event.preventDefault();
+  });
+}
+bindMenuEvents();
+bindSpeedEvents();
+bindMessageReviewEvents();
 // マスターダイアログを閉じた/開始した直後に、続けて開く特別ダイアログをまとめて管理する。
 // 今後この手の2段階演出が増えたら、ここに1行足すだけで済むようにする。
 // 悟り・名人などコース全体の節目同士の連鎖はCLEAR_CONTENTのキーで表せないので、ここにまとめる。
@@ -366,7 +382,7 @@ $('clearTipLink').addEventListener('click',()=>{
 const MASTER_DIALOG_CHAIN={
   // 二周目を既に制覇していても、一周目をもう一度完走したら新しい二周目を始められるようにする。
   satori:{via:'close',when:()=>activeLap===1,
-    setup:()=>{if(!secondLapUnlocked)beginSecondLap();else{activateCampaignLap(2);loadStage(0);}},
+    setup:()=>{if(!secondLapUnlocked)beginSecondLap();else{activateCampaignLap(2);GameNavigation.stage(0);}},
     open:'secondLapIntro'},
   mastery:{via:'close',when:()=>secondLapActive||speedMasteryTrialCleared,open:'satoriIntro'}
 };
@@ -384,8 +400,8 @@ $('masterClose').addEventListener('click',()=>{
     openChainedDialog(chain.open);
     return;
   }
-  if(restartTraining){activateCampaignLap(1);loadStage(0);return;}
-  if(leaveSpeed){returnToStageMode();return;}
+  if(restartTraining){activateCampaignLap(1);GameNavigation.stage(0);return;}
+  if(leaveSpeed){GameNavigation.stageMenu();return;}
   renderStageNav();
 });
 $('shareGame').addEventListener('click',()=>shareWakeSeven('game',$('shareGame')));
@@ -422,7 +438,7 @@ $('messageRankLink').addEventListener('click',()=>{
     return;
   }
   $('messageDialog').hidden=true;
-  openRankDialog({dialogId:'messageDialog',focusId:'messageRankLink'});
+  GameDialogs.ranks({dialogId:'messageDialog',focusId:'messageRankLink'});
 });
 $('rankBadge').addEventListener('click',openRankDialog);
 $('masterSeal').addEventListener('click',()=>openRankDialogFrom('masterDialog','masterSeal'));
@@ -452,7 +468,7 @@ $('masterStart').addEventListener('click',()=>{
     if(!secondLapActive&&!speedTrainingTrialCleared){speedVariant='training9';speedSession=null;enterSpeedMode(true);return;}
     const before=clearContentBefore(false,TRAINING_STAGE_START);
     if(before?.dialog){rememberSpecialMessage(before.dialog);openChainedDialog(before.dialog);return;}
-    loadStage(TRAINING_STAGE_START);return;
+    GameNavigation.stage(TRAINING_STAGE_START);return;
   }
   if(masterDialogKind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared){
     speedVariant='mastery15';speedSession=null;enterSpeedMode(true);return;
@@ -460,13 +476,13 @@ $('masterStart').addEventListener('click',()=>{
   if(masterDialogKind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared){
     speedVariant='mastery24';speedSession=null;enterSpeedMode(true);return;
   }
-  if(masterDialogKind==='intermediate'){loadExtraStage(0);return;}
-  if(masterDialogKind==='pathInfo')loadExtraStage(0);
-  else if(masterDialogKind==='secondLapIntro')loadStage(0);
-  else if(masterDialogKind==='satoriIntro')loadSatoriStage(0);
+  if(masterDialogKind==='intermediate'){GameNavigation.mastery(0);return;}
+  if(masterDialogKind==='pathInfo')GameNavigation.mastery(0);
+  else if(masterDialogKind==='secondLapIntro')GameNavigation.stage(0);
+  else if(masterDialogKind==='satoriIntro')GameNavigation.satori(0);
   else if(masterDialogKind==='satori')openSatoriPicker();
   else if(masterDialogKind==='mastery')openSatoriPicker();
-  else loadExtraStage(extraIndex+1);
+  else GameNavigation.mastery(extraIndex+1);
 });
 $('masterSpeedUnlockStart').addEventListener('click',()=>{
   hideGameDialogs();
@@ -478,7 +494,7 @@ $('introStart').addEventListener('click',()=>{
   clearInterval(introTimer);
   $('introDialog').hidden=true;
   storage.set(STORAGE_KEYS.introSeen,'1');
-  startTutorial();
+  GameNavigation.tutorial();
 });
 $('chainDialogAction').addEventListener('click',()=>{
   const step=chainActiveStep;
@@ -814,7 +830,7 @@ function applyLanguage(lang){
   $('tutorialReset').textContent='↻ '+tr('tutorialReset');
   $('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');
   if(!$('rankDialog').hidden)renderRankList();
-  if(!$('masterDialog').hidden)showMasterDialog(masterDialogKind);
+  if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);
   renderStageNav();
   if(!$('stagePicker').hidden)renderStagePicker();
   if(!$('twoMoveDialog').hidden)renderTwoMovePatterns();
@@ -870,10 +886,7 @@ $('menuToggle').addEventListener('click',e=>{
   $(id).addEventListener('click',closeAppMenu);
 });
 $('soundToggle').addEventListener('click',()=>{
-  soundEnabled=!soundEnabled;
-  try{storage.set('wake7-sound',soundEnabled?'on':'off');}catch(_){ }
-  updateSoundToggle();
-  if(soundEnabled)playTone(523,.07,.025);
+  toggleSoundCommand();
 });
 $('twoMovePatterns').addEventListener('click',()=>{
   closeAppMenu();
@@ -890,6 +903,15 @@ $('boardThemeDialog').addEventListener('click',event=>{
 $('boardThemeOptions').addEventListener('click',event=>{
   const button=event.target.closest('[data-board-color],[data-board-layout],[data-daruma-color]');
   if(!button||button.disabled)return;
+  selectBoardThemeCommand(button);
+});
+function toggleSoundCommand(){
+  soundEnabled=!soundEnabled;
+  try{storage.set('wake7-sound',soundEnabled?'on':'off');}catch(_){ }
+  updateSoundToggle();
+  if(soundEnabled)playTone(523,.07,.025);
+}
+function selectBoardThemeCommand(button){
   if(button.dataset.boardColor){
     boardTheme=button.dataset.boardColor;
     boardThemeChosen=true;
@@ -905,7 +927,7 @@ $('boardThemeOptions').addEventListener('click',event=>{
   }
   updateMasterTheme();
   renderBoardThemeOptions();
-});
+}
 function closeTwoMovePatterns(){
   $('twoMoveDialog').hidden=true;
   if(returnToClearCard){returnToClearDialog();return;}
@@ -1033,11 +1055,11 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
     storage.remove('wake7-satori-cleared');
     storage.remove('wake7-current-stage');
     storage.remove('wake7-active-session');
-    storage.remove('wake7-second-lap-active');
+    storage.remove(STORAGE_KEYS.secondLapActive);
     storage.remove('wake7-second-lap-unlocked');
     storage.remove('wake7-active-lap');
     for(const lap of [1,2])for(const part of ['primary','extra','satori'])storage.remove('wake7-lap'+lap+'-'+part+'-cleared');
-    storage.remove('wake7-awakened-granted');
+    storage.remove(STORAGE_KEYS.awakenedGranted);
     if(!preserveRewards){
       // デバッグの完全リセットでは、ゲノム側で選んだ表示設定も初期化する。
       storage.remove('wakeSevenGenomeBoardSize');
@@ -1048,10 +1070,10 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
       storage.remove('wake7-board-layout-chosen');
       storage.remove('wake7-daruma-color');
       storage.remove('wake7-daruma-color-chosen');
-      storage.remove('wake7-master-gold-granted');
-      storage.remove('wake7-satori-design-granted');
-      storage.remove('wake7-rainbow-daruma-granted');
-      storage.remove('wake7-speed-unlocked');
+      storage.remove(STORAGE_KEYS.masterGoldGranted);
+      storage.remove(STORAGE_KEYS.satoriDesignGranted);
+      storage.remove(STORAGE_KEYS.rainbowDarumaGranted);
+      storage.remove(STORAGE_KEYS.speedUnlocked);
       storage.remove(STORAGE_KEYS.speedTrainingUnlocked);
       storage.remove(STORAGE_KEYS.speedIntermediateUnlocked);
       storage.remove(STORAGE_KEYS.speedMasteryUnlocked);
@@ -1063,7 +1085,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
       storage.remove(STORAGE_KEYS.speedTrialModelVersion);
       storage.remove('wake7-3d-unlocked');
       for(const variant of ['standard','training9','mastery15','mastery24','satori73']){
-        storage.remove(speedSessionStorageKey(variant));
+        clearSpeedSession(variant);
         storage.remove(speedBestStorageKey(variant));
         storage.remove(speedHistoryStorageKey(variant));
       }
@@ -1108,7 +1130,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   awakenedGranted=false;
   setActiveMode('stage');speedSession=null;pauseSpeedClock();
   updateMasterTheme();
-  loadStage(0);
+  GameNavigation.stage(0);
   if(showIntro)setTimeout(openIntroGuide,80);
 }
 $('resetProgress').addEventListener('click',()=>{
@@ -1144,9 +1166,9 @@ let savedLanguage=UI_TEXT[gameState.settings.language]?gameState.settings.langua
 applyLanguage(savedLanguage);
 if(storage.get(STORAGE_KEYS.introSeen)!=='1')setTimeout(openIntroGuide,350);
 else if(storage.get(STORAGE_KEYS.tutorialComplete)!=='1'&&!isMode('tutorial'))setTimeout(startTutorial,80);
-window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();saveActiveSession();});
+window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();persistActiveSession();});
 document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='hidden'){if(isMode('speed'))pauseSpeedClock();saveActiveSession();}
+  if(document.visibilityState==='hidden'){if(isMode('speed'))pauseSpeedClock();persistActiveSession();}
   else if(isMode('speed')&&!speedAwaitingStart()){
     if(isSolved()&&speedSession){
       // 非表示の間にクリア演出や、その後の次の問題へ進む処理が止まってしまうことがある

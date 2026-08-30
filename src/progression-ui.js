@@ -418,8 +418,8 @@ function renderStagePicker(){
 }
 function openStagePicker(){
   pickerLap=activeLap;
-  if(isMode('satori')||((isMode('free')||isMode('custom'))&&lastStageMode.satori)){openSatoriPicker();return;}
-  const showingExtra=isMode('mastery')||((isMode('free')||isMode('custom'))&&lastStageMode.extra);
+  if(isMode('satori')||(isSideCourseMode()&&lastStageMode.satori)){openSatoriPicker();return;}
+  const showingExtra=isMode('mastery')||(isSideCourseMode()&&lastStageMode.extra);
   const showingIndex=isMode('mastery')?extraIndex:lastStageMode.index;
   pickerRound=showingExtra?Math.floor(showingIndex/MASTER_VOLUME_SIZE):PRIMARY_SECTIONS.indexOf(primarySection(showingIndex))-PRIMARY_PICKER_SECTION_COUNT;
   renderStagePicker();
@@ -519,8 +519,8 @@ function renderStageNav(){
     $('stageSubtitle').hidden=true;
     $('stageCount').hidden=true;
     $('stagePickerTrigger').disabled=false;
-    $('stagePickerTrigger').classList.toggle('second-lap-stage',activeLap===2&&!isMode('free')&&!isMode('custom')&&!isMode('speed'));
-    $('lapBadge').hidden=activeLap!==2||isMode('free')||isMode('custom')||isMode('speed');
+    $('stagePickerTrigger').classList.toggle('second-lap-stage',activeLap===2&&isCampaignMode());
+    $('lapBadge').hidden=activeLap!==2||!isCampaignMode();
     $('lapBadge').textContent=secondLapMark();
     $('shuffle').hidden=true;
     $('undo').hidden=hideLearningControls||editingBoard||isMode('satori')||(isMode('speed')&&!speedAllowsUndo());
@@ -550,7 +550,7 @@ function renderStageNav(){
     $('twoMoveLessonOpen').textContent=tr('twoMoveLessonOpen');
   }
   function renderStageNavModeButtons(){
-    const inSideMode=isMode('free')||isMode('custom');
+    const inSideMode=isSideCourseMode();
     $('stageKind').hidden=false;
     $('stageNav').classList.toggle('side-mode-nav',inSideMode);
     $('prevStage').textContent=inSideMode?tr('stageModeReturn'):tr('prev');
@@ -564,10 +564,10 @@ function renderStageNav(){
     $('nextStage').disabled=customPlaying?false:isMode('custom')?true:isMode('free')?false:isMode('mastery')
       ?(extraIndex===EXTRA_STAGES.length-1?!canEnterSatori():!clearedExtraStages.has(extraIndex))
       :(stageIndex===STAGES.length-1?!allPrimaryCleared():!clearedStages.has(stageIndex));
-    $('stageMode').classList.toggle('on',!isMode('free')&&!isMode('custom')&&!isMode('speed'));
+    $('stageMode').classList.toggle('on',isCampaignMode());
     $('freeMode').classList.toggle('on',isMode('free'));
     $('menuSpeed').classList.toggle('on',isMode('speed'));
-    $('stageMode').setAttribute('aria-pressed',String(!isMode('free')&&!isMode('custom')));
+    $('stageMode').setAttribute('aria-pressed',String(isCampaignMode()));
     $('freeMode').setAttribute('aria-pressed',String(isMode('free')));
     $('stageModeReturn').hidden=true;
     $('menuRankList').hidden=highestRankIndex()<0;
@@ -638,16 +638,6 @@ function renderStageNav(){
       showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
     }
   }
-  function renderStageNavAccent(){
-    let accentFrac=0;
-    if(isMode('speed'))accentFrac=(speedSession.index+1)/(speedSession.total||activeSpeedDefinition().total);
-    else if(isMode('satori'))accentFrac=(satoriIndex+1)/SATORI_STAGES.length;
-    else if(isMode('mastery'))accentFrac=(extraIndex+1)/EXTRA_STAGES.length;
-    else if(!isMode('free')&&!isMode('custom'))accentFrac=stageIndex<ACADEMY_STAGE_COUNT?(stageIndex+1)/ACADEMY_STAGE_COUNT:(stageIndex-ACADEMY_STAGE_COUNT+1)/TRAINING_STAGE_COUNT;
-    $('stageAccentFill').style.width=(Math.max(0,Math.min(1,accentFrac))*100)+'%';
-    if(!isMode('speed')){$('shortestLabel').textContent=tr('shortestDisplay');$('moveUnit').textContent=tr('moveUnit');$('academyClearSuffix').textContent=tr('academyClearSuffix');$('movesLabel').textContent=tr('moves');$('moves').textContent=moves;$('movesUnit').textContent=tr('moveUnit');}
-    renderRankBadge();
-  }
   function renderStageNavPrevNext(){
     const customPlaying=isMode('custom')&&!editingBoard;
     if(isMode('speed')){$('prevStage').hidden=false;$('nextStage').hidden=false;$('prevStage').disabled=true;$('nextStage').disabled=true;}
@@ -659,7 +649,7 @@ function renderStageNav(){
         :!clearedSatoriStages.has(satoriIndex);
     }
     else{$('prevStage').hidden=false;$('nextStage').hidden=isMode('custom')&&!customPlaying;}
-    const highlightNext=nextStageAttention&&!isMode('free')&&!isMode('custom')&&!$('nextStage').hidden&&!$('nextStage').disabled;
+    const highlightNext=nextStageAttention&&isCampaignMode()&&!$('nextStage').hidden&&!$('nextStage').disabled;
     $('nextStage').classList.toggle('next-attention',highlightNext);
   }
   function renderStageNavGuidance(){
@@ -720,10 +710,16 @@ function renderClearStageContext(){
     return;
   }
   context.hidden=false;
-  const showsCount=isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','development'].includes(primarySectionPosition(stageIndex).section.id));
+  const showsCount=clearDialogShowsStageCount();
   context.textContent=showsCount
     ?$('stageKind').textContent+'　'+$('stageNumber').textContent+' '+$('stageCount').textContent
     :$('stageKind').textContent+' '+$('stageNumber').textContent;
+}
+function clearDialogShowsStageCount(){
+  return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','development'].includes(primarySectionPosition(stageIndex).section.id));
+}
+function clearDialogUsesStageProgression(){
+  return !isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori');
 }
 function clearDialogHeading(){
   return tr(isMode('mastery')||isMode('satori')?'optimalClear':'clear');
@@ -740,22 +736,22 @@ function showClearDialog(){
     showMasterDialog(secondLapActive?'awakening':'satori');
     return;
   }
-  if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&stageIndex===ACADEMY_STAGE_COUNT-1&&academyCleared()){
+  if(clearDialogUsesStageProgression()&&stageIndex===ACADEMY_STAGE_COUNT-1&&academyCleared()){
     showMasterDialog('primary');
     return;
   }
   // 入門クラス最終問題のクリアは、通常のクリアダイアログの代わりに
   // だるま学園入学と同じ演出の「基本クラスへようこそ」を毎回そのまま見せる。
-  if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&stageIndex===INTRO_STAGE_COUNT-1){
+  if(clearDialogUsesStageProgression()&&stageIndex===INTRO_STAGE_COUNT-1){
     openChainedDialog('basicWelcome');
     return;
   }
   // 基本クラス最終問題のクリアも、同じ演出で「発展クラス開始」を毎回そのまま見せる。
-  if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&stageIndex===DEVELOPMENT_STAGE_START-1){
+  if(clearDialogUsesStageProgression()&&stageIndex===DEVELOPMENT_STAGE_START-1){
     openChainedDialog('developmentWelcome');
     return;
   }
-  if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&stageIndex===STAGES.length-1&&allPrimaryCleared()){
+  if(clearDialogUsesStageProgression()&&stageIndex===STAGES.length-1&&allPrimaryCleared()){
     showMasterDialog('intermediate');
     return;
   }
@@ -801,27 +797,6 @@ function renderOptimalFail(){
   $('optimalFailEncourage').textContent=encourage;
   $('optimalRetry').textContent=tr('optimalRetry');
 }
-function twoMoveDiscoveryText(card){
-  const position=TWO_MOVE_PATTERN_POSITION[card];
-  const key=TWO_MOVE_CLEAR_MESSAGE_KEYS[position];
-  return currentLang==='ja'&&key?tr(key,{n:position}):tr('twoMoveDiscovery',{n:position});
-}
-function stageClearTextAt(mode,index){
-  const entry=clearContentAt(mode,index);
-  if(!entry)return mode?'':'';
-  if(entry.twoMoveCard!==undefined)return twoMoveDiscoveryText(entry.twoMoveCard);
-  if(entry.guideCard)return resolveLocaleText(entry.guideCard.text);
-  return entry.tip?resolveLocaleText(entry.tip):'';
-}
-function stageClearText(){return isMode('free')||isMode('custom')||isMode('satori')?'':stageClearTextAt(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);}
-function stageClearArtAt(mode,index){
-  const entry=clearContentAt(mode,index);
-  if(!entry)return '';
-  if(entry.twoMoveCard!==undefined)return 'twoMoveCard:'+entry.twoMoveCard;
-  if(entry.guideCard)return 'guideCard:'+entry.guideCard.state.join('');
-  return entry.art||'';
-}
-function stageClearArt(){return isMode('satori')?'':stageClearArtAt(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);}
 function tipDaruma(x,y,scale=.55){
   return '<g transform="translate('+x+' '+y+') scale('+scale+')"><use href="#daruma-body"/><use href="#face-open"/></g>';
 }
@@ -923,7 +898,7 @@ function renderClearTip(){
   const twoMoveLesson=lessonVariantFromArt(art);
   const lessonCopy=$('clearTwoMoveLessonCopy');
   const lessonRule=$('clearTwoMoveLessonRule');
-  const clearEntry=isMode('mastery')?clearContentAt(true,extraIndex):null;
+  const clearEntry=isMode('mastery')?clearEntryForCurrent():null;
   const twoMoveCard=clearEntry?clearEntry.twoMoveCard:undefined;
   const guideCard=clearEntry?clearEntry.guideCard:null;
   const rankLink=!!clearEntry&&clearEntry.link==='rank';
@@ -984,299 +959,8 @@ function renderClearTip(){
     document.querySelector('#clearDialog .clear-dialog-heading').after(illustration);
   }
 }
-const MESSAGE_REVIEW_STORAGE_KEY='wake7-message-review';
-const MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY='wake7-message-review-last-clear';
-let messageReviewEntries=[],messageReviewIndex=0;
-function messageReviewEntryKey(entry){
-  const kind=entry.awakened?'master:awakening':entry.satori?'satori':entry.master?'master:'+entry.master:entry.boardQuiz?'board-quiz':entry.quiz!==undefined?'quiz':'text';
-  return (entry.awakened||entry.satori?'satori':entry.extra?'extra':'primary')+':'+entry.index+':'+kind;
-}
-function buildMessageReviewEntries(){
-  const entries=[];
-  // 二周目を始めた直後も、一周目で集めたメッセージを読み返せるようにする。
-  const reviewPrimary=activeLap===2?lap1ClearedStages:clearedStages;
-  const reviewExtra=activeLap===2?lap1ClearedExtraStages:clearedExtraStages;
-  const reviewSatori=activeLap===2?lap1ClearedSatoriStages:clearedSatoriStages;
-  const reviewPrimaryDone=STAGES.every((_,i)=>reviewPrimary.has(i));
-  const reviewMastered=EXTRA_STAGES.every((_,i)=>reviewExtra.has(i));
-  const reviewSatoriMastered=SATORI_STAGES.every((_,i)=>reviewSatori.has(i));
-  for(let i=0;i<STAGES.length;i++){
-    if(!reviewPrimary.has(i))continue;
-    if(i===ACADEMY_STAGE_COUNT-1){
-      if(speedTrainingTrialCleared){
-        entries.push({master:'primary',extra:false,index:i});
-        const before=clearContentBefore(false,TRAINING_STAGE_START);
-        if(before?.dialog)entries.push({master:before.dialog,extra:false,index:i});
-      }
-      continue;
-    }
-    const text=stageClearTextAt(false,i);if(text)entries.push({extra:false,index:i,text,art:stageClearArtAt(false,i)});
-    const primaryEntry=clearContentAt(false,i);
-    if(primaryEntry&&primaryEntry.quiz)entries.push({extra:false,index:i,quiz:resolveLocaleText(primaryEntry.quiz),art:stageClearArtAt(false,i)});
-  }
-  // だるま修行を終えるまでは、後半コースのメッセージへ飛ばさない。
-  if(!reviewPrimaryDone){
-    if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});
-    return entries;
-  }
-  for(let i=0;i<EXTRA_STAGES.length;i++){
-    if(!reviewExtra.has(i))continue;
-    if((i+1)%MASTER_VOLUME_SIZE===0){
-      if(i===EXTRA_STAGES.length-1){if(speedMasteryTrialCleared)entries.push({master:'mastery',extra:true,index:i});}
-      else if(i!==29||speedIntermediateTrialCleared)entries.push({master:'volume',extra:true,index:i});
-      continue;
-    }
-    const text=stageClearTextAt(true,i);if(text)entries.push({extra:true,index:i,text,art:stageClearArtAt(true,i)});
-    const extraEntry=clearContentAt(true,i);
-    if(extraEntry&&extraEntry.boardQuiz)entries.push({extra:true,index:i,boardQuiz:true});
-    if(extraEntry&&extraEntry.quiz)entries.push({extra:true,index:i,quiz:resolveLocaleText(extraEntry.quiz),art:stageClearArtAt(true,i)});
-  }
-  if(reviewMastered&&speedMasteryTrialCleared)entries.push({master:'satoriIntro',extra:true,index:EXTRA_STAGES.length-1});
-  if(reviewSatoriMastered||hasSatoriReward())entries.push({master:'satori',satori:true,index:SATORI_STAGES.length-1});
-  if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});
-  if(awakenedGranted)entries.push({master:'awakening',awakened:true,index:SATORI_STAGES.length-1});
-  return entries;
-}
-function rememberClearedMessage(extra,index,satori=false){
-  const entry=buildMessageReviewEntries().find(item=>!!item.satori===satori&&!!item.extra===extra&&item.index===index);
-  if(!entry)return;
-  const key=messageReviewEntryKey(entry);
-  try{
-    storage.set(MESSAGE_REVIEW_STORAGE_KEY,key);
-    storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);
-  }catch(_){}
-}
-function rememberSpecialMessage(master){
-  const entry=buildMessageReviewEntries().find(item=>item.master===master);
-  if(!entry)return;
-  const key=messageReviewEntryKey(entry);
-  try{
-    storage.set(MESSAGE_REVIEW_STORAGE_KEY,key);
-    storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);
-  }catch(_){ }
-}
-function messageReviewPlace(entry){
-  if(entry.awakened)return tr('awakenedTitle');
-  if(entry.satori)return currentLang==='ja'?'悟りへの道・第'+(entry.index+1)+'問 クリア':tr('satoriTitle');
-  if(entry.master==='satoriIntro')return currentLang==='ja'?'悟りへの道の案内':tr('satoriIntroTitle');
-  if(entry.master==='secondLapIntro')return currentLang==='ja'?'二周目の案内':tr('secondLapTitle');
-  if(entry.master==='trainingWelcome')return currentLang==='ja'?'だるま修行の案内':tr('trainingWelcomeTitle');
-  if(!entry.extra){
-    if(currentLang!=='ja')return tr('stageAria',{n:entry.index+1,par:STAGES[entry.index].par});
-    const {section,position}=primarySectionPosition(entry.index);
-    const group=tr(section.labelKey);
-    const number=position;
-    return group+' 第'+number+'問 クリア';
-  }
-  const volume=Math.floor(entry.index/MASTER_VOLUME_SIZE)+1;
-  return currentLang==='ja'?'名人への道 '+volumeLabel(volume)+'・第'+(entry.index%MASTER_VOLUME_SIZE+1)+'問 クリア':tr('extraStageAria',{n:entry.index+1,total:EXTRA_STAGES.length});
-}
-function messageReviewStageContext(entry){
-  if(entry.awakened)return tr('secondLapPath');
-  if(entry.satori)return tr('satori')+' '+(entry.index+1)+' / '+SATORI_STAGES.length;
-  if(entry.master==='satoriIntro')return tr('satori');
-  if(entry.master==='secondLapIntro')return tr('secondLapPath');
-  if(entry.master==='trainingWelcome')return tr('darumaTraining');
-  if(!entry.extra){
-    const {section,position:number}=primarySectionPosition(entry.index);
-    const group=tr(section.labelKey);
-    const total=section.total;
-    return group+' '+number+' / '+total;
-  }
-  const volume=Math.floor(entry.index/MASTER_VOLUME_SIZE)+1;
-  const path=currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume);
-  return path+'　'+masterSubtitle(volume)+' '+(entry.index%MASTER_VOLUME_SIZE+1)+' / '+MASTER_VOLUME_SIZE;
-}
-function renderMessageReview(){
-  const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
-  const art=entry.art||'',twoMoveLesson=lessonVariantFromArt(art),illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
-  $('messagePrev').textContent='← '+tr('prev');
-  $('messageNext').textContent=tr('next')+' →';
-  $('closeMessages').textContent=tr('close');
-  $('messageStageContext').textContent=messageReviewStageContext(entry);
-  $('messageDialogPlace').hidden=true;
-  renderMasteryBoard('messageMasteryBoard',['mastery','satori','awakening'].includes(entry.master),['satori','awakening'].includes(entry.master)?'satori-tilted':'gold');
-  roadmap.hidden=!entry.master||['primary','mastery','satori','satoriIntro','secondLapIntro','awakening','trainingWelcome'].includes(entry.master);roadmapNote.hidden=true;boardNote.hidden=true;rules.hidden=true;
-  seal.hidden=!entry.master;
-  seal.classList.add('rank-seal');
-  seal.classList.remove('rank-frame-seal','second-lap-mark');
-  seal.tabIndex=0;
-  rankText.hidden=true;masterText.hidden=true;
-  $('messageDialogText').hidden=!!entry.master||entry.quiz!==undefined||!!entry.boardQuiz;
-  const messageClearEntry=entry.extra?clearContentAt(true,entry.index):null;
-  const twoMoveCard=messageClearEntry?messageClearEntry.twoMoveCard:undefined;
-  const guideCard=messageClearEntry?messageClearEntry.guideCard:null;
-  const rankLink=!!messageClearEntry&&messageClearEntry.link==='rank';
-  const tipsLink=!!messageClearEntry&&messageClearEntry.link==='tips';
-  const patternsLink=!!messageClearEntry&&messageClearEntry.link==='patterns';
-  $('messageRankLink').hidden=twoMoveCard===undefined&&!guideCard&&!rankLink&&!tipsLink&&!patternsLink;
-  $('messageRankLink').dataset.target=tipsLink?'tips':patternsLink?'patterns':twoMoveCard!==undefined?'card':guideCard?'guide':'rank';
-  $('messageRankLink').textContent=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatternsLink')+' →':twoMoveCard!==undefined||guideCard?tr('detailsLink'):tr('rankLink');
-  $('messageQuiz').hidden=entry.quiz===undefined;
-  $('messageBoardQuiz').hidden=!entry.boardQuiz;
-  if(entry.master){
-    const volume=entry.master==='primary'?0:Math.ceil((entry.index+1)/MASTER_VOLUME_SIZE);
-    const current=entry.master==='primary'?2:entry.master==='mastery'?6:Math.min(5,volume+2);
-    if(entry.master!=='mastery')roadmap.innerHTML=masterRoadmapMarkup(current);
-    if(entry.master==='primary'){
-      $('messageMasterSealLabel').textContent=masterPath().ranks[0];setSealColor(seal,0);$('messageDialogTitle').textContent=tr('masterTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[0]);masterText.hidden=false;masterText.textContent=tr('masterText');rules.hidden=false;rules.textContent=masterCommonRules();
-    }else if(entry.master==='mastery'){
-      $('messageMasterSealLabel').textContent=masterPath().ranks[3];setSealColor(seal,3);$('messageDialogTitle').textContent=tr('masteryTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[3]);masterText.hidden=false;masterText.textContent=tr('masteryText');boardNote.hidden=false;boardNote.textContent=tr('masteryBoardNote');
-    }else if(entry.master==='satori'){
-      $('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('satoriRank'),false,5);setSealColor(seal,5);seal.classList.add('rank-frame-seal');$('messageDialogTitle').textContent=tr('satoriTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));masterText.hidden=false;masterText.textContent=tr('satoriText');
-    }else if(entry.master==='awakening'){
-      $('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('awakenedRank'),false,6);setSealColor(seal,6);seal.classList.add('rank-frame-seal');$('messageDialogTitle').textContent=tr('awakenedTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('awakenedRank'));masterText.hidden=false;masterText.textContent=tr('satoriThanks');boardNote.hidden=false;boardNote.textContent=tr('threeDUnlockedText');
-    }else if(entry.master==='satoriIntro'){
-      seal.hidden=false;seal.classList.remove('rank-seal','rank-frame-seal','second-lap-mark');seal.tabIndex=-1;setSealColor(seal,5);$('messageMasterSealLabel').innerHTML=satoriSealSvg();$('messageDialogTitle').textContent=tr('satoriIntroTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr('satoriIntroText');
-    }else if(entry.master==='secondLapIntro'){
-      seal.hidden=false;seal.classList.remove('rank-seal','rank-frame-seal');seal.classList.add('second-lap-mark');seal.tabIndex=-1;$('messageMasterSealLabel').textContent=secondLapMark();$('messageDialogTitle').textContent=tr('secondLapTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr('secondLapText');
-    }else if(entry.master==='trainingWelcome'){
-      seal.hidden=true;$('messageDialogTitle').textContent=tr('trainingWelcomeTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr('trainingWelcomeText');
-    }else{
-      const nextRules={ja:['「破」からは、ヒントが使えなくなります。','「急」では途中から最短4手の問題です。\nスワイプ中は残り最短手数が「？」になります。','「極」では残り最短手数が表示されません。\nかわりに回数限定で「残り手数」のボタンが使えますが、これも途中から使用回数が減っていきます。']}[currentLang]||[];
-      const clearName=currentLang==='ja'?'名人への道・'+volumeLabel(volume)+'　'+masterSubtitle(volume):volumeLabel(volume)+'　'+masterSubtitle(volume);
-      $('messageMasterSealLabel').textContent=rankForVolume(volume);setSealColor(seal,volume);$('messageDialogTitle').textContent=tr('volumeClearTitle',{n:clearName});$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(rankForVolume(volume));masterText.hidden=false;masterText.textContent=nextRules[volume-1]||tr('volumeClearText');
-    }
-  }else if(entry.quiz!==undefined){
-  $('messageDialogTitle').textContent=tr('clear');
-  $('messageDialogPlace').textContent=messageReviewPlace(entry);
-  renderMessageQuiz(entry.quiz);
-  }else if(entry.boardQuiz){
-  $('messageDialogTitle').textContent=tr('clear');
-  $('messageDialogPlace').textContent=messageReviewPlace(entry);
-  renderBoardQuiz('messageBoardQuiz',clearContentAt(true,entry.index).boardQuiz);
-  }else{
-  $('messageDialogText').hidden=false;
-  $('messageDialogTitle').textContent=tr('clear');
-  $('messageDialogPlace').textContent=messageReviewPlace(entry);
-  $('messageDialogTextBody').textContent=entry.text;
-  }
-  illustration.classList.toggle('move-graph',art==='moveGraph');
-  illustration.classList.toggle('board-card',art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'));
-  illustration.classList.toggle('controls-art',art==='controls');
-  illustration.classList.toggle('navigation-art',art==='navigation');
-  illustration.classList.toggle('menu-art',art==='menuButtons');
-  illustration.classList.toggle('rank-badge-art',art==='rankBadgeArt');
-  illustration.classList.toggle('unwritten-art',art==='unwritten');
-  illustration.classList.toggle('cheer-art',art==='cheer');
-  illustration.classList.toggle('intro-guide-art',art==='introGuide');
-  illustration.classList.toggle('two-move-lesson-art',!!twoMoveLesson);
-  stopClearGuideBoard('messageClearGuideBoard');
-  stopClearGuideBoard('messageTwoMoveLessonBoard');
-  illustration.innerHTML=art==='introGuide'?'<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
-    :twoMoveLesson?'<svg id="messageTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
-    :art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'';
-  if(art==='introGuide')buildClearGuideBoard('messageClearGuideBoard');
-  if(twoMoveLesson)buildTwoMoveLessonBoard('messageTwoMoveLessonBoard',twoMoveLesson);
-  illustration.hidden=!art;
-  lessonCopy.hidden=!twoMoveLesson;
-  lessonRule.hidden=!twoMoveLesson;
-  if(twoMoveLesson){
-    renderTwoMoveLessonRule('messageTwoMoveLessonRule');
-    renderTwoMoveLessonCopy('messageTwoMoveLessonCopy',twoMoveLesson);
-    $('messageDialogText').after(illustration);
-    illustration.before(lessonRule);
-    illustration.after(lessonCopy);
-  }else{
-    // 一覧の再表示でも、節目以外に前回のレッスンを残さない。
-    lessonRule.replaceChildren();
-    lessonCopy.replaceChildren();
-  }
-  if(entry.master==='satoriIntro'||entry.master==='secondLapIntro'){
-    seal.classList.remove('animate');
-    void seal.offsetWidth;
-    seal.classList.add('animate');
-  }
-  $('messagePrev').disabled=messageReviewIndex===0;
-  $('messageNext').disabled=messageReviewIndex===messageReviewEntries.length-1;
-  try{storage.set(MESSAGE_REVIEW_STORAGE_KEY,messageReviewEntryKey(entry));}catch(_){}
-}
-// ===== クイズシステム =====
-/* クイズは見直すたびに選択肢の位置を変える。 */
-function shuffledIndices(length){
-  const order=Array.from({length},(_,index)=>index);
-  for(let index=order.length-1;index>0;index--){
-    const swap=Math.floor(Math.random()*(index+1));
-    [order[index],order[swap]]=[order[swap],order[index]];
-  }
-  return order;
-}
-function quizPresentation(quiz){
-  const order=shuffledIndices(quiz.a.length);
-  return {answers:order.map(index=>quiz.a[index]),correct:order.indexOf(quiz.correct)};
-}
-// en/zh/koのnotTwoは現状どこからも読まれていない下書きの出題文(「最短2手でない盤面はどれ？」)。
-// 未使用だからと削除しないこと(後で使う予定)。
-const BOARD_QUIZ_COPY={
-  ja:{title:'盤面クイズ',moves:'この盤面は最短何手？',choose:'最短2手の盤面を選んでね。',chooseThree:'どちらが最短3手？正解だと思う盤面を選択してね。',chooseTwo:'最短2手の盤面を、2つ選んでね。',selectMore:'あと{n}つ選んでね。',moveChoices:['最短1手','最短2手','最短3手','最短4手'],movesNote:'2体寝ていて片方が真ん中なら最短2手です。',diamond:'ひし形は、対角線のだるまが逆向きなら最短2手です。',caterpillar:'芋虫は、目玉同士・胴体同士がそれぞれ同じ向きなら最短2手です。',outer:'外周で隣り合う2体の向きまで合っていれば、最短2手です。',ribbon:'リボン型は、だるまの向きまで見分ける必要があります。',trapezoid:'台形型は、だるまの向きまで見分ける必要があります。',largeTriangle:'大三角が起きてる方は最短3手、寝てる方は最短4手です。'},
-  en:{title:'Board Quiz',moves:'What is this board’s shortest solution?',choose:'Which board takes only 2 moves?',notTwo:'Which board does not take 2 moves?',moveChoices:['1 move','2 moves','3 moves','4 moves'],movesNote:'This is pattern 1 of the nine 2-move boards.',diamond:'For a diamond, opposite corners must face opposite ways.',caterpillar:'For a caterpillar, the eyes match each other and the body pair match each other.',outer:'The two neighboring outer daruma must also have the right directions.',ribbon:'In a ribbon, the odd daruma’s direction is decisive.',trapezoid:'For a trapezoid, distinguish the odd daruma’s direction too.'},
-  zh:{title:'棋盘小测验',moves:'这个棋盘最少需要几步？',choose:'哪一个最少只要2步？',notTwo:'哪一个不是最少2步？',moveChoices:['最少1步','最少2步','最少3步','最少4步'],movesNote:'这是“最少2步的9种图案”中的第1种。',diamond:'菱形中，对角线上的不倒翁方向相反时才是最少2步。',caterpillar:'毛毛虫形中，眼睛彼此同向、身体彼此同向时才是最少2步。',outer:'外圈相邻的两个不倒翁方向也必须正确。',ribbon:'缎带形的关键是那个不同方向的不倒翁。',trapezoid:'梯形还需要辨认那个不同方向的不倒翁。'},
-  ko:{title:'보드 퀴즈',moves:'이 보드의 최단 수는?',choose:'어느 보드가 최단 2수일까요?',notTwo:'최단 2수가 아닌 것은?',moveChoices:['최단 1수','최단 2수','최단 3수','최단 4수'],movesNote:'최단 2수 9가지 패턴 중 1번입니다.',diamond:'마름모는 대각선 다루마가 서로 반대 방향이면 최단 2수입니다.',caterpillar:'애벌레는 눈끼리, 몸통끼리 각각 같은 방향이면 최단 2수입니다.',outer:'바깥쪽에서 이웃한 두 다루마의 방향도 맞아야 합니다.',ribbon:'리본형은 다른 하나의 다루마 방향이 핵심입니다.',trapezoid:'사다리꼴은 다른 하나의 다루마 방향도 구별해야 합니다.'}
-};
-Object.assign(BOARD_QUIZ_COPY.en,{chooseThree:'Which board takes 3 moves?',largeTriangle:'A large triangle of fallen daruma can take either 3 or 4 moves, depending on their directions.'});
-Object.assign(BOARD_QUIZ_COPY.zh,{chooseThree:'哪一个最少需要3步？',largeTriangle:'倒下的大三角形会因方向不同而需要3步或4步。'});
-Object.assign(BOARD_QUIZ_COPY.ko,{chooseThree:'어느 보드가 최단 3수일까요?',largeTriangle:'누운 다루마의 큰 삼각형은 방향에 따라 최단 3수 또는 4수가 됩니다.'});
-function celebrateQuiz(root){
-  root.classList.remove('quiz-success');
-  void root.offsetWidth;
-  root.classList.add('quiz-success');
-  playTone(784,.09,.024);
-  playTone(1047,.13,.026,.07);
-  haptic([10,32,16]);
-}
-function renderQuizInto(ids,quiz){
-  const root=$(ids.root),options=$(ids.options),note=$(ids.note);
-  root.classList.remove('quiz-success');
-  const {answers,correct}=quizPresentation(quiz);
-  $(ids.title).textContent=tr('quizTitle');
-  $(ids.question).textContent=quiz.q;
-  note.textContent='';
-  options.innerHTML='';
-  answers.forEach((answer,index)=>{
-    const button=document.createElement('button');
-    button.className='quiz-option';button.type='button';button.textContent=answer;
-    button.addEventListener('click',()=>{
-      [...options.children].forEach(item=>item.disabled=true);
-      options.children[correct].classList.add('correct');
-      if(index===correct){note.textContent=tr('quizCorrect')+'　'+quiz.note;celebrateQuiz(root);}
-      else{button.classList.add('wrong');note.textContent=tr('quizWrong')+'　'+quiz.note;}
-    });
-    options.appendChild(button);
-  });
-}
-function renderMessageQuiz(quiz){
-  renderQuizInto({root:'messageQuiz',options:'messageQuizOptions',note:'messageQuizNote',title:'messageQuizTitle',question:'messageQuizQuestion'},quiz);
-}
-function openMessageReview({resume=false,returnTarget=null}={}){
-  messageDialogReturn=returnTarget;
-  messageReviewEntries=buildMessageReviewEntries();
-  if(resume){
-    let lastKey='',lastClearKey='';
-    try{
-      lastKey=storage.get(MESSAGE_REVIEW_STORAGE_KEY)||'';
-      lastClearKey=storage.get(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY)||'';
-    }catch(_){}
-    // 以前の保存データには「最後にクリアした問題」がないため、悟り制覇済みなら一度だけ制覇メッセージへ移行する。
-    if(!lastClearKey&&isSatoriMastered()){
-      const satoriEntry=messageReviewEntries.findIndex(entry=>entry.satori);
-      if(satoriEntry>=0){
-        messageReviewIndex=satoriEntry;
-        const key=messageReviewEntryKey(messageReviewEntries[satoriEntry]);
-        try{storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);}catch(_){}
-      }else messageReviewIndex=0;
-    }else{
-      const saved=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===lastKey);
-      messageReviewIndex=saved>=0?saved:0;
-    }
-  }else{
-    const currentExtra=isMode('mastery'),currentIndex=isMode('mastery')?extraIndex:stageIndex;
-    const exact=messageReviewEntries.findIndex(entry=>entry.extra===currentExtra&&entry.index===currentIndex);
-    messageReviewIndex=exact>=0?exact:0;
-  }
-  renderMessageReview();
-  $('messageDialog').hidden=false;
-  $('closeMessages').focus();
-}
+// メッセージ見直しUIは src/message-ui.js に分離済み。
+// 盤面クイズの翻訳データは src/data-board-quiz.js に分離。
 function volumeLabel(n){
   const labels={
     ja:['序','破','急'],
@@ -1314,7 +998,7 @@ function hideGameDialogs(){
   $('clearNext').hidden=true;
 }
 function renderClearQuiz(){
-  const clearEntry=isMode('mastery')?clearContentAt(true,extraIndex):(!isMode('free')&&!isMode('custom')&&!isMode('satori')?clearContentAt(false,stageIndex):undefined);
+  const clearEntry=clearEntryForCurrent();
   const quiz=clearEntry&&clearEntry.quiz?resolveLocaleText(clearEntry.quiz):undefined;
   const root=$('clearQuiz');
   root.classList.remove('quiz-success');
@@ -1445,72 +1129,13 @@ function transformButtonText(kind){
   const label={rotateBack:'rotateCcw',rotate:'rotateCw',mirror:'mirror',vertical:'flipVertical'}[kind]||kind;
   return transformIcon(kind)+' '+tr(label);
 }
-function boardQuizPatternState(position){
-  return TWO_MOVE_STAGES[TWO_MOVE_PATTERN_ORDER[position-1]].state;
-}
-function boardQuizMatchingStates(state,match,limit=Infinity,accept=()=>true){
-  const target=dec(state),candidates=[];
-  for(let next=0;next<NS;next++){
-    const distance=SOLVER.dist[next];
-    if(distance===255||!match(distance))continue;
-    const board=dec(next);
-    if(board.some((value,index)=>(value===0)!==(target[index]===0))||!accept(board))continue;
-    let changes=0;
-    board.forEach((value,index)=>{if(value!==0&&value!==target[index])changes++;});
-    candidates.push({state:next,distance,changes});
-  }
-  candidates.sort((a,b)=>a.distance-b.distance||a.changes-b.changes||a.state-b.state);
-  return candidates.slice(0,limit).map(candidate=>candidate.state);
-}
-function boardQuizSameShapeState(state,shapeState){
-  const shape=dec(shapeState);
-  for(const symmetry of SYMMETRIES){
-    const transformed=transformStateBySymmetry(state,symmetry),board=dec(transformed);
-    if(board.every((value,index)=>(value===0)===(shape[index]===0)))return transformed;
-  }
-  return state;
-}
-function boardQuizCenterIsNotOdd(board){
-  if(board[3]===0)return true;
-  const count=[0,0,0];
-  board.forEach(value=>{if(value!==0)count[value]++;});
-  return count[board[3]]===Math.max(...count);
-}
-function boardQuizConfigForCurrent(){return isMode('mastery')?(clearContentAt(true,extraIndex)?.boardQuiz||null):null;}
 function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
   root.classList.remove('quiz-success');
   if(!config){root.hidden=true;if(requireAnswer)$('clearNext').disabled=false;return;}
   const copy=BOARD_QUIZ_COPY[currentLang]||BOARD_QUIZ_COPY.ja;
   const state=config.state?enc(Uint8Array.from(config.state)):config.options?null:boardQuizPatternState(config.pattern||config.patterns[0]);
-  let states=[],correct=[],question=copy.choose,moveChoiceOrder=null;
-  if(config.kind==='moves'){
-    states=[state];
-    moveChoiceOrder=shuffledIndices(copy.moveChoices.length);
-    correct=[moveChoiceOrder.indexOf(1)];
-    question=copy.moves;
-  }else if(config.kind==='choose-two'){
-    const accept=config.outerOddOnly?boardQuizCenterIsNotOdd:undefined;
-    const good=[state];
-    if(config.patterns)good.push(boardQuizSameShapeState(boardQuizPatternState(config.patterns[1]),state));
-    for(const candidate of boardQuizMatchingStates(state,distance=>distance===2,Infinity,accept))if(!good.includes(candidate))good.push(candidate);
-    const wrong=boardQuizMatchingStates(state,distance=>distance>=3,2,accept);
-    states=[...wrong];
-    for(const index of config.correct)states.splice(index,0,good.shift());
-    correct=config.correct;question=copy.chooseTwo||copy.choose;
-  }else if(config.options){
-    states=config.options.map(option=>{
-      const reference=enc(Uint8Array.from(option.state));
-      return SOLVER.dist[reference]===option.distance?reference:boardQuizMatchingStates(reference,distance=>distance===option.distance,1)[0]??reference;
-    });
-    correct=[config.correct];question=copy[config.questionKey]||copy.choose;
-  }else{
-    const targetDistance=config.targetDistance||2;
-    const target=SOLVER.dist[state]===targetDistance?state:boardQuizMatchingStates(state,distance=>distance===targetDistance,1)[0]??state;
-    states=boardQuizMatchingStates(target,distance=>distance>targetDistance,1);
-    states.splice(config.correct,0,target);
-    correct=[config.correct];question=targetDistance===3?(copy.chooseThree||copy.choose):copy.choose;
-  }
+  let {states,correct,question,moveChoiceOrder}=boardQuizPresentation(config,state,copy);
   if(config.kind!=='moves'){
     const order=shuffledIndices(states.length);
     states=order.map(index=>states[index]);
@@ -1520,12 +1145,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const detailPatterns=config.patterns||(config.pattern?[config.pattern]:[]);
   const guideLinks=(config.guidePages||[]).map(page=>'<button class="clear-tip-link" id="'+rootId+'Guide'+page+'" type="button" data-guide-page="'+page+'" hidden>'+tr('tipGuideTitle').replace('を見る','')+' '+(page+1)+' / '+GUIDE_TIP_INDEX.length+' →</button>').join('');
   root.hidden=false;
-  const controls=index=>'<div class="board-quiz-tools"><button type="button" data-board-transform="rotateBack" data-board-index="'+index+'" aria-label="60°逆回転">'+transformIcon('rotateBack')+'</button><button type="button" data-board-transform="rotate" data-board-index="'+index+'" aria-label="60°回転">'+transformIcon('rotate')+'</button><button type="button" data-board-transform="mirror" data-board-index="'+index+'" aria-label="左右反転">'+transformIcon('mirror')+'</button><button type="button" data-board-transform="vertical" data-board-index="'+index+'" aria-label="上下反転">'+transformIcon('vertical')+'</button></div>';
-  const card=(board,index)=>'<div class="board-quiz-card"><button class="board-quiz-option" type="button" data-board-answer="'+index+'"><span class="board-quiz-board">'+miniBoardSvg(board)+'</span></button>'+controls(index)+'</div>';
-  const boardMarkup=config.kind==='moves'
-    ?'<div class="board-quiz-single"><span class="board-quiz-board">'+miniBoardSvg(states[0])+'</span>'+controls(0)+'</div><div class="board-quiz-moves">'+moveChoiceOrder.map((choice,index)=>'<button class="board-quiz-option" type="button" data-board-answer="'+index+'">'+copy.moveChoices[choice]+'</button>').join('')+'</div>'
-    :'<div class="board-quiz-options '+(states.length===3?'three':'')+'">'+states.map(card).join('')+'</div>';
-  const detailLinks=detailPatterns.map(pattern=>'<button class="clear-tip-link" id="'+rootId+'Patterns'+pattern+'" type="button" data-board-patterns data-board-pattern="'+pattern+'" hidden>'+(detailPatterns.length>1?'最短2手の9パターン　'+pattern+' / 9 →':tr('detailsLink'))+'</button>').join('');
+  const {boardMarkup,detailLinks}=boardQuizMarkup(config,states,moveChoiceOrder,copy,rootId,detailPatterns);
   root.innerHTML='<div class="quiz-label">'+copy.title+'</div><p class="board-quiz-question">'+question+'</p>'+boardMarkup+'<p class="board-quiz-note"></p>'+detailLinks+guideLinks;
   const note=root.querySelector('.board-quiz-note');
   let animating=false;
@@ -1609,26 +1229,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
     const index=Number(transform.dataset.boardIndex);
     animateTransform(index,transform.dataset.boardTransform);
   };
-  const required=correct.length,selected=[];
-  root.querySelectorAll('[data-board-answer]').forEach(button=>button.addEventListener('click',()=>{
-    if(animating)return;
-    const index=Number(button.dataset.boardAnswer);
-    const selectedAt=selected.indexOf(index);
-    if(selectedAt>=0){selected.splice(selectedAt,1);button.classList.remove('selected');}
-    else if(selected.length<required){selected.push(index);button.classList.add('selected');}
-    if(selected.length<required){
-      note.textContent=required>1?(copy.selectMore||'Choose one more.').replace('{n}',required-selected.length):'';
-      return;
-    }
-    root.querySelectorAll('[data-board-answer]').forEach(item=>item.disabled=true);
-    correct.forEach(rightIndex=>root.querySelector('[data-board-answer="'+rightIndex+'"]').classList.add('correct'));
-    selected.filter(selectedIndex=>!correct.includes(selectedIndex)).forEach(wrongIndex=>root.querySelector('[data-board-answer="'+wrongIndex+'"]').classList.add('wrong'));
-    const passed=selected.length===correct.length&&selected.every(selectedIndex=>correct.includes(selectedIndex));
-    note.textContent=(passed?tr('quizCorrect'):tr('quizWrong'))+'　'+copy[noteKey];
-    if(passed)celebrateQuiz(root);
-    root.querySelectorAll('[data-board-patterns],[data-guide-page]').forEach(link=>link.hidden=false);
-    if(requireAnswer)$('clearNext').disabled=false;
-  }));
+  bindBoardQuizAnswerEvents(root,{config,correct,states,copy,note,noteKey,requireAnswer,isAnimating:()=>animating});
   if(requireAnswer)$('clearNext').disabled=true;
 }
 // ===== クリア後フロー・最短2手ギャラリー・名人ダイアログ =====
@@ -1845,22 +1446,29 @@ function animateTwoMovePattern(boardIndex,angle=0,mirror=false){
   animateMiniBoardTiles(card,'.mini-tile','.mini-daruma',i=>CELL[i],symmetry.permutation,before,after);
   twoMoveGuard.arm(480,()=>transformTwoMovePattern(boardIndex,angle,mirror));
 }
-function showMasterDialog(kind='primary'){
-  masterDialogKind=kind;
-  $('masterStart').dataset.speedVariant='';
-  const needsMasteryTrial=kind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared;
-  const needsIntermediateTrial=kind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared;
-  if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
+// 節目ダイアログを開いたときに確定する解放・見た目報酬を、表示分岐から分離する。
+// 報酬の付与条件と永続化はここに集約し、showMasterDialog は表示内容の組み立てに専念させる。
+function grantMasterDialogRewards(kind){
+  if(kind==='satori'&&!secondLapActive){
+    unlockSpeedVariant('satori73');
+    renderStageNav();
+  }
   if(kind==='mastery'&&secondLapActive&&!rainbowDarumaGranted){
-    rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);darumaColor='rainbow';darumaColorChosen=false;
-    try{storage.set('wake7-rainbow-daruma-granted','1');storage.remove('wake7-daruma-color-chosen');}catch(_){ }
-    updateMasterTheme();renderStageNav();
+    rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);
+    darumaColor='rainbow';
+    darumaColorChosen=false;
+    try{
+      storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');
+      storage.remove('wake7-daruma-color-chosen');
+    }catch(_){ }
+    updateMasterTheme();
+    renderStageNav();
   }
   if(kind==='awakening'&&!awakenedGranted){
     awakenedGranted=setUnlock('awakened',true);
     threeDUnlocked=setUnlock('threeD',true);
     try{
-      storage.set('wake7-awakened-granted','1');
+      storage.set(STORAGE_KEYS.awakenedGranted,'1');
       storage.set(STORAGE_KEYS.threeDUnlocked,'1');
     }catch(_){ }
     persistLapProgress();
@@ -1868,10 +1476,20 @@ function showMasterDialog(kind='primary'){
     renderStageNav();
     rememberSpecialMessage('awakening');
   }
+}
+function showMasterDialog(kind='primary'){
+  masterDialogKind=kind;
+  $('masterStart').dataset.speedVariant='';
+  const trialState=masterDialogTrialState(kind);
+  const needsMasteryTrial=trialState.mastery;
+  const needsIntermediateTrial=trialState.intermediate;
+  const dialogVisibility=masterDialogVisibility(kind,needsMasteryTrial);
+  grantMasterDialogRewards(kind);
   if(kind==='mastery'&&!needsMasteryTrial)$('menuAllPatterns').hidden=false;
-  const masteryBoardTheme=kind==='awakening'?'gold-3d':(kind==='mastery'&&secondLapActive)||kind==='satori'?'satori-tilted':'gold';
-  renderMasteryBoard('masteryBoard',kind!=='awakening'&&((kind==='mastery'&&!needsMasteryTrial)||['satori','awakening'].includes(kind)),masteryBoardTheme,kind!=='awakening');
-  renderMasteryBoard('awakeningRewardBoard',kind==='awakening',masteryBoardTheme,false);
+  const masteryBoardTheme=masterDialogBoardTheme(kind);
+  const boardOptions=masterDialogBoardOptions(kind,needsMasteryTrial,masteryBoardTheme);
+  renderMasteryBoard('masteryBoard',...boardOptions.mastery);
+  renderMasteryBoard('awakeningRewardBoard',...boardOptions.awakening);
   const seal=$('masterSeal');
   const rankText=$('masterRankText');
   const shareButton=$('masterShare');
@@ -1892,13 +1510,13 @@ function showMasterDialog(kind='primary'){
   speedModeOptions.hidden=true;
   $('masterDialogText').hidden=false;
   boardNote.hidden=true;
-  shareButton.hidden=!['primary','satori','awakening'].includes(kind);
+  shareButton.hidden=dialogVisibility.share;
   allPatternsLink.hidden=true;
   threeDRewardBox.hidden=true;
   speedUnlockBox.hidden=true;
   trialFooter.hidden=true;
-  $('masterStart').hidden=['satori','awakening'].includes(kind)||(kind==='mastery'&&!needsMasteryTrial);
-  shareButton.dataset.shareKind=kind==='primary'?'training':['satori','awakening'].includes(kind)?'satori':'mastery';
+  $('masterStart').hidden=dialogVisibility.start;
+  shareButton.dataset.shareKind=masterDialogShareKind(kind);
   $('masterShareLabel').textContent=tr('shareShort');
   rankText.hidden=true;
   seal.hidden=false;
@@ -2179,4 +1797,21 @@ $('stageModeReturn').addEventListener('click',()=>{
 $('freeMode').addEventListener('click',()=>{
   if(busy||isMode('free'))return;
   restoreFreeSession();
+});
+
+/* Event wiring uses this boundary instead of reaching into individual screens. */
+const GameNavigation=Object.freeze({
+  tutorial:()=>startTutorial(),
+  stage:index=>loadStage(index),
+  mastery:index=>loadExtraStage(index),
+  satori:index=>loadSatoriStage(index),
+  free:()=>startFree(),
+  maker:()=>enterBoardMaker(),
+  stageMenu:()=>returnToStageMode(),
+  speedPicker:()=>openSpeedPicker()
+});
+const GameDialogs=Object.freeze({
+  messages:options=>openMessageReview(options),
+  ranks:options=>openRankDialog(options),
+  mastery:kind=>showMasterDialog(kind)
 });

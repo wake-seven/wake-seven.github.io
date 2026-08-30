@@ -71,7 +71,8 @@ if(new URLSearchParams(location.search).get('debug')==='touch'){
 let ori=new Uint8Array(N), spin=new Int16Array(N), history=[], moves=0, best=0;
 let tileEls=[], baseTiles=[], drag=null, busy=false, boardTouchActive=false;
 const gameState=window.WakeSevenState.migrateLegacy();
-let stageIndex=gameState.navigation.stageIndex,extraIndex=gameState.navigation.masteryIndex,satoriIndex=gameState.navigation.satoriIndex,tutorialStep=gameState.navigation.tutorialStep,activeMode=gameState.navigation.mode,clearShown=false,clearTimer=0,nextStageAttention=false;
+const initialNavigation=WakeSevenState.navigationView(gameState);
+let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep,activeMode=initialNavigation.mode,clearShown=false,clearTimer=0,nextStageAttention=false;
 let tutorialAdvanceTimer=0,boardArrivalTimer=0;
 let pendingMasterThemeRefresh=false;
 let lastAnalyticsStageKey='';
@@ -79,8 +80,8 @@ let lastAnalyticsStageKey='';
 /* モードの実体は activeMode のみ。 */
 const ACTIVE_MODES=Object.freeze(['tutorial','stage','mastery','satori','speed','free','custom']);
 function setActiveMode(mode){
-  activeMode=ACTIVE_MODES.includes(mode)?mode:'stage';
-  gameState.navigation.mode=activeMode;
+  const navigation=WakeSevenState.updateNavigation(gameState,{mode:ACTIVE_MODES.includes(mode)?mode:'stage'});
+  activeMode=navigation.mode;
 }
 const isMode=mode=>activeMode===mode;
 function setUnlock(key,value){
@@ -93,40 +94,20 @@ function setUnlock(key,value){
  * モード判定と保存キーが各所に散らばりやすい。新しい解放要素・速解き派生
  * モード・問題ごとの案内を追加するときは、まずここを経由する。
  */
-const STORAGE_KEYS=Object.freeze({
-  language:'wake7-language',sound:'wake7-sound',
-  boardTheme:'wake7-board-theme',boardThemeChosen:'wake7-board-theme-chosen',
-  boardLayout:'wake7-board-layout',boardLayoutChosen:'wake7-board-layout-chosen',
-  darumaColor:'wake7-daruma-color',darumaColorChosen:'wake7-daruma-color-chosen',
-  cleared:'wake7-cleared',extraCleared:'wake7-extra-cleared',satoriCleared:'wake7-satori-cleared',
-  currentStage:'wake7-current-stage',activeSession:'wake7-active-session',activeLap:'wake7-active-lap',
-  introSeen:'wake7-intro-seen',tutorialComplete:'wake7-tutorial-complete',tutorialStep:'wake7-tutorial-step',messageReview:'wake7-message-review',messageReviewLast:'wake7-message-review-last-clear',
-  speedSession:'wake7-speed-session',speedActiveVariant:'wake7-speed-active-variant',speedBestMs:'wake7-speed-best-ms',speedHistory:'wake7-speed-history',
-  speedUnlocked:'wake7-speed-unlocked',speedTrainingUnlocked:'wake7-speed-training-unlocked',speedIntermediateUnlocked:'wake7-speed-intermediate-unlocked',speedMasteryUnlocked:'wake7-speed-mastery-unlocked',speedSatoriUnlocked:'wake7-speed-satori-unlocked',speedUnlockModelVersion:'wake7-speed-unlock-model-version',speedTrainingTrialCleared:'wake7-speed-training-trial-cleared',speedIntermediateTrialCleared:'wake7-speed-intermediate-trial-cleared',speedMasteryTrialCleared:'wake7-speed-mastery-trial-cleared',speedTrialModelVersion:'wake7-speed-trial-model-version',stagesLayoutVersion:'wake7-stages-layout-version',threeDUnlocked:'wake7-3d-unlocked',
-  masterGoldGranted:'wake7-master-gold-granted',satoriDesignGranted:'wake7-satori-design-granted',
-  secondLapActive:'wake7-second-lap-active',secondLapUnlocked:'wake7-second-lap-unlocked',
-  rainbowDarumaGranted:'wake7-rainbow-daruma-granted',awakenedGranted:'wake7-awakened-granted',
-  satoriOrderVersion:'wake7-satori-order-version'
-});
-const storage={
-  get(key,fallback=null){try{const value=localStorage.getItem(key);return value===null?fallback:value;}catch(_){return fallback;}},
-  set(key,value){try{localStorage.setItem(key,value);return true;}catch(_){return false;}},
-  remove(key){try{localStorage.removeItem(key);return true;}catch(_){return false;}},
-  json(key,fallback=null){try{const raw=localStorage.getItem(key);return raw===null?fallback:JSON.parse(raw);}catch(_){return fallback;}},
-  setJson(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch(_){return false;}}
-};
+const STORAGE_KEYS=WakeSevenState.STORAGE_KEYS;
+const storage=WakeSevenState.storage;
 /*
  * New persistence boundary. Existing code still reads legacy keys during the
  * incremental migration, but every saved session is also one versioned state
  * document. New features should add fields here instead of new top-level keys.
  */
 function syncGameState(legacySession=null){
-  gameState.navigation={mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};
-  gameState.progress={
+  WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});
+  WakeSevenState.updateProgress(gameState,{
     lap1:{primary:[...lap1ClearedStages],mastery:[...lap1ClearedExtraStages],satori:[...lap1ClearedSatoriStages]},
     lap2:{primary:[...lap2ClearedStages],mastery:[...lap2ClearedExtraStages],satori:[...lap2ClearedSatoriStages]}
-  };
-  gameState.settings={language:currentLang,sound:soundEnabled,boardTheme,boardLayout,darumaColor};
+  });
+  WakeSevenState.updateSettings(gameState,{language:currentLang,sound:soundEnabled,boardTheme,boardLayout,darumaColor});
   gameState.unlocks={
     secondLap:secondLapUnlocked,awakened:awakenedGranted,threeD:threeDUnlocked,
     speedTraining:speedTrainingUnlocked,speedIntermediate:speedIntermediateUnlocked,
@@ -140,16 +121,27 @@ function syncGameState(legacySession=null){
   if(legacySession)gameState.legacySession=legacySession;
   return window.WakeSevenState.write(gameState);
 }
-const SPEED_LAST_TAB_STORAGE_KEY='wake7-speed-last-tab';
-const SPEED_NEW_TAB_STORAGE_KEY='wake7-speed-new-tab';
+const SPEED_LAST_TAB_STORAGE_KEY=STORAGE_KEYS.speedLastTab;
+const SPEED_NEW_TAB_STORAGE_KEY=STORAGE_KEYS.speedNewTab;
 const COURSE_DEFINITIONS=Object.freeze({
-  tutorial:{id:'tutorial',total:TUTORIAL_STEPS.length,label:'tutorial'},
-  primary:{id:'primary',total:STAGES.length,label:'training'},
-  mastery:{id:'mastery',total:EXTRA_STAGES.length,label:'mastery'},
-  satori:{id:'satori',total:SATORI_STAGES.length,label:'satori'},
-  speed:{id:'speed',total:SATORI_STAGES.length,label:'speed'},
-  free:{id:'free',total:null,label:'free'},custom:{id:'custom',total:null,label:'custom'}
+  tutorial:{id:'tutorial',total:TUTORIAL_STEPS.length,label:'tutorial',indexKey:'tutorialStep'},
+  primary:{id:'primary',total:STAGES.length,label:'training',indexKey:'stageIndex'},
+  mastery:{id:'mastery',total:EXTRA_STAGES.length,label:'mastery',indexKey:'masteryIndex'},
+  satori:{id:'satori',total:SATORI_STAGES.length,label:'satori',indexKey:'satoriIndex'},
+  speed:{id:'speed',total:SATORI_STAGES.length,label:'speed',indexKey:'speedIndex'},
+  free:{id:'free',total:null,label:'free',indexKey:null},
+  custom:{id:'custom',total:null,label:'custom',indexKey:null}
 });
+const COURSE_MODE_ALIASES=Object.freeze({stage:'primary'});
+function courseDefinitionForMode(mode=activeMode){
+  return COURSE_DEFINITIONS[COURSE_MODE_ALIASES[mode]||mode]||COURSE_DEFINITIONS.primary;
+}
+function runtimeNavigation(){
+  return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};
+}
+const isSideCourseMode=()=>isMode('free')||isMode('custom');
+// 複数の画面で共通する「通常の進行中」判定。サイドコースと速解きは除外する。
+const isCampaignMode=()=>!isSideCourseMode()&&!isMode('speed');
 const PRIMARY_SECTIONS=Object.freeze([
   {id:'intro',labelKey:'intro',start:0,total:INTRO_STAGE_COUNT,analytics:'training_intro'},
   {id:'basic',labelKey:'basic',start:BASIC_STAGE_START,total:BASIC_STAGE_COUNT,analytics:'training_basic'},
@@ -172,20 +164,23 @@ const pickerRoundToSection=round=>PRIMARY_SECTIONS[round+PRIMARY_PICKER_SECTION_
 const PICKER_ACADEMY_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='development')-PRIMARY_PICKER_SECTION_COUNT;
 const PICKER_TRAINING_FIRST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingUpper')-PRIMARY_PICKER_SECTION_COUNT;
 const PICKER_TRAINING_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingLower')-PRIMARY_PICKER_SECTION_COUNT;
-function runtimeContext(){
-  if(isMode('tutorial'))return {mode:'tutorial',course:COURSE_DEFINITIONS.tutorial,index:tutorialStep,position:tutorialStep+1,total:TUTORIAL_STEPS.length,lap:1};
-  if(isMode('custom'))return {mode:'custom',course:COURSE_DEFINITIONS.custom,index:null,position:null,total:null,lap:activeLap};
-  if(isMode('free'))return {mode:'free',course:COURSE_DEFINITIONS.free,index:null,position:null,total:null,lap:activeLap};
+// 現在のモード・コース・問題位置を、画面や計測から共通して参照する実行コンテキスト。
+// 既存の runtimeContext() は互換入口として残し、段階的にこちらへ寄せる。
+function getGameContext(){
+  const navigation=runtimeNavigation();
+  if(isMode('tutorial'))return {mode:'tutorial',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'tutorial'),position:tutorialStep+1,total:TUTORIAL_STEPS.length,lap:1};
+  if(isSideCourseMode())return {mode:activeMode,course:courseDefinitionForMode(),index:null,position:null,total:null,lap:activeLap};
   if(isMode('speed')){
     const index=speedSession?.index||0;
-    return {mode:'speed',course:COURSE_DEFINITIONS.speed,index,position:index+1,total:SATORI_STAGES.length,lap:activeLap};
+    return {mode:'speed',course:courseDefinitionForMode(),index,position:index+1,total:SATORI_STAGES.length,lap:activeLap};
   }
-  if(isMode('satori'))return {mode:'satori',course:COURSE_DEFINITIONS.satori,index:satoriIndex,position:satoriIndex+1,total:SATORI_STAGES.length,lap:activeLap};
-  if(isMode('mastery'))return {mode:'mastery',course:COURSE_DEFINITIONS.mastery,index:extraIndex,position:extraIndex+1,total:EXTRA_STAGES.length,lap:activeLap};
-  return {mode:'primary',course:COURSE_DEFINITIONS.primary,index:stageIndex,position:stageIndex+1,total:STAGES.length,lap:activeLap};
+  if(isMode('satori'))return {mode:'satori',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'satori'),position:satoriIndex+1,total:SATORI_STAGES.length,lap:activeLap};
+  if(isMode('mastery'))return {mode:'mastery',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'mastery'),position:extraIndex+1,total:EXTRA_STAGES.length,lap:activeLap};
+  return {mode:'primary',course:courseDefinitionForMode('stage'),index:WakeSevenState.navigationIndex(navigation,'stage'),position:stageIndex+1,total:STAGES.length,lap:activeLap};
 }
+function runtimeContext(){return getGameContext();}
 function runtimeStageKey(){
-  const ctx=runtimeContext();
+  const ctx=getGameContext();
   return ctx.position===null?ctx.mode:ctx.mode+':'+ctx.index;
 }
 function featureUnlocked(feature){
@@ -211,11 +206,12 @@ const MAIN_BOARD_GUIDANCE=Object.freeze({
   'primary:10':'basicGuideJoinTwo',
   'primary:11':'basicGuideJoinTwo'
 });
+Object.assign(MESSAGE_CATALOG.guidance,MAIN_BOARD_GUIDANCE);
 // 初めて原理を見せる問題は矢印つき、次の問題は「回す3枚」だけを示す。
 const BASIC_LESSON_ASSISTS=Object.freeze({
   3:'arrow',4:'axis',8:'arrow',9:'axis'
 });
-function mainBoardGuidance(){return MAIN_BOARD_GUIDANCE[runtimeStageKey()]||null;}
+function mainBoardGuidance(){return messageContent('guidance',runtimeStageKey());}
 function appendMoveCountEmphasis(root,message){
   message.split(/([12]枚)/g).forEach(part=>{
     if(!part)return;
@@ -241,7 +237,7 @@ function renderMainBoardGuidance(){
   text.append(link);
 }
 function analyticsStageInfo(){
-  const context=runtimeContext();
+  const context=getGameContext();
   if(context.mode==='free'||context.mode==='custom')return null;
   if(context.mode==='speed'){
     const position=(speedSession?.index||0)+1;
@@ -278,7 +274,7 @@ function trackAnalyticsEvent(name,parameters={}){
   if(!WAKE7_GA_ENABLED||typeof window.gtag!=='function')return;
   let analyticsLanguage=currentLang;
   try{
-    const storedLanguage=storage.get('wake7-language');
+    const storedLanguage=storage.get(STORAGE_KEYS.language);
     if(UI_TEXT[storedLanguage])analyticsLanguage=storedLanguage;
   }catch(_){ }
   window.gtag('event',name,Object.assign({
@@ -305,42 +301,19 @@ function trackGameStart(){
     game_mode:isMode('custom')?'custom':'free',course:isMode('custom')?'custom':'free'
   });
 }
-let soundEnabled=gameState.settings.sound!==false,audioContext=null;
-let boardTheme=['default','gold','satori'].includes(gameState.settings.boardTheme)?gameState.settings.boardTheme:'default';
-let boardLayout=gameState.settings.boardTheme==='tilted'||gameState.settings.boardLayout==='tilted'?'tilted':'normal';
-// Legacy settings are only a fallback while upgrading an incomplete vNext document.
-if(!gameState.settings.boardTheme||!gameState.settings.boardLayout)try{
-  const savedTheme=storage.get('wake7-board-theme');
-  // 旧「縦配置」テーマは、通常色 + 縦配置へ移行する。
-  if(savedTheme==='tilted')boardLayout='tilted';
-  else if(['default','gold','satori'].includes(savedTheme))boardTheme=savedTheme;
-  const savedLayout=storage.get('wake7-board-layout');
-  if(['normal','tilted'].includes(savedLayout))boardLayout=savedLayout;
-}catch(_){ }
-let boardThemeChosen=false;
-try{boardThemeChosen=storage.get('wake7-board-theme-chosen')==='1';}catch(_){ }
-let boardLayoutChosen=false;
-try{boardLayoutChosen=storage.get('wake7-board-layout-chosen')==='1';}catch(_){ }
-let darumaColor=['red','rainbow'].includes(gameState.settings.darumaColor)?gameState.settings.darumaColor:'red',darumaColorChosen=false;
-if(!gameState.settings.darumaColor)try{
-  const savedDarumaColor=storage.get('wake7-daruma-color');
-  // 旧版の特別色は、七色のだるまへ移行する。
-  if(['red','rainbow'].includes(savedDarumaColor))darumaColor=savedDarumaColor;
-  else if(['indigo','gold','green'].includes(savedDarumaColor))darumaColor='rainbow';
-  darumaColorChosen=storage.get('wake7-daruma-color-chosen')==='1';
-}catch(_){ }
+initializeRuntimeSettings();
 let masterGoldGranted=gameState.unlocks.masterGoldGranted===true;
-if(!masterGoldGranted)try{masterGoldGranted=storage.get('wake7-master-gold-granted')==='1';}catch(_){ }
+if(!masterGoldGranted)try{masterGoldGranted=storage.get(STORAGE_KEYS.masterGoldGranted)==='1';}catch(_){ }
 let satoriDesignGranted=gameState.unlocks.satoriDesignGranted===true;
-if(!satoriDesignGranted)try{satoriDesignGranted=storage.get('wake7-satori-design-granted')==='1';}catch(_){ }
+if(!satoriDesignGranted)try{satoriDesignGranted=storage.get(STORAGE_KEYS.satoriDesignGranted)==='1';}catch(_){ }
 let secondLapActive=false;
-try{secondLapActive=storage.get('wake7-second-lap-active')==='1';}catch(_){ }
+try{secondLapActive=storage.get(STORAGE_KEYS.secondLapActive)==='1';}catch(_){ }
 let awakenedGranted=gameState.unlocks.awakened===true;
-if(!awakenedGranted)try{awakenedGranted=storage.get('wake7-awakened-granted')==='1';}catch(_){ }
+if(!awakenedGranted)try{awakenedGranted=storage.get(STORAGE_KEYS.awakenedGranted)==='1';}catch(_){ }
 // 速解きモードは、進行状況をリセットしても残す独立した解放要素。
 let speedModeUnlocked=false;
-try{speedModeUnlocked=storage.get('wake7-speed-unlocked')==='1'||awakenedGranted;}catch(_){speedModeUnlocked=awakenedGranted;}
-if(speedModeUnlocked)try{storage.set('wake7-speed-unlocked','1');}catch(_){ }
+try{speedModeUnlocked=storage.get(STORAGE_KEYS.speedUnlocked)==='1'||awakenedGranted;}catch(_){speedModeUnlocked=awakenedGranted;}
+if(speedModeUnlocked)try{storage.set(STORAGE_KEYS.speedUnlocked,'1');}catch(_){ }
 // この印がない保存データだけを、旧「速解き一括解放」仕様として移行する。
 const hasSpeedTrialModel=storage.get(STORAGE_KEYS.speedTrialModelVersion)==='3';
 // 速解きは解放された範囲ごとに選択できる。旧版の一括解放は、互換性のため全て解放済みとして移行する。
@@ -422,8 +395,8 @@ let threeDUnlocked=gameState.unlocks.threeD===true;
 if(!threeDUnlocked)try{threeDUnlocked=storage.get('wake7-3d-unlocked')==='1';}catch(_){ }
 // 七色だるまは二周目の名人達成報酬。旧版で覚者まで到達済みなら移行して保持する。
 let rainbowDarumaGranted=gameState.unlocks.rainbowDarumaGranted===true;
-try{rainbowDarumaGranted=rainbowDarumaGranted||storage.get('wake7-rainbow-daruma-granted')==='1'||awakenedGranted;}catch(_){rainbowDarumaGranted=awakenedGranted;}
-if(rainbowDarumaGranted)try{storage.set('wake7-rainbow-daruma-granted','1');}catch(_){ }
+try{rainbowDarumaGranted=rainbowDarumaGranted||storage.get(STORAGE_KEYS.rainbowDarumaGranted)==='1'||awakenedGranted;}catch(_){rainbowDarumaGranted=awakenedGranted;}
+if(rainbowDarumaGranted)try{storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');}catch(_){ }
 let secondLapUnlocked=gameState.unlocks.secondLap===true;
 try{secondLapUnlocked=secondLapUnlocked||storage.get('wake7-second-lap-unlocked')==='1'||secondLapActive||awakenedGranted;}catch(_){secondLapUnlocked=secondLapActive||awakenedGranted;}
 let activeLap=gameState.navigation.lap===2?2:1;
@@ -637,7 +610,7 @@ function updateMasterTheme(){
   // 悟り制覇の瞬間は、白黒と縦配置をセットで新しい褒美として見せる。
   if(isSatoriMastered()&&!satoriDesignGranted){
     boardTheme='satori';boardLayout='tilted';satoriDesignGranted=setUnlock('satoriDesignGranted',true);
-    try{storage.set('wake7-satori-design-granted','1');}catch(_){ }
+    try{storage.set(STORAGE_KEYS.satoriDesignGranted,'1');}catch(_){ }
   }
   if(hasMasterReward()&&!boardThemeChosen)boardTheme=hasSatoriReward()?'satori':'gold';
   if(hasSatoriReward()&&!boardLayoutChosen)boardLayout='tilted';
@@ -648,7 +621,7 @@ function updateMasterTheme(){
   document.body.dataset.boardTheme=boardTheme;
   document.body.dataset.boardLayout=boardLayout;
   applyBoardTheme();
-  try{storage.set('wake7-board-theme',boardTheme);storage.set('wake7-board-layout',boardLayout);storage.set('wake7-daruma-color',darumaColor);}catch(_){ }
+  try{storage.set(STORAGE_KEYS.boardTheme,boardTheme);storage.set(STORAGE_KEYS.boardLayout,boardLayout);storage.set(STORAGE_KEYS.darumaColor,darumaColor);}catch(_){ }
 }
 const BOARD_THEME_TONES={
   gold:{stand:{fill:'#F6DE93',stroke:'#C89C35'},fallen:{fill:'#D7B75F',stroke:'#A67D28'}},
@@ -843,348 +816,17 @@ function refreshGuidedBasicCandidates(){
 }
 // 補助輪中も盤面全体を見比べられるよう、選択外の4枚は暗転させない。
 const usesSwipeDimming=()=>false;
-const usesSecondLapSwipe=()=>secondLapActive&&!isMode('free')&&!isMode('custom')&&!isMode('speed');
+const usesSecondLapSwipe=()=>secondLapActive&&!isSideCourseMode()&&!isMode('speed');
 const requiresOptimalClear=()=>isMode('mastery')||isMode('satori');
 const masterHintsDisabled=()=>masterVolume()>=2;
 const isThirdVolume=()=>isMode('mastery')&&extraIndex>=30&&extraIndex<45;
 // 三巻構成では最後の「不立文字」に、従来の終盤ルールをまとめる。
 const isFourthVolume=()=>isThirdVolume();
 
-/* 速解きは同じセッション基盤で派生ルールを増やせるよう、モード定義を分離する。 */
-// ===== スピードラン(速解き)モード =====
-const SPEED_MODE_DEFINITIONS=PROGRESSION.speedModes;
-let speedVariant='standard';
-function activeSpeedDefinition(){return SPEED_MODE_DEFINITIONS[speedVariant]||SPEED_MODE_DEFINITIONS.standard;}
-const speedShowsRemaining=()=>isMode('speed')&&activeSpeedDefinition().showsRemaining;
-const speedAllowsUndo=()=>isMode('speed')&&activeSpeedDefinition().allowsUndo;
-function speedStagePool(definition=activeSpeedDefinition()){
-  if(definition.source==='twoMove')return SATORI_STAGES.filter(stage=>stage.par===2).slice(0,definition.total);
-  if(definition.source==='training')return TRAINING_EXAM_STAGES;
-  if(definition.source==='mastery')return EXTRA_STAGES;
-  if(definition.source==='threeMove')return SATORI_STAGES.filter(stage=>stage.par===3);
-  // 「全部から」の派生版も、同じ正規化済みの全パターンを母集団にする。
-  return SATORI_STAGES;
-}
-function speedVariantUnlocked(id){
-  return PROGRESSION.speedUnlocked(id,{
-    speedTraining:speedTrainingUnlocked,speedIntermediate:speedIntermediateUnlocked,
-    speedMastery:speedMasteryUnlocked,speedSatori:speedSatoriUnlocked
-  });
-}
-const SPEED_VARIANT_ORDER=PROGRESSION.publicSpeedIds;
-function speedVariantCopy(id){
-  const definition=SPEED_MODE_DEFINITIONS[id];
-  return {label:tr(definition.labelKey),intro:tr(definition.introKey),definition};
-}
-function speedTabLabel(id){
-  const definition=SPEED_MODE_DEFINITIONS[id];
-  return currentLang==='ja'?(definition?.jaLabel||definition?.total+'番'):String(definition?.total||'');
-}
-function preferredSpeedVariant(){
-  const available=SPEED_VARIANT_ORDER.filter(speedVariantUnlocked);
-  const newlyUnlocked=storage.get(SPEED_NEW_TAB_STORAGE_KEY);
-  if(available.includes(newlyUnlocked)){
-    storage.remove(SPEED_NEW_TAB_STORAGE_KEY);
-    return newlyUnlocked;
-  }
-  const lastTab=storage.get(SPEED_LAST_TAB_STORAGE_KEY);
-  if(available.includes(lastTab))return lastTab;
-  return available.includes(speedVariant)?speedVariant:(available[0]||'training9');
-}
-const unlockedSpeedVariants=()=>SPEED_VARIANT_ORDER.filter(speedVariantUnlocked);
-function renderSpeedModeOptions(){
-  const list=$('speedModeOptionsList');
-  if(!list)return;
-  list.innerHTML='';
-  const available=unlockedSpeedVariants();
-  list.style.gridTemplateColumns='repeat('+Math.max(1,available.length)+',minmax(0,1fr))';
-  available.forEach(id=>{
-    const copy=speedVariantCopy(id),button=document.createElement('button');
-    button.type='button';button.className='speed-mode-tab'+(id===speedVariant?' selected':'');
-    button.dataset.speedVariant=id;
-    button.setAttribute('role','tab');
-    button.setAttribute('aria-selected',String(id===speedVariant));
-    button.textContent=speedTabLabel(id);
-    button.addEventListener('click',()=>{
-      speedVariant=id;
-      storage.set(SPEED_LAST_TAB_STORAGE_KEY,id);
-      renderSpeedModeOptions();
-      renderMasterSpeedStats();
-      $('masterStart').textContent=readSpeedSession()?tr('speedResume'):tr('speedStart');
-    });
-    list.appendChild(button);
-  });
-  const copy=speedVariantCopy(speedVariant);
-  const [introMain,...introRest]=copy.intro.split('\n');
-  $('speedModeOptionsDetail').textContent=introMain;
-  $('speedModeOptionsScope').textContent=introRest.join('\n');
-  $('speedModeOptionsScope').hidden=!introRest.length;
-  $('speedModeOptions').hidden=available.length<=1;
-}
-function openSpeedPicker(){
-  if(!DEBUG_MODE&&!featureUnlocked('speedRun'))return;
-  speedVariant=preferredSpeedVariant();
-  storage.set(SPEED_LAST_TAB_STORAGE_KEY,speedVariant);
-  showMasterDialog('speedIntro');
-}
-const SPEED_SESSION_KEY=STORAGE_KEYS.speedSession;
-const SPEED_BEST_KEY=STORAGE_KEYS.speedBestMs;
-const SPEED_HISTORY_KEY=STORAGE_KEYS.speedHistory;
-function speedStorageKey(base,variant=speedVariant){return variant==='standard'?base:base+'-'+variant;}
-function speedSessionStorageKey(variant=speedVariant){return speedStorageKey(SPEED_SESSION_KEY,variant);}
-function speedBestStorageKey(variant=speedVariant){return speedStorageKey(SPEED_BEST_KEY,variant);}
-function speedHistoryStorageKey(variant=speedVariant){return speedStorageKey(SPEED_HISTORY_KEY,variant);}
-let speedSession=null,speedClockStarted=0,speedClockTimer=0,speedManuallyPaused=false;
-function shuffleCopy(values){
-  const result=[...values];
-  for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]];}
-  return result;
-}
-function makeSpeedOrder(variant=activeSpeedDefinition().id){
-  const definition=SPEED_MODE_DEFINITIONS[variant]||SPEED_MODE_DEFINITIONS.standard;
-  const pool=speedStagePool(definition),total=definition.total||pool.length;
-  if(definition.order==='shuffle')return shuffleCopy(Array.from({length:pool.length},(_,i)=>i)).slice(0,total);
-  if(definition.order==='sample')return shuffleCopy(Array.from({length:pool.length},(_,i)=>i)).slice(0,total);
-  // 1手問題は先頭、2手問題はひとまとまり。以降は難易度の流れを保ちつつ5問ごとに入れ替える。
-  const order=[0,...shuffleCopy(Array.from({length:Math.min(9,pool.length-1)},(_,i)=>i+1))];
-  for(let start=10;start<pool.length;start+=5){
-    order.push(...shuffleCopy(Array.from({length:Math.min(5,pool.length-start)},(_,i)=>start+i)));
-  }
-  return order.slice(0,total);
-}
-function validSpeedSession(data){
-  const definition=SPEED_MODE_DEFINITIONS[data?.variant]||SPEED_MODE_DEFINITIONS.standard;
-  const total=Number.isInteger(data?.total)?data.total:definition.total;
-  return data&&Array.isArray(data.order)&&data.order.length===total
-    &&new Set(data.order).size===total
-    &&data.order.every(i=>Number.isInteger(i)&&i>=0&&i<speedStagePool(definition).length)
-    &&Number.isInteger(data.index)&&data.index>=0&&data.index<total
-    &&Number.isFinite(data.elapsedMs)&&data.elapsedMs>=0&&!data.completed;
-}
-function speedOptimalClears(session=speedSession){return Math.max(0,Math.min(Number(session?.total)||SATORI_STAGES.length,Number(session?.optimalClears)||0));}
-function readSpeedHistory(){
-  const entries=storage.json(speedHistoryStorageKey(),[]);
-  return Array.isArray(entries)?entries.filter(entry=>Number.isFinite(entry?.elapsedMs)&&entry.elapsedMs>=0).slice(0,20):[];
-}
-function writeSpeedHistory(entries){storage.setJson(speedHistoryStorageKey(),entries.slice(0,20));}
-function readSpeedSession(variant=speedVariant){
-  const data=storage.json(speedSessionStorageKey(variant),null);
-  if(!validSpeedSession(data))return null;
-  if(!SPEED_MODE_DEFINITIONS[data.variant])data.variant='standard';
-  return data;
-}
-function readActiveSpeedSession(){
-  const lastVariant=storage.get(STORAGE_KEYS.speedActiveVariant,'');
-  if(SPEED_MODE_DEFINITIONS[lastVariant]){
-    const saved=readSpeedSession(lastVariant);
-    if(saved)return saved;
-  }
-  // 旧保存形式との互換用。最後に見つかった未完走セッションを復帰候補にする。
-  for(const variant of Object.keys(SPEED_MODE_DEFINITIONS)){
-    const saved=readSpeedSession(variant);
-    if(saved)return saved;
-  }
-  return null;
-}
-function speedElapsedMs(){return (speedSession?.elapsedMs||0)+(speedClockStarted?performance.now()-speedClockStarted:0);}
-function formatSpeedTime(ms){
-  const tenths=Math.floor(ms/100),minutes=Math.floor(tenths/600),seconds=Math.floor(tenths/10)%60;
-  return String(minutes).padStart(2,'0')+':'+String(seconds).padStart(2,'0')+'.'+(tenths%10);
-}
-function formatSpeedClock(ms){
-  const totalSeconds=Math.floor(ms/1000),minutes=Math.floor(totalSeconds/60),seconds=totalSeconds%60;
-  return String(minutes).padStart(2,'0')+':'+String(seconds).padStart(2,'0');
-}
-function renderSpeedClock(){
-  if(!isMode('speed'))return;
-  const text=formatSpeedClock(speedElapsedMs());
-  $('speedClockValue').textContent=text;
-}
-function startSpeedClock(){
-  if(!isMode('speed')||speedManuallyPaused||speedClockStarted||document.visibilityState==='hidden'||speedAwaitingStart())return;
-  speedClockStarted=performance.now();clearInterval(speedClockTimer);speedClockTimer=setInterval(renderSpeedClock,100);renderSpeedClock();
-}
-function pauseSpeedClock(){
-  if(speedClockStarted){if(speedSession)speedSession.elapsedMs+=performance.now()-speedClockStarted;speedClockStarted=0;}
-  clearInterval(speedClockTimer);speedClockTimer=0;renderSpeedClock();
-}
-function saveSpeedSession(){
-  if(!speedSession)return;
-  const elapsed=speedElapsedMs();
-  const payload={...speedSession,variant:activeSpeedDefinition().id,elapsedMs:elapsed,board:isMode('speed')?serializeActiveBoard():speedSession.board};
-  storage.setJson(speedSessionStorageKey(),payload);
-  storage.set(STORAGE_KEYS.speedActiveVariant,payload.variant);
-}
-function pauseSpeedRun(){if(!isMode('speed'))return;pauseSpeedClock();saveSpeedSession();}
-function openSpeedPauseDialog(){
-  if(!isMode('speed'))return;
-  speedManuallyPaused=true;
-  pauseSpeedClock();saveSpeedSession();
-  renderSpeedPauseStats();
-  $('speedPauseDialog').hidden=false;
-}
-function rotateSpeedSnapshot(data){
-  if(!validSavedBoard(data))return data;
-  const position=transformPosition(Uint8Array.from(data.o),Int16Array.from(data.s),data.t.map(index=>baseTiles[index]),SPEED_BOARD_VIEW.permutation,false);
-  return {...data,
-    o:[...position.o],s:[...position.s],t:position.t.map(tile=>baseTiles.indexOf(tile)),
-    initialState:Number.isInteger(data.initialState)?transformStateCode(data.initialState,SPEED_BOARD_VIEW.permutation,false):data.initialState,
-    history:(Array.isArray(data.history)?data.history:[]).filter(validSavedBoard).map(rotateSpeedSnapshot)
-  };
-}
-function ensureSpeedBoardView(session){
-  if(session.view==='left60')return session;
-  session.board=rotateSpeedSnapshot(session.board);
-  session.view='left60';
-  return session;
-}
-function pendingSpeedTrial(variant=activeSpeedDefinition().id){
-  // 卒業試験は一周目だけ。二周目は各コースをそのまま進める。
-  if(activeLap===2)return null;
-  if(variant==='training9'&&!speedTrainingTrialCleared)return 'training9';
-  if(variant==='mastery15'&&!speedIntermediateTrialCleared)return 'mastery15';
-  if(variant==='mastery24'&&!speedMasteryTrialCleared)return 'mastery24';
-  return null;
-}
-function newSpeedSession(){const definition=activeSpeedDefinition();return {version:5,variant:definition.id,total:definition.total,view:'left60',order:makeSpeedOrder(definition.id),index:0,elapsedMs:0,board:null,completed:false,optimalClears:0,started:false,requiredTrial:pendingSpeedTrial(definition.id)};}
-// 1問目を始める前だけ、タイマーを止めた「スタート待ち」の状態にする。
-function speedAwaitingStart(){
-  return !!(isMode('speed')&&speedSession&&!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent);
-}
-// 問題が切り替わった時に、盤面が中央から広がって現れる演出。速解きモード専用だったが、
-// 通常モード（次へ・ステージ選択・フリー等）の問題開始時にも共通で使う。
-function animateBoardArrival(){
-  clearTimeout(boardArrivalTimer);
-  svg.classList.add('arriving');
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches){
-    svg.classList.remove('arriving');
-    return;
-  }
-  const center=CELL[3];
-  tileEls.forEach((tile,index)=>{
-    const end=tile.style.transform;
-    const turn=spin[index]*120;
-    tile.animate([
-      {transform:'translate('+center.x+'px,'+center.y+'px) rotate('+turn+'deg) scale(.42)',opacity:0},
-      {transform:'translate('+center.x+'px,'+center.y+'px) rotate('+turn+'deg) scale(.64)',opacity:.72,offset:.48},
-      {transform:end,opacity:1}
-    ],{duration:430,delay:index*32,easing:'cubic-bezier(.18,.8,.2,1)',fill:'backwards'});
-  });
-  boardArrivalTimer=setTimeout(()=>svg.classList.remove('arriving'),560);
-}
-function loadSpeedStage(restoreBoard=false,arriving=false){
-  if(!speedSession)return;
-  speedManuallyPaused=false;
-  setActiveMode('speed');editingBoard=false;
-  const pool=speedStagePool(activeSpeedDefinition());
-  if(!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent){
-    // スタート前は問題を見せず、全員が起きたまっさらな盤面で開始を促す。
-    setPosition(0,0);
-    renderStageNav();
-    saveSpeedSession();saveActiveSession();
-    return;
-  }
-  const stage=pool[speedSession.order[speedSession.index]];
-  setPosition(transformStateBySymmetry(stage.state,SPEED_BOARD_VIEW),stage.par);
-  if(restoreBoard&&validSavedBoard(speedSession.board)){
-    restoreSavedBoard(speedSession.board);
-    // クリア演出中に閉じた場合は、同じ問題を重ねて出さず次へ進める。
-    if(isSolved()){clearShown=false;advanceSpeedRun();return;}
-  }
-  renderStageNav();
-  if(arriving)animateBoardArrival();
-  saveSpeedSession();saveActiveSession();startSpeedClock();
-}
-function enterSpeedMode(forceNew=false){
-  pauseSpeedRun();
-  const requestedVariant=speedVariant;
-  const saved=forceNew?null:readSpeedSession();
-  const isNew=forceNew||!saved;
-  speedVariant=saved?.variant&&SPEED_MODE_DEFINITIONS[saved.variant]?saved.variant:requestedVariant;
-  speedSession=saved||newSpeedSession();
-  ensureSpeedBoardView(speedSession);
-  loadSpeedStage(!isNew,isNew);
-}
-function beginSpeedRun(){
-  if(!isMode('speed')||!speedSession||speedSession.started)return;
-  speedSession.started=true;
-  loadSpeedStage(false,true);
-}
-function finishSpeedRun(){
-  pauseSpeedClock();
-  const elapsed=Math.round(speedSession.elapsedMs);
-  const optimalClears=speedOptimalClears();
-  let bestTime=0;
-  bestTime=Number(storage.get(speedBestStorageKey(),'0'))||0;
-  if(!bestTime||elapsed<bestTime){bestTime=elapsed;storage.set(speedBestStorageKey(),String(bestTime));}
-  const history=readSpeedHistory();
-  history.unshift({elapsedMs:elapsed,optimalClears,total:speedSession.total||activeSpeedDefinition().total,completedAt:Date.now()});
-  writeSpeedHistory(history);
-  storage.remove(speedSessionStorageKey());
-  storage.remove(STORAGE_KEYS.speedActiveVariant);
-  // 速解き自体の完走では報酬を付けない。3Dページは二周目制覇の報酬。
-  speedSession={...speedSession,completed:true,elapsedMs:elapsed,bestMs:bestTime,optimalClears,runNumber:history.length};
-  const trialVariant=speedSession.requiredTrial===true?'training9':speedSession.requiredTrial;
-  if(trialVariant){
-    // 卒業試験は、最短手数を問わず全問を完走すれば合格。
-    grantSpeedTrialCleared(trialVariant);
-    if(trialVariant==='training9')rememberSpecialMessage('primary');
-    else if(trialVariant==='mastery15')rememberSpecialMessage('volume');
-    else if(trialVariant==='mastery24'){grantMasterReward();rememberSpecialMessage('mastery');}
-    setActiveMode('stage');
-    // 合格後に速解き最終盤の状態を残さない。元のコースの節目へ戻して、
-    // 既存のクリア演出・次の道への導線にそのまま合流させる。
-    if(trialVariant==='training9')loadStage(ACADEMY_STAGE_COUNT-1);
-    else if(trialVariant==='mastery15')loadStage(STAGES.length-1);
-    else loadExtraStage(EXTRA_STAGES.length-1);
-    // 合格後は、それぞれの道を終えたときの既存の昇格ダイアログに合流する。
-    showMasterDialog(trialVariant==='training9'?'primary':trialVariant==='mastery15'?'intermediate':'mastery');
-  }else showMasterDialog('speedComplete');
-}
-function speedStatsData(){
-  const history=readSpeedHistory();
-  const storedBest=Number(storage.get(speedBestStorageKey(),'0'))||0;
-  const best=storedBest||(history.length?Math.min(...history.map(entry=>entry.elapsedMs)):0);
-  const total=speedSession?.total||activeSpeedDefinition().total;
-  const optimal=history.reduce((max,entry)=>Math.max(max,Math.max(0,Math.min(total,Number(entry.optimalClears)||0))),0);
-  return {history,best,optimal};
-}
-function renderSpeedStatsList(list,history){
-  if(!history.length){list.innerHTML='<p>'+tr('speedStatsEmpty')+'</p>';return;}
-  list.innerHTML=[...history].sort((a,b)=>a.elapsedMs-b.elapsedMs).slice(0,3).map((entry,index)=>{
-    const rank=index+1,optimalClears=Math.max(0,Math.min(Number(entry.total)||activeSpeedDefinition().total,Number(entry.optimalClears)||0)),runNumber=history.length-history.indexOf(entry);
-    return '<div class="speed-result" data-rank="'+rank+'"><span class="speed-result-medal" aria-label="'+tr('speedStatsPlace',{n:rank})+'"><span>'+rank+'</span></span><span><strong class="speed-result-time">'+formatSpeedTime(entry.elapsedMs)+'</strong><small class="speed-result-note">'+tr('speedStatsOptimal',{optimal:optimalClears})+' '+tr('speedStatsAttempt',{n:runNumber})+'</small></span></div>';
-  }).join('');
-}
-function renderSpeedPauseStats(){
-  const {history,best,optimal}=speedStatsData();
-  $('speedPauseProgress').textContent=tr('speedPauseProgress',{current:(speedSession?.index||0)+1,total:speedSession?.total||activeSpeedDefinition().total,time:formatSpeedTime(speedElapsedMs())});
-  $('speedPauseStats').hidden=!history.length;
-  if(!history.length)return;
-  $('speedPauseStatsSummary').textContent=tr('speedStatsSummary',{runs:history.length,best:best?formatSpeedTime(best):'--:--.-',optimal});
-  $('speedPauseStatsTitle').textContent=tr('speedStatsTop');
-  renderSpeedStatsList($('speedPauseStatsList'),history);
-}
-function renderMasterSpeedStats(){
-  const {history,best,optimal}=speedStatsData();
-  $('masterSpeedStatsSummary').textContent=tr('speedStatsSummary',{runs:history.length,best:best?formatSpeedTime(best):'--:--.-',optimal});
-  $('masterSpeedStatsTitle').textContent=tr('speedStatsTop');
-  renderSpeedStatsList($('masterSpeedStatsList'),history);
-}
-function advanceSpeedRun(){
-  if(!isMode('speed')||!speedSession)return;
-  if(speedSession.index>=speedSession.total-1){finishSpeedRun();return;}
-  speedSession.index++;speedSession.board=null;speedSession.movedCurrent=false;speedSession.restartedCurrent=false;loadSpeedStage(false,true);
-}
-function completeSpeedStage(){
-  clearShown=true;
-  if(speedSession&&moves===best&&!speedSession.restartedCurrent) speedSession.optimalClears=speedOptimalClears()+1;
-  pauseSpeedClock();saveSpeedSession();
-  const delay=celebrateClear();
-  clearTimer=setTimeout(advanceSpeedRun,delay+120);
-}
+// 速解きランタイムは src/speed-runtime.js に分離しています。
+
 // ===== 残り手数チェック(第四巻) =====
-const FOURTH_CHECKS_STORAGE_KEY='wake7-fourth-checks';
+const FOURTH_CHECKS_STORAGE_KEY=STORAGE_KEYS.fourthChecks;
 let fourthCheckUsage={};
 try{fourthCheckUsage=JSON.parse(storage.get(FOURTH_CHECKS_STORAGE_KEY)||'{}')||{};}catch(_){fourthCheckUsage={};}
 let fourthHintPreview=false,fourthDistanceRevealed=false,fourthHintDistance=null,fourthChecksUsed=0;
@@ -1246,54 +888,6 @@ function haptic(pattern){
   if(document.hidden||typeof navigator==='undefined'||typeof navigator.vibrate!=='function')return;
   try{navigator.vibrate(pattern);}catch(_){ }
 }
-// ===== HUD・サウンド =====
-function playTone(frequency,duration=.06,volume=.028,delay=0){
-  if(!soundEnabled||document.hidden)return;
-  try{
-    const AudioCtor=window.AudioContext||window.webkitAudioContext;
-    if(!AudioCtor)return;
-    if(!audioContext)audioContext=new AudioCtor();
-    if(audioContext.state==='suspended')audioContext.resume().catch(()=>{});
-    const start=audioContext.currentTime+delay;
-    const oscillator=audioContext.createOscillator();
-    const gain=audioContext.createGain();
-    oscillator.type='sine';
-    oscillator.frequency.setValueAtTime(frequency,start);
-    gain.gain.setValueAtTime(.0001,start);
-    gain.gain.exponentialRampToValueAtTime(volume,start+.008);
-    gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
-    oscillator.connect(gain).connect(audioContext.destination);
-    oscillator.start(start);oscillator.stop(start+duration+.02);
-  }catch(_){ }
-}
-function playRotateSound(direction){playTone(direction>0?392:349,.055,.022);}
-function playClearSound(kind='normal'){
-  const tunes={
-    normal:[[523,0],[659,.075],[784,.15]],
-    volume:[[440,0],[554,.08],[659,.16],[880,.26]],
-    training:[[440,0],[554,.07],[659,.14],[880,.23],[1109,.33]],
-    mastery:[[392,0],[523,.08],[659,.16],[784,.24],[1047,.34],[1319,.47]],
-    // 悟りの制覇は名人クリアよりさらに一段高い、C7 まで届く上昇音にする。
-    satori:[[392,0],[523,.075],[659,.15],[784,.225],[1047,.31],[1319,.405],[1568,.51],[2093,.64]]
-  };
-  (tunes[kind]||tunes.normal).forEach(([tone,delay])=>playTone(tone,.18,.032,delay));
-}
-function clearSoundKind(){
-  if(isMode('free')||isMode('custom')||isMode('speed'))return 'normal';
-  if(isMode('satori')&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';
-  if(!isMode('mastery')&&stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
-  if(isMode('mastery')&&(extraIndex+1)%MASTER_VOLUME_SIZE===0)return extraIndex===EXTRA_STAGES.length-1?'mastery':'volume';
-  return 'normal';
-}
-function updateSoundToggle(){
-  const button=$('soundToggle');
-  button.setAttribute('aria-label',tr(soundEnabled?'soundOn':'soundOff'));
-  button.setAttribute('aria-pressed',String(soundEnabled));
-  button.innerHTML=soundEnabled
-    ?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M16 9.5a4 4 0 0 1 0 5M18.5 7a7.5 7.5 0 0 1 0 10"/></svg>'
-    :'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="m4 4 16 16"/></svg>';
-}
-
 function hexPath(r){
   let p='';
   for(let i=0;i<6;i++){

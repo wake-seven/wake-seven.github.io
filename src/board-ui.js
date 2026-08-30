@@ -273,7 +273,8 @@ function buildAcademyWelcomeBoard(variant='enroll'){
   play();
   academyWelcomeTimer=setInterval(play,leadDelay+rotateDur+holdAfter+240);
 }
-function academyEnrollArtSvg(){
+// Legacy copy retained temporarily while generated HTML consumers migrate.
+function academyEnrollArtSvgLegacy(){
   const sakura=(x,y,scale=1)=>{
     let petals='';
     for(let i=0;i<5;i++)petals+='<ellipse cx="0" cy="-3.6" rx="2.6" ry="4.2" fill="#F4BFD1" stroke="#E191AC" stroke-width=".4" transform="rotate('+i*72+')"/>';
@@ -347,38 +348,6 @@ function academyBoardStep(variant,titleKey,textKey,actionKey,onAction){
     onAction
   };
 }
-const TRAINING_WELCOME_ART_SVG=`<svg id="trainingWelcomeArt" viewBox="0 0 320 220" aria-hidden="true">
-  <defs>
-    <linearGradient id="twSky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#16283C"/>
-      <stop offset=".58" stop-color="#3E4F63"/>
-      <stop offset="1" stop-color="#C98A57"/>
-    </linearGradient>
-    <radialGradient id="twSun" cx="50%" cy="50%" r="50%">
-      <stop offset="0" stop-color="#FCE7B0"/>
-      <stop offset=".55" stop-color="#F2C063" stop-opacity=".8"/>
-      <stop offset="1" stop-color="#E0985A" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <rect x="0" y="0" width="320" height="220" fill="url(#twSky)"/>
-  <circle cx="238" cy="122" r="48" fill="url(#twSun)"/>
-  <circle cx="238" cy="122" r="21" fill="#F6D68A"/>
-  <path d="M0,158 L35,116 L70,146 L108,103 L150,150 L195,113 L235,148 L280,108 L320,153 L320,220 L0,220 Z" fill="#4C6478" opacity=".5"/>
-  <path d="M-10,168 L40,110 L85,158 L135,95 L190,163 L245,113 L300,158 L330,166 L330,220 L-10,220 Z" fill="#233549"/>
-  <path d="M0,178 Q160,152 320,180 L320,220 L0,220 Z" fill="#332821"/>
-  <path d="M160,220 C150,196 182,182 168,160 C158,148 172,140 165,128" fill="none" stroke="#C9A54E" stroke-width="6" stroke-linecap="round" stroke-dasharray="1.5 11" opacity=".55"/>
-  <path d="M54,58 q6,-8 12,0 q6,-8 12,0" fill="none" stroke="#8FB9CC" stroke-width="2" stroke-linecap="round" opacity=".8"/>
-  <path d="M96,76 q5,-7 10,0 q5,-7 10,0" fill="none" stroke="#8FB9CC" stroke-width="1.8" stroke-linecap="round" opacity=".7"/>
-  <ellipse cx="163" cy="200" rx="32" ry="6" fill="#000" opacity=".26"/>
-  <line x1="193" y1="196" x2="206" y2="100" stroke="#8A6A3C" stroke-width="4" stroke-linecap="round"/>
-  <path d="M197,104 Q189,89 204,85 Q217,89 210,102 Q203,109 197,104Z" fill="#62B8D2" stroke="#1B2A3A" stroke-width="2"/>
-  <g transform="translate(163,160) scale(1.05)">
-    <use href="#daruma-body"/>
-    <use href="#face-happy"/>
-    <path d="M-30,-36 Q0,-64 30,-36 Q0,-46 -30,-36 Z" fill="#D9B67A" stroke="#241D1A" stroke-width="2.2"/>
-    <ellipse cx="0" cy="-36" rx="32" ry="6.5" fill="#E4C88F" stroke="#241D1A" stroke-width="2.2"/>
-  </g>
-</svg>`;
 const CHAIN_STEPS={
   academyEnroll:{
     titleKey:'academyEnrollTitle', actionKey:'trainingWelcomeNext',
@@ -985,7 +954,7 @@ function reorientBoard(permutation,flip=false,rotationDeg=0){
   if(usesHiddenRemaining())resetFourthDistance();
   const applyTransform=()=>{
     const transformed=transformPosition(ori,spin,tileEls,permutation,flip);
-    ori=transformed.o;spin=transformed.s;tileEls=transformed.t;
+    replaceBoardState({ori:transformed.o,spin:transformed.s,tiles:transformed.t});
     history=history.map(h=>{
       const next=transformPosition(h.o,h.s,h.t,permutation,flip);
       return {o:next.o,s:next.s,t:next.t,m:h.m};
@@ -1045,13 +1014,13 @@ function applySwipe(ti,dir,save=true,playEffects=true){
   if(save) history.push(snapshot());
   if(save)trackGameStart();
   const oldSpin=Int16Array.from(spin), oldTiles=tileEls.slice(), c=TRI[ti].cells;
-  ori=rollOnce(ori,ti,dir);
+  const nextOri=rollOnce(ori,ti,dir),nextSpin=oldSpin.slice(),nextTiles=oldTiles.slice();
   for(let i=0;i<3;i++){
     const from=dir>0?c[i]:c[(i+1)%3], to=dir>0?c[(i+1)%3]:c[i];
-    tileEls[to]=oldTiles[from];
-    spin[to]=oldSpin[from]+dir;
+    nextTiles[to]=oldTiles[from];
+    nextSpin[to]=oldSpin[from]+dir;
   }
-  moves++;
+  replaceBoardState({ori:nextOri,spin:nextSpin,tiles:nextTiles,moves:moves+1});
   if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){
     setTimeout(()=>{
       if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves>=5&&!isSolved())
@@ -1062,7 +1031,7 @@ function applySwipe(ti,dir,save=true,playEffects=true){
   if(!isMode('speed')&&isAssistedLearningStage()&&!isSolved())showAcademyRemainingCallout();
   if(isMode('speed')&&speedSession){
     if(save)speedSession.movedCurrent=true;
-    saveSpeedSession();
+    persistSpeedSession();
   }
   if(playEffects){
     haptic(SOLVER.dist[enc(ori)]===0?[20,32,42]:10);
@@ -1123,6 +1092,15 @@ function showAcademyRemainingCallout(){
     setTimeout(()=>{el.hidden=true;},260);
   },700);
 }
+function replaceBoardState(next,{paintNow=false}={}){
+  if(next.ori)ori=next.ori;
+  if(next.spin)spin=next.spin;
+  if(next.tiles)tileEls=next.tiles;
+  if(Number.isInteger(next.moves))moves=next.moves;
+  if(Number.isInteger(next.best))best=next.best;
+  if(next.history)history=next.history;
+  if(paintNow)paint();
+}
 function setPosition(state,par){
   loadFourthChecks();
   resetFourthDistance();
@@ -1134,10 +1112,8 @@ function setPosition(state,par){
   svg.querySelectorAll('.training-shape-callout').forEach(el=>el.remove());
   clearTimeout(trainingShapeCalloutTimer);
   currentInitialState=state; currentInitialPar=par;
-  ori=dec(state);
-  spin=Int16Array.from(ori);
-  tileEls=baseTiles.slice();
-  best=par; moves=0; history=[]; clearShown=false;
+  const nextOri=dec(state);
+  replaceBoardState({ori:nextOri,spin:Int16Array.from(nextOri),tiles:baseTiles.slice(),best:par,moves:0,history:[]}); clearShown=false;
   clearTimeout(boardArrivalTimer);
   busy=false; drag=null;boardTouchActive=false; svg.classList.remove('spinning','selecting','clear-pending','celebrating','arriving');
   svg.classList.remove('tutorial-grab-step','tutorial-clear-step','invalid-grab');
@@ -1237,7 +1213,7 @@ function loadTutorialStep(index=0){
   renderStageNav();
   animateBoardArrival();
   setTimeout(showTutorialCue,430);
-  saveActiveSession();
+  persistActiveSession();
 }
 function startTutorial(){
   if(storage.get(STORAGE_KEYS.tutorialComplete)==='1'){loadStage(0);return;}
@@ -1264,7 +1240,7 @@ function loadStage(index){
   stageIndex=Math.max(0,Math.min(STAGES.length-1,index));
   lastStageMode={extra:false,satori:false,index:stageIndex};
   const stage=STAGES[stageIndex];
-  saveCurrentStage(false,stageIndex);
+  persistCurrentStage(false,stageIndex);
   setPosition(campaignStageState(stage.state),stage.par);
   renderStageNav();
   animateBoardArrival();
@@ -1281,7 +1257,7 @@ function loadExtraStage(index){
   extraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
   lastStageMode={extra:true,satori:false,index:extraIndex};
   const stage=EXTRA_STAGES[extraIndex];
-  saveCurrentStage(true,extraIndex);
+  persistCurrentStage(true,extraIndex);
   setPosition(campaignStageState(stage.state),stage.par);
   renderStageNav();
   animateBoardArrival();
@@ -1304,7 +1280,7 @@ function loadSatoriStage(index){
   animateBoardArrival();
   trackStageView();
 }
-function saveCurrentStage(extra,index){
+function persistCurrentStage(extra,index){
   try{storage.set('wake7-current-stage',JSON.stringify({extra,index,lap:activeLap}));}catch(_){}
 }
 function restoreCurrentStage(){
@@ -1342,7 +1318,7 @@ function validSavedBoard(data){
 function restoreSavedBoard(data){
   if(!validSavedBoard(data))return false;
   cancelTileAnimations();clearHintVisuals();clearTimeout(clearTimer);
-  ori=Uint8Array.from(data.o);spin=Int16Array.from(data.s);tileEls=data.t.map(i=>baseTiles[i]);
+  replaceBoardState({ori:Uint8Array.from(data.o),spin:Int16Array.from(data.s),tiles:data.t.map(i=>baseTiles[i])});
   moves=Number.isInteger(data.m)&&data.m>=0?data.m:0;
   best=Number.isInteger(data.best)&&data.best>=0?data.best:SOLVER.dist[enc(ori)];
   currentInitialState=Number.isInteger(data.initialState)?data.initialState:enc(ori);
@@ -1359,7 +1335,7 @@ function restoreSavedBoard(data){
   paint();
   return true;
 }
-function saveActiveSession(){
+function persistActiveSession(){
   if(isMode('tutorial')){
     const payload={mode:'tutorial',step:tutorialStep};
     syncGameState(payload);
@@ -1370,7 +1346,7 @@ function saveActiveSession(){
   if(isMode('speed')){
     // 速解きの保存盤だけでは「最後に遊んでいたモード」を判定しない。
     // 他モードへ戻った後に古い速解きセッションが残っていても、復元先を奪わないための印。
-    saveSpeedSession();
+    persistSpeedSession();
     const payload={mode:'speed',variant:speedVariant,lap:activeLap};
     syncGameState(payload);
     try{storage.set(STORAGE_KEYS.activeSession,JSON.stringify(payload));}catch(_){ }
@@ -1453,7 +1429,7 @@ function startFreeFromState(state){
 function cloneHistoryEntry(h){
   return {o:Uint8Array.from(h.o),s:Int16Array.from(h.s),t:h.t.slice(),m:h.m};
 }
-function saveFreeSession(){
+function persistFreeSession(){
   savedFreeSession={
     ori:Uint8Array.from(ori),spin:Int16Array.from(spin),tileEls:tileEls.slice(),
     moves,best,history:history.map(cloneHistoryEntry),
@@ -1470,7 +1446,7 @@ function restoreFreeSession(){
   clearTimeout(clearTimer);
   setActiveMode('free');editingBoard=false;
   resetFourthDistance();
-  ori=Uint8Array.from(s.ori);spin=Int16Array.from(s.spin);
+    replaceBoardState({ori:Uint8Array.from(s.ori),spin:Int16Array.from(s.spin)});
   tileEls=s.tileEls.slice();moves=s.moves;best=s.best;
   history=s.history.map(cloneHistoryEntry);
   currentInitialState=s.initialState;currentInitialPar=s.initialPar;clearShown=s.clearShown;
@@ -1485,7 +1461,7 @@ function restoreFreeSession(){
   renderStageNav();
 }
 function leaveFreeMode(){
-  saveFreeSession();
+  persistFreeSession();
   lastStageMode.satori?loadSatoriStage(lastStageMode.index):lastStageMode.extra?loadExtraStage(lastStageMode.index):loadStage(lastStageMode.index);
 }
 function makerDistance(){
@@ -1502,7 +1478,7 @@ function showMakerMessage(){
 function enterBoardMaker(){
   if(busy)return;
   if(isMode('speed'))pauseSpeedRun();
-  if(isMode('free'))saveFreeSession();
+  if(isMode('free'))persistFreeSession();
   // 自作モードは常にまっさらな盤面から。直前の悟り／速解き盤面を
   // そのまま最短手数の確認に使えないようにする。
   const state=0;
@@ -1521,8 +1497,7 @@ function playCustomBoard(){
   animateBoardArrival();
 }
 function resetMakerBoard(){
-  ori=new Uint8Array(N);spin=new Int16Array(N);tileEls=baseTiles.slice();
-  moves=0;history=[];clearShown=true;
+  replaceBoardState({ori:new Uint8Array(N),spin:new Int16Array(N),tiles:baseTiles.slice(),moves:0,history:[]}); clearShown=true;
   paint();renderStageNav();showMakerMessage();
 }
 
@@ -1588,18 +1563,7 @@ function orbitTransform(item,deg,kc){
   return tileTransformDeg(x,y,item.turn*120+deg);
 }
 function animateGroupedSwipe(dg,target,dir,waking){
-  const group=document.createElementNS('http://www.w3.org/2000/svg','g');
-  group.setAttribute('class','auto-swipe-group');
-  const clones=[];
-  for(const item of dg.items){
-    const clone=item.el.cloneNode(true);
-    clone.style.transform=orbitTransform(item,0,dg.kc);
-    clone.setAttribute('class','tile '+(mod3(item.turn)===0?'stand':'fallen'));
-    item.el.style.visibility='hidden';
-    group.appendChild(clone);
-    clones.push({item,clone,hex:clone.querySelector('.hex')});
-  }
-  svg.appendChild(group);
+  const {group,clones}=createAutoSwipePreview(dg.items,dg.kc);
   busy=true;
   const duration=Math.max(190,Math.min(620,Math.abs(target-dg.deg)*4.65));
   const previewState=rollOnce(ori,dg.ti,dir);
@@ -1612,21 +1576,10 @@ function animateGroupedSwipe(dg,target,dir,waking){
     const progress=Math.min(1,(now-start)/duration);
     const deg=dg.deg+(target-dg.deg)*ease(progress);
     group.setAttribute('transform','rotate('+deg+' '+dg.kc.x+' '+dg.kc.y+')');
-    for(const {item,clone,hex} of clones){
-      // 自動回転では半分を越えた時点で次の状態へ切り替える。
-      // 終端付近まで古い表情が残り、回転後に遅れて変わるように見えるのを防ぐ。
-      const turnProgress=Math.abs(target-dg.deg)<.001?1:Math.abs(deg-dg.deg)/Math.abs(target-dg.deg);
-      const turn=turnProgress>=.5?item.turn+dir:item.turn;
-      const state=mod3(turn)===0?'stand':'fallen';
-      clone.setAttribute('class','tile '+state);
-      // 金色・白黒テーマは六角形にインライン色を持つため、
-      // class だけでなく複製パネルの色も同じフレームで更新する。
-      if(hex){
-        const tone=BOARD_THEME_TONES[boardTheme]?.[state];
-        hex.style.fill=tone?.fill||'';
-        hex.style.stroke=tone?.stroke||'';
-      }
-    }
+    // 自動回転では半分を越えた時点で次の状態へ切り替える。
+    // 終端付近まで古い表情が残り、回転後に遅れて変わるように見えるのを防ぐ。
+    const turnProgress=Math.abs(target-dg.deg)<.001?1:Math.abs(deg-dg.deg)/Math.abs(target-dg.deg);
+    updateAutoSwipePreview(clones,turnProgress,dir);
     if(progress<1){requestAnimationFrame(frame);return;}
     // 効果音や振動より先に、盤面の見た目を確定する。
     applySwipe(dg.ti,dir,true,false);
@@ -1650,7 +1603,7 @@ function findSwipeThatReached(beforeState,afterState){
 function animateUndoSwipe(target){
   const move=findSwipeThatReached(enc(target.o),enc(ori));
   if(!move){
-    ori=target.o;spin=target.s;tileEls=target.t;moves=target.m;paint();
+    replaceBoardState({ori:target.o,spin:target.s,tiles:target.t,moves:target.m},{paintNow:true});
     return;
   }
   const c=TRI[move.ti].cells;
@@ -1660,18 +1613,7 @@ function animateUndoSwipe(target){
     const el=tileEls[cell];
     return {el,cell,turn:spin[cell],dx:CELL[cell].x-pivot.x,dy:CELL[cell].y-pivot.y};
   });
-  const group=document.createElementNS('http://www.w3.org/2000/svg','g');
-  group.setAttribute('class','auto-swipe-group');
-  const clones=[];
-  for(const item of items){
-    const clone=item.el.cloneNode(true);
-    clone.style.transform=orbitTransform(item,0,pivot);
-    clone.setAttribute('class','tile '+(mod3(item.turn)===0?'stand':'fallen'));
-    item.el.style.visibility='hidden';
-    group.appendChild(clone);
-    clones.push({item,clone,hex:clone.querySelector('.hex')});
-  }
-  svg.appendChild(group);
+  const {group,clones}=createAutoSwipePreview(items,pivot);
   busy=true;
   const duration=420;
   let started=null;
@@ -1681,20 +1623,11 @@ function animateUndoSwipe(target){
     const progress=Math.min(1,(now-started)/duration);
     const deg=reverseDir*120*ease(progress);
     group.setAttribute('transform','rotate('+deg+' '+pivot.x+' '+pivot.y+')');
-    for(const {item,clone,hex} of clones){
-      const turn=progress>=.5?item.turn+reverseDir:item.turn;
-      const state=mod3(turn)===0?'stand':'fallen';
-      clone.setAttribute('class','tile '+state);
-      if(hex){
-        const tone=BOARD_THEME_TONES[boardTheme]?.[state];
-        hex.style.fill=tone?.fill||'';
-        hex.style.stroke=tone?.stroke||'';
-      }
-    }
+    updateAutoSwipePreview(clones,progress,reverseDir);
     if(progress<1){requestAnimationFrame(frame);return;}
     group.remove();
     for(const item of items)item.el.style.visibility='';
-    ori=target.o;spin=target.s;tileEls=target.t;moves=target.m;
+    replaceBoardState({ori:target.o,spin:target.s,tiles:target.t,moves:target.m});
     busy=false;paint();
     haptic(7);playRotateSound(reverseDir);
   };
@@ -1707,7 +1640,7 @@ function restartWithAnimation(){
   // 極1〜9はやり直しで回復、極10〜12は使用回数を維持する。
   if(!fourthChecksSurviveRestart())renewFourthChecks();
   setPosition(currentInitialState,currentInitialPar);
-  if(isMode('speed')&&speedSession)saveSpeedSession();
+  if(isMode('speed')&&speedSession)persistSpeedSession();
   renderStageNav();
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   busy=true;
@@ -1741,7 +1674,7 @@ function effectiveTurn(turns){
   const n=((turns%3)+3)%3;
   return n===1?1:n===2?-1:0;
 }
-// Keep the numeric preview in sync with the visual wake threshold (120°-22°).
+// 数字のプレビューを、見た目の起立判定しきい値（120°−22°）と同期させる。
 function visualTurns(deg){
   if(!deg)return 0;
   const sign=deg<0?-1:1;
@@ -1774,7 +1707,7 @@ function showAxisGuide(t){
   svg.appendChild(g);
 }
 // ===== ドラッグ/スワイプ操作(ポインタイベント) =====
-svg.addEventListener('pointerdown',e=>{
+function handleBoardPointerDown(e){
   if(busy||svg.classList.contains('arriving')||(e.pointerType==='mouse'&&e.button!==0)) return;
   // 棒をつかめたかどうかに関わらず、盤面上で始まったタッチはページスワイプに奪われたくない。
   boardTouchActive=true;
@@ -1848,8 +1781,8 @@ svg.addEventListener('pointerdown',e=>{
   svg.querySelector('.pivot[data-tri="'+ti+'"]').classList.add('active');
   svg.setPointerCapture(e.pointerId);
   svg.classList.add('spinning');
-});
-svg.addEventListener('pointermove',e=>{
+}
+function handleBoardPointerMove(e){
   if(!drag||e.pointerId!==drag.id){
     if(!drag&&e.pointerType==='mouse')svg.classList.toggle('grip-hover',!!gripAt(toView(e)));
     // 棒をつかめていなくても、盤面上で始まったタッチならページスワイプに奪われないようにする。
@@ -1922,8 +1855,8 @@ svg.addEventListener('pointermove',e=>{
     previewWake(item,drag.deg);
   }
   applyBoardTheme();
-});
-svg.addEventListener('pointerleave',()=>{if(!drag)svg.classList.remove('grip-hover');});
+}
+function handleBoardPointerLeave(){if(!drag)svg.classList.remove('grip-hover');}
 function resumeTutorialCue(){
   if(isMode('tutorial')&&!isSolved())setTimeout(showTutorialCue,110);
 }
@@ -2092,11 +2025,17 @@ function animateGuidedBasicRewind(dg){
   };
   requestAnimationFrame(frame);
 }
-svg.addEventListener('pointerup',e=>{if(!clearInvalidGrab(e))finishDrag(e);});
-svg.addEventListener('pointercancel',e=>{if(!clearInvalidGrab(e))finishDrag(e,true);});
+function handleBoardPointerUp(e){if(!clearInvalidGrab(e))finishDrag(e);}
+function handleBoardPointerCancel(e){if(!clearInvalidGrab(e))finishDrag(e,true);}
+svg.addEventListener('pointerdown',handleBoardPointerDown);
+svg.addEventListener('pointermove',handleBoardPointerMove);
+svg.addEventListener('pointerleave',handleBoardPointerLeave);
+svg.addEventListener('pointerup',handleBoardPointerUp);
+svg.addEventListener('pointercancel',handleBoardPointerCancel);
 // pointermoveのpreventDefault()だけではスワイプ操作を吸収しきれないアプリ内ブラウザ(LINE等の
 // WebView)向けに、生のtouchmoveでも盤面ドラッグ中だけ明示的に止める。passive:falseが必須。
-svg.addEventListener('touchmove',e=>{if(boardTouchActive)e.preventDefault();},{passive:false});
+function handleBoardTouchMove(e){if(boardTouchActive)e.preventDefault();}
+svg.addEventListener('touchmove',handleBoardTouchMove,{passive:false});
 
 $('undo').addEventListener('click',()=>{
   if(busy||isFinalMasterPuzzle()||!history.length) return;
@@ -2109,12 +2048,12 @@ $('undo').addEventListener('click',()=>{
   if(usesHiddenRemaining())resetFourthDistance();
   $('msg').classList.remove('show');
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
-    ori=h.o;spin=h.s;tileEls=h.t;moves=h.m;paint();
-    if(isMode('speed')&&speedSession)saveSpeedSession();
+    replaceBoardState({ori:h.o,spin:h.s,tiles:h.t,moves:h.m},{paintNow:true});
+    if(isMode('speed')&&speedSession)persistSpeedSession();
   }else{
     animateUndoSwipe(h);
     // アニメーション完了後の盤面を保存する。
-    if(isMode('speed')&&speedSession)setTimeout(saveSpeedSession,460);
+    if(isMode('speed')&&speedSession)setTimeout(persistSpeedSession,460);
   }
 });
 $('reset').addEventListener('click',()=>{
@@ -2137,4 +2076,9 @@ $('tutorialReset').addEventListener('click',()=>{
 });
 $('shuffle').addEventListener('click',()=>{
   if(!busy&&isMode('free'))startFree();
+});
+
+const GameBoard=Object.freeze({
+  repaint:()=>paint(),
+  reset:(state,par)=>setPosition(state,par)
 });
