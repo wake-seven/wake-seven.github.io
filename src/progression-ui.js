@@ -638,16 +638,6 @@ function renderStageNav(){
       showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
     }
   }
-  function renderStageNavAccent(){
-    let accentFrac=0;
-    if(isMode('speed'))accentFrac=(speedSession.index+1)/(speedSession.total||activeSpeedDefinition().total);
-    else if(isMode('satori'))accentFrac=(satoriIndex+1)/SATORI_STAGES.length;
-    else if(isMode('mastery'))accentFrac=(extraIndex+1)/EXTRA_STAGES.length;
-    else if(!isMode('free')&&!isMode('custom'))accentFrac=stageIndex<ACADEMY_STAGE_COUNT?(stageIndex+1)/ACADEMY_STAGE_COUNT:(stageIndex-ACADEMY_STAGE_COUNT+1)/TRAINING_STAGE_COUNT;
-    $('stageAccentFill').style.width=(Math.max(0,Math.min(1,accentFrac))*100)+'%';
-    if(!isMode('speed')){$('shortestLabel').textContent=tr('shortestDisplay');$('moveUnit').textContent=tr('moveUnit');$('academyClearSuffix').textContent=tr('academyClearSuffix');$('movesLabel').textContent=tr('moves');$('moves').textContent=moves;$('movesUnit').textContent=tr('moveUnit');}
-    renderRankBadge();
-  }
   function renderStageNavPrevNext(){
     const customPlaying=isMode('custom')&&!editingBoard;
     if(isMode('speed')){$('prevStage').hidden=false;$('nextStage').hidden=false;$('prevStage').disabled=true;$('nextStage').disabled=true;}
