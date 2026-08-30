@@ -10,7 +10,6 @@
 | `src/runtime/namespace.js:attachWakeSevenNamespace` | 保持 | 公開版の`window.WakeSeven`互換APIを初期化する。 |
 | `src/state/game-state.js:attachWakeSevenState` | 保持 | 公開版の状態APIを初期化する。 |
 | `src/state/progression-policy.js:attachWakeSevenProgression` | 保持 | 公開版の進行ポリシーAPIを初期化する。 |
-| `src/ui/board-ui.js:academyEnrollArtSvgLegacy` | 保留 | 現在の静的参照は宣言のみ。旧演出の保管用コードで、表示経路を確認してから削除する。 |
 
 ## 導線監査
 

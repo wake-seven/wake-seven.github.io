@@ -164,8 +164,7 @@ const documentedCandidates = [
   'src/main.mjs:createDevelopmentRuntime',
   'src/runtime/namespace.js:attachWakeSevenNamespace',
   'src/state/game-state.js:attachWakeSevenState',
-  'src/state/progression-policy.js:attachWakeSevenProgression',
-  'src/ui/board-ui.js:academyEnrollArtSvgLegacy'
+  'src/state/progression-policy.js:attachWakeSevenProgression'
 ];
 for (const candidate of documentedCandidates) {
   assert.ok(candidates.includes(candidate), `Documented audit candidate disappeared or changed: ${candidate}`);
