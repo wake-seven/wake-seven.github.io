@@ -7,6 +7,8 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const html = await readFile(join(root, 'index.html'), 'utf8');
 const stateModule = await readFile(join(root, 'src', 'game-state.js'), 'utf8');
 const progressionModule = await readFile(join(root, 'src', 'progression-policy.js'), 'utf8');
+const coreDataModule = await readFile(join(root, 'src', 'core-data.js'), 'utf8');
+const runtimeModule = await readFile(join(root, 'src', 'runtime.js'), 'utf8');
 const required = [
   'WAKE7:STATE-MODULE:START',
   'WAKE7:PROGRESSION-POLICY:START',
@@ -44,6 +46,51 @@ const markerPositions = moduleMarkers.map(marker => html.indexOf(marker));
 if (markerPositions.some(position => position < 0)
   || markerPositions.some((position, index) => index > 0 && position <= markerPositions[index - 1])) {
   throw new Error('Application modules are missing or out of order in generated index.html.');
+}
+
+// コースの基準値は複数の画面・解放条件から参照されるため、宣言同士の整合性を静的に確認する。
+const declaredExpressions = new Map([...coreDataModule.matchAll(/const\s+([A-Z][A-Z0-9_]*)\s*=\s*([^;]+);/g)]
+  .map(([, name, expression]) => [name, expression.trim()]));
+const declaredNumbers = new Map();
+for (let pass = 0; pass < declaredExpressions.size; pass++) {
+  let changed = false;
+  for (const [name, expression] of declaredExpressions) {
+    if (declaredNumbers.has(name) || !/^[0-9A-Z_ +*()/.-]+$/.test(expression)) continue;
+    const identifiers = expression.match(/[A-Z][A-Z0-9_]*/g) || [];
+    if (identifiers.some(identifier => !declaredNumbers.has(identifier))) continue;
+    const resolved = expression.replace(/[A-Z][A-Z0-9_]*/g, identifier => String(declaredNumbers.get(identifier)));
+    try {
+      const value = Function(`return ${resolved};`)();
+      if (Number.isFinite(value)) { declaredNumbers.set(name, value); changed = true; }
+    } catch { /* 式として評価できない宣言は対象外 */ }
+  }
+  if (!changed) break;
+}
+const expectedCourseCounts = {
+  INTRO_STAGE_COUNT: 3,
+  BASIC_STAGE_COUNT: 9,
+  DEVELOPMENT_STAGE_COUNT: 8,
+  ACADEMY_STAGE_COUNT: 20,
+  TRAINING_STAGE_COUNT: 27,
+  TRAINING_UPPER_COUNT: 9,
+  TRAINING_MIDDLE_COUNT: 9,
+  TRAINING_LOWER_COUNT: 9,
+  MASTER_VOLUME_SIZE: 15
+};
+for (const [name, expected] of Object.entries(expectedCourseCounts)) {
+  if (declaredNumbers.get(name) !== expected) {
+    throw new Error(`${name} is inconsistent: expected ${expected}, found ${declaredNumbers.get(name)}.`);
+  }
+}
+if (declaredNumbers.get('ACADEMY_STAGE_COUNT') !== declaredNumbers.get('DEVELOPMENT_STAGE_START') + declaredNumbers.get('DEVELOPMENT_STAGE_COUNT')
+  || declaredNumbers.get('TRAINING_STAGE_COUNT') !== declaredNumbers.get('TRAINING_UPPER_COUNT') + declaredNumbers.get('TRAINING_MIDDLE_COUNT') + declaredNumbers.get('TRAINING_LOWER_COUNT')) {
+  throw new Error('Course count formulas are inconsistent.');
+}
+const primarySectionBlock = runtimeModule.match(/const PRIMARY_SECTIONS=Object\.freeze\(\[(.*?)\]\);/s)?.[1] || '';
+const sectionTotals = [...primarySectionBlock.matchAll(/total:([A-Z][A-Z0-9_]*)/g)].map(([, name]) => declaredNumbers.get(name));
+if (sectionTotals.length !== 6 || sectionTotals.some(value => !Number.isFinite(value))
+  || sectionTotals.reduce((sum, value) => sum + value, 0) !== declaredNumbers.get('ACADEMY_STAGE_COUNT') + declaredNumbers.get('TRAINING_STAGE_COUNT')) {
+  throw new Error('PRIMARY_SECTIONS totals do not match the academy and training course counts.');
 }
 
 const countDefinitions = (source, name) => {
