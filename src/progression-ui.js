@@ -992,9 +992,7 @@ function buildMessageReviewEntries(){
   const entries=[];
   // 二周目を始めた直後も、一周目で集めたメッセージを読み返せるようにする。
   const {primary:reviewPrimary,extra:reviewExtra,satori:reviewSatori}=messageReviewProgressSets();
-  const reviewPrimaryDone=STAGES.every((_,i)=>reviewPrimary.has(i));
-  const reviewMastered=EXTRA_STAGES.every((_,i)=>reviewExtra.has(i));
-  const reviewSatoriMastered=SATORI_STAGES.every((_,i)=>reviewSatori.has(i));
+  const {primary:reviewPrimaryDone,extra:reviewMastered,satori:reviewSatoriMastered}=messageReviewCompletion({primary:reviewPrimary,extra:reviewExtra,satori:reviewSatori});
   for(let i=0;i<STAGES.length;i++){
     if(!reviewPrimary.has(i))continue;
     if(i===ACADEMY_STAGE_COUNT-1){
