@@ -8284,12 +8284,12 @@ function configureMessageReviewLinks(entry,messageClearEntry){
 }
 function isMilestoneMessage(entry){return !!entry?.master;}
 function milestoneVolume(entry){return entry?.master==='primary'?0:Math.ceil((entry.index+1)/MASTER_VOLUME_SIZE);}
-function messageReviewView(){return {seal:$('messageMasterSeal'),rankText:$('messageRankText'),masterText:$('messageMasterText'),boardNote:$('messageMasterBoardNote'),rules:$('messageRules')};}
+function messageReviewView(){return {seal:$('messageMasterSeal'),rankText:$('messageRankText'),masterText:$('messageMasterText'),boardNote:$('messageMasterBoardNote'),rules:$('messageRules'),roadmap:$('messageRoadmap'),roadmapNote:$('messageRoadmapNote'),illustration:$('messageIllustration'),lessonCopy:$('messageTwoMoveLessonCopy'),lessonRule:$('messageTwoMoveLessonRule')};}
 const MESSAGE_ROADMAP_MASTERS=Object.freeze(['primary','mastery','satori','satoriIntro','secondLapIntro','awakening','trainingWelcome']);
 const MESSAGE_MASTERY_BOARD_MASTERS=Object.freeze(['mastery','satori','awakening']);
 const MESSAGE_TILTED_BOARD_MASTERS=Object.freeze(['satori','awakening']);
 function resetMessageReviewView(entry,view){
-  const roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote');
+  const {roadmap,roadmapNote}=view;
   $('messagePrev').textContent='← '+tr('prev');
   $('messageNext').textContent=tr('next')+' →';
   $('closeMessages').textContent=tr('close');
@@ -8398,8 +8398,8 @@ function renderMessageLesson(twoMoveLesson,illustration,lessonCopy,lessonRule){
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
   const {art,twoMoveLesson}=prepareMessageReview(entry);
-  const illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),seal=$('messageMasterSeal');
   const view=messageReviewView();
+  const {illustration,lessonCopy,lessonRule,roadmap,seal}=view;
   resetMessageReviewView(entry,view);
   if(isMilestoneMessage(entry)){
     const volume=milestoneVolume(entry);
