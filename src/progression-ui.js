@@ -1120,7 +1120,8 @@ function configureMessageReviewLinks(entry,messageClearEntry){
 }
 function isMilestoneMessage(entry){return !!entry?.master;}
 function milestoneVolume(entry){return entry?.master==='primary'?0:Math.ceil((entry.index+1)/MASTER_VOLUME_SIZE);}
-function renderPrimaryMilestone(entry,seal,rankText,masterText,rules){
+function messageReviewView(){return {seal:$('messageMasterSeal'),rankText:$('messageRankText'),masterText:$('messageMasterText'),boardNote:$('messageMasterBoardNote'),rules:$('messageRules')};}
+function renderPrimaryMilestone(entry,{seal,rankText,masterText,rules}){
   $('messageMasterSealLabel').textContent=masterPath().ranks[0];setSealColor(seal,0);$('messageDialogTitle').textContent=tr('masterTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[0]);masterText.hidden=false;masterText.textContent=tr('masterText');rules.hidden=false;rules.textContent=masterCommonRules();
 }
 function renderMasteryMilestone(entry,seal,rankText,masterText,boardNote){
@@ -1133,6 +1134,7 @@ function renderVolumeMilestone(entry,volume,seal,rankText,masterText){const next
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
   const art=messageReviewArt(entry),twoMoveLesson=lessonVariantFromArt(art),illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
+  const view=messageReviewView();
   $('messagePrev').textContent='← '+tr('prev');
   $('messageNext').textContent=tr('next')+' →';
   $('closeMessages').textContent=tr('close');
@@ -1153,7 +1155,7 @@ function renderMessageReview(){
     const current=entry.master==='primary'?2:entry.master==='mastery'?6:Math.min(5,volume+2);
     if(entry.master!=='mastery')roadmap.innerHTML=masterRoadmapMarkup(current);
     if(entry.master==='primary'){
-      renderPrimaryMilestone(entry,seal,rankText,masterText,rules);
+      renderPrimaryMilestone(entry,view);
     }else if(entry.master==='mastery'){
       renderMasteryMilestone(entry,seal,rankText,masterText,boardNote);
     }else if(entry.master==='satori'){
