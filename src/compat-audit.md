@@ -14,7 +14,7 @@
 
 ## 互換ID
 
-`mastery15` と `mastery24` は旧保存データの読み込み時だけ、それぞれ `training18` と `mastery27` へ変換する。新規保存では canonical ID を使用する。
+`mastery15` と `mastery24` は旧保存データの読み込み時だけ、それぞれ `training18` と `mastery27` へ変換する。新規保存と実行時の速解き経路では canonical ID (`training18` / `mastery27`) を使用する。旧IDの参照は移行表と進行ポリシーに限定する。
 
 ## 互換キー
 

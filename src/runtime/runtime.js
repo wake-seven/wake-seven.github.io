@@ -335,8 +335,8 @@ function syncSpeedUnlockFlag(){
 function unlockSpeedVariant(id){
   const wasUnlocked=speedVariantUnlocked(id);
   if(id==='training9')speedTrainingUnlocked=true;
-  else if(id==='mastery15')speedIntermediateUnlocked=true;
-  else if(id==='mastery24')speedMasteryUnlocked=true;
+  else if(id==='training18')speedIntermediateUnlocked=true;
+  else if(id==='mastery27')speedMasteryUnlocked=true;
   else if(id==='satori73'||id==='standard')speedSatoriUnlocked=true;
   syncSpeedUnlockFlag();
   if(!wasUnlocked)storage.set(SPEED_NEW_TAB_STORAGE_KEY,id);
@@ -352,8 +352,8 @@ function unlockSpeedVariant(id){
 // 卒業試験に合格させる処理は必ずここを通す。
 function grantSpeedTrialCleared(variant){
   if(variant==='training9'){speedTrainingTrialCleared=setUnlock('speedTrainingTrialCleared',true);storage.set(STORAGE_KEYS.speedTrainingTrialCleared,'1');}
-  else if(variant==='mastery15'){speedIntermediateTrialCleared=setUnlock('speedIntermediateTrialCleared',true);storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,'1');}
-  else if(variant==='mastery24'){speedMasteryTrialCleared=setUnlock('speedMasteryTrialCleared',true);storage.set(STORAGE_KEYS.speedMasteryTrialCleared,'1');}
+  else if(variant==='training18'){speedIntermediateTrialCleared=setUnlock('speedIntermediateTrialCleared',true);storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,'1');}
+  else if(variant==='mastery27'){speedMasteryTrialCleared=setUnlock('speedMasteryTrialCleared',true);storage.set(STORAGE_KEYS.speedMasteryTrialCleared,'1');}
   else return;
   unlockSpeedVariant(variant);
 }
@@ -365,11 +365,11 @@ function grantCampaignProgressThrough(checkpoint){
   grantSpeedTrialCleared('training9');
   if(checkpoint==='training'||checkpoint==='mastery'){
     STAGES.forEach((_,i)=>clearedStages.add(i));
-    grantSpeedTrialCleared('mastery15');
+    grantSpeedTrialCleared('training18');
   }
   if(checkpoint==='mastery'){
     EXTRA_STAGES.forEach((_,i)=>clearedExtraStages.add(i));
-    grantSpeedTrialCleared('mastery24');
+    grantSpeedTrialCleared('mastery27');
   }
 }
 // 3Dページは速解きモード初回クリアの報酬。速解きの解放同様、進行状況リセットでは残す。

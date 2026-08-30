@@ -1366,7 +1366,7 @@ function showMasterDialog(kind='primary'){
         rankText.hidden=true;
         speedIntroNote.textContent=tr('intermediateTrialNote');
         speedIntroNote.hidden=false;
-        $('masterStart').dataset.speedVariant='mastery15';
+        $('masterStart').dataset.speedVariant='training18';
       }else{
         rankText.hidden=false;
         rankText.textContent=rankEarnedText(rank);
@@ -1382,7 +1382,7 @@ function showMasterDialog(kind='primary'){
         $('masterDialogText').textContent=tr('intermediateTrialText');
         speedIntroNote.textContent=tr('intermediateTrialNote');
         speedIntroNote.hidden=false;
-        $('masterStart').dataset.speedVariant='mastery15';
+        $('masterStart').dataset.speedVariant='training18';
         $('masterStart').textContent=tr('intermediateTrialStart');
       }else{
         showRankSeal(masterPath().ranks[1],1);
@@ -1437,10 +1437,10 @@ function showMasterDialog(kind='primary'){
       $('masterStart').textContent=readSpeedSession()?tr('speedResume'):tr('speedStart');
     },
     speedTrialFailed(){
-      const failedVariant=['training9','mastery15','mastery24'].includes(speedSession?.requiredTrial)?speedSession.requiredTrial:'training9';
+      const failedVariant=['training9','training18','mastery27'].includes(speedSession?.requiredTrial)?speedSession.requiredTrial:'training9';
       seal.hidden=true;speedIntroArt.hidden=false;
       $('masterDialogTitle').textContent=tr('speedTrialFailTitle');
-      $('masterDialogText').textContent=tr(failedVariant==='training9'?'speedTrainingTrialFailText':failedVariant==='mastery15'?'speedIntermediateTrialFailText':'speedMasteryTrialFailText');
+      $('masterDialogText').textContent=tr(failedVariant==='training9'?'speedTrainingTrialFailText':failedVariant==='training18'?'speedIntermediateTrialFailText':'speedMasteryTrialFailText');
       $('masterStart').textContent=tr('speedTrialRetry');
       renderMasterSpeedStats();
       speedStats.hidden=false;
@@ -1473,7 +1473,7 @@ function showMasterDialog(kind='primary'){
         $('masterDialogText').textContent=tr('masteryTrialText');
         speedIntroNote.textContent=tr('masteryTrialNote');
         speedIntroNote.hidden=false;
-        $('masterStart').dataset.speedVariant='mastery24';
+        $('masterStart').dataset.speedVariant='mastery27';
         $('masterStart').textContent=tr('masteryTrialStart');
       }else{
         showRankSeal(masterPath().ranks[3],3);

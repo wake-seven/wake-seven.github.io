@@ -132,7 +132,7 @@ for (const token of [
   'showClearDialog(',
   'completeSpeedStage(',
   'advanceSpeedRun(',
-  "$('clearNext').addEventListener('click'"
+  "WakeSevenEventBindings.click('clearNext'"
 ]) {
   assert.match(all, new RegExp(token.replace(/[()$']/g, '\\$&')), `Campaign/speed completion flow is missing: ${token}`);
 }
@@ -140,7 +140,9 @@ for (const token of [
 const legacyLocations = [...sources.entries()]
   .filter(([, source]) => legacyIds.some(id => source.includes(id)))
   .map(([file]) => file);
-const expectedLegacyLocations = new Set(['src/state/game-state.js', 'src/state/progression-policy.js', 'src/runtime/runtime.js', 'src/runtime/app-events.js', 'src/runtime/speed.js', 'src/ui/progression.js']);
+// 旧IDは移行表と、旧IDをcanonical定義へ写す進行ポリシーだけに閉じ込める。
+// 実行時の速解き経路は training18 / mastery27 のcanonical IDを使う。
+const expectedLegacyLocations = new Set(['src/state/game-state.js', 'src/state/progression-policy.js']);
 for (const file of legacyLocations) {
   assert.ok(expectedLegacyLocations.has(file), `Legacy speed id spread into unexpected source: ${file}`);
 }

@@ -249,6 +249,16 @@
     return state.navigation;
   }
 
+  // 画面側が navigation の保存形式を直接組み立てないための薄い操作API。
+  // モードごとの現在位置を変更するときは、この入口を使うことで
+  // stageIndex/masteryIndex/satoriIndex の扱いを一箇所に保てる。
+  function setNavigationIndex(state, mode, index) {
+    const key = mode === 'mastery' ? 'masteryIndex'
+      : mode === 'satori' ? 'satoriIndex'
+        : mode === 'tutorial' ? 'tutorialStep' : 'stageIndex';
+    return updateNavigation(state, { [key]: asIndex(index) });
+  }
+
   // 実行側が保存形式のオブジェクトへ直接依存しないための読み取り境界。
   // 返却値は読み取り専用として扱い、変更は update* API 経由で行う。
   function sectionView(state, section) {
@@ -304,6 +314,7 @@
     migrateLegacy,
     navigationView,
     navigationIndex,
+    setNavigationIndex,
     sectionView,
     updateNavigation,
     updateBoard,

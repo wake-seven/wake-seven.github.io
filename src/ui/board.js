@@ -1235,6 +1235,7 @@ function loadTutorialStep(index=0){
   clearTimeout(tutorialAdvanceTimer);
   setActiveMode('tutorial');editingBoard=false;
   tutorialStep=Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index));
+  WakeSevenState.setNavigationIndex(gameState,'tutorial',tutorialStep);
   storage.set(STORAGE_KEYS.tutorialStep,String(tutorialStep));
   const step=TUTORIAL_STEPS[tutorialStep];
   setPosition(step.state,step.par);
@@ -1267,6 +1268,7 @@ function loadStage(index){
   setActiveMode('stage');editingBoard=false;
   nextStageAttention=false;
   stageIndex=Math.max(0,Math.min(STAGES.length-1,index));
+  WakeSevenState.setNavigationIndex(gameState,'stage',stageIndex);
   lastStageMode={extra:false,satori:false,index:stageIndex};
   const stage=STAGES[stageIndex];
   persistCurrentStage(false,stageIndex);
@@ -1284,6 +1286,7 @@ function loadExtraStage(index){
   setActiveMode('mastery');editingBoard=false;
   nextStageAttention=false;
   extraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
+  WakeSevenState.setNavigationIndex(gameState,'mastery',extraIndex);
   lastStageMode={extra:true,satori:false,index:extraIndex};
   const stage=EXTRA_STAGES[extraIndex];
   persistCurrentStage(true,extraIndex);
@@ -1301,6 +1304,7 @@ function loadSatoriStage(index){
   setActiveMode('satori');editingBoard=false;
   nextStageAttention=false;
   satoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
+  WakeSevenState.setNavigationIndex(gameState,'satori',satoriIndex);
   lastStageMode={extra:false,satori:true,index:satoriIndex};
   const stage=SATORI_STAGES[satoriIndex];
   try{storage.set('wake7-current-stage',JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}

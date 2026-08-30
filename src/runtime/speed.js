@@ -205,8 +205,8 @@ function pendingSpeedTrial(variant=activeSpeedDefinition().id){
   // 卒業試験は一周目だけ。二周目は各コースをそのまま進める。
   if(activeLap===2)return null;
   if(variant==='training9'&&!speedTrainingTrialCleared)return 'training9';
-  if(variant==='mastery15'&&!speedIntermediateTrialCleared)return 'mastery15';
-  if(variant==='mastery24'&&!speedMasteryTrialCleared)return 'mastery24';
+  if(variant==='training18'&&!speedIntermediateTrialCleared)return 'training18';
+  if(variant==='mastery27'&&!speedMasteryTrialCleared)return 'mastery27';
   return null;
 }
 function newSpeedSession(){const definition=activeSpeedDefinition();return {version:5,variant:definition.id,total:definition.total,view:'left60',order:makeSpeedOrder(definition.id),index:0,elapsedMs:0,board:null,completed:false,optimalClears:0,started:false,requiredTrial:pendingSpeedTrial(definition.id)};}
@@ -292,16 +292,16 @@ function finishSpeedRun(){
     // 卒業試験は、最短手数を問わず全問を完走すれば合格。
     grantSpeedTrialCleared(trialVariant);
     if(trialVariant==='training9')rememberSpecialMessage('primary');
-    else if(trialVariant==='mastery15')rememberSpecialMessage('volume');
-    else if(trialVariant==='mastery24'){grantMasterReward();rememberSpecialMessage('mastery');}
+    else if(trialVariant==='training18')rememberSpecialMessage('volume');
+    else if(trialVariant==='mastery27'){grantMasterReward();rememberSpecialMessage('mastery');}
     setActiveMode('stage');
     // 合格後に速解き最終盤の状態を残さない。元のコースの節目へ戻して、
     // 既存のクリア演出・次の道への導線にそのまま合流させる。
     if(trialVariant==='training9')loadStage(ACADEMY_STAGE_COUNT-1);
-    else if(trialVariant==='mastery15')loadStage(STAGES.length-1);
+    else if(trialVariant==='training18')loadStage(STAGES.length-1);
     else loadExtraStage(EXTRA_STAGES.length-1);
     // 合格後は、それぞれの道を終えたときの既存の昇格ダイアログに合流する。
-    showMasterDialog(trialVariant==='training9'?'primary':trialVariant==='mastery15'?'intermediate':'mastery');
+    showMasterDialog(trialVariant==='training9'?'primary':trialVariant==='training18'?'intermediate':'mastery');
   }else showMasterDialog('speedComplete');
 }
 function speedStatsData(){
