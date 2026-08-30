@@ -163,6 +163,7 @@ const sourceModules = [
   ['src/progression-render.js', ['renderStageNavAccent']],
   ['src/master-dialog.js', ['masterDialogTrialState', 'masterDialogBoardTheme', 'masterDialogBoardOptions']],
   ['src/progression-ui.js', ['showClearDialog', 'renderClearTip']],
+  ['src/rank-ui.js', ['rankFrameSvg', 'renderRankList', 'openRankDialog']],
   ['src/ui-render.js', ['renderCurrentView']]
 ];
 for (const [moduleName, names] of sourceModules) {
