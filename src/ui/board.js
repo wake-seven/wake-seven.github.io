@@ -365,12 +365,22 @@ const CHAIN_STEPS={
   developmentWelcome:{
     titleKey:'developmentWelcomeTitle', actionKey:'developmentWelcomeStart',
     render(body){
-      body.innerHTML='<p class="chain-text-left" id="developmentWelcomeSpinHint"></p>'
+      const template=document.getElementById('chain-template-development-welcome-spin');
+      if(template)body.append(template.content.cloneNode(true));
+      else body.innerHTML='<p class="chain-text-left" id="developmentWelcomeSpinHint"></p>'
         +'<div class="development-welcome-frame">'
         +'<div class="status-metric remaining training-spin-counter" id="developmentWelcomeSpinCounter"><span id="developmentWelcomeSpinCounterLabel"></span><b id="developmentWelcomeSpinCounterNumber"></b><span id="developmentWelcomeSpinCounterUnit"></span></div>'
         +'<div class="two-move-detail-board-area"><div class="two-move-detail-board" id="developmentWelcomeSpinBoardWrap"><svg id="developmentWelcomeSpinBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>'
         +'</div>'
         +'<p class="chain-text-left" id="chainDialogText"></p>';
+      body.querySelector('[data-spin-hint]')?.setAttribute('id','developmentWelcomeSpinHint');
+      body.querySelector('[data-spin-counter]')?.setAttribute('id','developmentWelcomeSpinCounter');
+      body.querySelector('[data-spin-label]')?.setAttribute('id','developmentWelcomeSpinCounterLabel');
+      body.querySelector('[data-spin-number]')?.setAttribute('id','developmentWelcomeSpinCounterNumber');
+      body.querySelector('[data-spin-unit]')?.setAttribute('id','developmentWelcomeSpinCounterUnit');
+      body.querySelector('[data-spin-board]')?.setAttribute('id','developmentWelcomeSpinBoard');
+      body.querySelector('[data-spin-board-wrap]')?.setAttribute('id','developmentWelcomeSpinBoardWrap');
+      body.querySelector('[data-chain-dialog-text]')?.setAttribute('id','chainDialogText');
       $('developmentWelcomeSpinCounterLabel').textContent=tr('shortestDisplay');
       $('developmentWelcomeSpinCounterUnit').textContent=tr('moveUnit');
       $('chainDialogText').textContent=tr('developmentWelcomeText');
@@ -413,8 +423,16 @@ const CHAIN_STEPS={
   trainingMiddleSpin:{
     kindKey:'trainingMiddleGoalKind', titleKey:'trainingMiddleSpinTitle', actionKey:'trainingWelcomeNext',
     render(body){
-      body.innerHTML='<div class="status-metric remaining training-spin-counter" id="trainingMiddleSpinCounter"><span id="trainingMiddleSpinCounterLabel"></span><b id="trainingMiddleSpinCounterNumber"></b><span id="trainingMiddleSpinCounterUnit"></span></div>'
+      const template=document.getElementById('chain-template-training-middle-spin');
+      if(template)body.append(template.content.cloneNode(true));
+      else body.innerHTML='<div class="status-metric remaining training-spin-counter" id="trainingMiddleSpinCounter"><span id="trainingMiddleSpinCounterLabel"></span><b id="trainingMiddleSpinCounterNumber"></b><span id="trainingMiddleSpinCounterUnit"></span></div>'
         +'<div class="two-move-detail-board-area"><div class="two-move-detail-board" id="trainingMiddleSpinBoardWrap"><svg id="trainingMiddleSpinBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>';
+      body.querySelector('[data-spin-counter]')?.setAttribute('id','trainingMiddleSpinCounter');
+      body.querySelector('[data-spin-label]')?.setAttribute('id','trainingMiddleSpinCounterLabel');
+      body.querySelector('[data-spin-number]')?.setAttribute('id','trainingMiddleSpinCounterNumber');
+      body.querySelector('[data-spin-unit]')?.setAttribute('id','trainingMiddleSpinCounterUnit');
+      body.querySelector('[data-spin-board]')?.setAttribute('id','trainingMiddleSpinBoard');
+      body.querySelector('[data-spin-board-wrap]')?.setAttribute('id','trainingMiddleSpinBoardWrap');
       $('trainingMiddleSpinCounterLabel').textContent=tr('shortestDisplay');
       $('trainingMiddleSpinCounterUnit').textContent=tr('moveUnit');
       buildTrainingMiddleSpinBoard('trainingMiddleSpinBoard','trainingMiddleSpinCounter');

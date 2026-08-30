@@ -59,6 +59,9 @@ assert.match(sources.get('src/ui/progression-roadmap.js'), /content\.cloneNode\(
 assert.match(template, /<template[^>]+id=["']rank-list-row-template["']/i, 'Rank list template is missing.');
 assert.match(sources.get('src/ui/rank.js'), /rank-list-row-template/);
 assert.match(sources.get('src/ui/rank.js'), /content\.cloneNode\(true\)/);
+for (const id of ['chain-template-training-middle-spin', 'chain-template-development-welcome-spin']) {
+  assert.match(template, new RegExp(`<template[^>]+id=["']${id}["']`, 'i'), `Spin dialog template is missing: ${id}`);
+}
 for (const token of ['startTutorial', 'rollOnce', 'tutorialStep', 'paint()']) {
   assert.match(all, new RegExp(token.replace(/[()]/g, '\\$&')), `Main flow implementation token is missing: ${token}`);
 }
