@@ -1124,7 +1124,7 @@ function messageReviewView(){return {seal:$('messageMasterSeal'),rankText:$('mes
 function renderPrimaryMilestone(entry,{seal,rankText,masterText,rules}){
   $('messageMasterSealLabel').textContent=masterPath().ranks[0];setSealColor(seal,0);$('messageDialogTitle').textContent=tr('masterTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[0]);masterText.hidden=false;masterText.textContent=tr('masterText');rules.hidden=false;rules.textContent=masterCommonRules();
 }
-function renderMasteryMilestone(entry,seal,rankText,masterText,boardNote){
+function renderMasteryMilestone(entry,{seal,rankText,masterText,boardNote}){
   $('messageMasterSealLabel').textContent=masterPath().ranks[3];setSealColor(seal,3);$('messageDialogTitle').textContent=tr('masteryTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[3]);masterText.hidden=false;masterText.textContent=tr('masteryText');boardNote.hidden=false;boardNote.textContent=tr('masteryBoardNote');
 }
 function renderSatoriMilestone(entry,seal,rankText,masterText){$('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('satoriRank'),false,5);setSealColor(seal,5);seal.classList.add('rank-frame-seal');$('messageDialogTitle').textContent=tr('satoriTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));masterText.hidden=false;masterText.textContent=tr('satoriText');}
@@ -1157,7 +1157,7 @@ function renderMessageReview(){
     if(entry.master==='primary'){
       renderPrimaryMilestone(entry,view);
     }else if(entry.master==='mastery'){
-      renderMasteryMilestone(entry,seal,rankText,masterText,boardNote);
+      renderMasteryMilestone(entry,view);
     }else if(entry.master==='satori'){
       renderSatoriMilestone(entry,seal,rankText,masterText);
     }else if(entry.master==='awakening'){
