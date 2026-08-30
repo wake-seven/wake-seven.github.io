@@ -4,6 +4,10 @@ import { createPersistence } from '../src/state/persistence.mjs';
 import { createBoardQuizCatalog } from '../src/data/board-quiz.mjs';
 import { createMessageCatalog } from '../src/data/messages.mjs';
 import { createSatoriCatalog } from '../src/data/satori.mjs';
+import { createBoardCommands } from '../src/commands/board-commands.mjs';
+import { createProgressionCommands } from '../src/commands/progression-commands.mjs';
+import { createBoardView } from '../src/ui/board.mjs';
+import { createMessagePresenter } from '../src/ui/messages.mjs';
 
 const runtime = createDevelopmentRuntime({ triangles: [{ cells: [0, 1, 2] }] });
 assert.equal(runtime.board.stateCount, 2187);
@@ -37,4 +41,18 @@ const runtimeData = createDevelopmentRuntime({ data: { clearContent: { x: { tip:
 assert.equal(runtimeData.messages.has('x'), true);
 assert.equal(runtimeData.satori.length, 1);
 assert.equal(runtimeData.boardQuiz.forLanguage('ja').title, 'q');
+let boardState = Uint8Array.from([0, 0, 0]);
+const boardCommands = createBoardCommands({
+  getBoard: () => boardState,
+  applyMove: (current, triangleIndex, direction) => ({ board: Uint8Array.from(current, value => value + direction), triangleIndex }),
+  setBoard: next => { boardState = next; }
+});
+assert.equal(boardCommands.apply(0, 1).triangleIndex, 0);
+assert.deepEqual(Array.from(boardState), [1, 1, 1]);
+let progressionCalls = 0;
+const progressionCommands = createProgressionCommands({ startSpeedRun: () => { progressionCalls++; return { ok: true }; } });
+assert.deepEqual(progressionCommands.startSpeedRun(), { ok: true });
+assert.equal(progressionCalls, 1);
+assert.equal(createBoardView({}).build(), false);
+assert.equal(createMessagePresenter({}).show('missing'), null);
 console.log('Validated development ES module entry point.');
