@@ -312,36 +312,16 @@ try{secondLapActive=storage.get(STORAGE_KEYS.secondLapActive)==='1';}catch(_){ }
 let awakenedGranted=initialUnlocks.awakened===true;
 if(!awakenedGranted)try{awakenedGranted=storage.get(STORAGE_KEYS.awakenedGranted)==='1';}catch(_){ }
 // 速解きモードは、進行状況をリセットしても残す独立した解放要素。
-let speedModeUnlocked=false;
-try{speedModeUnlocked=storage.get(STORAGE_KEYS.speedUnlocked)==='1'||awakenedGranted;}catch(_){speedModeUnlocked=awakenedGranted;}
-if(speedModeUnlocked)try{storage.set(STORAGE_KEYS.speedUnlocked,'1');}catch(_){ }
-// この印がない保存データだけを、旧「速解き一括解放」仕様として移行する。
-const hasSpeedTrialModel=storage.get(STORAGE_KEYS.speedTrialModelVersion)==='3';
-// 速解きは解放された範囲ごとに選択できる。旧版の一括解放は、互換性のため全て解放済みとして移行する。
-let speedTrainingUnlocked=false,speedIntermediateUnlocked=false,speedMasteryUnlocked=false,speedSatoriUnlocked=false;
-let speedTrainingTrialCleared=false,speedIntermediateTrialCleared=false,speedMasteryTrialCleared=false;
-try{
-  speedTrainingUnlocked=storage.get('wake7-speed-training-unlocked')==='1';
-  speedIntermediateUnlocked=storage.get(STORAGE_KEYS.speedIntermediateUnlocked)==='1';
-  speedMasteryUnlocked=storage.get('wake7-speed-mastery-unlocked')==='1';
-  speedSatoriUnlocked=storage.get('wake7-speed-satori-unlocked')==='1';
-  speedTrainingTrialCleared=storage.get(STORAGE_KEYS.speedTrainingTrialCleared)==='1';
-  speedIntermediateTrialCleared=storage.get(STORAGE_KEYS.speedIntermediateTrialCleared)==='1';
-  speedMasteryTrialCleared=storage.get(STORAGE_KEYS.speedMasteryTrialCleared)==='1';
-}catch(_){ }
-if(speedModeUnlocked&&!hasSpeedTrialModel){speedTrainingUnlocked=true;speedIntermediateUnlocked=true;speedMasteryUnlocked=true;speedSatoriUnlocked=true;}
-// 旧保存の合格状態は、盤面クリア状況を読み込んだ後で新しい関門へ対応付ける。
-// 見た目の報酬だけを残したリセットでは、試験を通過済みにしない。
-storage.set(STORAGE_KEYS.speedTrialModelVersion,'3');
-if(speedTrainingTrialCleared)try{storage.set(STORAGE_KEYS.speedTrainingTrialCleared,'1');}catch(_){ }
-if(speedIntermediateTrialCleared)try{storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,'1');}catch(_){ }
-if(speedMasteryTrialCleared)try{storage.set(STORAGE_KEYS.speedMasteryTrialCleared,'1');}catch(_){ }
-if(speedModeUnlocked&&!hasSpeedTrialModel)try{
-  storage.set(STORAGE_KEYS.speedTrainingUnlocked,'1');
-  storage.set(STORAGE_KEYS.speedIntermediateUnlocked,'1');
-  storage.set(STORAGE_KEYS.speedMasteryUnlocked,'1');
-  storage.set(STORAGE_KEYS.speedSatoriUnlocked,'1');
-}catch(_){ }
+const speedUnlockState=initializeSpeedUnlockState({initialUnlocks,storage,storageKeys:STORAGE_KEYS,awakenedGranted});
+let speedModeUnlocked=speedUnlockState.modeUnlocked;
+// 速解きは解放された範囲ごとに選択できる。旧版の一括解放は移行時に全て解放済みへ変換する。
+let speedTrainingUnlocked=speedUnlockState.training;
+let speedIntermediateUnlocked=speedUnlockState.intermediate;
+let speedMasteryUnlocked=speedUnlockState.mastery;
+let speedSatoriUnlocked=speedUnlockState.satori;
+let speedTrainingTrialCleared=speedUnlockState.trainingTrial;
+let speedIntermediateTrialCleared=speedUnlockState.intermediateTrial;
+let speedMasteryTrialCleared=speedUnlockState.masteryTrial;
 function syncSpeedUnlockFlag(){
   speedModeUnlocked=speedTrainingUnlocked||speedIntermediateUnlocked||speedMasteryUnlocked||speedSatoriUnlocked;
   setUnlock('speedTraining',speedTrainingUnlocked);
