@@ -988,10 +988,6 @@ const MESSAGE_REVIEW_STORAGE_KEY='wake7-message-review';
 const MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY='wake7-message-review-last-clear';
 let messageReviewEntries=[],messageReviewIndex=0;
 // ===== メッセージ見直しUI（message-ui.js 分離予定の境界） =====
-function messageReviewEntryKey(entry){
-  const kind=entry.awakened?'master:awakening':entry.satori?'satori':entry.master?'master:'+entry.master:entry.boardQuiz?'board-quiz':entry.quiz!==undefined?'quiz':'text';
-  return (entry.awakened||entry.satori?'satori':entry.extra?'extra':'primary')+':'+entry.index+':'+kind;
-}
 function buildMessageReviewEntries(){
   const finalize=entries=>entries.map(entry=>{
     const messageId=entry.master||clearContentKey(!!entry.extra,entry.index);
