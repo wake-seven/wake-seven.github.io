@@ -23,8 +23,8 @@ function debugGrantRainbowDaruma(){
   darumaColorChosen=false;
   try{
     storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');
-    storage.set('wake7-daruma-color','rainbow');
-    storage.remove('wake7-daruma-color-chosen');
+    storage.set(STORAGE_KEY_GROUPS.settings.darumaColor,'rainbow');
+    storage.remove(STORAGE_KEY_GROUPS.settings.darumaColorChosen);
   }catch(_){ }
 }
 $('debugAlmost').addEventListener('click',()=>debugClearCurrent(1));
@@ -42,7 +42,7 @@ function debugPrepareSecondLapCheckpoint(){
   masterGoldGranted=setUnlock('masterGoldGranted',true);
   satoriDesignGranted=setUnlock('satoriDesignGranted',true);
   try{
-    storage.set('wake7-second-lap-unlocked','1');
+    storage.set(STORAGE_KEY_GROUPS.progression.secondLapUnlocked,'1');
     storage.remove(STORAGE_KEYS.awakenedGranted);
     for(const variant of ['standard','training9','mastery15','mastery24','satori73'])clearSpeedSession(variant);
     storage.set(STORAGE_KEYS.masterGoldGranted,'1');
@@ -64,7 +64,7 @@ function debugPrepareFirstLapCheckpoint(){
   speedIntermediateTrialCleared=false;
   speedMasteryTrialCleared=false;
   try{
-    storage.remove('wake7-second-lap-unlocked');
+    storage.remove(STORAGE_KEY_GROUPS.progression.secondLapUnlocked);
     storage.remove(STORAGE_KEYS.secondLapActive);
     storage.remove(STORAGE_KEYS.awakenedGranted);
   storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
@@ -799,7 +799,7 @@ const LANGUAGE_TEXT_TARGETS=[
 function applyLanguage(lang){
   if(!UI_TEXT[lang])return;
   currentLang=lang;
-  try{storage.set('wake7-language',lang);}catch(_){}
+  try{storage.set(STORAGE_KEY_GROUPS.settings.language,lang);}catch(_){}
   document.documentElement.lang=lang==='zh'?'zh-CN':lang;
   document.title=tr('pageTitle');
   document.querySelector('h1').textContent=tr('title');
@@ -906,7 +906,7 @@ $('boardThemeOptions').addEventListener('click',event=>{
 });
 function toggleSoundCommand(){
   soundEnabled=!soundEnabled;
-  try{storage.set('wake7-sound',soundEnabled?'on':'off');}catch(_){ }
+  try{storage.set(STORAGE_KEY_GROUPS.settings.sound,soundEnabled?'on':'off');}catch(_){ }
   updateSoundToggle();
   if(soundEnabled)playTone(523,.07,.025);
 }
@@ -914,15 +914,15 @@ function selectBoardThemeCommand(button){
   if(button.dataset.boardColor){
     boardTheme=button.dataset.boardColor;
     boardThemeChosen=true;
-    try{storage.set('wake7-board-theme-chosen','1');}catch(_){ }
+    try{storage.set(STORAGE_KEY_GROUPS.settings.boardThemeChosen,'1');}catch(_){ }
   }else if(button.dataset.boardLayout){
     boardLayout=button.dataset.boardLayout;
     boardLayoutChosen=true;
-    try{storage.set('wake7-board-layout-chosen','1');}catch(_){ }
+    try{storage.set(STORAGE_KEY_GROUPS.settings.boardLayoutChosen,'1');}catch(_){ }
   }else{
     darumaColor=button.dataset.darumaColor;
     darumaColorChosen=true;
-    try{storage.set('wake7-daruma-color',darumaColor);storage.set('wake7-daruma-color-chosen','1');}catch(_){ }
+    try{storage.set(STORAGE_KEY_GROUPS.settings.darumaColor,darumaColor);storage.set(STORAGE_KEY_GROUPS.settings.darumaColorChosen,'1');}catch(_){ }
   }
   updateMasterTheme();
   renderBoardThemeOptions();

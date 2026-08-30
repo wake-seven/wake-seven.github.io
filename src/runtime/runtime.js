@@ -95,6 +95,7 @@ function setUnlock(key,value){
  * モード・問題ごとの案内を追加するときは、まずここを経由する。
  */
 const STORAGE_KEYS=WakeSevenState.STORAGE_KEYS;
+const STORAGE_KEY_GROUPS=WakeSevenState.STORAGE_KEY_GROUPS;
 const storage=WakeSevenState.storage;
 /*
  * New persistence boundary. Existing code still reads legacy keys during the
