@@ -8816,16 +8816,23 @@ function animateTwoMovePattern(boardIndex,angle=0,mirror=false){
   animateMiniBoardTiles(card,'.mini-tile','.mini-daruma',i=>CELL[i],symmetry.permutation,before,after);
   twoMoveGuard.arm(480,()=>transformTwoMovePattern(boardIndex,angle,mirror));
 }
-function showMasterDialog(kind='primary'){
-  masterDialogKind=kind;
-  $('masterStart').dataset.speedVariant='';
-  const needsMasteryTrial=kind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared;
-  const needsIntermediateTrial=kind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared;
-  if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
+// 節目ダイアログを開いたときに確定する解放・見た目報酬を、表示分岐から分離する。
+// 報酬の付与条件と永続化はここに集約し、showMasterDialog は表示内容の組み立てに専念させる。
+function grantMasterDialogRewards(kind){
+  if(kind==='satori'&&!secondLapActive){
+    unlockSpeedVariant('satori73');
+    renderStageNav();
+  }
   if(kind==='mastery'&&secondLapActive&&!rainbowDarumaGranted){
-    rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);darumaColor='rainbow';darumaColorChosen=false;
-    try{storage.set('wake7-rainbow-daruma-granted','1');storage.remove('wake7-daruma-color-chosen');}catch(_){ }
-    updateMasterTheme();renderStageNav();
+    rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);
+    darumaColor='rainbow';
+    darumaColorChosen=false;
+    try{
+      storage.set('wake7-rainbow-daruma-granted','1');
+      storage.remove('wake7-daruma-color-chosen');
+    }catch(_){ }
+    updateMasterTheme();
+    renderStageNav();
   }
   if(kind==='awakening'&&!awakenedGranted){
     awakenedGranted=setUnlock('awakened',true);
@@ -8839,6 +8846,13 @@ function showMasterDialog(kind='primary'){
     renderStageNav();
     rememberSpecialMessage('awakening');
   }
+}
+function showMasterDialog(kind='primary'){
+  masterDialogKind=kind;
+  $('masterStart').dataset.speedVariant='';
+  const needsMasteryTrial=kind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared;
+  const needsIntermediateTrial=kind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared;
+  grantMasterDialogRewards(kind);
   if(kind==='mastery'&&!needsMasteryTrial)$('menuAllPatterns').hidden=false;
   const masteryBoardTheme=kind==='awakening'?'gold-3d':(kind==='mastery'&&secondLapActive)||kind==='satori'?'satori-tilted':'gold';
   renderMasteryBoard('masteryBoard',kind!=='awakening'&&((kind==='mastery'&&!needsMasteryTrial)||['satori','awakening'].includes(kind)),masteryBoardTheme,kind!=='awakening');
