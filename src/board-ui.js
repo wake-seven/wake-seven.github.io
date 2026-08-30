@@ -1210,7 +1210,7 @@ function loadTutorialStep(index=0){
   const step=TUTORIAL_STEPS[tutorialStep];
   setPosition(step.state,step.par);
   $('gripPrompt').classList.add('tutorial-prompt-top');
-  renderStageNav();
+  renderCurrentView();
   animateBoardArrival();
   setTimeout(showTutorialCue,430);
   persistActiveSession();
@@ -1242,7 +1242,7 @@ function loadStage(index){
   const stage=STAGES[stageIndex];
   persistCurrentStage(false,stageIndex);
   setPosition(campaignStageState(stage.state),stage.par);
-  renderStageNav();
+  renderCurrentView();
   animateBoardArrival();
   trackStageView();
   if(stageIndex===0&&!hasMasterReward())scheduleStageOneTutorial();
@@ -1259,7 +1259,7 @@ function loadExtraStage(index){
   const stage=EXTRA_STAGES[extraIndex];
   persistCurrentStage(true,extraIndex);
   setPosition(campaignStageState(stage.state),stage.par);
-  renderStageNav();
+  renderCurrentView();
   animateBoardArrival();
   trackStageView();
 }
@@ -1276,7 +1276,7 @@ function loadSatoriStage(index){
   const stage=SATORI_STAGES[satoriIndex];
   try{storage.set('wake7-current-stage',JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}
   setPosition(campaignStageState(stage.state),stage.par);
-  renderStageNav();
+  renderCurrentView();
   animateBoardArrival();
   trackStageView();
 }

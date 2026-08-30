@@ -831,8 +831,7 @@ function applyLanguage(lang){
   $('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');
   if(!$('rankDialog').hidden)renderRankList();
   if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);
-  renderStageNav();
-  if(!$('stagePicker').hidden)renderStagePicker();
+  renderCurrentView();
   if(!$('twoMoveDialog').hidden)renderTwoMovePatterns();
   if(!$('twoMoveDetailDialog').hidden)renderTwoMoveDetail();
   if(!$('messageDialog').hidden)renderMessageReview();
