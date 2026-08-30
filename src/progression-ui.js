@@ -985,21 +985,6 @@ function renderClearTip(){
   }
 }
 // ===== メッセージ見直しUI（message-ui.js 分離予定の境界） =====
-function buildMessageReviewEntriesInternal(){
-  const entries=[];
-  // 二周目を始めた直後も、一周目で集めたメッセージを読み返せるようにする。
-  const {primary:reviewPrimary,extra:reviewExtra,satori:reviewSatori}=messageReviewProgressSets();
-  const {primary:reviewPrimaryDone,extra:reviewMastered,satori:reviewSatoriMastered}=messageReviewCompletion({primary:reviewPrimary,extra:reviewExtra,satori:reviewSatori});
-  entries.push(...collectPrimaryMessageReviewEntries(reviewPrimary));
-  // だるま修行を終えるまでは、後半コースのメッセージへ飛ばさない。
-  if(!reviewPrimaryDone){
-    if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});
-    return finalizeMessageReviewEntries(entries);
-  }
-  entries.push(...collectExtraMessageReviewEntries(reviewExtra));
-  entries.push(...collectMessageReviewMilestones(reviewMastered,reviewSatoriMastered));
-  return finalizeMessageReviewEntries(entries);
-}
 // ===== メッセージ見直しUIここまで =====
 // ===== クイズシステム =====
 /* クイズは見直すたびに選択肢の位置を変える。 */
