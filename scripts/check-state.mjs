@@ -44,6 +44,8 @@ const data = new Map([
   ['wake7-cleared', '[0,1]'],
   ['wake7-extra-cleared', '[3]'],
   ['wake7-satori-cleared', '[7]'],
+  ['wake7-master-gold-granted', '1'],
+  ['wake7-speed-intermediate-trial-cleared', '1'],
   ['wake7-active-session', JSON.stringify({mode:'mastery',extra:true,index:3,lap:2,board:{o:[0,0,0,0,0,0,0]}})]
 ]);
 const localStorage = {
@@ -60,6 +62,9 @@ if (migrated.navigation.mode !== 'mastery' || migrated.navigation.masteryIndex !
 }
 if (migrated.settings.language !== 'en' || migrated.settings.sound !== false || migrated.progress.lap1.primary.join(',') !== '0,1') {
   throw new Error('Legacy settings or progress migration failed.');
+}
+if (!migrated.unlocks.masterGoldGranted || !migrated.unlocks.speedIntermediateTrialCleared) {
+  throw new Error('Legacy unlock migration failed.');
 }
 if (!data.has('wake7-state-vnext')) throw new Error('Migration did not write wake7-state-vnext.');
 
