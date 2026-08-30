@@ -14,12 +14,27 @@
 
 ## このリポジトリについて
 
-ビルドやインストールは不要です。`index.html` をブラウザで開くだけで遊べます。
+公開版はビルドやインストール不要です。`index.html` をブラウザで開くだけで遊べます。
 
 - `index.html` — ゲーム本体
+- `src/index.template.html` — `index.html` の保守用テンプレート
+- `src/game-state.js` — バージョン付き統合ゲーム状態と旧保存データ移行
+- `src/progression-policy.js` — コース解放・速解き・学習用 UI の宣言ポリシー
+- `scripts/build-index.mjs` — 単体HTMLを生成するスクリプト
 - `all-patterns.html` — クリア後に楽しめる盤面一覧
 
 進行状況や設定は、ブラウザの Local Storage に保存されます。外部サーバーへの送信やアカウント登録はありません。
+
+## 開発
+
+Node.js があれば、保守用ファイルを変更後に次で公開版を生成できます。
+
+```sh
+npm run build
+npm run check
+```
+
+新しい保存形式は `wake7-state-vnext` です。初回は既存の `wake7-*` キーから読み取り、従来の保存キーも残すため、移行中でも旧版へ戻せます。
 
 ## 共有について
 
