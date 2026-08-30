@@ -29,11 +29,12 @@ function inject(source,startMarker,endMarker,module,name) {
 }
 const withState = inject(template,start,end,stateModule,'State-module');
 const withProgression = inject(withState,progressionStart,progressionEnd,progressionModule,'Progression-policy');
+const moduleLabels = ['基礎データ', '実行状態', '盤面UI', '進行UI', 'イベントと起動'];
 const generated = inject(
   withProgression,
   appStart,
   appEnd,
-  appModules.map((module,index) => `// ===== ${appModuleFiles[index]} =====\n${module.trim()}`).join('\n\n'),
+  appModules.map((module,index) => `// ===== ${moduleLabels[index]} =====\n${module.trim()}`).join('\n\n'),
   'Application-modules'
 );
 await writeFile(outputPath, generated, 'utf8');

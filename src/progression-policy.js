@@ -1,4 +1,4 @@
-/* Declarative campaign and speed-run policy. Injected into the single-file build. */
+/* コース進行と速解きの宣言ポリシー。公開版では単体HTMLへ埋め込む。 */
 (function attachWakeSevenProgression(global) {
   'use strict';
 

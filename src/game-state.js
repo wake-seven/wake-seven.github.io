@@ -1,9 +1,9 @@
 /*
- * WAKE SEVEN state foundation.
+ * WAKE SEVEN 統合状態の基盤。
  *
  * The public build in index.html is intentionally self-contained.  This file
  * is injected as an inline script by scripts/build-index.mjs so it remains
- * available on GitHub Pages without a bundler or extra runtime requests.
+ * ビルドなしでGitHub Pagesから利用できるよう、公開版へインライン埋め込みする。
  */
 (function attachWakeSevenState(global) {
   'use strict';
@@ -40,8 +40,7 @@
         sessions: seed.speed?.sessions && typeof seed.speed.sessions === 'object' ? clone(seed.speed.sessions) : {}
       },
       ui: seed.ui && typeof seed.ui === 'object' ? clone(seed.ui) : {},
-      // Keeping the exact legacy payload makes the migration reversible while
-      // the rest of the UI is incrementally moved to this canonical shape.
+      // 旧データを保持しておくことで、段階移行中も旧版へ戻せるようにする。
       legacySession: seed.legacySession && typeof seed.legacySession === 'object' ? clone(seed.legacySession) : null
     };
     return state;

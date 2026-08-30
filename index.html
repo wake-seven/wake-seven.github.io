@@ -1343,11 +1343,11 @@
 <!-- WAKE7:STATE-MODULE:START -->
 <script>
 /*
- * WAKE SEVEN state foundation.
+ * WAKE SEVEN 統合状態の基盤。
  *
  * The public build in index.html is intentionally self-contained.  This file
  * is injected as an inline script by scripts/build-index.mjs so it remains
- * available on GitHub Pages without a bundler or extra runtime requests.
+ * ビルドなしでGitHub Pagesから利用できるよう、公開版へインライン埋め込みする。
  */
 (function attachWakeSevenState(global) {
   'use strict';
@@ -1384,8 +1384,7 @@
         sessions: seed.speed?.sessions && typeof seed.speed.sessions === 'object' ? clone(seed.speed.sessions) : {}
       },
       ui: seed.ui && typeof seed.ui === 'object' ? clone(seed.ui) : {},
-      // Keeping the exact legacy payload makes the migration reversible while
-      // the rest of the UI is incrementally moved to this canonical shape.
+      // 旧データを保持しておくことで、段階移行中も旧版へ戻せるようにする。
       legacySession: seed.legacySession && typeof seed.legacySession === 'object' ? clone(seed.legacySession) : null
     };
     return state;
@@ -1494,7 +1493,7 @@
 <!-- WAKE7:STATE-MODULE:END -->
 <!-- WAKE7:PROGRESSION-POLICY:START -->
 <script>
-/* Declarative campaign and speed-run policy. Injected into the single-file build. */
+/* コース進行と速解きの宣言ポリシー。公開版では単体HTMLへ埋め込む。 */
 (function attachWakeSevenProgression(global) {
   'use strict';
 
@@ -1555,7 +1554,7 @@
 
 <!-- WAKE7:APPLICATION-MODULES:START -->
 <script>
-// ===== core-data.js =====
+// ===== 基礎データ =====
 // ===== 盤面ジオメトリ定数 =====
 const R=54, W=Math.sqrt(3)*R, H=1.5*R, OX=66.77, OY=74;
 const CELL=[[0.5,0],[1.5,0],[0,1],[1,1],[2,1],[0.5,2],[1.5,2]]
@@ -3689,7 +3688,7 @@ const UI_TEXT={
   }
 };
 
-// ===== runtime.js =====
+// ===== 実行状態 =====
 // ===== 共通ユーティリティ =====
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
@@ -4995,7 +4994,7 @@ function hexPath(r){
   return p+'Z';
 }
 
-// ===== board-ui.js =====
+// ===== 盤面UI =====
 // ===== 盤面SVG構築・入門/学園ダイアログ・最短2手レッスン =====
 function buildBoard(){
   svg.innerHTML='';
@@ -7148,7 +7147,7 @@ const GameBoard=Object.freeze({
   reset:(state,par)=>setPosition(state,par)
 });
 
-// ===== progression-ui.js =====
+// ===== 進行UI =====
 // ===== ヒントシステム・段位・名人ロードマップ =====
 function clearHintVisuals(preserveSelection=false){
   clearAxisGuide();
@@ -9349,7 +9348,7 @@ const GameDialogs=Object.freeze({
   mastery:kind=>showMasterDialog(kind)
 });
 
-// ===== app-events.js =====
+// ===== イベントと起動 =====
 // ===== デバッグツール =====
 function debugClearCurrent(extraMoves=0){
   if(!DEBUG_MODE||busy||editingBoard)return;
