@@ -1,4 +1,4 @@
-# 互換層・未使用候補監査
+# 状態境界・未使用候補監査
 
 最終確認日: 2026-08-31
 
@@ -10,7 +10,7 @@
 | `src/runtime/namespace.js:attachWakeSevenNamespace` | 保持 | 公開版の`window.WakeSeven`互換APIを初期化する。 |
 | `src/state/game-state.js:attachWakeSevenState` | 保持 | 公開版の状態APIを初期化する。 |
 | `src/state/progression-policy.js:attachWakeSevenProgression` | 保持 | 公開版の進行ポリシーAPIを初期化する。 |
-| `src/ui/board-ui.js:academyEnrollArtSvgLegacy` | 保留 | 現在の静的参照は宣言のみだが、旧演出の互換資産。表示経路をブラウザで確認してから削除する。 |
+| `src/ui/board-ui.js:academyEnrollArtSvgLegacy` | 保留 | 現在の静的参照は宣言のみ。旧演出の保管用コードで、表示経路を確認してから削除する。 |
 
 ## 速解きID
 
@@ -28,9 +28,9 @@
 - チュートリアルの段階状態とリセット操作が存在する
 - 盤面の pointer 操作と `rollOnce` / `paint()` が接続されている
 - 通常ステージ、クリア後、速解きの主要DOMと遷移関数が残っている
-- 旧速解きIDの参照場所が互換層・進行処理の許可範囲に限定されている
+- 速解きIDが正式ID（`training9` / `training18` / `mastery27` / `satori73`）だけで構成されている
 
-この監査はDOM構造とイベント接続を静的に確認する。実ブラウザのクリック・スワイプ確認は、内蔵ブラウザで別途実施する。未使用候補や下書きメッセージは、この検査では削除しない。
+この監査はDOM構造、イベント接続、正式IDの使用を静的に確認する。実ブラウザのクリック・スワイプ確認は、内蔵ブラウザで別途実施する。未使用候補や下書きメッセージは、この検査では削除しない。
 
 ## 固定UI fallback
 
