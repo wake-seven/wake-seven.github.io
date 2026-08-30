@@ -162,7 +162,9 @@ const pickerRoundToSection=round=>PRIMARY_SECTIONS[round+PRIMARY_PICKER_SECTION_
 const PICKER_ACADEMY_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='development')-PRIMARY_PICKER_SECTION_COUNT;
 const PICKER_TRAINING_FIRST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingUpper')-PRIMARY_PICKER_SECTION_COUNT;
 const PICKER_TRAINING_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingLower')-PRIMARY_PICKER_SECTION_COUNT;
-function runtimeContext(){
+// 現在のモード・コース・問題位置を、画面や計測から共通して参照する実行コンテキスト。
+// 既存の runtimeContext() は互換入口として残し、段階的にこちらへ寄せる。
+function getGameContext(){
   const navigation=runtimeNavigation();
   if(isMode('tutorial'))return {mode:'tutorial',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'tutorial'),position:tutorialStep+1,total:TUTORIAL_STEPS.length,lap:1};
   if(isSideCourseMode())return {mode:activeMode,course:courseDefinitionForMode(),index:null,position:null,total:null,lap:activeLap};
@@ -174,8 +176,9 @@ function runtimeContext(){
   if(isMode('mastery'))return {mode:'mastery',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'mastery'),position:extraIndex+1,total:EXTRA_STAGES.length,lap:activeLap};
   return {mode:'primary',course:courseDefinitionForMode('stage'),index:WakeSevenState.navigationIndex(navigation,'stage'),position:stageIndex+1,total:STAGES.length,lap:activeLap};
 }
+function runtimeContext(){return getGameContext();}
 function runtimeStageKey(){
-  const ctx=runtimeContext();
+  const ctx=getGameContext();
   return ctx.position===null?ctx.mode:ctx.mode+':'+ctx.index;
 }
 function featureUnlocked(feature){
@@ -232,7 +235,7 @@ function renderMainBoardGuidance(){
   text.append(link);
 }
 function analyticsStageInfo(){
-  const context=runtimeContext();
+  const context=getGameContext();
   if(context.mode==='free'||context.mode==='custom')return null;
   if(context.mode==='speed'){
     const position=(speedSession?.index||0)+1;
