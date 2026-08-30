@@ -74,6 +74,7 @@ for (const id of ['message-intro-guide-frame-template', 'message-two-move-lesson
 }
 assert.match(sources.get('src/ui/message.js'), /message-intro-guide-frame-template/);
 assert.match(sources.get('src/ui/message.js'), /message-two-move-lesson-frame-template/);
+assert.match(sources.get('src/ui/message.js'), /function messageReviewView\(\)\{const refs=createRefs/);
 for (const id of ['stage-picker-row-template', 'two-move-card-template']) {
   assert.match(template, new RegExp(`<template[^>]+id=["']${id}["']`, 'i'), `List template is missing: ${id}`);
 }

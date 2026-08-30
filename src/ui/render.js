@@ -8,10 +8,12 @@ const WakeSevenRendererRegistry=Object.freeze({
 });
 function renderCurrentView(model={},context={}){
   const {includeBoard=false,includePicker=true}=model;
-  const renderers=WakeSevenRendererRegistry.create({board:()=>includeBoard&&paint(context),navigation:()=>renderStageNav(),picker:()=>includePicker&&!$('stagePicker').hidden&&renderStagePicker()});
-  renderers.get('board').render();
-  renderers.get('navigation').render();
-  renderers.get('picker').render();
+  const screenRenderers={board:()=>includeBoard&&paint(context),navigation:()=>renderStageNav(),picker:()=>includePicker&&!$('stagePicker').hidden&&renderStagePicker()};
+  if(model.screen==='speed')screenRenderers.speed=()=>renderMasterSpeedStats();
+  if(model.screen==='message')screenRenderers.message=()=>renderMessageReview();
+  if(model.screen==='guide'&&typeof renderTipGuide==='function')screenRenderers.guide=()=>renderTipGuide();
+  const renderers=WakeSevenRendererRegistry.create(screenRenderers);
+  renderers.names().forEach(name=>renderers.get(name).render(model,context));
 }
 // 動的コンテナ更新の共通境界。既存rendererのmarkup生成は維持する。
 function replaceRenderedContent(root,markup=''){return svgMount(root,markup);}
