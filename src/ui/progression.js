@@ -884,7 +884,7 @@ function transformIcon(kind){
   return '<svg class="transform-svg" viewBox="0 0 24 24" aria-hidden="true">'+paths[kind]+'</svg>';
 }
 // transformIconは固定のrenderer出力だけを受け付けるため、挿入境界をここへ集約する。
-function insertTransformIcon(target,kind){if(!target)return;target.replaceChildren();target.insertAdjacentHTML('afterbegin',transformIcon(kind));}
+function insertTransformIcon(target,kind){svgSetIcon(target,transformIcon(kind));}
 function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
   root.classList.remove('quiz-success');

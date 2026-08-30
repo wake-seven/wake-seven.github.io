@@ -15,6 +15,7 @@ import { createSessionService } from './runtime/session.mjs';
 import { createNavigationController } from './ui/navigation.mjs';
 import { createRenderCoordinator } from './ui/render.mjs';
 import { createEventBinder } from './ui/events.mjs';
+import { createStagePickerViewModel, createClearMessageViewModel, createSpeedViewModel } from './ui/view-models.mjs';
 import { createUiLifecycle } from './ui/lifecycle.mjs';
 import { createUiStateView } from './ui/state-view.mjs';
 import { createSpeedUnlockService, DEFAULT_SPEED_UNLOCK_KEYS } from './runtime/progression.mjs';
@@ -53,6 +54,7 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
     lifecycle: options => createUiLifecycle(options),
     stateView: options => createUiStateView({ store, ...options }),
     navigation,
+    viewModels: Object.freeze({ createStagePickerViewModel, createClearMessageViewModel, createSpeedViewModel }),
     render: options => createRenderCoordinator({ store, ...options }),
     messages: options => createMessagePresenter({ catalog: createMessageCatalog(data.clearContent), ...ui.messages, ...options }),
     messageModel: createClearMessageModel

@@ -23,6 +23,8 @@ async function collect(directory) {
 await collect(srcRoot);
 
 const all = [...sources.entries()].map(([file, source]) => `${file}\n${source}`).join('\n');
+assert.match(sources.get('src/ui/dom.js'), /function setText/);
+assert.match(sources.get('src/ui/template.js'), /function mountTemplate/);
 const canonicalIds = ['training18', 'mastery27', 'satori73'];
 const legacyIds = ['mastery15', 'mastery24'];
 for (const id of canonicalIds) assert.match(all, new RegExp(`['"]${id}['"]`), `Canonical speed id is missing: ${id}`);

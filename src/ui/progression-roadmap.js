@@ -25,8 +25,8 @@ function masterRoadmapFragment(current){
     const examBadge=earned&&speedExamClearedForRank(i);
     const step=template.content.cloneNode(true).firstElementChild;
     step.classList.add(i+1<current?'done':i+1===current?'current':'');
-    step.querySelector('[data-road-name]').textContent=label;
-    step.querySelector('[data-road-detail]').textContent=detail;
+    setText(step.querySelector('[data-road-name]'),label);
+    setText(step.querySelector('[data-road-detail]'),detail);
     const rankElement=step.querySelector('[data-road-rank]');
     rankElement.innerHTML=rankFrameSvg(rank,!earned,i,secondLapActive,secondLapActive);
     if(examBadge){

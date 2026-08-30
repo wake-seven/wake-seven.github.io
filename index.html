@@ -8769,7 +8769,7 @@ function transformIcon(kind){
   return '<svg class="transform-svg" viewBox="0 0 24 24" aria-hidden="true">'+paths[kind]+'</svg>';
 }
 // transformIconは固定のrenderer出力だけを受け付けるため、挿入境界をここへ集約する。
-function insertTransformIcon(target,kind){if(!target)return;target.replaceChildren();target.insertAdjacentHTML('afterbegin',transformIcon(kind));}
+function insertTransformIcon(target,kind){svgSetIcon(target,transformIcon(kind));}
 function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
   root.classList.remove('quiz-success');
@@ -9419,8 +9419,8 @@ function masterRoadmapFragment(current){
     const examBadge=earned&&speedExamClearedForRank(i);
     const step=template.content.cloneNode(true).firstElementChild;
     step.classList.add(i+1<current?'done':i+1===current?'current':'');
-    step.querySelector('[data-road-name]').textContent=label;
-    step.querySelector('[data-road-detail]').textContent=detail;
+    setText(step.querySelector('[data-road-name]'),label);
+    setText(step.querySelector('[data-road-detail]'),detail);
     const rankElement=step.querySelector('[data-road-rank]');
     rankElement.innerHTML=rankFrameSvg(rank,!earned,i,secondLapActive,secondLapActive);
     if(examBadge){
@@ -9573,7 +9573,7 @@ $('freeMode').addEventListener('click',()=>{
 // concatenated into the single published native-module script.
 export {};
 
-// ===== 画面描画境界 =====
+// ===== SVG表示境界 =====
 // 称号表示と称号一覧ダイアログ。
 // 盤面選択画面やクリア後演出からも利用するため、描画の共通部をここに集約する。
 function rankFrameSvg(text,locked=false,index=0,doubleFrame=false,dimmed=false){
@@ -9685,6 +9685,19 @@ function openRankDialogFrom(dialogId,sealId){
 // 公開native moduleの構文境界。
 export {};
 
+// ===== 画面描画境界 =====
+// ===== SVG表示境界 =====
+// SVGを生成するrendererと、DOMコンテナへの取り付けを分離する。
+function svgMount(root,markup=''){
+  if(!root)return null;
+  root.replaceChildren();
+  if(markup)root.insertAdjacentHTML('afterbegin',markup);
+  return root;
+}
+function svgClear(root){return svgMount(root,'');}
+function svgSetIcon(root,markup=''){return svgMount(root,markup);}
+export {};
+
 // ===== イベントと起動 =====
 /* ---- 画面描画の境界 ----
  * 進行状態を変更する処理と、現在の状態を画面へ反映する処理を分ける。
@@ -9697,12 +9710,7 @@ function renderCurrentView({includeBoard=false,includePicker=true}={}){
   if(includePicker&&!$('stagePicker').hidden)renderStagePicker();
 }
 // 動的コンテナ更新の共通境界。既存rendererのmarkup生成は維持する。
-function replaceRenderedContent(root,markup=''){
-  if(!root)return null;
-  root.replaceChildren();
-  if(markup)root.insertAdjacentHTML('afterbegin',markup);
-  return root;
-}
+function replaceRenderedContent(root,markup=''){return svgMount(root,markup);}
 // 公開native moduleの構文境界。
 export {};
 
@@ -10977,6 +10985,25 @@ export {};
   global.WakeSeven = Object.freeze({state: stateApi, progression: progressionApi, messages: messagesApi, speed: speedApi});
 })(window);
 // 公開native moduleの構文境界。
+export {};
+
+// ===== ui/dom.js =====
+// ===== 共通DOM更新API =====
+function setText(elementOrId,value){const element=typeof elementOrId==='string'?document.getElementById(elementOrId):elementOrId;if(element)element.textContent=value==null?'':String(value);return element;}
+function setVisible(elementOrId,visible){const element=typeof elementOrId==='string'?document.getElementById(elementOrId):elementOrId;if(element)element.hidden=!visible;return element;}
+function setDisabled(elementOrId,disabled){const element=typeof elementOrId==='string'?document.getElementById(elementOrId):elementOrId;if(element)element.disabled=!!disabled;return element;}
+function setAttribute(elementOrId,name,value){const element=typeof elementOrId==='string'?document.getElementById(elementOrId):elementOrId;if(element)element.setAttribute(name,String(value));return element;}
+function clear(elementOrId){const element=typeof elementOrId==='string'?document.getElementById(elementOrId):elementOrId;if(element)element.replaceChildren();return element;}
+
+// 公開バンドルへ連結する断片でもESM境界を明示する。
+export {};
+
+// ===== ui/template.js =====
+// ===== template mount API =====
+function cloneTemplate(id,documentRef=document){const template=documentRef.getElementById(id);return template?.content?.cloneNode(true)||null;}
+function mountTemplate(target,id,documentRef=document){const host=typeof target==='string'?documentRef.getElementById(target):target;if(!host)return null;const fragment=cloneTemplate(id,documentRef);if(!fragment)return null;host.replaceChildren(fragment);return host;}
+
+// 公開バンドルへ連結する断片でもESM境界を明示する。
 export {};
 </script>
 <!-- WAKE7:APPLICATION-MODULES:END -->

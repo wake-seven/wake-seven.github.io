@@ -9,11 +9,6 @@ function renderCurrentView({includeBoard=false,includePicker=true}={}){
   if(includePicker&&!$('stagePicker').hidden)renderStagePicker();
 }
 // 動的コンテナ更新の共通境界。既存rendererのmarkup生成は維持する。
-function replaceRenderedContent(root,markup=''){
-  if(!root)return null;
-  root.replaceChildren();
-  if(markup)root.insertAdjacentHTML('afterbegin',markup);
-  return root;
-}
+function replaceRenderedContent(root,markup=''){return svgMount(root,markup);}
 // 公開native moduleの構文境界。
 export {};

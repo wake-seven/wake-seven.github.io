@@ -16,6 +16,7 @@ import { createUiLifecycle } from '../src/ui/lifecycle.mjs';
 import { createUiStateView } from '../src/ui/state-view.mjs';
 import { createSpeedUnlockService, DEFAULT_SPEED_UNLOCK_KEYS } from '../src/runtime/progression.mjs';
 import { DEFAULT_SETTING_KEYS } from '../src/runtime/settings.mjs';
+import { createStagePickerViewModel, createClearMessageViewModel, createSpeedViewModel } from '../src/ui/view-models.mjs';
 import { createRuntimeEnvironment } from '../src/runtime/environment.mjs';
 
 const runtime = createDevelopmentRuntime({ triangles: [{ cells: [0, 1, 2] }] });
@@ -129,4 +130,10 @@ const stopView = createUiStateView({ store: runtime.store, select: state => stat
 runtime.commands.progression.navigate({ mode: 'mastery', masteryIndex: 2 });
 stopView();
 assert.equal(viewMode, 'mastery');
+const stagePickerView = createStagePickerViewModel({ title: 'Stage', stages: [1, 2], selectedIndex: 1 });
+assert.equal(stagePickerView.kind, 'stage-picker');
+assert.equal(Object.isFrozen(stagePickerView), true);
+assert.equal(createClearMessageViewModel({ canContinue: true }).canContinue, true);
+assert.equal(createSpeedViewModel({ variant: 'training18', total: 18 }).total, 18);
+assert.equal(typeof runtime.ui.viewModels.createSpeedViewModel, 'function');
 console.log('Validated development ES module entry point.');

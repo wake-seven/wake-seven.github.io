@@ -8,8 +8,8 @@ export const applicationModuleFiles = [
   'runtime/audio.js', 'runtime/progression.js', 'runtime/runtime.js', 'runtime/speed.js',
   'ui/board-animation.js', 'ui/board-geometry.js', 'ui/board.js', 'commands/board.js', 'commands/progression.js',
   'ui/quiz.js', 'ui/clear-flow.js', 'ui/message.js', 'ui/progression-render.js',
-  'ui/master-dialog.js', 'ui/progression.js', 'ui/progression-roadmap.js', 'ui/progression-hints.js', 'ui/progression-clear-flow.js', 'ui/progression-navigation.js', 'ui/rank.js', 'ui/render.js',
-  'runtime/app-events.js', 'runtime/namespace.js'
+  'ui/master-dialog.js', 'ui/progression.js', 'ui/progression-roadmap.js', 'ui/progression-hints.js', 'ui/progression-clear-flow.js', 'ui/progression-navigation.js', 'ui/rank.js', 'ui/svg.js', 'ui/render.js',
+  'runtime/app-events.js', 'runtime/namespace.js', 'ui/dom.js', 'ui/template.js'
 ];
 
 export const publishedSourceFiles = Object.freeze([
@@ -25,7 +25,7 @@ export const developmentSourceFiles = [
   'state/store.mjs', 'state/persistence.mjs',
   'data/messages.mjs', 'data/satori.mjs', 'data/board-quiz.mjs',
   'commands/board-commands.mjs', 'commands/progression-commands.mjs',
-  'ui/board.mjs', 'ui/messages.mjs', 'ui/navigation.mjs', 'ui/render.mjs', 'ui/events.mjs', 'ui/lifecycle.mjs', 'ui/state-view.mjs'
+  'ui/board.mjs', 'ui/messages.mjs', 'ui/navigation.mjs', 'ui/render.mjs', 'ui/events.mjs', 'ui/lifecycle.mjs', 'ui/state-view.mjs', 'ui/view-models.mjs'
 ];
 
 export const trackedSourceFiles = Object.freeze([...publishedSourceFiles, ...developmentSourceFiles]);
