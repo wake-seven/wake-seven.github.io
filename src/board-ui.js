@@ -1528,8 +1528,7 @@ function playCustomBoard(){
   animateBoardArrival();
 }
 function resetMakerBoard(){
-  ori=new Uint8Array(N);spin=new Int16Array(N);tileEls=baseTiles.slice();
-  moves=0;history=[];clearShown=true;
+  replaceBoardState({ori:new Uint8Array(N),spin:new Int16Array(N),tiles:baseTiles.slice(),moves:0,history:[]}); clearShown=true;
   paint();renderStageNav();showMakerMessage();
 }
 
