@@ -1121,6 +1121,13 @@ function configureMessageReviewLinks(entry,messageClearEntry){
 function isMilestoneMessage(entry){return !!entry?.master;}
 function milestoneVolume(entry){return entry?.master==='primary'?0:Math.ceil((entry.index+1)/MASTER_VOLUME_SIZE);}
 function messageReviewView(){return {seal:$('messageMasterSeal'),rankText:$('messageRankText'),masterText:$('messageMasterText'),boardNote:$('messageMasterBoardNote'),rules:$('messageRules')};}
+function prepareMessageReview(entry){
+  const art=messageReviewArt(entry);
+  const twoMoveLesson=lessonVariantFromArt(art);
+  const messageClearEntry=configureMessageReviewType(entry);
+  configureMessageReviewLinks(entry,messageClearEntry);
+  return {art,twoMoveLesson,messageClearEntry};
+}
 function renderPrimaryMilestone(entry,{seal,rankText,masterText,rules}){
   $('messageMasterSealLabel').textContent=masterPath().ranks[0];setSealColor(seal,0);$('messageDialogTitle').textContent=tr('masterTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[0]);masterText.hidden=false;masterText.textContent=tr('masterText');rules.hidden=false;rules.textContent=masterCommonRules();
 }
@@ -1152,7 +1159,8 @@ function renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRu
 }
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
-  const art=messageReviewArt(entry),twoMoveLesson=lessonVariantFromArt(art),illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
+  const {art,twoMoveLesson}=prepareMessageReview(entry);
+  const illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
   const view=messageReviewView();
   $('messagePrev').textContent='← '+tr('prev');
   $('messageNext').textContent=tr('next')+' →';
@@ -1166,9 +1174,6 @@ function renderMessageReview(){
   seal.classList.remove('rank-frame-seal','second-lap-mark');
   seal.tabIndex=0;
   rankText.hidden=true;masterText.hidden=true;
-  const messageClearEntry=configureMessageReviewType(entry);
-  const twoMoveCard=messageClearEntry?.twoMoveCard,guideCard=messageClearEntry?.guideCard;
-  configureMessageReviewLinks(entry,messageClearEntry);
   if(isMilestoneMessage(entry)){
     const volume=milestoneVolume(entry);
     const current=entry.master==='primary'?2:entry.master==='mastery'?6:Math.min(5,volume+2);
