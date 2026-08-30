@@ -10,10 +10,12 @@
 | `src/runtime/namespace.js:attachWakeSevenNamespace` | 保持 | 公開版の`window.WakeSeven`互換APIを初期化する。 |
 | `src/state/game-state.js:attachWakeSevenState` | 保持 | 公開版の状態APIを初期化する。 |
 | `src/state/progression-policy.js:attachWakeSevenProgression` | 保持 | 公開版の進行ポリシーAPIを初期化する。 |
+| `src/ui/svg.js:svgClear` | 保持 | SVG描画領域を空にする共通API。現時点では直接参照がなくても、UI renderer APIの公開境界として残す。 |
+| `src/ui/template.js:mountTemplate` | 保持 | テンプレートをDOMへマウントする共通API。監査スクリプトでも存在を確認している。 |
 
 ## 導線監査
 
-`npm run check:compat-e2e` は次の実プレイ相当の契約を検査する。
+`npm run check:compat-e2e` は、実プレイ導線を支えるDOM・イベント接続・状態遷移の静的契約を検査する。
 
 - 開始ダイアログの開始操作がチュートリアル初期化へ接続されている
 - チュートリアルの段階状態とリセット操作が存在する
