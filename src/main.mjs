@@ -5,9 +5,13 @@ import { createPersistence } from './state/persistence.mjs';
 import { createBoardQuizCatalog } from './data/board-quiz.mjs';
 import { createMessageCatalog } from './data/messages.mjs';
 import { createSatoriCatalog } from './data/satori.mjs';
+import { createBoardCommands } from './commands/board-commands.mjs';
+import { createProgressionCommands } from './commands/progression-commands.mjs';
+import { createBoardView } from './ui/board.mjs';
+import { createMessagePresenter } from './ui/messages.mjs';
 
 /** Development ESM entry point. The published build still uses index.html. */
-export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data = {} } = {}) {
+export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data = {}, commands = {}, ui = {} } = {}) {
   const store = createGameStore({ navigation: { mode: 'stage', lap: 1 } });
   const board = createBoardDomain({ cellCount, triangles });
   const progression = createProgressionDomain();
@@ -15,7 +19,15 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
     storage: globalThis.localStorage,
     create: value => value
   });
-  return Object.freeze({ board, progression, store, persistence, data: Object.freeze({
+  const commandApi = Object.freeze({
+    board: createBoardCommands(commands.board),
+    progression: createProgressionCommands(commands.progression)
+  });
+  const uiApi = Object.freeze({
+    board: options => createBoardView(options),
+    messages: options => createMessagePresenter({ catalog: createMessageCatalog(data.clearContent), ...ui.messages, ...options })
+  });
+  return Object.freeze({ board, progression, store, persistence, commands: commandApi, ui: uiApi, data: Object.freeze({
     messages: createMessageCatalog(data.clearContent),
     satori: createSatoriCatalog(data.satoriStages),
     boardQuiz: createBoardQuizCatalog(data.boardQuizCopy)

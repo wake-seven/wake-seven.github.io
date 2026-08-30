@@ -1,7 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "build": "node scripts/build-index.mjs",
+    "build": "node scripts/build-index.mjs && npm run build:esm",
+    "build:esm": "node scripts/build-esm.mjs",
     "check": "node scripts/check-state.mjs && npm run check:esm",
     "check:esm": "node scripts/check-esm.mjs"
   }
