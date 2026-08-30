@@ -6,20 +6,20 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const templatePath = join(root, 'src', 'index.template.html');
 const stateModulePath = join(root, 'src', 'game-state.js');
 const progressionModulePath = join(root, 'src', 'progression-policy.js');
-const appModulePath = join(root, 'src', 'app.js');
+const appModuleFiles = ['core-data.js', 'runtime.js', 'board-ui.js', 'progression-ui.js', 'app-events.js'];
 const outputPath = join(root, 'index.html');
 const start = '<!-- WAKE7:STATE-MODULE:START -->';
 const end = '<!-- WAKE7:STATE-MODULE:END -->';
 const progressionStart = '<!-- WAKE7:PROGRESSION-POLICY:START -->';
 const progressionEnd = '<!-- WAKE7:PROGRESSION-POLICY:END -->';
-const appStart = '<!-- WAKE7:APP-MODULE:START -->';
-const appEnd = '<!-- WAKE7:APP-MODULE:END -->';
+const appStart = '<!-- WAKE7:APPLICATION-MODULES:START -->';
+const appEnd = '<!-- WAKE7:APPLICATION-MODULES:END -->';
 
-const [template, stateModule, progressionModule, appModule] = await Promise.all([
+const [template, stateModule, progressionModule, ...appModules] = await Promise.all([
   readFile(templatePath, 'utf8'),
   readFile(stateModulePath, 'utf8'),
   readFile(progressionModulePath, 'utf8'),
-  readFile(appModulePath, 'utf8')
+  ...appModuleFiles.map(file => readFile(join(root, 'src', file), 'utf8'))
 ]);
 function inject(source,startMarker,endMarker,module,name) {
   const startAt = source.indexOf(startMarker);
@@ -29,6 +29,12 @@ function inject(source,startMarker,endMarker,module,name) {
 }
 const withState = inject(template,start,end,stateModule,'State-module');
 const withProgression = inject(withState,progressionStart,progressionEnd,progressionModule,'Progression-policy');
-const generated = inject(withProgression,appStart,appEnd,appModule,'Application-module');
+const generated = inject(
+  withProgression,
+  appStart,
+  appEnd,
+  appModules.map((module,index) => `// ===== ${appModuleFiles[index]} =====\n${module.trim()}`).join('\n\n'),
+  'Application-modules'
+);
 await writeFile(outputPath, generated, 'utf8');
 console.log('Built index.html from src/index.template.html');

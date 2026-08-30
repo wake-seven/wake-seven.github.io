@@ -10,7 +10,7 @@ const progressionModule = await readFile(join(root, 'src', 'progression-policy.j
 const required = [
   'WAKE7:STATE-MODULE:START',
   'WAKE7:PROGRESSION-POLICY:START',
-  'WAKE7:APP-MODULE:START',
+  'WAKE7:APPLICATION-MODULES:START',
   'wake7-state-vnext',
   'WakeSevenProgression',
   'const ACTIVE_MODES=',

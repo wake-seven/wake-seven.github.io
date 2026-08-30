@@ -1547,8 +1547,9 @@
 </script>
 <!-- WAKE7:PROGRESSION-POLICY:END -->
 
-<!-- WAKE7:APP-MODULE:START -->
+<!-- WAKE7:APPLICATION-MODULES:START -->
 <script>
+// ===== core-data.js =====
 // ===== 盤面ジオメトリ定数 =====
 const R=54, W=Math.sqrt(3)*R, H=1.5*R, OX=66.77, OY=74;
 const CELL=[[0.5,0],[1.5,0],[0,1],[1,1],[2,1],[0.5,2],[1.5,2]]
@@ -3681,6 +3682,8 @@ const UI_TEXT={
     flipVertical:'상하 반전'
   }
 };
+
+// ===== runtime.js =====
 // ===== 共通ユーティリティ =====
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
@@ -4974,6 +4977,8 @@ function hexPath(r){
   }
   return p+'Z';
 }
+
+// ===== board-ui.js =====
 // ===== 盤面SVG構築・入門/学園ダイアログ・最短2手レッスン =====
 function buildBoard(){
   svg.innerHTML='';
@@ -7114,6 +7119,8 @@ $('tutorialReset').addEventListener('click',()=>{
 $('shuffle').addEventListener('click',()=>{
   if(!busy&&isMode('free'))startFree();
 });
+
+// ===== progression-ui.js =====
 // ===== ヒントシステム・段位・名人ロードマップ =====
 function clearHintVisuals(preserveSelection=false){
   clearAxisGuide();
@@ -9296,6 +9303,8 @@ $('freeMode').addEventListener('click',()=>{
   if(busy||isMode('free'))return;
   restoreFreeSession();
 });
+
+// ===== app-events.js =====
 // ===== デバッグツール =====
 function debugClearCurrent(extraMoves=0){
   if(!DEBUG_MODE||busy||editingBoard)return;
@@ -10483,6 +10492,6 @@ if(document.documentElement.classList.contains('embed')&&window.parent!==window)
   reportEmbedHeight();
 }
 </script>
-<!-- WAKE7:APP-MODULE:END -->
+<!-- WAKE7:APPLICATION-MODULES:END -->
 </body>
 </html>
