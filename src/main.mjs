@@ -20,7 +20,7 @@ import { createUiStateView } from './ui/state-view.mjs';
 import { createSpeedUnlockService, DEFAULT_SPEED_UNLOCK_KEYS } from './runtime/progression.mjs';
 
 /** Development ESM entry point. The published build still uses index.html. */
-export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data = {}, commands = {}, ui = {} } = {}) {
+export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data = {}, commands = {}, ui = {}, environment = {} } = {}) {
   const store = createGameStore({ navigation: { mode: 'stage', lap: 1 } });
   const board = createBoardDomain({ cellCount, triangles });
   const progression = createProgressionDomain();
@@ -28,9 +28,9 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
     store,
     normalize: progression.normalizeNavigation
   });
-  const browserWindow = typeof window === 'undefined' ? undefined : window;
-  const browserDocument = typeof document === 'undefined' ? undefined : document;
-  const browserStorage = browserWindow?.localStorage;
+  const browserWindow = environment.windowRef ?? (typeof window === 'undefined' ? undefined : window);
+  const browserDocument = environment.documentRef ?? (typeof document === 'undefined' ? undefined : document);
+  const browserStorage = environment.storage ?? browserWindow?.localStorage;
   const persistence = createPersistence({
     storage: browserStorage,
     create: value => value
