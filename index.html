@@ -2032,12 +2032,19 @@ function messageDefinition(kind,key){
   return content==null?null:{id:key,kind,content};
 }
 function messageContent(kind,key){return messageDefinition(kind,key)?.content||null;}
+// 画面ごとに個別のオブジェクトを組み立てず、すべてのメッセージを
+// 同じ descriptor 形に正規化する。表示側は content の構造だけを解釈する。
+function messageDescriptor({id,kind,type='text',timing='afterClear',content,titleKey=null,bodyKey=null,actions=[]}={}){
+  return {id,kind,type,timing,content,titleKey,bodyKey,actions};
+}
 function normalizeMessage(kind,key,content=messageContent(kind,key)){
   if(content==null)return null;
   const timing=kind==='guidance'?'inBoard':key.endsWith('before')?'beforeStart':'afterClear';
   const type=kind==='guidance'?'guidance':content.quiz?'quiz':content.boardQuiz?'boardQuiz':content.art?'trivia':'text';
-  return {id:key,kind,type,timing,content};
+  return messageDescriptor({id:key,kind,type,timing,content});
 }
+function clearMessageDescriptor(mode,index){return normalizeMessage('clear',clearContentKey(mode,index));}
+function milestoneMessageDescriptor(key){return messageDescriptor({id:key,kind:'milestone',type:'dialog',timing:'beforeStart',content:key});}
 // stageIndex/extraIndex から CLEAR_CONTENT のキーへ変換する。
 function clearContentKey(mode,index){
   if(mode){
@@ -7631,7 +7638,7 @@ const VOLUME_NEXT_RULES=Object.freeze({
   ]
 });
 function messageReviewEntryKey(entry){const kind=entry.awakened?'master:awakening':entry.satori?'satori':entry.master?'master:'+entry.master:entry.boardQuiz?'board-quiz':entry.quiz!==undefined?'quiz':'text';return (entry.awakened||entry.satori?'satori':entry.extra?'extra':'primary')+':'+entry.index+':'+kind;}
-function finalizeMessageReviewEntries(entries){return entries.map(entry=>{const messageId=entry.master||clearContentKey(!!entry.extra,entry.index);const message=entry.master?{id:messageId,kind:'milestone',type:'dialog',timing:'beforeStart',content:entry.master}:normalizeMessage('clear',messageId);return {...entry,messageId,message};});}
+function finalizeMessageReviewEntries(entries){return entries.map(entry=>{const messageId=entry.master||clearContentKey(!!entry.extra,entry.index);const message=entry.master?milestoneMessageDescriptor(entry.master):clearMessageDescriptor(!!entry.extra,entry.index);return {...entry,messageId,message};});}
 function messageReviewProgressSets(){return {primary:activeLap===2?lap1ClearedStages:clearedStages,extra:activeLap===2?lap1ClearedExtraStages:clearedExtraStages,satori:activeLap===2?lap1ClearedSatoriStages:clearedSatoriStages};}
 function collectPrimaryMessageReviewEntries(reviewPrimary){const entries=[];for(let i=0;i<STAGES.length;i++){if(!reviewPrimary.has(i))continue;if(i===ACADEMY_STAGE_COUNT-1){if(speedTrainingTrialCleared){entries.push({master:'primary',extra:false,index:i});const before=clearContentBefore(false,TRAINING_STAGE_START);if(before?.dialog)entries.push({master:before.dialog,extra:false,index:i});}continue;}const text=stageClearTextAt(false,i);if(text)entries.push({extra:false,index:i,text,art:stageClearArtAt(false,i)});const primaryEntry=clearContentAt(false,i);if(primaryEntry&&primaryEntry.quiz)entries.push({extra:false,index:i,quiz:resolveLocaleText(primaryEntry.quiz),art:stageClearArtAt(false,i)});}return entries;}
 function collectExtraMessageReviewEntries(reviewExtra){const entries=[];for(let i=0;i<EXTRA_STAGES.length;i++){if(!reviewExtra.has(i))continue;if((i+1)%MASTER_VOLUME_SIZE===0){if(i===EXTRA_STAGES.length-1){if(speedMasteryTrialCleared)entries.push({master:'mastery',extra:true,index:i});}else if(i!==29||speedIntermediateTrialCleared)entries.push({master:'volume',extra:true,index:i});continue;}const text=stageClearTextAt(true,i);if(text)entries.push({extra:true,index:i,text,art:stageClearArtAt(true,i)});const extraEntry=clearContentAt(true,i);if(extraEntry&&extraEntry.boardQuiz)entries.push({extra:true,index:i,boardQuiz:true});if(extraEntry&&extraEntry.quiz)entries.push({extra:true,index:i,quiz:resolveLocaleText(extraEntry.quiz),art:stageClearArtAt(true,i)});}return entries;}

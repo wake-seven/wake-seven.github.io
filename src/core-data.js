@@ -149,12 +149,19 @@ function messageDefinition(kind,key){
   return content==null?null:{id:key,kind,content};
 }
 function messageContent(kind,key){return messageDefinition(kind,key)?.content||null;}
+// 画面ごとに個別のオブジェクトを組み立てず、すべてのメッセージを
+// 同じ descriptor 形に正規化する。表示側は content の構造だけを解釈する。
+function messageDescriptor({id,kind,type='text',timing='afterClear',content,titleKey=null,bodyKey=null,actions=[]}={}){
+  return {id,kind,type,timing,content,titleKey,bodyKey,actions};
+}
 function normalizeMessage(kind,key,content=messageContent(kind,key)){
   if(content==null)return null;
   const timing=kind==='guidance'?'inBoard':key.endsWith('before')?'beforeStart':'afterClear';
   const type=kind==='guidance'?'guidance':content.quiz?'quiz':content.boardQuiz?'boardQuiz':content.art?'trivia':'text';
-  return {id:key,kind,type,timing,content};
+  return messageDescriptor({id:key,kind,type,timing,content});
 }
+function clearMessageDescriptor(mode,index){return normalizeMessage('clear',clearContentKey(mode,index));}
+function milestoneMessageDescriptor(key){return messageDescriptor({id:key,kind:'milestone',type:'dialog',timing:'beforeStart',content:key});}
 // stageIndex/extraIndex から CLEAR_CONTENT のキーへ変換する。
 function clearContentKey(mode,index){
   if(mode){
