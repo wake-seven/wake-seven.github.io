@@ -6799,7 +6799,7 @@ function showAxisGuide(t){
   svg.appendChild(g);
 }
 // ===== ドラッグ/スワイプ操作(ポインタイベント) =====
-svg.addEventListener('pointerdown',e=>{
+function handleBoardPointerDown(e){
   if(busy||svg.classList.contains('arriving')||(e.pointerType==='mouse'&&e.button!==0)) return;
   // 棒をつかめたかどうかに関わらず、盤面上で始まったタッチはページスワイプに奪われたくない。
   boardTouchActive=true;
@@ -6873,8 +6873,8 @@ svg.addEventListener('pointerdown',e=>{
   svg.querySelector('.pivot[data-tri="'+ti+'"]').classList.add('active');
   svg.setPointerCapture(e.pointerId);
   svg.classList.add('spinning');
-});
-svg.addEventListener('pointermove',e=>{
+}
+function handleBoardPointerMove(e){
   if(!drag||e.pointerId!==drag.id){
     if(!drag&&e.pointerType==='mouse')svg.classList.toggle('grip-hover',!!gripAt(toView(e)));
     // 棒をつかめていなくても、盤面上で始まったタッチならページスワイプに奪われないようにする。
@@ -6947,8 +6947,8 @@ svg.addEventListener('pointermove',e=>{
     previewWake(item,drag.deg);
   }
   applyBoardTheme();
-});
-svg.addEventListener('pointerleave',()=>{if(!drag)svg.classList.remove('grip-hover');});
+}
+function handleBoardPointerLeave(){if(!drag)svg.classList.remove('grip-hover');}
 function resumeTutorialCue(){
   if(isMode('tutorial')&&!isSolved())setTimeout(showTutorialCue,110);
 }
@@ -7117,11 +7117,17 @@ function animateGuidedBasicRewind(dg){
   };
   requestAnimationFrame(frame);
 }
-svg.addEventListener('pointerup',e=>{if(!clearInvalidGrab(e))finishDrag(e);});
-svg.addEventListener('pointercancel',e=>{if(!clearInvalidGrab(e))finishDrag(e,true);});
+function handleBoardPointerUp(e){if(!clearInvalidGrab(e))finishDrag(e);}
+function handleBoardPointerCancel(e){if(!clearInvalidGrab(e))finishDrag(e,true);}
+svg.addEventListener('pointerdown',handleBoardPointerDown);
+svg.addEventListener('pointermove',handleBoardPointerMove);
+svg.addEventListener('pointerleave',handleBoardPointerLeave);
+svg.addEventListener('pointerup',handleBoardPointerUp);
+svg.addEventListener('pointercancel',handleBoardPointerCancel);
 // pointermoveのpreventDefault()だけではスワイプ操作を吸収しきれないアプリ内ブラウザ(LINE等の
 // WebView)向けに、生のtouchmoveでも盤面ドラッグ中だけ明示的に止める。passive:falseが必須。
-svg.addEventListener('touchmove',e=>{if(boardTouchActive)e.preventDefault();},{passive:false});
+function handleBoardTouchMove(e){if(boardTouchActive)e.preventDefault();}
+svg.addEventListener('touchmove',handleBoardTouchMove,{passive:false});
 
 $('undo').addEventListener('click',()=>{
   if(busy||isFinalMasterPuzzle()||!history.length) return;
