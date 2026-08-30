@@ -1113,6 +1113,9 @@
 <template id="master-road-step-template">
   <div class="road-step"><span class="road-dot"><b class="road-name" data-road-name></b><small data-road-detail></small></span><span class="road-rank" data-road-rank></span></div>
 </template>
+<template id="rank-list-row-template">
+  <div class="rank-row"><b class="rank-title" data-rank-title></b><span class="rank-condition" data-rank-condition></span></div>
+</template>
 <div class="game-dialog-backdrop two-move-lesson-dialog" id="twoMoveLessonDialog" hidden>
   <div class="game-dialog" role="dialog" aria-modal="true" aria-labelledby="twoMoveLessonTitle">
     <div class="clear-dialog-heading"><h2 id="twoMoveLessonTitle">あと2くるりのコツ</h2><span class="clear-stage-context" id="twoMoveLessonPosition"></span></div>
@@ -1199,6 +1202,9 @@
     <div class="clear-tip-illustration speed-art" id="speedIntroArt" hidden><svg viewBox="0 0 150 140" aria-hidden="true"><path d="M18 58H50M10 76H54M18 94H46" stroke="#62B8D2" stroke-width="4" stroke-linecap="round" opacity=".55" fill="none"/><rect x="67" y="10" width="16" height="11" rx="4" fill="none" stroke="#62B8D2" stroke-width="4"/><line x1="93" y1="22" x2="103" y2="12" stroke="#62B8D2" stroke-width="4" stroke-linecap="round"/><circle cx="95" cy="80" r="52" fill="none" stroke="#62B8D2" stroke-width="5"/><circle cx="95" cy="80" r="40" fill="none" stroke="#62B8D2" stroke-width="2" opacity=".4"/><g stroke="#62B8D2" stroke-width="3" stroke-linecap="round" opacity=".7"><line x1="95" y1="42" x2="95" y2="48"/><line x1="133" y1="80" x2="127" y2="80"/><line x1="95" y1="118" x2="95" y2="112"/><line x1="57" y1="80" x2="63" y2="80"/></g><line x1="95" y1="80" x2="95" y2="52" stroke="#F2D77A" stroke-width="4" stroke-linecap="round"/><line x1="95" y1="80" x2="117" y2="92" stroke="#F2D77A" stroke-width="4" stroke-linecap="round"/><circle cx="95" cy="80" r="4" fill="#F2D77A"/></svg></div>
     <p class="speed-intro-note" id="masterSpeedIntroNote" hidden></p>
     <div class="speed-mode-options" id="speedModeOptions" hidden><div class="speed-mode-tabs" id="speedModeOptionsList" role="tablist"></div><div class="speed-mode-detail"><p id="speedModeOptionsDetail"></p><p class="speed-mode-scope" id="speedModeOptionsScope" hidden></p></div></div>
+    <template id="speedModeTabTemplate"><button type="button" class="speed-mode-tab" role="tab"></button></template>
+    <template id="speedStatsEmptyTemplate"><p></p></template>
+    <template id="speedStatsRowTemplate"><div class="speed-result"><span class="speed-result-medal"><span></span></span><span><strong class="speed-result-time"></strong><small class="speed-result-note"></small></span></div></template>
     <div class="mastery-board" id="masteryBoard" hidden></div>
     <div class="master-speed-unlock" id="masterSpeedUnlockBox" hidden>
       <p id="masterSpeedUnlockText"></p>

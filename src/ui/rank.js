@@ -65,14 +65,16 @@ function renderRankList(){
   $('rankLap1').classList.toggle('on',!second);
   $('rankLap2').classList.toggle('on',second);
   list.innerHTML='';
+  const rowTemplate=document.getElementById('rank-list-row-template');
   const visible=second?sequence:sequence.slice(0,Math.min(sequence.length,Math.max(1,highest+2)));
   visible.forEach((index,position)=>{
     const rank=masterPath().ranks[index];
     const earned=second?(index===6?awakenedGranted:position<earnedCount):index<=highest;
     const next=position===earnedCount;
-    const linkable=earned||next,row=document.createElement('div');
+    const linkable=earned||next;
+    const row=rowTemplate?.content.cloneNode(true).firstElementChild||document.createElement('div');
     row.className='rank-row'+(earned?' earned':'')+(next?' next':'');
-    const condition=document.createElement('span'),path=document.createElement(linkable?'button':'span'),count=document.createElement('span'),title=document.createElement('b');
+    const condition=row.querySelector('[data-rank-condition]')||document.createElement('span'),path=document.createElement(linkable?'button':'span'),count=document.createElement('span'),title=row.querySelector('[data-rank-title]')||document.createElement('b');
     condition.className='rank-condition';
     path.className=linkable?'rank-stage-link':'rank-stage-label';
     if(linkable)path.type='button';
@@ -86,7 +88,7 @@ function renderRankList(){
       if(index===6||index===5)openSatoriPicker();
       else openStagePickerForRank(index);
     });
-    condition.append(path,count);row.append(title,condition);list.appendChild(row);
+    condition.append(path,count);list.appendChild(row);
   });
 }
 function openRankDialog(returnTarget=null){

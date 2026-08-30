@@ -1113,6 +1113,9 @@
 <template id="master-road-step-template">
   <div class="road-step"><span class="road-dot"><b class="road-name" data-road-name></b><small data-road-detail></small></span><span class="road-rank" data-road-rank></span></div>
 </template>
+<template id="rank-list-row-template">
+  <div class="rank-row"><b class="rank-title" data-rank-title></b><span class="rank-condition" data-rank-condition></span></div>
+</template>
 <div class="game-dialog-backdrop two-move-lesson-dialog" id="twoMoveLessonDialog" hidden>
   <div class="game-dialog" role="dialog" aria-modal="true" aria-labelledby="twoMoveLessonTitle">
     <div class="clear-dialog-heading"><h2 id="twoMoveLessonTitle">あと2くるりのコツ</h2><span class="clear-stage-context" id="twoMoveLessonPosition"></span></div>
@@ -1199,6 +1202,9 @@
     <div class="clear-tip-illustration speed-art" id="speedIntroArt" hidden><svg viewBox="0 0 150 140" aria-hidden="true"><path d="M18 58H50M10 76H54M18 94H46" stroke="#62B8D2" stroke-width="4" stroke-linecap="round" opacity=".55" fill="none"/><rect x="67" y="10" width="16" height="11" rx="4" fill="none" stroke="#62B8D2" stroke-width="4"/><line x1="93" y1="22" x2="103" y2="12" stroke="#62B8D2" stroke-width="4" stroke-linecap="round"/><circle cx="95" cy="80" r="52" fill="none" stroke="#62B8D2" stroke-width="5"/><circle cx="95" cy="80" r="40" fill="none" stroke="#62B8D2" stroke-width="2" opacity=".4"/><g stroke="#62B8D2" stroke-width="3" stroke-linecap="round" opacity=".7"><line x1="95" y1="42" x2="95" y2="48"/><line x1="133" y1="80" x2="127" y2="80"/><line x1="95" y1="118" x2="95" y2="112"/><line x1="57" y1="80" x2="63" y2="80"/></g><line x1="95" y1="80" x2="95" y2="52" stroke="#F2D77A" stroke-width="4" stroke-linecap="round"/><line x1="95" y1="80" x2="117" y2="92" stroke="#F2D77A" stroke-width="4" stroke-linecap="round"/><circle cx="95" cy="80" r="4" fill="#F2D77A"/></svg></div>
     <p class="speed-intro-note" id="masterSpeedIntroNote" hidden></p>
     <div class="speed-mode-options" id="speedModeOptions" hidden><div class="speed-mode-tabs" id="speedModeOptionsList" role="tablist"></div><div class="speed-mode-detail"><p id="speedModeOptionsDetail"></p><p class="speed-mode-scope" id="speedModeOptionsScope" hidden></p></div></div>
+    <template id="speedModeTabTemplate"><button type="button" class="speed-mode-tab" role="tab"></button></template>
+    <template id="speedStatsEmptyTemplate"><p></p></template>
+    <template id="speedStatsRowTemplate"><div class="speed-result"><span class="speed-result-medal"><span></span></span><span><strong class="speed-result-time"></strong><small class="speed-result-note"></small></span></div></template>
     <div class="mastery-board" id="masteryBoard" hidden></div>
     <div class="master-speed-unlock" id="masterSpeedUnlockBox" hidden>
       <p id="masterSpeedUnlockText"></p>
@@ -5131,11 +5137,11 @@ const unlockedSpeedVariants=()=>SPEED_VARIANT_ORDER.filter(speedVariantUnlocked)
 function renderSpeedModeOptions(){
   const list=$('speedModeOptionsList');
   if(!list)return;
-  list.innerHTML='';
+  while(list.firstChild)list.removeChild(list.firstChild);
   const available=unlockedSpeedVariants();
   list.style.gridTemplateColumns='repeat('+Math.max(1,available.length)+',minmax(0,1fr))';
   available.forEach(id=>{
-    const copy=speedVariantCopy(id),button=document.createElement('button');
+    const copy=speedVariantCopy(id),template=document.getElementById('speedModeTabTemplate'),button=template?template.content.cloneNode(true).firstElementChild:document.createElement('button');
     button.type='button';button.className='speed-mode-tab'+(id===speedVariant?' selected':'');
     button.dataset.speedVariant=id;
     button.setAttribute('role','tab');
@@ -5388,11 +5394,13 @@ function speedStatsData(){
   return {history,best,optimal};
 }
 function renderSpeedStatsList(list,history){
-  if(!history.length){list.innerHTML='<p>'+tr('speedStatsEmpty')+'</p>';return;}
-  list.innerHTML=[...history].sort((a,b)=>a.elapsedMs-b.elapsedMs).slice(0,3).map((entry,index)=>{
+  while(list.firstChild)list.removeChild(list.firstChild);
+  if(!history.length){const template=document.getElementById('speedStatsEmptyTemplate'),empty=template?template.content.cloneNode(true).firstElementChild:document.createElement('p');empty.textContent=tr('speedStatsEmpty');list.appendChild(empty);return;}
+  [...history].sort((a,b)=>a.elapsedMs-b.elapsedMs).slice(0,3).forEach((entry,index)=>{
     const rank=index+1,optimalClears=Math.max(0,Math.min(Number(entry.total)||activeSpeedDefinition().total,Number(entry.optimalClears)||0)),runNumber=history.length-history.indexOf(entry);
-    return '<div class="speed-result" data-rank="'+rank+'"><span class="speed-result-medal" aria-label="'+tr('speedStatsPlace',{n:rank})+'"><span>'+rank+'</span></span><span><strong class="speed-result-time">'+formatSpeedTime(entry.elapsedMs)+'</strong><small class="speed-result-note">'+tr('speedStatsOptimal',{optimal:optimalClears})+' '+tr('speedStatsAttempt',{n:runNumber})+'</small></span></div>';
-  }).join('');
+    const template=document.getElementById('speedStatsRowTemplate'),row=template?template.content.cloneNode(true).firstElementChild:document.createElement('div');
+    row.dataset.rank=rank;const medal=row.querySelector('.speed-result-medal'),number=row.querySelector('.speed-result-medal span');medal.setAttribute('aria-label',tr('speedStatsPlace',{n:rank}));number.textContent=rank;row.querySelector('.speed-result-time').textContent=formatSpeedTime(entry.elapsedMs);row.querySelector('.speed-result-note').textContent=tr('speedStatsOptimal',{optimal:optimalClears})+' '+tr('speedStatsAttempt',{n:runNumber});list.appendChild(row);
+  });
 }
 function renderSpeedPauseStats(){
   const {history,best,optimal}=speedStatsData();
@@ -9551,14 +9559,16 @@ function renderRankList(){
   $('rankLap1').classList.toggle('on',!second);
   $('rankLap2').classList.toggle('on',second);
   list.innerHTML='';
+  const rowTemplate=document.getElementById('rank-list-row-template');
   const visible=second?sequence:sequence.slice(0,Math.min(sequence.length,Math.max(1,highest+2)));
   visible.forEach((index,position)=>{
     const rank=masterPath().ranks[index];
     const earned=second?(index===6?awakenedGranted:position<earnedCount):index<=highest;
     const next=position===earnedCount;
-    const linkable=earned||next,row=document.createElement('div');
+    const linkable=earned||next;
+    const row=rowTemplate?.content.cloneNode(true).firstElementChild||document.createElement('div');
     row.className='rank-row'+(earned?' earned':'')+(next?' next':'');
-    const condition=document.createElement('span'),path=document.createElement(linkable?'button':'span'),count=document.createElement('span'),title=document.createElement('b');
+    const condition=row.querySelector('[data-rank-condition]')||document.createElement('span'),path=document.createElement(linkable?'button':'span'),count=document.createElement('span'),title=row.querySelector('[data-rank-title]')||document.createElement('b');
     condition.className='rank-condition';
     path.className=linkable?'rank-stage-link':'rank-stage-label';
     if(linkable)path.type='button';
@@ -9572,7 +9582,7 @@ function renderRankList(){
       if(index===6||index===5)openSatoriPicker();
       else openStagePickerForRank(index);
     });
-    condition.append(path,count);row.append(title,condition);list.appendChild(row);
+    condition.append(path,count);list.appendChild(row);
   });
 }
 function openRankDialog(returnTarget=null){

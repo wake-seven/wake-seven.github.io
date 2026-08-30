@@ -44,11 +44,11 @@ const unlockedSpeedVariants=()=>SPEED_VARIANT_ORDER.filter(speedVariantUnlocked)
 function renderSpeedModeOptions(){
   const list=$('speedModeOptionsList');
   if(!list)return;
-  list.innerHTML='';
+  while(list.firstChild)list.removeChild(list.firstChild);
   const available=unlockedSpeedVariants();
   list.style.gridTemplateColumns='repeat('+Math.max(1,available.length)+',minmax(0,1fr))';
   available.forEach(id=>{
-    const copy=speedVariantCopy(id),button=document.createElement('button');
+    const copy=speedVariantCopy(id),template=document.getElementById('speedModeTabTemplate'),button=template?template.content.cloneNode(true).firstElementChild:document.createElement('button');
     button.type='button';button.className='speed-mode-tab'+(id===speedVariant?' selected':'');
     button.dataset.speedVariant=id;
     button.setAttribute('role','tab');
@@ -301,11 +301,13 @@ function speedStatsData(){
   return {history,best,optimal};
 }
 function renderSpeedStatsList(list,history){
-  if(!history.length){list.innerHTML='<p>'+tr('speedStatsEmpty')+'</p>';return;}
-  list.innerHTML=[...history].sort((a,b)=>a.elapsedMs-b.elapsedMs).slice(0,3).map((entry,index)=>{
+  while(list.firstChild)list.removeChild(list.firstChild);
+  if(!history.length){const template=document.getElementById('speedStatsEmptyTemplate'),empty=template?template.content.cloneNode(true).firstElementChild:document.createElement('p');empty.textContent=tr('speedStatsEmpty');list.appendChild(empty);return;}
+  [...history].sort((a,b)=>a.elapsedMs-b.elapsedMs).slice(0,3).forEach((entry,index)=>{
     const rank=index+1,optimalClears=Math.max(0,Math.min(Number(entry.total)||activeSpeedDefinition().total,Number(entry.optimalClears)||0)),runNumber=history.length-history.indexOf(entry);
-    return '<div class="speed-result" data-rank="'+rank+'"><span class="speed-result-medal" aria-label="'+tr('speedStatsPlace',{n:rank})+'"><span>'+rank+'</span></span><span><strong class="speed-result-time">'+formatSpeedTime(entry.elapsedMs)+'</strong><small class="speed-result-note">'+tr('speedStatsOptimal',{optimal:optimalClears})+' '+tr('speedStatsAttempt',{n:runNumber})+'</small></span></div>';
-  }).join('');
+    const template=document.getElementById('speedStatsRowTemplate'),row=template?template.content.cloneNode(true).firstElementChild:document.createElement('div');
+    row.dataset.rank=rank;const medal=row.querySelector('.speed-result-medal'),number=row.querySelector('.speed-result-medal span');medal.setAttribute('aria-label',tr('speedStatsPlace',{n:rank}));number.textContent=rank;row.querySelector('.speed-result-time').textContent=formatSpeedTime(entry.elapsedMs);row.querySelector('.speed-result-note').textContent=tr('speedStatsOptimal',{optimal:optimalClears})+' '+tr('speedStatsAttempt',{n:runNumber});list.appendChild(row);
+  });
 }
 function renderSpeedPauseStats(){
   const {history,best,optimal}=speedStatsData();
