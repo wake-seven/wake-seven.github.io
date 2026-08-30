@@ -3,6 +3,15 @@
 // ===== スピードラン(速解き)モード =====
 const SPEED_MODE_DEFINITIONS=PROGRESSION.speedModes;
 let speedVariant='standard';
+// 速解き画面の骨格は固定なので、静的DOM参照を画面単位でまとめて再利用する。
+let speedUiRefs=null;
+function getSpeedUiRefs(){
+  return speedUiRefs??=createRefs([
+    'speedModeOptionsList','masterStart','speedModeOptionsDetail','speedModeOptionsScope','speedModeOptions',
+    'speedPauseDialog','speedPauseProgress','speedPauseStats','speedPauseStatsSummary','speedPauseStatsTitle','speedPauseStatsList',
+    'masterSpeedStatsSummary','masterSpeedStatsTitle'
+  ]);
+}
 function activeSpeedDefinition(){return SPEED_MODE_DEFINITIONS[speedVariant]||SPEED_MODE_DEFINITIONS.standard;}
 const speedShowsRemaining=()=>isMode('speed')&&activeSpeedDefinition().showsRemaining;
 const speedAllowsUndo=()=>isMode('speed')&&activeSpeedDefinition().allowsUndo;
@@ -42,7 +51,7 @@ function preferredSpeedVariant(){
 }
 const unlockedSpeedVariants=()=>SPEED_VARIANT_ORDER.filter(speedVariantUnlocked);
 function renderSpeedModeOptions(){
-  const list=$('speedModeOptionsList');
+  const refs=getSpeedUiRefs(),list=refs.speedModeOptionsList;
   if(!list)return;
   while(list.firstChild)list.removeChild(list.firstChild);
   const available=unlockedSpeedVariants();
@@ -59,16 +68,16 @@ function renderSpeedModeOptions(){
       storage.set(SPEED_LAST_TAB_STORAGE_KEY,id);
       renderSpeedModeOptions();
       renderMasterSpeedStats();
-      $('masterStart').textContent=readSpeedSession()?tr('speedResume'):tr('speedStart');
+      setText(refs.masterStart,readSpeedSession()?tr('speedResume'):tr('speedStart'));
     });
     list.appendChild(button);
   });
   const copy=speedVariantCopy(speedVariant);
   const [introMain,...introRest]=copy.intro.split('\n');
-  $('speedModeOptionsDetail').textContent=introMain;
-  $('speedModeOptionsScope').textContent=introRest.join('\n');
-  $('speedModeOptionsScope').hidden=!introRest.length;
-  $('speedModeOptions').hidden=available.length<=1;
+  setText(refs.speedModeOptionsDetail,introMain);
+  setText(refs.speedModeOptionsScope,introRest.join('\n'));
+  setVisible(refs.speedModeOptionsScope,!!introRest.length);
+  setVisible(refs.speedModeOptions,available.length>1);
 }
 function openSpeedPicker(){
   if(!DEBUG_MODE&&!featureUnlocked('speedRun'))return;
@@ -175,7 +184,7 @@ function openSpeedPauseDialog(){
   speedManuallyPaused=true;
   pauseSpeedClock();persistSpeedSession();
   renderSpeedPauseStats();
-  $('speedPauseDialog').hidden=false;
+  setVisible(getSpeedUiRefs().speedPauseDialog,true);
 }
 function rotateSpeedSnapshot(data){
   if(!validSavedBoard(data))return data;
@@ -314,18 +323,20 @@ function renderSpeedStatsList(list,history){
 }
 function renderSpeedPauseStats(){
   const {history,best,optimal}=speedStatsData();
-  $('speedPauseProgress').textContent=tr('speedPauseProgress',{current:(speedSession?.index||0)+1,total:speedSession?.total||activeSpeedDefinition().total,time:formatSpeedTime(speedElapsedMs())});
-  $('speedPauseStats').hidden=!history.length;
+  const refs=getSpeedUiRefs();
+  setText(refs.speedPauseProgress,tr('speedPauseProgress',{current:(speedSession?.index||0)+1,total:speedSession?.total||activeSpeedDefinition().total,time:formatSpeedTime(speedElapsedMs())}));
+  setVisible(refs.speedPauseStats,!!history.length);
   if(!history.length)return;
-  $('speedPauseStatsSummary').textContent=tr('speedStatsSummary',{runs:history.length,best:best?formatSpeedTime(best):'--:--.-',optimal});
-  $('speedPauseStatsTitle').textContent=tr('speedStatsTop');
-  renderSpeedStatsList($('speedPauseStatsList'),history);
+  setText(refs.speedPauseStatsSummary,tr('speedStatsSummary',{runs:history.length,best:best?formatSpeedTime(best):'--:--.-',optimal}));
+  setText(refs.speedPauseStatsTitle,tr('speedStatsTop'));
+  renderSpeedStatsList(refs.speedPauseStatsList,history);
 }
 function renderMasterSpeedStats(){
   const {history,best,optimal}=speedStatsData();
-  $('masterSpeedStatsSummary').textContent=tr('speedStatsSummary',{runs:history.length,best:best?formatSpeedTime(best):'--:--.-',optimal});
-  $('masterSpeedStatsTitle').textContent=tr('speedStatsTop');
-  renderSpeedStatsList($('masterSpeedStatsList'),history);
+  const refs=getSpeedUiRefs();
+  setText(refs.masterSpeedStatsSummary,tr('speedStatsSummary',{runs:history.length,best:best?formatSpeedTime(best):'--:--.-',optimal}));
+  setText(refs.masterSpeedStatsTitle,tr('speedStatsTop'));
+  renderSpeedStatsList(refs.masterSpeedStatsList,history);
 }
 function advanceSpeedRun(){
   if(!isMode('speed')||!speedSession)return;

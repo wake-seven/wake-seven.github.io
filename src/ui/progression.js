@@ -901,7 +901,17 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const guideLinks=(config.guidePages||[]).map(page=>'<button class="clear-tip-link" id="'+rootId+'Guide'+page+'" type="button" data-guide-page="'+page+'" hidden>'+tr('tipGuideTitle').replace('を見る','')+' '+(page+1)+' / '+GUIDE_TIP_INDEX.length+' →</button>').join('');
   root.hidden=false;
   const {boardMarkup,detailLinks}=boardQuizMarkup(config,states,moveChoiceOrder,copy,rootId,detailPatterns);
-  root.innerHTML='<div class="quiz-label">'+copy.title+'</div><p class="board-quiz-question">'+question+'</p>'+boardMarkup+'<p class="board-quiz-note"></p>'+detailLinks+guideLinks;
+  const shellTemplate=document.getElementById('boardQuizShellTemplate');
+  if(shellTemplate){
+    const shell=shellTemplate.content.cloneNode(true);
+    shell.querySelector('[data-board-quiz-title]').textContent=copy.title;
+    shell.querySelector('[data-board-quiz-question]').textContent=question;
+    shell.querySelector('[data-board-quiz-content]').innerHTML=boardMarkup;
+    shell.querySelector('[data-board-quiz-links]').innerHTML=detailLinks+guideLinks;
+    root.replaceChildren(shell);
+  }else{
+    root.innerHTML='<div class="quiz-label">'+copy.title+'</div><p class="board-quiz-question">'+question+'</p>'+boardMarkup+'<p class="board-quiz-note"></p>'+detailLinks+guideLinks;
+  }
   const note=root.querySelector('.board-quiz-note');
   let animating=false;
   const updateCard=index=>{
@@ -1040,23 +1050,37 @@ function renderMasteryBoard(id,show,theme='gold',animate=true){
 function renderTwoMovePatterns(){
   const controls=[['rotateBack','rotateCcw'],['rotate','rotateCw'],['mirror','mirror'],['vertical','flipVertical']];
   const cardTemplate=document.getElementById('two-move-card-template');
-  $('twoMoveGrid').innerHTML=twoMoveDisplayStates.map((state,index)=>{
+  const grid=$('twoMoveGrid');
+  if(!cardTemplate){
+    grid.innerHTML=twoMoveDisplayStates.map((state,index)=>{
+      const buttons=controls.map(([transform,label])=>'<button class="chip" type="button" data-two-move-transform="'+transform+'" aria-label="'+tr(label)+'">'+transformIcon(transform)+'</button>').join('');
+      return '<article class="two-move-card" data-state="'+state+'" data-pattern="'+twoMoveDisplayPatterns[index]+'" data-board-index="'+index+'"><div class="two-move-card-tools">'+buttons+'</div><button class="two-move-card-open" type="button">'+miniBoardSvg(state)+'</button></article>';
+    }).join('');
+    return;
+  }
+  const fragment=document.createDocumentFragment();
+  twoMoveDisplayStates.forEach((state,index)=>{
     const buttonTemplate=document.getElementById('two-move-transform-button-template');
-    const buttons=controls.map(([transform,label])=>{
-      if(!buttonTemplate)return '<button class="chip" type="button" data-two-move-transform="'+transform+'" aria-label="'+tr(label)+'">'+transformIcon(transform)+'</button>';
-      const button=buttonTemplate.content.cloneNode(true).firstElementChild;
+    const card=cardTemplate.content.cloneNode(true).firstElementChild;
+    card.dataset.state=String(state);card.dataset.pattern=String(twoMoveDisplayPatterns[index]);card.dataset.boardIndex=String(index);
+    const tools=card.querySelector('[data-two-move-tools]');
+    controls.forEach(([transform,label])=>{
+      const button=buttonTemplate
+        ?buttonTemplate.content.cloneNode(true).firstElementChild
+        :document.createElement('button');
+      if(!buttonTemplate){
+        button.className='chip';button.type='button';
+        const art=document.createElement('span');art.dataset.transformArt='';art.setAttribute('aria-hidden','true');button.appendChild(art);
+      }
       button.dataset.twoMoveTransform=transform;
       button.setAttribute('aria-label',tr(label));
       svgSetIcon(button.querySelector('[data-transform-art]'),transformIcon(transform));
-      return button.outerHTML;
-    }).join('');
-    if(!cardTemplate)return '<article class="two-move-card" data-state="'+state+'" data-pattern="'+twoMoveDisplayPatterns[index]+'" data-board-index="'+index+'"><div class="two-move-card-tools">'+buttons+'</div><button class="two-move-card-open" type="button">'+miniBoardSvg(state)+'</button></article>';
-    const card=cardTemplate.content.cloneNode(true).firstElementChild;
-    card.dataset.state=String(state);card.dataset.pattern=String(twoMoveDisplayPatterns[index]);card.dataset.boardIndex=String(index);
-    card.querySelector('[data-two-move-tools]').innerHTML=buttons;
+      tools.appendChild(button);
+    });
     card.querySelector('[data-two-move-open]').innerHTML=miniBoardSvg(state);
-    return card.outerHTML;
-  }).join('');
+    fragment.appendChild(card);
+  });
+  grid.replaceChildren(fragment);
 }
 function openTwoMovePatterns({returnToClear=false}={}){
   returnToClearCard=returnToClear;

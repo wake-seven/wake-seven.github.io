@@ -75,6 +75,9 @@ for (const id of ['message-intro-guide-frame-template', 'message-two-move-lesson
 assert.match(sources.get('src/ui/message.js'), /message-intro-guide-frame-template/);
 assert.match(sources.get('src/ui/message.js'), /message-two-move-lesson-frame-template/);
 assert.match(sources.get('src/ui/message.js'), /function messageReviewView\(\)\{const refs=createRefs/);
+// クリア後メッセージは、クリア情報・節目情報のどちらからでも同じ見直し導線へ入れる。
+assert.match(sources.get('src/ui/message.js'), /function buildMessageReviewEntries\(\)/, 'Clear-message review aggregation is missing.');
+assert.match(sources.get('src/ui/message.js'), /MILESTONE_RENDERERS/, 'Milestone message renderer registry is missing.');
 for (const id of ['stage-picker-row-template', 'two-move-card-template']) {
   assert.match(template, new RegExp(`<template[^>]+id=["']${id}["']`, 'i'), `List template is missing: ${id}`);
 }
@@ -112,6 +115,19 @@ const tutorialStartAt = all.indexOf('startTutorial()');
 assert.ok(introStartAt >= 0 && tutorialStartAt > introStartAt, 'Start button must lead into tutorial initialization.');
 for (const token of [
   'loadTutorialStep(',
+  'storage.set(STORAGE_KEYS.tutorialStep',
+  'storage.remove(STORAGE_KEYS.tutorialStep',
+  'beginSecondLap()',
+  'activateCampaignLap(2)',
+  'secondLapIntro',
+  'pauseSpeedRun()',
+  'persistSpeedSession()',
+  'speedSessionStorageKey('
+]) {
+  assert.match(all, new RegExp(token.replace(/[()$']/g, '\\$&')), `Resume/transition regression contract is missing: ${token}`);
+}
+for (const token of [
+  'loadTutorialStep(',
   'loadStage(',
   'showClearDialog(',
   'completeSpeedStage(',
@@ -129,6 +145,21 @@ for (const file of legacyLocations) {
   assert.ok(expectedLegacyLocations.has(file), `Legacy speed id spread into unexpected source: ${file}`);
 }
 
+// 互換fallbackは移行用に必要なものだけを許可し、通常UIの固定HTMLが
+// 新たなfallbackとして増えていないかを差分レビュー時に見える化する。
+const fallbackAssignments = [];
+for (const [file, source] of sources) {
+  source.split(/\r?\n/).forEach((line, index) => {
+    if (/body\.innerHTML\s*=\s*fallback\b/.test(line)) {
+      fallbackAssignments.push({ location: `${file}:${index + 1}`, file, line: line.trim() });
+    }
+  });
+}
+const documentedFallbacks = [line => line === 'body.innerHTML=fallback;'];
+for (const fallback of fallbackAssignments) {
+  assert.ok(fallback.file === 'src/ui/board.js' && documentedFallbacks.some(test => test(fallback.line)), `Undocumented ordinary-HTML fallback found: ${fallback.location}`);
+}
+
 // 宣言一回・参照一回の関数は削除候補として報告するだけに留める。
 const candidates = [];
 for (const [file, source] of sources) {
@@ -140,6 +171,7 @@ for (const [file, source] of sources) {
 console.log(`Audited compatibility aliases (${legacyIds.join(', ')}) and ${sources.size} source files.`);
 console.log(`Storage boundary calls: localStorage=${localStorageCalls.length}, sessionStorage=${sessionStorageCalls.length}.`);
 console.log(`Legacy speed-id compatibility locations: ${legacyLocations.join(', ')}.`);
+console.log(`Ordinary-HTML compatibility fallbacks: ${fallbackAssignments.map(item => item.location).join(', ') || 'none'}.`);
 console.log(`Potential unused function candidates (review only): ${candidates.length}.`);
 if (candidates.length) console.log(candidates.slice(0, 30).join(', '));
 const documentedCandidates = [
