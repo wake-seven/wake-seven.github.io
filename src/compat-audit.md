@@ -10,7 +10,7 @@
 | `src/runtime/namespace.js:attachWakeSevenNamespace` | 保持 | 公開版の`window.WakeSeven`互換APIを初期化する。 |
 | `src/state/game-state.js:attachWakeSevenState` | 保持 | 公開版の状態APIを初期化する。 |
 | `src/state/progression-policy.js:attachWakeSevenProgression` | 保持 | 公開版の進行ポリシーAPIを初期化する。 |
-| `src/ui/board.js:academyEnrollArtSvgLegacy` | 保留 | 現在の静的参照は宣言のみだが、旧演出の互換資産。表示経路をブラウザで確認してから削除する。 |
+| `src/ui/board-ui.js:academyEnrollArtSvgLegacy` | 保留 | 現在の静的参照は宣言のみだが、旧演出の互換資産。表示経路をブラウザで確認してから削除する。 |
 
 ## 互換ID
 
@@ -34,7 +34,7 @@
 
 ## 固定UI fallback
 
-通常UIの互換fallbackは `src/ui/board.js` の `cloneDialogTemplate()` に残る
+通常UIの互換fallbackは `src/ui/board-ui.js` の `cloneDialogTemplate()` に残る
 `body.innerHTML = fallback` の1箇所だけを許可する。公開版テンプレートが欠落した旧生成物を
 読み込む場合の保険であり、現行のテンプレート経路では実行されない。動的SVGや問題数に応じて
 変化するカード群のHTML生成は、固定構造fallbackとは区別して監査対象外とする。

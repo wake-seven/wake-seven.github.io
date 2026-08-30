@@ -7,7 +7,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const html = await readFile(join(root, 'index.html'), 'utf8');
 const stateModule = await readFile(join(root, 'src', 'state', 'game-state.js'), 'utf8');
 const progressionModule = await readFile(join(root, 'src', 'state', 'progression-policy.js'), 'utf8');
-const boardDomainModule = await readFile(join(root, 'src', 'domain', 'board.js'), 'utf8');
+const boardDomainModule = await readFile(join(root, 'src', 'domain', 'board-domain.js'), 'utf8');
 const coreDataModule = await readFile(join(root, 'src', 'data', 'core-data.js'), 'utf8');
 const runtimeModule = await readFile(join(root, 'src', 'runtime', 'runtime.js'), 'utf8');
 const namespaceModule = await readFile(join(root, 'src', 'runtime', 'namespace.js'), 'utf8');
@@ -157,21 +157,21 @@ if (!html.includes('const WakeSevenProgressionCommands=Object.freeze(')
 }
 
 const sourceModules = [
-  ['src/domain/board.js', ['const WakeSevenBoardDomain=']],
+  ['src/domain/board-domain.js', ['const WakeSevenBoardDomain=']],
   ['src/data/board-quiz.js', ['const BOARD_QUIZ_COPY=']],
   ['src/data/satori.js', ['const SATORI_STAGES=', "const SATORI_ORDER_VERSION='"]],
   ['src/data/assets.js', ['academyEnrollArtSvg']],
   ['src/runtime/settings.js', ['initializeRuntimeSettings']],
   ['src/runtime/audio.js', ['playTone', 'playClearSound']],
-  ['src/runtime/progression.js', ['initializeSpeedUnlockState']],
+  ['src/runtime/progression-runtime.js', ['initializeSpeedUnlockState']],
   ['src/ui/quiz.js', ['boardQuizPatternState', 'boardQuizPresentation', 'boardQuizMarkup', 'bindBoardQuizAnswerEvents']],
-  ['src/commands/board.js', ['const WakeSevenBoardCommands=Object.freeze(']],
-  ['src/commands/progression.js', ['const WakeSevenProgressionCommands=Object.freeze(']],
+  ['src/commands/board-commands.js', ['const WakeSevenBoardCommands=Object.freeze(']],
+  ['src/commands/progression-commands-legacy.js', ['const WakeSevenProgressionCommands=Object.freeze(']],
   ['src/ui/clear-flow.js', ['stageClearTextAt', 'clearEntryForCurrent', 'stageClearArtAt']],
   ['src/ui/message.js', ['buildMessageReviewEntries', 'openMessageReview', 'moveMessageReview']],
   ['src/ui/progression-render.js', ['renderStageNavAccent']],
   ['src/ui/master-dialog.js', ['masterDialogTrialState', 'masterDialogBoardTheme', 'masterDialogBoardOptions']],
-  ['src/ui/progression.js', ['showClearDialog', 'renderClearTip']],
+  ['src/ui/progression-ui.js', ['showClearDialog', 'renderClearTip']],
   ['src/ui/rank.js', ['rankFrameSvg', 'renderRankList', 'openRankDialog']],
   ['src/ui/render.js', ['renderCurrentView']]
 ];
@@ -267,7 +267,7 @@ const context = {window:{localStorage}, JSON};
 context.window.window = context.window;
 vm.runInNewContext(forClassicVm(stateModule), context, {filename:'src/state/game-state.js'});
 vm.runInNewContext(forClassicVm(progressionModule), context, {filename:'src/state/progression-policy.js'});
-vm.runInNewContext(`${forClassicVm(boardDomainModule)}\nwindow.WakeSevenBoardDomain=WakeSevenBoardDomain;`, context, {filename:'src/domain/board.js'});
+vm.runInNewContext(`${forClassicVm(boardDomainModule)}\nwindow.WakeSevenBoardDomain=WakeSevenBoardDomain;`, context, {filename:'src/domain/board-domain.js'});
 const migrated = context.window.WakeSevenState.migrateLegacy(localStorage);
 if (migrated.navigation.mode !== 'mastery' || migrated.navigation.masteryIndex !== 3 || migrated.navigation.lap !== 2) {
   throw new Error('Legacy navigation migration failed.');

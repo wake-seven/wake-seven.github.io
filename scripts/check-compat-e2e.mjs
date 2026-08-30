@@ -56,8 +56,8 @@ for (const id of ['rankBadge', 'stagePickerRankBadge', 'master-road-step-templat
   assert.match(template, new RegExp(`(?:id|id)=?["']${id}["']`), `Rank/dialog template contract is missing: ${id}`);
 }
 assert.match(template, /<template[^>]+id=["']chain-template-development-four-start["']/i, 'Milestone dialog template is missing.');
-assert.match(sources.get('src/ui/board.js'), /chain-template-development-four-start/);
-assert.match(sources.get('src/ui/board.js'), /content\.cloneNode\(true\)/);
+assert.match(sources.get('src/ui/board-ui.js'), /chain-template-development-four-start/);
+assert.match(sources.get('src/ui/board-ui.js'), /content\.cloneNode\(true\)/);
 for (const id of ['chain-template-academy-board', 'chain-template-training-welcome']) {
   assert.match(template, new RegExp(`<template[^>]+id=["']${id}["']`, 'i'), `Start dialog template is missing: ${id}`);
 }
@@ -84,13 +84,13 @@ for (const id of ['stage-picker-row-template', 'two-move-card-template']) {
 for (const id of ['rankBadge', 'stagePickerRankBadge']) {
   assert.match(template, new RegExp(`<button[^>]+id=["']${id}["']`, 'i'), `Rank badge shell is missing: ${id}`);
 }
-assert.match(sources.get('src/ui/progression.js'), /stage-picker-row-template/);
-assert.match(sources.get('src/ui/progression.js'), /two-move-card-template/);
+assert.match(sources.get('src/ui/progression-ui.js'), /stage-picker-row-template/);
+assert.match(sources.get('src/ui/progression-ui.js'), /two-move-card-template/);
 for (const id of ['chain-template-training-middle-spin', 'chain-template-development-welcome-spin']) {
   assert.match(template, new RegExp(`<template[^>]+id=["']${id}["']`, 'i'), `Spin dialog template is missing: ${id}`);
 }
 assert.match(template, /<template[^>]+id=["']chain-template-academy-enroll["']/i, 'Academy enroll template is missing.');
-assert.match(sources.get('src/ui/board.js'), /chain-template-academy-enroll/);
+assert.match(sources.get('src/ui/board-ui.js'), /chain-template-academy-enroll/);
 for (const token of ['startTutorial', 'rollOnce', 'tutorialStep', 'paint()']) {
   assert.match(all, new RegExp(token.replace(/[()]/g, '\\$&')), `Main flow implementation token is missing: ${token}`);
 }
@@ -159,7 +159,7 @@ for (const [file, source] of sources) {
 }
 const documentedFallbacks = [line => line === 'body.innerHTML=fallback;'];
 for (const fallback of fallbackAssignments) {
-  assert.ok(fallback.file === 'src/ui/board.js' && documentedFallbacks.some(test => test(fallback.line)), `Undocumented ordinary-HTML fallback found: ${fallback.location}`);
+  assert.ok(fallback.file === 'src/ui/board-ui.js' && documentedFallbacks.some(test => test(fallback.line)), `Undocumented ordinary-HTML fallback found: ${fallback.location}`);
 }
 
 // 宣言一回・参照一回の関数は削除候補として報告するだけに留める。
@@ -181,7 +181,7 @@ const documentedCandidates = [
   'src/runtime/namespace.js:attachWakeSevenNamespace',
   'src/state/game-state.js:attachWakeSevenState',
   'src/state/progression-policy.js:attachWakeSevenProgression',
-  'src/ui/board.js:academyEnrollArtSvgLegacy'
+  'src/ui/board-ui.js:academyEnrollArtSvgLegacy'
 ];
 for (const candidate of documentedCandidates) {
   assert.ok(candidates.includes(candidate), `Documented audit candidate disappeared or changed: ${candidate}`);

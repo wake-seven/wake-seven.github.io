@@ -1,14 +1,14 @@
-import { createBoardDomain } from './domain/board.mjs';
-import { createProgressionDomain } from './domain/progression.mjs';
+import { createBoardDomain } from './domain/board-domain.mjs';
+import { createProgressionDomain } from './domain/progression-domain.mjs';
 import { createGameStore } from './state/store.mjs';
 import { createPersistence } from './state/persistence.mjs';
 import { createBoardQuizCatalog } from './data/board-quiz.mjs';
-import { createMessageCatalog } from './data/messages.mjs';
+import { createMessageCatalog } from './data/messages-data.mjs';
 import { createSatoriCatalog } from './data/satori.mjs';
 import { createBoardCommands } from './commands/board-commands.mjs';
 import { createProgressionCommands } from './commands/progression-commands.mjs';
-import { createBoardView } from './ui/board.mjs';
-import { createMessagePresenter, createClearMessageModel } from './ui/messages.mjs';
+import { createBoardView } from './ui/board-view.mjs';
+import { createMessagePresenter, createClearMessageModel } from './ui/messages-ui.mjs';
 import { createRuntimeSettings, DEFAULT_SETTING_KEYS } from './runtime/settings.mjs';
 import { createAudioService } from './runtime/audio.mjs';
 import { createSessionService } from './runtime/session.mjs';
@@ -18,7 +18,7 @@ import { createEventBinder } from './ui/events.mjs';
 import { createStagePickerViewModel, createClearMessageViewModel, createSpeedViewModel, createStagePickerModel, createSpeedRunModel, createGuideModel } from './ui/view-models.mjs';
 import { createUiLifecycle } from './ui/lifecycle.mjs';
 import { createUiStateView } from './ui/state-view.mjs';
-import { createSpeedUnlockService, DEFAULT_SPEED_UNLOCK_KEYS } from './runtime/progression.mjs';
+import { createSpeedUnlockService, DEFAULT_SPEED_UNLOCK_KEYS } from './runtime/progression-runtime.mjs';
 import { createRuntimeEnvironment } from './runtime/environment.mjs';
 import { createApplicationController } from './runtime/application.mjs';
 
