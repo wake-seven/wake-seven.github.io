@@ -655,7 +655,11 @@ function renderTwoMoveLessonShape(){
   const root=$('twoMoveLessonShape');
   root.replaceChildren();
   const line=document.createElement('p');
-  line.innerHTML=tr('twoMoveTip3DescTemplate',{name:'<strong>'+name+'</strong>',text:tr('twoMoveTip3'+shape+'Text')});
+  const marker='__WAKE7_NAME__',description=tr('twoMoveTip3DescTemplate',{name:marker,text:tr('twoMoveTip3'+shape+'Text')});
+  const markerAt=description.indexOf(marker),nameNode=document.createElement('strong');
+  nameNode.textContent=name;
+  if(markerAt<0)line.textContent=description;
+  else{line.append(document.createTextNode(description.slice(0,markerAt)),nameNode,document.createTextNode(description.slice(markerAt+marker.length)));}
   root.append(line);
   root.hidden=false;
 }

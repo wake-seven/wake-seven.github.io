@@ -651,9 +651,19 @@ function renderTipGuide(){
     ?'<div class="tip-guide-single-visual">'+tipGuideSvg(tipGuideIndex,currentBoards)+'</div>'+tipGuideControls(0,1)
     :tipGuideDoubleMarkup(currentBoards);
   const tipText=tips[GUIDE_TIP_INDEX[tipGuideIndex]];
-  $('tipGuideText').innerHTML=currentLang==='ja'&&tipGuideIndex===GUIDE_DOUBLE_INDEX
-    ?tipText.replace('ほかは最短3手','<strong>ほかは最短3手</strong>')
-    :tipText;
+  const tipTextRoot=$('tipGuideText');
+  tipTextRoot.replaceChildren();
+  const emphasized=currentLang==='ja'&&tipGuideIndex===GUIDE_DOUBLE_INDEX;
+  if(emphasized){
+    const phrase='ほかは最短3手',at=tipText.indexOf(phrase);
+    const template=$('tipGuideTextEmphasisTemplate'),fragment=template?.content?.cloneNode(true);
+    if(fragment&&at>=0){
+      fragment.querySelector('[data-tip-prefix]').textContent=tipText.slice(0,at);
+      fragment.querySelector('[data-tip-emphasis]').textContent=phrase;
+      fragment.querySelector('[data-tip-suffix]').textContent=tipText.slice(at+phrase.length);
+      tipTextRoot.append(fragment);
+    }else tipTextRoot.textContent=tipText;
+  }else tipTextRoot.textContent=tipText;
   const names={ja:['小三角','大三角'],en:['Small triangle','Large triangle'],zh:['小三角','大三角'],ko:['작은 삼각형','큰 삼각형']}[currentLang]||['小三角','大三角'];
   const playRoot=$('tipGuidePlay');
   playRoot.replaceChildren();

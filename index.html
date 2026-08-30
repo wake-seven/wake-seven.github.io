@@ -1208,6 +1208,7 @@
 </div>
 <template id="tipGuidePlayItemTemplate"><button class="chip on" type="button" data-state=""></button></template>
 <template id="tipGuideCaptionTemplate"><span data-caption-text></span><strong data-caption-best></strong></template>
+<template id="tipGuideTextEmphasisTemplate"><span data-tip-prefix></span><strong data-tip-emphasis></strong><span data-tip-suffix></span></template>
 <div class="game-dialog-backdrop" id="optimalFailDialog" hidden>
   <div class="game-dialog" role="dialog" aria-modal="true" aria-labelledby="optimalFailTitle">
     <h2 id="optimalFailTitle">おしい！あと1手短縮できればクリア。</h2>
@@ -6168,7 +6169,11 @@ function renderTwoMoveLessonShape(){
   const root=$('twoMoveLessonShape');
   root.replaceChildren();
   const line=document.createElement('p');
-  line.innerHTML=tr('twoMoveTip3DescTemplate',{name:'<strong>'+name+'</strong>',text:tr('twoMoveTip3'+shape+'Text')});
+  const marker='__WAKE7_NAME__',description=tr('twoMoveTip3DescTemplate',{name:marker,text:tr('twoMoveTip3'+shape+'Text')});
+  const markerAt=description.indexOf(marker),nameNode=document.createElement('strong');
+  nameNode.textContent=name;
+  if(markerAt<0)line.textContent=description;
+  else{line.append(document.createTextNode(description.slice(0,markerAt)),nameNode,document.createTextNode(description.slice(markerAt+marker.length)));}
   root.append(line);
   root.hidden=false;
 }
@@ -7816,7 +7821,7 @@ const MESSAGE_RENDERERS=Object.freeze({
   boardQuiz:entry=>{configureMessageReviewHeader(entry);renderBoardQuiz('messageBoardQuiz',clearContentAt(true,entry.index).boardQuiz);},
   text:entry=>{$('messageDialogText').hidden=false;configureMessageReviewHeader(entry);$('messageDialogTextBody').textContent=entry.text;}
 });
-function renderMessageReview(){const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;const {art,twoMoveLesson}=prepareMessageReview(entry),view=messageReviewView(),{illustration,lessonCopy,lessonRule,roadmap,seal}=view;resetMessageReviewView(entry,view);if(isMilestoneMessage(entry)){const volume=milestoneVolume(entry),current=entry.master==='primary'?2:entry.master==='mastery'?6:Math.min(5,volume+2);if(entry.master!=='mastery')roadmap.innerHTML=masterRoadmapMarkup(current);milestoneRenderer(entry)(entry,view,volume);}else messageReviewRenderer(entry)(entry);renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule);renderMessageLesson(twoMoveLesson,illustration,lessonCopy,lessonRule);if(entry.master==='satoriIntro'||entry.master==='secondLapIntro'){seal.classList.remove('animate');void seal.offsetWidth;seal.classList.add('animate');}updateMessageReviewNavigation(entry);}
+function renderMessageReview(){const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;const {art,twoMoveLesson}=prepareMessageReview(entry),view=messageReviewView(),{illustration,lessonCopy,lessonRule,roadmap,seal}=view;resetMessageReviewView(entry,view);if(isMilestoneMessage(entry)){const volume=milestoneVolume(entry),current=entry.master==='primary'?2:entry.master==='mastery'?6:Math.min(5,volume+2);if(entry.master!=='mastery')roadmap.replaceChildren(masterRoadmapFragment(current));milestoneRenderer(entry)(entry,view,volume);}else messageReviewRenderer(entry)(entry);renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule);renderMessageLesson(twoMoveLesson,illustration,lessonCopy,lessonRule);if(entry.master==='satoriIntro'||entry.master==='secondLapIntro'){seal.classList.remove('animate');void seal.offsetWidth;seal.classList.add('animate');}updateMessageReviewNavigation(entry);}
 function renderPrimaryMilestone(entry,{seal,rankText,masterText,rules}){$('messageMasterSealLabel').textContent=masterPath().ranks[0];setSealColor(seal,0);configureMilestoneHeader(entry,tr('masterTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[0]);masterText.hidden=false;masterText.textContent=tr('masterText');rules.hidden=false;rules.textContent=masterCommonRules();}
 function renderMasteryMilestone(entry,{seal,rankText,masterText,boardNote}){$('messageMasterSealLabel').textContent=masterPath().ranks[3];setSealColor(seal,3);configureMilestoneHeader(entry,tr('masteryTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[3]);masterText.hidden=false;masterText.textContent=tr('masteryText');boardNote.hidden=false;boardNote.textContent=tr('masteryBoardNote');}
 function renderSatoriMilestone(entry,{seal,rankText,masterText}){$('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('satoriRank'),false,5);setSealColor(seal,5);seal.classList.add('rank-frame-seal');configureMilestoneHeader(entry,tr('satoriTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));masterText.hidden=false;masterText.textContent=tr('satoriText');}
@@ -9389,19 +9394,20 @@ function renderMasterRoadmap(kind){
   if(roadmap.hidden)return;
   const milestones=[speedTrainingTrialCleared,speedIntermediateTrialCleared,clearedExtraStages.has(14),clearedExtraStages.has(29),clearedExtraStages.has(44)];
   const current=Math.min(5,milestones.findIndex(done=>!done)+1||5);
-  roadmap.innerHTML=masterRoadmapMarkup(current);
+  roadmap.replaceChildren(masterRoadmapFragment(current));
   if(kind==='intermediate')rules.textContent=masterCommonRules();
 }
-function masterRoadmapMarkup(current){
+function masterRoadmapFragment(current){
   const template=document.getElementById('master-road-step-template');
-  return Array.from({length:5},(_,i)=>{
+  const fragment=document.createDocumentFragment();
+  if(!template)return fragment;
+  Array.from({length:5},(_,i)=>{
     const volume=i-1;
     const label=i===0?tr('academyPickerRound'):i===1?tr('darumaTraining'):(currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' · '+volumeLabel(volume));
     const detail=i===0?tr('roadmapCount',{n:ACADEMY_STAGE_COUNT}):i===1?tr('roadmapCount',{n:TRAINING_STAGE_COUNT}):masterSubtitle(volume)+'　'+tr('roadmapCount',{n:MASTER_VOLUME_SIZE});
     const earned=i<current-1;
     const rank=earned?masterPath().ranks[i]:'？';
     const examBadge=earned&&speedExamClearedForRank(i);
-    if(!template)return '';
     const step=template.content.cloneNode(true).firstElementChild;
     step.classList.add(i+1<current?'done':i+1===current?'current':'');
     step.querySelector('[data-road-name]').textContent=label;
@@ -9415,8 +9421,9 @@ function masterRoadmapMarkup(current){
       badge.querySelector('[data-exam-badge-art]')?.insertAdjacentHTML('afterbegin',speedExamBadgeSvg());
       rankElement.append(badge);
     }
-    return step.outerHTML;
-  }).join('');
+    fragment.append(step);
+  });
+  return fragment;
 }
 function masterCommonRules(){return currentLang==='ja'?'名人への道は最短の手でクリアする必要があります。\nまた、進むほど自力で考える場面が増えていきます。':'Path to Mastery must be cleared in the fewest moves. As you advance, the rules become stricter.';}
 
@@ -10337,9 +10344,19 @@ function renderTipGuide(){
     ?'<div class="tip-guide-single-visual">'+tipGuideSvg(tipGuideIndex,currentBoards)+'</div>'+tipGuideControls(0,1)
     :tipGuideDoubleMarkup(currentBoards);
   const tipText=tips[GUIDE_TIP_INDEX[tipGuideIndex]];
-  $('tipGuideText').innerHTML=currentLang==='ja'&&tipGuideIndex===GUIDE_DOUBLE_INDEX
-    ?tipText.replace('ほかは最短3手','<strong>ほかは最短3手</strong>')
-    :tipText;
+  const tipTextRoot=$('tipGuideText');
+  tipTextRoot.replaceChildren();
+  const emphasized=currentLang==='ja'&&tipGuideIndex===GUIDE_DOUBLE_INDEX;
+  if(emphasized){
+    const phrase='ほかは最短3手',at=tipText.indexOf(phrase);
+    const template=$('tipGuideTextEmphasisTemplate'),fragment=template?.content?.cloneNode(true);
+    if(fragment&&at>=0){
+      fragment.querySelector('[data-tip-prefix]').textContent=tipText.slice(0,at);
+      fragment.querySelector('[data-tip-emphasis]').textContent=phrase;
+      fragment.querySelector('[data-tip-suffix]').textContent=tipText.slice(at+phrase.length);
+      tipTextRoot.append(fragment);
+    }else tipTextRoot.textContent=tipText;
+  }else tipTextRoot.textContent=tipText;
   const names={ja:['小三角','大三角'],en:['Small triangle','Large triangle'],zh:['小三角','大三角'],ko:['작은 삼각형','큰 삼각형']}[currentLang]||['小三角','大三角'];
   const playRoot=$('tipGuidePlay');
   playRoot.replaceChildren();
