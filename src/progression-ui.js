@@ -1117,11 +1117,6 @@ function configureMessageReviewHeader(entry){
   $('messageDialogTitle').textContent=tr('clear');
   $('messageDialogPlace').textContent=messageReviewPlace(entry);
 }
-const MESSAGE_RENDERERS=Object.freeze({
-  quiz:entry=>{ configureMessageReviewHeader(entry); renderMessageQuiz(entry.quiz); },
-  boardQuiz:entry=>{ configureMessageReviewHeader(entry); renderBoardQuiz('messageBoardQuiz',clearContentAt(true,entry.index).boardQuiz); },
-  text:entry=>{ $('messageDialogText').hidden=false; configureMessageReviewHeader(entry); $('messageDialogTextBody').textContent=entry.text; }
-});
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
   const {art,twoMoveLesson}=prepareMessageReview(entry);
