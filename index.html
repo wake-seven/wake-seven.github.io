@@ -8271,6 +8271,17 @@ function configureMessageReviewType(entry){
   $('messageBoardQuiz').hidden=!entry.boardQuiz;
   return messageClearEntry;
 }
+function configureMessageReviewLinks(entry,messageClearEntry){
+  const twoMoveCard=messageClearEntry?.twoMoveCard;
+  const guideCard=messageClearEntry?.guideCard;
+  const rankLink=messageClearEntry?.link==='rank';
+  const tipsLink=messageClearEntry?.link==='tips';
+  const patternsLink=messageClearEntry?.link==='patterns';
+  const link=$('messageRankLink');
+  link.hidden=twoMoveCard===undefined&&!guideCard&&!rankLink&&!tipsLink&&!patternsLink;
+  link.dataset.target=tipsLink?'tips':patternsLink?'patterns':twoMoveCard!==undefined?'card':guideCard?'guide':'rank';
+  link.textContent=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatternsLink')+' →':twoMoveCard!==undefined||guideCard?tr('detailsLink'):tr('rankLink');
+}
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
   const art=messageReviewArt(entry),twoMoveLesson=lessonVariantFromArt(art),illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
@@ -8287,14 +8298,8 @@ function renderMessageReview(){
   seal.tabIndex=0;
   rankText.hidden=true;masterText.hidden=true;
   const messageClearEntry=configureMessageReviewType(entry);
-  const twoMoveCard=messageClearEntry?messageClearEntry.twoMoveCard:undefined;
-  const guideCard=messageClearEntry?messageClearEntry.guideCard:null;
-  const rankLink=!!messageClearEntry&&messageClearEntry.link==='rank';
-  const tipsLink=!!messageClearEntry&&messageClearEntry.link==='tips';
-  const patternsLink=!!messageClearEntry&&messageClearEntry.link==='patterns';
-  $('messageRankLink').hidden=twoMoveCard===undefined&&!guideCard&&!rankLink&&!tipsLink&&!patternsLink;
-  $('messageRankLink').dataset.target=tipsLink?'tips':patternsLink?'patterns':twoMoveCard!==undefined?'card':guideCard?'guide':'rank';
-  $('messageRankLink').textContent=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatternsLink')+' →':twoMoveCard!==undefined||guideCard?tr('detailsLink'):tr('rankLink');
+  const twoMoveCard=messageClearEntry?.twoMoveCard,guideCard=messageClearEntry?.guideCard;
+  configureMessageReviewLinks(entry,messageClearEntry);
   if(entry.master){
     const volume=entry.master==='primary'?0:Math.ceil((entry.index+1)/MASTER_VOLUME_SIZE);
     const current=entry.master==='primary'?2:entry.master==='mastery'?6:Math.min(5,volume+2);
