@@ -5,6 +5,10 @@ import { fileURLToPath } from 'node:url';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const srcRoot = join(root, 'src');
+const auditDoc = await readFile(join(srcRoot, 'compat-audit.md'), 'utf8');
+for (const heading of ['# 互換層・未使用候補監査', '## 互換ID', '## 互換キー']) {
+  assert.match(auditDoc, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `Compatibility audit documentation is missing: ${heading}`);
+}
 const sources = new Map();
 
 async function collect(directory) {
@@ -37,7 +41,7 @@ assert.equal(sessionStorageCalls.length, 2, `Analytics session storage calls cha
 
 // 開始→チュートリアル→盤面操作を支えるDOM契約。文言変更には影響せず、要素の消失だけを検出する。
 const template = sources.get('src/index.template.html');
-for (const id of ['introDialog', 'introStart', 'tutorialReset', 'board', 'boardGuidance']) {
+for (const id of ['introDialog', 'introStart', 'tutorialReset', 'board', 'boardGuidance', 'reset', 'undo']) {
   assert.match(template, new RegExp(`id=["']${id}["']`), `Main flow DOM contract is missing: ${id}`);
 }
 for (const token of ['startTutorial', 'rollOnce', 'tutorialStep', 'paint()']) {
@@ -51,6 +55,17 @@ for (const token of [
 ]) {
   assert.match(all, new RegExp(token.replace(/[()$']/g, '\\$&')), `Main flow event binding is missing: ${token}`);
 }
+for (const token of [
+  "$('reset').addEventListener('click'",
+  "$('undo').addEventListener('click'",
+  'startTutorial()',
+  'history.pop()'
+]) {
+  assert.match(all, new RegExp(token.replace(/[()$']/g, '\\$&')), `Play-flow recovery action is missing: ${token}`);
+}
+const introStartAt = all.indexOf("$('introStart').addEventListener('click'");
+const tutorialStartAt = all.indexOf('startTutorial()');
+assert.ok(introStartAt >= 0 && tutorialStartAt > introStartAt, 'Start button must lead into tutorial initialization.');
 
 const legacyLocations = [...sources.entries()]
   .filter(([, source]) => legacyIds.some(id => source.includes(id)))
