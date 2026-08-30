@@ -5890,14 +5890,12 @@ const CHAIN_STEPS={
   developmentWelcome:{
     titleKey:'developmentWelcomeTitle', actionKey:'developmentWelcomeStart',
     render(body){
-      const template=document.getElementById('chain-template-development-welcome-spin');
-      if(template)body.append(template.content.cloneNode(true));
-      else body.innerHTML='<p class="chain-text-left" id="developmentWelcomeSpinHint"></p>'
+      cloneDialogTemplate(body,'chain-template-development-welcome-spin','<p class="chain-text-left" id="developmentWelcomeSpinHint"></p>'
         +'<div class="development-welcome-frame">'
         +'<div class="status-metric remaining training-spin-counter" id="developmentWelcomeSpinCounter"><span id="developmentWelcomeSpinCounterLabel"></span><b id="developmentWelcomeSpinCounterNumber"></b><span id="developmentWelcomeSpinCounterUnit"></span></div>'
         +'<div class="two-move-detail-board-area"><div class="two-move-detail-board" id="developmentWelcomeSpinBoardWrap"><svg id="developmentWelcomeSpinBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>'
         +'</div>'
-        +'<p class="chain-text-left" id="chainDialogText"></p>';
+        +'<p class="chain-text-left" id="chainDialogText"></p>');
       body.querySelector('[data-spin-hint]')?.setAttribute('id','developmentWelcomeSpinHint');
       body.querySelector('[data-spin-counter]')?.setAttribute('id','developmentWelcomeSpinCounter');
       body.querySelector('[data-spin-label]')?.setAttribute('id','developmentWelcomeSpinCounterLabel');
@@ -5944,10 +5942,8 @@ const CHAIN_STEPS={
   trainingMiddleSpin:{
     kindKey:'trainingMiddleGoalKind', titleKey:'trainingMiddleSpinTitle', actionKey:'trainingWelcomeNext',
     render(body){
-      const template=document.getElementById('chain-template-training-middle-spin');
-      if(template)body.append(template.content.cloneNode(true));
-      else body.innerHTML='<div class="status-metric remaining training-spin-counter" id="trainingMiddleSpinCounter"><span id="trainingMiddleSpinCounterLabel"></span><b id="trainingMiddleSpinCounterNumber"></b><span id="trainingMiddleSpinCounterUnit"></span></div>'
-        +'<div class="two-move-detail-board-area"><div class="two-move-detail-board" id="trainingMiddleSpinBoardWrap"><svg id="trainingMiddleSpinBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>';
+      cloneDialogTemplate(body,'chain-template-training-middle-spin','<div class="status-metric remaining training-spin-counter" id="trainingMiddleSpinCounter"><span id="trainingMiddleSpinCounterLabel"></span><b id="trainingMiddleSpinCounterNumber"></b><span id="trainingMiddleSpinCounterUnit"></span></div>'
+        +'<div class="two-move-detail-board-area"><div class="two-move-detail-board" id="trainingMiddleSpinBoardWrap"><svg id="trainingMiddleSpinBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>');
       body.querySelector('[data-spin-counter]')?.setAttribute('id','trainingMiddleSpinCounter');
       body.querySelector('[data-spin-label]')?.setAttribute('id','trainingMiddleSpinCounterLabel');
       body.querySelector('[data-spin-number]')?.setAttribute('id','trainingMiddleSpinCounterNumber');
@@ -7706,7 +7702,7 @@ function boardQuizPresentation(config,state,copy){
   return {states,correct,question,moveChoiceOrder};
 }
 function boardQuizMarkup(config,states,moveChoiceOrder,copy,rootId,detailPatterns){
-  const card=(board,index)=>{const template=document.getElementById('boardQuizCardTemplate'),wrapper=document.createElement('div');if(!template)return '<div class="board-quiz-card"><button class="board-quiz-option" type="button" data-board-answer="'+index+'"><span class="board-quiz-board">'+miniBoardSvg(board)+'</span></button></div>';const fragment=template.content.cloneNode(true),card=fragment.firstElementChild,answer=card.querySelector('.board-quiz-option');answer.dataset.boardAnswer=index;card.querySelector('.board-quiz-board').innerHTML=miniBoardSvg(board);card.querySelectorAll('[data-board-transform]').forEach(button=>{button.dataset.boardIndex=index;button.innerHTML=transformIcon(button.dataset.boardTransform);});wrapper.appendChild(card);return wrapper.innerHTML;};
+  const card=(board,index)=>{const template=document.getElementById('boardQuizCardTemplate'),wrapper=document.createElement('div');if(!template)return '<div class="board-quiz-card"><button class="board-quiz-option" type="button" data-board-answer="'+index+'"><span class="board-quiz-board">'+miniBoardSvg(board)+'</span></button></div>';const fragment=template.content.cloneNode(true),card=fragment.firstElementChild,answer=card.querySelector('.board-quiz-option');answer.dataset.boardAnswer=index;card.querySelector('.board-quiz-board').innerHTML=miniBoardSvg(board);card.querySelectorAll('[data-board-transform]').forEach(button=>{button.dataset.boardIndex=index;insertTransformIcon(button,button.dataset.boardTransform);});wrapper.appendChild(card);return wrapper.innerHTML;};
   const boardMarkup=config.kind==='moves'
     ?'<div class="board-quiz-single"><span class="board-quiz-board">'+miniBoardSvg(states[0])+'</span>'+controls(0)+'</div><div class="board-quiz-moves">'+moveChoiceOrder.map((choice,index)=>'<button class="board-quiz-option" type="button" data-board-answer="'+index+'">'+copy.moveChoices[choice]+'</button>').join('')+'</div>'
     :'<div class="board-quiz-options '+(states.length===3?'three':'')+'">'+states.map(card).join('')+'</div>';
@@ -8627,9 +8623,9 @@ function renderClearTip(){
   illustration.classList.toggle('two-move-lesson-art',!!twoMoveLesson);
   stopClearGuideBoard('clearGuideBoard');
   stopClearGuideBoard('clearTwoMoveLessonBoard');
-  illustration.innerHTML=art==='introGuide'?'<svg id="clearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
+  replaceRenderedContent(illustration,art==='introGuide'?'<svg id="clearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
     :twoMoveLesson?'<svg id="clearTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
-    :art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'';
+    :art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'');
   if(art==='introGuide')buildClearGuideBoard('clearGuideBoard');
   if(twoMoveLesson)buildTwoMoveLessonBoard('clearTwoMoveLessonBoard',twoMoveLesson);
   illustration.hidden=!art;
@@ -8772,6 +8768,8 @@ function transformIcon(kind){
   };
   return '<svg class="transform-svg" viewBox="0 0 24 24" aria-hidden="true">'+paths[kind]+'</svg>';
 }
+// transformIconは固定のrenderer出力だけを受け付けるため、挿入境界をここへ集約する。
+function insertTransformIcon(target,kind){if(!target)return;target.replaceChildren();target.insertAdjacentHTML('afterbegin',transformIcon(kind));}
 function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
   root.classList.remove('quiz-success');
@@ -8935,7 +8933,7 @@ function renderTwoMovePatterns(){
       const button=buttonTemplate.content.cloneNode(true).firstElementChild;
       button.dataset.twoMoveTransform=transform;
       button.setAttribute('aria-label',tr(label));
-      button.querySelector('[data-transform-art]').insertAdjacentHTML('afterbegin',transformIcon(transform));
+      insertTransformIcon(button.querySelector('[data-transform-art]'),transform);
       return button.outerHTML;
     }).join('');
     if(!cardTemplate)return '<article class="two-move-card" data-state="'+state+'" data-pattern="'+twoMoveDisplayPatterns[index]+'" data-board-index="'+index+'"><div class="two-move-card-tools">'+buttons+'</div><button class="two-move-card-open" type="button">'+miniBoardSvg(state)+'</button></article>';
@@ -8959,7 +8957,7 @@ function openTwoMovePatterns({returnToClear=false}={}){
   $('closeTwoMovePatterns').focus();
 }
 function renderTwoMoveDetail(){
-  $('twoMoveDetailBoard').innerHTML=miniBoardSvg(twoMoveDetailState);
+  replaceRenderedContent($('twoMoveDetailBoard'),miniBoardSvg(twoMoveDetailState));
   const tips=PLAY_TIPS[currentLang]||PLAY_TIPS.ja;
   const intro=(TWO_MOVE_DETAIL_INTROS[currentLang]||TWO_MOVE_DETAIL_INTROS.ja)[twoMoveDetailIndex]||'';
   $('twoMoveDetailIntro').textContent=intro;
@@ -9698,6 +9696,13 @@ function renderCurrentView({includeBoard=false,includePicker=true}={}){
   renderStageNav();
   if(includePicker&&!$('stagePicker').hidden)renderStagePicker();
 }
+// 動的コンテナ更新の共通境界。既存rendererのmarkup生成は維持する。
+function replaceRenderedContent(root,markup=''){
+  if(!root)return null;
+  root.replaceChildren();
+  if(markup)root.insertAdjacentHTML('afterbegin',markup);
+  return root;
+}
 // 公開native moduleの構文境界。
 export {};
 
@@ -10351,9 +10356,9 @@ function renderTipGuide(){
       caption.append(fragment);
     }else caption.textContent=captions[tipGuideIndex]+' '+tipGuideBestLabel(best);
   }
-  $('tipGuideArt').innerHTML=compact
+  replaceRenderedContent($('tipGuideArt'),compact
     ?'<div class="tip-guide-single-visual">'+tipGuideSvg(tipGuideIndex,currentBoards)+'</div>'+tipGuideControls(0,1)
-    :tipGuideDoubleMarkup(currentBoards);
+    :tipGuideDoubleMarkup(currentBoards));
   const tipText=tips[GUIDE_TIP_INDEX[tipGuideIndex]];
   const tipTextRoot=$('tipGuideText');
   tipTextRoot.replaceChildren();
@@ -10549,10 +10554,10 @@ function applyLanguage(lang){
   updateSoundToggle();
   if(!$('twoMoveLessonDialog').hidden)openTwoMoveLessonDialog();
   if(!$('speedPauseDialog').hidden)renderSpeedPauseStats();
-  [['mirrorBoard','mirror','mirror'],['flipBoardVertical','vertical','flipVertical'],['rotateBoardBack','rotateBack','rotateCcw'],['rotateBoard','rotate','rotateCw']].forEach(([id,icon,label])=>{const button=$(id);button.querySelector('[data-transform-icon]').innerHTML=transformIcon(icon);button.querySelector('[data-transform-label]').textContent=tr(label);});
+  [['mirrorBoard','mirror','mirror'],['flipBoardVertical','vertical','flipVertical'],['rotateBoardBack','rotateBack','rotateCcw'],['rotateBoard','rotate','rotateCw']].forEach(([id,icon,label])=>{const button=$(id);insertTransformIcon(button.querySelector('[data-transform-icon]'),icon);button.querySelector('[data-transform-label]').textContent=tr(label);});
   [
     ['twoMoveDetailRotateBack','rotateBack','rotateCcw'],['twoMoveDetailRotate','rotate','rotateCw'],['twoMoveDetailMirror','mirror','mirror'],['twoMoveDetailFlipVertical','vertical','flipVertical']
-  ].forEach(([id,icon,label])=>{$(id).innerHTML=transformIcon(icon);$(id).setAttribute('aria-label',tr(label));});
+  ].forEach(([id,icon,label])=>{insertTransformIcon($(id),icon);$(id).setAttribute('aria-label',tr(label));});
   if(!$('chainDialog').hidden&&chainActiveName)openChainedDialog(chainActiveName);
   $('tutorialReset').textContent='↻ '+tr('tutorialReset');
   $('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');

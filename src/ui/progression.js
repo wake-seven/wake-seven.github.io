@@ -738,9 +738,9 @@ function renderClearTip(){
   illustration.classList.toggle('two-move-lesson-art',!!twoMoveLesson);
   stopClearGuideBoard('clearGuideBoard');
   stopClearGuideBoard('clearTwoMoveLessonBoard');
-  illustration.innerHTML=art==='introGuide'?'<svg id="clearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
+  replaceRenderedContent(illustration,art==='introGuide'?'<svg id="clearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
     :twoMoveLesson?'<svg id="clearTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
-    :art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'';
+    :art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'');
   if(art==='introGuide')buildClearGuideBoard('clearGuideBoard');
   if(twoMoveLesson)buildTwoMoveLessonBoard('clearTwoMoveLessonBoard',twoMoveLesson);
   illustration.hidden=!art;
@@ -883,6 +883,8 @@ function transformIcon(kind){
   };
   return '<svg class="transform-svg" viewBox="0 0 24 24" aria-hidden="true">'+paths[kind]+'</svg>';
 }
+// transformIconは固定のrenderer出力だけを受け付けるため、挿入境界をここへ集約する。
+function insertTransformIcon(target,kind){if(!target)return;target.replaceChildren();target.insertAdjacentHTML('afterbegin',transformIcon(kind));}
 function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
   root.classList.remove('quiz-success');
@@ -1046,7 +1048,7 @@ function renderTwoMovePatterns(){
       const button=buttonTemplate.content.cloneNode(true).firstElementChild;
       button.dataset.twoMoveTransform=transform;
       button.setAttribute('aria-label',tr(label));
-      button.querySelector('[data-transform-art]').insertAdjacentHTML('afterbegin',transformIcon(transform));
+      insertTransformIcon(button.querySelector('[data-transform-art]'),transform);
       return button.outerHTML;
     }).join('');
     if(!cardTemplate)return '<article class="two-move-card" data-state="'+state+'" data-pattern="'+twoMoveDisplayPatterns[index]+'" data-board-index="'+index+'"><div class="two-move-card-tools">'+buttons+'</div><button class="two-move-card-open" type="button">'+miniBoardSvg(state)+'</button></article>';
@@ -1070,7 +1072,7 @@ function openTwoMovePatterns({returnToClear=false}={}){
   $('closeTwoMovePatterns').focus();
 }
 function renderTwoMoveDetail(){
-  $('twoMoveDetailBoard').innerHTML=miniBoardSvg(twoMoveDetailState);
+  replaceRenderedContent($('twoMoveDetailBoard'),miniBoardSvg(twoMoveDetailState));
   const tips=PLAY_TIPS[currentLang]||PLAY_TIPS.ja;
   const intro=(TWO_MOVE_DETAIL_INTROS[currentLang]||TWO_MOVE_DETAIL_INTROS.ja)[twoMoveDetailIndex]||'';
   $('twoMoveDetailIntro').textContent=intro;

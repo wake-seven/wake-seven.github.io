@@ -647,9 +647,9 @@ function renderTipGuide(){
       caption.append(fragment);
     }else caption.textContent=captions[tipGuideIndex]+' '+tipGuideBestLabel(best);
   }
-  $('tipGuideArt').innerHTML=compact
+  replaceRenderedContent($('tipGuideArt'),compact
     ?'<div class="tip-guide-single-visual">'+tipGuideSvg(tipGuideIndex,currentBoards)+'</div>'+tipGuideControls(0,1)
-    :tipGuideDoubleMarkup(currentBoards);
+    :tipGuideDoubleMarkup(currentBoards));
   const tipText=tips[GUIDE_TIP_INDEX[tipGuideIndex]];
   const tipTextRoot=$('tipGuideText');
   tipTextRoot.replaceChildren();
@@ -845,10 +845,10 @@ function applyLanguage(lang){
   updateSoundToggle();
   if(!$('twoMoveLessonDialog').hidden)openTwoMoveLessonDialog();
   if(!$('speedPauseDialog').hidden)renderSpeedPauseStats();
-  [['mirrorBoard','mirror','mirror'],['flipBoardVertical','vertical','flipVertical'],['rotateBoardBack','rotateBack','rotateCcw'],['rotateBoard','rotate','rotateCw']].forEach(([id,icon,label])=>{const button=$(id);button.querySelector('[data-transform-icon]').innerHTML=transformIcon(icon);button.querySelector('[data-transform-label]').textContent=tr(label);});
+  [['mirrorBoard','mirror','mirror'],['flipBoardVertical','vertical','flipVertical'],['rotateBoardBack','rotateBack','rotateCcw'],['rotateBoard','rotate','rotateCw']].forEach(([id,icon,label])=>{const button=$(id);insertTransformIcon(button.querySelector('[data-transform-icon]'),icon);button.querySelector('[data-transform-label]').textContent=tr(label);});
   [
     ['twoMoveDetailRotateBack','rotateBack','rotateCcw'],['twoMoveDetailRotate','rotate','rotateCw'],['twoMoveDetailMirror','mirror','mirror'],['twoMoveDetailFlipVertical','vertical','flipVertical']
-  ].forEach(([id,icon,label])=>{$(id).innerHTML=transformIcon(icon);$(id).setAttribute('aria-label',tr(label));});
+  ].forEach(([id,icon,label])=>{insertTransformIcon($(id),icon);$(id).setAttribute('aria-label',tr(label));});
   if(!$('chainDialog').hidden&&chainActiveName)openChainedDialog(chainActiveName);
   $('tutorialReset').textContent='↻ '+tr('tutorialReset');
   $('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');
