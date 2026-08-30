@@ -3758,26 +3758,13 @@ let tutorialAdvanceTimer=0,boardArrivalTimer=0;
 let pendingMasterThemeRefresh=false;
 let lastAnalyticsStageKey='';
 
-/* モードはこの値だけを実体として持つ。既存コードに残る `xxxMode` は、
- * 段階的な移行のため activeMode を読む／更新する互換アクセサにしている。 */
+/* モードの実体は activeMode のみ。 */
 const ACTIVE_MODES=Object.freeze(['tutorial','stage','mastery','satori','speed','free','custom']);
 function setActiveMode(mode){
   activeMode=ACTIVE_MODES.includes(mode)?mode:'stage';
   gameState.navigation.mode=activeMode;
 }
 const isMode=mode=>activeMode===mode;
-for(const [legacyName,mode] of Object.entries({
-  extraMode:'mastery',satoriMode:'satori',speedMode:'speed',freeMode:'free',customMode:'custom'
-})){
-  Object.defineProperty(window,legacyName,{
-    configurable:true,
-    get(){return activeMode===mode;},
-    set(value){
-      if(value)setActiveMode(mode);
-      else if(activeMode===mode)setActiveMode('stage');
-    }
-  });
-}
 
 /* ---- 状態管理の境界 ----
  * 盤面の描画や操作は歴史的にこのファイルへ段階的に追加されてきたため、
@@ -3991,7 +3978,7 @@ function trackGameStart(){
   }catch(_){ }
   const stage=analyticsStageInfo();
   trackAnalyticsEvent('game_start',stage||{
-    game_mode:customMode?'custom':'free',course:customMode?'custom':'free'
+    game_mode:isMode('custom')?'custom':'free',course:isMode('custom')?'custom':'free'
   });
 }
 let soundEnabled=gameState.settings.sound!==false,audioContext=null;
@@ -4395,8 +4382,8 @@ function openBoardThemeDialog(){
 const mod3=v=>((v%3)+3)%3;
 const isSolved=()=>SOLVER.dist[enc(ori)]===0;
 let displayedMoves=null,displayedRemaining=null;
-const masterVolume=()=>extraMode?Math.floor(extraIndex/MASTER_VOLUME_SIZE)+1:0;
-const isFinalMasterPuzzle=()=>extraMode&&extraIndex===EXTRA_STAGES.length-1;
+const masterVolume=()=>isMode('mastery')?Math.floor(extraIndex/MASTER_VOLUME_SIZE)+1:0;
+const isFinalMasterPuzzle=()=>isMode('mastery')&&extraIndex===EXTRA_STAGES.length-1;
 const PROGRESSION=window.WakeSevenProgression.create({
   satoriTotal:SATORI_STAGES.length,
   trainingExamTotal:TRAINING_EXAM_STAGES.length,
@@ -4407,7 +4394,7 @@ const PROGRESSION=window.WakeSevenProgression.create({
   trainingTotal:TRAINING_STAGE_COUNT,
   basicStart:BASIC_STAGE_START
 });
-const currentUiPolicy=()=>PROGRESSION.uiPolicy({mode:activeMode,lap:activeLap,stageIndex,speedVariant:speedMode?speedVariant:null});
+const currentUiPolicy=()=>PROGRESSION.uiPolicy({mode:activeMode,lap:activeLap,stageIndex,speedVariant:isMode('speed')?speedVariant:null});
 const isGuidedBasicStage=()=>currentUiPolicy().guidedBasic===true;
 // 入門・基本・だるま学園の発展クラスは周回を問わず、余計な操作や現在手数を見せない学習区間。
 const isAssistedLearningStage=()=>currentUiPolicy().assisted===true;
@@ -4527,10 +4514,10 @@ function refreshGuidedBasicCandidates(){
 }
 // 補助輪中も盤面全体を見比べられるよう、選択外の4枚は暗転させない。
 const usesSwipeDimming=()=>false;
-const usesSecondLapSwipe=()=>secondLapActive&&!freeMode&&!customMode&&!speedMode;
-const requiresOptimalClear=()=>extraMode||satoriMode;
+const usesSecondLapSwipe=()=>secondLapActive&&!isMode('free')&&!isMode('custom')&&!isMode('speed');
+const requiresOptimalClear=()=>isMode('mastery')||isMode('satori');
 const masterHintsDisabled=()=>masterVolume()>=2;
-const isThirdVolume=()=>extraMode&&extraIndex>=30&&extraIndex<45;
+const isThirdVolume=()=>isMode('mastery')&&extraIndex>=30&&extraIndex<45;
 // 三巻構成では最後の「不立文字」に、従来の終盤ルールをまとめる。
 const isFourthVolume=()=>isThirdVolume();
 
@@ -4539,8 +4526,8 @@ const isFourthVolume=()=>isThirdVolume();
 const SPEED_MODE_DEFINITIONS=PROGRESSION.speedModes;
 let speedVariant='standard';
 function activeSpeedDefinition(){return SPEED_MODE_DEFINITIONS[speedVariant]||SPEED_MODE_DEFINITIONS.standard;}
-const speedShowsRemaining=()=>speedMode&&activeSpeedDefinition().showsRemaining;
-const speedAllowsUndo=()=>speedMode&&activeSpeedDefinition().allowsUndo;
+const speedShowsRemaining=()=>isMode('speed')&&activeSpeedDefinition().showsRemaining;
+const speedAllowsUndo=()=>isMode('speed')&&activeSpeedDefinition().allowsUndo;
 function speedStagePool(definition=activeSpeedDefinition()){
   if(definition.source==='twoMove')return SATORI_STAGES.filter(stage=>stage.par===2).slice(0,definition.total);
   if(definition.source==='training')return TRAINING_EXAM_STAGES;
@@ -4680,12 +4667,12 @@ function formatSpeedClock(ms){
   return String(minutes).padStart(2,'0')+':'+String(seconds).padStart(2,'0');
 }
 function renderSpeedClock(){
-  if(!speedMode)return;
+  if(!isMode('speed'))return;
   const text=formatSpeedClock(speedElapsedMs());
   $('speedClockValue').textContent=text;
 }
 function startSpeedClock(){
-  if(!speedMode||speedManuallyPaused||speedClockStarted||document.visibilityState==='hidden'||speedAwaitingStart())return;
+  if(!isMode('speed')||speedManuallyPaused||speedClockStarted||document.visibilityState==='hidden'||speedAwaitingStart())return;
   speedClockStarted=performance.now();clearInterval(speedClockTimer);speedClockTimer=setInterval(renderSpeedClock,100);renderSpeedClock();
 }
 function pauseSpeedClock(){
@@ -4695,13 +4682,13 @@ function pauseSpeedClock(){
 function saveSpeedSession(){
   if(!speedSession)return;
   const elapsed=speedElapsedMs();
-  const payload={...speedSession,variant:activeSpeedDefinition().id,elapsedMs:elapsed,board:speedMode?serializeActiveBoard():speedSession.board};
+  const payload={...speedSession,variant:activeSpeedDefinition().id,elapsedMs:elapsed,board:isMode('speed')?serializeActiveBoard():speedSession.board};
   storage.setJson(speedSessionStorageKey(),payload);
   storage.set(STORAGE_KEYS.speedActiveVariant,payload.variant);
 }
-function pauseSpeedRun(){if(!speedMode)return;pauseSpeedClock();saveSpeedSession();}
+function pauseSpeedRun(){if(!isMode('speed'))return;pauseSpeedClock();saveSpeedSession();}
 function openSpeedPauseDialog(){
-  if(!speedMode)return;
+  if(!isMode('speed'))return;
   speedManuallyPaused=true;
   pauseSpeedClock();saveSpeedSession();
   renderSpeedPauseStats();
@@ -4733,7 +4720,7 @@ function pendingSpeedTrial(variant=activeSpeedDefinition().id){
 function newSpeedSession(){const definition=activeSpeedDefinition();return {version:5,variant:definition.id,total:definition.total,view:'left60',order:makeSpeedOrder(definition.id),index:0,elapsedMs:0,board:null,completed:false,optimalClears:0,started:false,requiredTrial:pendingSpeedTrial(definition.id)};}
 // 1問目を始める前だけ、タイマーを止めた「スタート待ち」の状態にする。
 function speedAwaitingStart(){
-  return !!(speedMode&&speedSession&&!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent);
+  return !!(isMode('speed')&&speedSession&&!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent);
 }
 // 問題が切り替わった時に、盤面が中央から広がって現れる演出。速解きモード専用だったが、
 // 通常モード（次へ・ステージ選択・フリー等）の問題開始時にも共通で使う。
@@ -4790,7 +4777,7 @@ function enterSpeedMode(forceNew=false){
   loadSpeedStage(!isNew,isNew);
 }
 function beginSpeedRun(){
-  if(!speedMode||!speedSession||speedSession.started)return;
+  if(!isMode('speed')||!speedSession||speedSession.started)return;
   speedSession.started=true;
   loadSpeedStage(false,true);
 }
@@ -4815,7 +4802,7 @@ function finishSpeedRun(){
     if(trialVariant==='training9')rememberSpecialMessage('primary');
     else if(trialVariant==='mastery15')rememberSpecialMessage('volume');
     else if(trialVariant==='mastery24'){grantMasterReward();rememberSpecialMessage('mastery');}
-    speedMode=false;
+    setActiveMode('stage');
     // 合格後に速解き最終盤の状態を残さない。元のコースの節目へ戻して、
     // 既存のクリア演出・次の道への導線にそのまま合流させる。
     if(trialVariant==='training9')loadStage(ACADEMY_STAGE_COUNT-1);
@@ -4856,7 +4843,7 @@ function renderMasterSpeedStats(){
   renderSpeedStatsList($('masterSpeedStatsList'),history);
 }
 function advanceSpeedRun(){
-  if(!speedMode||!speedSession)return;
+  if(!isMode('speed')||!speedSession)return;
   if(speedSession.index>=speedSession.total-1){finishSpeedRun();return;}
   speedSession.index++;speedSession.board=null;speedSession.movedCurrent=false;speedSession.restartedCurrent=false;loadSpeedStage(false,true);
 }
@@ -4879,7 +4866,7 @@ const fourthChecksPersist=()=>isFourthVolume()&&extraIndex%MASTER_VOLUME_SIZE<12
 // 極10〜12だけは、「やり直す」でも残り手数を復活させない。
 const fourthChecksSurviveRestart=()=>isFourthVolume()&&extraIndex%MASTER_VOLUME_SIZE>=9&&extraIndex%MASTER_VOLUME_SIZE<12;
 const fourthChecksLeft=()=>Math.max(0,fourthCheckLimit()-fourthChecksUsed);
-const usesHiddenRemaining=()=>satoriMode||freeMode||isFourthVolume();
+const usesHiddenRemaining=()=>isMode('satori')||isMode('free')||isFourthVolume();
 function persistFourthChecks(){
   if(!fourthChecksPersist())return;
   fourthCheckUsage[extraIndex]=fourthChecksUsed;
@@ -4915,7 +4902,7 @@ function showMoves(value){
 }
 function showRemaining(value,animate=true){
   // 九番・十五番勝負では、タイマーと残り最短手数を並べて表示する。
-  if(speedMode&&!speedShowsRemaining()){renderSpeedClock();return;}
+  if(isMode('speed')&&!speedShowsRemaining()){renderSpeedClock();return;}
   const el=$('stagePar');
   if(displayedRemaining===value&&el.textContent===String(value))return;
   displayedRemaining=value;el.textContent=value;
@@ -4963,10 +4950,10 @@ function playClearSound(kind='normal'){
   (tunes[kind]||tunes.normal).forEach(([tone,delay])=>playTone(tone,.18,.032,delay));
 }
 function clearSoundKind(){
-  if(freeMode||customMode||speedMode)return 'normal';
-  if(satoriMode&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';
-  if(!extraMode&&stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
-  if(extraMode&&(extraIndex+1)%MASTER_VOLUME_SIZE===0)return extraIndex===EXTRA_STAGES.length-1?'mastery':'volume';
+  if(isMode('free')||isMode('custom')||isMode('speed'))return 'normal';
+  if(isMode('satori')&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';
+  if(!isMode('mastery')&&stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
+  if(isMode('mastery')&&(extraIndex+1)%MASTER_VOLUME_SIZE===0)return extraIndex===EXTRA_STAGES.length-1?'mastery':'volume';
   return 'normal';
 }
 function updateSoundToggle(){
@@ -5620,7 +5607,7 @@ const isTwoMoveLessonStage=()=>isMode('stage')&&((stageIndex>=BASIC_STAGE_START&
   ||(stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT));
 // 盤面の向きに関係なく型を判定できるよう、9パターンの正規化済み状態から出題順(1〜9)を逆引きする。
 const TWO_MOVE_CANONICAL_POSITION=new Map(TWO_MOVE_STAGES.map((stage,patternIndex)=>[canonicalState(stage.state),BASIC_LESSON_PATTERN_ORDER.indexOf(patternIndex)+1]));
-const isTwoMoveLessonSpeedStage=()=>speedMode&&speedVariant==='training9';
+const isTwoMoveLessonSpeedStage=()=>isMode('speed')&&speedVariant==='training9';
 function currentTwoMoveLessonContext(){
   if(isTwoMoveLessonStage()){
     const base=stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT?BASIC_STAGE_START:TRAINING_STAGE_START;
@@ -5871,24 +5858,24 @@ function paint(){
     }
     return;
   }
-  if(!editingBoard&&!speedMode)showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]));
-  else if(speedMode){
+  if(!editingBoard&&!isMode('speed'))showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]));
+  else if(isMode('speed')){
     if(speedShowsRemaining())showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]));
     renderSpeedClock();
   }
-  if(speedMode&&isSolved()&&!clearShown&&speedSession&&!speedAwaitingStart()){
+  if(isMode('speed')&&isSolved()&&!clearShown&&speedSession&&!speedAwaitingStart()){
     completeSpeedStage();
     return;
   }
   // 二周目の悟りは、最短手数を手がかりにさせない。成功しない限り4手目まで続けられる。
   const satoriFailureLimit=secondLapActive?4:best;
-  if(satoriMode&&!isSolved()&&moves>=satoriFailureLimit&&!clearShown){
+  if(isMode('satori')&&!isSolved()&&moves>=satoriFailureLimit&&!clearShown){
     clearShown=true;
     renderOptimalFail();
     $('optimalFailDialog').hidden=false;
     return;
   }
-  if(!editingBoard&&!speedMode&&isSolved()&&!clearShown){
+  if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){
     clearShown=true;
     svg.classList.add('clear-pending');
     if(requiresOptimalClear()&&moves!==best){
@@ -5899,14 +5886,14 @@ function paint(){
     }
     const analyticsStage=analyticsStageInfo();
     if(analyticsStage){
-      const firstClear=satoriMode?!clearedSatoriStages.has(satoriIndex)
-        :extraMode?!clearedExtraStages.has(extraIndex)
+      const firstClear=isMode('satori')?!clearedSatoriStages.has(satoriIndex)
+        :isMode('mastery')?!clearedExtraStages.has(extraIndex)
         :!clearedStages.has(stageIndex);
       trackAnalyticsEvent('stage_clear',Object.assign({},analyticsStage,{
         moves_used:moves,first_clear:firstClear
       }));
     }
-    if(satoriMode){
+    if(isMode('satori')){
       const wasSatoriMastered=isSatoriMastered();
       clearedSatoriStages.add(satoriIndex);
       persistLapProgress();
@@ -5914,12 +5901,12 @@ function paint(){
       if(!wasSatoriMastered&&isSatoriMastered())pendingMasterThemeRefresh=true;
       else updateMasterTheme();
       renderStageNav();
-    }else if(extraMode){
+    }else if(isMode('mastery')){
       clearedExtraStages.add(extraIndex);
       persistLapProgress();
       rememberClearedMessage(true,extraIndex);
       updateMasterTheme();
-    }else if(!freeMode&&!customMode){
+    }else if(!isMode('free')&&!isMode('custom')){
       clearedStages.add(stageIndex);
       persistLapProgress();
       rememberClearedMessage(false,stageIndex);
@@ -6046,9 +6033,9 @@ function applySwipe(ti,dir,save=true,playEffects=true){
         openTwoMoveLessonDialog(true);
     },520);
   }
-  if(!speedMode&&isTrainingRangeStage()&&SOLVER.dist[enc(ori)]===2)showTrainingShapeCallout();
-  if(!speedMode&&isAssistedLearningStage()&&!isSolved())showAcademyRemainingCallout();
-  if(speedMode&&speedSession){
+  if(!isMode('speed')&&isTrainingRangeStage()&&SOLVER.dist[enc(ori)]===2)showTrainingShapeCallout();
+  if(!isMode('speed')&&isAssistedLearningStage()&&!isSolved())showAcademyRemainingCallout();
+  if(isMode('speed')&&speedSession){
     if(save)speedSession.movedCurrent=true;
     saveSpeedSession();
   }
@@ -6246,7 +6233,7 @@ function loadStage(index){
     showMasterDialog('primary');
     return;
   }
-  if(speedMode)pauseSpeedRun();speedMode=false;
+  if(isMode('speed'))pauseSpeedRun();
   setActiveMode('stage');editingBoard=false;
   nextStageAttention=false;
   stageIndex=Math.max(0,Math.min(STAGES.length-1,index));
@@ -6263,7 +6250,7 @@ function loadStage(index){
 function loadExtraStage(index){
   // 一周目は、だるま修行の修了試験を終えるまで名人への道へ進めない。
   if(!canEnterMastery()){showMasterDialog('intermediate');return;}
-  if(speedMode)pauseSpeedRun();
+  if(isMode('speed'))pauseSpeedRun();
   setActiveMode('mastery');editingBoard=false;
   nextStageAttention=false;
   extraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
@@ -6280,7 +6267,7 @@ function loadSatoriStage(index){
     if(activeLap===1&&isMastered())showMasterDialog('mastery');
     return;
   }
-  if(speedMode)pauseSpeedRun();
+  if(isMode('speed'))pauseSpeedRun();
   setActiveMode('satori');editingBoard=false;
   nextStageAttention=false;
   satoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
@@ -6367,7 +6354,7 @@ function saveActiveSession(){
   persistLapProgress();
   const mode=activeMode;
   const payload={
-    mode,editingBoard,extra:extraMode,satori:satoriMode,index:satoriMode?satoriIndex:extraMode?extraIndex:stageIndex,lap:activeLap,
+    mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,
     lastStageMode,board:serializeActiveBoard()
   };
   syncGameState(payload);
@@ -6411,10 +6398,10 @@ function restoreActiveSession(){
   }
   restoreSavedBoard(saved.board);
   renderStageNav();
-  if(customMode&&editingBoard)showMakerMessage();
+  if(isMode('custom')&&editingBoard)showMakerMessage();
 }
 function startFree(){
-  if(speedMode)pauseSpeedRun();
+  if(isMode('speed'))pauseSpeedRun();
   savedFreeSession=null;
   setActiveMode('free');editingBoard=false;
   const pool=[...SOLVER.byDepth[2],...SOLVER.byDepth[3],...SOLVER.byDepth[4]];
@@ -6432,7 +6419,7 @@ function revealFourthDistance(){
   renderStageNav();
 }
 function startFreeFromState(state){
-  if(speedMode)pauseSpeedRun();
+  if(isMode('speed'))pauseSpeedRun();
   savedFreeSession=null;
   setActiveMode('free');editingBoard=false;
   setPosition(state,SOLVER.dist[state]);
@@ -6449,7 +6436,7 @@ function saveFreeSession(){
   };
 }
 function restoreFreeSession(){
-  if(speedMode)pauseSpeedRun();
+  if(isMode('speed'))pauseSpeedRun();
   const s=savedFreeSession;
   if(!s){startFree();return;}
   cancelTileAnimations();
@@ -6489,8 +6476,8 @@ function showMakerMessage(){
 }
 function enterBoardMaker(){
   if(busy)return;
-  if(speedMode)pauseSpeedRun();
-  if(freeMode)saveFreeSession();
+  if(isMode('speed'))pauseSpeedRun();
+  if(isMode('free'))saveFreeSession();
   // 自作モードは常にまっさらな盤面から。直前の悟り／速解き盤面を
   // そのまま最短手数の確認に使えないようにする。
   const state=0;
@@ -6691,11 +6678,11 @@ function animateUndoSwipe(target){
 function restartWithAnimation(){
   const beforeOri=Uint8Array.from(ori),beforeSpin=Int16Array.from(spin);
   // 速解きでは、一度動かしてからのやり直しは最短クリアとして数えない。
-  if(speedMode&&speedSession&&speedSession.movedCurrent)speedSession.restartedCurrent=true;
+  if(isMode('speed')&&speedSession&&speedSession.movedCurrent)speedSession.restartedCurrent=true;
   // 極1〜9はやり直しで回復、極10〜12は使用回数を維持する。
   if(!fourthChecksSurviveRestart())renewFourthChecks();
   setPosition(currentInitialState,currentInitialPar);
-  if(speedMode&&speedSession)saveSpeedSession();
+  if(isMode('speed')&&speedSession)saveSpeedSession();
   renderStageNav();
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   busy=true;
@@ -7098,18 +7085,18 @@ $('undo').addEventListener('click',()=>{
   $('msg').classList.remove('show');
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
     ori=h.o;spin=h.s;tileEls=h.t;moves=h.m;paint();
-    if(speedMode&&speedSession)saveSpeedSession();
+    if(isMode('speed')&&speedSession)saveSpeedSession();
   }else{
     animateUndoSwipe(h);
     // アニメーション完了後の盤面を保存する。
-    if(speedMode&&speedSession)setTimeout(saveSpeedSession,460);
+    if(isMode('speed')&&speedSession)setTimeout(saveSpeedSession,460);
   }
 });
 $('reset').addEventListener('click',()=>{
   if(busy)return;
   if(editingBoard){resetMakerBoard();return;}
   restartWithAnimation();
-  if(!freeMode&&!customMode&&!extraMode&&stageIndex===0&&!hasMasterReward())
+  if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&stageIndex===0&&!hasMasterReward())
     setTimeout(scheduleStageOneTutorial,500);
 });
 $('tutorialReset').addEventListener('click',()=>{
@@ -7124,7 +7111,7 @@ $('tutorialReset').addEventListener('click',()=>{
   openIntroGuide();
 });
 $('shuffle').addEventListener('click',()=>{
-  if(!busy&&freeMode)startFree();
+  if(!busy&&isMode('free'))startFree();
 });
 // ===== ヒントシステム・段位・名人ロードマップ =====
 function clearHintVisuals(preserveSelection=false){
@@ -7460,7 +7447,7 @@ function renderSatoriStagePicker(){
     const button=document.createElement('button');
     button.textContent=index+1;
     button.classList.toggle('cleared',pickerSatori.has(index));
-    button.classList.toggle('current',pickerLap===activeLap&&satoriMode&&satoriIndex===index);
+    button.classList.toggle('current',pickerLap===activeLap&&isMode('satori')&&satoriIndex===index);
     button.disabled=!(index===0||pickerSatori.has(index)||pickerSatori.has(index-1));
     button.setAttribute('aria-label',tr('satori')+' '+(index+1));
     button.addEventListener('click',()=>{closeStagePicker();activateCampaignLap(pickerLap);loadSatoriStage(index);});
@@ -7474,7 +7461,7 @@ function openSatoriPicker(){
   }
   pickerLap=activeLap;
   pickerRound='satori';
-  satoriPickerPage=satoriMode?Math.floor(satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0;
+  satoriPickerPage=isMode('satori')?Math.floor(satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0;
   renderSatoriStagePicker();
   $('stagePicker').hidden=false;
 }
@@ -7532,7 +7519,7 @@ function renderStagePicker(){
       :!(index===0||pickerExtra.has(index)||pickerExtra.has(index-1)));
     b.classList.toggle('cleared',cleared);
     if(!isPrimary)b.classList.add('extra-lap-'+pickerRound);
-    b.classList.toggle('current',pickerLap===activeLap&&!speedMode&&(isPrimary?!extraMode&&!satoriMode&&stageIndex===index:extraMode&&extraIndex===index));
+    b.classList.toggle('current',pickerLap===activeLap&&!isMode('speed')&&(isPrimary?!isMode('mastery')&&!isMode('satori')&&stageIndex===index:isMode('mastery')&&extraIndex===index));
     const displayNumber=isPrimary?primarySectionPosition(index).position:i+1;
     b.innerHTML=displayNumber+'<span>'+tr('shortest')+' '+stage.par+' '+tr('moveUnit')+'</span>';
     b.addEventListener('click',()=>{
@@ -7546,9 +7533,9 @@ function renderStagePicker(){
 }
 function openStagePicker(){
   pickerLap=activeLap;
-  if(satoriMode||((freeMode||customMode)&&lastStageMode.satori)){openSatoriPicker();return;}
-  const showingExtra=extraMode||((freeMode||customMode)&&lastStageMode.extra);
-  const showingIndex=extraMode?extraIndex:lastStageMode.index;
+  if(isMode('satori')||((isMode('free')||isMode('custom'))&&lastStageMode.satori)){openSatoriPicker();return;}
+  const showingExtra=isMode('mastery')||((isMode('free')||isMode('custom'))&&lastStageMode.extra);
+  const showingIndex=isMode('mastery')?extraIndex:lastStageMode.index;
   pickerRound=showingExtra?Math.floor(showingIndex/MASTER_VOLUME_SIZE):PRIMARY_SECTIONS.indexOf(primarySection(showingIndex))-PRIMARY_PICKER_SECTION_COUNT;
   renderStagePicker();
   $('stagePicker').hidden=false;
@@ -7595,17 +7582,17 @@ $('pickerNextRound').addEventListener('click',()=>{
 $('pickerFreeMode').addEventListener('click',()=>{
   if(busy)return;
   closeStagePicker();
-  if(!freeMode)restoreFreeSession();
+  if(!isMode('free'))restoreFreeSession();
 });
 $('pickerCustomMode').addEventListener('click',()=>{
   if(busy)return;
   closeStagePicker();
-  if(!customMode)enterBoardMaker();
+  if(!isMode('custom'))enterBoardMaker();
 });
 $('pickerSpeedMode').addEventListener('click',()=>{
   if(!featureUnlocked('speedRun'))return;
   closeStagePicker();
-  if(speedMode)return;
+  if(isMode('speed'))return;
   openSpeedPicker();
 });
 
@@ -7639,21 +7626,21 @@ function renderStageNav(){
     const modeRow=document.querySelector('.mode-row');
     document.querySelector('.status-metric.moves').hidden=assistedLearning;
     document.querySelector('.status-separator').hidden=assistedLearning;
-    modeRow.classList.toggle('satori-mode',satoriMode);
-    modeRow.classList.toggle('speed-mode',speedMode);
+    modeRow.classList.toggle('satori-mode',isMode('satori'));
+    modeRow.classList.toggle('speed-mode',isMode('speed'));
     modeRow.classList.toggle('speed-training',speedShowsRemaining());
     modeRow.classList.toggle('speed-with-remaining',speedShowsRemaining());
-    $('stagePickerTrigger').classList.toggle('master-stage',extraMode||satoriMode);
+    $('stagePickerTrigger').classList.toggle('master-stage',isMode('mastery')||isMode('satori'));
     $('stageSubtitle').hidden=true;
     $('stageCount').hidden=true;
     $('stagePickerTrigger').disabled=false;
-    $('stagePickerTrigger').classList.toggle('second-lap-stage',activeLap===2&&!freeMode&&!customMode&&!speedMode);
-    $('lapBadge').hidden=activeLap!==2||freeMode||customMode||speedMode;
+    $('stagePickerTrigger').classList.toggle('second-lap-stage',activeLap===2&&!isMode('free')&&!isMode('custom')&&!isMode('speed'));
+    $('lapBadge').hidden=activeLap!==2||isMode('free')||isMode('custom')||isMode('speed');
     $('lapBadge').textContent=secondLapMark();
     $('shuffle').hidden=true;
-    $('undo').hidden=hideLearningControls||editingBoard||satoriMode||(speedMode&&!speedAllowsUndo());
-    $('undo').disabled=hideLearningControls||editingBoard||satoriMode||(speedMode&&!speedAllowsUndo())||isFinalMasterPuzzle();
-    $('hint').hidden=hideLearningControls||editingBoard||satoriMode||speedMode;
+    $('undo').hidden=hideLearningControls||editingBoard||isMode('satori')||(isMode('speed')&&!speedAllowsUndo());
+    $('undo').disabled=hideLearningControls||editingBoard||isMode('satori')||(isMode('speed')&&!speedAllowsUndo())||isFinalMasterPuzzle();
+    $('hint').hidden=hideLearningControls||editingBoard||isMode('satori')||isMode('speed');
     if(isFourthVolume()){
       $('hint').textContent=tr('remainingCheck',{n:fourthChecksLeft()});
       $('hint').disabled=fourthChecksLeft()<=0||fourthDistanceRevealed;
@@ -7664,39 +7651,39 @@ function renderStageNav(){
     $('debugTools').hidden=!DEBUG_MODE;
     for(const id of ['debugReset','debugClear','debugSpeedJumpFinish','debugAlmost','debugMore','debugFar','debugSkipTutorial','debugIntro2','debugBasic11','debugAcademy20','debugSpeedTraining8','debugTrainingUpper','debugTrainingMiddle','debugTrainingLower','debugSpeedIntermediate17','debugExtra14','debugExtra29','debugExtra44','debugSpeedMastery26','debugSatori72','debugSecondIntro2','debugSecondBasic11','debugSecondAcademy20','debugSecondTrainingUpper','debugSecondTrainingMiddle','debugSecondTrainingLower','debugSecondExtra14','debugSecondExtra29','debugSecondExtra44','debugSecondSatori72'])$(id).hidden=!DEBUG_MODE;
     const pauseButton=$('speedPause'),pauseInline=$('speedPauseInline'),playActions=document.querySelector('.play-actions');
-    const awaitingSpeedStart=speedMode&&speedAwaitingStart();
-    if(speedMode&&!speedShowsRemaining())pauseInline.appendChild(pauseButton);
+    const awaitingSpeedStart=isMode('speed')&&speedAwaitingStart();
+    if(isMode('speed')&&!speedShowsRemaining())pauseInline.appendChild(pauseButton);
     else playActions.appendChild(pauseButton);
-    $('reset').textContent=editingBoard?tr('resetAll'):speedShowsRemaining()?tr('reset'):speedMode?tr('speedPuzzleRestart'):tr('reset');
-    $('reset').hidden=hideLearningControls||satoriMode||(speedMode&&!speedShowsRemaining());
-    $('speedPause').hidden=!speedMode;
+    $('reset').textContent=editingBoard?tr('resetAll'):speedShowsRemaining()?tr('reset'):isMode('speed')?tr('speedPuzzleRestart'):tr('reset');
+    $('reset').hidden=hideLearningControls||isMode('satori')||(isMode('speed')&&!speedShowsRemaining());
+    $('speedPause').hidden=!isMode('speed');
     $('speedStartOverlay').hidden=!awaitingSpeedStart;
     $('playbar').hidden=hideLearningControls||(awaitingSpeedStart&&!speedShowsRemaining());
-    const hideBoardViewControls=assistedLearning||speedMode||(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT);
+    const hideBoardViewControls=assistedLearning||isMode('speed')||(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT);
     for(const id of ['rotateBoardBack','rotateBoard','mirrorBoard','flipBoardVertical'])$(id).hidden=hideBoardViewControls;
     $('twoMoveLessonOpen').hidden=!((isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)||isTwoMoveLessonSpeedStage());
     $('twoMoveLessonOpen').textContent=tr('twoMoveLessonOpen');
   }
   function renderStageNavModeButtons(){
-    const inSideMode=freeMode||customMode;
+    const inSideMode=isMode('free')||isMode('custom');
     $('stageKind').hidden=false;
     $('stageNav').classList.toggle('side-mode-nav',inSideMode);
     $('prevStage').textContent=inSideMode?tr('stageModeReturn'):tr('prev');
     $('prevStage').setAttribute('aria-label',inSideMode?tr('stageModeReturn'):tr('prev'));
-    $('prevStage').disabled=speedMode||(!inSideMode&&(!extraMode&&!satoriMode&&stageIndex===0&&activeLap===1));
-    const customPlaying=customMode&&!editingBoard;
-    const nextLabel=customPlaying?tr('boardMaker'):freeMode?tr('shuffle'):tr('next');
+    $('prevStage').disabled=isMode('speed')||(!inSideMode&&(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===1));
+    const customPlaying=isMode('custom')&&!editingBoard;
+    const nextLabel=customPlaying?tr('boardMaker'):isMode('free')?tr('shuffle'):tr('next');
     $('nextStage').textContent=nextLabel;
     $('nextStage').setAttribute('aria-label',nextLabel);
-    $('nextStage').hidden=speedMode||(customMode&&!customPlaying);
-    $('nextStage').disabled=customPlaying?false:customMode?true:freeMode?false:extraMode
+    $('nextStage').hidden=isMode('speed')||(isMode('custom')&&!customPlaying);
+    $('nextStage').disabled=customPlaying?false:isMode('custom')?true:isMode('free')?false:isMode('mastery')
       ?(extraIndex===EXTRA_STAGES.length-1?!canEnterSatori():!clearedExtraStages.has(extraIndex))
       :(stageIndex===STAGES.length-1?!allPrimaryCleared():!clearedStages.has(stageIndex));
-    $('stageMode').classList.toggle('on',!freeMode&&!customMode&&!speedMode);
-    $('freeMode').classList.toggle('on',freeMode);
-    $('menuSpeed').classList.toggle('on',speedMode);
-    $('stageMode').setAttribute('aria-pressed',String(!freeMode&&!customMode));
-    $('freeMode').setAttribute('aria-pressed',String(freeMode));
+    $('stageMode').classList.toggle('on',!isMode('free')&&!isMode('custom')&&!isMode('speed'));
+    $('freeMode').classList.toggle('on',isMode('free'));
+    $('menuSpeed').classList.toggle('on',isMode('speed'));
+    $('stageMode').setAttribute('aria-pressed',String(!isMode('free')&&!isMode('custom')));
+    $('freeMode').setAttribute('aria-pressed',String(isMode('free')));
     $('stageModeReturn').hidden=true;
     $('menuRankList').hidden=highestRankIndex()<0;
     $('menuAllPatterns').hidden=!featureUnlocked('genome');
@@ -7715,7 +7702,7 @@ function renderStageNav(){
     }
   }
   function renderStageNavStageText(){
-    if(speedMode){
+    if(isMode('speed')){
       $('stageKind').textContent=speedVariantCopy(speedVariant).label;
       $('stageNumber').textContent=(speedSession.index+1)+' / '+(speedSession.total||activeSpeedDefinition().total);
       const showsRemaining=speedShowsRemaining();
@@ -7728,21 +7715,21 @@ function renderStageNav(){
       document.querySelector('.status-metric.moves').hidden=isTwoMoveLessonSpeedStage();
       if(showsRemaining)showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
       renderSpeedClock();
-    }else if(freeMode){
+    }else if(isMode('free')){
       $('stageKind').textContent=tr('freeKind');
       $('stageNumber').textContent=tr('freePlay');
       showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
-    }else if(customMode){
+    }else if(isMode('custom')){
       $('stageKind').textContent='CUSTOM';
       $('stageNumber').textContent=tr('makeBoard');
       const d=SOLVER.dist[enc(ori)];
       if(editingBoard)$('stagePar').textContent=d===255?'—':d;
       else showRemaining(d,false);
-    }else if(satoriMode){
+    }else if(isMode('satori')){
       $('stageKind').textContent=tr('satori');
       $('stageNumber').textContent=(satoriIndex+1)+' / '+SATORI_STAGES.length;
       showRemaining('?',false);
-    }else if(extraMode){
+    }else if(isMode('mastery')){
       const volume=Math.floor(extraIndex/MASTER_VOLUME_SIZE)+1;
       $('stageKind').textContent=currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume);
       $('stageNumber').textContent=masterSubtitle(volume);
@@ -7768,26 +7755,26 @@ function renderStageNav(){
   }
   function renderStageNavAccent(){
     let accentFrac=0;
-    if(speedMode)accentFrac=(speedSession.index+1)/(speedSession.total||activeSpeedDefinition().total);
-    else if(satoriMode)accentFrac=(satoriIndex+1)/SATORI_STAGES.length;
-    else if(extraMode)accentFrac=(extraIndex+1)/EXTRA_STAGES.length;
-    else if(!freeMode&&!customMode)accentFrac=stageIndex<ACADEMY_STAGE_COUNT?(stageIndex+1)/ACADEMY_STAGE_COUNT:(stageIndex-ACADEMY_STAGE_COUNT+1)/TRAINING_STAGE_COUNT;
+    if(isMode('speed'))accentFrac=(speedSession.index+1)/(speedSession.total||activeSpeedDefinition().total);
+    else if(isMode('satori'))accentFrac=(satoriIndex+1)/SATORI_STAGES.length;
+    else if(isMode('mastery'))accentFrac=(extraIndex+1)/EXTRA_STAGES.length;
+    else if(!isMode('free')&&!isMode('custom'))accentFrac=stageIndex<ACADEMY_STAGE_COUNT?(stageIndex+1)/ACADEMY_STAGE_COUNT:(stageIndex-ACADEMY_STAGE_COUNT+1)/TRAINING_STAGE_COUNT;
     $('stageAccentFill').style.width=(Math.max(0,Math.min(1,accentFrac))*100)+'%';
-    if(!speedMode){$('shortestLabel').textContent=tr('shortestDisplay');$('moveUnit').textContent=tr('moveUnit');$('academyClearSuffix').textContent=tr('academyClearSuffix');$('movesLabel').textContent=tr('moves');$('moves').textContent=moves;$('movesUnit').textContent=tr('moveUnit');}
+    if(!isMode('speed')){$('shortestLabel').textContent=tr('shortestDisplay');$('moveUnit').textContent=tr('moveUnit');$('academyClearSuffix').textContent=tr('academyClearSuffix');$('movesLabel').textContent=tr('moves');$('moves').textContent=moves;$('movesUnit').textContent=tr('moveUnit');}
     renderRankBadge();
   }
   function renderStageNavPrevNext(){
-    const customPlaying=customMode&&!editingBoard;
-    if(speedMode){$('prevStage').hidden=false;$('nextStage').hidden=false;$('prevStage').disabled=true;$('nextStage').disabled=true;}
-    else if(satoriMode){
+    const customPlaying=isMode('custom')&&!editingBoard;
+    if(isMode('speed')){$('prevStage').hidden=false;$('nextStage').hidden=false;$('prevStage').disabled=true;$('nextStage').disabled=true;}
+    else if(isMode('satori')){
       $('prevStage').hidden=false;$('nextStage').hidden=false;
       $('prevStage').disabled=false;
       $('nextStage').disabled=satoriIndex===SATORI_STAGES.length-1
         ?!(activeLap===1&&secondLapUnlocked)
         :!clearedSatoriStages.has(satoriIndex);
     }
-    else{$('prevStage').hidden=false;$('nextStage').hidden=customMode&&!customPlaying;}
-    const highlightNext=nextStageAttention&&!freeMode&&!customMode&&!$('nextStage').hidden&&!$('nextStage').disabled;
+    else{$('prevStage').hidden=false;$('nextStage').hidden=isMode('custom')&&!customPlaying;}
+    const highlightNext=nextStageAttention&&!isMode('free')&&!isMode('custom')&&!$('nextStage').hidden&&!$('nextStage').disabled;
     $('nextStage').classList.toggle('next-attention',highlightNext);
   }
   function renderStageNavGuidance(){
@@ -7842,24 +7829,24 @@ function showClearActions(){
 }
 function renderClearStageContext(){
   const context=$('clearStageContext');
-  if(freeMode||customMode){
+  if(isMode('free')||isMode('custom')){
     context.hidden=true;
     context.textContent='';
     return;
   }
   context.hidden=false;
-  const showsCount=extraMode||(!satoriMode&&!speedMode&&['intro','basic','development'].includes(primarySectionPosition(stageIndex).section.id));
+  const showsCount=isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','development'].includes(primarySectionPosition(stageIndex).section.id));
   context.textContent=showsCount
     ?$('stageKind').textContent+'　'+$('stageNumber').textContent+' '+$('stageCount').textContent
     :$('stageKind').textContent+' '+$('stageNumber').textContent;
 }
 function clearDialogHeading(){
-  return tr(extraMode||satoriMode?'optimalClear':'clear');
+  return tr(isMode('mastery')||isMode('satori')?'optimalClear':'clear');
 }
 function showClearDialog(){
   // 悟りの最終問題は、再挑戦で解いた場合も制覇ダイアログを見せる。
   // それ以外の悟り問題は、制覇後も通常のクリアダイアログにする。
-  const showSatoriMastery=satoriMode&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered();
+  const showSatoriMastery=isMode('satori')&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered();
   if(pendingMasterThemeRefresh){
     pendingMasterThemeRefresh=false;
     updateMasterTheme();
@@ -7868,34 +7855,34 @@ function showClearDialog(){
     showMasterDialog(secondLapActive?'awakening':'satori');
     return;
   }
-  if(!freeMode&&!customMode&&!extraMode&&!satoriMode&&stageIndex===ACADEMY_STAGE_COUNT-1&&academyCleared()){
+  if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&stageIndex===ACADEMY_STAGE_COUNT-1&&academyCleared()){
     showMasterDialog('primary');
     return;
   }
   // 入門クラス最終問題のクリアは、通常のクリアダイアログの代わりに
   // だるま学園入学と同じ演出の「基本クラスへようこそ」を毎回そのまま見せる。
-  if(!freeMode&&!customMode&&!extraMode&&!satoriMode&&stageIndex===INTRO_STAGE_COUNT-1){
+  if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&stageIndex===INTRO_STAGE_COUNT-1){
     openChainedDialog('basicWelcome');
     return;
   }
   // 基本クラス最終問題のクリアも、同じ演出で「発展クラス開始」を毎回そのまま見せる。
-  if(!freeMode&&!customMode&&!extraMode&&!satoriMode&&stageIndex===DEVELOPMENT_STAGE_START-1){
+  if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&stageIndex===DEVELOPMENT_STAGE_START-1){
     openChainedDialog('developmentWelcome');
     return;
   }
-  if(!freeMode&&!customMode&&!extraMode&&!satoriMode&&stageIndex===STAGES.length-1&&allPrimaryCleared()){
+  if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&stageIndex===STAGES.length-1&&allPrimaryCleared()){
     showMasterDialog('intermediate');
     return;
   }
-  if(extraMode&&(extraIndex+1)%MASTER_VOLUME_SIZE===0){
+  if(isMode('mastery')&&(extraIndex+1)%MASTER_VOLUME_SIZE===0){
     showMasterDialog(extraIndex===EXTRA_STAGES.length-1?'mastery':'volume');
     return;
   }
   const action=$('clearNext');
-  if(freeMode)action.textContent=tr('another');
-  else if(customMode)action.textContent=tr('again');
-  else if(satoriMode)action.textContent=satoriIndex===SATORI_STAGES.length-1?tr('satoriChoose'):tr('nextPuzzle');
-  else if(extraMode)action.textContent=extraIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');
+  if(isMode('free'))action.textContent=tr('another');
+  else if(isMode('custom'))action.textContent=tr('again');
+  else if(isMode('satori'))action.textContent=satoriIndex===SATORI_STAGES.length-1?tr('satoriChoose'):tr('nextPuzzle');
+  else if(isMode('mastery'))action.textContent=extraIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');
   else if(stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');
   else if(stageIndex===STAGES.length-1)action.textContent=tr('toFree');
   else action.textContent=tr('nextPuzzle');
@@ -7909,9 +7896,9 @@ function showClearDialog(){
   $('clearDialog').hidden=false;
 }
 function renderOptimalFail(){
-  const secondSatori=satoriMode&&secondLapActive;
+  const secondSatori=isMode('satori')&&secondLapActive;
   const over=Math.max(1,moves-best);
-  const satoriLimit=satoriMode&&!isSolved()&&moves>=best;
+  const satoriLimit=isMode('satori')&&!isSolved()&&moves>=best;
   if(secondSatori){
     $('optimalFailTitle').textContent=tr('satoriSecondFailTitle');
     $('optimalFailRule').textContent=tr('satoriSecondFailRule');
@@ -7921,10 +7908,10 @@ function renderOptimalFail(){
     return;
   }
   $('optimalFailResult').hidden=false;
-  const encourage=tr(satoriMode?'satoriFailEncourage':'optimalFailEncourage');
+  const encourage=tr(isMode('satori')?'satoriFailEncourage':'optimalFailEncourage');
   $('optimalFailEncourage').hidden=!encourage;
   $('optimalFailTitle').textContent=satoriLimit?tr('satoriFailLimit'):tr(over===1?'optimalFailOne':over===2?'optimalFailTwo':'optimalFailMany');
-  $('optimalFailRule').textContent=tr(satoriMode?'satoriFailRule':'optimalFailRule');
+  $('optimalFailRule').textContent=tr(isMode('satori')?'satoriFailRule':'optimalFailRule');
   $('optimalFailResult').textContent=satoriLimit?tr('satoriFailResult',{best}):tr('optimalFailResult',{best,moves});
   $('optimalFailEncourage').textContent=encourage;
   $('optimalRetry').textContent=tr('optimalRetry');
@@ -7941,7 +7928,7 @@ function stageClearTextAt(mode,index){
   if(entry.guideCard)return resolveLocaleText(entry.guideCard.text);
   return entry.tip?resolveLocaleText(entry.tip):'';
 }
-function stageClearText(){return freeMode||customMode||satoriMode?'':stageClearTextAt(extraMode,extraMode?extraIndex:stageIndex);}
+function stageClearText(){return isMode('free')||isMode('custom')||isMode('satori')?'':stageClearTextAt(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);}
 function stageClearArtAt(mode,index){
   const entry=clearContentAt(mode,index);
   if(!entry)return '';
@@ -7949,7 +7936,7 @@ function stageClearArtAt(mode,index){
   if(entry.guideCard)return 'guideCard:'+entry.guideCard.state.join('');
   return entry.art||'';
 }
-function stageClearArt(){return satoriMode?'':stageClearArtAt(extraMode,extraMode?extraIndex:stageIndex);}
+function stageClearArt(){return isMode('satori')?'':stageClearArtAt(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);}
 function tipDaruma(x,y,scale=.55){
   return '<g transform="translate('+x+' '+y+') scale('+scale+')"><use href="#daruma-body"/><use href="#face-open"/></g>';
 }
@@ -8051,7 +8038,7 @@ function renderClearTip(){
   const twoMoveLesson=lessonVariantFromArt(art);
   const lessonCopy=$('clearTwoMoveLessonCopy');
   const lessonRule=$('clearTwoMoveLessonRule');
-  const clearEntry=extraMode?clearContentAt(true,extraIndex):null;
+  const clearEntry=isMode('mastery')?clearContentAt(true,extraIndex):null;
   const twoMoveCard=clearEntry?clearEntry.twoMoveCard:undefined;
   const guideCard=clearEntry?clearEntry.guideCard:null;
   const rankLink=!!clearEntry&&clearEntry.link==='rank';
@@ -8065,8 +8052,8 @@ function renderClearTip(){
   detailLink.dataset.target=rankLink?'rank':messagesLink?'messages':tipsLink?'tips':patternsLink?'patterns':'details';
   detailLink.textContent=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatternsLink')+' →':tr(rankLink?'rankLink':messagesLink?'clearMessagesLink':'detailsLink');
   const middleStart=TRAINING_STAGE_START+TRAINING_UPPER_COUNT;
-  const middleIndex=!extraMode&&!satoriMode&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;
-  const developmentIndex=!extraMode&&!satoriMode&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;
+  const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;
+  const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;
   const shapeState=middleIndex>=0?TRAINING_MIDDLE_CLEAR_SHAPE_STATES[middleIndex]:developmentIndex>=0?DEVELOPMENT_THREE_CLEAR_SHAPE_STATES[developmentIndex]:null;
   const shapeName=shapeState!=null?TWO_MOVE_TIP3_SHAPES[TWO_MOVE_CANONICAL_POSITION.get(canonicalState(shapeState))]:null;
   const showShapeRule=!!shapeName&&TRAINING_SHAPE_RULE_SUPPORTED_SHAPES.has(shapeName);
@@ -8397,7 +8384,7 @@ function openMessageReview({resume=false,returnTarget=null}={}){
       messageReviewIndex=saved>=0?saved:0;
     }
   }else{
-    const currentExtra=extraMode,currentIndex=extraMode?extraIndex:stageIndex;
+    const currentExtra=isMode('mastery'),currentIndex=isMode('mastery')?extraIndex:stageIndex;
     const exact=messageReviewEntries.findIndex(entry=>entry.extra===currentExtra&&entry.index===currentIndex);
     messageReviewIndex=exact>=0?exact:0;
   }
@@ -8442,7 +8429,7 @@ function hideGameDialogs(){
   $('clearNext').hidden=true;
 }
 function renderClearQuiz(){
-  const clearEntry=extraMode?clearContentAt(true,extraIndex):(!freeMode&&!customMode&&!satoriMode?clearContentAt(false,stageIndex):undefined);
+  const clearEntry=isMode('mastery')?clearContentAt(true,extraIndex):(!isMode('free')&&!isMode('custom')&&!isMode('satori')?clearContentAt(false,stageIndex):undefined);
   const quiz=clearEntry&&clearEntry.quiz?resolveLocaleText(clearEntry.quiz):undefined;
   const root=$('clearQuiz');
   root.classList.remove('quiz-success');
@@ -8457,16 +8444,16 @@ function advanceAfterClear(){
     makerButtonBlockedUntil=0;
     renderStageNav();
   },600);
-  if(freeMode) startFree();
-  else if(customMode){
+  if(isMode('free')) startFree();
+  else if(isMode('custom')){
     setPosition(currentInitialState,currentInitialPar);
     renderStageNav();
   }
-  else if(satoriMode){
+  else if(isMode('satori')){
     if(satoriIndex<SATORI_STAGES.length-1)loadSatoriStage(satoriIndex+1);
     else openSatoriPicker();
   }
-  else if(extraMode){
+  else if(isMode('mastery')){
     if(extraIndex===EXTRA_STAGES.length-1)restoreFreeSession();
     else loadExtraStage(extraIndex+1);
   }
@@ -8604,7 +8591,7 @@ function boardQuizCenterIsNotOdd(board){
   board.forEach(value=>{if(value!==0)count[value]++;});
   return count[board[3]]===Math.max(...count);
 }
-function boardQuizConfigForCurrent(){return extraMode?(clearContentAt(true,extraIndex)?.boardQuiz||null):null;}
+function boardQuizConfigForCurrent(){return isMode('mastery')?(clearContentAt(true,extraIndex)?.boardQuiz||null):null;}
 function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
   root.classList.remove('quiz-success');
@@ -9213,7 +9200,7 @@ function showMasterDialog(kind='primary'){
 }
 function returnToStageMode(){
   if(busy)return;
-  if(freeMode)leaveFreeMode();
+  if(isMode('free'))leaveFreeMode();
   else if(lastStageMode.satori)loadSatoriStage(lastStageMode.index);
   else if(lastStageMode.extra)loadExtraStage(lastStageMode.index);
   else loadStage(lastStageMode.index);
@@ -9253,31 +9240,31 @@ function masterRoadmapMarkup(current){
 }
 function masterCommonRules(){return currentLang==='ja'?'名人への道は最短の手でクリアする必要があります。\nまた、進むほど自力で考える場面が増えていきます。':'Path to Mastery must be cleared in the fewest moves. As you advance, the rules become stricter.';}
 $('prevStage').addEventListener('click',()=>{
-  if(freeMode||customMode){returnToStageMode();return;}
-  if(!extraMode&&!satoriMode&&stageIndex===0&&activeLap===2){
+  if(isMode('free')||isMode('custom')){returnToStageMode();return;}
+  if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){
     activateCampaignLap(1);
     loadSatoriStage(SATORI_STAGES.length-1);
     return;
   }
-  if(satoriMode){
+  if(isMode('satori')){
     if(satoriIndex>0)loadSatoriStage(satoriIndex-1);
     else loadExtraStage(EXTRA_STAGES.length-1);
     return;
   }
-  if(extraMode){
+  if(isMode('mastery')){
     if(extraIndex===0)loadStage(STAGES.length-1);
     else loadExtraStage(extraIndex-1);
   }else loadStage(stageIndex-1);
  });
 $('nextStage').addEventListener('click',()=>{
-  if(freeMode){startFree();return;}
-  if(customMode&&!editingBoard){enterBoardMaker();return;}
-  if(satoriMode){
+  if(isMode('free')){startFree();return;}
+  if(isMode('custom')&&!editingBoard){enterBoardMaker();return;}
+  if(isMode('satori')){
     if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);
     else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}
     return;
   }
-  if(extraMode){
+  if(isMode('mastery')){
     if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);
     else loadExtraStage(extraIndex+1);
   }
@@ -9294,9 +9281,9 @@ $('customMode').addEventListener('click',()=>{
 });
 $('playCustomBoard').addEventListener('click',playCustomBoard);
 $('stageMode').addEventListener('click',()=>{
-  if(busy||(!freeMode&&!customMode&&!extraMode&&!satoriMode&&!speedMode))return;
-  if(speedMode){pauseSpeedRun();speedMode=false;returnToStageMode();return;}
-  if(freeMode)leaveFreeMode();
+  if(busy||(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&!isMode('speed')))return;
+  if(isMode('speed')){pauseSpeedRun();returnToStageMode();return;}
+  if(isMode('free'))leaveFreeMode();
   else if(lastStageMode.satori)loadSatoriStage(lastStageMode.index);
   else if(lastStageMode.extra)loadExtraStage(lastStageMode.index);
   else loadStage(lastStageMode.index);
@@ -9305,7 +9292,7 @@ $('stageModeReturn').addEventListener('click',()=>{
   returnToStageMode();
 });
 $('freeMode').addEventListener('click',()=>{
-  if(busy||freeMode)return;
+  if(busy||isMode('free'))return;
   restoreFreeSession();
 });
 // ===== デバッグツール =====
@@ -9322,8 +9309,8 @@ function debugClearCurrent(extraMoves=0){
   $('clearNext').hidden=true;
   paint();
   // 即クリアでも、通常操作と同じくメッセージ一覧の開始位置を更新する。
-  if(extraMoves===0&&!satoriMode&&!freeMode&&!customMode){
-    rememberClearedMessage(extraMode,extraMode?extraIndex:stageIndex);
+  if(extraMoves===0&&!isMode('satori')&&!isMode('free')&&!isMode('custom')){
+    rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);
   }
 }
 $('debugClear').addEventListener('click',()=>debugClearCurrent(0));
@@ -9457,7 +9444,7 @@ function debugUnlockSatori(count,secondLap=false){
 $('debugSatori72').addEventListener('click',()=>debugUnlockSatori(72));
 // 現在アクティブな速解きセッション（メニューから選んだもの）を、そのまま最終問題まで進める。
 function debugJumpSpeedFinish(){
-  if(!DEBUG_MODE||!speedMode||!speedSession)return;
+  if(!DEBUG_MODE||!isMode('speed')||!speedSession)return;
   speedSession.started=true;
   const total=speedSession.total||activeSpeedDefinition().total;
   speedSession.index=Math.max(0,total-1);
@@ -9530,7 +9517,7 @@ $('clearNext').addEventListener('click',()=>{
 });
 $('clearClose').addEventListener('click',()=>{
   hideGameDialogs();
-  nextStageAttention=!freeMode&&!customMode&&!editingBoard;
+  nextStageAttention=!isMode('free')&&!isMode('custom')&&!editingBoard;
   renderStageNav();
 });
 $('optimalRetry').addEventListener('click',()=>{
@@ -9553,12 +9540,12 @@ $('menuOpen3D').addEventListener('click',()=>{window.open('index_3D.html','_blan
 $('menuSatori').addEventListener('click',()=>{closeAppMenu();openSatoriPicker();});
 $('menuSpeed').addEventListener('click',()=>{
   closeAppMenu();
-  if(speedMode){pauseSpeedRun();openSpeedPicker();return;}
+  if(isMode('speed')){pauseSpeedRun();openSpeedPicker();return;}
   openSpeedPicker();
 });
 $('speedBoardStart').addEventListener('click',beginSpeedRun);
 $('speedPause').addEventListener('click',()=>{
-  if(!speedMode)return;
+  if(!isMode('speed'))return;
   openSpeedPauseDialog();
   $('speedResume').focus();
 });
@@ -9585,15 +9572,15 @@ $('speedRestartConfirm').addEventListener('click',()=>{
 });
 $('speedPauseStageMode').addEventListener('click',()=>{
   $('speedPauseDialog').hidden=true;
-  pauseSpeedRun();speedMode=false;returnToStageMode();
+  pauseSpeedRun();returnToStageMode();
 });
 $('speedPauseFreeMode').addEventListener('click',()=>{
   $('speedPauseDialog').hidden=true;
-  if(!freeMode)restoreFreeSession();
+  if(!isMode('free'))restoreFreeSession();
 });
 $('speedPauseCustomMode').addEventListener('click',()=>{
   $('speedPauseDialog').hidden=true;
-  if(!customMode)enterBoardMaker();
+  if(!isMode('custom'))enterBoardMaker();
 });
 $('closeMessages').addEventListener('click',()=>{
   const returnTarget=messageDialogReturn;
@@ -9653,7 +9640,7 @@ $('clearTipLink').addEventListener('click',()=>{
     openTwoMovePatterns({returnToClear:true});
     return;
   }
-  if(!extraMode)return;
+  if(!isMode('mastery'))return;
   const clickClearEntry=clearContentAt(true,extraIndex);
   const twoMoveCard=clickClearEntry?.twoMoveCard,guideCard=clickClearEntry?.guideCard;
   if(twoMoveCard!==undefined){
@@ -9685,7 +9672,7 @@ $('masterClose').addEventListener('click',()=>{
   const chainActive=chain?.via==='close'&&chain.when();
   const restartTraining=masterDialogKind==='awakening';
   const leaveSpeed=['speedComplete','speedTrialFailed'].includes(masterDialogKind);
-  const resumeSpeed=masterDialogKind==='speedIntro'&&speedMode;
+  const resumeSpeed=masterDialogKind==='speedIntro'&&isMode('speed');
   hideGameDialogs();
   if(resumeSpeed){startSpeedClock();return;}
   if(chainActive){
@@ -9695,7 +9682,7 @@ $('masterClose').addEventListener('click',()=>{
     return;
   }
   if(restartTraining){activateCampaignLap(1);loadStage(0);return;}
-  if(leaveSpeed){speedMode=false;returnToStageMode();return;}
+  if(leaveSpeed){returnToStageMode();return;}
   renderStageNav();
 });
 $('shareGame').addEventListener('click',()=>shareWakeSeven('game',$('shareGame')));
@@ -10141,9 +10128,9 @@ function applyLanguage(lang){
     renderClearQuiz();
     renderBoardQuiz('boardQuiz',boardQuizConfigForCurrent(),{requireAnswer:true});
     const action=$('clearNext');
-    if(freeMode)action.textContent=tr('another');
-    else if(customMode)action.textContent=tr('again');
-    else if(extraMode)action.textContent=extraIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');
+    if(isMode('free'))action.textContent=tr('another');
+    else if(isMode('custom'))action.textContent=tr('again');
+    else if(isMode('mastery'))action.textContent=extraIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');
     else if(stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');
     else if(stageIndex===STAGES.length-1)action.textContent=tr('toFree');
     else action.textContent=tr('nextPuzzle');
@@ -10331,7 +10318,7 @@ document.addEventListener('click',e=>{
 });
 // ===== 進捗リセット・チュートリアル移行・起動シーケンス =====
 function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=false}={}){
-  if(speedMode)pauseSpeedRun();
+  if(isMode('speed'))pauseSpeedRun();
   lap1ClearedStages=new Set();lap1ClearedExtraStages=new Set();lap1ClearedSatoriStages=new Set();
   lap2ClearedStages=new Set();lap2ClearedExtraStages=new Set();lap2ClearedSatoriStages=new Set();
   activeLap=1;secondLapUnlocked=false;
@@ -10416,7 +10403,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   }
   secondLapActive=false;
   awakenedGranted=false;
-  speedMode=false;speedSession=null;pauseSpeedClock();
+  setActiveMode('stage');speedSession=null;pauseSpeedClock();
   updateMasterTheme();
   loadStage(0);
   if(showIntro)setTimeout(openIntroGuide,80);
@@ -10454,10 +10441,10 @@ let savedLanguage=UI_TEXT[gameState.settings.language]?gameState.settings.langua
 applyLanguage(savedLanguage);
 if(storage.get(STORAGE_KEYS.introSeen)!=='1')setTimeout(openIntroGuide,350);
 else if(storage.get(STORAGE_KEYS.tutorialComplete)!=='1'&&!isMode('tutorial'))setTimeout(startTutorial,80);
-window.addEventListener('pagehide',()=>{if(speedMode)pauseSpeedClock();saveActiveSession();});
+window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();saveActiveSession();});
 document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='hidden'){if(speedMode)pauseSpeedClock();saveActiveSession();}
-  else if(speedMode&&!speedAwaitingStart()){
+  if(document.visibilityState==='hidden'){if(isMode('speed'))pauseSpeedClock();saveActiveSession();}
+  else if(isMode('speed')&&!speedAwaitingStart()){
     if(isSolved()&&speedSession){
       // 非表示の間にクリア演出や、その後の次の問題へ進む処理が止まってしまうことがある
       // (裏に回った端末がタイマーの発火を止める・遅らせる等)。
