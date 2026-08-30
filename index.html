@@ -5275,10 +5275,12 @@ function formatSpeedClock(ms){
   const totalSeconds=Math.floor(ms/1000),minutes=Math.floor(totalSeconds/60),seconds=totalSeconds%60;
   return String(minutes).padStart(2,'0')+':'+String(seconds).padStart(2,'0');
 }
+let speedViewRefs=null;
 function renderSpeedClock(){
   if(!isMode('speed'))return;
   const text=formatSpeedClock(speedElapsedMs());
-  setText('speedClockValue',text);
+  speedViewRefs??=createRefs(['speedClockValue']);
+  setText(speedViewRefs.speedClockValue,text);
 }
 function startSpeedClock(){
   if(!isMode('speed')||speedManuallyPaused||speedClockStarted||document.visibilityState==='hidden'||speedAwaitingStart())return;
@@ -7824,7 +7826,7 @@ const MESSAGE_RENDERERS=Object.freeze({
   boardQuiz:entry=>{configureMessageReviewHeader(entry);renderBoardQuiz('messageBoardQuiz',clearContentAt(true,entry.index).boardQuiz);},
   text:entry=>{$('messageDialogText').hidden=false;configureMessageReviewHeader(entry);$('messageDialogTextBody').textContent=entry.text;}
 });
-function renderMessageReview(){const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;const {art,twoMoveLesson}=prepareMessageReview(entry),view=messageReviewView(),{illustration,lessonCopy,lessonRule,roadmap,seal}=view;resetMessageReviewView(entry,view);if(isMilestoneMessage(entry)){const volume=milestoneVolume(entry),current=entry.master==='primary'?2:entry.master==='mastery'?6:Math.min(5,volume+2);if(entry.master!=='mastery')roadmap.replaceChildren(masterRoadmapFragment(current));milestoneRenderer(entry)(entry,view,volume);}else messageReviewRenderer(entry)(entry);renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule);renderMessageLesson(twoMoveLesson,illustration,lessonCopy,lessonRule);if(entry.master==='satoriIntro'||entry.master==='secondLapIntro'){seal.classList.remove('animate');void seal.offsetWidth;seal.classList.add('animate');}updateMessageReviewNavigation(entry);}
+function renderMessageReview(model={}){const entry=model.entry??messageReviewEntries[model.index??messageReviewIndex];if(!entry)return;const {art,twoMoveLesson}=prepareMessageReview(entry),view=messageReviewView(),{illustration,lessonCopy,lessonRule,roadmap,seal}=view;resetMessageReviewView(entry,view);if(isMilestoneMessage(entry)){const volume=milestoneVolume(entry),current=entry.master==='primary'?2:entry.master==='mastery'?6:Math.min(5,volume+2);if(entry.master!=='mastery')roadmap.replaceChildren(masterRoadmapFragment(current));milestoneRenderer(entry)(entry,view,volume);}else messageReviewRenderer(entry)(entry);renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule);renderMessageLesson(twoMoveLesson,illustration,lessonCopy,lessonRule);if(entry.master==='satoriIntro'||entry.master==='secondLapIntro'){seal.classList.remove('animate');void seal.offsetWidth;seal.classList.add('animate');}updateMessageReviewNavigation(entry);}
 function renderPrimaryMilestone(entry,{seal,rankText,masterText,rules}){$('messageMasterSealLabel').textContent=masterPath().ranks[0];setSealColor(seal,0);configureMilestoneHeader(entry,tr('masterTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[0]);masterText.hidden=false;masterText.textContent=tr('masterText');rules.hidden=false;rules.textContent=masterCommonRules();}
 function renderMasteryMilestone(entry,{seal,rankText,masterText,boardNote}){$('messageMasterSealLabel').textContent=masterPath().ranks[3];setSealColor(seal,3);configureMilestoneHeader(entry,tr('masteryTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[3]);masterText.hidden=false;masterText.textContent=tr('masteryText');boardNote.hidden=false;boardNote.textContent=tr('masteryBoardNote');}
 function renderSatoriMilestone(entry,{seal,rankText,masterText}){$('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('satoriRank'),false,5);setSealColor(seal,5);seal.classList.add('rank-frame-seal');configureMilestoneHeader(entry,tr('satoriTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));masterText.hidden=false;masterText.textContent=tr('satoriText');}
@@ -10995,6 +10997,7 @@ function setVisible(elementOrId,visible){const element=typeof elementOrId==='str
 function setDisabled(elementOrId,disabled){const element=typeof elementOrId==='string'?document.getElementById(elementOrId):elementOrId;if(element)element.disabled=!!disabled;return element;}
 function setAttribute(elementOrId,name,value){const element=typeof elementOrId==='string'?document.getElementById(elementOrId):elementOrId;if(element)element.setAttribute(name,String(value));return element;}
 function clear(elementOrId){const element=typeof elementOrId==='string'?document.getElementById(elementOrId):elementOrId;if(element)element.replaceChildren();return element;}
+function createRefs(ids,documentRef=document){return Object.freeze(Object.fromEntries(ids.map(id=>[id,documentRef?.getElementById(id)||null])));}
 
 // 公開バンドルへ連結する断片でもESM境界を明示する。
 export {};

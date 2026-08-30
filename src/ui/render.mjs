@@ -24,3 +24,11 @@ export function createRenderCoordinator({ store, boardView, messagePresenter, re
   };
   return Object.freeze({ render, connect });
 }
+
+// 画面単位のrendererを名前で解決する境界。イベントやDOMを保持しない。
+export function createRendererRegistry(renderers = {}) {
+  const entries = new Map(Object.entries(renderers).map(([name, render]) => [name, Object.freeze({
+    render: typeof render === 'function' ? render : () => ({ ok: false, reason: 'renderer is unavailable' })
+  })]));
+  return Object.freeze({ get: name => entries.get(name) ?? null, names: () => [...entries.keys()] });
+}

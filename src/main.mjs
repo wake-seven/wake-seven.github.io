@@ -13,7 +13,7 @@ import { createRuntimeSettings, DEFAULT_SETTING_KEYS } from './runtime/settings.
 import { createAudioService } from './runtime/audio.mjs';
 import { createSessionService } from './runtime/session.mjs';
 import { createNavigationController } from './ui/navigation.mjs';
-import { createRenderCoordinator } from './ui/render.mjs';
+import { createRenderCoordinator, createRendererRegistry } from './ui/render.mjs';
 import { createEventBinder } from './ui/events.mjs';
 import { createStagePickerViewModel, createClearMessageViewModel, createSpeedViewModel, createStagePickerModel, createSpeedRunModel, createGuideModel } from './ui/view-models.mjs';
 import { createUiLifecycle } from './ui/lifecycle.mjs';
@@ -56,6 +56,7 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
     navigation,
     viewModels: Object.freeze({ createStagePickerViewModel, createClearMessageViewModel, createSpeedViewModel, createStagePickerModel, createSpeedRunModel, createGuideModel }),
     render: options => createRenderCoordinator({ store, ...options }),
+    registry: createRendererRegistry(ui.renderers),
     messages: options => createMessagePresenter({ catalog: createMessageCatalog(data.clearContent), ...ui.messages, ...options }),
     messageModel: createClearMessageModel
   });
