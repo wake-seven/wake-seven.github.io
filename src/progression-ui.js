@@ -984,8 +984,7 @@ function renderClearTip(){
     document.querySelector('#clearDialog .clear-dialog-heading').after(illustration);
   }
 }
-// ===== メッセージ見直しUI（message-ui.js 分離予定の境界） =====
-// ===== メッセージ見直しUIここまで =====
+// メッセージ見直しUIは src/message-ui.js に分離済み。
 // ===== クイズシステム =====
 /* クイズは見直すたびに選択肢の位置を変える。 */
 function shuffledIndices(length){
