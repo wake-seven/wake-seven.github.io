@@ -1828,6 +1828,12 @@ function messageDefinition(kind,key){
   return content==null?null:{id:key,kind,content};
 }
 function messageContent(kind,key){return messageDefinition(kind,key)?.content||null;}
+function normalizeMessage(kind,key,content=messageContent(kind,key)){
+  if(content==null)return null;
+  const timing=kind==='guidance'?'inBoard':key.endsWith('before')?'beforeStart':'afterClear';
+  const type=kind==='guidance'?'guidance':content.quiz?'quiz':content.boardQuiz?'boardQuiz':content.art?'trivia':'text';
+  return {id:key,kind,type,timing,content};
+}
 // stageIndex/extraIndex から CLEAR_CONTENT のキーへ変換する。
 function clearContentKey(mode,index){
   if(mode){
