@@ -43,7 +43,7 @@
   const rawStorage = global.localStorage;
   const persistActiveState = () => {
     if (!activeState) return false;
-    try { rawStorage.setItem(STORAGE_KEY, JSON.stringify(create(activeState))); return true; } catch (_) { return false; }
+    try { rawStorage.setItem(STORAGE_KEY, JSON.stringify(create(activeState, false))); return true; } catch (_) { return false; }
   };
   const storage = {
     get(key, fallback = null) { try { const value = activeState?.flat?.[key]; return value === undefined ? fallback : value; } catch (_) { return fallback; } },
@@ -77,7 +77,7 @@
     return () => listeners.delete(listener);
   }
 
-  function create(seed = {}) {
+  function create(seed = {}, activate = true) {
     const state = {
       version: VERSION,
       navigation: {
@@ -102,7 +102,7 @@
       ui: seed.ui && typeof seed.ui === 'object' ? clone(seed.ui) : {},
       flat: seed.flat && typeof seed.flat === 'object' ? clone(seed.flat) : {},
     };
-      activeState = state;
+      if (activate) activeState = state;
       return state;
   }
 
@@ -119,7 +119,10 @@
       const raw = storage.getItem(STORAGE_KEY);
       if (!raw) return null;
       const parsed = JSON.parse(raw);
-      return parsed?.version === VERSION ? create(parsed) : null;
+      if (parsed?.version !== VERSION) return null;
+      const state = create(parsed, false);
+      activeState = state;
+      return state;
     } catch (_) {
       return null;
     }
@@ -127,8 +130,9 @@
 
   function write(state, storage = global.localStorage) {
     try {
+      const snapshot = create(state, false);
       activeState = state;
-      storage.setItem(STORAGE_KEY, JSON.stringify(create(state)));
+      storage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
       return true;
     } catch (_) {
       return false;
