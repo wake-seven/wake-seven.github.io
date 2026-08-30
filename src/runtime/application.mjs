@@ -5,14 +5,20 @@ export function createApplicationController({ store, events, renderer, session, 
     if (state !== undefined) session?.save?.(state);
     return state;
   };
+  let unsubscribe = () => {};
+  let disconnect = () => {};
   const start = () => {
     events?.bindAll?.();
-    renderer?.connect?.();
+    disconnect = renderer?.connect?.() || (() => {});
+    unsubscribe = store?.subscribe?.(() => sync()) || (() => {});
     onStart?.(store?.state);
     return true;
   };
   const stop = () => {
-    renderer?.disconnect?.();
+    disconnect();
+    disconnect = () => {};
+    unsubscribe();
+    unsubscribe = () => {};
     events?.unbindAll?.();
     onStop?.(store?.state);
     return true;
