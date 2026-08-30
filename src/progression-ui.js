@@ -1057,22 +1057,6 @@ function rememberSpecialMessage(master){
     storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);
   }catch(_){ }
 }
-function messageReviewPlace(entry){
-  if(entry.awakened)return tr('awakenedTitle');
-  if(entry.satori)return currentLang==='ja'?'悟りへの道・第'+(entry.index+1)+'問 クリア':tr('satoriTitle');
-  if(entry.master==='satoriIntro')return currentLang==='ja'?'悟りへの道の案内':tr('satoriIntroTitle');
-  if(entry.master==='secondLapIntro')return currentLang==='ja'?'二周目の案内':tr('secondLapTitle');
-  if(entry.master==='trainingWelcome')return currentLang==='ja'?'だるま修行の案内':tr('trainingWelcomeTitle');
-  if(!entry.extra){
-    if(currentLang!=='ja')return tr('stageAria',{n:entry.index+1,par:STAGES[entry.index].par});
-    const {section,position}=primarySectionPosition(entry.index);
-    const group=tr(section.labelKey);
-    const number=position;
-    return group+' 第'+number+'問 クリア';
-  }
-  const volume=Math.floor(entry.index/MASTER_VOLUME_SIZE)+1;
-  return currentLang==='ja'?'名人への道 '+volumeLabel(volume)+'・第'+(entry.index%MASTER_VOLUME_SIZE+1)+'問 クリア':tr('extraStageAria',{n:entry.index+1,total:EXTRA_STAGES.length});
-}
 function messageReviewStageContext(entry){
   if(entry.awakened)return tr('secondLapPath');
   if(entry.satori)return tr('satori')+' '+(entry.index+1)+' / '+SATORI_STAGES.length;
