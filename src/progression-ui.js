@@ -1137,21 +1137,10 @@ function resetMessageReviewView(entry,view){
   view.seal.tabIndex=0;
   view.rankText.hidden=true;view.masterText.hidden=true;
 }
-function configureMilestoneHeader(entry,title){
-  $('messageDialogTitle').textContent=title;
-  $('messageDialogPlace').textContent=messageReviewPlace(entry);
-}
 function updateMessageReviewNavigation(entry){
   $('messagePrev').disabled=messageReviewIndex===0;
   $('messageNext').disabled=messageReviewIndex===messageReviewEntries.length-1;
   try{storage.set(MESSAGE_REVIEW_STORAGE_KEY,messageReviewEntryKey(entry));}catch(_){}
-}
-function prepareMessageReview(entry){
-  const art=messageReviewArt(entry);
-  const twoMoveLesson=lessonVariantFromArt(art);
-  const messageClearEntry=configureMessageReviewType(entry);
-  configureMessageReviewLinks(entry,messageClearEntry);
-  return {art,twoMoveLesson,messageClearEntry};
 }
 function renderPrimaryMilestone(entry,{seal,rankText,masterText,rules}){
   $('messageMasterSealLabel').textContent=masterPath().ranks[0];setSealColor(seal,0);configureMilestoneHeader(entry,tr('masterTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[0]);masterText.hidden=false;masterText.textContent=tr('masterText');rules.hidden=false;rules.textContent=masterCommonRules();
@@ -1173,7 +1162,6 @@ const MILESTONE_RENDERERS=Object.freeze({
   trainingWelcome:(entry,view)=>renderIntroMilestone(entry,view),
   volume:(entry,view,volume)=>renderVolumeMilestone(entry,volume,view)
 });
-function milestoneRenderer(entry){return MILESTONE_RENDERERS[entry.master]||MILESTONE_RENDERERS.volume;}
 function configureMessageReviewHeader(entry){
   $('messageDialogTitle').textContent=tr('clear');
   $('messageDialogPlace').textContent=messageReviewPlace(entry);
@@ -1183,11 +1171,6 @@ const MESSAGE_RENDERERS=Object.freeze({
   boardQuiz:entry=>{ configureMessageReviewHeader(entry); renderBoardQuiz('messageBoardQuiz',clearContentAt(true,entry.index).boardQuiz); },
   text:entry=>{ $('messageDialogText').hidden=false; configureMessageReviewHeader(entry); $('messageDialogTextBody').textContent=entry.text; }
 });
-function messageReviewRenderer(entry){
-  if(entry.quiz!==undefined)return MESSAGE_RENDERERS.quiz;
-  if(entry.boardQuiz)return MESSAGE_RENDERERS.boardQuiz;
-  return MESSAGE_RENDERERS.text;
-}
 function renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule){
   const classByArt={
     'move-graph':art==='moveGraph',
