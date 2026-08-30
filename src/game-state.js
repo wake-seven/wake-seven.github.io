@@ -242,6 +242,13 @@
     return state.navigation;
   }
 
+  // 実行側が保存形式のオブジェクトへ直接依存しないための読み取り境界。
+  // 返却値は読み取り専用として扱い、変更は update* API 経由で行う。
+  function sectionView(state, section) {
+    const value = state?.[section];
+    return value && typeof value === 'object' ? value : {};
+  }
+
   function updateBoard(state, next) {
     if (!state || typeof state !== 'object') return null;
     state.board = next && typeof next === 'object' ? clone(next) : next ?? null;
@@ -289,6 +296,7 @@
     migrateLegacy,
     navigationView,
     navigationIndex,
+    sectionView,
     updateNavigation,
     updateBoard,
     updateUnlocks,

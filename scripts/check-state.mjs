@@ -10,6 +10,7 @@ const progressionModule = await readFile(join(root, 'src', 'progression-policy.j
 const boardDomainModule = await readFile(join(root, 'src', 'domain-board.js'), 'utf8');
 const coreDataModule = await readFile(join(root, 'src', 'core-data.js'), 'utf8');
 const runtimeModule = await readFile(join(root, 'src', 'runtime.js'), 'utf8');
+const namespaceModule = await readFile(join(root, 'src', 'namespace-api.js'), 'utf8');
 const compatCleanupDoc = await readFile(join(root, 'src', 'compat-cleanup.md'), 'utf8');
 const required = [
   'WAKE7:STATE-MODULE:START',
@@ -171,6 +172,16 @@ for (const [moduleName, names] of sourceModules) {
     }
   }
 }
+const namespaceSourceTokens = [
+  'global.WakeSeven = Object.freeze',
+  'const stateApi = Object.freeze',
+  'const progressionApi = Object.freeze',
+  'const messagesApi = Object.freeze',
+  'const speedApi = Object.freeze'
+];
+for (const token of namespaceSourceTokens) {
+  if (!namespaceModule.includes(token)) throw new Error(`src/namespace-api.js is missing ${token}.`);
+}
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[1]);
 for (const script of inlineScripts) new Function(script);
@@ -259,6 +270,44 @@ if (Array.from(domain.click(clicked, 0, -1)).join(',') !== Array.from(sampleBoar
 const swiped = domain.swipe(sampleBoard, 0, 1);
 if (Array.from(domain.swipe(swiped, 0, -1)).join(',') !== Array.from(sampleBoard).join(',')) {
   throw new Error('Board swipe inverse failed.');
+}
+// 公開APIは生成HTMLに埋め込まれた実行時の入口でもあるため、形状と凍結状態を機械検証する。
+const namespaceContext = {
+  window: {},
+  gameState: {settings: {}, progress: {}},
+  WakeSevenState: {navigationView: () => ({}), updateNavigation: () => {}, updateSettings: () => {}},
+  PROGRESSION: {uiPolicy: () => ({})},
+  getGameContext: () => ({}),
+  openMessageReview: () => {},
+  renderMessageReview: () => {},
+  messageReviewEntries: [],
+  pauseSpeedRun: () => {},
+  startSpeedClock: () => {},
+  pauseSpeedClock: () => {},
+  SPEED_MODE_DEFINITIONS: {}
+};
+vm.runInNewContext(namespaceModule, namespaceContext, {filename:'src/namespace-api.js'});
+const wakeSeven = namespaceContext.window.WakeSeven;
+if (!wakeSeven || !Object.isFrozen(wakeSeven)
+  || Object.keys(wakeSeven).sort().join(',') !== 'messages,progression,speed,state') {
+  throw new Error('WakeSeven namespace shape or freeze state is invalid.');
+}
+for (const [name, expectedKeys] of Object.entries({
+  state: ['current', 'navigation', 'progress', 'settings', 'persist', 'updateNavigation', 'updateSettings'],
+  progression: ['definition', 'context', 'uiPolicy'],
+  messages: ['entries', 'openReview', 'renderReview'],
+  speed: ['definitions', 'pause', 'pauseClock', 'startClock']
+})) {
+  const api = wakeSeven[name];
+  if (!Object.isFrozen(api) || expectedKeys.some(key => !(key in api))) {
+    throw new Error(`WakeSeven.${name} API shape or freeze state is invalid.`);
+  }
+}
+if (wakeSeven.state.current !== namespaceContext.gameState
+  || wakeSeven.state.settings !== namespaceContext.gameState.settings
+  || wakeSeven.progression.definition !== namespaceContext.PROGRESSION
+  || wakeSeven.speed.definitions !== namespaceContext.SPEED_MODE_DEFINITIONS) {
+  throw new Error('WakeSeven namespace getters do not expose runtime state.');
 }
 const solved = domain.buildSolver('roll');
 if (solved.dist.length !== domain.stateCount || solved.dist[0] !== 0

@@ -1586,6 +1586,13 @@
     return state.navigation;
   }
 
+  // 実行側が保存形式のオブジェクトへ直接依存しないための読み取り境界。
+  // 返却値は読み取り専用として扱い、変更は update* API 経由で行う。
+  function sectionView(state, section) {
+    const value = state?.[section];
+    return value && typeof value === 'object' ? value : {};
+  }
+
   function updateBoard(state, next) {
     if (!state || typeof state !== 'object') return null;
     state.board = next && typeof next === 'object' ? clone(next) : next ?? null;
@@ -1633,6 +1640,7 @@
     migrateLegacy,
     navigationView,
     navigationIndex,
+    sectionView,
     updateNavigation,
     updateBoard,
     updateUnlocks,
@@ -4396,13 +4404,14 @@ function trackGameStart(){
   });
 }
 initializeRuntimeSettings();
-let masterGoldGranted=gameState.unlocks.masterGoldGranted===true;
+const initialUnlocks=WakeSevenState.sectionView(gameState,'unlocks');
+let masterGoldGranted=initialUnlocks.masterGoldGranted===true;
 if(!masterGoldGranted)try{masterGoldGranted=storage.get(STORAGE_KEYS.masterGoldGranted)==='1';}catch(_){ }
-let satoriDesignGranted=gameState.unlocks.satoriDesignGranted===true;
+let satoriDesignGranted=initialUnlocks.satoriDesignGranted===true;
 if(!satoriDesignGranted)try{satoriDesignGranted=storage.get(STORAGE_KEYS.satoriDesignGranted)==='1';}catch(_){ }
 let secondLapActive=false;
 try{secondLapActive=storage.get(STORAGE_KEYS.secondLapActive)==='1';}catch(_){ }
-let awakenedGranted=gameState.unlocks.awakened===true;
+let awakenedGranted=initialUnlocks.awakened===true;
 if(!awakenedGranted)try{awakenedGranted=storage.get(STORAGE_KEYS.awakenedGranted)==='1';}catch(_){ }
 // 速解きモードは、進行状況をリセットしても残す独立した解放要素。
 let speedModeUnlocked=false;
@@ -4485,15 +4494,16 @@ function grantCampaignProgressThrough(checkpoint){
   }
 }
 // 3Dページは速解きモード初回クリアの報酬。速解きの解放同様、進行状況リセットでは残す。
-let threeDUnlocked=gameState.unlocks.threeD===true;
+let threeDUnlocked=initialUnlocks.threeD===true;
 if(!threeDUnlocked)try{threeDUnlocked=storage.get('wake7-3d-unlocked')==='1';}catch(_){ }
 // 七色だるまは二周目の名人達成報酬。旧版で覚者まで到達済みなら移行して保持する。
-let rainbowDarumaGranted=gameState.unlocks.rainbowDarumaGranted===true;
+let rainbowDarumaGranted=initialUnlocks.rainbowDarumaGranted===true;
 try{rainbowDarumaGranted=rainbowDarumaGranted||storage.get(STORAGE_KEYS.rainbowDarumaGranted)==='1'||awakenedGranted;}catch(_){rainbowDarumaGranted=awakenedGranted;}
 if(rainbowDarumaGranted)try{storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');}catch(_){ }
-let secondLapUnlocked=gameState.unlocks.secondLap===true;
+let secondLapUnlocked=initialUnlocks.secondLap===true;
 try{secondLapUnlocked=secondLapUnlocked||storage.get('wake7-second-lap-unlocked')==='1'||secondLapActive||awakenedGranted;}catch(_){secondLapUnlocked=secondLapActive||awakenedGranted;}
-let activeLap=gameState.navigation.lap===2?2:1;
+const initialNavigationState=WakeSevenState.sectionView(gameState,'navigation');
+let activeLap=initialNavigationState.lap===2?2:1;
 let lastStageMode={extra:false,satori:false,index:0};
 let editingBoard=false;
 let masterDialogKind='primary';
@@ -4513,9 +4523,10 @@ let tutorialHintTimers=[];
 let makerButtonBlockedUntil=0,makerRevealTimer=0;
 let currentInitialState=0, currentInitialPar=0;
 let savedFreeSession=null;
-let clearedStages=new Set(gameState.progress.lap1.primary);
-let clearedExtraStages=new Set(gameState.progress.lap1.mastery);
-let clearedSatoriStages=new Set(gameState.progress.lap1.satori);
+const initialProgress=WakeSevenState.sectionView(gameState,'progress');
+let clearedStages=new Set(initialProgress.lap1?.primary||[]);
+let clearedExtraStages=new Set(initialProgress.lap1?.mastery||[]);
+let clearedSatoriStages=new Set(initialProgress.lap1?.satori||[]);
 function readLapProgress(lap,part){
   const statePart=part==='extra'?'mastery':part;
   const vNextProgress=gameState.progress?.['lap'+lap]?.[statePart];
