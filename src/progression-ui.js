@@ -992,6 +992,7 @@ function messageReviewEntryKey(entry){
   return (entry.awakened||entry.satori?'satori':entry.extra?'extra':'primary')+':'+entry.index+':'+kind;
 }
 function buildMessageReviewEntries(){
+  const finalize=entries=>entries.map(entry=>({...entry,messageId:entry.master||clearContentKey(!!entry.extra,entry.index)}));
   const entries=[];
   // 二周目を始めた直後も、一周目で集めたメッセージを読み返せるようにする。
   const reviewPrimary=activeLap===2?lap1ClearedStages:clearedStages;
@@ -1017,7 +1018,7 @@ function buildMessageReviewEntries(){
   // だるま修行を終えるまでは、後半コースのメッセージへ飛ばさない。
   if(!reviewPrimaryDone){
     if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});
-    return entries;
+    return finalize(entries);
   }
   for(let i=0;i<EXTRA_STAGES.length;i++){
     if(!reviewExtra.has(i))continue;
@@ -1035,7 +1036,7 @@ function buildMessageReviewEntries(){
   if(reviewSatoriMastered||hasSatoriReward())entries.push({master:'satori',satori:true,index:SATORI_STAGES.length-1});
   if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});
   if(awakenedGranted)entries.push({master:'awakening',awakened:true,index:SATORI_STAGES.length-1});
-  return entries;
+  return finalize(entries);
 }
 function rememberClearedMessage(extra,index,satori=false){
   const entry=buildMessageReviewEntries().find(item=>!!item.satori===satori&&!!item.extra===extra&&item.index===index);
