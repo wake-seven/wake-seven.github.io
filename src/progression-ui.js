@@ -1092,9 +1092,16 @@ function messageReviewStageContext(entry){
   const path=currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume);
   return path+'　'+masterSubtitle(volume)+' '+(entry.index%MASTER_VOLUME_SIZE+1)+' / '+MASTER_VOLUME_SIZE;
 }
+function messageReviewContent(entry){
+  return entry?.message?.content||null;
+}
+function messageReviewArt(entry){
+  const content=messageReviewContent(entry);
+  return entry?.art||content?.art||'';
+}
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
-  const art=entry.art||'',twoMoveLesson=lessonVariantFromArt(art),illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
+  const art=messageReviewArt(entry),twoMoveLesson=lessonVariantFromArt(art),illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
   $('messagePrev').textContent='← '+tr('prev');
   $('messageNext').textContent=tr('next')+' →';
   $('closeMessages').textContent=tr('close');
