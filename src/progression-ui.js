@@ -1172,34 +1172,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   if(!config){root.hidden=true;if(requireAnswer)$('clearNext').disabled=false;return;}
   const copy=BOARD_QUIZ_COPY[currentLang]||BOARD_QUIZ_COPY.ja;
   const state=config.state?enc(Uint8Array.from(config.state)):config.options?null:boardQuizPatternState(config.pattern||config.patterns[0]);
-  let states=[],correct=[],question=copy.choose,moveChoiceOrder=null;
-  if(config.kind==='moves'){
-    states=[state];
-    moveChoiceOrder=shuffledIndices(copy.moveChoices.length);
-    correct=[moveChoiceOrder.indexOf(1)];
-    question=copy.moves;
-  }else if(config.kind==='choose-two'){
-    const accept=config.outerOddOnly?boardQuizCenterIsNotOdd:undefined;
-    const good=[state];
-    if(config.patterns)good.push(boardQuizSameShapeState(boardQuizPatternState(config.patterns[1]),state));
-    for(const candidate of boardQuizMatchingStates(state,distance=>distance===2,Infinity,accept))if(!good.includes(candidate))good.push(candidate);
-    const wrong=boardQuizMatchingStates(state,distance=>distance>=3,2,accept);
-    states=[...wrong];
-    for(const index of config.correct)states.splice(index,0,good.shift());
-    correct=config.correct;question=copy.chooseTwo||copy.choose;
-  }else if(config.options){
-    states=config.options.map(option=>{
-      const reference=enc(Uint8Array.from(option.state));
-      return SOLVER.dist[reference]===option.distance?reference:boardQuizMatchingStates(reference,distance=>distance===option.distance,1)[0]??reference;
-    });
-    correct=[config.correct];question=copy[config.questionKey]||copy.choose;
-  }else{
-    const targetDistance=config.targetDistance||2;
-    const target=SOLVER.dist[state]===targetDistance?state:boardQuizMatchingStates(state,distance=>distance===targetDistance,1)[0]??state;
-    states=boardQuizMatchingStates(target,distance=>distance>targetDistance,1);
-    states.splice(config.correct,0,target);
-    correct=[config.correct];question=targetDistance===3?(copy.chooseThree||copy.choose):copy.choose;
-  }
+  let {states,correct,question,moveChoiceOrder}=boardQuizPresentation(config,state,copy);
   if(config.kind!=='moves'){
     const order=shuffledIndices(states.length);
     states=order.map(index=>states[index]);
