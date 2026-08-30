@@ -1129,7 +1129,7 @@ function renderMasteryMilestone(entry,{seal,rankText,masterText,boardNote}){
 }
 function renderSatoriMilestone(entry,{seal,rankText,masterText}){$('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('satoriRank'),false,5);setSealColor(seal,5);seal.classList.add('rank-frame-seal');$('messageDialogTitle').textContent=tr('satoriTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));masterText.hidden=false;masterText.textContent=tr('satoriText');}
 function renderAwakeningMilestone(entry,{seal,rankText,masterText,boardNote}){$('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('awakenedRank'),false,6);setSealColor(seal,6);seal.classList.add('rank-frame-seal');$('messageDialogTitle').textContent=tr('awakenedTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('awakenedRank'));masterText.hidden=false;masterText.textContent=tr('satoriThanks');boardNote.hidden=false;boardNote.textContent=tr('threeDUnlockedText');}
-function renderIntroMilestone(entry,seal,masterText){const data={satoriIntro:['satoriIntroTitle','satoriIntroText'],secondLapIntro:['secondLapTitle','secondLapText'],trainingWelcome:['trainingWelcomeTitle','trainingWelcomeText']}[entry.master];seal.hidden=entry.master==='trainingWelcome';if(entry.master==='satoriIntro'){$('messageMasterSealLabel').innerHTML=satoriSealSvg();setSealColor(seal,5);}else if(entry.master==='secondLapIntro'){$('messageMasterSealLabel').textContent=secondLapMark();seal.classList.add('second-lap-mark');}$('messageDialogTitle').textContent=tr(data[0]);$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr(data[1]);}
+function renderIntroMilestone(entry,{seal,masterText}){const data={satoriIntro:['satoriIntroTitle','satoriIntroText'],secondLapIntro:['secondLapTitle','secondLapText'],trainingWelcome:['trainingWelcomeTitle','trainingWelcomeText']}[entry.master];seal.hidden=entry.master==='trainingWelcome';if(entry.master==='satoriIntro'){$('messageMasterSealLabel').innerHTML=satoriSealSvg();setSealColor(seal,5);}else if(entry.master==='secondLapIntro'){$('messageMasterSealLabel').textContent=secondLapMark();seal.classList.add('second-lap-mark');}$('messageDialogTitle').textContent=tr(data[0]);$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr(data[1]);}
 function renderVolumeMilestone(entry,volume,seal,rankText,masterText){const nextRules={ja:['「破」からは、ヒントが使えなくなります。','「急」では途中から最短4手の問題です。\nスワイプ中は残り最短手数が「？」になります。','「極」では残り最短手数が表示されません。\nかわりに回数限定で「残り手数」のボタンが使えますが、これも途中から使用回数が減っていきます。']}[currentLang]||[];const clearName=currentLang==='ja'?'名人への道・'+volumeLabel(volume)+'　'+masterSubtitle(volume):volumeLabel(volume)+'　'+masterSubtitle(volume);$('messageMasterSealLabel').textContent=rankForVolume(volume);setSealColor(seal,volume);$('messageDialogTitle').textContent=tr('volumeClearTitle',{n:clearName});$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(rankForVolume(volume));masterText.hidden=false;masterText.textContent=nextRules[volume-1]||tr('volumeClearText');}
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
@@ -1163,11 +1163,11 @@ function renderMessageReview(){
     }else if(entry.master==='awakening'){
       renderAwakeningMilestone(entry,view);
     }else if(entry.master==='satoriIntro'){
-      renderIntroMilestone(entry,seal,masterText);
+      renderIntroMilestone(entry,view);
     }else if(entry.master==='secondLapIntro'){
-      renderIntroMilestone(entry,seal,masterText);
+      renderIntroMilestone(entry,view);
     }else if(entry.master==='trainingWelcome'){
-      renderIntroMilestone(entry,seal,masterText);
+      renderIntroMilestone(entry,view);
     }else{
       renderVolumeMilestone(entry,volume,seal,rankText,masterText);
     }
