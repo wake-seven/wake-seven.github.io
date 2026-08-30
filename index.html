@@ -7268,7 +7268,7 @@ function finishDrag(e,cancel=false,forcedTurns=null){
     animateGroupedSwipe(dg,target,dir,waking);
     return;
   }
-  if(dir) applySwipe(dg.ti,dir,!isMode('tutorial'));
+  if(dir) WakeSevenBoardCommands.applySwipe(dg.ti,dir,{save:!isMode('tutorial')});
   paint();
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){wakeFeedback(waking);resumeTutorialCue();return;}
   const delta=Math.abs(target-dg.deg);
@@ -7387,7 +7387,7 @@ svg.addEventListener('pointercancel',handleBoardPointerCancel);
 function handleBoardTouchMove(e){if(boardTouchActive)e.preventDefault();}
 svg.addEventListener('touchmove',handleBoardTouchMove,{passive:false});
 
-$('undo').addEventListener('click',()=>{
+function undoLastMove(){
   if(busy||isFinalMasterPuzzle()||!history.length) return;
   cancelTileAnimations();
   clearTimeout(clearTimer); clearShown=false;
@@ -7405,7 +7405,8 @@ $('undo').addEventListener('click',()=>{
     // アニメーション完了後の盤面を保存する。
     if(isMode('speed')&&speedSession)setTimeout(persistSpeedSession,460);
   }
-});
+}
+$('undo').addEventListener('click',()=>WakeSevenBoardCommands.undo());
 $('reset').addEventListener('click',()=>{
   if(busy)return;
   if(editingBoard){resetMakerBoard();return;}
@@ -7431,6 +7432,14 @@ $('shuffle').addEventListener('click',()=>{
 const GameBoard=Object.freeze({
   repaint:()=>paint(),
   reset:(state,par)=>setPosition(state,par)
+});
+
+// ===== 盤面コマンド =====
+// 盤面操作のコマンド入口。実装本体は当面 board-ui.js に残し、入力経路だけを統一する。
+// options をオブジェクト化しておくことで、将来の状態ストア移行時に呼び出し側を変えずに済む。
+const WakeSevenBoardCommands=Object.freeze({
+  applySwipe:(ti,dir,options={})=>applySwipe(ti,dir,options.save??true,options.playEffects??true),
+  undo:()=>undoLastMove()
 });
 
 // ===== クイズUI =====

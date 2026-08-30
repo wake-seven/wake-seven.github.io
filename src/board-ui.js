@@ -1918,7 +1918,7 @@ function finishDrag(e,cancel=false,forcedTurns=null){
     animateGroupedSwipe(dg,target,dir,waking);
     return;
   }
-  if(dir) applySwipe(dg.ti,dir,!isMode('tutorial'));
+  if(dir) WakeSevenBoardCommands.applySwipe(dg.ti,dir,{save:!isMode('tutorial')});
   paint();
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){wakeFeedback(waking);resumeTutorialCue();return;}
   const delta=Math.abs(target-dg.deg);
@@ -2037,7 +2037,7 @@ svg.addEventListener('pointercancel',handleBoardPointerCancel);
 function handleBoardTouchMove(e){if(boardTouchActive)e.preventDefault();}
 svg.addEventListener('touchmove',handleBoardTouchMove,{passive:false});
 
-$('undo').addEventListener('click',()=>{
+function undoLastMove(){
   if(busy||isFinalMasterPuzzle()||!history.length) return;
   cancelTileAnimations();
   clearTimeout(clearTimer); clearShown=false;
@@ -2055,7 +2055,8 @@ $('undo').addEventListener('click',()=>{
     // アニメーション完了後の盤面を保存する。
     if(isMode('speed')&&speedSession)setTimeout(persistSpeedSession,460);
   }
-});
+}
+$('undo').addEventListener('click',()=>WakeSevenBoardCommands.undo());
 $('reset').addEventListener('click',()=>{
   if(busy)return;
   if(editingBoard){resetMakerBoard();return;}

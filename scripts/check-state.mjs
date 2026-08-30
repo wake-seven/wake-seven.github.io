@@ -62,6 +62,7 @@ const moduleMarkers = [
   '// ===== スピードラン(速解き)ランタイム =====',
   '// ===== 盤面アニメーション補助 =====',
   '// ===== 盤面UI =====',
+  '// ===== 盤面コマンド =====',
   '// ===== クイズUI =====',
   '// ===== クリアフロー =====',
   '// ===== メッセージUI =====',
@@ -130,6 +131,11 @@ for (const name of [
   'showClearDialog', 'renderClearTip', 'buildMessageReviewEntries', 'openMessageReview', 'moveMessageReview',
   'boardQuizPatternState', 'boardQuizPresentation', 'boardQuizMarkup', 'bindBoardQuizAnswerEvents'
 ]) countDefinitions(html, name);
+if (!html.includes('const WakeSevenBoardCommands=Object.freeze(')
+  || !html.includes('WakeSevenBoardCommands.applySwipe')
+  || !html.includes('WakeSevenBoardCommands.undo()')) {
+  throw new Error('Board input handlers must use WakeSevenBoardCommands.');
+}
 
 const sourceModules = [
   ['src/domain-board.js', ['const WakeSevenBoardDomain=']],
@@ -139,6 +145,7 @@ const sourceModules = [
   ['src/runtime-settings.js', ['initializeRuntimeSettings']],
   ['src/runtime-audio.js', ['playTone', 'playClearSound']],
   ['src/quiz-ui.js', ['boardQuizPatternState', 'boardQuizPresentation', 'boardQuizMarkup', 'bindBoardQuizAnswerEvents']],
+  ['src/commands-board.js', ['const WakeSevenBoardCommands=Object.freeze(']],
   ['src/clear-flow.js', ['stageClearTextAt', 'clearEntryForCurrent', 'stageClearArtAt']],
   ['src/message-ui.js', ['buildMessageReviewEntries', 'openMessageReview', 'moveMessageReview']],
   ['src/progression-render.js', ['renderStageNavAccent']],
