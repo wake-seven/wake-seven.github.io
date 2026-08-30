@@ -18,7 +18,11 @@ const required = [
   'function restoreActiveSession()',
   'const GameNavigation=',
   'const GameDialogs=',
-  'const GameBoard='
+  'const GameBoard=',
+  '// ===== クイズUI =====',
+  '// ===== メッセージUI =====',
+  'function buildMessageReviewEntries()',
+  'function boardQuizPatternState('
 ];
 const missing = required.filter(token => !html.includes(token));
 if (missing.length) throw new Error(`index.html is missing: ${missing.join(', ')}`);
