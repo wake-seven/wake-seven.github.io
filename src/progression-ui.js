@@ -418,8 +418,8 @@ function renderStagePicker(){
 }
 function openStagePicker(){
   pickerLap=activeLap;
-  if(isMode('satori')||((isMode('free')||isMode('custom'))&&lastStageMode.satori)){openSatoriPicker();return;}
-  const showingExtra=isMode('mastery')||((isMode('free')||isMode('custom'))&&lastStageMode.extra);
+  if(isMode('satori')||(isSideCourseMode()&&lastStageMode.satori)){openSatoriPicker();return;}
+  const showingExtra=isMode('mastery')||(isSideCourseMode()&&lastStageMode.extra);
   const showingIndex=isMode('mastery')?extraIndex:lastStageMode.index;
   pickerRound=showingExtra?Math.floor(showingIndex/MASTER_VOLUME_SIZE):PRIMARY_SECTIONS.indexOf(primarySection(showingIndex))-PRIMARY_PICKER_SECTION_COUNT;
   renderStagePicker();
@@ -519,8 +519,8 @@ function renderStageNav(){
     $('stageSubtitle').hidden=true;
     $('stageCount').hidden=true;
     $('stagePickerTrigger').disabled=false;
-    $('stagePickerTrigger').classList.toggle('second-lap-stage',activeLap===2&&!isMode('free')&&!isMode('custom')&&!isMode('speed'));
-    $('lapBadge').hidden=activeLap!==2||isMode('free')||isMode('custom')||isMode('speed');
+    $('stagePickerTrigger').classList.toggle('second-lap-stage',activeLap===2&&isCampaignMode());
+    $('lapBadge').hidden=activeLap!==2||!isCampaignMode();
     $('lapBadge').textContent=secondLapMark();
     $('shuffle').hidden=true;
     $('undo').hidden=hideLearningControls||editingBoard||isMode('satori')||(isMode('speed')&&!speedAllowsUndo());
@@ -550,7 +550,7 @@ function renderStageNav(){
     $('twoMoveLessonOpen').textContent=tr('twoMoveLessonOpen');
   }
   function renderStageNavModeButtons(){
-    const inSideMode=isMode('free')||isMode('custom');
+    const inSideMode=isSideCourseMode();
     $('stageKind').hidden=false;
     $('stageNav').classList.toggle('side-mode-nav',inSideMode);
     $('prevStage').textContent=inSideMode?tr('stageModeReturn'):tr('prev');
@@ -564,10 +564,10 @@ function renderStageNav(){
     $('nextStage').disabled=customPlaying?false:isMode('custom')?true:isMode('free')?false:isMode('mastery')
       ?(extraIndex===EXTRA_STAGES.length-1?!canEnterSatori():!clearedExtraStages.has(extraIndex))
       :(stageIndex===STAGES.length-1?!allPrimaryCleared():!clearedStages.has(stageIndex));
-    $('stageMode').classList.toggle('on',!isMode('free')&&!isMode('custom')&&!isMode('speed'));
+    $('stageMode').classList.toggle('on',isCampaignMode());
     $('freeMode').classList.toggle('on',isMode('free'));
     $('menuSpeed').classList.toggle('on',isMode('speed'));
-    $('stageMode').setAttribute('aria-pressed',String(!isMode('free')&&!isMode('custom')));
+    $('stageMode').setAttribute('aria-pressed',String(isCampaignMode()));
     $('freeMode').setAttribute('aria-pressed',String(isMode('free')));
     $('stageModeReturn').hidden=true;
     $('menuRankList').hidden=highestRankIndex()<0;
@@ -649,7 +649,7 @@ function renderStageNav(){
         :!clearedSatoriStages.has(satoriIndex);
     }
     else{$('prevStage').hidden=false;$('nextStage').hidden=isMode('custom')&&!customPlaying;}
-    const highlightNext=nextStageAttention&&!isMode('free')&&!isMode('custom')&&!$('nextStage').hidden&&!$('nextStage').disabled;
+    const highlightNext=nextStageAttention&&isCampaignMode()&&!$('nextStage').hidden&&!$('nextStage').disabled;
     $('nextStage').classList.toggle('next-attention',highlightNext);
   }
   function renderStageNavGuidance(){

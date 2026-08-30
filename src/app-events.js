@@ -260,7 +260,7 @@ function bindClearDialogEvents(){
   });
   $('clearClose').addEventListener('click',()=>{
     hideGameDialogs();
-    nextStageAttention=!isMode('free')&&!isMode('custom')&&!editingBoard;
+    nextStageAttention=isCampaignMode()&&!editingBoard;
     renderStageNav();
   });
   $('optimalRetry').addEventListener('click',()=>{

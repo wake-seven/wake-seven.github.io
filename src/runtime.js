@@ -140,6 +140,8 @@ function runtimeNavigation(){
   return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};
 }
 const isSideCourseMode=()=>isMode('free')||isMode('custom');
+// 複数の画面で共通する「通常の進行中」判定。サイドコースと速解きは除外する。
+const isCampaignMode=()=>!isSideCourseMode()&&!isMode('speed');
 const PRIMARY_SECTIONS=Object.freeze([
   {id:'intro',labelKey:'intro',start:0,total:INTRO_STAGE_COUNT,analytics:'training_intro'},
   {id:'basic',labelKey:'basic',start:BASIC_STAGE_START,total:BASIC_STAGE_COUNT,analytics:'training_basic'},
