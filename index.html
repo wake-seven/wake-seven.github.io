@@ -7161,6 +7161,13 @@ const GameBoard=Object.freeze({
   reset:(state,par)=>setPosition(state,par)
 });
 
+// ===== クイズUI =====
+// ===== 共通クイズUI =====
+function shuffledIndices(length){const order=Array.from({length},(_,index)=>index);for(let index=order.length-1;index>0;index--){const swap=Math.floor(Math.random()*(index+1));[order[index],order[swap]]=[order[swap],order[index]];}return order;}
+function quizPresentation(quiz){const order=shuffledIndices(quiz.a.length);return {answers:order.map(index=>quiz.a[index]),correct:order.indexOf(quiz.correct)};}
+function celebrateQuiz(root){root.classList.remove('quiz-success');void root.offsetWidth;root.classList.add('quiz-success');playTone(784,.09,.024);playTone(1047,.13,.026,.07);haptic([10,32,16]);}
+function renderQuizInto(ids,quiz){const root=$(ids.root),options=$(ids.options),note=$(ids.note);root.classList.remove('quiz-success');const {answers,correct}=quizPresentation(quiz);$(ids.title).textContent=tr('quizTitle');$(ids.question).textContent=quiz.q;note.textContent='';options.innerHTML='';answers.forEach((answer,index)=>{const button=document.createElement('button');button.className='quiz-option';button.type='button';button.textContent=answer;button.addEventListener('click',()=>{[...options.children].forEach(item=>item.disabled=true);options.children[correct].classList.add('correct');if(index===correct){note.textContent=tr('quizCorrect')+'　'+quiz.note;celebrateQuiz(root);}else{button.classList.add('wrong');note.textContent=tr('quizWrong')+'　'+quiz.note;}});options.appendChild(button);});}
+
 // ===== メッセージUI =====
 // ===== メッセージUIの宣言データ =====
 const MESSAGE_REVIEW_STORAGE_KEY='wake7-message-review';
@@ -8216,18 +8223,6 @@ function renderClearTip(){
 // メッセージ見直しUIは src/message-ui.js に分離済み。
 // ===== クイズシステム =====
 /* クイズは見直すたびに選択肢の位置を変える。 */
-function shuffledIndices(length){
-  const order=Array.from({length},(_,index)=>index);
-  for(let index=order.length-1;index>0;index--){
-    const swap=Math.floor(Math.random()*(index+1));
-    [order[index],order[swap]]=[order[swap],order[index]];
-  }
-  return order;
-}
-function quizPresentation(quiz){
-  const order=shuffledIndices(quiz.a.length);
-  return {answers:order.map(index=>quiz.a[index]),correct:order.indexOf(quiz.correct)};
-}
 // en/zh/koのnotTwoは現状どこからも読まれていない下書きの出題文(「最短2手でない盤面はどれ？」)。
 // 未使用だからと削除しないこと(後で使う予定)。
 const BOARD_QUIZ_COPY={
@@ -8239,34 +8234,6 @@ const BOARD_QUIZ_COPY={
 Object.assign(BOARD_QUIZ_COPY.en,{chooseThree:'Which board takes 3 moves?',largeTriangle:'A large triangle of fallen daruma can take either 3 or 4 moves, depending on their directions.'});
 Object.assign(BOARD_QUIZ_COPY.zh,{chooseThree:'哪一个最少需要3步？',largeTriangle:'倒下的大三角形会因方向不同而需要3步或4步。'});
 Object.assign(BOARD_QUIZ_COPY.ko,{chooseThree:'어느 보드가 최단 3수일까요?',largeTriangle:'누운 다루마의 큰 삼각형은 방향에 따라 최단 3수 또는 4수가 됩니다.'});
-function celebrateQuiz(root){
-  root.classList.remove('quiz-success');
-  void root.offsetWidth;
-  root.classList.add('quiz-success');
-  playTone(784,.09,.024);
-  playTone(1047,.13,.026,.07);
-  haptic([10,32,16]);
-}
-function renderQuizInto(ids,quiz){
-  const root=$(ids.root),options=$(ids.options),note=$(ids.note);
-  root.classList.remove('quiz-success');
-  const {answers,correct}=quizPresentation(quiz);
-  $(ids.title).textContent=tr('quizTitle');
-  $(ids.question).textContent=quiz.q;
-  note.textContent='';
-  options.innerHTML='';
-  answers.forEach((answer,index)=>{
-    const button=document.createElement('button');
-    button.className='quiz-option';button.type='button';button.textContent=answer;
-    button.addEventListener('click',()=>{
-      [...options.children].forEach(item=>item.disabled=true);
-      options.children[correct].classList.add('correct');
-      if(index===correct){note.textContent=tr('quizCorrect')+'　'+quiz.note;celebrateQuiz(root);}
-      else{button.classList.add('wrong');note.textContent=tr('quizWrong')+'　'+quiz.note;}
-    });
-    options.appendChild(button);
-  });
-}
 function volumeLabel(n){
   const labels={
     ja:['序','破','急'],
