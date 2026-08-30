@@ -1126,6 +1126,9 @@ function renderPrimaryMilestone(entry,seal,rankText,masterText,rules){
 function renderMasteryMilestone(entry,seal,rankText,masterText,boardNote){
   $('messageMasterSealLabel').textContent=masterPath().ranks[3];setSealColor(seal,3);$('messageDialogTitle').textContent=tr('masteryTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[3]);masterText.hidden=false;masterText.textContent=tr('masteryText');boardNote.hidden=false;boardNote.textContent=tr('masteryBoardNote');
 }
+function renderSatoriMilestone(entry,seal,rankText,masterText){$('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('satoriRank'),false,5);setSealColor(seal,5);seal.classList.add('rank-frame-seal');$('messageDialogTitle').textContent=tr('satoriTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));masterText.hidden=false;masterText.textContent=tr('satoriText');}
+function renderAwakeningMilestone(entry,seal,rankText,masterText,boardNote){$('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('awakenedRank'),false,6);setSealColor(seal,6);seal.classList.add('rank-frame-seal');$('messageDialogTitle').textContent=tr('awakenedTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('awakenedRank'));masterText.hidden=false;masterText.textContent=tr('satoriThanks');boardNote.hidden=false;boardNote.textContent=tr('threeDUnlockedText');}
+function renderIntroMilestone(entry,seal,masterText){const data={satoriIntro:['satoriIntroTitle','satoriIntroText'],secondLapIntro:['secondLapTitle','secondLapText'],trainingWelcome:['trainingWelcomeTitle','trainingWelcomeText']}[entry.master];seal.hidden=entry.master==='trainingWelcome';if(entry.master==='satoriIntro'){$('messageMasterSealLabel').innerHTML=satoriSealSvg();setSealColor(seal,5);}else if(entry.master==='secondLapIntro'){$('messageMasterSealLabel').textContent=secondLapMark();seal.classList.add('second-lap-mark');}$('messageDialogTitle').textContent=tr(data[0]);$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr(data[1]);}
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
   const art=messageReviewArt(entry),twoMoveLesson=lessonVariantFromArt(art),illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
@@ -1153,15 +1156,15 @@ function renderMessageReview(){
     }else if(entry.master==='mastery'){
       renderMasteryMilestone(entry,seal,rankText,masterText,boardNote);
     }else if(entry.master==='satori'){
-      $('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('satoriRank'),false,5);setSealColor(seal,5);seal.classList.add('rank-frame-seal');$('messageDialogTitle').textContent=tr('satoriTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));masterText.hidden=false;masterText.textContent=tr('satoriText');
+      renderSatoriMilestone(entry,seal,rankText,masterText);
     }else if(entry.master==='awakening'){
-      $('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('awakenedRank'),false,6);setSealColor(seal,6);seal.classList.add('rank-frame-seal');$('messageDialogTitle').textContent=tr('awakenedTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);rankText.hidden=false;rankText.textContent=rankEarnedText(tr('awakenedRank'));masterText.hidden=false;masterText.textContent=tr('satoriThanks');boardNote.hidden=false;boardNote.textContent=tr('threeDUnlockedText');
+      renderAwakeningMilestone(entry,seal,rankText,masterText,boardNote);
     }else if(entry.master==='satoriIntro'){
-      seal.hidden=false;seal.classList.remove('rank-seal','rank-frame-seal','second-lap-mark');seal.tabIndex=-1;setSealColor(seal,5);$('messageMasterSealLabel').innerHTML=satoriSealSvg();$('messageDialogTitle').textContent=tr('satoriIntroTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr('satoriIntroText');
+      renderIntroMilestone(entry,seal,masterText);
     }else if(entry.master==='secondLapIntro'){
-      seal.hidden=false;seal.classList.remove('rank-seal','rank-frame-seal');seal.classList.add('second-lap-mark');seal.tabIndex=-1;$('messageMasterSealLabel').textContent=secondLapMark();$('messageDialogTitle').textContent=tr('secondLapTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr('secondLapText');
+      renderIntroMilestone(entry,seal,masterText);
     }else if(entry.master==='trainingWelcome'){
-      seal.hidden=true;$('messageDialogTitle').textContent=tr('trainingWelcomeTitle');$('messageDialogPlace').textContent=messageReviewPlace(entry);masterText.hidden=false;masterText.textContent=tr('trainingWelcomeText');
+      renderIntroMilestone(entry,seal,masterText);
     }else{
       const nextRules={ja:['「破」からは、ヒントが使えなくなります。','「急」では途中から最短4手の問題です。\nスワイプ中は残り最短手数が「？」になります。','「極」では残り最短手数が表示されません。\nかわりに回数限定で「残り手数」のボタンが使えますが、これも途中から使用回数が減っていきます。']}[currentLang]||[];
       const clearName=currentLang==='ja'?'名人への道・'+volumeLabel(volume)+'　'+masterSubtitle(volume):volumeLabel(volume)+'　'+masterSubtitle(volume);
