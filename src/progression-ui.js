@@ -1118,6 +1118,7 @@ function configureMessageReviewLinks(entry,messageClearEntry){
   link.dataset.target=tipsLink?'tips':patternsLink?'patterns':twoMoveCard!==undefined?'card':guideCard?'guide':'rank';
   link.textContent=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatternsLink')+' →':twoMoveCard!==undefined||guideCard?tr('detailsLink'):tr('rankLink');
 }
+function isMilestoneMessage(entry){return !!entry?.master;}
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
   const art=messageReviewArt(entry),twoMoveLesson=lessonVariantFromArt(art),illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
@@ -1136,7 +1137,7 @@ function renderMessageReview(){
   const messageClearEntry=configureMessageReviewType(entry);
   const twoMoveCard=messageClearEntry?.twoMoveCard,guideCard=messageClearEntry?.guideCard;
   configureMessageReviewLinks(entry,messageClearEntry);
-  if(entry.master){
+  if(isMilestoneMessage(entry)){
     const volume=entry.master==='primary'?0:Math.ceil((entry.index+1)/MASTER_VOLUME_SIZE);
     const current=entry.master==='primary'?2:entry.master==='mastery'?6:Math.min(5,volume+2);
     if(entry.master!=='mastery')roadmap.innerHTML=masterRoadmapMarkup(current);
