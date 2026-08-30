@@ -20,6 +20,8 @@
 - `src/index.template.html` — `index.html` の保守用テンプレート
 - `src/game-state.js` — バージョン付き統合ゲーム状態と旧保存データ移行
 - `src/progression-policy.js` — コース解放・速解き・学習用 UI の宣言ポリシー
+- `src/quiz-ui.js` — 共通クイズ描画・選択肢シャッフル・正解演出
+- `src/message-ui.js` — クリア後メッセージ・節目表示・見直し一覧
 - `scripts/build-index.mjs` — 単体HTMLを生成するスクリプト
 - `all-patterns.html` — クリア後に楽しめる盤面一覧
 
