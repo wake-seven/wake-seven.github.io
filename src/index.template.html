@@ -3752,7 +3752,7 @@ function trackAnalyticsEvent(name,parameters={}){
   if(!WAKE7_GA_ENABLED||typeof window.gtag!=='function')return;
   let analyticsLanguage=currentLang;
   try{
-    const storedLanguage=localStorage.getItem('wake7-language');
+    const storedLanguage=storage.get('wake7-language');
     if(UI_TEXT[storedLanguage])analyticsLanguage=storedLanguage;
   }catch(_){ }
   window.gtag('event',name,Object.assign({
@@ -3784,63 +3784,63 @@ let boardTheme=['default','gold','satori'].includes(gameState.settings.boardThem
 let boardLayout=gameState.settings.boardTheme==='tilted'||gameState.settings.boardLayout==='tilted'?'tilted':'normal';
 // Legacy settings are only a fallback while upgrading an incomplete vNext document.
 if(!gameState.settings.boardTheme||!gameState.settings.boardLayout)try{
-  const savedTheme=localStorage.getItem('wake7-board-theme');
+  const savedTheme=storage.get('wake7-board-theme');
   // 旧「縦配置」テーマは、通常色 + 縦配置へ移行する。
   if(savedTheme==='tilted')boardLayout='tilted';
   else if(['default','gold','satori'].includes(savedTheme))boardTheme=savedTheme;
-  const savedLayout=localStorage.getItem('wake7-board-layout');
+  const savedLayout=storage.get('wake7-board-layout');
   if(['normal','tilted'].includes(savedLayout))boardLayout=savedLayout;
 }catch(_){ }
 let boardThemeChosen=false;
-try{boardThemeChosen=localStorage.getItem('wake7-board-theme-chosen')==='1';}catch(_){ }
+try{boardThemeChosen=storage.get('wake7-board-theme-chosen')==='1';}catch(_){ }
 let boardLayoutChosen=false;
-try{boardLayoutChosen=localStorage.getItem('wake7-board-layout-chosen')==='1';}catch(_){ }
+try{boardLayoutChosen=storage.get('wake7-board-layout-chosen')==='1';}catch(_){ }
 let darumaColor=['red','rainbow'].includes(gameState.settings.darumaColor)?gameState.settings.darumaColor:'red',darumaColorChosen=false;
 if(!gameState.settings.darumaColor)try{
-  const savedDarumaColor=localStorage.getItem('wake7-daruma-color');
+  const savedDarumaColor=storage.get('wake7-daruma-color');
   // 旧版の特別色は、七色のだるまへ移行する。
   if(['red','rainbow'].includes(savedDarumaColor))darumaColor=savedDarumaColor;
   else if(['indigo','gold','green'].includes(savedDarumaColor))darumaColor='rainbow';
-  darumaColorChosen=localStorage.getItem('wake7-daruma-color-chosen')==='1';
+  darumaColorChosen=storage.get('wake7-daruma-color-chosen')==='1';
 }catch(_){ }
 let masterGoldGranted=false;
-try{masterGoldGranted=localStorage.getItem('wake7-master-gold-granted')==='1';}catch(_){ }
+try{masterGoldGranted=storage.get('wake7-master-gold-granted')==='1';}catch(_){ }
 let satoriDesignGranted=false;
-try{satoriDesignGranted=localStorage.getItem('wake7-satori-design-granted')==='1';}catch(_){ }
+try{satoriDesignGranted=storage.get('wake7-satori-design-granted')==='1';}catch(_){ }
 let secondLapActive=false;
-try{secondLapActive=localStorage.getItem('wake7-second-lap-active')==='1';}catch(_){ }
+try{secondLapActive=storage.get('wake7-second-lap-active')==='1';}catch(_){ }
 let awakenedGranted=gameState.unlocks.awakened===true;
-if(!awakenedGranted)try{awakenedGranted=localStorage.getItem('wake7-awakened-granted')==='1';}catch(_){ }
+if(!awakenedGranted)try{awakenedGranted=storage.get('wake7-awakened-granted')==='1';}catch(_){ }
 // 速解きモードは、進行状況をリセットしても残す独立した解放要素。
 let speedModeUnlocked=false;
-try{speedModeUnlocked=localStorage.getItem('wake7-speed-unlocked')==='1'||awakenedGranted;}catch(_){speedModeUnlocked=awakenedGranted;}
-if(speedModeUnlocked)try{localStorage.setItem('wake7-speed-unlocked','1');}catch(_){ }
+try{speedModeUnlocked=storage.get('wake7-speed-unlocked')==='1'||awakenedGranted;}catch(_){speedModeUnlocked=awakenedGranted;}
+if(speedModeUnlocked)try{storage.set('wake7-speed-unlocked','1');}catch(_){ }
 // この印がない保存データだけを、旧「速解き一括解放」仕様として移行する。
 const hasSpeedTrialModel=storage.get(STORAGE_KEYS.speedTrialModelVersion)==='3';
 // 速解きは解放された範囲ごとに選択できる。旧版の一括解放は、互換性のため全て解放済みとして移行する。
 let speedTrainingUnlocked=false,speedIntermediateUnlocked=false,speedMasteryUnlocked=false,speedSatoriUnlocked=false;
 let speedTrainingTrialCleared=false,speedIntermediateTrialCleared=false,speedMasteryTrialCleared=false;
 try{
-  speedTrainingUnlocked=localStorage.getItem('wake7-speed-training-unlocked')==='1';
-  speedIntermediateUnlocked=localStorage.getItem(STORAGE_KEYS.speedIntermediateUnlocked)==='1';
-  speedMasteryUnlocked=localStorage.getItem('wake7-speed-mastery-unlocked')==='1';
-  speedSatoriUnlocked=localStorage.getItem('wake7-speed-satori-unlocked')==='1';
-  speedTrainingTrialCleared=localStorage.getItem(STORAGE_KEYS.speedTrainingTrialCleared)==='1';
-  speedIntermediateTrialCleared=localStorage.getItem(STORAGE_KEYS.speedIntermediateTrialCleared)==='1';
-  speedMasteryTrialCleared=localStorage.getItem(STORAGE_KEYS.speedMasteryTrialCleared)==='1';
+  speedTrainingUnlocked=storage.get('wake7-speed-training-unlocked')==='1';
+  speedIntermediateUnlocked=storage.get(STORAGE_KEYS.speedIntermediateUnlocked)==='1';
+  speedMasteryUnlocked=storage.get('wake7-speed-mastery-unlocked')==='1';
+  speedSatoriUnlocked=storage.get('wake7-speed-satori-unlocked')==='1';
+  speedTrainingTrialCleared=storage.get(STORAGE_KEYS.speedTrainingTrialCleared)==='1';
+  speedIntermediateTrialCleared=storage.get(STORAGE_KEYS.speedIntermediateTrialCleared)==='1';
+  speedMasteryTrialCleared=storage.get(STORAGE_KEYS.speedMasteryTrialCleared)==='1';
 }catch(_){ }
 if(speedModeUnlocked&&!hasSpeedTrialModel){speedTrainingUnlocked=true;speedIntermediateUnlocked=true;speedMasteryUnlocked=true;speedSatoriUnlocked=true;}
 // 旧保存の合格状態は、盤面クリア状況を読み込んだ後で新しい関門へ対応付ける。
 // 見た目の報酬だけを残したリセットでは、試験を通過済みにしない。
 storage.set(STORAGE_KEYS.speedTrialModelVersion,'3');
-if(speedTrainingTrialCleared)try{localStorage.setItem(STORAGE_KEYS.speedTrainingTrialCleared,'1');}catch(_){ }
-if(speedIntermediateTrialCleared)try{localStorage.setItem(STORAGE_KEYS.speedIntermediateTrialCleared,'1');}catch(_){ }
-if(speedMasteryTrialCleared)try{localStorage.setItem(STORAGE_KEYS.speedMasteryTrialCleared,'1');}catch(_){ }
+if(speedTrainingTrialCleared)try{storage.set(STORAGE_KEYS.speedTrainingTrialCleared,'1');}catch(_){ }
+if(speedIntermediateTrialCleared)try{storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,'1');}catch(_){ }
+if(speedMasteryTrialCleared)try{storage.set(STORAGE_KEYS.speedMasteryTrialCleared,'1');}catch(_){ }
 if(speedModeUnlocked&&!hasSpeedTrialModel)try{
-  localStorage.setItem(STORAGE_KEYS.speedTrainingUnlocked,'1');
-  localStorage.setItem(STORAGE_KEYS.speedIntermediateUnlocked,'1');
-  localStorage.setItem(STORAGE_KEYS.speedMasteryUnlocked,'1');
-  localStorage.setItem(STORAGE_KEYS.speedSatoriUnlocked,'1');
+  storage.set(STORAGE_KEYS.speedTrainingUnlocked,'1');
+  storage.set(STORAGE_KEYS.speedIntermediateUnlocked,'1');
+  storage.set(STORAGE_KEYS.speedMasteryUnlocked,'1');
+  storage.set(STORAGE_KEYS.speedSatoriUnlocked,'1');
 }catch(_){ }
 function syncSpeedUnlockFlag(){
   speedModeUnlocked=speedTrainingUnlocked||speedIntermediateUnlocked||speedMasteryUnlocked||speedSatoriUnlocked;
@@ -3856,10 +3856,10 @@ function unlockSpeedVariant(id){
   syncSpeedUnlockFlag();
   if(!wasUnlocked)storage.set(SPEED_NEW_TAB_STORAGE_KEY,id);
   try{
-    if(speedTrainingUnlocked)localStorage.setItem(STORAGE_KEYS.speedTrainingUnlocked,'1');
-    if(speedIntermediateUnlocked)localStorage.setItem(STORAGE_KEYS.speedIntermediateUnlocked,'1');
-    if(speedMasteryUnlocked)localStorage.setItem(STORAGE_KEYS.speedMasteryUnlocked,'1');
-    if(speedSatoriUnlocked)localStorage.setItem(STORAGE_KEYS.speedSatoriUnlocked,'1');
+    if(speedTrainingUnlocked)storage.set(STORAGE_KEYS.speedTrainingUnlocked,'1');
+    if(speedIntermediateUnlocked)storage.set(STORAGE_KEYS.speedIntermediateUnlocked,'1');
+    if(speedMasteryUnlocked)storage.set(STORAGE_KEYS.speedMasteryUnlocked,'1');
+    if(speedSatoriUnlocked)storage.set(STORAGE_KEYS.speedSatoriUnlocked,'1');
   }catch(_){ }
 }
 // 卒業試験1つ分の合格を、称号判定用の「試験フラグ」と速解きモード側の「解放フラグ」の
@@ -3889,13 +3889,13 @@ function grantCampaignProgressThrough(checkpoint){
 }
 // 3Dページは速解きモード初回クリアの報酬。速解きの解放同様、進行状況リセットでは残す。
 let threeDUnlocked=gameState.unlocks.threeD===true;
-if(!threeDUnlocked)try{threeDUnlocked=localStorage.getItem('wake7-3d-unlocked')==='1';}catch(_){ }
+if(!threeDUnlocked)try{threeDUnlocked=storage.get('wake7-3d-unlocked')==='1';}catch(_){ }
 // 七色だるまは二周目の名人達成報酬。旧版で覚者まで到達済みなら移行して保持する。
 let rainbowDarumaGranted=false;
-try{rainbowDarumaGranted=localStorage.getItem('wake7-rainbow-daruma-granted')==='1'||awakenedGranted;}catch(_){rainbowDarumaGranted=awakenedGranted;}
-if(rainbowDarumaGranted)try{localStorage.setItem('wake7-rainbow-daruma-granted','1');}catch(_){ }
+try{rainbowDarumaGranted=storage.get('wake7-rainbow-daruma-granted')==='1'||awakenedGranted;}catch(_){rainbowDarumaGranted=awakenedGranted;}
+if(rainbowDarumaGranted)try{storage.set('wake7-rainbow-daruma-granted','1');}catch(_){ }
 let secondLapUnlocked=gameState.unlocks.secondLap===true;
-try{secondLapUnlocked=secondLapUnlocked||localStorage.getItem('wake7-second-lap-unlocked')==='1'||secondLapActive||awakenedGranted;}catch(_){secondLapUnlocked=secondLapActive||awakenedGranted;}
+try{secondLapUnlocked=secondLapUnlocked||storage.get('wake7-second-lap-unlocked')==='1'||secondLapActive||awakenedGranted;}catch(_){secondLapUnlocked=secondLapActive||awakenedGranted;}
 let activeLap=gameState.navigation.lap===2?2:1;
 let lastStageMode={extra:false,satori:false,index:0};
 let editingBoard=false;
@@ -3968,15 +3968,15 @@ if(storage.get(STORAGE_KEYS.stagesLayoutVersion)!==STAGES_LAYOUT_VERSION){
   clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
   speedTrainingTrialCleared=false;speedIntermediateTrialCleared=false;
   try{
-    localStorage.removeItem(STORAGE_KEYS.cleared);
-    localStorage.removeItem('wake7-lap1-primary-cleared');
-    localStorage.removeItem('wake7-lap2-primary-cleared');
-    localStorage.removeItem(STORAGE_KEYS.extraCleared);
-    localStorage.removeItem('wake7-lap1-extra-cleared');
-    localStorage.removeItem('wake7-lap2-extra-cleared');
-    localStorage.removeItem(STORAGE_KEYS.currentStage);
-    localStorage.setItem(STORAGE_KEYS.speedTrainingTrialCleared,'0');
-    localStorage.setItem(STORAGE_KEYS.speedIntermediateTrialCleared,'0');
+    storage.remove(STORAGE_KEYS.cleared);
+    storage.remove('wake7-lap1-primary-cleared');
+    storage.remove('wake7-lap2-primary-cleared');
+    storage.remove(STORAGE_KEYS.extraCleared);
+    storage.remove('wake7-lap1-extra-cleared');
+    storage.remove('wake7-lap2-extra-cleared');
+    storage.remove(STORAGE_KEYS.currentStage);
+    storage.set(STORAGE_KEYS.speedTrainingTrialCleared,'0');
+    storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,'0');
   }catch(_){}
   storage.set(STORAGE_KEYS.stagesLayoutVersion,STAGES_LAYOUT_VERSION);
 }
@@ -4035,12 +4035,12 @@ function beginSecondLap(){
   secondLapUnlocked=true;
   activateCampaignLap(2);
   try{
-    localStorage.setItem('wake7-second-lap-unlocked','1');
-    localStorage.removeItem('wake7-current-stage');
-    localStorage.removeItem('wake7-active-session');
-    localStorage.removeItem(FOURTH_CHECKS_STORAGE_KEY);
-    localStorage.removeItem(MESSAGE_REVIEW_STORAGE_KEY);
-    localStorage.removeItem(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY);
+    storage.set('wake7-second-lap-unlocked','1');
+    storage.remove('wake7-current-stage');
+    storage.remove('wake7-active-session');
+    storage.remove(FOURTH_CHECKS_STORAGE_KEY);
+    storage.remove(MESSAGE_REVIEW_STORAGE_KEY);
+    storage.remove(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY);
   }catch(_){ }
   lastStageMode={extra:false,satori:false,index:0};
   persistLapProgress();
@@ -4049,7 +4049,7 @@ function beginSecondLap(){
 }
 function migrateSatoriOrder(){
   let version='';
-  try{version=localStorage.getItem('wake7-satori-order-version')||'';}catch(_){}
+  try{version=storage.get('wake7-satori-order-version')||'';}catch(_){}
   if(version===SATORI_ORDER_VERSION)return;
   const sourceStages=version==='probability-2'?SATORI_PROBABILITY_ASCENDING
     :version==='probability-3'?SATORI_PROBABILITY_DESCENDING
@@ -4067,16 +4067,16 @@ function migrateSatoriOrder(){
   clearedSatoriStages=new Set([...clearedSatoriStages].map(remapIndex).filter(Number.isInteger));
   for(const key of ['wake7-current-stage','wake7-active-session']){
     try{
-      const saved=JSON.parse(localStorage.getItem(key)||'null');
+      const saved=JSON.parse(storage.get(key)||'null');
       if(saved&&saved.satori===true&&Number.isInteger(saved.index)){
         const next=remapIndex(saved.index);
-        if(Number.isInteger(next)){saved.index=next;localStorage.setItem(key,JSON.stringify(saved));}
+        if(Number.isInteger(next)){saved.index=next;storage.set(key,JSON.stringify(saved));}
       }
     }catch(_){}
   }
   try{
-    localStorage.setItem('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));
-    localStorage.setItem('wake7-satori-order-version',SATORI_ORDER_VERSION);
+    storage.set('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));
+    storage.set('wake7-satori-order-version',SATORI_ORDER_VERSION);
   }catch(_){}
 }
 migrateSatoriOrder();
@@ -4096,8 +4096,8 @@ function grantMasterReward(){
   masterGoldGranted=true;
   boardTheme='gold';boardThemeChosen=false;
   try{
-    localStorage.setItem(STORAGE_KEYS.masterGoldGranted,'1');
-    localStorage.removeItem(STORAGE_KEYS.boardThemeChosen);
+    storage.set(STORAGE_KEYS.masterGoldGranted,'1');
+    storage.remove(STORAGE_KEYS.boardThemeChosen);
   }catch(_){ }
 }
 function updateMasterTheme(){
@@ -4106,7 +4106,7 @@ function updateMasterTheme(){
   // 悟り制覇の瞬間は、白黒と縦配置をセットで新しい褒美として見せる。
   if(isSatoriMastered()&&!satoriDesignGranted){
     boardTheme='satori';boardLayout='tilted';satoriDesignGranted=true;
-    try{localStorage.setItem('wake7-satori-design-granted','1');}catch(_){ }
+    try{storage.set('wake7-satori-design-granted','1');}catch(_){ }
   }
   if(hasMasterReward()&&!boardThemeChosen)boardTheme=hasSatoriReward()?'satori':'gold';
   if(hasSatoriReward()&&!boardLayoutChosen)boardLayout='tilted';
@@ -4117,7 +4117,7 @@ function updateMasterTheme(){
   document.body.dataset.boardTheme=boardTheme;
   document.body.dataset.boardLayout=boardLayout;
   applyBoardTheme();
-  try{localStorage.setItem('wake7-board-theme',boardTheme);localStorage.setItem('wake7-board-layout',boardLayout);localStorage.setItem('wake7-daruma-color',darumaColor);}catch(_){ }
+  try{storage.set('wake7-board-theme',boardTheme);storage.set('wake7-board-layout',boardLayout);storage.set('wake7-daruma-color',darumaColor);}catch(_){ }
 }
 const BOARD_THEME_TONES={
   gold:{stand:{fill:'#F6DE93',stroke:'#C89C35'},fallen:{fill:'#D7B75F',stroke:'#A67D28'}},
@@ -4655,7 +4655,7 @@ function completeSpeedStage(){
 // ===== 残り手数チェック(第四巻) =====
 const FOURTH_CHECKS_STORAGE_KEY='wake7-fourth-checks';
 let fourthCheckUsage={};
-try{fourthCheckUsage=JSON.parse(localStorage.getItem(FOURTH_CHECKS_STORAGE_KEY)||'{}')||{};}catch(_){fourthCheckUsage={};}
+try{fourthCheckUsage=JSON.parse(storage.get(FOURTH_CHECKS_STORAGE_KEY)||'{}')||{};}catch(_){fourthCheckUsage={};}
 let fourthHintPreview=false,fourthDistanceRevealed=false,fourthHintDistance=null,fourthChecksUsed=0;
 const fourthCheckLimit=()=>!isFourthVolume()?0:(extraIndex%MASTER_VOLUME_SIZE<6?2:extraIndex%MASTER_VOLUME_SIZE<12?1:0);
 // 極1〜12では、戻す操作で残り手数の使用回数を復活させない。
@@ -4668,7 +4668,7 @@ const usesHiddenRemaining=()=>isMode('satori')||isMode('free')||isFourthVolume()
 function persistFourthChecks(){
   if(!fourthChecksPersist())return;
   fourthCheckUsage[extraIndex]=fourthChecksUsed;
-  try{localStorage.setItem(FOURTH_CHECKS_STORAGE_KEY,JSON.stringify(fourthCheckUsage));}catch(_){ }
+  try{storage.set(FOURTH_CHECKS_STORAGE_KEY,JSON.stringify(fourthCheckUsage));}catch(_){ }
 }
 function loadFourthChecks(){
   fourthChecksUsed=fourthChecksPersist()&&Number.isInteger(fourthCheckUsage[extraIndex])?fourthCheckUsage[extraIndex]:0;
@@ -4677,7 +4677,7 @@ function renewFourthChecks(){
   if(!isFourthVolume())return;
   fourthChecksUsed=0;
   delete fourthCheckUsage[extraIndex];
-  try{localStorage.setItem(FOURTH_CHECKS_STORAGE_KEY,JSON.stringify(fourthCheckUsage));}catch(_){ }
+  try{storage.set(FOURTH_CHECKS_STORAGE_KEY,JSON.stringify(fourthCheckUsage));}catch(_){ }
 }
 function resetFourthDistance(){
   fourthHintPreview=false;fourthDistanceRevealed=false;fourthHintDistance=null;
@@ -6071,18 +6071,18 @@ function loadSatoriStage(index){
   satoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
   lastStageMode={extra:false,satori:true,index:satoriIndex};
   const stage=SATORI_STAGES[satoriIndex];
-  try{localStorage.setItem('wake7-current-stage',JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}
+  try{storage.set('wake7-current-stage',JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}
   setPosition(campaignStageState(stage.state),stage.par);
   renderStageNav();
   animateBoardArrival();
   trackStageView();
 }
 function saveCurrentStage(extra,index){
-  try{localStorage.setItem('wake7-current-stage',JSON.stringify({extra,index,lap:activeLap}));}catch(_){}
+  try{storage.set('wake7-current-stage',JSON.stringify({extra,index,lap:activeLap}));}catch(_){}
 }
 function restoreCurrentStage(){
   let saved=null;
-  try{saved=JSON.parse(localStorage.getItem('wake7-current-stage')||'null');}catch(_){}
+  try{saved=JSON.parse(storage.get('wake7-current-stage')||'null');}catch(_){}
   if(saved&&(saved.lap===1||saved.lap===2))activateCampaignLap(saved.lap);
   if(saved&&saved.satori===true&&Number.isInteger(saved.index)
     &&saved.index>=0&&saved.index<SATORI_STAGES.length&&canEnterSatori()){
@@ -6146,7 +6146,7 @@ function saveActiveSession(){
     saveSpeedSession();
     const payload={mode:'speed',variant:speedVariant,lap:activeLap};
     syncGameState(payload);
-    try{localStorage.setItem(STORAGE_KEYS.activeSession,JSON.stringify(payload));}catch(_){ }
+    try{storage.set(STORAGE_KEYS.activeSession,JSON.stringify(payload));}catch(_){ }
     return;
   }
   persistLapProgress();
@@ -6156,11 +6156,11 @@ function saveActiveSession(){
     lastStageMode,board:serializeActiveBoard()
   };
   syncGameState(payload);
-  try{localStorage.setItem('wake7-active-session',JSON.stringify(payload));}catch(_){ }
+  try{storage.set('wake7-active-session',JSON.stringify(payload));}catch(_){ }
 }
 function restoreActiveSession(){
   let saved=null;
-  try{saved=JSON.parse(localStorage.getItem('wake7-active-session')||'null');}catch(_){ }
+  try{saved=JSON.parse(storage.get('wake7-active-session')||'null');}catch(_){ }
   if(!saved)saved=window.WakeSevenState.read()?.legacySession||null;
   if(saved?.mode==='tutorial'&&storage.get(STORAGE_KEYS.tutorialComplete)!=='1'){
     loadTutorialStep(Number.isInteger(saved.step)?saved.step:Number(storage.get(STORAGE_KEYS.tutorialStep,'0'))||0);
@@ -6173,7 +6173,7 @@ function restoreActiveSession(){
     if(savedSpeed&&speedVariantUnlocked(savedSpeed.variant)){
       speedVariant=savedSpeed.variant;speedSession=ensureSpeedBoardView(savedSpeed);loadSpeedStage(true);return;
     }
-    try{localStorage.removeItem(STORAGE_KEYS.activeSession);}catch(_){ }
+    try{storage.remove(STORAGE_KEYS.activeSession);}catch(_){ }
     restoreCurrentStage();return;
   }
   if(!saved||!validSavedBoard(saved.board)){restoreCurrentStage();return;}
@@ -7955,8 +7955,8 @@ function rememberClearedMessage(extra,index,satori=false){
   if(!entry)return;
   const key=messageReviewEntryKey(entry);
   try{
-    localStorage.setItem(MESSAGE_REVIEW_STORAGE_KEY,key);
-    localStorage.setItem(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);
+    storage.set(MESSAGE_REVIEW_STORAGE_KEY,key);
+    storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);
   }catch(_){}
 }
 function rememberSpecialMessage(master){
@@ -7964,8 +7964,8 @@ function rememberSpecialMessage(master){
   if(!entry)return;
   const key=messageReviewEntryKey(entry);
   try{
-    localStorage.setItem(MESSAGE_REVIEW_STORAGE_KEY,key);
-    localStorage.setItem(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);
+    storage.set(MESSAGE_REVIEW_STORAGE_KEY,key);
+    storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);
   }catch(_){ }
 }
 function messageReviewPlace(entry){
@@ -8102,7 +8102,7 @@ function renderMessageReview(){
   }
   $('messagePrev').disabled=messageReviewIndex===0;
   $('messageNext').disabled=messageReviewIndex===messageReviewEntries.length-1;
-  try{localStorage.setItem(MESSAGE_REVIEW_STORAGE_KEY,messageReviewEntryKey(entry));}catch(_){}
+  try{storage.set(MESSAGE_REVIEW_STORAGE_KEY,messageReviewEntryKey(entry));}catch(_){}
 }
 // ===== クイズシステム =====
 /* クイズは見直すたびに選択肢の位置を変える。 */
@@ -8166,8 +8166,8 @@ function openMessageReview({resume=false,returnTarget=null}={}){
   if(resume){
     let lastKey='',lastClearKey='';
     try{
-      lastKey=localStorage.getItem(MESSAGE_REVIEW_STORAGE_KEY)||'';
-      lastClearKey=localStorage.getItem(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY)||'';
+      lastKey=storage.get(MESSAGE_REVIEW_STORAGE_KEY)||'';
+      lastClearKey=storage.get(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY)||'';
     }catch(_){}
     // 以前の保存データには「最後にクリアした問題」がないため、悟り制覇済みなら一度だけ制覇メッセージへ移行する。
     if(!lastClearKey&&isSatoriMastered()){
@@ -8175,7 +8175,7 @@ function openMessageReview({resume=false,returnTarget=null}={}){
       if(satoriEntry>=0){
         messageReviewIndex=satoriEntry;
         const key=messageReviewEntryKey(messageReviewEntries[satoriEntry]);
-        try{localStorage.setItem(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);}catch(_){}
+        try{storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);}catch(_){}
       }else messageReviewIndex=0;
     }else{
       const saved=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===lastKey);
@@ -8766,15 +8766,15 @@ function showMasterDialog(kind='primary'){
   if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
   if(kind==='mastery'&&secondLapActive&&!rainbowDarumaGranted){
     rainbowDarumaGranted=true;darumaColor='rainbow';darumaColorChosen=false;
-    try{localStorage.setItem('wake7-rainbow-daruma-granted','1');localStorage.removeItem('wake7-daruma-color-chosen');}catch(_){ }
+    try{storage.set('wake7-rainbow-daruma-granted','1');storage.remove('wake7-daruma-color-chosen');}catch(_){ }
     updateMasterTheme();renderStageNav();
   }
   if(kind==='awakening'&&!awakenedGranted){
     awakenedGranted=true;
     threeDUnlocked=true;
     try{
-      localStorage.setItem('wake7-awakened-granted','1');
-      localStorage.setItem(STORAGE_KEYS.threeDUnlocked,'1');
+      storage.set('wake7-awakened-granted','1');
+      storage.set(STORAGE_KEYS.threeDUnlocked,'1');
     }catch(_){ }
     persistLapProgress();
     updateMasterTheme();
@@ -9117,9 +9117,9 @@ function debugGrantRainbowDaruma(){
   darumaColor='rainbow';
   darumaColorChosen=false;
   try{
-    localStorage.setItem('wake7-rainbow-daruma-granted','1');
-    localStorage.setItem('wake7-daruma-color','rainbow');
-    localStorage.removeItem('wake7-daruma-color-chosen');
+    storage.set('wake7-rainbow-daruma-granted','1');
+    storage.set('wake7-daruma-color','rainbow');
+    storage.remove('wake7-daruma-color-chosen');
   }catch(_){ }
 }
 $('debugAlmost').addEventListener('click',()=>debugClearCurrent(1));
@@ -9137,11 +9137,11 @@ function debugPrepareSecondLapCheckpoint(){
   masterGoldGranted=true;
   satoriDesignGranted=true;
   try{
-    localStorage.setItem('wake7-second-lap-unlocked','1');
-    localStorage.removeItem('wake7-awakened-granted');
-    for(const variant of ['standard','training9','mastery15','mastery24','satori73'])localStorage.removeItem(speedSessionStorageKey(variant));
-    localStorage.setItem('wake7-master-gold-granted','1');
-    localStorage.setItem('wake7-satori-design-granted','1');
+    storage.set('wake7-second-lap-unlocked','1');
+    storage.remove('wake7-awakened-granted');
+    for(const variant of ['standard','training9','mastery15','mastery24','satori73'])storage.remove(speedSessionStorageKey(variant));
+    storage.set('wake7-master-gold-granted','1');
+    storage.set('wake7-satori-design-granted','1');
   }catch(_){ }
   activateCampaignLap(2);
 }
@@ -9159,13 +9159,13 @@ function debugPrepareFirstLapCheckpoint(){
   speedIntermediateTrialCleared=false;
   speedMasteryTrialCleared=false;
   try{
-    localStorage.removeItem('wake7-second-lap-unlocked');
-    localStorage.removeItem('wake7-second-lap-active');
-    localStorage.removeItem('wake7-awakened-granted');
-  localStorage.removeItem(STORAGE_KEYS.speedTrainingTrialCleared);
-  localStorage.removeItem(STORAGE_KEYS.speedIntermediateTrialCleared);
-  localStorage.removeItem(STORAGE_KEYS.speedMasteryTrialCleared);
-    localStorage.setItem(STORAGE_KEYS.speedTrialModelVersion,'3');
+    storage.remove('wake7-second-lap-unlocked');
+    storage.remove('wake7-second-lap-active');
+    storage.remove('wake7-awakened-granted');
+  storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
+  storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
+  storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
+    storage.set(STORAGE_KEYS.speedTrialModelVersion,'3');
   }catch(_){ }
   activateCampaignLap(1);
 }
@@ -9177,10 +9177,10 @@ function debugUnlockStageCheckpoint(index,secondLap=false){
   if(index>=TRAINING_STAGE_START&&!secondLap)grantSpeedTrialCleared('training9');
   for(let i=0;i<index;i++)clearedStages.add(i);
   try{
-    localStorage.setItem('wake7-cleared',JSON.stringify([...clearedStages]));
+    storage.set('wake7-cleared',JSON.stringify([...clearedStages]));
     if(secondLap){
-      localStorage.setItem('wake7-extra-cleared','[]');
-      localStorage.setItem('wake7-satori-cleared','[]');
+      storage.set('wake7-extra-cleared','[]');
+      storage.set('wake7-satori-cleared','[]');
     }
   }catch(_){}
   persistLapProgress();updateMasterTheme();
@@ -9208,9 +9208,9 @@ function debugUnlockExtra(count,secondLap=false){
   else STAGES.forEach((_,i)=>clearedStages.add(i));
   for(let i=0;i<count;i++)clearedExtraStages.add(i);
   try{
-    localStorage.setItem('wake7-cleared',JSON.stringify([...clearedStages]));
-    localStorage.setItem('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
-    if(secondLap)localStorage.setItem('wake7-satori-cleared','[]');
+    storage.set('wake7-cleared',JSON.stringify([...clearedStages]));
+    storage.set('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
+    if(secondLap)storage.set('wake7-satori-cleared','[]');
   }catch(_){}
   persistLapProgress();updateMasterTheme();
   if(count>0)rememberClearedMessage(true,count-1);
@@ -9230,9 +9230,9 @@ function debugUnlockSatori(count,secondLap=false){
   else{STAGES.forEach((_,i)=>clearedStages.add(i));EXTRA_STAGES.forEach((_,i)=>clearedExtraStages.add(i));}
   for(let i=0;i<count;i++)clearedSatoriStages.add(i);
   try{
-    localStorage.setItem('wake7-cleared',JSON.stringify([...clearedStages]));
-    localStorage.setItem('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
-    localStorage.setItem('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));
+    storage.set('wake7-cleared',JSON.stringify([...clearedStages]));
+    storage.set('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
+    storage.set('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));
   }catch(_){}
   persistLapProgress();updateMasterTheme();
   if(secondLap){debugGrantRainbowDaruma();updateMasterTheme();}
@@ -9264,8 +9264,8 @@ function debugOpenSpeedExam(variant,index){
     grantCampaignProgressThrough('mastery');
   }
   try{
-    localStorage.setItem('wake7-cleared',JSON.stringify([...clearedStages]));
-    localStorage.setItem('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
+    storage.set('wake7-cleared',JSON.stringify([...clearedStages]));
+    storage.set('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
   }catch(_){ }
   persistLapProgress();updateMasterTheme();
   speedVariant=variant;
@@ -9287,9 +9287,9 @@ function debugOpenSpeedExam(variant,index){
   speedSession.requiredTrial=variant;
   speedManuallyPaused=false;
   try{
-    if(variant==='training9')localStorage.setItem(STORAGE_KEYS.speedTrainingUnlocked,'1');
-    if(variant==='mastery15')localStorage.setItem(STORAGE_KEYS.speedIntermediateUnlocked,'1');
-    if(variant==='mastery24')localStorage.setItem(STORAGE_KEYS.speedMasteryUnlocked,'1');
+    if(variant==='training9')storage.set(STORAGE_KEYS.speedTrainingUnlocked,'1');
+    if(variant==='mastery15')storage.set(STORAGE_KEYS.speedIntermediateUnlocked,'1');
+    if(variant==='mastery24')storage.set(STORAGE_KEYS.speedMasteryUnlocked,'1');
   }catch(_){ }
   loadSpeedStage(false);
 }
@@ -9878,7 +9878,7 @@ const LANGUAGE_TEXT_TARGETS=[
 function applyLanguage(lang){
   if(!UI_TEXT[lang])return;
   currentLang=lang;
-  try{localStorage.setItem('wake7-language',lang);}catch(_){}
+  try{storage.set('wake7-language',lang);}catch(_){}
   document.documentElement.lang=lang==='zh'?'zh-CN':lang;
   document.title=tr('pageTitle');
   document.querySelector('h1').textContent=tr('title');
@@ -9966,7 +9966,7 @@ $('menuToggle').addEventListener('click',e=>{
 });
 $('soundToggle').addEventListener('click',()=>{
   soundEnabled=!soundEnabled;
-  try{localStorage.setItem('wake7-sound',soundEnabled?'on':'off');}catch(_){ }
+  try{storage.set('wake7-sound',soundEnabled?'on':'off');}catch(_){ }
   updateSoundToggle();
   if(soundEnabled)playTone(523,.07,.025);
 });
@@ -9988,15 +9988,15 @@ $('boardThemeOptions').addEventListener('click',event=>{
   if(button.dataset.boardColor){
     boardTheme=button.dataset.boardColor;
     boardThemeChosen=true;
-    try{localStorage.setItem('wake7-board-theme-chosen','1');}catch(_){ }
+    try{storage.set('wake7-board-theme-chosen','1');}catch(_){ }
   }else if(button.dataset.boardLayout){
     boardLayout=button.dataset.boardLayout;
     boardLayoutChosen=true;
-    try{localStorage.setItem('wake7-board-layout-chosen','1');}catch(_){ }
+    try{storage.set('wake7-board-layout-chosen','1');}catch(_){ }
   }else{
     darumaColor=button.dataset.darumaColor;
     darumaColorChosen=true;
-    try{localStorage.setItem('wake7-daruma-color',darumaColor);localStorage.setItem('wake7-daruma-color-chosen','1');}catch(_){ }
+    try{storage.set('wake7-daruma-color',darumaColor);storage.set('wake7-daruma-color-chosen','1');}catch(_){ }
   }
   updateMasterTheme();
   renderBoardThemeOptions();
@@ -10123,54 +10123,54 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   clearedStages=lap1ClearedStages;clearedExtraStages=lap1ClearedExtraStages;clearedSatoriStages=lap1ClearedSatoriStages;
   fourthCheckUsage={};
   try{
-    localStorage.removeItem('wake7-cleared');
-    localStorage.removeItem('wake7-extra-cleared');
-    localStorage.removeItem('wake7-satori-cleared');
-    localStorage.removeItem('wake7-current-stage');
-    localStorage.removeItem('wake7-active-session');
-    localStorage.removeItem('wake7-second-lap-active');
-    localStorage.removeItem('wake7-second-lap-unlocked');
-    localStorage.removeItem('wake7-active-lap');
-    for(const lap of [1,2])for(const part of ['primary','extra','satori'])localStorage.removeItem('wake7-lap'+lap+'-'+part+'-cleared');
-    localStorage.removeItem('wake7-awakened-granted');
+    storage.remove('wake7-cleared');
+    storage.remove('wake7-extra-cleared');
+    storage.remove('wake7-satori-cleared');
+    storage.remove('wake7-current-stage');
+    storage.remove('wake7-active-session');
+    storage.remove('wake7-second-lap-active');
+    storage.remove('wake7-second-lap-unlocked');
+    storage.remove('wake7-active-lap');
+    for(const lap of [1,2])for(const part of ['primary','extra','satori'])storage.remove('wake7-lap'+lap+'-'+part+'-cleared');
+    storage.remove('wake7-awakened-granted');
     if(!preserveRewards){
       // デバッグの完全リセットでは、ゲノム側で選んだ表示設定も初期化する。
-      localStorage.removeItem('wakeSevenGenomeBoardSize');
-      localStorage.removeItem('wakeSevenGenomeBoardLayout');
-      localStorage.removeItem('wake7-board-theme');
-      localStorage.removeItem('wake7-board-layout');
-      localStorage.removeItem('wake7-board-theme-chosen');
-      localStorage.removeItem('wake7-board-layout-chosen');
-      localStorage.removeItem('wake7-daruma-color');
-      localStorage.removeItem('wake7-daruma-color-chosen');
-      localStorage.removeItem('wake7-master-gold-granted');
-      localStorage.removeItem('wake7-satori-design-granted');
-      localStorage.removeItem('wake7-rainbow-daruma-granted');
-      localStorage.removeItem('wake7-speed-unlocked');
-      localStorage.removeItem(STORAGE_KEYS.speedTrainingUnlocked);
-      localStorage.removeItem(STORAGE_KEYS.speedIntermediateUnlocked);
-      localStorage.removeItem(STORAGE_KEYS.speedMasteryUnlocked);
-      localStorage.removeItem(STORAGE_KEYS.speedSatoriUnlocked);
-      localStorage.removeItem(STORAGE_KEYS.speedUnlockModelVersion);
-      localStorage.removeItem(STORAGE_KEYS.speedTrainingTrialCleared);
-      localStorage.removeItem(STORAGE_KEYS.speedIntermediateTrialCleared);
-      localStorage.removeItem(STORAGE_KEYS.speedMasteryTrialCleared);
-      localStorage.removeItem(STORAGE_KEYS.speedTrialModelVersion);
-      localStorage.removeItem('wake7-3d-unlocked');
+      storage.remove('wakeSevenGenomeBoardSize');
+      storage.remove('wakeSevenGenomeBoardLayout');
+      storage.remove('wake7-board-theme');
+      storage.remove('wake7-board-layout');
+      storage.remove('wake7-board-theme-chosen');
+      storage.remove('wake7-board-layout-chosen');
+      storage.remove('wake7-daruma-color');
+      storage.remove('wake7-daruma-color-chosen');
+      storage.remove('wake7-master-gold-granted');
+      storage.remove('wake7-satori-design-granted');
+      storage.remove('wake7-rainbow-daruma-granted');
+      storage.remove('wake7-speed-unlocked');
+      storage.remove(STORAGE_KEYS.speedTrainingUnlocked);
+      storage.remove(STORAGE_KEYS.speedIntermediateUnlocked);
+      storage.remove(STORAGE_KEYS.speedMasteryUnlocked);
+      storage.remove(STORAGE_KEYS.speedSatoriUnlocked);
+      storage.remove(STORAGE_KEYS.speedUnlockModelVersion);
+      storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
+      storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
+      storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
+      storage.remove(STORAGE_KEYS.speedTrialModelVersion);
+      storage.remove('wake7-3d-unlocked');
       for(const variant of ['standard','training9','mastery15','mastery24','satori73']){
-        localStorage.removeItem(speedSessionStorageKey(variant));
-        localStorage.removeItem(speedBestStorageKey(variant));
-        localStorage.removeItem(speedHistoryStorageKey(variant));
+        storage.remove(speedSessionStorageKey(variant));
+        storage.remove(speedBestStorageKey(variant));
+        storage.remove(speedHistoryStorageKey(variant));
       }
-      localStorage.removeItem(STORAGE_KEYS.speedActiveVariant);
+      storage.remove(STORAGE_KEYS.speedActiveVariant);
     }
-    localStorage.removeItem(FOURTH_CHECKS_STORAGE_KEY);
-    localStorage.removeItem(MESSAGE_REVIEW_STORAGE_KEY);
-    localStorage.removeItem(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY);
+    storage.remove(FOURTH_CHECKS_STORAGE_KEY);
+    storage.remove(MESSAGE_REVIEW_STORAGE_KEY);
+    storage.remove(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY);
     if(resetIntro){
-      localStorage.removeItem(STORAGE_KEYS.introSeen);
-      localStorage.removeItem(STORAGE_KEYS.tutorialComplete);
-      localStorage.removeItem(STORAGE_KEYS.tutorialStep);
+      storage.remove(STORAGE_KEYS.introSeen);
+      storage.remove(STORAGE_KEYS.tutorialComplete);
+      storage.remove(STORAGE_KEYS.tutorialStep);
     }
   }catch(_){}
   // 盤面デザインや速解きの解放を残すリセットでも、卒業試験はコース進行
