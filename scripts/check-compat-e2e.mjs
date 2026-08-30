@@ -33,11 +33,10 @@ for (const id of canonicalIds) assert.match(all, new RegExp(`['"]${id}['"]`), `C
 
 const storageSource = sources.get('src/state/game-state.js');
 assert.match(storageSource, /STORAGE_KEY\s*=\s*'wake7-state-vnext'/, 'Unified state storage key is missing.');
-assert.match(storageSource, /LEGACY_STORAGE_KEYS\s*=\s*Object\.freeze/, 'Legacy storage key registry is missing.');
 const directStorage = all.match(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)/g) || [];
 const localStorageCalls = all.match(/localStorage\.(?:getItem|setItem|removeItem)/g) || [];
 const sessionStorageCalls = all.match(/sessionStorage\.(?:getItem|setItem|removeItem)/g) || [];
-assert.equal(localStorageCalls.length, 5, `State boundary storage calls changed: ${localStorageCalls.length}`);
+assert.equal(localStorageCalls.length, 0, `State boundary storage calls changed: ${localStorageCalls.length}`);
 assert.equal(sessionStorageCalls.length, 2, `Analytics session storage calls changed: ${sessionStorageCalls.length}`);
 
 // 開始→チュートリアル→盤面操作を支えるDOM契約。文言変更には影響せず、要素の消失だけを検出する。

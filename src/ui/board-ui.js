@@ -1371,7 +1371,7 @@ function restoreSavedBoard(data){
 function persistActiveSession(){
   if(isMode('tutorial')){
     const payload={mode:'tutorial',step:tutorialStep};
-    syncGameState(payload);
+    syncGameState();
     storage.setJson(STORAGE_KEYS.activeSession,payload);
     storage.set(STORAGE_KEYS.tutorialStep,String(tutorialStep));
     return;
@@ -1381,7 +1381,7 @@ function persistActiveSession(){
     // 他モードへ戻った後に古い速解きセッションが残っていても、復元先を奪わないための印。
     persistSpeedSession();
     const payload={mode:'speed',variant:speedVariant,lap:activeLap};
-    syncGameState(payload);
+    syncGameState();
     try{storage.set(STORAGE_KEYS.activeSession,JSON.stringify(payload));}catch(_){ }
     return;
   }
@@ -1391,13 +1391,12 @@ function persistActiveSession(){
     mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,
     lastStageMode,board:serializeActiveBoard()
   };
-  syncGameState(payload);
+  syncGameState();
   try{storage.set('wake7-active-session',JSON.stringify(payload));}catch(_){ }
 }
 function restoreActiveSession(){
   let saved=null;
   try{saved=JSON.parse(storage.get('wake7-active-session')||'null');}catch(_){ }
-  if(!saved)saved=window.WakeSevenState.read()?.legacySession||null;
   if(saved?.mode==='tutorial'&&storage.get(STORAGE_KEYS.tutorialComplete)!=='1'){
     loadTutorialStep(Number.isInteger(saved.step)?saved.step:Number(storage.get(STORAGE_KEYS.tutorialStep,'0'))||0);
     return;

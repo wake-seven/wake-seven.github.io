@@ -70,7 +70,9 @@ if(new URLSearchParams(location.search).get('debug')==='touch'){
 }
 let ori=new Uint8Array(N), spin=new Int16Array(N), history=[], moves=0, best=0;
 let tileEls=[], baseTiles=[], drag=null, busy=false, boardTouchActive=false;
-const gameState=window.WakeSevenState.migrateLegacy();
+const gameState=window.WakeSevenState.read()||window.WakeSevenState.create();
+// 旧バージョンのフラットな保存キーは現行状態へ持ち込まず破棄する。
+WakeSevenState.purgeExternalStorage();
 const initialNavigation=WakeSevenState.navigationView(gameState);
 let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep,activeMode=initialNavigation.mode,clearShown=false,clearTimer=0,nextStageAttention=false;
 let tutorialAdvanceTimer=0,boardArrivalTimer=0;
@@ -98,11 +100,10 @@ const STORAGE_KEYS=WakeSevenState.STORAGE_KEYS;
 const STORAGE_KEY_GROUPS=WakeSevenState.STORAGE_KEY_GROUPS;
 const storage=WakeSevenState.storage;
 /*
- * New persistence boundary. Existing code still reads legacy keys during the
- * incremental migration, but every saved session is also one versioned state
- * document. New features should add fields here instead of new top-level keys.
+ * Versioned persistence boundary. New features should add fields here instead
+ * of introducing another storage format.
  */
-function syncGameState(legacySession=null){
+function syncGameState(){
   WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});
   WakeSevenState.updateProgress(gameState,{
     lap1:{primary:[...lap1ClearedStages],mastery:[...lap1ClearedExtraStages],satori:[...lap1ClearedSatoriStages]},
@@ -119,7 +120,6 @@ function syncGameState(legacySession=null){
   gameState.speed={activeVariant:speedVariant,sessions:Object.fromEntries(Object.keys(SPEED_MODE_DEFINITIONS).map(variant=>[variant,readSpeedSession(variant)]).filter(([,session])=>session))};
   gameState.ui={editingBoard,lastStageMode};
   if(typeof serializeActiveBoard==='function')WakeSevenState.updateBoard(gameState,serializeActiveBoard());
-  if(legacySession)gameState.legacySession=legacySession;
   return window.WakeSevenState.write(gameState);
 }
 const SPEED_LAST_TAB_STORAGE_KEY=STORAGE_KEYS.speedLastTab;

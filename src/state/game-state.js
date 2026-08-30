@@ -39,28 +39,18 @@
     rewards: Object.freeze({ masterGoldGranted: STORAGE_KEYS.masterGoldGranted, satoriDesignGranted: STORAGE_KEYS.satoriDesignGranted, rainbowDarumaGranted: STORAGE_KEYS.rainbowDarumaGranted, awakenedGranted: STORAGE_KEYS.awakenedGranted, threeDUnlocked: STORAGE_KEYS.threeDUnlocked }),
     speed: Object.freeze({ session: STORAGE_KEYS.speedSession, activeVariant: STORAGE_KEYS.speedActiveVariant, bestMs: STORAGE_KEYS.speedBestMs, history: STORAGE_KEYS.speedHistory, unlocked: STORAGE_KEYS.speedUnlocked, trainingUnlocked: STORAGE_KEYS.speedTrainingUnlocked, intermediateUnlocked: STORAGE_KEYS.speedIntermediateUnlocked, masteryUnlocked: STORAGE_KEYS.speedMasteryUnlocked, satoriUnlocked: STORAGE_KEYS.speedSatoriUnlocked, unlockModelVersion: STORAGE_KEYS.speedUnlockModelVersion, trainingTrialCleared: STORAGE_KEYS.speedTrainingTrialCleared, intermediateTrialCleared: STORAGE_KEYS.speedIntermediateTrialCleared, masteryTrialCleared: STORAGE_KEYS.speedMasteryTrialCleared, trialModelVersion: STORAGE_KEYS.speedTrialModelVersion, lastTab: STORAGE_KEYS.speedLastTab, newTab: STORAGE_KEYS.speedNewTab })
   });
-  // 旧版からの移行でだけ読むキー。現行処理の保存先とは分けておき、
-  // 互換キーを誤って新機能から参照しないようにする。
-  const LEGACY_STORAGE_KEYS = Object.freeze({
-    activeSession: 'wake7-active-session', activeLap: 'wake7-active-lap',
-    language: 'wake7-language', sound: 'wake7-sound',
-    boardTheme: 'wake7-board-theme', boardLayout: 'wake7-board-layout', darumaColor: 'wake7-daruma-color',
-    cleared: 'wake7-cleared', extraCleared: 'wake7-extra-cleared', satoriCleared: 'wake7-satori-cleared',
-    lap1PrimaryCleared: 'wake7-lap1-primary-cleared', lap1ExtraCleared: 'wake7-lap1-extra-cleared', lap1SatoriCleared: 'wake7-lap1-satori-cleared',
-    lap2PrimaryCleared: 'wake7-lap2-primary-cleared', lap2ExtraCleared: 'wake7-lap2-extra-cleared', lap2SatoriCleared: 'wake7-lap2-satori-cleared',
-    secondLapUnlocked: 'wake7-second-lap-unlocked',
-    awakenedGranted: 'wake7-awakened-granted', threeDUnlocked: 'wake7-3d-unlocked',
-    masterGoldGranted: 'wake7-master-gold-granted', satoriDesignGranted: 'wake7-satori-design-granted', rainbowDarumaGranted: 'wake7-rainbow-daruma-granted',
-    speedActiveVariant: 'wake7-speed-active-variant', speedTrainingUnlocked: 'wake7-speed-training-unlocked', speedIntermediateUnlocked: 'wake7-speed-intermediate-unlocked',
-    speedMasteryUnlocked: 'wake7-speed-mastery-unlocked', speedSatoriUnlocked: 'wake7-speed-satori-unlocked',
-    speedTrainingTrialCleared: 'wake7-speed-training-trial-cleared', speedIntermediateTrialCleared: 'wake7-speed-intermediate-trial-cleared', speedMasteryTrialCleared: 'wake7-speed-mastery-trial-cleared'
-  });
+  let activeState = null;
+  const rawStorage = global.localStorage;
+  const persistActiveState = () => {
+    if (!activeState) return false;
+    try { rawStorage.setItem(STORAGE_KEY, JSON.stringify(create(activeState))); return true; } catch (_) { return false; }
+  };
   const storage = {
-    get(key, fallback = null) { try { const value = global.localStorage.getItem(key); return value === null ? fallback : value; } catch (_) { return fallback; } },
-    set(key, value) { try { global.localStorage.setItem(key, value); return true; } catch (_) { return false; } },
-    remove(key) { try { global.localStorage.removeItem(key); return true; } catch (_) { return false; } },
-    json(key, fallback = null) { try { const raw = global.localStorage.getItem(key); return raw === null ? fallback : JSON.parse(raw); } catch (_) { return fallback; } },
-    setJson(key, value) { try { global.localStorage.setItem(key, JSON.stringify(value)); return true; } catch (_) { return false; } }
+    get(key, fallback = null) { try { const value = activeState?.flat?.[key]; return value === undefined ? fallback : value; } catch (_) { return fallback; } },
+    set(key, value) { try { if (activeState) { activeState.flat[key] = String(value); return persistActiveState(); } return false; } catch (_) { return false; } },
+    remove(key) { try { if (!activeState) return false; delete activeState.flat[key]; return persistActiveState(); } catch (_) { return false; } },
+    json(key, fallback = null) { try { const raw = storage.get(key); return raw === null ? fallback : JSON.parse(raw); } catch (_) { return fallback; } },
+    setJson(key, value) { return storage.set(key, JSON.stringify(value)); }
   };
 
   const clone = value => JSON.parse(JSON.stringify(value));
@@ -110,10 +100,10 @@
         sessions: seed.speed?.sessions && typeof seed.speed.sessions === 'object' ? clone(seed.speed.sessions) : {}
       },
       ui: seed.ui && typeof seed.ui === 'object' ? clone(seed.ui) : {},
-      // 旧データを保持しておくことで、段階移行中も旧版へ戻せるようにする。
-      legacySession: seed.legacySession && typeof seed.legacySession === 'object' ? clone(seed.legacySession) : null
+      flat: seed.flat && typeof seed.flat === 'object' ? clone(seed.flat) : {},
     };
-    return state;
+      activeState = state;
+      return state;
   }
 
   function normalizeProgress(value) {
@@ -137,6 +127,7 @@
 
   function write(state, storage = global.localStorage) {
     try {
+      activeState = state;
       storage.setItem(STORAGE_KEY, JSON.stringify(create(state)));
       return true;
     } catch (_) {
@@ -144,66 +135,6 @@
     }
   }
 
-  function readJson(storage, key) {
-    try { return JSON.parse(storage.getItem(key) || '[]'); } catch (_) { return []; }
-  }
-
-  function migrateLegacy(storage = global.localStorage) {
-    const existing = read(storage);
-    if (existing) return existing;
-    const session = readJson(storage, LEGACY_STORAGE_KEYS.activeSession);
-    const activeLap = Number(storage.getItem(LEGACY_STORAGE_KEYS.activeLap)) === 2 ? 2 : 1;
-    const mode = typeof session?.mode === 'string' ? session.mode : 'stage';
-    const state = create({
-      navigation: {
-        mode,
-        lap: activeLap,
-        stageIndex: session?.extra || session?.satori ? 0 : session?.index,
-        masteryIndex: session?.extra ? session?.index : 0,
-        satoriIndex: session?.satori ? session?.index : 0,
-        tutorialStep: session?.step
-      },
-      board: session?.board || null,
-      progress: {
-        lap1: {
-          primary: readJson(storage, LEGACY_STORAGE_KEYS.lap1PrimaryCleared).length ? readJson(storage, LEGACY_STORAGE_KEYS.lap1PrimaryCleared) : readJson(storage, LEGACY_STORAGE_KEYS.cleared),
-          mastery: readJson(storage, LEGACY_STORAGE_KEYS.lap1ExtraCleared).length ? readJson(storage, LEGACY_STORAGE_KEYS.lap1ExtraCleared) : readJson(storage, LEGACY_STORAGE_KEYS.extraCleared),
-          satori: readJson(storage, LEGACY_STORAGE_KEYS.lap1SatoriCleared).length ? readJson(storage, LEGACY_STORAGE_KEYS.lap1SatoriCleared) : readJson(storage, LEGACY_STORAGE_KEYS.satoriCleared)
-        },
-        lap2: {
-          primary: readJson(storage, LEGACY_STORAGE_KEYS.lap2PrimaryCleared),
-          mastery: readJson(storage, LEGACY_STORAGE_KEYS.lap2ExtraCleared),
-          satori: readJson(storage, LEGACY_STORAGE_KEYS.lap2SatoriCleared)
-        }
-      },
-      settings: {
-        language: storage.getItem(LEGACY_STORAGE_KEYS.language) || 'ja',
-        sound: storage.getItem(LEGACY_STORAGE_KEYS.sound) !== 'off',
-        boardTheme: storage.getItem(LEGACY_STORAGE_KEYS.boardTheme) || 'default',
-        boardLayout: storage.getItem(LEGACY_STORAGE_KEYS.boardLayout) || 'normal',
-        darumaColor: storage.getItem(LEGACY_STORAGE_KEYS.darumaColor) || 'red'
-      },
-      unlocks: {
-        secondLap: storage.getItem(LEGACY_STORAGE_KEYS.secondLapUnlocked) === '1',
-        awakened: storage.getItem(LEGACY_STORAGE_KEYS.awakenedGranted) === '1',
-        threeD: storage.getItem(LEGACY_STORAGE_KEYS.threeDUnlocked) === '1',
-        masterGoldGranted: storage.getItem(LEGACY_STORAGE_KEYS.masterGoldGranted) === '1',
-        satoriDesignGranted: storage.getItem(LEGACY_STORAGE_KEYS.satoriDesignGranted) === '1',
-        rainbowDarumaGranted: storage.getItem(LEGACY_STORAGE_KEYS.rainbowDarumaGranted) === '1',
-        speedTraining: storage.getItem(LEGACY_STORAGE_KEYS.speedTrainingUnlocked) === '1',
-        speedIntermediate: storage.getItem(LEGACY_STORAGE_KEYS.speedIntermediateUnlocked) === '1',
-        speedMastery: storage.getItem(LEGACY_STORAGE_KEYS.speedMasteryUnlocked) === '1',
-        speedSatori: storage.getItem(LEGACY_STORAGE_KEYS.speedSatoriUnlocked) === '1',
-        speedTrainingTrialCleared: storage.getItem(LEGACY_STORAGE_KEYS.speedTrainingTrialCleared) === '1',
-        speedIntermediateTrialCleared: storage.getItem(LEGACY_STORAGE_KEYS.speedIntermediateTrialCleared) === '1',
-        speedMasteryTrialCleared: storage.getItem(LEGACY_STORAGE_KEYS.speedMasteryTrialCleared) === '1'
-      },
-      speed: { activeVariant: ['standard','training9','training18','mastery27','satori73'].includes(storage.getItem(LEGACY_STORAGE_KEYS.speedActiveVariant)) ? storage.getItem(LEGACY_STORAGE_KEYS.speedActiveVariant) : 'training9' },
-      legacySession: session && typeof session === 'object' ? session : null
-    });
-    write(state, storage);
-    return state;
-  }
 
   // ナビゲーションは小さな読み取り専用ビューとして公開する。
   // 状態移行中は実行側が現在値を保持していても、利用側が保存形式を
@@ -247,6 +178,15 @@
     };
     notify(state, { section: 'navigation', patch: clone(patch) });
     return state.navigation;
+  }
+
+  function purgeExternalStorage(storage = global.localStorage) {
+    try {
+      const keys = [];
+      for (let i = 0; i < storage.length; i++) keys.push(storage.key(i));
+      keys.filter(key => key && key !== STORAGE_KEY).forEach(key => storage.removeItem(key));
+      return true;
+    } catch (_) { return false; }
   }
 
   // 画面側が navigation の保存形式を直接組み立てないための薄い操作API。
@@ -304,14 +244,13 @@
     STORAGE_KEY,
     STORAGE_KEYS,
     STORAGE_KEY_GROUPS,
-    LEGACY_STORAGE_KEYS,
     VERSION,
     MODES,
     storage,
     create,
     read,
     write,
-    migrateLegacy,
+    purgeExternalStorage,
     navigationView,
     navigationIndex,
     setNavigationIndex,

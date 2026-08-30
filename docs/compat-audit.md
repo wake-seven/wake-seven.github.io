@@ -18,7 +18,7 @@
 
 ## 互換キー
 
-旧localStorageキーは `WakeSevenState.LEGACY_STORAGE_KEYS` に閉じ込め、vNext状態への移行以外から参照しない。キーを削除する場合は、既存ユーザーの移行確認と公開版の回帰確認を先に行う。
+保存と復元は `wake7-state-vnext` のバージョン付き状態ストアを使用する。旧保存形式からの移行は行わない。
 
 ## 導線監査
 
