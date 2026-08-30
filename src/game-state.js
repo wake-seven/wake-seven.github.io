@@ -118,10 +118,16 @@
         secondLap: storage.getItem('wake7-second-lap-unlocked') === '1',
         awakened: storage.getItem('wake7-awakened-granted') === '1',
         threeD: storage.getItem('wake7-3d-unlocked') === '1',
+        masterGoldGranted: storage.getItem('wake7-master-gold-granted') === '1',
+        satoriDesignGranted: storage.getItem('wake7-satori-design-granted') === '1',
+        rainbowDarumaGranted: storage.getItem('wake7-rainbow-daruma-granted') === '1',
         speedTraining: storage.getItem('wake7-speed-training-unlocked') === '1',
         speedIntermediate: storage.getItem('wake7-speed-intermediate-unlocked') === '1',
         speedMastery: storage.getItem('wake7-speed-mastery-unlocked') === '1',
-        speedSatori: storage.getItem('wake7-speed-satori-unlocked') === '1'
+        speedSatori: storage.getItem('wake7-speed-satori-unlocked') === '1',
+        speedTrainingTrialCleared: storage.getItem('wake7-speed-training-trial-cleared') === '1',
+        speedIntermediateTrialCleared: storage.getItem('wake7-speed-intermediate-trial-cleared') === '1',
+        speedMasteryTrialCleared: storage.getItem('wake7-speed-mastery-trial-cleared') === '1'
       },
       speed: { activeVariant: storage.getItem('wake7-speed-active-variant') || 'training9' },
       legacySession: session && typeof session === 'object' ? session : null

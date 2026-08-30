@@ -18,7 +18,7 @@ function debugClearCurrent(extraMoves=0){
 }
 $('debugClear').addEventListener('click',()=>debugClearCurrent(0));
 function debugGrantRainbowDaruma(){
-  rainbowDarumaGranted=true;
+  rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);
   darumaColor='rainbow';
   darumaColorChosen=false;
   try{
@@ -37,10 +37,10 @@ function debugPrepareSecondLapCheckpoint(){
   lap2ClearedStages.clear();
   lap2ClearedExtraStages.clear();
   lap2ClearedSatoriStages.clear();
-  secondLapUnlocked=true;
-  awakenedGranted=false;
-  masterGoldGranted=true;
-  satoriDesignGranted=true;
+  secondLapUnlocked=setUnlock('secondLap',true);
+  awakenedGranted=setUnlock('awakened',false);
+  masterGoldGranted=setUnlock('masterGoldGranted',true);
+  satoriDesignGranted=setUnlock('satoriDesignGranted',true);
   try{
     storage.set('wake7-second-lap-unlocked','1');
     storage.remove('wake7-awakened-granted');
@@ -57,8 +57,8 @@ function debugPrepareFirstLapCheckpoint(){
   lap2ClearedStages.clear();
   lap2ClearedExtraStages.clear();
   lap2ClearedSatoriStages.clear();
-  secondLapUnlocked=false;
-  awakenedGranted=false;
+  secondLapUnlocked=setUnlock('secondLap',false);
+  awakenedGranted=setUnlock('awakened',false);
   // 一周目の節目を検証するデバッグでは、卒業試験も未合格から始める。
   speedTrainingTrialCleared=false;
   speedIntermediateTrialCleared=false;

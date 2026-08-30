@@ -1852,13 +1852,13 @@ function showMasterDialog(kind='primary'){
   const needsIntermediateTrial=kind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared;
   if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
   if(kind==='mastery'&&secondLapActive&&!rainbowDarumaGranted){
-    rainbowDarumaGranted=true;darumaColor='rainbow';darumaColorChosen=false;
+    rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);darumaColor='rainbow';darumaColorChosen=false;
     try{storage.set('wake7-rainbow-daruma-granted','1');storage.remove('wake7-daruma-color-chosen');}catch(_){ }
     updateMasterTheme();renderStageNav();
   }
   if(kind==='awakening'&&!awakenedGranted){
-    awakenedGranted=true;
-    threeDUnlocked=true;
+    awakenedGranted=setUnlock('awakened',true);
+    threeDUnlocked=setUnlock('threeD',true);
     try{
       storage.set('wake7-awakened-granted','1');
       storage.set(STORAGE_KEYS.threeDUnlocked,'1');
