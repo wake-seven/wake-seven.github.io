@@ -9446,7 +9446,12 @@ function moveTwoMoveDetail(direction){
   renderTwoMoveDetail();
 }
 
-/* Event wiring uses this boundary instead of reaching into individual screens. */
+// 公開native moduleの構文境界。
+export {};
+
+// ===== ロードマップ表示 =====
+// 進行画面から呼び出す公開コマンドの名前空間。
+// 描画や状態計算とは分離し、イベント配線が参照する入口だけを束ねる。
 const GameNavigation=Object.freeze({
   tutorial:()=>startTutorial(),
   stage:index=>loadStage(index),
@@ -9462,10 +9467,11 @@ const GameDialogs=Object.freeze({
   ranks:options=>openRankDialog(options),
   mastery:kind=>showMasterDialog(kind)
 });
+
 // 公開native moduleの構文境界。
 export {};
 
-// ===== ロードマップ表示 =====
+// ===== ヒント表示 =====
 // ===== 名人ロードマップ表示 =====
 function renderMasterRoadmap(kind){
   const roadmap=$('masterRoadmap'),roadmapNote=$('masterRoadmapNote');
@@ -9514,7 +9520,7 @@ function masterCommonRules(){return currentLang==='ja'?'名人への道は最短
 // concatenated into the single published native-module script.
 export {};
 
-// ===== ヒント表示 =====
+// ===== クリア後遷移 =====
 // ===== ヒント表示・チュートリアル補助 =====
 function clearHintVisuals(preserveSelection=false){
   clearAxisGuide();
@@ -9557,7 +9563,7 @@ $('hint').addEventListener('click',()=>{cancelTutorialHint();if(isFourthVolume()
 // concatenated into the single published native-module script.
 export {};
 
-// ===== クリア後遷移 =====
+// ===== 進行ナビゲーション =====
 // ===== クリア後の状態遷移 =====
 // クリア演出の表示と、次の問題/コースへの遷移を進行UI本体から分離する。
 function advanceAfterClear(){
@@ -9583,7 +9589,7 @@ function returnToClearDialog(){
 // concatenated into the single published native-module script.
 export {};
 
-// ===== 進行ナビゲーション =====
+// ===== SVG表示境界 =====
 // ===== 進行ナビゲーションのイベント =====
 // 画面遷移のイベント登録を、ロードマップ/ダイアログ描画から分離する。
 $('prevStage').addEventListener('click',()=>{
@@ -9647,7 +9653,7 @@ $('freeMode').addEventListener('click',()=>{
 // concatenated into the single published native-module script.
 export {};
 
-// ===== SVG表示境界 =====
+// ===== 画面描画境界 =====
 // 称号表示と称号一覧ダイアログ。
 // 盤面選択画面やクリア後演出からも利用するため、描画の共通部をここに集約する。
 function rankFrameSvg(text,locked=false,index=0,doubleFrame=false,dimmed=false){
@@ -9759,7 +9765,7 @@ function openRankDialogFrom(dialogId,sealId){
 // 公開native moduleの構文境界。
 export {};
 
-// ===== 画面描画境界 =====
+// ===== イベントと起動 =====
 // ===== SVG表示境界 =====
 // SVGを生成するrendererと、DOMコンテナへの取り付けを分離する。
 function svgMount(root,markup=''){
@@ -9772,7 +9778,7 @@ function svgClear(root){return svgMount(root,'');}
 function svgSetIcon(root,markup=''){return svgMount(root,markup);}
 export {};
 
-// ===== イベントと起動 =====
+// ===== 公開API名前空間 =====
 /* ---- 画面描画の境界 ----
  * 進行状態を変更する処理と、現在の状態を画面へ反映する処理を分ける。
  * 既存の個別レンダラーは互換のため残し、画面全体を更新する入口だけを
@@ -9795,7 +9801,7 @@ function replaceRenderedContent(root,markup=''){return svgMount(root,markup);}
 // 公開native moduleの構文境界。
 export {};
 
-// ===== 公開API名前空間 =====
+// ===== runtime/event-bindings.js =====
 // DOMイベント登録の共通境界。イベント配線から要素検索の細部を分離する。
 const WakeSevenEventBindings=Object.freeze({
   click(id,handler){
