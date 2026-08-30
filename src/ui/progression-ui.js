@@ -553,7 +553,9 @@ function showClearDialog(){
     openChainedDialog('developmentWelcome');
     return;
   }
-  if(clearDialogUsesStageProgression()&&stageIndex===STAGES.length-1&&allPrimaryCleared()){
+  const currentLapPrimaryCleared=(activeLap===2?lap2ClearedStages:lap1ClearedStages);
+  const currentLapPrimaryComplete=STAGES.every((_,i)=>currentLapPrimaryCleared.has(i));
+  if(clearDialogUsesStageProgression()&&stageIndex===STAGES.length-1&&currentLapPrimaryComplete){
     showMasterDialog('intermediate');
     return;
   }

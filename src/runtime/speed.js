@@ -275,6 +275,8 @@ function beginSpeedRun(){
 }
 function finishSpeedRun(){
   pauseSpeedClock();
+  // セッションを保存・削除する前に、卒業試験として起動されたかを確定する。
+  const trialVariant=speedSession?.requiredTrial===true?'training9':speedSession?.requiredTrial;
   const elapsed=Math.round(speedSession.elapsedMs);
   const optimalClears=speedOptimalClears();
   let bestTime=0;
@@ -287,7 +289,6 @@ function finishSpeedRun(){
   storage.remove(STORAGE_KEYS.speedActiveVariant);
   // 速解き自体の完走では報酬を付けない。3Dページは二周目制覇の報酬。
   speedSession={...speedSession,completed:true,elapsedMs:elapsed,bestMs:bestTime,optimalClears,runNumber:history.length};
-  const trialVariant=speedSession.requiredTrial===true?'training9':speedSession.requiredTrial;
   if(trialVariant){
     // 卒業試験は、最短手数を問わず全問を完走すれば合格。
     grantSpeedTrialCleared(trialVariant);
