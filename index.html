@@ -8263,6 +8263,14 @@ function messageReviewArt(entry){
   const content=messageReviewContent(entry);
   return entry?.art||content?.art||'';
 }
+function configureMessageReviewType(entry){
+  const content=messageReviewContent(entry);
+  const messageClearEntry=content||(entry.extra?clearContentAt(true,entry.index):null);
+  $('messageDialogText').hidden=!!entry.master||entry.quiz!==undefined||!!entry.boardQuiz;
+  $('messageQuiz').hidden=entry.quiz===undefined;
+  $('messageBoardQuiz').hidden=!entry.boardQuiz;
+  return messageClearEntry;
+}
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
   const art=messageReviewArt(entry),twoMoveLesson=lessonVariantFromArt(art),illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
@@ -8278,9 +8286,7 @@ function renderMessageReview(){
   seal.classList.remove('rank-frame-seal','second-lap-mark');
   seal.tabIndex=0;
   rankText.hidden=true;masterText.hidden=true;
-  $('messageDialogText').hidden=!!entry.master||entry.quiz!==undefined||!!entry.boardQuiz;
-  const normalizedContent=entry.message?.kind==='clear'?entry.message.content:null;
-  const messageClearEntry=normalizedContent||(entry.extra?clearContentAt(true,entry.index):null);
+  const messageClearEntry=configureMessageReviewType(entry);
   const twoMoveCard=messageClearEntry?messageClearEntry.twoMoveCard:undefined;
   const guideCard=messageClearEntry?messageClearEntry.guideCard:null;
   const rankLink=!!messageClearEntry&&messageClearEntry.link==='rank';
@@ -8289,8 +8295,6 @@ function renderMessageReview(){
   $('messageRankLink').hidden=twoMoveCard===undefined&&!guideCard&&!rankLink&&!tipsLink&&!patternsLink;
   $('messageRankLink').dataset.target=tipsLink?'tips':patternsLink?'patterns':twoMoveCard!==undefined?'card':guideCard?'guide':'rank';
   $('messageRankLink').textContent=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatternsLink')+' →':twoMoveCard!==undefined||guideCard?tr('detailsLink'):tr('rankLink');
-  $('messageQuiz').hidden=entry.quiz===undefined;
-  $('messageBoardQuiz').hidden=!entry.boardQuiz;
   if(entry.master){
     const volume=entry.master==='primary'?0:Math.ceil((entry.index+1)/MASTER_VOLUME_SIZE);
     const current=entry.master==='primary'?2:entry.master==='mastery'?6:Math.min(5,volume+2);
