@@ -1000,10 +1000,6 @@ function buildMessageReviewEntriesInternal(){
   entries.push(...collectMessageReviewMilestones(reviewMastered,reviewSatoriMastered));
   return finalizeMessageReviewEntries(entries);
 }
-function configureMessageReviewHeader(entry){
-  $('messageDialogTitle').textContent=tr('clear');
-  $('messageDialogPlace').textContent=messageReviewPlace(entry);
-}
 // ===== メッセージ見直しUIここまで =====
 // ===== クイズシステム =====
 /* クイズは見直すたびに選択肢の位置を変える。 */
