@@ -993,20 +993,7 @@ function buildMessageReviewEntries(){
   // 二周目を始めた直後も、一周目で集めたメッセージを読み返せるようにする。
   const {primary:reviewPrimary,extra:reviewExtra,satori:reviewSatori}=messageReviewProgressSets();
   const {primary:reviewPrimaryDone,extra:reviewMastered,satori:reviewSatoriMastered}=messageReviewCompletion({primary:reviewPrimary,extra:reviewExtra,satori:reviewSatori});
-  for(let i=0;i<STAGES.length;i++){
-    if(!reviewPrimary.has(i))continue;
-    if(i===ACADEMY_STAGE_COUNT-1){
-      if(speedTrainingTrialCleared){
-        entries.push({master:'primary',extra:false,index:i});
-        const before=clearContentBefore(false,TRAINING_STAGE_START);
-        if(before?.dialog)entries.push({master:before.dialog,extra:false,index:i});
-      }
-      continue;
-    }
-    const text=stageClearTextAt(false,i);if(text)entries.push({extra:false,index:i,text,art:stageClearArtAt(false,i)});
-    const primaryEntry=clearContentAt(false,i);
-    if(primaryEntry&&primaryEntry.quiz)entries.push({extra:false,index:i,quiz:resolveLocaleText(primaryEntry.quiz),art:stageClearArtAt(false,i)});
-  }
+  entries.push(...collectPrimaryMessageReviewEntries(reviewPrimary));
   // だるま修行を終えるまでは、後半コースのメッセージへ飛ばさない。
   if(!reviewPrimaryDone){
     if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});
