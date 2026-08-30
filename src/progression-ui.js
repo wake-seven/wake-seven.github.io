@@ -989,11 +989,6 @@ const MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY='wake7-message-review-last-clear';
 let messageReviewEntries=[],messageReviewIndex=0;
 // ===== メッセージ見直しUI（message-ui.js 分離予定の境界） =====
 function buildMessageReviewEntries(){
-  const finalize=entries=>entries.map(entry=>{
-    const messageId=entry.master||clearContentKey(!!entry.extra,entry.index);
-    const message=entry.master?{id:messageId,kind:'milestone',type:'dialog',timing:'beforeStart',content:entry.master}:normalizeMessage('clear',messageId);
-    return {...entry,messageId,message};
-  });
   const entries=[];
   // 二周目を始めた直後も、一周目で集めたメッセージを読み返せるようにする。
   const reviewPrimary=activeLap===2?lap1ClearedStages:clearedStages;
@@ -1019,7 +1014,7 @@ function buildMessageReviewEntries(){
   // だるま修行を終えるまでは、後半コースのメッセージへ飛ばさない。
   if(!reviewPrimaryDone){
     if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});
-    return finalize(entries);
+    return finalizeMessageReviewEntries(entries);
   }
   for(let i=0;i<EXTRA_STAGES.length;i++){
     if(!reviewExtra.has(i))continue;
@@ -1037,7 +1032,7 @@ function buildMessageReviewEntries(){
   if(reviewSatoriMastered||hasSatoriReward())entries.push({master:'satori',satori:true,index:SATORI_STAGES.length-1});
   if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});
   if(awakenedGranted)entries.push({master:'awakening',awakened:true,index:SATORI_STAGES.length-1});
-  return finalize(entries);
+  return finalizeMessageReviewEntries(entries);
 }
 function configureMessageReviewHeader(entry){
   $('messageDialogTitle').textContent=tr('clear');
