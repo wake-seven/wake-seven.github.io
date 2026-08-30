@@ -136,8 +136,7 @@ for (const token of [
   assert.match(all, new RegExp(token.replace(/[()$']/g, '\\$&')), `Campaign/speed completion flow is missing: ${token}`);
 }
 
-// 互換fallbackは移行用に必要なものだけを許可し、通常UIの固定HTMLが
-// 新たなfallbackとして増えていないかを差分レビュー時に見える化する。
+// 固定構造のテンプレート欠落fallbackは持たない。
 const fallbackAssignments = [];
 for (const [file, source] of sources) {
   source.split(/\r?\n/).forEach((line, index) => {
@@ -146,10 +145,7 @@ for (const [file, source] of sources) {
     }
   });
 }
-const documentedFallbacks = [line => line === 'body.innerHTML=fallback;'];
-for (const fallback of fallbackAssignments) {
-  assert.ok(fallback.file === 'src/ui/board-ui.js' && documentedFallbacks.some(test => test(fallback.line)), `Undocumented ordinary-HTML fallback found: ${fallback.location}`);
-}
+if (fallbackAssignments.length) throw new Error(`Ordinary-HTML fallbacks remain: ${fallbackAssignments.map(item => item.location).join(', ')}`);
 
 // 宣言一回・参照一回の関数は削除候補として報告するだけに留める。
 const candidates = [];
@@ -161,7 +157,7 @@ for (const [file, source] of sources) {
 }
 console.log(`Audited canonical speed ids (${canonicalIds.join(', ')}) and ${sources.size} source files.`);
 console.log(`Storage boundary calls: localStorage=${localStorageCalls.length}, sessionStorage=${sessionStorageCalls.length}.`);
-console.log(`Ordinary-HTML compatibility fallbacks: ${fallbackAssignments.map(item => item.location).join(', ') || 'none'}.`);
+console.log('Ordinary-HTML compatibility fallbacks: none.');
 console.log(`Potential unused function candidates (review only): ${candidates.length}.`);
 if (candidates.length) console.log(candidates.slice(0, 30).join(', '));
 const documentedCandidates = [

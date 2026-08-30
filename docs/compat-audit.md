@@ -23,10 +23,3 @@
 - 速解きIDが正式ID（`training9` / `training18` / `mastery27` / `satori73`）だけで構成されている
 
 この監査はDOM構造、イベント接続、正式IDの使用を静的に確認する。実ブラウザのクリック・スワイプ確認は、内蔵ブラウザで別途実施する。未使用候補や下書きメッセージは、この検査では削除しない。
-
-## 固定UI fallback
-
-通常UIの互換fallbackは `src/ui/board-ui.js` の `cloneDialogTemplate()` に残る
-`body.innerHTML = fallback` の1箇所だけを許可する。公開版テンプレートが欠落した旧生成物を
-読み込む場合の保険であり、現行のテンプレート経路では実行されない。動的SVGや問題数に応じて
-変化するカード群のHTML生成は、固定構造fallbackとは区別して監査対象外とする。

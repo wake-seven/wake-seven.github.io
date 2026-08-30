@@ -5823,11 +5823,11 @@ function academyEnrollArtSvgLegacy(){
 // 1つの共有ダイアログ枠(#chainDialog)を、CHAIN_STEPSに登録した「ステップ」で使い回す。
 // 新しい案内ダイアログを増やすときは、ここにエントリを1つ足すだけでよい
 // (HTML・hideGameDialogs()・ボタンハンドラは一切さわらない)。
-function cloneDialogTemplate(body,id,fallback=''){
+function cloneDialogTemplate(body,id){
   const template=document.getElementById(id);
-  if(template){body.append(template.content.cloneNode(true));return true;}
-  body.innerHTML=fallback;
-  return false;
+  if(!template)return false;
+  body.append(template.content.cloneNode(true));
+  return true;
 }
 function shapeGridRenderer(states,shapeNames,nameKey,labelKey){
   return body=>{
