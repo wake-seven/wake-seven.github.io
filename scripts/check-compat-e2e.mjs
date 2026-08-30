@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const srcRoot = join(root, 'src');
 const auditDoc = await readFile(join(root, 'docs', 'compat-audit.md'), 'utf8');
-for (const heading of ['# 互換層・未使用候補監査', '## 互換ID', '## 互換キー']) {
+for (const heading of ['# 互換層・未使用候補監査', '## 速解きID', '## 互換キー']) {
   assert.match(auditDoc, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `Compatibility audit documentation is missing: ${heading}`);
 }
 const sources = new Map();
@@ -29,11 +29,7 @@ assert.match(sources.get('src/ui/dom.js'), /function createRefs/);
 assert.match(sources.get('src/runtime/speed.js'), /speedViewRefs/);
 assert.match(sources.get('src/ui/rank.js'), /setText\('rankDialogTitle'/);
 const canonicalIds = ['training18', 'mastery27', 'satori73'];
-const legacyIds = ['mastery15', 'mastery24'];
 for (const id of canonicalIds) assert.match(all, new RegExp(`['"]${id}['"]`), `Canonical speed id is missing: ${id}`);
-for (const id of legacyIds) assert.match(all, new RegExp(`['"]${id}['"]`), `Legacy speed alias lost: ${id}`);
-assert.match(sources.get('src/state/game-state.js'), /mastery15\s*:\s*'training18'/, 'Legacy mastery15 migration is missing.');
-assert.match(sources.get('src/state/game-state.js'), /mastery24\s*:\s*'mastery27'/, 'Legacy mastery24 migration is missing.');
 
 const storageSource = sources.get('src/state/game-state.js');
 assert.match(storageSource, /STORAGE_KEY\s*=\s*'wake7-state-vnext'/, 'Unified state storage key is missing.');
@@ -141,16 +137,6 @@ for (const token of [
   assert.match(all, new RegExp(token.replace(/[()$']/g, '\\$&')), `Campaign/speed completion flow is missing: ${token}`);
 }
 
-const legacyLocations = [...sources.entries()]
-  .filter(([, source]) => legacyIds.some(id => source.includes(id)))
-  .map(([file]) => file);
-// 旧IDは移行表と、旧IDをcanonical定義へ写す進行ポリシーだけに閉じ込める。
-// 実行時の速解き経路は training18 / mastery27 のcanonical IDを使う。
-const expectedLegacyLocations = new Set(['src/state/game-state.js', 'src/state/progression-policy.js']);
-for (const file of legacyLocations) {
-  assert.ok(expectedLegacyLocations.has(file), `Legacy speed id spread into unexpected source: ${file}`);
-}
-
 // 互換fallbackは移行用に必要なものだけを許可し、通常UIの固定HTMLが
 // 新たなfallbackとして増えていないかを差分レビュー時に見える化する。
 const fallbackAssignments = [];
@@ -174,9 +160,8 @@ for (const [file, source] of sources) {
     if (references === 1) candidates.push(`${file}:${name}`);
   }
 }
-console.log(`Audited compatibility aliases (${legacyIds.join(', ')}) and ${sources.size} source files.`);
+console.log(`Audited canonical speed ids (${canonicalIds.join(', ')}) and ${sources.size} source files.`);
 console.log(`Storage boundary calls: localStorage=${localStorageCalls.length}, sessionStorage=${sessionStorageCalls.length}.`);
-console.log(`Legacy speed-id compatibility locations: ${legacyLocations.join(', ')}.`);
 console.log(`Ordinary-HTML compatibility fallbacks: ${fallbackAssignments.map(item => item.location).join(', ') || 'none'}.`);
 console.log(`Potential unused function candidates (review only): ${candidates.length}.`);
 if (candidates.length) console.log(candidates.slice(0, 30).join(', '));

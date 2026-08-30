@@ -5,8 +5,8 @@
   const SPEED_BLUEPRINTS = Object.freeze([
     {id:'standard',visible:false,labelKey:'speedMode',introKey:'speedSatoriIntro',jaLabel:null,order:'mixed',source:'satori',total:'satori',unlockKey:'speedSatori',showsRemaining:false,allowsUndo:false},
     {id:'training9',visible:true,labelKey:'speedTrainingLabel',introKey:'speedTrainingIntro',jaLabel:'九番',order:'shuffle',source:'twoMove',total:9,unlockKey:'speedTraining',showsRemaining:true,allowsUndo:true,trial:'training'},
-    {id:'training18',legacyIds:['mastery15'],visible:true,labelKey:'speedIntermediateLabel',introKey:'speedIntermediateIntro',jaLabel:'十八番',order:'shuffle',source:'training',total:'trainingExam',unlockKey:'speedIntermediate',showsRemaining:true,allowsUndo:true,trial:'intermediate'},
-    {id:'mastery27',legacyIds:['mastery24'],visible:true,labelKey:'speedMasteryLabel',introKey:'speedMasteryIntro',jaLabel:'二十七番',order:'sample',source:'satori',total:27,unlockKey:'speedMastery',showsRemaining:false,allowsUndo:true,trial:'mastery'},
+    {id:'training18',visible:true,labelKey:'speedIntermediateLabel',introKey:'speedIntermediateIntro',jaLabel:'十八番',order:'shuffle',source:'training',total:'trainingExam',unlockKey:'speedIntermediate',showsRemaining:true,allowsUndo:true,trial:'intermediate'},
+    {id:'mastery27',visible:true,labelKey:'speedMasteryLabel',introKey:'speedMasteryIntro',jaLabel:'二十七番',order:'sample',source:'satori',total:27,unlockKey:'speedMastery',showsRemaining:false,allowsUndo:true,trial:'mastery'},
     {id:'satori73',visible:true,labelKey:'speedSatoriLabel',introKey:'speedSatoriIntro',jaLabel:'七十三番',order:'mixed',source:'satori',total:'satori',unlockKey:'speedSatori',showsRemaining:false,allowsUndo:false}
   ]);
 
@@ -18,9 +18,9 @@
 
   function create({satoriTotal,trainingExamTotal,academyTotal,developmentStart,developmentTotal,trainingStart,trainingTotal,basicStart}) {
     const totalFor = value => value === 'satori' ? satoriTotal : value === 'trainingExam' ? trainingExamTotal : value;
-    const speedModes = Object.freeze(Object.fromEntries(SPEED_BLUEPRINTS.flatMap(blueprint => {
+    const speedModes = Object.freeze(Object.fromEntries(SPEED_BLUEPRINTS.map(blueprint => {
       const definition = Object.freeze({...blueprint,total:totalFor(blueprint.total)});
-      return [[definition.id,definition], ...(definition.legacyIds || []).map(legacyId => [legacyId,definition])];
+      return [definition.id,definition];
     })));
     const publicSpeedIds = Object.freeze(SPEED_BLUEPRINTS.filter(definition => definition.visible).map(definition => definition.id));
 

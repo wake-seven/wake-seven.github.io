@@ -411,7 +411,7 @@ const progression = context.window.WakeSevenProgression.create({
   trainingStart:20,trainingTotal:27,basicStart:3
 });
 if (progression.speedModes.training18.total !== 18 || progression.speedModes.mastery27.total !== 27 || progression.speedModes.satori73.allowsUndo !== false
-  || progression.speedModes.mastery15.id !== 'training18' || progression.speedModes.mastery24.id !== 'mastery27') {
+  || Object.keys(progression.speedModes).some(id => !['standard','training9','training18','mastery27','satori73'].includes(id))) {
   throw new Error('Speed policy generation failed.');
 }
 if (!progression.canEnter('training',{lap:1,trials:{training:true}}) || progression.canEnter('satori',{lap:1,mastered:false,trials:{mastery:true}})) {

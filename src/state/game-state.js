@@ -198,7 +198,7 @@
         speedIntermediateTrialCleared: storage.getItem(LEGACY_STORAGE_KEYS.speedIntermediateTrialCleared) === '1',
         speedMasteryTrialCleared: storage.getItem(LEGACY_STORAGE_KEYS.speedMasteryTrialCleared) === '1'
       },
-      speed: { activeVariant: ({mastery15:'training18',mastery24:'mastery27'}[storage.getItem(LEGACY_STORAGE_KEYS.speedActiveVariant)] || storage.getItem(LEGACY_STORAGE_KEYS.speedActiveVariant) || 'training9') },
+      speed: { activeVariant: ['standard','training9','training18','mastery27','satori73'].includes(storage.getItem(LEGACY_STORAGE_KEYS.speedActiveVariant)) ? storage.getItem(LEGACY_STORAGE_KEYS.speedActiveVariant) : 'training9' },
       legacySession: session && typeof session === 'object' ? session : null
     });
     write(state, storage);
