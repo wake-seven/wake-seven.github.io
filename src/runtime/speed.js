@@ -276,7 +276,8 @@ function beginSpeedRun(){
 function finishSpeedRun(){
   pauseSpeedClock();
   // セッションを保存・削除する前に、卒業試験として起動されたかを確定する。
-  const trialVariant=speedSession?.requiredTrial===true?'training9':speedSession?.requiredTrial;
+  const trialVariant=(speedSession?.requiredTrial===true?'training9':speedSession?.requiredTrial)
+    ||pendingSpeedTrial(speedSession?.variant||speedVariant);
   const elapsed=Math.round(speedSession.elapsedMs);
   const optimalClears=speedOptimalClears();
   let bestTime=0;

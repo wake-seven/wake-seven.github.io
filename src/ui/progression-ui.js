@@ -559,9 +559,10 @@ function showClearDialog(){
     showMasterDialog('intermediate');
     return;
   }
-  const clearedMasteryIndex=isMode('mastery')&&Number.isInteger(extraIndex)
+  const masteryClearContext=isMode('mastery')||lastStageMode?.extra===true;
+  const clearedMasteryIndex=masteryClearContext&&Number.isInteger(extraIndex)
     ?extraIndex
-    :(isMode('mastery')&&Number.isInteger(lastStageMode?.index)?lastStageMode.index:-1);
+    :(masteryClearContext&&Number.isInteger(lastStageMode?.index)?lastStageMode.index:-1);
   if(clearedMasteryIndex>=0&&(clearedMasteryIndex+1)%MASTER_VOLUME_SIZE===0){
     showMasterDialog(clearedMasteryIndex===EXTRA_STAGES.length-1?'mastery':'volume');
     return;
