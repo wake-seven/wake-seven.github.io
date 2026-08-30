@@ -1507,9 +1507,9 @@
     return state;
   }
 
-  // Navigation is intentionally exposed as a small read-only view.  Runtime
-  // code may still own the live variables while the state migration is in
-  // progress, but consumers should not need to know the storage field names.
+  // ナビゲーションは小さな読み取り専用ビューとして公開する。
+  // 状態移行中は実行側が現在値を保持していても、利用側が保存形式を
+  // 意識せずに済むようにする。
   function navigationView(state) {
     const navigation = state?.navigation || {};
     return {
@@ -5009,7 +5009,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
     // スタート前は問題を見せず、全員が起きたまっさらな盤面で開始を促す。
     setPosition(0,0);
     renderStageNav();
-    persistSpeedSession();saveActiveSession();
+    persistSpeedSession();persistActiveSession();
     return;
   }
   const stage=pool[speedSession.order[speedSession.index]];
@@ -5021,7 +5021,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
   }
   renderStageNav();
   if(arriving)animateBoardArrival();
-  persistSpeedSession();saveActiveSession();startSpeedClock();
+  persistSpeedSession();persistActiveSession();startSpeedClock();
 }
 function enterSpeedMode(forceNew=false){
   pauseSpeedRun();
@@ -6394,7 +6394,7 @@ function loadTutorialStep(index=0){
   renderStageNav();
   animateBoardArrival();
   setTimeout(showTutorialCue,430);
-  saveActiveSession();
+  persistActiveSession();
 }
 function startTutorial(){
   if(storage.get(STORAGE_KEYS.tutorialComplete)==='1'){loadStage(0);return;}
@@ -6421,7 +6421,7 @@ function loadStage(index){
   stageIndex=Math.max(0,Math.min(STAGES.length-1,index));
   lastStageMode={extra:false,satori:false,index:stageIndex};
   const stage=STAGES[stageIndex];
-  saveCurrentStage(false,stageIndex);
+  persistCurrentStage(false,stageIndex);
   setPosition(campaignStageState(stage.state),stage.par);
   renderStageNav();
   animateBoardArrival();
@@ -6438,7 +6438,7 @@ function loadExtraStage(index){
   extraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
   lastStageMode={extra:true,satori:false,index:extraIndex};
   const stage=EXTRA_STAGES[extraIndex];
-  saveCurrentStage(true,extraIndex);
+  persistCurrentStage(true,extraIndex);
   setPosition(campaignStageState(stage.state),stage.par);
   renderStageNav();
   animateBoardArrival();
@@ -6461,7 +6461,7 @@ function loadSatoriStage(index){
   animateBoardArrival();
   trackStageView();
 }
-function saveCurrentStage(extra,index){
+function persistCurrentStage(extra,index){
   try{storage.set('wake7-current-stage',JSON.stringify({extra,index,lap:activeLap}));}catch(_){}
 }
 function restoreCurrentStage(){
@@ -6516,7 +6516,7 @@ function restoreSavedBoard(data){
   paint();
   return true;
 }
-function saveActiveSession(){
+function persistActiveSession(){
   if(isMode('tutorial')){
     const payload={mode:'tutorial',step:tutorialStep};
     syncGameState(payload);
@@ -6610,7 +6610,7 @@ function startFreeFromState(state){
 function cloneHistoryEntry(h){
   return {o:Uint8Array.from(h.o),s:Int16Array.from(h.s),t:h.t.slice(),m:h.m};
 }
-function saveFreeSession(){
+function persistFreeSession(){
   savedFreeSession={
     ori:Uint8Array.from(ori),spin:Int16Array.from(spin),tileEls:tileEls.slice(),
     moves,best,history:history.map(cloneHistoryEntry),
@@ -6642,7 +6642,7 @@ function restoreFreeSession(){
   renderStageNav();
 }
 function leaveFreeMode(){
-  saveFreeSession();
+  persistFreeSession();
   lastStageMode.satori?loadSatoriStage(lastStageMode.index):lastStageMode.extra?loadExtraStage(lastStageMode.index):loadStage(lastStageMode.index);
 }
 function makerDistance(){
@@ -6659,7 +6659,7 @@ function showMakerMessage(){
 function enterBoardMaker(){
   if(busy)return;
   if(isMode('speed'))pauseSpeedRun();
-  if(isMode('free'))saveFreeSession();
+  if(isMode('free'))persistFreeSession();
   // 自作モードは常にまっさらな盤面から。直前の悟り／速解き盤面を
   // そのまま最短手数の確認に使えないようにする。
   const state=0;
@@ -6855,7 +6855,7 @@ function effectiveTurn(turns){
   const n=((turns%3)+3)%3;
   return n===1?1:n===2?-1:0;
 }
-// Keep the numeric preview in sync with the visual wake threshold (120°-22°).
+// 数字のプレビューを、見た目の起立判定しきい値（120°−22°）と同期させる。
 function visualTurns(deg){
   if(!deg)return 0;
   const sign=deg<0?-1:1;
@@ -10448,9 +10448,9 @@ let savedLanguage=UI_TEXT[gameState.settings.language]?gameState.settings.langua
 applyLanguage(savedLanguage);
 if(storage.get(STORAGE_KEYS.introSeen)!=='1')setTimeout(openIntroGuide,350);
 else if(storage.get(STORAGE_KEYS.tutorialComplete)!=='1'&&!isMode('tutorial'))setTimeout(startTutorial,80);
-window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();saveActiveSession();});
+window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();persistActiveSession();});
 document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='hidden'){if(isMode('speed'))pauseSpeedClock();saveActiveSession();}
+  if(document.visibilityState==='hidden'){if(isMode('speed'))pauseSpeedClock();persistActiveSession();}
   else if(isMode('speed')&&!speedAwaitingStart()){
     if(isSolved()&&speedSession){
       // 非表示の間にクリア演出や、その後の次の問題へ進む処理が止まってしまうことがある

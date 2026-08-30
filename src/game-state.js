@@ -163,9 +163,9 @@
     return state;
   }
 
-  // Navigation is intentionally exposed as a small read-only view.  Runtime
-  // code may still own the live variables while the state migration is in
-  // progress, but consumers should not need to know the storage field names.
+  // ナビゲーションは小さな読み取り専用ビューとして公開する。
+  // 状態移行中は実行側が現在値を保持していても、利用側が保存形式を
+  // 意識せずに済むようにする。
   function navigationView(state) {
     const navigation = state?.navigation || {};
     return {

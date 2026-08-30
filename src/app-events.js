@@ -1166,9 +1166,9 @@ let savedLanguage=UI_TEXT[gameState.settings.language]?gameState.settings.langua
 applyLanguage(savedLanguage);
 if(storage.get(STORAGE_KEYS.introSeen)!=='1')setTimeout(openIntroGuide,350);
 else if(storage.get(STORAGE_KEYS.tutorialComplete)!=='1'&&!isMode('tutorial'))setTimeout(startTutorial,80);
-window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();saveActiveSession();});
+window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();persistActiveSession();});
 document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='hidden'){if(isMode('speed'))pauseSpeedClock();saveActiveSession();}
+  if(document.visibilityState==='hidden'){if(isMode('speed'))pauseSpeedClock();persistActiveSession();}
   else if(isMode('speed')&&!speedAwaitingStart()){
     if(isSolved()&&speedSession){
       // 非表示の間にクリア演出や、その後の次の問題へ進む処理が止まってしまうことがある

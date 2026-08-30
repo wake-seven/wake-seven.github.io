@@ -1244,7 +1244,7 @@ function loadTutorialStep(index=0){
   renderStageNav();
   animateBoardArrival();
   setTimeout(showTutorialCue,430);
-  saveActiveSession();
+  persistActiveSession();
 }
 function startTutorial(){
   if(storage.get(STORAGE_KEYS.tutorialComplete)==='1'){loadStage(0);return;}
@@ -1271,7 +1271,7 @@ function loadStage(index){
   stageIndex=Math.max(0,Math.min(STAGES.length-1,index));
   lastStageMode={extra:false,satori:false,index:stageIndex};
   const stage=STAGES[stageIndex];
-  saveCurrentStage(false,stageIndex);
+  persistCurrentStage(false,stageIndex);
   setPosition(campaignStageState(stage.state),stage.par);
   renderStageNav();
   animateBoardArrival();
@@ -1288,7 +1288,7 @@ function loadExtraStage(index){
   extraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
   lastStageMode={extra:true,satori:false,index:extraIndex};
   const stage=EXTRA_STAGES[extraIndex];
-  saveCurrentStage(true,extraIndex);
+  persistCurrentStage(true,extraIndex);
   setPosition(campaignStageState(stage.state),stage.par);
   renderStageNav();
   animateBoardArrival();
@@ -1311,7 +1311,7 @@ function loadSatoriStage(index){
   animateBoardArrival();
   trackStageView();
 }
-function saveCurrentStage(extra,index){
+function persistCurrentStage(extra,index){
   try{storage.set('wake7-current-stage',JSON.stringify({extra,index,lap:activeLap}));}catch(_){}
 }
 function restoreCurrentStage(){
@@ -1366,7 +1366,7 @@ function restoreSavedBoard(data){
   paint();
   return true;
 }
-function saveActiveSession(){
+function persistActiveSession(){
   if(isMode('tutorial')){
     const payload={mode:'tutorial',step:tutorialStep};
     syncGameState(payload);
@@ -1460,7 +1460,7 @@ function startFreeFromState(state){
 function cloneHistoryEntry(h){
   return {o:Uint8Array.from(h.o),s:Int16Array.from(h.s),t:h.t.slice(),m:h.m};
 }
-function saveFreeSession(){
+function persistFreeSession(){
   savedFreeSession={
     ori:Uint8Array.from(ori),spin:Int16Array.from(spin),tileEls:tileEls.slice(),
     moves,best,history:history.map(cloneHistoryEntry),
@@ -1492,7 +1492,7 @@ function restoreFreeSession(){
   renderStageNav();
 }
 function leaveFreeMode(){
-  saveFreeSession();
+  persistFreeSession();
   lastStageMode.satori?loadSatoriStage(lastStageMode.index):lastStageMode.extra?loadExtraStage(lastStageMode.index):loadStage(lastStageMode.index);
 }
 function makerDistance(){
@@ -1509,7 +1509,7 @@ function showMakerMessage(){
 function enterBoardMaker(){
   if(busy)return;
   if(isMode('speed'))pauseSpeedRun();
-  if(isMode('free'))saveFreeSession();
+  if(isMode('free'))persistFreeSession();
   // 自作モードは常にまっさらな盤面から。直前の悟り／速解き盤面を
   // そのまま最短手数の確認に使えないようにする。
   const state=0;
@@ -1705,7 +1705,7 @@ function effectiveTurn(turns){
   const n=((turns%3)+3)%3;
   return n===1?1:n===2?-1:0;
 }
-// Keep the numeric preview in sync with the visual wake threshold (120°-22°).
+// 数字のプレビューを、見た目の起立判定しきい値（120°−22°）と同期させる。
 function visualTurns(deg){
   if(!deg)return 0;
   const sign=deg<0?-1:1;

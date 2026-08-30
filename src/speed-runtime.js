@@ -232,7 +232,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
     // スタート前は問題を見せず、全員が起きたまっさらな盤面で開始を促す。
     setPosition(0,0);
     renderStageNav();
-    persistSpeedSession();saveActiveSession();
+    persistSpeedSession();persistActiveSession();
     return;
   }
   const stage=pool[speedSession.order[speedSession.index]];
@@ -244,7 +244,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
   }
   renderStageNav();
   if(arriving)animateBoardArrival();
-  persistSpeedSession();saveActiveSession();startSpeedClock();
+  persistSpeedSession();persistActiveSession();startSpeedClock();
 }
 function enterSpeedMode(forceNew=false){
   pauseSpeedRun();
