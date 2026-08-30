@@ -1,6 +1,6 @@
 // ===== 盤面SVG構築・入門/学園ダイアログ・最短2手レッスン =====
 function buildBoard(){
-  svg.innerHTML='';
+  svg.replaceChildren();
   const NS_='http://www.w3.org/2000/svg';
   tileEls=[];
   CELL.forEach((c,i)=>{
@@ -35,7 +35,7 @@ function buildBoard(){
 let introTimer=0;
 function buildIntroBoard(){
   const intro=$('introBoard'),NS_='http://www.w3.org/2000/svg';
-  intro.innerHTML='';
+  intro.replaceChildren();
   const start=dec(STAGES[0].state),tiles=[];
   CELL.forEach((c,i)=>{
     const g=document.createElementNS(NS_,'g');
@@ -137,7 +137,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
   const settleFrac=((overshootBase+settleBase)/(overshootBase+settleBase+snapBase)).toFixed(4);
   stopAcademyWelcomeBoard();
   const board=$('academyWelcomeBoard'),NS_='http://www.w3.org/2000/svg';
-  board.innerHTML='';
+  board.replaceChildren();
   // くるり数と盤面を、ひとつの案内カードとして見せる。
   const frame=document.createElementNS(NS_,'rect');
   frame.setAttribute('x','4');frame.setAttribute('y','-52');frame.setAttribute('width','312');frame.setAttribute('height','354');
@@ -463,7 +463,7 @@ function openChainedDialog(name){
   $('chainDialogTitle').className=step.titleClass||'';
   $('chainDialogAction').textContent=tr(step.actionKey);
   $('chainDialogCard').classList.toggle('chain-wide',!!step.wide);
-  $('chainDialogBody').innerHTML='';
+  $('chainDialogBody').replaceChildren();
   chainCleanup=step.render($('chainDialogBody'))||null;
   $('chainDialog').hidden=false;
 }
@@ -504,7 +504,7 @@ function buildTrainingMiddleSpinBoard(boardId,counterId,startState=TRAINING_MIDD
   const cycleStates=[startState,0,0];
   cycleStates[1]=enc(rollOnce(dec(cycleStates[0]),ti,dir));
   cycleStates[2]=enc(rollOnce(dec(cycleStates[1]),ti,dir));
-  guide.innerHTML='';
+  guide.replaceChildren();
   const tiles=[];
   CELL.forEach((c,i)=>{
     const g=document.createElementNS(NS_,'g');
@@ -715,7 +715,7 @@ function buildClearGuideBoard(id){
   stopClearGuideBoard(id);
   const guide=$(id),NS_='http://www.w3.org/2000/svg';
   if(!guide)return;
-  guide.innerHTML='';
+  guide.replaceChildren();
   const start=dec(STAGES[0].state),tiles=[];
   CELL.forEach((c,i)=>{
     const g=document.createElementNS(NS_,'g');
@@ -790,7 +790,7 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
   const initialState=overrideState??STAGES[variant==='joinTwo'?8:3].state,move=lessonBestMove(initialState);
   if(!move)return;
   const start=dec(initialState),after=rollOnce(start,move.ti,move.dir),tiles=[];
-  guide.innerHTML='';
+  guide.replaceChildren();
   CELL.forEach((c,i)=>{
     const g=document.createElementNS(NS_,'g');
     g.setAttribute('class','tile '+(start[i]?'fallen':'stand'));

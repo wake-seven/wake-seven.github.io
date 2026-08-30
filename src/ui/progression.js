@@ -123,7 +123,7 @@ function renderSatoriStagePicker(){
   $('pickerPrevRound').hidden=false;$('pickerNextRound').hidden=false;
   $('pickerPrevRound').disabled=false;
   $('pickerNextRound').disabled=satoriPickerPage===SATORI_PICKER_PAGES-1&&!(pickerLap===1&&secondLapUnlocked);
-  grid.innerHTML='';
+  grid.replaceChildren();
   SATORI_STAGES.slice(start,end).forEach((stage,offset)=>{
     const index=start+offset;
     const button=document.createElement('button');
@@ -187,7 +187,7 @@ function renderStagePicker(){
   $('pickerPrevRound').disabled=!canGoPrev;
   $('pickerNextRound').disabled=!canGoNext;
   const grid=$('stagePickerGrid');
-  grid.innerHTML='';
+  grid.replaceChildren();
   const primaryStart=isPrimary?section.start:0;
   const pageSize=isPrimary?section.total:MASTER_VOLUME_SIZE;
   const rowTemplate=document.getElementById('stage-picker-row-template');
@@ -882,10 +882,6 @@ function transformIcon(kind){
     vertical:'<path d="M12 4v16"/><path d="m8 8 4-4 4 4"/><path d="m8 16 4 4 4-4"/>'
   };
   return '<svg class="transform-svg" viewBox="0 0 24 24" aria-hidden="true">'+paths[kind]+'</svg>';
-}
-function transformButtonText(kind){
-  const label={rotateBack:'rotateCcw',rotate:'rotateCw',mirror:'mirror',vertical:'flipVertical'}[kind]||kind;
-  return transformIcon(kind)+' '+tr(label);
 }
 function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);

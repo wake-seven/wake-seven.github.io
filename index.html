@@ -1031,16 +1031,16 @@
 
 <div class="board-wrap">
   <div class="board-view-controls">
-    <button class="view-button" id="rotateBoardBack">60°回転</button>
-    <button class="view-button" id="rotateBoard">60°回転</button>
+    <button class="view-button" id="rotateBoardBack"><span data-transform-icon aria-hidden="true"></span><span data-transform-label>60°回転</span></button>
+    <button class="view-button" id="rotateBoard"><span data-transform-icon aria-hidden="true"></span><span data-transform-label>60°回転</span></button>
   </div>
   <svg id="board" viewBox="14 0 293 310" aria-label="七枚のだるま盤"></svg>
   <div class="grip-prompt" id="gripPrompt" hidden><span id="gripPromptText">水色の棒をつかんで回そう</span></div>
   <div class="academy-remaining-callout" id="academyRemainingCallout" hidden><span class="academy-remaining-callout-badge"><span class="academy-remaining-callout-label"></span><span class="academy-remaining-callout-number" id="academyRemainingCalloutNumber"></span><span class="academy-remaining-callout-unit"></span></span></div>
   <div class="speed-start-overlay" id="speedStartOverlay" hidden><button class="chip" id="speedBoardStart" type="button">スタート</button></div>
   <div class="board-view-controls bottom">
-    <button class="view-button" id="mirrorBoard">左右反転</button>
-    <button class="view-button" id="flipBoardVertical">上下反転</button>
+    <button class="view-button" id="mirrorBoard"><span data-transform-icon aria-hidden="true"></span><span data-transform-label>左右反転</span></button>
+    <button class="view-button" id="flipBoardVertical"><span data-transform-icon aria-hidden="true"></span><span data-transform-label>上下反転</span></button>
   </div>
 </div>
 
@@ -5521,7 +5521,7 @@ export {};
 // ===== 盤面UI =====
 // ===== 盤面SVG構築・入門/学園ダイアログ・最短2手レッスン =====
 function buildBoard(){
-  svg.innerHTML='';
+  svg.replaceChildren();
   const NS_='http://www.w3.org/2000/svg';
   tileEls=[];
   CELL.forEach((c,i)=>{
@@ -5556,7 +5556,7 @@ function buildBoard(){
 let introTimer=0;
 function buildIntroBoard(){
   const intro=$('introBoard'),NS_='http://www.w3.org/2000/svg';
-  intro.innerHTML='';
+  intro.replaceChildren();
   const start=dec(STAGES[0].state),tiles=[];
   CELL.forEach((c,i)=>{
     const g=document.createElementNS(NS_,'g');
@@ -5658,7 +5658,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
   const settleFrac=((overshootBase+settleBase)/(overshootBase+settleBase+snapBase)).toFixed(4);
   stopAcademyWelcomeBoard();
   const board=$('academyWelcomeBoard'),NS_='http://www.w3.org/2000/svg';
-  board.innerHTML='';
+  board.replaceChildren();
   // くるり数と盤面を、ひとつの案内カードとして見せる。
   const frame=document.createElementNS(NS_,'rect');
   frame.setAttribute('x','4');frame.setAttribute('y','-52');frame.setAttribute('width','312');frame.setAttribute('height','354');
@@ -5984,7 +5984,7 @@ function openChainedDialog(name){
   $('chainDialogTitle').className=step.titleClass||'';
   $('chainDialogAction').textContent=tr(step.actionKey);
   $('chainDialogCard').classList.toggle('chain-wide',!!step.wide);
-  $('chainDialogBody').innerHTML='';
+  $('chainDialogBody').replaceChildren();
   chainCleanup=step.render($('chainDialogBody'))||null;
   $('chainDialog').hidden=false;
 }
@@ -6025,7 +6025,7 @@ function buildTrainingMiddleSpinBoard(boardId,counterId,startState=TRAINING_MIDD
   const cycleStates=[startState,0,0];
   cycleStates[1]=enc(rollOnce(dec(cycleStates[0]),ti,dir));
   cycleStates[2]=enc(rollOnce(dec(cycleStates[1]),ti,dir));
-  guide.innerHTML='';
+  guide.replaceChildren();
   const tiles=[];
   CELL.forEach((c,i)=>{
     const g=document.createElementNS(NS_,'g');
@@ -6236,7 +6236,7 @@ function buildClearGuideBoard(id){
   stopClearGuideBoard(id);
   const guide=$(id),NS_='http://www.w3.org/2000/svg';
   if(!guide)return;
-  guide.innerHTML='';
+  guide.replaceChildren();
   const start=dec(STAGES[0].state),tiles=[];
   CELL.forEach((c,i)=>{
     const g=document.createElementNS(NS_,'g');
@@ -6311,7 +6311,7 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
   const initialState=overrideState??STAGES[variant==='joinTwo'?8:3].state,move=lessonBestMove(initialState);
   if(!move)return;
   const start=dec(initialState),after=rollOnce(start,move.ti,move.dir),tiles=[];
-  guide.innerHTML='';
+  guide.replaceChildren();
   CELL.forEach((c,i)=>{
     const g=document.createElementNS(NS_,'g');
     g.setAttribute('class','tile '+(start[i]?'fallen':'stand'));
@@ -8012,7 +8012,7 @@ function renderSatoriStagePicker(){
   $('pickerPrevRound').hidden=false;$('pickerNextRound').hidden=false;
   $('pickerPrevRound').disabled=false;
   $('pickerNextRound').disabled=satoriPickerPage===SATORI_PICKER_PAGES-1&&!(pickerLap===1&&secondLapUnlocked);
-  grid.innerHTML='';
+  grid.replaceChildren();
   SATORI_STAGES.slice(start,end).forEach((stage,offset)=>{
     const index=start+offset;
     const button=document.createElement('button');
@@ -8076,7 +8076,7 @@ function renderStagePicker(){
   $('pickerPrevRound').disabled=!canGoPrev;
   $('pickerNextRound').disabled=!canGoNext;
   const grid=$('stagePickerGrid');
-  grid.innerHTML='';
+  grid.replaceChildren();
   const primaryStart=isPrimary?section.start:0;
   const pageSize=isPrimary?section.total:MASTER_VOLUME_SIZE;
   const rowTemplate=document.getElementById('stage-picker-row-template');
@@ -8771,10 +8771,6 @@ function transformIcon(kind){
     vertical:'<path d="M12 4v16"/><path d="m8 8 4-4 4 4"/><path d="m8 16 4 4 4-4"/>'
   };
   return '<svg class="transform-svg" viewBox="0 0 24 24" aria-hidden="true">'+paths[kind]+'</svg>';
-}
-function transformButtonText(kind){
-  const label={rotateBack:'rotateCcw',rotate:'rotateCw',mirror:'mirror',vertical:'flipVertical'}[kind]||kind;
-  return transformIcon(kind)+' '+tr(label);
 }
 function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
@@ -9646,7 +9642,7 @@ function renderRankList(){
   $('rankLap2').textContent=tr('secondLapLabel');
   $('rankLap1').classList.toggle('on',!second);
   $('rankLap2').classList.toggle('on',second);
-  list.innerHTML='';
+  list.replaceChildren();
   const rowTemplate=document.getElementById('rank-list-row-template');
   const visible=second?sequence:sequence.slice(0,Math.min(sequence.length,Math.max(1,highest+2)));
   visible.forEach((index,position)=>{
@@ -10553,10 +10549,7 @@ function applyLanguage(lang){
   updateSoundToggle();
   if(!$('twoMoveLessonDialog').hidden)openTwoMoveLessonDialog();
   if(!$('speedPauseDialog').hidden)renderSpeedPauseStats();
-  $('mirrorBoard').innerHTML=transformButtonText('mirror');
-  $('flipBoardVertical').innerHTML=transformButtonText('vertical');
-  $('rotateBoardBack').innerHTML=transformButtonText('rotateBack');
-  $('rotateBoard').innerHTML=transformButtonText('rotate');
+  [['mirrorBoard','mirror','mirror'],['flipBoardVertical','vertical','flipVertical'],['rotateBoardBack','rotateBack','rotateCcw'],['rotateBoard','rotate','rotateCw']].forEach(([id,icon,label])=>{const button=$(id);button.querySelector('[data-transform-icon]').innerHTML=transformIcon(icon);button.querySelector('[data-transform-label]').textContent=tr(label);});
   [
     ['twoMoveDetailRotateBack','rotateBack','rotateCcw'],['twoMoveDetailRotate','rotate','rotateCw'],['twoMoveDetailMirror','mirror','mirror'],['twoMoveDetailFlipVertical','vertical','flipVertical']
   ].forEach(([id,icon,label])=>{$(id).innerHTML=transformIcon(icon);$(id).setAttribute('aria-label',tr(label));});

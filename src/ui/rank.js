@@ -64,7 +64,7 @@ function renderRankList(){
   $('rankLap2').textContent=tr('secondLapLabel');
   $('rankLap1').classList.toggle('on',!second);
   $('rankLap2').classList.toggle('on',second);
-  list.innerHTML='';
+  list.replaceChildren();
   const rowTemplate=document.getElementById('rank-list-row-template');
   const visible=second?sequence:sequence.slice(0,Math.min(sequence.length,Math.max(1,highest+2)));
   visible.forEach((index,position)=>{

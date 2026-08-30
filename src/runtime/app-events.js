@@ -845,10 +845,7 @@ function applyLanguage(lang){
   updateSoundToggle();
   if(!$('twoMoveLessonDialog').hidden)openTwoMoveLessonDialog();
   if(!$('speedPauseDialog').hidden)renderSpeedPauseStats();
-  $('mirrorBoard').innerHTML=transformButtonText('mirror');
-  $('flipBoardVertical').innerHTML=transformButtonText('vertical');
-  $('rotateBoardBack').innerHTML=transformButtonText('rotateBack');
-  $('rotateBoard').innerHTML=transformButtonText('rotate');
+  [['mirrorBoard','mirror','mirror'],['flipBoardVertical','vertical','flipVertical'],['rotateBoardBack','rotateBack','rotateCcw'],['rotateBoard','rotate','rotateCw']].forEach(([id,icon,label])=>{const button=$(id);button.querySelector('[data-transform-icon]').innerHTML=transformIcon(icon);button.querySelector('[data-transform-label]').textContent=tr(label);});
   [
     ['twoMoveDetailRotateBack','rotateBack','rotateCcw'],['twoMoveDetailRotate','rotate','rotateCw'],['twoMoveDetailMirror','mirror','mirror'],['twoMoveDetailFlipVertical','vertical','flipVertical']
   ].forEach(([id,icon,label])=>{$(id).innerHTML=transformIcon(icon);$(id).setAttribute('aria-label',tr(label));});
