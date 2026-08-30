@@ -9364,21 +9364,64 @@ $('debugSkipTutorial').addEventListener('click',debugSkipTutorial);
 $('tutorialDebugSkip').addEventListener('click',debugSkipTutorial);
 $('debugReset').addEventListener('click',()=>resetStoredProgress({resetIntro:true,showIntro:true}));
 // ===== イベントリスナー群A =====
-$('clearNext').addEventListener('click',()=>{
-  hideGameDialogs();
-  advanceAfterClear();
-});
-$('clearClose').addEventListener('click',()=>{
-  hideGameDialogs();
-  nextStageAttention=!isMode('free')&&!isMode('custom')&&!editingBoard;
-  renderStageNav();
-});
-$('optimalRetry').addEventListener('click',()=>{
-  $('optimalFailDialog').hidden=true;
-  GameBoard.reset(currentInitialState,currentInitialPar);
-  renderStageNav();
-});
-$('clearMessages').addEventListener('click',()=>GameDialogs.messages({resume:true}));
+function handleClearTipLink(){
+  if($('clearTipLink').dataset.target==='rank'){
+    $('clearDialog').hidden=true;
+    GameDialogs.ranks({dialogId:'clearDialog',focusId:'clearTipLink'});
+    return;
+  }
+  if($('clearTipLink').dataset.target==='messages'){
+    $('clearDialog').hidden=true;
+    GameDialogs.messages({resume:true,returnTarget:{dialogId:'clearDialog',focusId:'clearTipLink'}});
+    return;
+  }
+  if($('clearTipLink').dataset.target==='tips'){
+    returnToClearCard=true;
+    hideGameDialogs();
+    openTipGuide();
+    return;
+  }
+  if($('clearTipLink').dataset.target==='patterns'){
+    returnToClearCard=true;
+    hideGameDialogs();
+    openTwoMovePatterns({returnToClear:true});
+    return;
+  }
+  if(!isMode('mastery'))return;
+  const clickClearEntry=clearContentAt(true,extraIndex);
+  const twoMoveCard=clickClearEntry?.twoMoveCard,guideCard=clickClearEntry?.guideCard;
+  if(twoMoveCard!==undefined){
+    returnToClearCard=true;
+    hideGameDialogs();
+    openTwoMoveDetail(TWO_MOVE_STAGES[twoMoveCard].state,twoMoveCard);
+  }else if(guideCard){
+    returnToClearCard=true;
+    hideGameDialogs();
+    openTipGuide();
+    tipGuideIndex=guideCard.page;
+    renderTipGuide();
+    $('closeTipGuide').textContent=tr('backToClear');
+  }
+}
+function bindClearDialogEvents(){
+  $('clearNext').addEventListener('click',()=>{
+    hideGameDialogs();
+    advanceAfterClear();
+  });
+  $('clearClose').addEventListener('click',()=>{
+    hideGameDialogs();
+    nextStageAttention=!isMode('free')&&!isMode('custom')&&!editingBoard;
+    renderStageNav();
+  });
+  $('optimalRetry').addEventListener('click',()=>{
+    $('optimalFailDialog').hidden=true;
+    GameBoard.reset(currentInitialState,currentInitialPar);
+    renderStageNav();
+  });
+  $('clearMessages').addEventListener('click',()=>GameDialogs.messages({resume:true}));
+  $('clearTipLink').addEventListener('click',handleClearTipLink);
+}
+bindClearDialogEvents();
 $('menuStagePicker').addEventListener('click',()=>{closeAppMenu();openStagePicker();});
 $('menuRankList').addEventListener('click',()=>{closeAppMenu();GameDialogs.ranks();});
 $('menuAbout').addEventListener('click',()=>{
@@ -9469,45 +9512,6 @@ document.addEventListener('keydown',event=>{
   if($('messageDialog').hidden)return;
   if(event.key==='ArrowLeft'&&messageReviewIndex>0){event.preventDefault();messageReviewIndex--;renderMessageReview();}
   if(event.key==='ArrowRight'&&messageReviewIndex<messageReviewEntries.length-1){event.preventDefault();messageReviewIndex++;renderMessageReview();}
-});
-$('clearTipLink').addEventListener('click',()=>{
-  if($('clearTipLink').dataset.target==='rank'){
-    $('clearDialog').hidden=true;
-    GameDialogs.ranks({dialogId:'clearDialog',focusId:'clearTipLink'});
-    return;
-  }
-  if($('clearTipLink').dataset.target==='messages'){
-    $('clearDialog').hidden=true;
-    GameDialogs.messages({resume:true,returnTarget:{dialogId:'clearDialog',focusId:'clearTipLink'}});
-    return;
-  }
-  if($('clearTipLink').dataset.target==='tips'){
-    returnToClearCard=true;
-    hideGameDialogs();
-    openTipGuide();
-    return;
-  }
-  if($('clearTipLink').dataset.target==='patterns'){
-    returnToClearCard=true;
-    hideGameDialogs();
-    openTwoMovePatterns({returnToClear:true});
-    return;
-  }
-  if(!isMode('mastery'))return;
-  const clickClearEntry=clearContentAt(true,extraIndex);
-  const twoMoveCard=clickClearEntry?.twoMoveCard,guideCard=clickClearEntry?.guideCard;
-  if(twoMoveCard!==undefined){
-    returnToClearCard=true;
-    hideGameDialogs();
-    openTwoMoveDetail(TWO_MOVE_STAGES[twoMoveCard].state,twoMoveCard);
-  }else if(guideCard){
-    returnToClearCard=true;
-    hideGameDialogs();
-    openTipGuide();
-    tipGuideIndex=guideCard.page;
-    renderTipGuide();
-    $('closeTipGuide').textContent=tr('backToClear');
-  }
 });
 // マスターダイアログを閉じた/開始した直後に、続けて開く特別ダイアログをまとめて管理する。
 // 今後この手の2段階演出が増えたら、ここに1行足すだけで済むようにする。
