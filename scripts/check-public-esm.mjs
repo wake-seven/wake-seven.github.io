@@ -27,7 +27,9 @@ const ids = [...template.matchAll(/\bid=["']([^"']+)["']/g)].map(([, id]) => id)
 const duplicateIds = [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))];
 assert.deepEqual(duplicateIds, [], `Generated HTML contains duplicate ids: ${duplicateIds.join(', ')}`);
 
-const declarations = [...applicationScript[0].matchAll(/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(([, name]) => name);
+// インデントされたIIFE内部の同名factoryは別スコープなので、公開モジュールの
+// top-level宣言だけを重複測定する。
+const declarations = [...applicationScript[0].matchAll(/^function\s+([A-Za-z_$][\w$]*)\s*\(/gm)].map(([, name]) => name);
 const duplicateDeclarations = [...new Set(declarations.filter((name, index) => declarations.indexOf(name) !== index))];
 const moduleBytes = Buffer.byteLength(applicationScript[0], 'utf8');
 console.log(`Generated application payload: ${(moduleBytes / 1024).toFixed(1)} KiB; duplicate function declarations: ${duplicateDeclarations.length}.`);

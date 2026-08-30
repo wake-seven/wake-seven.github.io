@@ -44,6 +44,9 @@ const template = sources.get('src/index.template.html');
 for (const id of ['introDialog', 'introStart', 'tutorialReset', 'board', 'boardGuidance', 'reset', 'undo']) {
   assert.match(template, new RegExp(`id=["']${id}["']`), `Main flow DOM contract is missing: ${id}`);
 }
+for (const id of ['clearNext', 'speedBoardStart', 'masterStart', 'speedPause']) {
+  assert.match(template, new RegExp(`id=["']${id}["']`), `Completion/speed DOM contract is missing: ${id}`);
+}
 for (const token of ['startTutorial', 'rollOnce', 'tutorialStep', 'paint()']) {
   assert.match(all, new RegExp(token.replace(/[()]/g, '\\$&')), `Main flow implementation token is missing: ${token}`);
 }
@@ -66,6 +69,16 @@ for (const token of [
 const introStartAt = all.indexOf("$('introStart').addEventListener('click'");
 const tutorialStartAt = all.indexOf('startTutorial()');
 assert.ok(introStartAt >= 0 && tutorialStartAt > introStartAt, 'Start button must lead into tutorial initialization.');
+for (const token of [
+  'loadTutorialStep(',
+  'loadStage(',
+  'showClearDialog(',
+  'completeSpeedStage(',
+  'advanceSpeedRun(',
+  "$('clearNext').addEventListener('click'"
+]) {
+  assert.match(all, new RegExp(token.replace(/[()$']/g, '\\$&')), `Campaign/speed completion flow is missing: ${token}`);
+}
 
 const legacyLocations = [...sources.entries()]
   .filter(([, source]) => legacyIds.some(id => source.includes(id)))
@@ -88,3 +101,13 @@ console.log(`Storage boundary calls: localStorage=${localStorageCalls.length}, s
 console.log(`Legacy speed-id compatibility locations: ${legacyLocations.join(', ')}.`);
 console.log(`Potential unused function candidates (review only): ${candidates.length}.`);
 if (candidates.length) console.log(candidates.slice(0, 30).join(', '));
+const documentedCandidates = [
+  'src/main.mjs:createDevelopmentRuntime',
+  'src/runtime/namespace.js:attachWakeSevenNamespace',
+  'src/state/game-state.js:attachWakeSevenState',
+  'src/state/progression-policy.js:attachWakeSevenProgression',
+  'src/ui/board.js:academyEnrollArtSvgLegacy'
+];
+for (const candidate of documentedCandidates) {
+  assert.ok(candidates.includes(candidate), `Documented audit candidate disappeared or changed: ${candidate}`);
+}
