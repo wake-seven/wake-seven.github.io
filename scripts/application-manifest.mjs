@@ -25,7 +25,7 @@ export const developmentSourceFiles = [
   'state/store.mjs', 'state/persistence.mjs',
   'data/messages.mjs', 'data/satori.mjs', 'data/board-quiz.mjs',
   'commands/board-commands.mjs', 'commands/progression-commands.mjs',
-  'ui/board.mjs', 'ui/messages.mjs', 'ui/navigation.mjs', 'ui/render.mjs', 'ui/events.mjs'
+  'ui/board.mjs', 'ui/messages.mjs', 'ui/navigation.mjs', 'ui/render.mjs', 'ui/events.mjs', 'ui/lifecycle.mjs'
 ];
 
 export const trackedSourceFiles = Object.freeze([...publishedSourceFiles, ...developmentSourceFiles]);

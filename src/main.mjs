@@ -9,13 +9,14 @@ import { createBoardCommands } from './commands/board-commands.mjs';
 import { createProgressionCommands } from './commands/progression-commands.mjs';
 import { createBoardView } from './ui/board.mjs';
 import { createMessagePresenter } from './ui/messages.mjs';
-import { createRuntimeSettings } from './runtime/settings.mjs';
+import { createRuntimeSettings, DEFAULT_SETTING_KEYS } from './runtime/settings.mjs';
 import { createAudioService } from './runtime/audio.mjs';
 import { createSessionService } from './runtime/session.mjs';
 import { createNavigationController } from './ui/navigation.mjs';
 import { createRenderCoordinator } from './ui/render.mjs';
 import { createEventBinder } from './ui/events.mjs';
-import { createSpeedUnlockService } from './runtime/progression.mjs';
+import { createUiLifecycle } from './ui/lifecycle.mjs';
+import { createSpeedUnlockService, DEFAULT_SPEED_UNLOCK_KEYS } from './runtime/progression.mjs';
 
 /** Development ESM entry point. The published build still uses index.html. */
 export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data = {}, commands = {}, ui = {} } = {}) {
@@ -30,10 +31,10 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
     storage: globalThis.localStorage,
     create: value => value
   });
-  const settings = createRuntimeSettings({ state: store.state, storage: globalThis.localStorage });
+  const settings = createRuntimeSettings({ state: store.state, storage: globalThis.localStorage, keys: DEFAULT_SETTING_KEYS });
   const audio = createAudioService({ enabled: store.state.settings?.sound });
   const session = createSessionService({ persistence });
-  const speedUnlocks = createSpeedUnlockService({ storage: globalThis.localStorage });
+  const speedUnlocks = createSpeedUnlockService({ storage: globalThis.localStorage, storageKeys: DEFAULT_SPEED_UNLOCK_KEYS });
   const commandApi = Object.freeze({
     board: createBoardCommands(commands.board),
     progression: createProgressionCommands({ navigate: navigation.go, ...commands.progression })
@@ -41,6 +42,7 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
   const uiApi = Object.freeze({
     board: options => createBoardView(options),
     events: options => createEventBinder(options),
+    lifecycle: options => createUiLifecycle(options),
     navigation,
     render: options => createRenderCoordinator({ store, ...options }),
     messages: options => createMessagePresenter({ catalog: createMessageCatalog(data.clearContent), ...ui.messages, ...options })

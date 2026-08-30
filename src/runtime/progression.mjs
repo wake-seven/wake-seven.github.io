@@ -1,5 +1,6 @@
 /** Speed-trial unlock migration service for the ESM runtime. */
-export function createSpeedUnlockService({ storage, storageKeys = {}, awakenedGranted = false } = {}) {
+export const DEFAULT_SPEED_UNLOCK_KEYS = Object.freeze({ speedUnlocked: 'wake7-speed-unlocked', speedTrialModelVersion: 'wake7-speed-trial-model-version', speedTrainingUnlocked: 'wake7-speed-training-unlocked', speedIntermediateUnlocked: 'wake7-speed-intermediate-unlocked', speedMasteryUnlocked: 'wake7-speed-mastery-unlocked', speedSatoriUnlocked: 'wake7-speed-satori-unlocked', speedTrainingTrialCleared: 'wake7-speed-training-trial-cleared', speedIntermediateTrialCleared: 'wake7-speed-intermediate-trial-cleared', speedMasteryTrialCleared: 'wake7-speed-mastery-trial-cleared' });
+export function createSpeedUnlockService({ storage, storageKeys = DEFAULT_SPEED_UNLOCK_KEYS, awakenedGranted = false } = {}) {
   const get = key => { try { return storage?.getItem ? storage.getItem(key) : storage?.get?.(key); } catch { return null; } };
   const set = (key, value = '1') => { try { if (storage?.setItem) storage.setItem(key, value); else storage?.set?.(key, value); } catch {} };
   const initialize = () => {

@@ -43,6 +43,22 @@ for (const id of ['introDialog', 'introStart', 'tutorialReset', 'board', 'boardG
 for (const token of ['startTutorial', 'rollOnce', 'tutorialStep', 'paint()']) {
   assert.match(all, new RegExp(token.replace(/[()]/g, '\\$&')), `Main flow implementation token is missing: ${token}`);
 }
+for (const token of [
+  "$('introStart').addEventListener('click'",
+  "svg.addEventListener('pointerdown'",
+  "svg.addEventListener('pointerup'",
+  "$('tutorialReset').addEventListener('click'"
+]) {
+  assert.match(all, new RegExp(token.replace(/[()$']/g, '\\$&')), `Main flow event binding is missing: ${token}`);
+}
+
+const legacyLocations = [...sources.entries()]
+  .filter(([, source]) => legacyIds.some(id => source.includes(id)))
+  .map(([file]) => file);
+const expectedLegacyLocations = new Set(['src/state/game-state.js', 'src/state/progression-policy.js', 'src/runtime/runtime.js', 'src/runtime/app-events.js', 'src/runtime/speed.js', 'src/ui/progression.js']);
+for (const file of legacyLocations) {
+  assert.ok(expectedLegacyLocations.has(file), `Legacy speed id spread into unexpected source: ${file}`);
+}
 
 // 宣言一回・参照一回の関数は削除候補として報告するだけに留める。
 const candidates = [];
@@ -54,5 +70,6 @@ for (const [file, source] of sources) {
 }
 console.log(`Audited compatibility aliases (${legacyIds.join(', ')}) and ${sources.size} source files.`);
 console.log(`Storage boundary calls: localStorage=${localStorageCalls.length}, sessionStorage=${sessionStorageCalls.length}.`);
+console.log(`Legacy speed-id compatibility locations: ${legacyLocations.join(', ')}.`);
 console.log(`Potential unused function candidates (review only): ${candidates.length}.`);
 if (candidates.length) console.log(candidates.slice(0, 30).join(', '));
