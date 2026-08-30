@@ -41,66 +41,16 @@ const VIEW_TILTED_FLIP_VERTICAL=makeBoardPermutation(-120,true);
 const SPEED_BOARD_VIEW={permutation:VIEW_ROTATE_MINUS60,flip:false};
 
 /* ---- 全探索ソルバ（向き3値・7マス = 3進7桁） ---- */
-// ===== ソルバーコア =====
-const P3=[1,3,9,27,81,243,729], NS=2187;
-const enc=o=>{let n=0;for(let i=0;i<N;i++)n+=o[i]*P3[i];return n;};
-const dec=n=>{const a=new Uint8Array(N);for(let i=0;i<N;i++){a[i]=n%3;n=(n/3)|0;}return a;};
-function swipeOnce(o,ti,dir){
-  const t=Uint8Array.from(o), c=TRI[ti].cells;
-  for(let i=0;i<3;i++){
-    const f=dir>0?c[i]:c[(i+1)%3], to=dir>0?c[(i+1)%3]:c[i];
-    t[to]=o[f];
-  }
-  return t;
-}
-function clickOnce(o,ti,dir=1){
-  const t=Uint8Array.from(o);
-  for(const i of TRI[ti].cells) t[i]=(t[i]+dir+3)%3;
-  return t;
-}
-function rollOnce(o,ti,dir){
-  const t=Uint8Array.from(o), c=TRI[ti].cells;
-  for(let i=0;i<3;i++){
-    const f=dir>0?c[i]:c[(i+1)%3], to=dir>0?c[(i+1)%3]:c[i];
-    t[to]=(o[f]+(dir>0?1:2))%3;
-  }
-  return t;
-}
-function centerOnce(o,dir=1){
-  const t=Uint8Array.from(o); t[3]=(t[3]+dir+3)%3; return t;
-}
-function buildSolver(kind){
-  const dist=new Uint8Array(NS).fill(255), byDepth=[];
-  let fr=[0]; dist[0]=0; byDepth.push([0]);
-  let d=0;
-  while(fr.length){
-    const nx=[];
-    for(const s of fr){ const a=dec(s);
-      for(let ti=0;ti<TRI.length;ti++){
-        if(kind==='triple'){
-          const clicked=enc(clickOnce(a,ti,-1));
-          if(dist[clicked]===255){ dist[clicked]=d+1; nx.push(clicked); }
-        }else if(kind==='roll'){
-          for(const dir of [1,-1]){
-            const rolled=enc(rollOnce(a,ti,dir));
-            if(dist[rolled]===255){ dist[rolled]=d+1; nx.push(rolled); }
-          }
-        }
-        if(kind!=='roll') for(const dir of [1,-1]){
-          const n=enc(swipeOnce(a,ti,dir));
-          if(dist[n]===255){ dist[n]=d+1; nx.push(n); }
-        }
-      }
-      if(kind==='center'){
-        const clicked=enc(centerOnce(a,-1));
-        if(dist[clicked]===255){ dist[clicked]=d+1; nx.push(clicked); }
-      }
-    }
-    if(nx.length) byDepth.push(nx);
-    fr=nx; d++;
-  }
-  return {dist,byDepth};
-}
+// 盤面アルゴリズムはDOMから切り離したドメイン実装を利用し、既存名は互換ラッパーとして残す。
+const BOARD_DOMAIN=WakeSevenBoardDomain.create({cellCount:N,triangles:TRI});
+const P3=BOARD_DOMAIN.powers, NS=BOARD_DOMAIN.stateCount;
+const enc=o=>BOARD_DOMAIN.encode(o);
+const dec=n=>BOARD_DOMAIN.decode(n);
+const swipeOnce=(o,ti,dir)=>BOARD_DOMAIN.swipe(o,ti,dir);
+const clickOnce=(o,ti,dir=1)=>BOARD_DOMAIN.click(o,ti,dir);
+const rollOnce=(o,ti,dir)=>BOARD_DOMAIN.roll(o,ti,dir);
+const centerOnce=(o,dir=1)=>BOARD_DOMAIN.center(o,dir);
+const buildSolver=kind=>BOARD_DOMAIN.buildSolver(kind);
 const SOLVER=buildSolver('roll');
 const INTRO_STAGE_COUNT=3;
 const BASIC_STAGE_COUNT=9;

@@ -49,6 +49,7 @@ if (missingCompatSections.length) {
 }
 
 const moduleMarkers = [
+  '// ===== 盤面ドメイン =====',
   '// ===== クリア後メッセージデータ =====',
   '// ===== 基礎データ =====',
   '// ===== 悟り出題データ =====',
@@ -131,6 +132,7 @@ for (const name of [
 ]) countDefinitions(html, name);
 
 const sourceModules = [
+  ['src/domain-board.js', ['const WakeSevenBoardDomain=']],
   ['src/data-board-quiz.js', ['const BOARD_QUIZ_COPY=']],
   ['src/data-satori.js', ['const SATORI_STAGES=', "const SATORI_ORDER_VERSION='"]],
   ['src/data-assets.js', ['academyEnrollArtSvg']],
