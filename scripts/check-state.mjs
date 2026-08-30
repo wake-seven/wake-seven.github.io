@@ -23,6 +23,7 @@ const required = [
   'const GameBoard=',
   '// ===== クイズUI =====',
   '// ===== メッセージUI =====',
+  '// ===== 盤面クイズデータ =====',
   'function buildMessageReviewEntries()',
   'function boardQuizPatternState('
 ];
@@ -33,6 +34,7 @@ const moduleMarkers = [
   '// ===== クリア後メッセージデータ =====',
   '// ===== 基礎データ =====',
   '// ===== 多言語UIテキスト =====',
+  '// ===== 盤面クイズデータ =====',
   '// ===== 実行状態 =====',
   '// ===== スピードラン(速解き)ランタイム =====',
   '// ===== 盤面アニメーション補助 =====',
@@ -105,6 +107,7 @@ for (const name of [
 ]) countDefinitions(html, name);
 
 const sourceModules = [
+  ['src/data-board-quiz.js', ['const BOARD_QUIZ_COPY=']],
   ['src/quiz-ui.js', ['boardQuizPatternState', 'boardQuizPresentation', 'boardQuizMarkup', 'bindBoardQuizAnswerEvents']],
   ['src/clear-flow.js', ['stageClearTextAt', 'clearEntryForCurrent', 'stageClearArtAt']],
   ['src/message-ui.js', ['buildMessageReviewEntries', 'openMessageReview', 'moveMessageReview']],
@@ -114,7 +117,8 @@ const sourceModules = [
 for (const [moduleName, names] of sourceModules) {
   const moduleSource = await readFile(join(root, moduleName), 'utf8');
   for (const name of names) {
-    if (!moduleSource.includes(`function ${name}(`)) {
+    const token = name.startsWith('const ') ? name : `function ${name}(`;
+    if (!moduleSource.includes(token)) {
       throw new Error(`${moduleName} is missing ${name}().`);
     }
   }
