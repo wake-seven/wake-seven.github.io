@@ -80,8 +80,8 @@ let lastAnalyticsStageKey='';
 /* モードの実体は activeMode のみ。 */
 const ACTIVE_MODES=Object.freeze(['tutorial','stage','mastery','satori','speed','free','custom']);
 function setActiveMode(mode){
-  activeMode=ACTIVE_MODES.includes(mode)?mode:'stage';
-  WakeSevenState.updateNavigation(gameState,{mode:activeMode});
+  const navigation=WakeSevenState.updateNavigation(gameState,{mode:ACTIVE_MODES.includes(mode)?mode:'stage'});
+  activeMode=navigation.mode;
 }
 const isMode=mode=>activeMode===mode;
 function setUnlock(key,value){

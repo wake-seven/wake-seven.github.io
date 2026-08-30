@@ -151,6 +151,20 @@ if (directStorageUses.length !== 5) {
   throw new Error(`Expected only the five storage-boundary calls, found ${directStorageUses.length}.`);
 }
 
+// ナビゲーションの実行時ミラーは段階移行中の互換層として残している。
+// ただし、モード変更だけは必ずFacadeで正規化してからミラーへ反映する。
+// この検査で、将来の変更がFacadeを迂回する直接代入を増やさないようにする。
+const runtimeActiveModeAssignments = runtimeModule.match(/\bactiveMode\s*=(?!=)/g) || [];
+if (runtimeActiveModeAssignments.length !== 2
+  || !/function setActiveMode\(mode\)\{[\s\S]*?WakeSevenState\.updateNavigation\([\s\S]*?\)\;[\s\S]*?activeMode\s*=/.test(runtimeModule)) {
+  throw new Error('activeMode must be initialized once and updated through WakeSevenState.updateNavigation().');
+}
+for (const name of ['navigationView', 'updateNavigation', 'updateSettings', 'updateProgress']) {
+  if (!stateModule.includes(`function ${name}(`)) {
+    throw new Error(`WakeSevenState is missing the ${name} facade API.`);
+  }
+}
+
 const makeStorage = entries => {
   const data = new Map(Object.entries(entries));
   return {
