@@ -49,7 +49,8 @@ const moduleMarkers = [
   '// ===== 進行表示 =====',
   '// ===== 節目ダイアログ =====',
   '// ===== 進行UI =====',
-  '// ===== イベントと起動 ====='
+  '// ===== イベントと起動 =====',
+  '// ===== 公開API名前空間 ====='
 ];
 const markerPositions = moduleMarkers.map(marker => html.indexOf(marker));
 if (markerPositions.some(position => position < 0)
