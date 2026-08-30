@@ -1,10 +1,13 @@
 /** Small ESM store contract for development-side integrations. */
 export function createGameStore(initial = {}) {
-  let state = structuredClone(initial);
+  const clone = value => typeof structuredClone === 'function' ? structuredClone(value) : JSON.parse(JSON.stringify(value));
+  let state = clone(initial);
   const listeners = new Set();
   return Object.freeze({
     get state() { return state; },
-    update(patch = {}) { state = { ...state, ...structuredClone(patch) }; listeners.forEach(listener => listener(state)); return state; },
+    update(patch = {}) { state = { ...state, ...clone(patch) }; listeners.forEach(listener => listener(state, { type: 'update' })); return state; },
+    updateSection(section, patch = {}) { return this.update({ [section]: { ...(state[section] || {}), ...clone(patch) } }); },
+    replace(next = {}) { state = clone(next); listeners.forEach(listener => listener(state, { type: 'replace' })); return state; },
     subscribe(listener) { if (typeof listener !== 'function') return () => {}; listeners.add(listener); return () => listeners.delete(listener); }
   });
 }
