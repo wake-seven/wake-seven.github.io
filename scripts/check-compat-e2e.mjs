@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const srcRoot = join(root, 'src');
-const auditDoc = await readFile(join(srcRoot, 'compat-audit.md'), 'utf8');
+const auditDoc = await readFile(join(root, 'docs', 'compat-audit.md'), 'utf8');
 for (const heading of ['# 互換層・未使用候補監査', '## 互換ID', '## 互換キー']) {
   assert.match(auditDoc, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `Compatibility audit documentation is missing: ${heading}`);
 }

@@ -11,7 +11,7 @@ const boardDomainModule = await readFile(join(root, 'src', 'domain', 'board-doma
 const coreDataModule = await readFile(join(root, 'src', 'data', 'core-data.js'), 'utf8');
 const runtimeModule = await readFile(join(root, 'src', 'runtime', 'runtime.js'), 'utf8');
 const namespaceModule = await readFile(join(root, 'src', 'runtime', 'namespace.js'), 'utf8');
-const compatCleanupDoc = await readFile(join(root, 'src', 'compat-cleanup.md'), 'utf8');
+const compatCleanupDoc = await readFile(join(root, 'docs', 'compat-cleanup.md'), 'utf8');
 const satoriDataModule = await readFile(join(root, 'src', 'data', 'satori.js'), 'utf8');
 const boardQuizDataModule = await readFile(join(root, 'src', 'data', 'board-quiz.js'), 'utf8');
 // classic互換ソースをvmで単体検査する際は、公開module境界だけを除去する。
