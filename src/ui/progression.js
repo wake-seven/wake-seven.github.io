@@ -849,8 +849,8 @@ function renderClearTip(){
     document.querySelector('#clearDialog .clear-dialog-heading').after(illustration);
   }
 }
-// メッセージ見直しUIは src/message-ui.js に分離済み。
-// 盤面クイズの翻訳データは src/data-board-quiz.js に分離。
+// メッセージ見直しUIは src/ui/message.js に分離済み。
+// 盤面クイズの翻訳データは src/data/board-quiz.js に分離。
 function volumeLabel(n){
   const labels={
     ja:['序','破','急'],

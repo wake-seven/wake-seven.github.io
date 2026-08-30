@@ -4,9 +4,9 @@ import { dirname, join } from 'node:path';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const templatePath = join(root, 'src', 'index.template.html');
-const stateModulePath = join(root, 'src', 'game-state.js');
-const progressionModulePath = join(root, 'src', 'progression-policy.js');
-const appModuleFiles = ['domain-board.js', 'data-clear-content.js', 'core-data.js', 'data-satori.js', 'data-ui-text.js', 'data-board-quiz.js', 'data-assets.js', 'runtime-settings.js', 'runtime-audio.js', 'runtime-progression.js', 'runtime.js', 'speed-runtime.js', 'board-animation.js', 'board-ui.js', 'commands-board.js', 'commands-progression.js', 'quiz-ui.js', 'clear-flow.js', 'message-ui.js', 'progression-render.js', 'master-dialog.js', 'progression-ui.js', 'rank-ui.js', 'ui-render.js', 'app-events.js', 'namespace-api.js'];
+const stateModulePath = join(root, 'src', 'state', 'game-state.js');
+const progressionModulePath = join(root, 'src', 'state', 'progression-policy.js');
+const appModuleFiles = ['domain/board.js', 'data/clear-content.js', 'data/core-data.js', 'data/satori.js', 'data/ui-text.js', 'data/board-quiz.js', 'data/assets.js', 'runtime/settings.js', 'runtime/audio.js', 'runtime/progression.js', 'runtime/runtime.js', 'runtime/speed.js', 'ui/board-animation.js', 'ui/board.js', 'commands/board.js', 'commands/progression.js', 'ui/quiz.js', 'ui/clear-flow.js', 'ui/message.js', 'ui/progression-render.js', 'ui/master-dialog.js', 'ui/progression.js', 'ui/rank.js', 'ui/render.js', 'runtime/app-events.js', 'runtime/namespace.js'];
 const outputPath = join(root, 'index.html');
 const start = '<!-- WAKE7:STATE-MODULE:START -->';
 const end = '<!-- WAKE7:STATE-MODULE:END -->';

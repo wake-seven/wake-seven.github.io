@@ -388,5 +388,5 @@ const MASTER_FOUR_MOVE_STAGES=FOUR_MOVE_STAGES.filter(stage=>MASTER_FOUR_MOVE_ST
 EXTRA_STAGES.push(
   ...MASTER_FOUR_MOVE_STAGES.slice().reverse()
 );
-// 悟りへの道の出題データは src/data-satori.js で構築する。
+// 悟りへの道の出題データは src/data/satori.js で構築する。
 let currentLang='ja';

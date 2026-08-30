@@ -806,7 +806,7 @@ const isThirdVolume=()=>isMode('mastery')&&extraIndex>=30&&extraIndex<45;
 // 三巻構成では最後の「不立文字」に、従来の終盤ルールをまとめる。
 const isFourthVolume=()=>isThirdVolume();
 
-// 速解きランタイムは src/speed-runtime.js に分離しています。
+// 速解きランタイムは src/runtime/speed.js に分離しています。
 
 // ===== 残り手数チェック(第四巻) =====
 const FOURTH_CHECKS_STORAGE_KEY=STORAGE_KEYS.fourthChecks;
