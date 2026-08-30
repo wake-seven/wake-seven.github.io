@@ -1366,7 +1366,7 @@ function showMasterDialog(kind='primary'){
     volume(){
       const volume=Math.ceil((extraIndex+1)/MASTER_VOLUME_SIZE);
       const rank=rankForVolume(volume);
-      showRankSeal(rank,volume);
+      showRankSeal(rank,volume+1);
       const clearName=currentLang==='ja'?'名人への道・'+volumeLabel(volume)+'　'+masterSubtitle(volume):volumeLabel(volume)+'　'+masterSubtitle(volume);
       $('masterDialogTitle').textContent=needsIntermediateTrial?tr('intermediateTrialTitle'):tr('volumeClearTitle',{n:clearName});
       const nextRules={ja:['「破」からは、ヒントが使えなくなります。','「急」では途中から最短4手の問題です。\nスワイプ中は残り最短手数が「？」になります。','「極」では残り最短手数が表示されません。\nかわりに回数限定で「残り手数」のボタンが使えますが、これも途中から使用回数が減っていきます。'],en:['Hints are unavailable from Volume 2.','Volume 3 introduces four-move puzzles.\nMoves left are hidden while swiping.','Volume 4 hides moves left.\nThe Moves Left button has limited uses, with fewer available later.']}[currentLang]||[];
