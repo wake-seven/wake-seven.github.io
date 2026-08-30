@@ -339,8 +339,8 @@ function bindMessageReviewEvents(){
     $('messageDialog').hidden=true;
     focusReturnTarget(returnTarget);
   });
-  $('messagePrev').addEventListener('click',()=>{if(messageReviewIndex>0){messageReviewIndex--;renderMessageReview();}});
-  $('messageNext').addEventListener('click',()=>{if(messageReviewIndex<messageReviewEntries.length-1){messageReviewIndex++;renderMessageReview();}});
+  $('messagePrev').addEventListener('click',()=>moveMessageReview(-1));
+  $('messageNext').addEventListener('click',()=>moveMessageReview(1));
   document.addEventListener('keydown',event=>{
   const target=event.target;
   const typing=target instanceof HTMLElement&&target.matches('input, textarea, select, [contenteditable]');
@@ -365,8 +365,8 @@ function bindMessageReviewEvents(){
     }
   }
   if($('messageDialog').hidden)return;
-  if(event.key==='ArrowLeft'&&messageReviewIndex>0){event.preventDefault();messageReviewIndex--;renderMessageReview();}
-  if(event.key==='ArrowRight'&&messageReviewIndex<messageReviewEntries.length-1){event.preventDefault();messageReviewIndex++;renderMessageReview();}
+  if(event.key==='ArrowLeft'&&moveMessageReview(-1))event.preventDefault();
+  if(event.key==='ArrowRight'&&moveMessageReview(1))event.preventDefault();
   });
 }
 bindMenuEvents();
