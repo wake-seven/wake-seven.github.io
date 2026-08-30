@@ -814,6 +814,11 @@ function stageClearTextAt(mode,index){
   return entry.tip?resolveLocaleText(entry.tip):'';
 }
 function stageClearText(){return isMode('free')||isMode('custom')||isMode('satori')?'':stageClearTextAt(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);}
+function clearEntryForCurrent(){
+  if(isMode('mastery'))return clearContentAt(true,extraIndex);
+  if(isMode('free')||isMode('custom')||isMode('satori'))return undefined;
+  return clearContentAt(false,stageIndex);
+}
 function stageClearArtAt(mode,index){
   const entry=clearContentAt(mode,index);
   if(!entry)return '';
@@ -923,7 +928,7 @@ function renderClearTip(){
   const twoMoveLesson=lessonVariantFromArt(art);
   const lessonCopy=$('clearTwoMoveLessonCopy');
   const lessonRule=$('clearTwoMoveLessonRule');
-  const clearEntry=isMode('mastery')?clearContentAt(true,extraIndex):null;
+  const clearEntry=isMode('mastery')?clearEntryForCurrent():null;
   const twoMoveCard=clearEntry?clearEntry.twoMoveCard:undefined;
   const guideCard=clearEntry?clearEntry.guideCard:null;
   const rankLink=!!clearEntry&&clearEntry.link==='rank';
@@ -1035,7 +1040,7 @@ function hideGameDialogs(){
   $('clearNext').hidden=true;
 }
 function renderClearQuiz(){
-  const clearEntry=isMode('mastery')?clearContentAt(true,extraIndex):(!isMode('free')&&!isMode('custom')&&!isMode('satori')?clearContentAt(false,stageIndex):undefined);
+  const clearEntry=clearEntryForCurrent();
   const quiz=clearEntry&&clearEntry.quiz?resolveLocaleText(clearEntry.quiz):undefined;
   const root=$('clearQuiz');
   root.classList.remove('quiz-success');
