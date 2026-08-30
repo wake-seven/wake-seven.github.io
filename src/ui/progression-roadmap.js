@@ -20,13 +20,21 @@ function masterRoadmapMarkup(current){
     const detail=i===0?tr('roadmapCount',{n:ACADEMY_STAGE_COUNT}):i===1?tr('roadmapCount',{n:TRAINING_STAGE_COUNT}):masterSubtitle(volume)+'　'+tr('roadmapCount',{n:MASTER_VOLUME_SIZE});
     const earned=i<current-1;
     const rank=earned?masterPath().ranks[i]:'？';
-    const examBadge=earned&&speedExamClearedForRank(i)?'<button type="button" class="speed-exam-badge" data-exam-index="'+i+'">'+speedExamBadgeSvg()+'</button>':'';
+    const examBadge=earned&&speedExamClearedForRank(i);
     if(!template)return '';
     const step=template.content.cloneNode(true).firstElementChild;
     step.classList.add(i+1<current?'done':i+1===current?'current':'');
     step.querySelector('[data-road-name]').textContent=label;
     step.querySelector('[data-road-detail]').textContent=detail;
-    step.querySelector('[data-road-rank]').innerHTML=rankFrameSvg(rank,!earned,i,secondLapActive,secondLapActive)+examBadge;
+    const rankElement=step.querySelector('[data-road-rank]');
+    rankElement.innerHTML=rankFrameSvg(rank,!earned,i,secondLapActive,secondLapActive);
+    if(examBadge){
+      const badgeTemplate=document.getElementById('speed-exam-badge-template');
+      const badge=badgeTemplate?.content?.firstElementChild?.cloneNode(true)||document.createElement('button');
+      badge.dataset.examIndex=String(i);
+      badge.querySelector('[data-exam-badge-art]')?.insertAdjacentHTML('afterbegin',speedExamBadgeSvg());
+      rankElement.append(badge);
+    }
     return step.outerHTML;
   }).join('');
 }

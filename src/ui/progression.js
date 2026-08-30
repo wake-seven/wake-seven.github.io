@@ -190,11 +190,12 @@ function renderStagePicker(){
   grid.innerHTML='';
   const primaryStart=isPrimary?section.start:0;
   const pageSize=isPrimary?section.total:MASTER_VOLUME_SIZE;
+  const rowTemplate=document.getElementById('stage-picker-row-template');
   for(let i=0;i<pageSize;i++){
     const index=isPrimary?primaryStart+i:pickerRound*MASTER_VOLUME_SIZE+i;
     const stage=isPrimary?STAGES[index]:EXTRA_STAGES[index];
     if(!stage)continue;
-    const b=document.createElement('button');
+    const b=rowTemplate?.content.cloneNode(true).firstElementChild||document.createElement('button');
     const cleared=isPrimary?pickerPrimary.has(index):pickerExtra.has(index);
     b.disabled=(isPrimary
       ?!(index===0||pickerPrimary.has(index)||pickerPrimary.has(index-1))
@@ -203,7 +204,9 @@ function renderStagePicker(){
     if(!isPrimary)b.classList.add('extra-lap-'+pickerRound);
     b.classList.toggle('current',pickerLap===activeLap&&!isMode('speed')&&(isPrimary?!isMode('mastery')&&!isMode('satori')&&stageIndex===index:isMode('mastery')&&extraIndex===index));
     const displayNumber=isPrimary?primarySectionPosition(index).position:i+1;
-    b.innerHTML=displayNumber+'<span>'+tr('shortest')+' '+stage.par+' '+tr('moveUnit')+'</span>';
+    const number=b.querySelector('[data-picker-number]'),detail=b.querySelector('[data-picker-detail]');
+    if(number){number.textContent=String(displayNumber);detail.textContent=tr('shortest')+' '+stage.par+' '+tr('moveUnit');}
+    else b.innerHTML=displayNumber+'<span>'+tr('shortest')+' '+stage.par+' '+tr('moveUnit')+'</span>';
     b.addEventListener('click',()=>{
       closeStagePicker();
       activateCampaignLap(pickerLap);
@@ -477,8 +480,9 @@ function playWakeCelebrationEffect(targetSvg,tilesArr){
   const burst=document.createElementNS(NS_,'g');
   burst.setAttribute('class','clear-burst');
   burst.setAttribute('pointer-events','none');
-  burst.innerHTML='<circle cx="'+CELL[3].x+'" cy="'+CELL[3].y+'" r="47" fill="none" stroke="#C9A54E" stroke-width="4"/>'
-    +'<circle cx="'+CELL[3].x+'" cy="'+CELL[3].y+'" r="58" fill="none" stroke="#F3E8D5" stroke-width="1.5" opacity=".7"/>';
+  const addBurstRing=(radius,stroke,width,opacity)=>{const ring=document.createElementNS(NS_,'circle');ring.setAttribute('cx',CELL[3].x);ring.setAttribute('cy',CELL[3].y);ring.setAttribute('r',radius);ring.setAttribute('fill','none');ring.setAttribute('stroke',stroke);ring.setAttribute('stroke-width',width);if(opacity)ring.setAttribute('opacity',opacity);burst.appendChild(ring);};
+  addBurstRing(47,'#C9A54E',4);
+  addBurstRing(58,'#F3E8D5',1.5,'.7');
   burst.style.transformOrigin=CELL[3].x+'px '+CELL[3].y+'px';
   burst.style.transformBox='view-box';
   targetSvg.appendChild(burst);
@@ -1038,9 +1042,15 @@ function renderMasteryBoard(id,show,theme='gold',animate=true){
 }
 function renderTwoMovePatterns(){
   const controls=[['rotateBack','rotateCcw'],['rotate','rotateCw'],['mirror','mirror'],['vertical','flipVertical']];
+  const cardTemplate=document.getElementById('two-move-card-template');
   $('twoMoveGrid').innerHTML=twoMoveDisplayStates.map((state,index)=>{
     const buttons=controls.map(([transform,label])=>'<button class="chip" type="button" data-two-move-transform="'+transform+'" aria-label="'+tr(label)+'">'+transformIcon(transform)+'</button>').join('');
-    return '<article class="two-move-card" data-state="'+state+'" data-pattern="'+twoMoveDisplayPatterns[index]+'" data-board-index="'+index+'"><div class="two-move-card-tools">'+buttons+'</div><button class="two-move-card-open" type="button">'+miniBoardSvg(state)+'</button></article>';
+    if(!cardTemplate)return '<article class="two-move-card" data-state="'+state+'" data-pattern="'+twoMoveDisplayPatterns[index]+'" data-board-index="'+index+'"><div class="two-move-card-tools">'+buttons+'</div><button class="two-move-card-open" type="button">'+miniBoardSvg(state)+'</button></article>';
+    const card=cardTemplate.content.cloneNode(true).firstElementChild;
+    card.dataset.state=String(state);card.dataset.pattern=String(twoMoveDisplayPatterns[index]);card.dataset.boardIndex=String(index);
+    card.querySelector('[data-two-move-tools]').innerHTML=buttons;
+    card.querySelector('[data-two-move-open]').innerHTML=miniBoardSvg(state);
+    return card.outerHTML;
   }).join('');
 }
 function openTwoMovePatterns({returnToClear=false}={}){
