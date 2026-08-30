@@ -12,14 +12,6 @@
 | `src/state/progression-policy.js:attachWakeSevenProgression` | 保持 | 公開版の進行ポリシーAPIを初期化する。 |
 | `src/ui/board-ui.js:academyEnrollArtSvgLegacy` | 保留 | 現在の静的参照は宣言のみ。旧演出の保管用コードで、表示経路を確認してから削除する。 |
 
-## 速解きID
-
-速解きのIDは `training9`、`training18`、`mastery27`、`satori73` に統一する。過去IDの保存データ互換は行わず、未知のIDは初期値 `training9` として扱う。
-
-## 互換キー
-
-保存と復元は `wake7-state-vnext` のバージョン付き状態ストアを使用する。旧保存形式からの移行は行わない。
-
 ## 導線監査
 
 `npm run check:compat-e2e` は次の実プレイ相当の契約を検査する。
