@@ -1121,27 +1121,6 @@ function configureMessageReviewLinks(entry,messageClearEntry){
 }
 function isMilestoneMessage(entry){return !!entry?.master;}
 function milestoneVolume(entry){return entry?.master==='primary'?0:Math.ceil((entry.index+1)/MASTER_VOLUME_SIZE);}
-function resetMessageReviewView(entry,view){
-  const {roadmap,roadmapNote}=view;
-  $('messagePrev').textContent='← '+tr('prev');
-  $('messageNext').textContent=tr('next')+' →';
-  $('closeMessages').textContent=tr('close');
-  $('messageStageContext').textContent=messageReviewStageContext(entry);
-  $('messageDialogPlace').hidden=true;
-  renderMasteryBoard('messageMasteryBoard',MESSAGE_MASTERY_BOARD_MASTERS.includes(entry.master),MESSAGE_TILTED_BOARD_MASTERS.includes(entry.master)?'satori-tilted':'gold');
-  roadmap.hidden=!entry.master||!MESSAGE_ROADMAP_MASTERS.includes(entry.master);
-  roadmapNote.hidden=true;view.boardNote.hidden=true;view.rules.hidden=true;
-  view.seal.hidden=!entry.master;
-  view.seal.classList.add('rank-seal');
-  view.seal.classList.remove('rank-frame-seal','second-lap-mark');
-  view.seal.tabIndex=0;
-  view.rankText.hidden=true;view.masterText.hidden=true;
-}
-function updateMessageReviewNavigation(entry){
-  $('messagePrev').disabled=messageReviewIndex===0;
-  $('messageNext').disabled=messageReviewIndex===messageReviewEntries.length-1;
-  try{storage.set(MESSAGE_REVIEW_STORAGE_KEY,messageReviewEntryKey(entry));}catch(_){}
-}
 function renderPrimaryMilestone(entry,{seal,rankText,masterText,rules}){
   $('messageMasterSealLabel').textContent=masterPath().ranks[0];setSealColor(seal,0);configureMilestoneHeader(entry,tr('masterTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[0]);masterText.hidden=false;masterText.textContent=tr('masterText');rules.hidden=false;rules.textContent=masterCommonRules();
 }
