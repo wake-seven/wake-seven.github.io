@@ -327,6 +327,12 @@ function academyEnrollArtSvgLegacy(){
 // 1つの共有ダイアログ枠(#chainDialog)を、CHAIN_STEPSに登録した「ステップ」で使い回す。
 // 新しい案内ダイアログを増やすときは、ここにエントリを1つ足すだけでよい
 // (HTML・hideGameDialogs()・ボタンハンドラは一切さわらない)。
+function cloneDialogTemplate(body,id,fallback=''){
+  const template=document.getElementById(id);
+  if(template){body.append(template.content.cloneNode(true));return true;}
+  body.innerHTML=fallback;
+  return false;
+}
 function shapeGridRenderer(states,shapeNames,nameKey,labelKey){
   return body=>{
     body.innerHTML='<div class="training-departure-goal-frame">'
@@ -340,9 +346,7 @@ function academyBoardStep(variant,titleKey,textKey,actionKey,onAction){
   return {
     titleKey,actionKey,
     render(body){
-      const template=document.getElementById('chain-template-academy-board');
-      if(template)body.append(template.content.cloneNode(true));
-      else body.innerHTML='<p class="chain-text-highlight" id="chainDialogText"></p><div class="academy-welcome-board-wrap"><svg id="academyWelcomeBoard" viewBox="0 -60 320 370" aria-hidden="true"></svg></div>';
+      cloneDialogTemplate(body,'chain-template-academy-board','<p class="chain-text-highlight" id="chainDialogText"></p><div class="academy-welcome-board-wrap"><svg id="academyWelcomeBoard" viewBox="0 -60 320 370" aria-hidden="true"></svg></div>');
       body.querySelector('[data-chain-dialog-text]')?.setAttribute('id','chainDialogText');
       $('chainDialogText').textContent=tr(textKey);
       buildAcademyWelcomeBoard(variant);
@@ -394,9 +398,7 @@ const CHAIN_STEPS={
   developmentFourStart:{
     titleKey:'developmentFourStartTitle', actionKey:'developmentFourStartStart',
     render(body){
-      const template=document.getElementById('chain-template-development-four-start');
-      if(template)body.append(template.content.cloneNode(true));
-      else body.innerHTML='<p class="chain-text-left" id="chainDialogText"></p>';
+      cloneDialogTemplate(body,'chain-template-development-four-start','<p class="chain-text-left" id="chainDialogText"></p>');
       body.querySelector('[data-chain-dialog-text]')?.setAttribute('id','chainDialogText');
       $('chainDialogText').textContent=tr('developmentFourStartText');
     },
@@ -405,9 +407,7 @@ const CHAIN_STEPS={
   trainingWelcome:{
     wide:true, titleKey:'trainingWelcomeTitle', actionKey:'trainingWelcomeStart',
     render(body){
-      const template=document.getElementById('chain-template-training-welcome');
-      if(template)body.append(template.content.cloneNode(true));
-      else body.innerHTML='<div class="training-welcome-art-wrap"></div><p class="chain-text-left" id="chainDialogText"></p>';
+      cloneDialogTemplate(body,'chain-template-training-welcome','<div class="training-welcome-art-wrap"></div><p class="chain-text-left" id="chainDialogText"></p>');
       body.querySelector('[data-chain-dialog-text]')?.setAttribute('id','chainDialogText');
       const art=body.querySelector('[data-training-welcome-art]');
       if(art)art.innerHTML=TRAINING_WELCOME_ART_SVG;

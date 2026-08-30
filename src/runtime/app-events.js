@@ -638,7 +638,14 @@ function renderTipGuide(){
   caption.hidden=!compact;
   if(compact){
     const best=[3,3,4][tipGuideIndex];
-    caption.innerHTML=captions[tipGuideIndex]+'<strong>'+tipGuideBestLabel(best)+'</strong>';
+    caption.replaceChildren();
+    const template=$('tipGuideCaptionTemplate');
+    const fragment=template?.content?.cloneNode(true);
+    if(fragment){
+      fragment.querySelector('[data-caption-text]').textContent=captions[tipGuideIndex];
+      fragment.querySelector('[data-caption-best]').textContent=tipGuideBestLabel(best);
+      caption.append(fragment);
+    }else caption.textContent=captions[tipGuideIndex]+' '+tipGuideBestLabel(best);
   }
   $('tipGuideArt').innerHTML=compact
     ?'<div class="tip-guide-single-visual">'+tipGuideSvg(tipGuideIndex,currentBoards)+'</div>'+tipGuideControls(0,1)
