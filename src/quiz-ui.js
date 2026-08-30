@@ -42,3 +42,12 @@ function boardQuizPresentation(config,state,copy){
   }
   return {states,correct,question,moveChoiceOrder};
 }
+function boardQuizMarkup(config,states,moveChoiceOrder,copy,rootId,detailPatterns){
+  const controls=index=>'<div class="board-quiz-tools"><button type="button" data-board-transform="rotateBack" data-board-index="'+index+'" aria-label="60°逆回転">'+transformIcon('rotateBack')+'</button><button type="button" data-board-transform="rotate" data-board-index="'+index+'" aria-label="60°回転">'+transformIcon('rotate')+'</button><button type="button" data-board-transform="mirror" data-board-index="'+index+'" aria-label="左右反転">'+transformIcon('mirror')+'</button><button type="button" data-board-transform="vertical" data-board-index="'+index+'" aria-label="上下反転">'+transformIcon('vertical')+'</button></div>';
+  const card=(board,index)=>'<div class="board-quiz-card"><button class="board-quiz-option" type="button" data-board-answer="'+index+'"><span class="board-quiz-board">'+miniBoardSvg(board)+'</span></button>'+controls(index)+'</div>';
+  const boardMarkup=config.kind==='moves'
+    ?'<div class="board-quiz-single"><span class="board-quiz-board">'+miniBoardSvg(states[0])+'</span>'+controls(0)+'</div><div class="board-quiz-moves">'+moveChoiceOrder.map((choice,index)=>'<button class="board-quiz-option" type="button" data-board-answer="'+index+'">'+copy.moveChoices[choice]+'</button>').join('')+'</div>'
+    :'<div class="board-quiz-options '+(states.length===3?'three':'')+'">'+states.map(card).join('')+'</div>';
+  const detailLinks=detailPatterns.map(pattern=>'<button class="clear-tip-link" id="'+rootId+'Patterns'+pattern+'" type="button" data-board-patterns data-board-pattern="'+pattern+'" hidden>'+(detailPatterns.length>1?'最短2手の9パターン　'+pattern+' / 9 →':tr('detailsLink'))+'</button>').join('');
+  return {boardMarkup,detailLinks};
+}
