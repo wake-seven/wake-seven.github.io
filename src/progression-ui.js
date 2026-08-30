@@ -1190,7 +1190,19 @@ const MESSAGE_RENDERERS=Object.freeze({
   text:entry=>{ $('messageDialogText').hidden=false; configureMessageReviewHeader(entry); $('messageDialogTextBody').textContent=entry.text; }
 });
 function renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule){
-  illustration.classList.toggle('move-graph',art==='moveGraph'); illustration.classList.toggle('board-card',art.startsWith('twoMoveCard:')||art.startsWith('guideCard:')); illustration.classList.toggle('controls-art',art==='controls'); illustration.classList.toggle('navigation-art',art==='navigation'); illustration.classList.toggle('menu-art',art==='menuButtons'); illustration.classList.toggle('rank-badge-art',art==='rankBadgeArt'); illustration.classList.toggle('unwritten-art',art==='unwritten'); illustration.classList.toggle('cheer-art',art==='cheer'); illustration.classList.toggle('intro-guide-art',art==='introGuide'); illustration.classList.toggle('two-move-lesson-art',!!twoMoveLesson);
+  const classByArt={
+    'move-graph':art==='moveGraph',
+    'board-card':art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'),
+    'controls-art':art==='controls',
+    'navigation-art':art==='navigation',
+    'menu-art':art==='menuButtons',
+    'rank-badge-art':art==='rankBadgeArt',
+    'unwritten-art':art==='unwritten',
+    'cheer-art':art==='cheer',
+    'intro-guide-art':art==='introGuide',
+    'two-move-lesson-art':!!twoMoveLesson
+  };
+  Object.entries(classByArt).forEach(([className,enabled])=>illustration.classList.toggle(className,enabled));
   stopClearGuideBoard('messageClearGuideBoard');stopClearGuideBoard('messageTwoMoveLessonBoard'); illustration.innerHTML=art==='introGuide'?'<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':twoMoveLesson?'<svg id="messageTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):''; if(art==='introGuide')buildClearGuideBoard('messageClearGuideBoard');if(twoMoveLesson)buildTwoMoveLessonBoard('messageTwoMoveLessonBoard',twoMoveLesson);illustration.hidden=!art;lessonCopy.hidden=!twoMoveLesson;lessonRule.hidden=!twoMoveLesson;
 }
 function renderMessageReview(){
