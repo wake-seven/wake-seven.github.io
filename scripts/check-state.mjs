@@ -33,6 +33,7 @@ if (missing.length) throw new Error(`index.html is missing: ${missing.join(', ')
 const moduleMarkers = [
   '// ===== クリア後メッセージデータ =====',
   '// ===== 基礎データ =====',
+  '// ===== 悟り出題データ =====',
   '// ===== 多言語UIテキスト =====',
   '// ===== 盤面クイズデータ =====',
   '// ===== 固定挿絵・SVGデータ =====',
@@ -109,6 +110,7 @@ for (const name of [
 
 const sourceModules = [
   ['src/data-board-quiz.js', ['const BOARD_QUIZ_COPY=']],
+  ['src/data-satori.js', ['const SATORI_STAGES=', "const SATORI_ORDER_VERSION='"]],
   ['src/data-assets.js', ['academyEnrollArtSvg']],
   ['src/quiz-ui.js', ['boardQuizPatternState', 'boardQuizPresentation', 'boardQuizMarkup', 'bindBoardQuizAnswerEvents']],
   ['src/clear-flow.js', ['stageClearTextAt', 'clearEntryForCurrent', 'stageClearArtAt']],
