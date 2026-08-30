@@ -1476,9 +1476,9 @@ function showMasterDialog(kind='primary'){
     },
     mastery(){
       if(needsMasteryTrial){
-        showRankSeal(masterPath().ranks[3],3);
+        showRankSeal(masterPath().ranks[4],4);
         rankText.hidden=false;
-        rankText.textContent=rankEarnedText(masterPath().ranks[3]);
+        rankText.textContent=rankEarnedText(masterPath().ranks[4]);
         speedIntroArt.hidden=false;
         $('masterDialogTitle').textContent=tr('masteryTrialTitle');
         $('masterDialogText').textContent=tr('masteryTrialText');
@@ -1487,9 +1487,9 @@ function showMasterDialog(kind='primary'){
         $('masterStart').dataset.speedVariant='mastery27';
         $('masterStart').textContent=tr('masteryTrialStart');
       }else{
-        showRankSeal(masterPath().ranks[3],3);
+        showRankSeal(masterPath().ranks[4],4);
         $('masterDialogTitle').textContent=secondLapActive?tr('secondMasteryTitle'):tr('masteryTitle');
-        rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[3]);
+        rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[4]);
         $('masterDialogText').textContent=secondLapActive?tr('secondMasteryReward'):tr('masteryText');
         boardNote.hidden=secondLapActive;
         if(!secondLapActive)boardNote.textContent=tr('masteryBoardNote');
