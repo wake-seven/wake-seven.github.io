@@ -2192,3 +2192,8 @@ const GameNavigation=Object.freeze({
   stageMenu:()=>returnToStageMode(),
   speedPicker:()=>openSpeedPicker()
 });
+const GameDialogs=Object.freeze({
+  messages:options=>openMessageReview(options),
+  ranks:options=>openRankDialog(options),
+  mastery:kind=>showMasterDialog(kind)
+});

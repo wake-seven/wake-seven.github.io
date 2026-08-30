@@ -228,9 +228,9 @@ $('optimalRetry').addEventListener('click',()=>{
   setPosition(currentInitialState,currentInitialPar);
   renderStageNav();
 });
-$('clearMessages').addEventListener('click',()=>openMessageReview({resume:true}));
+$('clearMessages').addEventListener('click',()=>GameDialogs.messages({resume:true}));
 $('menuStagePicker').addEventListener('click',()=>{closeAppMenu();openStagePicker();});
-$('menuRankList').addEventListener('click',()=>{closeAppMenu();openRankDialog();});
+$('menuRankList').addEventListener('click',()=>{closeAppMenu();GameDialogs.ranks();});
 $('menuAbout').addEventListener('click',()=>{
   closeAppMenu();
   $('aboutDialog').hidden=false;
@@ -312,7 +312,7 @@ document.addEventListener('keydown',event=>{
     if(!dialogOpen&&buildMessageReviewEntries().length){
       event.preventDefault();
       closeAppMenu();
-      openMessageReview({resume:true});
+      GameDialogs.messages({resume:true});
       return;
     }
   }
@@ -323,12 +323,12 @@ document.addEventListener('keydown',event=>{
 $('clearTipLink').addEventListener('click',()=>{
   if($('clearTipLink').dataset.target==='rank'){
     $('clearDialog').hidden=true;
-    openRankDialog({dialogId:'clearDialog',focusId:'clearTipLink'});
+    GameDialogs.ranks({dialogId:'clearDialog',focusId:'clearTipLink'});
     return;
   }
   if($('clearTipLink').dataset.target==='messages'){
     $('clearDialog').hidden=true;
-    openMessageReview({resume:true,returnTarget:{dialogId:'clearDialog',focusId:'clearTipLink'}});
+    GameDialogs.messages({resume:true,returnTarget:{dialogId:'clearDialog',focusId:'clearTipLink'}});
     return;
   }
   if($('clearTipLink').dataset.target==='tips'){
@@ -422,7 +422,7 @@ $('messageRankLink').addEventListener('click',()=>{
     return;
   }
   $('messageDialog').hidden=true;
-  openRankDialog({dialogId:'messageDialog',focusId:'messageRankLink'});
+  GameDialogs.ranks({dialogId:'messageDialog',focusId:'messageRankLink'});
 });
 $('rankBadge').addEventListener('click',openRankDialog);
 $('masterSeal').addEventListener('click',()=>openRankDialogFrom('masterDialog','masterSeal'));
@@ -814,7 +814,7 @@ function applyLanguage(lang){
   $('tutorialReset').textContent='↻ '+tr('tutorialReset');
   $('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');
   if(!$('rankDialog').hidden)renderRankList();
-  if(!$('masterDialog').hidden)showMasterDialog(masterDialogKind);
+  if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);
   renderStageNav();
   if(!$('stagePicker').hidden)renderStagePicker();
   if(!$('twoMoveDialog').hidden)renderTwoMovePatterns();
