@@ -624,36 +624,39 @@ function tipGuideDoubleMarkup(states){
   const best=[1,4];
   return states.map((state,index)=>'<div class="tip-guide-double-board"><div class="tip-guide-double-visual">'+tipGuideDoubleVisualMarkup(state)+'</div><div class="tip-guide-double-caption">'+names[index]+'<strong>'+tipGuideBestLabel(best[index])+'</strong></div>'+tipGuideControls(index,1)+'</div>').join('');
 }
-function renderTipGuide(){
-  const tips=PLAY_TIPS[currentLang]||PLAY_TIPS.ja;
+function renderTipGuide(model={}){
+  const guideIndex=Number.isInteger(model.index)?model.index:tipGuideIndex;
+  const guideStates=model.states||tipGuideStates;
+  const guideLang=model.lang||currentLang;
+  const tips=PLAY_TIPS[guideLang]||PLAY_TIPS.ja;
   $('tipGuideTitle').textContent=tr('tipGuideTitle');
-  $('tipGuidePage').textContent=(tipGuideIndex+1)+' / '+GUIDE_TIP_INDEX.length;
+  $('tipGuidePage').textContent=(guideIndex+1)+' / '+GUIDE_TIP_INDEX.length;
   $('tipGuideCompareHint').textContent=tr('compareBoard');
-  const currentBoards=tipGuideStates[tipGuideIndex];
+  const currentBoards=guideStates[guideIndex];
   const captions=['寝た2体が外周で離れている','外周に1つおきに3体立っている','6体寝て、中央だけ立っている'];
   const caption=$('tipGuideBoardCaption');
-  const compact=tipGuideIndex!==GUIDE_DOUBLE_INDEX;
+  const compact=guideIndex!==GUIDE_DOUBLE_INDEX;
   $('tipGuideArt').classList.toggle('compact',compact);
   $('tipGuideArt').classList.toggle('double',!compact);
   caption.hidden=!compact;
   if(compact){
-    const best=[3,3,4][tipGuideIndex];
+    const best=[3,3,4][guideIndex];
     caption.replaceChildren();
     const template=$('tipGuideCaptionTemplate');
     const fragment=template?.content?.cloneNode(true);
     if(fragment){
-      fragment.querySelector('[data-caption-text]').textContent=captions[tipGuideIndex];
+      fragment.querySelector('[data-caption-text]').textContent=captions[guideIndex];
       fragment.querySelector('[data-caption-best]').textContent=tipGuideBestLabel(best);
       caption.append(fragment);
-    }else caption.textContent=captions[tipGuideIndex]+' '+tipGuideBestLabel(best);
+    }else caption.textContent=captions[guideIndex]+' '+tipGuideBestLabel(best);
   }
   replaceRenderedContent($('tipGuideArt'),compact
-    ?'<div class="tip-guide-single-visual">'+tipGuideSvg(tipGuideIndex,currentBoards)+'</div>'+tipGuideControls(0,1)
+    ?'<div class="tip-guide-single-visual">'+tipGuideSvg(guideIndex,currentBoards)+'</div>'+tipGuideControls(0,1)
     :tipGuideDoubleMarkup(currentBoards));
-  const tipText=tips[GUIDE_TIP_INDEX[tipGuideIndex]];
+  const tipText=tips[GUIDE_TIP_INDEX[guideIndex]];
   const tipTextRoot=$('tipGuideText');
   tipTextRoot.replaceChildren();
-  const emphasized=currentLang==='ja'&&tipGuideIndex===GUIDE_DOUBLE_INDEX;
+  const emphasized=guideLang==='ja'&&guideIndex===GUIDE_DOUBLE_INDEX;
   if(emphasized){
     const phrase='ほかは最短3手',at=tipText.indexOf(phrase);
     const template=$('tipGuideTextEmphasisTemplate'),fragment=template?.content?.cloneNode(true);
@@ -664,12 +667,12 @@ function renderTipGuide(){
       tipTextRoot.append(fragment);
     }else tipTextRoot.textContent=tipText;
   }else tipTextRoot.textContent=tipText;
-  const names={ja:['小三角','大三角'],en:['Small triangle','Large triangle'],zh:['小三角','大三角'],ko:['작은 삼각형','큰 삼각형']}[currentLang]||['小三角','大三角'];
+  const names={ja:['小三角','大三角'],en:['Small triangle','Large triangle'],zh:['小三角','大三角'],ko:['작은 삼각형','큰 삼각형']}[guideLang]||['小三角','大三角'];
   const playRoot=$('tipGuidePlay');
   playRoot.replaceChildren();
   const playTemplate=$('tipGuidePlayItemTemplate');
-  tipGuideStates[tipGuideIndex].forEach((state,index)=>{
-    const label=tipGuideIndex===GUIDE_DOUBLE_INDEX?names[index]+'　'+tr('playThisBoard'):tr('playThisBoard');
+  guideStates[guideIndex].forEach((state,index)=>{
+    const label=guideIndex===GUIDE_DOUBLE_INDEX?names[index]+'　'+tr('playThisBoard'):tr('playThisBoard');
     const button=playTemplate?.content?.firstElementChild?.cloneNode(true)||document.createElement('button');
     button.className='chip on';
     button.type='button';
