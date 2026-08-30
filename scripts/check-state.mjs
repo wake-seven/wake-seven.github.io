@@ -7,6 +7,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const html = await readFile(join(root, 'index.html'), 'utf8');
 const stateModule = await readFile(join(root, 'src', 'game-state.js'), 'utf8');
 const progressionModule = await readFile(join(root, 'src', 'progression-policy.js'), 'utf8');
+const boardDomainModule = await readFile(join(root, 'src', 'domain-board.js'), 'utf8');
 const coreDataModule = await readFile(join(root, 'src', 'core-data.js'), 'utf8');
 const runtimeModule = await readFile(join(root, 'src', 'runtime.js'), 'utf8');
 const compatCleanupDoc = await readFile(join(root, 'src', 'compat-cleanup.md'), 'utf8');
@@ -226,6 +227,7 @@ const context = {window:{localStorage}, JSON};
 context.window.window = context.window;
 vm.runInNewContext(stateModule, context, {filename:'src/game-state.js'});
 vm.runInNewContext(progressionModule, context, {filename:'src/progression-policy.js'});
+vm.runInNewContext(`${boardDomainModule}\nwindow.WakeSevenBoardDomain=WakeSevenBoardDomain;`, context, {filename:'src/domain-board.js'});
 const migrated = context.window.WakeSevenState.migrateLegacy(localStorage);
 if (migrated.navigation.mode !== 'mastery' || migrated.navigation.masteryIndex !== 3 || migrated.navigation.lap !== 2) {
   throw new Error('Legacy navigation migration failed.');
@@ -237,6 +239,48 @@ if (!migrated.unlocks.masterGoldGranted || !migrated.unlocks.speedIntermediateTr
   throw new Error('Legacy unlock migration failed.');
 }
 if (!localStorage.has('wake7-state-vnext')) throw new Error('Migration did not write wake7-state-vnext.');
+
+const boardDomain = context.window.WakeSevenBoardDomain;
+if (!boardDomain || typeof boardDomain.create !== 'function') throw new Error('Board domain API is unavailable.');
+const domain = boardDomain.create({cellCount: 7, triangles: [{cells: [0, 1, 2]}]});
+const sampleBoard = Uint8Array.from([0, 1, 2, 0, 1, 2, 1]);
+const encoded = domain.encode(sampleBoard);
+if (domain.stateCount !== 2187 || Array.from(domain.decode(encoded)).join(',') !== Array.from(sampleBoard).join(',')) {
+  throw new Error('Board encode/decode round trip failed.');
+}
+const rolled = domain.roll(sampleBoard, 0, 1);
+if (Array.from(domain.roll(rolled, 0, -1)).join(',') !== Array.from(sampleBoard).join(',')) {
+  throw new Error('Board roll inverse failed.');
+}
+const clicked = domain.click(sampleBoard, 0, 1);
+if (Array.from(domain.click(clicked, 0, -1)).join(',') !== Array.from(sampleBoard).join(',')) {
+  throw new Error('Board click inverse failed.');
+}
+const swiped = domain.swipe(sampleBoard, 0, 1);
+if (Array.from(domain.swipe(swiped, 0, -1)).join(',') !== Array.from(sampleBoard).join(',')) {
+  throw new Error('Board swipe inverse failed.');
+}
+const solved = domain.buildSolver('roll');
+if (solved.dist.length !== domain.stateCount || solved.dist[0] !== 0
+  || solved.dist[domain.encode(Uint8Array.from([1, 1, 1, 0, 0, 0, 0]))] === 255) {
+  throw new Error('Board roll solver validation failed.');
+}
+
+const stateApi = context.window.WakeSevenState;
+const state = stateApi.create({navigation: {mode: 'stage', lap: 1}});
+let stateChange = null;
+const unsubscribe = stateApi.subscribe(state, (_, change) => { stateChange = change; });
+stateApi.updateNavigation(state, {mode: 'invalid', lap: 2, stageIndex: 4});
+if (state.navigation.mode !== 'stage' || state.navigation.lap !== 2 || state.navigation.stageIndex !== 4
+  || stateChange?.section !== 'navigation') throw new Error('State navigation command validation failed.');
+stateApi.updateBoard(state, {o: [1, 2, 0]});
+if (state.board?.o?.join(',') !== '1,2,0') throw new Error('State board command validation failed.');
+unsubscribe();
+stateApi.write(state, localStorage);
+const restored = stateApi.read(localStorage);
+if (!restored || restored.navigation.stageIndex !== 4 || restored.board?.o?.join(',') !== '1,2,0') {
+  throw new Error('State store write/read validation failed.');
+}
 
 const migrationFixtures = [
   {

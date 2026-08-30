@@ -1376,6 +1376,22 @@
     satoriOrderVersion: 'wake7-satori-order-version', speedLastTab: 'wake7-speed-last-tab', speedNewTab: 'wake7-speed-new-tab',
     fourthChecks: 'wake7-fourth-checks'
   });
+  // 旧版からの移行でだけ読むキー。現行処理の保存先とは分けておき、
+  // 互換キーを誤って新機能から参照しないようにする。
+  const LEGACY_STORAGE_KEYS = Object.freeze({
+    activeSession: 'wake7-active-session', activeLap: 'wake7-active-lap',
+    language: 'wake7-language', sound: 'wake7-sound',
+    boardTheme: 'wake7-board-theme', boardLayout: 'wake7-board-layout', darumaColor: 'wake7-daruma-color',
+    cleared: 'wake7-cleared', extraCleared: 'wake7-extra-cleared', satoriCleared: 'wake7-satori-cleared',
+    lap1PrimaryCleared: 'wake7-lap1-primary-cleared', lap1ExtraCleared: 'wake7-lap1-extra-cleared', lap1SatoriCleared: 'wake7-lap1-satori-cleared',
+    lap2PrimaryCleared: 'wake7-lap2-primary-cleared', lap2ExtraCleared: 'wake7-lap2-extra-cleared', lap2SatoriCleared: 'wake7-lap2-satori-cleared',
+    secondLapUnlocked: 'wake7-second-lap-unlocked',
+    awakenedGranted: 'wake7-awakened-granted', threeDUnlocked: 'wake7-3d-unlocked',
+    masterGoldGranted: 'wake7-master-gold-granted', satoriDesignGranted: 'wake7-satori-design-granted', rainbowDarumaGranted: 'wake7-rainbow-daruma-granted',
+    speedActiveVariant: 'wake7-speed-active-variant', speedTrainingUnlocked: 'wake7-speed-training-unlocked', speedIntermediateUnlocked: 'wake7-speed-intermediate-unlocked',
+    speedMasteryUnlocked: 'wake7-speed-mastery-unlocked', speedSatoriUnlocked: 'wake7-speed-satori-unlocked',
+    speedTrainingTrialCleared: 'wake7-speed-training-trial-cleared', speedIntermediateTrialCleared: 'wake7-speed-intermediate-trial-cleared', speedMasteryTrialCleared: 'wake7-speed-mastery-trial-cleared'
+  });
   const storage = {
     get(key, fallback = null) { try { const value = global.localStorage.getItem(key); return value === null ? fallback : value; } catch (_) { return fallback; } },
     set(key, value) { try { global.localStorage.setItem(key, value); return true; } catch (_) { return false; } },
@@ -1472,8 +1488,8 @@
   function migrateLegacy(storage = global.localStorage) {
     const existing = read(storage);
     if (existing) return existing;
-    const session = readJson(storage, 'wake7-active-session');
-    const activeLap = Number(storage.getItem('wake7-active-lap')) === 2 ? 2 : 1;
+    const session = readJson(storage, LEGACY_STORAGE_KEYS.activeSession);
+    const activeLap = Number(storage.getItem(LEGACY_STORAGE_KEYS.activeLap)) === 2 ? 2 : 1;
     const mode = typeof session?.mode === 'string' ? session.mode : 'stage';
     const state = create({
       navigation: {
@@ -1487,39 +1503,39 @@
       board: session?.board || null,
       progress: {
         lap1: {
-          primary: readJson(storage, 'wake7-lap1-primary-cleared').length ? readJson(storage, 'wake7-lap1-primary-cleared') : readJson(storage, 'wake7-cleared'),
-          mastery: readJson(storage, 'wake7-lap1-extra-cleared').length ? readJson(storage, 'wake7-lap1-extra-cleared') : readJson(storage, 'wake7-extra-cleared'),
-          satori: readJson(storage, 'wake7-lap1-satori-cleared').length ? readJson(storage, 'wake7-lap1-satori-cleared') : readJson(storage, 'wake7-satori-cleared')
+          primary: readJson(storage, LEGACY_STORAGE_KEYS.lap1PrimaryCleared).length ? readJson(storage, LEGACY_STORAGE_KEYS.lap1PrimaryCleared) : readJson(storage, LEGACY_STORAGE_KEYS.cleared),
+          mastery: readJson(storage, LEGACY_STORAGE_KEYS.lap1ExtraCleared).length ? readJson(storage, LEGACY_STORAGE_KEYS.lap1ExtraCleared) : readJson(storage, LEGACY_STORAGE_KEYS.extraCleared),
+          satori: readJson(storage, LEGACY_STORAGE_KEYS.lap1SatoriCleared).length ? readJson(storage, LEGACY_STORAGE_KEYS.lap1SatoriCleared) : readJson(storage, LEGACY_STORAGE_KEYS.satoriCleared)
         },
         lap2: {
-          primary: readJson(storage, 'wake7-lap2-primary-cleared'),
-          mastery: readJson(storage, 'wake7-lap2-extra-cleared'),
-          satori: readJson(storage, 'wake7-lap2-satori-cleared')
+          primary: readJson(storage, LEGACY_STORAGE_KEYS.lap2PrimaryCleared),
+          mastery: readJson(storage, LEGACY_STORAGE_KEYS.lap2ExtraCleared),
+          satori: readJson(storage, LEGACY_STORAGE_KEYS.lap2SatoriCleared)
         }
       },
       settings: {
-        language: storage.getItem('wake7-language') || 'ja',
-        sound: storage.getItem('wake7-sound') !== 'off',
-        boardTheme: storage.getItem('wake7-board-theme') || 'default',
-        boardLayout: storage.getItem('wake7-board-layout') || 'normal',
-        darumaColor: storage.getItem('wake7-daruma-color') || 'red'
+        language: storage.getItem(LEGACY_STORAGE_KEYS.language) || 'ja',
+        sound: storage.getItem(LEGACY_STORAGE_KEYS.sound) !== 'off',
+        boardTheme: storage.getItem(LEGACY_STORAGE_KEYS.boardTheme) || 'default',
+        boardLayout: storage.getItem(LEGACY_STORAGE_KEYS.boardLayout) || 'normal',
+        darumaColor: storage.getItem(LEGACY_STORAGE_KEYS.darumaColor) || 'red'
       },
       unlocks: {
-        secondLap: storage.getItem('wake7-second-lap-unlocked') === '1',
-        awakened: storage.getItem(STORAGE_KEYS.awakenedGranted) === '1',
-        threeD: storage.getItem('wake7-3d-unlocked') === '1',
-        masterGoldGranted: storage.getItem(STORAGE_KEYS.masterGoldGranted) === '1',
-        satoriDesignGranted: storage.getItem(STORAGE_KEYS.satoriDesignGranted) === '1',
-        rainbowDarumaGranted: storage.getItem(STORAGE_KEYS.rainbowDarumaGranted) === '1',
-        speedTraining: storage.getItem('wake7-speed-training-unlocked') === '1',
-        speedIntermediate: storage.getItem('wake7-speed-intermediate-unlocked') === '1',
-        speedMastery: storage.getItem('wake7-speed-mastery-unlocked') === '1',
-        speedSatori: storage.getItem('wake7-speed-satori-unlocked') === '1',
-        speedTrainingTrialCleared: storage.getItem('wake7-speed-training-trial-cleared') === '1',
-        speedIntermediateTrialCleared: storage.getItem('wake7-speed-intermediate-trial-cleared') === '1',
-        speedMasteryTrialCleared: storage.getItem('wake7-speed-mastery-trial-cleared') === '1'
+        secondLap: storage.getItem(LEGACY_STORAGE_KEYS.secondLapUnlocked) === '1',
+        awakened: storage.getItem(LEGACY_STORAGE_KEYS.awakenedGranted) === '1',
+        threeD: storage.getItem(LEGACY_STORAGE_KEYS.threeDUnlocked) === '1',
+        masterGoldGranted: storage.getItem(LEGACY_STORAGE_KEYS.masterGoldGranted) === '1',
+        satoriDesignGranted: storage.getItem(LEGACY_STORAGE_KEYS.satoriDesignGranted) === '1',
+        rainbowDarumaGranted: storage.getItem(LEGACY_STORAGE_KEYS.rainbowDarumaGranted) === '1',
+        speedTraining: storage.getItem(LEGACY_STORAGE_KEYS.speedTrainingUnlocked) === '1',
+        speedIntermediate: storage.getItem(LEGACY_STORAGE_KEYS.speedIntermediateUnlocked) === '1',
+        speedMastery: storage.getItem(LEGACY_STORAGE_KEYS.speedMasteryUnlocked) === '1',
+        speedSatori: storage.getItem(LEGACY_STORAGE_KEYS.speedSatoriUnlocked) === '1',
+        speedTrainingTrialCleared: storage.getItem(LEGACY_STORAGE_KEYS.speedTrainingTrialCleared) === '1',
+        speedIntermediateTrialCleared: storage.getItem(LEGACY_STORAGE_KEYS.speedIntermediateTrialCleared) === '1',
+        speedMasteryTrialCleared: storage.getItem(LEGACY_STORAGE_KEYS.speedMasteryTrialCleared) === '1'
       },
-      speed: { activeVariant: storage.getItem('wake7-speed-active-variant') || 'training9' },
+      speed: { activeVariant: storage.getItem(LEGACY_STORAGE_KEYS.speedActiveVariant) || 'training9' },
       legacySession: session && typeof session === 'object' ? session : null
     });
     write(state, storage);
@@ -1607,6 +1623,7 @@
   global.WakeSevenState = Object.freeze({
     STORAGE_KEY,
     STORAGE_KEYS,
+    LEGACY_STORAGE_KEYS,
     VERSION,
     MODES,
     storage,
