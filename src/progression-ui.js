@@ -1151,9 +1151,6 @@ function renderQuizInto(ids,quiz){
     options.appendChild(button);
   });
 }
-function renderMessageQuiz(quiz){
-  renderQuizInto({root:'messageQuiz',options:'messageQuizOptions',note:'messageQuizNote',title:'messageQuizTitle',question:'messageQuizQuestion'},quiz);
-}
 function openMessageReview({resume=false,returnTarget=null}={}){
   messageDialogReturn=returnTarget;
   messageReviewEntries=buildMessageReviewEntries();
