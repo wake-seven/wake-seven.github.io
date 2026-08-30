@@ -984,9 +984,6 @@ function renderClearTip(){
     document.querySelector('#clearDialog .clear-dialog-heading').after(illustration);
   }
 }
-const MESSAGE_REVIEW_STORAGE_KEY='wake7-message-review';
-const MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY='wake7-message-review-last-clear';
-let messageReviewEntries=[],messageReviewIndex=0;
 // ===== メッセージ見直しUI（message-ui.js 分離予定の境界） =====
 function buildMessageReviewEntriesInternal(){
   const entries=[];
