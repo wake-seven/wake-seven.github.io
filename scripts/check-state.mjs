@@ -15,7 +15,10 @@ const required = [
   'WakeSevenProgression',
   'const ACTIVE_MODES=',
   'const SPEED_MODE_DEFINITIONS=',
-  'function restoreActiveSession()'
+  'function restoreActiveSession()',
+  'const GameNavigation=',
+  'const GameDialogs=',
+  'const GameBoard='
 ];
 const missing = required.filter(token => !html.includes(token));
 if (missing.length) throw new Error(`index.html is missing: ${missing.join(', ')}`);
