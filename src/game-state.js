@@ -189,6 +189,40 @@
     }
   }
 
+  // 状態の読み取りと同じ境界で、書き込みも正規化して受け付ける。
+  // 呼び出し側は保存形式や許容値を意識せず、変更したい項目だけ渡せる。
+  function updateNavigation(state, patch = {}) {
+    if (!state || typeof state !== 'object') return null;
+    const current = navigationView(state);
+    const next = { ...current, ...(patch && typeof patch === 'object' ? patch : {}) };
+    state.navigation = {
+      mode: MODES.includes(next.mode) ? next.mode : current.mode,
+      lap: asLap(next.lap),
+      stageIndex: asIndex(next.stageIndex),
+      masteryIndex: asIndex(next.masteryIndex),
+      satoriIndex: asIndex(next.satoriIndex),
+      tutorialStep: asIndex(next.tutorialStep)
+    };
+    return state.navigation;
+  }
+
+  function updateSettings(state, patch = {}) {
+    if (!state || typeof state !== 'object') return null;
+    const next = patch && typeof patch === 'object' ? patch : {};
+    state.settings = { ...(state.settings && typeof state.settings === 'object' ? state.settings : {}), ...clone(next) };
+    return state.settings;
+  }
+
+  function updateProgress(state, patch = {}) {
+    if (!state || typeof state !== 'object') return null;
+    const next = patch && typeof patch === 'object' ? patch : {};
+    state.progress = {
+      lap1: normalizeProgress(next.lap1 || state.progress?.lap1),
+      lap2: normalizeProgress(next.lap2 || state.progress?.lap2)
+    };
+    return state.progress;
+  }
+
   global.WakeSevenState = Object.freeze({
     STORAGE_KEY,
     STORAGE_KEYS,
@@ -200,6 +234,9 @@
     write,
     migrateLegacy,
     navigationView,
-    navigationIndex
+    navigationIndex,
+    updateNavigation,
+    updateSettings,
+    updateProgress
   });
 })(window);

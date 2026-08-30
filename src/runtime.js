@@ -81,7 +81,7 @@ let lastAnalyticsStageKey='';
 const ACTIVE_MODES=Object.freeze(['tutorial','stage','mastery','satori','speed','free','custom']);
 function setActiveMode(mode){
   activeMode=ACTIVE_MODES.includes(mode)?mode:'stage';
-  gameState.navigation.mode=activeMode;
+  WakeSevenState.updateNavigation(gameState,{mode:activeMode});
 }
 const isMode=mode=>activeMode===mode;
 function setUnlock(key,value){
@@ -102,12 +102,12 @@ const storage=WakeSevenState.storage;
  * document. New features should add fields here instead of new top-level keys.
  */
 function syncGameState(legacySession=null){
-  gameState.navigation={mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};
-  gameState.progress={
+  WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});
+  WakeSevenState.updateProgress(gameState,{
     lap1:{primary:[...lap1ClearedStages],mastery:[...lap1ClearedExtraStages],satori:[...lap1ClearedSatoriStages]},
     lap2:{primary:[...lap2ClearedStages],mastery:[...lap2ClearedExtraStages],satori:[...lap2ClearedSatoriStages]}
-  };
-  gameState.settings={language:currentLang,sound:soundEnabled,boardTheme,boardLayout,darumaColor};
+  });
+  WakeSevenState.updateSettings(gameState,{language:currentLang,sound:soundEnabled,boardTheme,boardLayout,darumaColor});
   gameState.unlocks={
     secondLap:secondLapUnlocked,awakened:awakenedGranted,threeD:threeDUnlocked,
     speedTraining:speedTrainingUnlocked,speedIntermediate:speedIntermediateUnlocked,
