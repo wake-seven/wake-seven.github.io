@@ -1097,29 +1097,6 @@ function configureMessageReviewHeader(entry){
   $('messageDialogTitle').textContent=tr('clear');
   $('messageDialogPlace').textContent=messageReviewPlace(entry);
 }
-function renderMessageReview(){
-  const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
-  const {art,twoMoveLesson}=prepareMessageReview(entry);
-  const view=messageReviewView();
-  const {illustration,lessonCopy,lessonRule,roadmap,seal}=view;
-  resetMessageReviewView(entry,view);
-  if(isMilestoneMessage(entry)){
-    const volume=milestoneVolume(entry);
-    const current=entry.master==='primary'?2:entry.master==='mastery'?6:Math.min(5,volume+2);
-    if(entry.master!=='mastery')roadmap.innerHTML=masterRoadmapMarkup(current);
-    milestoneRenderer(entry)(entry,view,volume);
-  }else{
-    messageReviewRenderer(entry)(entry);
-  }
-  renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule);
-  renderMessageLesson(twoMoveLesson,illustration,lessonCopy,lessonRule);
-  if(entry.master==='satoriIntro'||entry.master==='secondLapIntro'){
-    seal.classList.remove('animate');
-    void seal.offsetWidth;
-    seal.classList.add('animate');
-  }
-  updateMessageReviewNavigation(entry);
-}
 // ===== メッセージ見直しUIここまで =====
 // ===== クイズシステム =====
 /* クイズは見直すたびに選択肢の位置を変える。 */
