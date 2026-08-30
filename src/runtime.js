@@ -85,8 +85,8 @@ function setActiveMode(mode){
 }
 const isMode=mode=>activeMode===mode;
 function setUnlock(key,value){
-  gameState.unlocks[key]=value===true;
-  return gameState.unlocks[key];
+  const unlocks=WakeSevenState.updateUnlocks(gameState,{[key]:value===true});
+  return unlocks[key];
 }
 
 /* ---- 状態管理の境界 ----
@@ -108,16 +108,16 @@ function syncGameState(legacySession=null){
     lap2:{primary:[...lap2ClearedStages],mastery:[...lap2ClearedExtraStages],satori:[...lap2ClearedSatoriStages]}
   });
   WakeSevenState.updateSettings(gameState,{language:currentLang,sound:soundEnabled,boardTheme,boardLayout,darumaColor});
-  gameState.unlocks={
+  WakeSevenState.updateUnlocks(gameState,{
     secondLap:secondLapUnlocked,awakened:awakenedGranted,threeD:threeDUnlocked,
     speedTraining:speedTrainingUnlocked,speedIntermediate:speedIntermediateUnlocked,
     speedMastery:speedMasteryUnlocked,speedSatori:speedSatoriUnlocked,
     masterGoldGranted,satoriDesignGranted,rainbowDarumaGranted,
     speedTrainingTrialCleared,speedIntermediateTrialCleared,speedMasteryTrialCleared
-  };
+  });
   gameState.speed={activeVariant:speedVariant,sessions:Object.fromEntries(Object.keys(SPEED_MODE_DEFINITIONS).map(variant=>[variant,readSpeedSession(variant)]).filter(([,session])=>session))};
   gameState.ui={editingBoard,lastStageMode};
-  gameState.board=typeof serializeActiveBoard==='function'?serializeActiveBoard():gameState.board;
+  if(typeof serializeActiveBoard==='function')WakeSevenState.updateBoard(gameState,serializeActiveBoard());
   if(legacySession)gameState.legacySession=legacySession;
   return window.WakeSevenState.write(gameState);
 }

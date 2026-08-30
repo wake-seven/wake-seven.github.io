@@ -44,6 +44,25 @@
   const asArray = value => Array.isArray(value) ? value : [];
   const asIndex = value => Number.isInteger(value) && value >= 0 ? value : 0;
   const asLap = value => value === 2 ? 2 : 1;
+  // 状態ストアの購読は軽量な通知だけに留め、描画や保存の責務は呼び出し側へ委譲する。
+  const subscribers = new WeakMap();
+
+  function notify(state, change = {}) {
+    const listeners = subscribers.get(state);
+    if (!listeners) return state;
+    listeners.forEach(listener => {
+      try { listener(state, change); } catch (_) { /* 購読側の失敗でゲームを止めない */ }
+    });
+    return state;
+  }
+
+  function subscribe(state, listener) {
+    if (!state || typeof listener !== 'function') return () => {};
+    let listeners = subscribers.get(state);
+    if (!listeners) { listeners = new Set(); subscribers.set(state, listeners); }
+    listeners.add(listener);
+    return () => listeners.delete(listener);
+  }
 
   function create(seed = {}) {
     const state = {
@@ -203,13 +222,30 @@
       satoriIndex: asIndex(next.satoriIndex),
       tutorialStep: asIndex(next.tutorialStep)
     };
+    notify(state, { section: 'navigation', patch: clone(patch) });
     return state.navigation;
+  }
+
+  function updateBoard(state, next) {
+    if (!state || typeof state !== 'object') return null;
+    state.board = next && typeof next === 'object' ? clone(next) : next ?? null;
+    notify(state, { section: 'board' });
+    return state.board;
+  }
+
+  function updateUnlocks(state, patch = {}) {
+    if (!state || typeof state !== 'object') return null;
+    const next = patch && typeof patch === 'object' ? patch : {};
+    state.unlocks = { ...(state.unlocks && typeof state.unlocks === 'object' ? state.unlocks : {}), ...clone(next) };
+    notify(state, { section: 'unlocks', patch: clone(next) });
+    return state.unlocks;
   }
 
   function updateSettings(state, patch = {}) {
     if (!state || typeof state !== 'object') return null;
     const next = patch && typeof patch === 'object' ? patch : {};
     state.settings = { ...(state.settings && typeof state.settings === 'object' ? state.settings : {}), ...clone(next) };
+    notify(state, { section: 'settings', patch: clone(next) });
     return state.settings;
   }
 
@@ -220,6 +256,7 @@
       lap1: normalizeProgress(next.lap1 || state.progress?.lap1),
       lap2: normalizeProgress(next.lap2 || state.progress?.lap2)
     };
+    notify(state, { section: 'progress' });
     return state.progress;
   }
 
@@ -236,7 +273,11 @@
     navigationView,
     navigationIndex,
     updateNavigation,
+    updateBoard,
+    updateUnlocks,
     updateSettings,
-    updateProgress
+    updateProgress,
+    subscribe,
+    notify
   });
 })(window);
