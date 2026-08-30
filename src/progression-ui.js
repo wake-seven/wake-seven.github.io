@@ -1197,6 +1197,11 @@ const MESSAGE_RENDERERS=Object.freeze({
   boardQuiz:entry=>{ configureMessageReviewHeader(entry); renderBoardQuiz('messageBoardQuiz',clearContentAt(true,entry.index).boardQuiz); },
   text:entry=>{ $('messageDialogText').hidden=false; configureMessageReviewHeader(entry); $('messageDialogTextBody').textContent=entry.text; }
 });
+function messageReviewRenderer(entry){
+  if(entry.quiz!==undefined)return MESSAGE_RENDERERS.quiz;
+  if(entry.boardQuiz)return MESSAGE_RENDERERS.boardQuiz;
+  return MESSAGE_RENDERERS.text;
+}
 function renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule){
   const classByArt={
     'move-graph':art==='moveGraph',
@@ -1238,8 +1243,7 @@ function renderMessageReview(){
     const renderer=MILESTONE_RENDERERS[entry.master]||MILESTONE_RENDERERS.volume;
     renderer(entry,view,volume);
   }else{
-    const type=entry.quiz!==undefined?'quiz':entry.boardQuiz?'boardQuiz':'text';
-    MESSAGE_RENDERERS[type](entry);
+    messageReviewRenderer(entry)(entry);
   }
   renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule);
   renderMessageLesson(twoMoveLesson,illustration,lessonCopy,lessonRule);
