@@ -163,6 +163,32 @@
     return state;
   }
 
+  // Navigation is intentionally exposed as a small read-only view.  Runtime
+  // code may still own the live variables while the state migration is in
+  // progress, but consumers should not need to know the storage field names.
+  function navigationView(state) {
+    const navigation = state?.navigation || {};
+    return {
+      mode: MODES.includes(navigation.mode) ? navigation.mode : 'stage',
+      lap: asLap(navigation.lap),
+      stageIndex: asIndex(navigation.stageIndex),
+      masteryIndex: asIndex(navigation.masteryIndex),
+      satoriIndex: asIndex(navigation.satoriIndex),
+      tutorialStep: asIndex(navigation.tutorialStep)
+    };
+  }
+
+  function navigationIndex(navigation, mode = navigation?.mode) {
+    const view = navigation?.navigation ? navigationView(navigation) : navigationView({ navigation });
+    switch (mode) {
+      case 'tutorial': return view.tutorialStep;
+      case 'mastery': return view.masteryIndex;
+      case 'satori': return view.satoriIndex;
+      case 'stage': return view.stageIndex;
+      default: return null;
+    }
+  }
+
   global.WakeSevenState = Object.freeze({
     STORAGE_KEY,
     STORAGE_KEYS,
@@ -172,6 +198,8 @@
     create,
     read,
     write,
-    migrateLegacy
+    migrateLegacy,
+    navigationView,
+    navigationIndex
   });
 })(window);

@@ -71,7 +71,8 @@ if(new URLSearchParams(location.search).get('debug')==='touch'){
 let ori=new Uint8Array(N), spin=new Int16Array(N), history=[], moves=0, best=0;
 let tileEls=[], baseTiles=[], drag=null, busy=false, boardTouchActive=false;
 const gameState=window.WakeSevenState.migrateLegacy();
-let stageIndex=gameState.navigation.stageIndex,extraIndex=gameState.navigation.masteryIndex,satoriIndex=gameState.navigation.satoriIndex,tutorialStep=gameState.navigation.tutorialStep,activeMode=gameState.navigation.mode,clearShown=false,clearTimer=0,nextStageAttention=false;
+const initialNavigation=WakeSevenState.navigationView(gameState);
+let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep,activeMode=initialNavigation.mode,clearShown=false,clearTimer=0,nextStageAttention=false;
 let tutorialAdvanceTimer=0,boardArrivalTimer=0;
 let pendingMasterThemeRefresh=false;
 let lastAnalyticsStageKey='';
@@ -135,6 +136,9 @@ const COURSE_MODE_ALIASES=Object.freeze({stage:'primary'});
 function courseDefinitionForMode(mode=activeMode){
   return COURSE_DEFINITIONS[COURSE_MODE_ALIASES[mode]||mode]||COURSE_DEFINITIONS.primary;
 }
+function runtimeNavigation(){
+  return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};
+}
 const isSideCourseMode=()=>isMode('free')||isMode('custom');
 const PRIMARY_SECTIONS=Object.freeze([
   {id:'intro',labelKey:'intro',start:0,total:INTRO_STAGE_COUNT,analytics:'training_intro'},
@@ -159,15 +163,16 @@ const PICKER_ACADEMY_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='developmen
 const PICKER_TRAINING_FIRST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingUpper')-PRIMARY_PICKER_SECTION_COUNT;
 const PICKER_TRAINING_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingLower')-PRIMARY_PICKER_SECTION_COUNT;
 function runtimeContext(){
-  if(isMode('tutorial'))return {mode:'tutorial',course:courseDefinitionForMode(),index:tutorialStep,position:tutorialStep+1,total:TUTORIAL_STEPS.length,lap:1};
+  const navigation=runtimeNavigation();
+  if(isMode('tutorial'))return {mode:'tutorial',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'tutorial'),position:tutorialStep+1,total:TUTORIAL_STEPS.length,lap:1};
   if(isSideCourseMode())return {mode:activeMode,course:courseDefinitionForMode(),index:null,position:null,total:null,lap:activeLap};
   if(isMode('speed')){
     const index=speedSession?.index||0;
     return {mode:'speed',course:courseDefinitionForMode(),index,position:index+1,total:SATORI_STAGES.length,lap:activeLap};
   }
-  if(isMode('satori'))return {mode:'satori',course:courseDefinitionForMode(),index:satoriIndex,position:satoriIndex+1,total:SATORI_STAGES.length,lap:activeLap};
-  if(isMode('mastery'))return {mode:'mastery',course:courseDefinitionForMode(),index:extraIndex,position:extraIndex+1,total:EXTRA_STAGES.length,lap:activeLap};
-  return {mode:'primary',course:courseDefinitionForMode('stage'),index:stageIndex,position:stageIndex+1,total:STAGES.length,lap:activeLap};
+  if(isMode('satori'))return {mode:'satori',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'satori'),position:satoriIndex+1,total:SATORI_STAGES.length,lap:activeLap};
+  if(isMode('mastery'))return {mode:'mastery',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'mastery'),position:extraIndex+1,total:EXTRA_STAGES.length,lap:activeLap};
+  return {mode:'primary',course:courseDefinitionForMode('stage'),index:WakeSevenState.navigationIndex(navigation,'stage'),position:stageIndex+1,total:STAGES.length,lap:activeLap};
 }
 function runtimeStageKey(){
   const ctx=runtimeContext();
