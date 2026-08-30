@@ -266,7 +266,11 @@ const CLEAR_CONTENT={
 };
 // クリア後・開始前・盤面案内を同じメッセージカタログから引く。
 const MESSAGE_CATALOG={clear:CLEAR_CONTENT,guidance:{}};
-function messageDefinition(kind,key){return MESSAGE_CATALOG[kind]?.[key]||null;}
+function messageDefinition(kind,key){
+  const content=MESSAGE_CATALOG[kind]?.[key];
+  return content==null?null:{id:key,kind,content};
+}
+function messageContent(kind,key){return messageDefinition(kind,key)?.content||null;}
 // stageIndex/extraIndex から CLEAR_CONTENT のキーへ変換する。
 function clearContentKey(mode,index){
   if(mode){
@@ -280,9 +284,9 @@ function clearContentKey(mode,index){
   if(index<TRAINING_STAGE_START+TRAINING_UPPER_COUNT+TRAINING_MIDDLE_COUNT)return 'training2_'+(index-TRAINING_STAGE_START-TRAINING_UPPER_COUNT+1);
   return 'training3_'+(index-TRAINING_STAGE_START-TRAINING_UPPER_COUNT-TRAINING_MIDDLE_COUNT+1);
 }
-function clearContentAt(mode,index){return messageDefinition('clear',clearContentKey(mode,index));}
+function clearContentAt(mode,index){return messageContent('clear',clearContentKey(mode,index));}
 // その問題が始まる直前/終わった直後に、追加でダイアログを挟みたい場合に使う。
-function clearContentBefore(mode,index){return messageDefinition('clear',clearContentKey(mode,index)+'before');}
+function clearContentBefore(mode,index){return messageContent('clear',clearContentKey(mode,index)+'before');}
 // 埋め込み済みの{ja,en,zh,ko}オブジェクトから、現在の言語(なければ日本語)を解決する。
 function resolveLocaleText(obj){return obj?(obj[currentLang]||obj.ja):"";}
 // ===== 未使用の下書き置き場 =====

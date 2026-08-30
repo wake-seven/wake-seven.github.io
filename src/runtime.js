@@ -216,7 +216,7 @@ Object.assign(MESSAGE_CATALOG.guidance,MAIN_BOARD_GUIDANCE);
 const BASIC_LESSON_ASSISTS=Object.freeze({
   3:'arrow',4:'axis',8:'arrow',9:'axis'
 });
-function mainBoardGuidance(){return messageDefinition('guidance',runtimeStageKey());}
+function mainBoardGuidance(){return messageContent('guidance',runtimeStageKey());}
 function appendMoveCountEmphasis(root,message){
   message.split(/([12]枚)/g).forEach(part=>{
     if(!part)return;
