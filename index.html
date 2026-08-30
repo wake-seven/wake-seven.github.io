@@ -8285,6 +8285,22 @@ function configureMessageReviewLinks(entry,messageClearEntry){
 function isMilestoneMessage(entry){return !!entry?.master;}
 function milestoneVolume(entry){return entry?.master==='primary'?0:Math.ceil((entry.index+1)/MASTER_VOLUME_SIZE);}
 function messageReviewView(){return {seal:$('messageMasterSeal'),rankText:$('messageRankText'),masterText:$('messageMasterText'),boardNote:$('messageMasterBoardNote'),rules:$('messageRules')};}
+function resetMessageReviewView(entry,view){
+  const roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote');
+  $('messagePrev').textContent='← '+tr('prev');
+  $('messageNext').textContent=tr('next')+' →';
+  $('closeMessages').textContent=tr('close');
+  $('messageStageContext').textContent=messageReviewStageContext(entry);
+  $('messageDialogPlace').hidden=true;
+  renderMasteryBoard('messageMasteryBoard',['mastery','satori','awakening'].includes(entry.master),['satori','awakening'].includes(entry.master)?'satori-tilted':'gold');
+  roadmap.hidden=!entry.master||['primary','mastery','satori','satoriIntro','secondLapIntro','awakening','trainingWelcome'].includes(entry.master);
+  roadmapNote.hidden=true;view.boardNote.hidden=true;view.rules.hidden=true;
+  view.seal.hidden=!entry.master;
+  view.seal.classList.add('rank-seal');
+  view.seal.classList.remove('rank-frame-seal','second-lap-mark');
+  view.seal.tabIndex=0;
+  view.rankText.hidden=true;view.masterText.hidden=true;
+}
 function prepareMessageReview(entry){
   const art=messageReviewArt(entry);
   const twoMoveLesson=lessonVariantFromArt(art);
@@ -8328,20 +8344,9 @@ function renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRu
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
   const {art,twoMoveLesson}=prepareMessageReview(entry);
-  const illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
+  const illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),seal=$('messageMasterSeal');
   const view=messageReviewView();
-  $('messagePrev').textContent='← '+tr('prev');
-  $('messageNext').textContent=tr('next')+' →';
-  $('closeMessages').textContent=tr('close');
-  $('messageStageContext').textContent=messageReviewStageContext(entry);
-  $('messageDialogPlace').hidden=true;
-  renderMasteryBoard('messageMasteryBoard',['mastery','satori','awakening'].includes(entry.master),['satori','awakening'].includes(entry.master)?'satori-tilted':'gold');
-  roadmap.hidden=!entry.master||['primary','mastery','satori','satoriIntro','secondLapIntro','awakening','trainingWelcome'].includes(entry.master);roadmapNote.hidden=true;boardNote.hidden=true;rules.hidden=true;
-  seal.hidden=!entry.master;
-  seal.classList.add('rank-seal');
-  seal.classList.remove('rank-frame-seal','second-lap-mark');
-  seal.tabIndex=0;
-  rankText.hidden=true;masterText.hidden=true;
+  resetMessageReviewView(entry,view);
   if(isMilestoneMessage(entry)){
     const volume=milestoneVolume(entry);
     const current=entry.master==='primary'?2:entry.master==='mastery'?6:Math.min(5,volume+2);
