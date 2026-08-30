@@ -8156,7 +8156,11 @@ function messageReviewEntryKey(entry){
   return (entry.awakened||entry.satori?'satori':entry.extra?'extra':'primary')+':'+entry.index+':'+kind;
 }
 function buildMessageReviewEntries(){
-  const finalize=entries=>entries.map(entry=>({...entry,messageId:entry.master||clearContentKey(!!entry.extra,entry.index)}));
+  const finalize=entries=>entries.map(entry=>{
+    const messageId=entry.master||clearContentKey(!!entry.extra,entry.index);
+    const message=entry.master?{id:messageId,kind:'milestone',type:'dialog',timing:'beforeStart',content:entry.master}:normalizeMessage('clear',messageId);
+    return {...entry,messageId,message};
+  });
   const entries=[];
   // 二周目を始めた直後も、一周目で集めたメッセージを読み返せるようにする。
   const reviewPrimary=activeLap===2?lap1ClearedStages:clearedStages;
