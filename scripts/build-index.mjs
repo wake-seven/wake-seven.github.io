@@ -25,17 +25,28 @@ function inject(source,startMarker,endMarker,module,name) {
   const startAt = source.indexOf(startMarker);
   const endAt = source.indexOf(endMarker);
   if(startAt < 0 || endAt < 0 || endAt <= startAt) throw new Error(`${name} markers are missing from src/index.template.html.`);
-  return `${source.slice(0,startAt + startMarker.length)}\n<script>\n${module.trim()}\n</script>\n${source.slice(endAt)}`;
+  // The generated artifact is a single native module script.  Source files
+  // are concatenated directly so CSP can forbid eval/Function entirely.
+  return `${source.slice(0,startAt + startMarker.length)}\n<script type="module">\n${module.trim()}\n</script>\n${source.slice(endAt)}`;
 }
-const withState = inject(template,start,end,stateModule,'State-module');
-const withProgression = inject(withState,progressionStart,progressionEnd,progressionModule,'Progression-policy');
 const moduleLabels = ['盤面ドメイン', 'クリア後メッセージデータ', '基礎データ', '悟り出題データ', '多言語UIテキスト', '盤面クイズデータ', '固定挿絵・SVGデータ', '実行設定', 'サウンド', '速解き解放状態', '実行状態', 'スピードランランタイム', '盤面アニメーション補助', '盤面UI', '盤面コマンド', '進行コマンド', 'クイズUI', 'クリアフロー', 'メッセージUI', '進行表示', '節目ダイアログ', '進行UI', '画面描画境界', 'イベントと起動', '公開API名前空間'];
-const generated = inject(
-  withProgression,
-  appStart,
-  appEnd,
-  appModules.map((module,index) => `// ===== ${moduleLabels[index]} =====\n${module.trim()}`).join('\n\n'),
-  'Application-modules'
-);
+const applicationModule = appModules
+  .map((module,index) => `// ===== ${moduleLabels[index] || appModuleFiles[index]} =====\n${module.trim()}`)
+  .join('\n\n');
+
+// 公開版は1本のnative module scriptにまとめる。CSP互換性を保つため、
+// evalやFunctionによる実行ブリッジは使わず、ソースを直接連結する。
+const combinedPayload = [
+  `// ${start}\n${stateModule.trim()}`,
+  `// ${progressionStart}\n${progressionModule.trim()}`,
+  applicationModule
+].join('\n\n');
+function clearModuleBlock(source, blockStart, blockEnd) {
+  const startAt = source.indexOf(blockStart), endAt = source.indexOf(blockEnd);
+  if (startAt < 0 || endAt < 0 || endAt <= startAt) throw new Error('Build markers are missing.');
+  return `${source.slice(0, startAt + blockStart.length)}\n${source.slice(endAt)}`;
+}
+const cleared = clearModuleBlock(clearModuleBlock(template, start, end), progressionStart, progressionEnd);
+const generated = inject(cleared, appStart, appEnd, combinedPayload, 'Application-modules');
 await writeFile(outputPath, generated, 'utf8');
 console.log('Built index.html from src/index.template.html');

@@ -39,6 +39,10 @@ const required = [
 ];
 const missing = required.filter(token => !html.includes(token));
 if (missing.length) throw new Error(`index.html is missing: ${missing.join(', ')}`);
+const moduleScriptCount = (html.match(/<script\s+type="module">/g) || []).length;
+if (moduleScriptCount !== 1 || html.includes('window.eval(')) {
+  throw new Error('Published index.html must contain exactly one native module script without eval.');
+}
 const compatSections = [
   '# 互換層の段階的削除計画',
   '## 判定基準',

@@ -1341,7 +1341,13 @@
 </defs></svg>
 
 <!-- WAKE7:STATE-MODULE:START -->
-<script>
+<!-- WAKE7:STATE-MODULE:END -->
+<!-- WAKE7:PROGRESSION-POLICY:START -->
+<!-- WAKE7:PROGRESSION-POLICY:END -->
+
+<!-- WAKE7:APPLICATION-MODULES:START -->
+<script type="module">
+// <!-- WAKE7:STATE-MODULE:START -->
 /*
  * WAKE SEVEN 統合状態の基盤。
  *
@@ -1650,10 +1656,8 @@
     notify
   });
 })(window);
-</script>
-<!-- WAKE7:STATE-MODULE:END -->
-<!-- WAKE7:PROGRESSION-POLICY:START -->
-<script>
+
+// <!-- WAKE7:PROGRESSION-POLICY:START -->
 /* コース進行と速解きの宣言ポリシー。公開版では単体HTMLへ埋め込む。 */
 (function attachWakeSevenProgression(global) {
   'use strict';
@@ -1710,11 +1714,7 @@
 
   global.WakeSevenProgression = Object.freeze({create});
 })(window);
-</script>
-<!-- WAKE7:PROGRESSION-POLICY:END -->
 
-<!-- WAKE7:APPLICATION-MODULES:START -->
-<script>
 // ===== 盤面ドメイン =====
 /*
  * 盤面ドメインロジック。
@@ -10764,7 +10764,7 @@ if(document.documentElement.classList.contains('embed')&&window.parent!==window)
   reportEmbedHeight();
 }
 
-// ===== undefined =====
+// ===== namespace-api.js =====
 /* 公開APIの境界。既存のグローバル関数は互換のため残し、外部からはこの名前空間を入口にする。 */
 (function attachWakeSevenNamespace(global) {
   'use strict';
