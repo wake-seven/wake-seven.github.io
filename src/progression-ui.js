@@ -1122,34 +1122,6 @@ const MESSAGE_RENDERERS=Object.freeze({
   boardQuiz:entry=>{ configureMessageReviewHeader(entry); renderBoardQuiz('messageBoardQuiz',clearContentAt(true,entry.index).boardQuiz); },
   text:entry=>{ $('messageDialogText').hidden=false; configureMessageReviewHeader(entry); $('messageDialogTextBody').textContent=entry.text; }
 });
-function renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule){
-  const classByArt={
-    'move-graph':art==='moveGraph',
-    'board-card':art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'),
-    'controls-art':art==='controls',
-    'navigation-art':art==='navigation',
-    'menu-art':art==='menuButtons',
-    'rank-badge-art':art==='rankBadgeArt',
-    'unwritten-art':art==='unwritten',
-    'cheer-art':art==='cheer',
-    'intro-guide-art':art==='introGuide',
-    'two-move-lesson-art':!!twoMoveLesson
-  };
-  Object.entries(classByArt).forEach(([className,enabled])=>illustration.classList.toggle(className,enabled));
-  stopClearGuideBoard('messageClearGuideBoard');stopClearGuideBoard('messageTwoMoveLessonBoard'); illustration.innerHTML=art==='introGuide'?'<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':twoMoveLesson?'<svg id="messageTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):''; if(art==='introGuide')buildClearGuideBoard('messageClearGuideBoard');if(twoMoveLesson)buildTwoMoveLessonBoard('messageTwoMoveLessonBoard',twoMoveLesson);illustration.hidden=!art;lessonCopy.hidden=!twoMoveLesson;lessonRule.hidden=!twoMoveLesson;
-}
-function renderMessageLesson(twoMoveLesson,illustration,lessonCopy,lessonRule){
-  if(twoMoveLesson){
-    renderTwoMoveLessonRule('messageTwoMoveLessonRule');
-    renderTwoMoveLessonCopy('messageTwoMoveLessonCopy',twoMoveLesson);
-    $('messageDialogText').after(illustration);
-    illustration.before(lessonRule);
-    illustration.after(lessonCopy);
-  }else{
-    lessonRule.replaceChildren();
-    lessonCopy.replaceChildren();
-  }
-}
 function renderMessageReview(){
   const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
   const {art,twoMoveLesson}=prepareMessageReview(entry);
