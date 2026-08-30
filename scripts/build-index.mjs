@@ -6,16 +6,20 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const templatePath = join(root, 'src', 'index.template.html');
 const stateModulePath = join(root, 'src', 'game-state.js');
 const progressionModulePath = join(root, 'src', 'progression-policy.js');
+const appModulePath = join(root, 'src', 'app.js');
 const outputPath = join(root, 'index.html');
 const start = '<!-- WAKE7:STATE-MODULE:START -->';
 const end = '<!-- WAKE7:STATE-MODULE:END -->';
 const progressionStart = '<!-- WAKE7:PROGRESSION-POLICY:START -->';
 const progressionEnd = '<!-- WAKE7:PROGRESSION-POLICY:END -->';
+const appStart = '<!-- WAKE7:APP-MODULE:START -->';
+const appEnd = '<!-- WAKE7:APP-MODULE:END -->';
 
-const [template, stateModule, progressionModule] = await Promise.all([
+const [template, stateModule, progressionModule, appModule] = await Promise.all([
   readFile(templatePath, 'utf8'),
   readFile(stateModulePath, 'utf8'),
-  readFile(progressionModulePath, 'utf8')
+  readFile(progressionModulePath, 'utf8'),
+  readFile(appModulePath, 'utf8')
 ]);
 function inject(source,startMarker,endMarker,module,name) {
   const startAt = source.indexOf(startMarker);
@@ -24,6 +28,7 @@ function inject(source,startMarker,endMarker,module,name) {
   return `${source.slice(0,startAt + startMarker.length)}\n<script>\n${module.trim()}\n</script>\n${source.slice(endAt)}`;
 }
 const withState = inject(template,start,end,stateModule,'State-module');
-const generated = inject(withState,progressionStart,progressionEnd,progressionModule,'Progression-policy');
+const withProgression = inject(withState,progressionStart,progressionEnd,progressionModule,'Progression-policy');
+const generated = inject(withProgression,appStart,appEnd,appModule,'Application-module');
 await writeFile(outputPath, generated, 'utf8');
 console.log('Built index.html from src/index.template.html');
