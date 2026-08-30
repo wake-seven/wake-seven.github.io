@@ -886,10 +886,7 @@ $('menuToggle').addEventListener('click',e=>{
   $(id).addEventListener('click',closeAppMenu);
 });
 $('soundToggle').addEventListener('click',()=>{
-  soundEnabled=!soundEnabled;
-  try{storage.set('wake7-sound',soundEnabled?'on':'off');}catch(_){ }
-  updateSoundToggle();
-  if(soundEnabled)playTone(523,.07,.025);
+  toggleSoundCommand();
 });
 $('twoMovePatterns').addEventListener('click',()=>{
   closeAppMenu();
@@ -906,6 +903,15 @@ $('boardThemeDialog').addEventListener('click',event=>{
 $('boardThemeOptions').addEventListener('click',event=>{
   const button=event.target.closest('[data-board-color],[data-board-layout],[data-daruma-color]');
   if(!button||button.disabled)return;
+  selectBoardThemeCommand(button);
+});
+function toggleSoundCommand(){
+  soundEnabled=!soundEnabled;
+  try{storage.set('wake7-sound',soundEnabled?'on':'off');}catch(_){ }
+  updateSoundToggle();
+  if(soundEnabled)playTone(523,.07,.025);
+}
+function selectBoardThemeCommand(button){
   if(button.dataset.boardColor){
     boardTheme=button.dataset.boardColor;
     boardThemeChosen=true;
@@ -921,7 +927,7 @@ $('boardThemeOptions').addEventListener('click',event=>{
   }
   updateMasterTheme();
   renderBoardThemeOptions();
-});
+}
 function closeTwoMovePatterns(){
   $('twoMoveDialog').hidden=true;
   if(returnToClearCard){returnToClearDialog();return;}
