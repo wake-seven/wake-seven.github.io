@@ -18,6 +18,7 @@ import { createEventBinder } from './ui/events.mjs';
 import { createUiLifecycle } from './ui/lifecycle.mjs';
 import { createUiStateView } from './ui/state-view.mjs';
 import { createSpeedUnlockService, DEFAULT_SPEED_UNLOCK_KEYS } from './runtime/progression.mjs';
+import { createRuntimeEnvironment } from './runtime/environment.mjs';
 
 /** Development ESM entry point. The published build still uses index.html. */
 export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data = {}, commands = {}, ui = {}, environment = {} } = {}) {
@@ -28,9 +29,10 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
     store,
     normalize: progression.normalizeNavigation
   });
-  const browserWindow = environment.windowRef ?? (typeof window === 'undefined' ? undefined : window);
-  const browserDocument = environment.documentRef ?? (typeof document === 'undefined' ? undefined : document);
-  const browserStorage = environment.storage ?? browserWindow?.localStorage;
+  const host = createRuntimeEnvironment(environment);
+  const browserWindow = host.windowRef;
+  const browserDocument = host.documentRef;
+  const browserStorage = host.storage;
   const persistence = createPersistence({
     storage: browserStorage,
     create: value => value

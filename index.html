@@ -5446,6 +5446,16 @@ function updateAutoSwipePreview(clones,progress,turnDelta){
 // 公開native moduleの構文境界。
 export {};
 
+// ===== 盤面座標変換 =====
+// 盤面の座標変換表示だけを担当する小さな境界。
+// DOMやゲーム状態を参照せず、board.jsから安全に再利用できる。
+const WakeSevenBoardGeometry=Object.freeze({
+  tileTransform:(x,y,turn)=>'translate('+x.toFixed(2)+'px,'+y.toFixed(2)+'px) rotate('+(turn*120)+'deg)',
+  tileTransformDeg:(x,y,deg)=>'translate('+x.toFixed(2)+'px,'+y.toFixed(2)+'px) rotate('+deg+'deg)'
+});
+
+export {};
+
 // ===== 盤面UI =====
 // ===== 盤面SVG構築・入門/学園ダイアログ・最短2手レッスン =====
 function buildBoard(){
@@ -6362,10 +6372,10 @@ function paint(){
   }
 }
 function tileTransform(x,y,turn){
-  return 'translate('+x.toFixed(2)+'px,'+y.toFixed(2)+'px) rotate('+(turn*120)+'deg)';
+  return WakeSevenBoardGeometry.tileTransform(x,y,turn);
 }
 function tileTransformDeg(x,y,deg){
-  return 'translate('+x.toFixed(2)+'px,'+y.toFixed(2)+'px) rotate('+deg+'deg)';
+  return WakeSevenBoardGeometry.tileTransformDeg(x,y,deg);
 }
 function nearestRotationDeg(fromDeg,toDeg){
   const delta=((toDeg-fromDeg+180)%360+360)%360-180;
@@ -9418,6 +9428,29 @@ function masterRoadmapMarkup(current){
   }).join('');
 }
 function masterCommonRules(){return currentLang==='ja'?'名人への道は最短の手でクリアする必要があります。\nまた、進むほど自力で考える場面が増えていきます。':'Path to Mastery must be cleared in the fewest moves. As you advance, the rules become stricter.';}
+
+/* Event wiring uses this boundary instead of reaching into individual screens. */
+const GameNavigation=Object.freeze({
+  tutorial:()=>startTutorial(),
+  stage:index=>loadStage(index),
+  mastery:index=>loadExtraStage(index),
+  satori:index=>loadSatoriStage(index),
+  free:()=>startFree(),
+  maker:()=>enterBoardMaker(),
+  stageMenu:()=>returnToStageMode(),
+  speedPicker:()=>openSpeedPicker()
+});
+const GameDialogs=Object.freeze({
+  messages:options=>openMessageReview(options),
+  ranks:options=>openRankDialog(options),
+  mastery:kind=>showMasterDialog(kind)
+});
+// 公開native moduleの構文境界。
+export {};
+
+// ===== 進行ナビゲーション =====
+// ===== 進行ナビゲーションのイベント =====
+// 画面遷移のイベント登録を、ロードマップ/ダイアログ描画から分離する。
 $('prevStage').addEventListener('click',()=>{
   if(isMode('free')||isMode('custom')){returnToStageMode();return;}
   if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){
@@ -9475,23 +9508,8 @@ $('freeMode').addEventListener('click',()=>{
   restoreFreeSession();
 });
 
-/* Event wiring uses this boundary instead of reaching into individual screens. */
-const GameNavigation=Object.freeze({
-  tutorial:()=>startTutorial(),
-  stage:index=>loadStage(index),
-  mastery:index=>loadExtraStage(index),
-  satori:index=>loadSatoriStage(index),
-  free:()=>startFree(),
-  maker:()=>enterBoardMaker(),
-  stageMenu:()=>returnToStageMode(),
-  speedPicker:()=>openSpeedPicker()
-});
-const GameDialogs=Object.freeze({
-  messages:options=>openMessageReview(options),
-  ranks:options=>openRankDialog(options),
-  mastery:kind=>showMasterDialog(kind)
-});
-// 公開native moduleの構文境界。
+// Keep this extracted fragment explicit in the source audit while it remains
+// concatenated into the single published native-module script.
 export {};
 
 // ===== 画面描画境界 =====

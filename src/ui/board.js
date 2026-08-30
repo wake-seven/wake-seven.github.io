@@ -913,10 +913,10 @@ function paint(){
   }
 }
 function tileTransform(x,y,turn){
-  return 'translate('+x.toFixed(2)+'px,'+y.toFixed(2)+'px) rotate('+(turn*120)+'deg)';
+  return WakeSevenBoardGeometry.tileTransform(x,y,turn);
 }
 function tileTransformDeg(x,y,deg){
-  return 'translate('+x.toFixed(2)+'px,'+y.toFixed(2)+'px) rotate('+deg+'deg)';
+  return WakeSevenBoardGeometry.tileTransformDeg(x,y,deg);
 }
 function nearestRotationDeg(fromDeg,toDeg){
   const delta=((toDeg-fromDeg+180)%360+360)%360-180;

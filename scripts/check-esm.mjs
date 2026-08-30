@@ -16,6 +16,7 @@ import { createUiLifecycle } from '../src/ui/lifecycle.mjs';
 import { createUiStateView } from '../src/ui/state-view.mjs';
 import { createSpeedUnlockService, DEFAULT_SPEED_UNLOCK_KEYS } from '../src/runtime/progression.mjs';
 import { DEFAULT_SETTING_KEYS } from '../src/runtime/settings.mjs';
+import { createRuntimeEnvironment } from '../src/runtime/environment.mjs';
 
 const runtime = createDevelopmentRuntime({ triangles: [{ cells: [0, 1, 2] }] });
 assert.equal(runtime.board.stateCount, 2187);
@@ -24,6 +25,7 @@ assert.equal(typeof runtime.audio.playTone, 'function');
 assert.equal(typeof runtime.speedUnlocks.initialize, 'function');
 const injectedRuntime = createDevelopmentRuntime({ environment: { windowRef: {}, documentRef: {}, storage: { getItem: () => null, setItem: () => {} } } });
 assert.equal(injectedRuntime.settings.values.boardTheme, 'default');
+assert.equal(createRuntimeEnvironment({ windowRef: {}, documentRef: {}, storage: null }).windowRef !== undefined, true);
 assert.equal(DEFAULT_SETTING_KEYS.boardTheme, 'wake7-board-theme');
 assert.equal(DEFAULT_SPEED_UNLOCK_KEYS.speedUnlocked, 'wake7-speed-unlocked');
 const board = Uint8Array.from([0, 1, 2, 0, 1, 2, 1]);
