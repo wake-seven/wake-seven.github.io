@@ -8,7 +8,7 @@ export const applicationModuleFiles = [
   'runtime/audio.js', 'runtime/progression.js', 'runtime/runtime.js', 'runtime/speed.js',
   'ui/board-animation.js', 'ui/board-geometry.js', 'ui/board.js', 'commands/board.js', 'commands/progression.js',
   'ui/quiz.js', 'ui/clear-flow.js', 'ui/message.js', 'ui/progression-render.js',
-  'ui/master-dialog.js', 'ui/progression.js', 'ui/progression-navigation.js', 'ui/rank.js', 'ui/render.js',
+  'ui/master-dialog.js', 'ui/progression.js', 'ui/progression-clear-flow.js', 'ui/progression-navigation.js', 'ui/rank.js', 'ui/render.js',
   'runtime/app-events.js', 'runtime/namespace.js'
 ];
 
@@ -21,7 +21,7 @@ export const publishedSourceFiles = Object.freeze([
 // 開発用ESM入口からのみ参照されるモジュール。公開版へは直接連結しない。
 export const developmentSourceFiles = [
   'main.mjs', 'domain/board.mjs', 'domain/progression.mjs',
-  'runtime/settings.mjs', 'runtime/audio.mjs', 'runtime/progression.mjs', 'runtime/session.mjs', 'runtime/environment.mjs',
+  'runtime/settings.mjs', 'runtime/audio.mjs', 'runtime/progression.mjs', 'runtime/session.mjs', 'runtime/environment.mjs', 'runtime/application.mjs',
   'state/store.mjs', 'state/persistence.mjs',
   'data/messages.mjs', 'data/satori.mjs', 'data/board-quiz.mjs',
   'commands/board-commands.mjs', 'commands/progression-commands.mjs',

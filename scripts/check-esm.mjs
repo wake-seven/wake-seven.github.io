@@ -23,6 +23,7 @@ assert.equal(runtime.board.stateCount, 2187);
 assert.equal(typeof runtime.settings.initialize, 'function');
 assert.equal(typeof runtime.audio.playTone, 'function');
 assert.equal(typeof runtime.speedUnlocks.initialize, 'function');
+assert.equal(typeof runtime.application.sync, 'function');
 const injectedRuntime = createDevelopmentRuntime({ environment: { windowRef: {}, documentRef: {}, storage: { getItem: () => null, setItem: () => {} } } });
 assert.equal(injectedRuntime.settings.values.boardTheme, 'default');
 assert.equal(createRuntimeEnvironment({ windowRef: {}, documentRef: {}, storage: null }).windowRef !== undefined, true);

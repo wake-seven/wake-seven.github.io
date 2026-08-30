@@ -896,49 +896,6 @@ function renderClearQuiz(){
   if(quiz===undefined)return;
   renderQuizInto({root:'clearQuiz',options:'quizOptions',note:'quizNote',title:'quizTitle',question:'quizQuestion'},quiz);
 }
-function advanceAfterClear(){
-  makerButtonBlockedUntil=performance.now()+600;
-  clearTimeout(makerRevealTimer);
-  makerRevealTimer=setTimeout(()=>{
-    makerButtonBlockedUntil=0;
-    renderStageNav();
-  },600);
-  if(isMode('free')) startFree();
-  else if(isMode('custom')){
-    setPosition(currentInitialState,currentInitialPar);
-    renderStageNav();
-  }
-  else if(isMode('satori')){
-    if(satoriIndex<SATORI_STAGES.length-1)loadSatoriStage(satoriIndex+1);
-    else openSatoriPicker();
-  }
-  else if(isMode('mastery')){
-    if(extraIndex===EXTRA_STAGES.length-1)restoreFreeSession();
-    else loadExtraStage(extraIndex+1);
-  }
-  else if(stageIndex===ACADEMY_STAGE_COUNT-1&&academyCleared()) showMasterDialog('primary');
-  else if(stageIndex===STAGES.length-1&&allPrimaryCleared()) showMasterDialog('intermediate');
-  else if(stageIndex===STAGES.length-1) restoreFreeSession();
-  else{
-    // 節目(上巻完了→中巻開始など)は、CLEAR_CONTENTの`○○before`キーで案内ダイアログを挟む。
-    const before=clearContentBefore(false,stageIndex+1);
-    if(before?.dialog){openChainedDialog(before.dialog);return;}
-    loadStage(stageIndex+1);
-  }
-}
-let returnToClearCard=false,twoMovePatternsReturnTarget=null,twoMoveDetailReturnTarget=null;
-function returnToClearDialog(){
-  returnToClearCard=false;
-  $('clearDialogMessage').textContent=clearDialogHeading();
-  renderClearStageContext();
-  renderClearTip();
-  renderClearQuiz();
-  $('clearNext').disabled=false;
-  renderBoardQuiz('boardQuiz',boardQuizConfigForCurrent(),{requireAnswer:true});
-  $('clearNext').hidden=false;
-  $('clearDialog').hidden=false;
-  $('clearTipLink').focus();
-}
 let twoMoveDisplayStates=[],twoMoveDisplayPatterns=[];
 const twoMoveGuard=createAnimGuard();
 let twoMoveDetailState=null,twoMoveDetailIndex=-1,detailDrag=null;

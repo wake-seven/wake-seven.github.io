@@ -919,8 +919,7 @@ function tileTransformDeg(x,y,deg){
   return WakeSevenBoardGeometry.tileTransformDeg(x,y,deg);
 }
 function nearestRotationDeg(fromDeg,toDeg){
-  const delta=((toDeg-fromDeg+180)%360+360)%360-180;
-  return fromDeg+delta;
+  return WakeSevenBoardGeometry.nearestRotationDeg(fromDeg,toDeg);
 }
 function snapshot(){
   return {o:Uint8Array.from(ori),s:Int16Array.from(spin),t:tileEls.slice(),m:moves};

@@ -19,6 +19,7 @@ import { createUiLifecycle } from './ui/lifecycle.mjs';
 import { createUiStateView } from './ui/state-view.mjs';
 import { createSpeedUnlockService, DEFAULT_SPEED_UNLOCK_KEYS } from './runtime/progression.mjs';
 import { createRuntimeEnvironment } from './runtime/environment.mjs';
+import { createApplicationController } from './runtime/application.mjs';
 
 /** Development ESM entry point. The published build still uses index.html. */
 export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data = {}, commands = {}, ui = {}, environment = {} } = {}) {
@@ -41,6 +42,7 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
   const audio = createAudioService({ enabled: store.state.settings?.sound, documentRef: browserDocument, windowRef: browserWindow });
   const session = createSessionService({ persistence });
   const speedUnlocks = createSpeedUnlockService({ storage: browserStorage, storageKeys: DEFAULT_SPEED_UNLOCK_KEYS });
+  const application = createApplicationController({ store, session });
   const commandApi = Object.freeze({
     board: createBoardCommands(commands.board),
     progression: createProgressionCommands({ navigate: navigation.go, ...commands.progression })
@@ -54,7 +56,7 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
     render: options => createRenderCoordinator({ store, ...options }),
     messages: options => createMessagePresenter({ catalog: createMessageCatalog(data.clearContent), ...ui.messages, ...options })
   });
-  return Object.freeze({ board, progression, store, persistence, session, settings, audio, speedUnlocks, commands: commandApi, ui: uiApi, data: Object.freeze({
+  return Object.freeze({ board, progression, store, persistence, session, settings, audio, speedUnlocks, application, commands: commandApi, ui: uiApi, data: Object.freeze({
     messages: createMessageCatalog(data.clearContent),
     satori: createSatoriCatalog(data.satoriStages),
     boardQuiz: createBoardQuizCatalog(data.boardQuizCopy)
