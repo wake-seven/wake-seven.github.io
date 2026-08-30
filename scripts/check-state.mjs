@@ -87,21 +87,26 @@ if (directStorageUses.length !== 5) {
   throw new Error(`Expected only the five storage-boundary calls, found ${directStorageUses.length}.`);
 }
 
-const data = new Map([
-  ['wake7-language', 'en'],
-  ['wake7-sound', 'off'],
-  ['wake7-active-lap', '2'],
-  ['wake7-cleared', '[0,1]'],
-  ['wake7-extra-cleared', '[3]'],
-  ['wake7-satori-cleared', '[7]'],
-  ['wake7-master-gold-granted', '1'],
-  ['wake7-speed-intermediate-trial-cleared', '1'],
-  ['wake7-active-session', JSON.stringify({mode:'mastery',extra:true,index:3,lap:2,board:{o:[0,0,0,0,0,0,0]}})]
-]);
-const localStorage = {
-  getItem:key => data.has(key) ? data.get(key) : null,
-  setItem:(key,value) => data.set(key, String(value))
+const makeStorage = entries => {
+  const data = new Map(Object.entries(entries));
+  return {
+    getItem: key => data.has(key) ? data.get(key) : null,
+    setItem: (key, value) => data.set(key, String(value)),
+    removeItem: key => data.delete(key),
+    has: key => data.has(key)
+  };
 };
+const localStorage = makeStorage({
+  'wake7-language': 'en',
+  'wake7-sound': 'off',
+  'wake7-active-lap': '2',
+  'wake7-cleared': '[0,1]',
+  'wake7-extra-cleared': '[3]',
+  'wake7-satori-cleared': '[7]',
+  'wake7-master-gold-granted': '1',
+  'wake7-speed-intermediate-trial-cleared': '1',
+  'wake7-active-session': JSON.stringify({mode:'mastery',extra:true,index:3,lap:2,board:{o:[0,0,0,0,0,0,0]}})
+});
 const context = {window:{localStorage}, JSON};
 context.window.window = context.window;
 vm.runInNewContext(stateModule, context, {filename:'src/game-state.js'});
@@ -116,7 +121,52 @@ if (migrated.settings.language !== 'en' || migrated.settings.sound !== false || 
 if (!migrated.unlocks.masterGoldGranted || !migrated.unlocks.speedIntermediateTrialCleared) {
   throw new Error('Legacy unlock migration failed.');
 }
-if (!data.has('wake7-state-vnext')) throw new Error('Migration did not write wake7-state-vnext.');
+if (!localStorage.has('wake7-state-vnext')) throw new Error('Migration did not write wake7-state-vnext.');
+
+const migrationFixtures = [
+  {
+    name: 'settings, lap2 progress, and stage session',
+    entries: {
+      'wake7-language': 'zh', 'wake7-sound': 'on', 'wake7-board-theme': 'night',
+      'wake7-board-layout': 'wide', 'wake7-daruma-color': 'gold', 'wake7-active-lap': '2',
+      'wake7-lap2-primary-cleared': '[2,5]',
+      'wake7-active-session': JSON.stringify({mode:'stage',index:8,board:{o:[1,2,0,1,2,0,1]}})
+    },
+    verify: state => {
+      if (state.navigation.mode !== 'stage' || state.navigation.stageIndex !== 8 || state.navigation.lap !== 2)
+        throw new Error('Fixture stage navigation migration failed.');
+      if (state.progress.lap2.primary.join(',') !== '2,5') throw new Error('Fixture lap2 progress migration failed.');
+      if (state.settings.language !== 'zh' || state.settings.sound !== true || state.settings.boardTheme !== 'night'
+        || state.settings.boardLayout !== 'wide' || state.settings.darumaColor !== 'gold')
+        throw new Error('Fixture settings migration failed.');
+    }
+  },
+  {
+    name: 'mastery session and speed trial',
+    entries: {
+      'wake7-active-lap': '1', 'wake7-extra-cleared': '[1,4]',
+      'wake7-speed-active-variant': 'mastery15',
+      'wake7-speed-mastery-unlocked': '1', 'wake7-speed-mastery-trial-cleared': '1',
+      'wake7-active-session': JSON.stringify({mode:'mastery',extra:true,index:4,board:{o:[0,1,2,0,1,2,0]}})
+    },
+    verify: state => {
+      if (state.navigation.mode !== 'mastery' || state.navigation.masteryIndex !== 4)
+        throw new Error('Fixture mastery navigation migration failed.');
+      if (state.progress.lap1.mastery.join(',') !== '1,4') throw new Error('Fixture mastery progress migration failed.');
+      if (state.speed.activeVariant !== 'mastery15' || !state.unlocks.speedMastery
+        || !state.unlocks.speedMasteryTrialCleared)
+        throw new Error('Fixture speed migration failed.');
+    }
+  }
+];
+for (const fixture of migrationFixtures) {
+  const fixtureStorage = makeStorage(fixture.entries);
+  const migratedFixture = context.window.WakeSevenState.migrateLegacy(fixtureStorage);
+  fixture.verify(migratedFixture);
+  if (!fixtureStorage.has('wake7-state-vnext')) {
+    throw new Error(`Fixture ${fixture.name} did not write wake7-state-vnext.`);
+  }
+}
 
 const progression = context.window.WakeSevenProgression.create({
   satoriTotal:73,trainingExamTotal:18,
