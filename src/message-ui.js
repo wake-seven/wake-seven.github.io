@@ -35,3 +35,5 @@ const MESSAGE_RENDERERS=Object.freeze({
   boardQuiz:entry=>{configureMessageReviewHeader(entry);renderBoardQuiz('messageBoardQuiz',clearContentAt(true,entry.index).boardQuiz);},
   text:entry=>{$('messageDialogText').hidden=false;configureMessageReviewHeader(entry);$('messageDialogTextBody').textContent=entry.text;}
 });
+function renderPrimaryMilestone(entry,{seal,rankText,masterText,rules}){$('messageMasterSealLabel').textContent=masterPath().ranks[0];setSealColor(seal,0);configureMilestoneHeader(entry,tr('masterTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[0]);masterText.hidden=false;masterText.textContent=tr('masterText');rules.hidden=false;rules.textContent=masterCommonRules();}
+function renderMasteryMilestone(entry,{seal,rankText,masterText,boardNote}){$('messageMasterSealLabel').textContent=masterPath().ranks[3];setSealColor(seal,3);configureMilestoneHeader(entry,tr('masteryTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[3]);masterText.hidden=false;masterText.textContent=tr('masteryText');boardNote.hidden=false;boardNote.textContent=tr('masteryBoardNote');}

@@ -1093,12 +1093,6 @@ function messageReviewStageContext(entry){
   const path=currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume);
   return path+'　'+masterSubtitle(volume)+' '+(entry.index%MASTER_VOLUME_SIZE+1)+' / '+MASTER_VOLUME_SIZE;
 }
-function renderPrimaryMilestone(entry,{seal,rankText,masterText,rules}){
-  $('messageMasterSealLabel').textContent=masterPath().ranks[0];setSealColor(seal,0);configureMilestoneHeader(entry,tr('masterTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[0]);masterText.hidden=false;masterText.textContent=tr('masterText');rules.hidden=false;rules.textContent=masterCommonRules();
-}
-function renderMasteryMilestone(entry,{seal,rankText,masterText,boardNote}){
-  $('messageMasterSealLabel').textContent=masterPath().ranks[3];setSealColor(seal,3);configureMilestoneHeader(entry,tr('masteryTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(masterPath().ranks[3]);masterText.hidden=false;masterText.textContent=tr('masteryText');boardNote.hidden=false;boardNote.textContent=tr('masteryBoardNote');
-}
 function renderSatoriMilestone(entry,{seal,rankText,masterText}){$('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('satoriRank'),false,5);setSealColor(seal,5);seal.classList.add('rank-frame-seal');configureMilestoneHeader(entry,tr('satoriTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));masterText.hidden=false;masterText.textContent=tr('satoriText');}
 function renderAwakeningMilestone(entry,{seal,rankText,masterText,boardNote}){$('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('awakenedRank'),false,6);setSealColor(seal,6);seal.classList.add('rank-frame-seal');configureMilestoneHeader(entry,tr('awakenedTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(tr('awakenedRank'));masterText.hidden=false;masterText.textContent=tr('satoriThanks');boardNote.hidden=false;boardNote.textContent=tr('threeDUnlockedText');}
 function renderIntroMilestone(entry,{seal,masterText}){const data=INTRO_MILESTONE_COPY[entry.master];if(!data)return;seal.hidden=entry.master==='trainingWelcome';if(entry.master==='satoriIntro'){$('messageMasterSealLabel').innerHTML=satoriSealSvg();setSealColor(seal,5);}else if(entry.master==='secondLapIntro'){$('messageMasterSealLabel').textContent=secondLapMark();seal.classList.add('second-lap-mark');}configureMilestoneHeader(entry,tr(data[0]));masterText.hidden=false;masterText.textContent=tr(data[1]);}
