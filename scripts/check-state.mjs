@@ -70,6 +70,7 @@ const moduleMarkers = [
   '// ===== 進行表示 =====',
   '// ===== 節目ダイアログ =====',
   '// ===== 進行UI =====',
+  '// ===== 画面描画境界 =====',
   '// ===== イベントと起動 =====',
   '// ===== 公開API名前空間 ====='
 ];
@@ -157,7 +158,8 @@ const sourceModules = [
   ['src/message-ui.js', ['buildMessageReviewEntries', 'openMessageReview', 'moveMessageReview']],
   ['src/progression-render.js', ['renderStageNavAccent']],
   ['src/master-dialog.js', ['masterDialogTrialState', 'masterDialogBoardTheme', 'masterDialogBoardOptions']],
-  ['src/progression-ui.js', ['showClearDialog', 'renderClearTip']]
+  ['src/progression-ui.js', ['showClearDialog', 'renderClearTip']],
+  ['src/ui-render.js', ['renderCurrentView']]
 ];
 for (const [moduleName, names] of sourceModules) {
   const moduleSource = await readFile(join(root, moduleName), 'utf8');
