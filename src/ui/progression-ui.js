@@ -1476,14 +1476,15 @@ function showMasterDialog(kind='primary'){
     },
     mastery(){
       if(needsMasteryTrial){
-        showRankSeal(masterPath().ranks[4],4);
-        rankText.hidden=false;
-        rankText.textContent=rankEarnedText(masterPath().ranks[4]);
+        // 急のクリア時点ではまだ「名人」を授与しない。修了試験（速解き27）
+        // を完走した後に、改めて制覇ダイアログで称号を表示する。
+        seal.hidden=true;
         speedIntroArt.hidden=false;
         $('masterDialogTitle').textContent=tr('masteryTrialTitle');
         $('masterDialogText').textContent=tr('masteryTrialText');
         speedIntroNote.textContent=tr('masteryTrialNote');
         speedIntroNote.hidden=false;
+        rankText.hidden=true;
         $('masterStart').dataset.speedVariant='mastery27';
         $('masterStart').textContent=tr('masteryTrialStart');
       }else{
