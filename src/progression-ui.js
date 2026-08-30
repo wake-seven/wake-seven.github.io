@@ -720,10 +720,16 @@ function renderClearStageContext(){
     return;
   }
   context.hidden=false;
-  const showsCount=isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','development'].includes(primarySectionPosition(stageIndex).section.id));
+  const showsCount=clearDialogShowsStageCount();
   context.textContent=showsCount
     ?$('stageKind').textContent+'　'+$('stageNumber').textContent+' '+$('stageCount').textContent
     :$('stageKind').textContent+' '+$('stageNumber').textContent;
+}
+function clearDialogShowsStageCount(){
+  return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','development'].includes(primarySectionPosition(stageIndex).section.id));
+}
+function clearDialogUsesStageProgression(){
+  return !isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori');
 }
 function clearDialogHeading(){
   return tr(isMode('mastery')||isMode('satori')?'optimalClear':'clear');
@@ -740,22 +746,22 @@ function showClearDialog(){
     showMasterDialog(secondLapActive?'awakening':'satori');
     return;
   }
-  if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&stageIndex===ACADEMY_STAGE_COUNT-1&&academyCleared()){
+  if(clearDialogUsesStageProgression()&&stageIndex===ACADEMY_STAGE_COUNT-1&&academyCleared()){
     showMasterDialog('primary');
     return;
   }
   // 入門クラス最終問題のクリアは、通常のクリアダイアログの代わりに
   // だるま学園入学と同じ演出の「基本クラスへようこそ」を毎回そのまま見せる。
-  if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&stageIndex===INTRO_STAGE_COUNT-1){
+  if(clearDialogUsesStageProgression()&&stageIndex===INTRO_STAGE_COUNT-1){
     openChainedDialog('basicWelcome');
     return;
   }
   // 基本クラス最終問題のクリアも、同じ演出で「発展クラス開始」を毎回そのまま見せる。
-  if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&stageIndex===DEVELOPMENT_STAGE_START-1){
+  if(clearDialogUsesStageProgression()&&stageIndex===DEVELOPMENT_STAGE_START-1){
     openChainedDialog('developmentWelcome');
     return;
   }
-  if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&stageIndex===STAGES.length-1&&allPrimaryCleared()){
+  if(clearDialogUsesStageProgression()&&stageIndex===STAGES.length-1&&allPrimaryCleared()){
     showMasterDialog('intermediate');
     return;
   }
