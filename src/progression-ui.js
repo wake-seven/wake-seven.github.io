@@ -1144,6 +1144,11 @@ function configureMilestoneHeader(entry,title){
   $('messageDialogTitle').textContent=title;
   $('messageDialogPlace').textContent=messageReviewPlace(entry);
 }
+function updateMessageReviewNavigation(entry){
+  $('messagePrev').disabled=messageReviewIndex===0;
+  $('messageNext').disabled=messageReviewIndex===messageReviewEntries.length-1;
+  try{storage.set(MESSAGE_REVIEW_STORAGE_KEY,messageReviewEntryKey(entry));}catch(_){}
+}
 function prepareMessageReview(entry){
   const art=messageReviewArt(entry);
   const twoMoveLesson=lessonVariantFromArt(art);
@@ -1241,9 +1246,7 @@ function renderMessageReview(){
     void seal.offsetWidth;
     seal.classList.add('animate');
   }
-  $('messagePrev').disabled=messageReviewIndex===0;
-  $('messageNext').disabled=messageReviewIndex===messageReviewEntries.length-1;
-  try{storage.set(MESSAGE_REVIEW_STORAGE_KEY,messageReviewEntryKey(entry));}catch(_){}
+  updateMessageReviewNavigation(entry);
 }
 // ===== クイズシステム =====
 /* クイズは見直すたびに選択肢の位置を変える。 */
