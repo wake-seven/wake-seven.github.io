@@ -1188,6 +1188,7 @@ const MILESTONE_RENDERERS=Object.freeze({
   trainingWelcome:(entry,view)=>renderIntroMilestone(entry,view),
   volume:(entry,view,volume)=>renderVolumeMilestone(entry,volume,view)
 });
+function milestoneRenderer(entry){return MILESTONE_RENDERERS[entry.master]||MILESTONE_RENDERERS.volume;}
 function configureMessageReviewHeader(entry){
   $('messageDialogTitle').textContent=tr('clear');
   $('messageDialogPlace').textContent=messageReviewPlace(entry);
@@ -1240,8 +1241,7 @@ function renderMessageReview(){
     const volume=milestoneVolume(entry);
     const current=entry.master==='primary'?2:entry.master==='mastery'?6:Math.min(5,volume+2);
     if(entry.master!=='mastery')roadmap.innerHTML=masterRoadmapMarkup(current);
-    const renderer=MILESTONE_RENDERERS[entry.master]||MILESTONE_RENDERERS.volume;
-    renderer(entry,view,volume);
+    milestoneRenderer(entry)(entry,view,volume);
   }else{
     messageReviewRenderer(entry)(entry);
   }
