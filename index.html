@@ -9321,6 +9321,18 @@ $('freeMode').addEventListener('click',()=>{
   restoreFreeSession();
 });
 
+/* Event wiring uses this boundary instead of reaching into individual screens. */
+const GameNavigation=Object.freeze({
+  tutorial:()=>startTutorial(),
+  stage:index=>loadStage(index),
+  mastery:index=>loadExtraStage(index),
+  satori:index=>loadSatoriStage(index),
+  free:()=>startFree(),
+  maker:()=>enterBoardMaker(),
+  stageMenu:()=>returnToStageMode(),
+  speedPicker:()=>openSpeedPicker()
+});
+
 // ===== app-events.js =====
 // ===== デバッグツール =====
 function debugClearCurrent(extraMoves=0){
@@ -9414,7 +9426,7 @@ function debugUnlockStageCheckpoint(index,secondLap=false){
   }catch(_){}
   persistLapProgress();updateMasterTheme();
   if(index>0)rememberClearedMessage(false,index-1);
-  loadStage(index);
+  GameNavigation.stage(index);
 }
 $('debugIntro2').addEventListener('click',()=>debugUnlockStageCheckpoint(INTRO_STAGE_COUNT-1));
 $('debugBasic11').addEventListener('click',()=>debugUnlockStageCheckpoint(DEVELOPMENT_STAGE_START-1));
@@ -9443,7 +9455,7 @@ function debugUnlockExtra(count,secondLap=false){
   }catch(_){}
   persistLapProgress();updateMasterTheme();
   if(count>0)rememberClearedMessage(true,count-1);
-  loadExtraStage(Math.min(count,EXTRA_STAGES.length-1));
+  GameNavigation.mastery(Math.min(count,EXTRA_STAGES.length-1));
 }
 $('debugExtra14').addEventListener('click',()=>debugUnlockExtra(14));
 $('debugExtra29').addEventListener('click',()=>debugUnlockExtra(29));
@@ -9466,7 +9478,7 @@ function debugUnlockSatori(count,secondLap=false){
   persistLapProgress();updateMasterTheme();
   if(secondLap){debugGrantRainbowDaruma();updateMasterTheme();}
   rememberClearedMessage(true,EXTRA_STAGES.length-1);
-  loadSatoriStage(Math.min(count,SATORI_STAGES.length-1));
+  GameNavigation.satori(Math.min(count,SATORI_STAGES.length-1));
 }
 $('debugSatori72').addEventListener('click',()=>debugUnlockSatori(72));
 // 現在アクティブな速解きセッション（メニューから選んだもの）を、そのまま最終問題まで進める。
@@ -9531,7 +9543,7 @@ function debugSkipTutorial(){
   storage.set(STORAGE_KEYS.introSeen,'1');
   storage.set(STORAGE_KEYS.tutorialComplete,'1');
   storage.remove(STORAGE_KEYS.tutorialStep);
-  loadStage(0);
+  GameNavigation.stage(0);
   setTimeout(()=>openChainedDialog('academyEnroll'),260);
 }
 $('debugSkipTutorial').addEventListener('click',debugSkipTutorial);
@@ -9567,8 +9579,8 @@ $('menuOpen3D').addEventListener('click',()=>{window.open('index_3D.html','_blan
 $('menuSatori').addEventListener('click',()=>{closeAppMenu();openSatoriPicker();});
 $('menuSpeed').addEventListener('click',()=>{
   closeAppMenu();
-  if(isMode('speed')){pauseSpeedRun();openSpeedPicker();return;}
-  openSpeedPicker();
+  if(isMode('speed')){pauseSpeedRun();GameNavigation.speedPicker();return;}
+  GameNavigation.speedPicker();
 });
 $('speedBoardStart').addEventListener('click',beginSpeedRun);
 $('speedPause').addEventListener('click',()=>{
@@ -9599,7 +9611,7 @@ $('speedRestartConfirm').addEventListener('click',()=>{
 });
 $('speedPauseStageMode').addEventListener('click',()=>{
   $('speedPauseDialog').hidden=true;
-  pauseSpeedRun();returnToStageMode();
+  pauseSpeedRun();GameNavigation.stageMenu();
 });
 $('speedPauseFreeMode').addEventListener('click',()=>{
   $('speedPauseDialog').hidden=true;
@@ -9607,7 +9619,7 @@ $('speedPauseFreeMode').addEventListener('click',()=>{
 });
 $('speedPauseCustomMode').addEventListener('click',()=>{
   $('speedPauseDialog').hidden=true;
-  if(!isMode('custom'))enterBoardMaker();
+  if(!isMode('custom'))GameNavigation.maker();
 });
 $('closeMessages').addEventListener('click',()=>{
   const returnTarget=messageDialogReturn;
@@ -9690,7 +9702,7 @@ $('clearTipLink').addEventListener('click',()=>{
 const MASTER_DIALOG_CHAIN={
   // 二周目を既に制覇していても、一周目をもう一度完走したら新しい二周目を始められるようにする。
   satori:{via:'close',when:()=>activeLap===1,
-    setup:()=>{if(!secondLapUnlocked)beginSecondLap();else{activateCampaignLap(2);loadStage(0);}},
+    setup:()=>{if(!secondLapUnlocked)beginSecondLap();else{activateCampaignLap(2);GameNavigation.stage(0);}},
     open:'secondLapIntro'},
   mastery:{via:'close',when:()=>secondLapActive||speedMasteryTrialCleared,open:'satoriIntro'}
 };
@@ -9708,8 +9720,8 @@ $('masterClose').addEventListener('click',()=>{
     openChainedDialog(chain.open);
     return;
   }
-  if(restartTraining){activateCampaignLap(1);loadStage(0);return;}
-  if(leaveSpeed){returnToStageMode();return;}
+  if(restartTraining){activateCampaignLap(1);GameNavigation.stage(0);return;}
+  if(leaveSpeed){GameNavigation.stageMenu();return;}
   renderStageNav();
 });
 $('shareGame').addEventListener('click',()=>shareWakeSeven('game',$('shareGame')));
@@ -9776,7 +9788,7 @@ $('masterStart').addEventListener('click',()=>{
     if(!secondLapActive&&!speedTrainingTrialCleared){speedVariant='training9';speedSession=null;enterSpeedMode(true);return;}
     const before=clearContentBefore(false,TRAINING_STAGE_START);
     if(before?.dialog){rememberSpecialMessage(before.dialog);openChainedDialog(before.dialog);return;}
-    loadStage(TRAINING_STAGE_START);return;
+    GameNavigation.stage(TRAINING_STAGE_START);return;
   }
   if(masterDialogKind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared){
     speedVariant='mastery15';speedSession=null;enterSpeedMode(true);return;
@@ -9784,13 +9796,13 @@ $('masterStart').addEventListener('click',()=>{
   if(masterDialogKind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared){
     speedVariant='mastery24';speedSession=null;enterSpeedMode(true);return;
   }
-  if(masterDialogKind==='intermediate'){loadExtraStage(0);return;}
-  if(masterDialogKind==='pathInfo')loadExtraStage(0);
-  else if(masterDialogKind==='secondLapIntro')loadStage(0);
-  else if(masterDialogKind==='satoriIntro')loadSatoriStage(0);
+  if(masterDialogKind==='intermediate'){GameNavigation.mastery(0);return;}
+  if(masterDialogKind==='pathInfo')GameNavigation.mastery(0);
+  else if(masterDialogKind==='secondLapIntro')GameNavigation.stage(0);
+  else if(masterDialogKind==='satoriIntro')GameNavigation.satori(0);
   else if(masterDialogKind==='satori')openSatoriPicker();
   else if(masterDialogKind==='mastery')openSatoriPicker();
-  else loadExtraStage(extraIndex+1);
+  else GameNavigation.mastery(extraIndex+1);
 });
 $('masterSpeedUnlockStart').addEventListener('click',()=>{
   hideGameDialogs();
@@ -9802,7 +9814,7 @@ $('introStart').addEventListener('click',()=>{
   clearInterval(introTimer);
   $('introDialog').hidden=true;
   storage.set(STORAGE_KEYS.introSeen,'1');
-  startTutorial();
+  GameNavigation.tutorial();
 });
 $('chainDialogAction').addEventListener('click',()=>{
   const step=chainActiveStep;
@@ -10432,7 +10444,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   awakenedGranted=false;
   setActiveMode('stage');speedSession=null;pauseSpeedClock();
   updateMasterTheme();
-  loadStage(0);
+  GameNavigation.stage(0);
   if(showIntro)setTimeout(openIntroGuide,80);
 }
 $('resetProgress').addEventListener('click',()=>{

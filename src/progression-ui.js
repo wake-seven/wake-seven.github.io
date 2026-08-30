@@ -2180,3 +2180,15 @@ $('freeMode').addEventListener('click',()=>{
   if(busy||isMode('free'))return;
   restoreFreeSession();
 });
+
+/* Event wiring uses this boundary instead of reaching into individual screens. */
+const GameNavigation=Object.freeze({
+  tutorial:()=>startTutorial(),
+  stage:index=>loadStage(index),
+  mastery:index=>loadExtraStage(index),
+  satori:index=>loadSatoriStage(index),
+  free:()=>startFree(),
+  maker:()=>enterBoardMaker(),
+  stageMenu:()=>returnToStageMode(),
+  speedPicker:()=>openSpeedPicker()
+});
