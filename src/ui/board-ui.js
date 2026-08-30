@@ -1228,6 +1228,7 @@ function loadStage(index){
   trackStageView();
   if(stageIndex===0&&!hasMasterReward())scheduleStageOneTutorial();
   else scheduleBasicLessonAssist();
+  syncGameState();
 }
 function loadExtraStage(index){
   // 一周目は、だるま修行の修了試験を終えるまで名人への道へ進めない。
@@ -1244,6 +1245,7 @@ function loadExtraStage(index){
   renderCurrentView();
   animateBoardArrival();
   trackStageView();
+  syncGameState();
 }
 function loadSatoriStage(index){
   if(!canEnterSatori()){
@@ -1262,6 +1264,7 @@ function loadSatoriStage(index){
   renderCurrentView();
   animateBoardArrival();
   trackStageView();
+  syncGameState();
 }
 function persistCurrentStage(extra,index){
   try{storage.set('wake7-current-stage',JSON.stringify({extra,index,lap:activeLap}));}catch(_){}

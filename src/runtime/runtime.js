@@ -409,9 +409,12 @@ let clearedSatoriStages=new Set(initialProgress.lap1?.satori||[]);
 function readLapProgress(lap,part){
   const statePart=part==='extra'?'mastery':part;
   const vNextProgress=gameState.progress?.['lap'+lap]?.[statePart];
-  if(Array.isArray(vNextProgress))return new Set(vNextProgress);
   const key='wake7-lap'+lap+'-'+part+'-cleared';
   const value=storage.json(key,null);
+  // 状態ストア移行直後など、progress が空でも flat に最新値が残る場合がある。
+  // 実績のある flat 値を優先し、空の progress が保存値を隠さないようにする。
+  if(Array.isArray(vNextProgress)&&vNextProgress.length===0&&Array.isArray(value)&&value.length>0)return new Set(value);
+  if(Array.isArray(vNextProgress))return new Set(vNextProgress);
   return value===null?null:new Set(Array.isArray(value)?value:[]);
 }
 const fullStageSet=stages=>new Set(stages.map((_,i)=>i));
