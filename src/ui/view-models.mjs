@@ -1,5 +1,7 @@
-// 開発側UIへ渡す読み取り専用view model。DOMやイベント登録を持たない。
-const freezeModel=model=>Object.freeze({...model});
-export function createStagePickerViewModel({ title='', stages=[], selectedIndex=0, canClose=true }={}) { return freezeModel({ kind:'stage-picker', title, stages:[...stages], selectedIndex, canClose }); }
-export function createClearMessageViewModel({ heading='', context='', nextLabel='', canContinue=false }={}) { return freezeModel({ kind:'clear-message', heading, context, nextLabel, canContinue }); }
-export function createSpeedViewModel({ variant='', current=0, total=0, elapsedMs=0, paused=false }={}) { return freezeModel({ kind:'speed', variant, current, total, elapsedMs, paused }); }
+/** Stable view-model contracts for classic-compatible renderer adapters. */
+export const createStagePickerModel = ({ title = '', page = 0, total = 0, items = [], stages = items, selectedIndex = -1 } = {}) => Object.freeze({ kind: 'stage-picker', title, page, total, items: Object.freeze([...items]), stages: Object.freeze([...stages]), selectedIndex });
+export const createClearMessageViewModel = ({ title = '', body = '', tip = null, quiz = null, art = '', nextAction = null, canContinue = false } = {}) => Object.freeze({ kind: 'clear-message', title, body, tip, quiz, art, nextAction, canContinue });
+export const createSpeedRunModel = ({ variant = '', index = 0, total = 0, elapsedMs = 0, bestMs = 0 } = {}) => Object.freeze({ kind: 'speed-run', variant, index, total, elapsedMs, bestMs });
+export const createGuideModel = ({ index = 0, total = 0, caption = '', text = '', boards = [] } = {}) => Object.freeze({ kind: 'guide', index, total, caption, text, boards: Object.freeze([...boards]) });
+export const createStagePickerViewModel = createStagePickerModel;
+export const createSpeedViewModel = createSpeedRunModel;

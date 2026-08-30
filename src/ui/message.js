@@ -41,7 +41,7 @@ function resetMessageReviewView(entry,view){const {roadmap,roadmapNote}=view;$('
 function updateMessageReviewNavigation(entry){$('messagePrev').disabled=messageReviewIndex===0;$('messageNext').disabled=messageReviewIndex===messageReviewEntries.length-1;try{storage.set(MESSAGE_REVIEW_STORAGE_KEY,messageReviewEntryKey(entry));}catch(_){}
 }
 function moveMessageReview(delta){const next=messageReviewIndex+delta;if(next<0||next>=messageReviewEntries.length)return false;messageReviewIndex=next;renderMessageReview();return true;}
-function configureMilestoneHeader(entry,title){$('messageDialogTitle').textContent=title;$('messageDialogPlace').textContent=messageReviewPlace(entry);}
+function configureMilestoneHeader(entry,title){setText('messageDialogTitle',title);setText('messageDialogPlace',messageReviewPlace(entry));}
 function prepareMessageReview(entry){const art=messageReviewArt(entry),twoMoveLesson=lessonVariantFromArt(art),messageClearEntry=configureMessageReviewType(entry);configureMessageReviewLinks(entry,messageClearEntry);return {art,twoMoveLesson,messageClearEntry};}
 function milestoneRenderer(entry){return MILESTONE_RENDERERS[entry.master]||MILESTONE_RENDERERS.volume;}
 function messageReviewRenderer(entry){if(entry.quiz!==undefined)return MESSAGE_RENDERERS.quiz;if(entry.boardQuiz)return MESSAGE_RENDERERS.boardQuiz;return MESSAGE_RENDERERS.text;}

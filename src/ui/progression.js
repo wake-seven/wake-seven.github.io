@@ -388,35 +388,35 @@ function renderStageNav(){
   }
   function renderStageNavStageText(){
     if(isMode('speed')){
-      $('stageKind').textContent=speedVariantCopy(speedVariant).label;
+      setText('stageKind',speedVariantCopy(speedVariant).label);
       $('stageNumber').textContent=(speedSession.index+1)+' / '+(speedSession.total||activeSpeedDefinition().total);
       const showsRemaining=speedShowsRemaining();
       $('shortestLabel').textContent=showsRemaining?tr('shortestDisplay'):'';
       $('moveUnit').textContent=showsRemaining?tr('moveUnit'):'';
       $('academyClearSuffix').textContent=showsRemaining?tr('academyClearSuffix'):'';
       $('speedClockInline').hidden=false;
-      $('speedClockLabel').textContent='';
+      setText('speedClockLabel','');
       $('movesLabel').textContent=tr('moves');$('moves').textContent=moves;$('movesUnit').textContent=tr('moveUnit');
       document.querySelector('.status-metric.moves').hidden=isTwoMoveLessonSpeedStage();
       if(showsRemaining)showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
       renderSpeedClock();
     }else if(isMode('free')){
-      $('stageKind').textContent=tr('freeKind');
+      setText('stageKind',tr('freeKind'));
       $('stageNumber').textContent=tr('freePlay');
       showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
     }else if(isMode('custom')){
-      $('stageKind').textContent='CUSTOM';
+      setText('stageKind','CUSTOM');
       $('stageNumber').textContent=tr('makeBoard');
       const d=SOLVER.dist[enc(ori)];
       if(editingBoard)$('stagePar').textContent=d===255?'—':d;
       else showRemaining(d,false);
     }else if(isMode('satori')){
-      $('stageKind').textContent=tr('satori');
+      setText('stageKind',tr('satori'));
       $('stageNumber').textContent=(satoriIndex+1)+' / '+SATORI_STAGES.length;
       showRemaining('?',false);
     }else if(isMode('mastery')){
       const volume=Math.floor(extraIndex/MASTER_VOLUME_SIZE)+1;
-      $('stageKind').textContent=currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume);
+      setText('stageKind',currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume));
       $('stageNumber').textContent=masterSubtitle(volume);
       $('stageCount').textContent=(extraIndex%MASTER_VOLUME_SIZE+1)+' / '+MASTER_VOLUME_SIZE;
       $('stageCount').hidden=false;
@@ -426,13 +426,13 @@ function renderStageNav(){
       const {section,position}=primarySectionPosition(stageIndex);
       const isAcademySection=['intro','basic','development'].includes(section.id);
       if(isAcademySection){
-        $('stageKind').textContent=tr('academyPickerRound');
+        setText('stageKind',tr('academyPickerRound'));
         $('stageNumber').textContent=tr(section.labelKey)+tr('academyClassSuffix');
         $('stageCount').textContent=position+' / '+section.total;
         $('stageCount').hidden=false;
         $('stageSubtitle').hidden=true;
       }else{
-        $('stageKind').textContent=tr(section.labelKey);
+        setText('stageKind',tr(section.labelKey));
         $('stageNumber').textContent=position+' / '+section.total;
       }
       showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);

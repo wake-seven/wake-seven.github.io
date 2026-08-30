@@ -147,7 +147,7 @@ function formatSpeedClock(ms){
 function renderSpeedClock(){
   if(!isMode('speed'))return;
   const text=formatSpeedClock(speedElapsedMs());
-  $('speedClockValue').textContent=text;
+  setText('speedClockValue',text);
 }
 function startSpeedClock(){
   if(!isMode('speed')||speedManuallyPaused||speedClockStarted||document.visibilityState==='hidden'||speedAwaitingStart())return;

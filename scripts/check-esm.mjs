@@ -18,6 +18,7 @@ import { createSpeedUnlockService, DEFAULT_SPEED_UNLOCK_KEYS } from '../src/runt
 import { DEFAULT_SETTING_KEYS } from '../src/runtime/settings.mjs';
 import { createStagePickerViewModel, createClearMessageViewModel, createSpeedViewModel } from '../src/ui/view-models.mjs';
 import { createRuntimeEnvironment } from '../src/runtime/environment.mjs';
+import { createGuideModel } from '../src/ui/view-models.mjs';
 
 const runtime = createDevelopmentRuntime({ triangles: [{ cells: [0, 1, 2] }] });
 assert.equal(runtime.board.stateCount, 2187);
@@ -33,6 +34,7 @@ assert.equal(injectedRuntime.settings.values.boardTheme, 'default');
 assert.equal(createRuntimeEnvironment({ windowRef: {}, documentRef: {}, storage: null }).windowRef !== undefined, true);
 assert.equal(DEFAULT_SETTING_KEYS.boardTheme, 'wake7-board-theme');
 assert.equal(DEFAULT_SPEED_UNLOCK_KEYS.speedUnlocked, 'wake7-speed-unlocked');
+assert.equal(createGuideModel({ index: 1, total: 4 }).kind, 'guide');
 const board = Uint8Array.from([0, 1, 2, 0, 1, 2, 1]);
 assert.deepEqual(Array.from(runtime.board.decode(runtime.board.encode(board))), Array.from(board));
 assert.deepEqual(Array.from(runtime.board.roll(runtime.board.roll(board, 0, 1), 0, -1)), Array.from(board));
@@ -97,10 +99,14 @@ assert.equal(runtime.commands.progression.navigate({ mode: 'stage', stageIndex: 
 let renderCount = 0;
 const renderer = createRenderCoordinator({ store: runtime.store, renderers: { navigation: () => { renderCount++; } } });
 assert.equal(renderer.render().ok, true);
+const firstRender = renderer.render();
+const secondRender = renderer.render();
+assert.equal(firstRender.ok, true);
+assert.deepEqual(Object.keys(firstRender.results), Object.keys(secondRender.results));
 const disconnect = renderer.connect();
 runtime.store.updateSection('navigation', { stageIndex: 4 });
 disconnect();
-assert.equal(renderCount, 2);
+assert.equal(renderCount, 4);
 const eventTarget = { added: [], addEventListener(type, listener, options) { this.added.push({ type, listener, options }); }, removeEventListener(type, listener) { this.added = this.added.filter(item => item.type !== type || item.listener !== listener); } };
 const events = createEventBinder({ target: eventTarget, handlers: { change: () => {} } });
 assert.equal(events.bindAll(), 1);
