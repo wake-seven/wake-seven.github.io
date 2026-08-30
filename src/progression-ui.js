@@ -1048,15 +1048,6 @@ function rememberClearedMessage(extra,index,satori=false){
     storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);
   }catch(_){}
 }
-function rememberSpecialMessage(master){
-  const entry=buildMessageReviewEntries().find(item=>item.master===master);
-  if(!entry)return;
-  const key=messageReviewEntryKey(entry);
-  try{
-    storage.set(MESSAGE_REVIEW_STORAGE_KEY,key);
-    storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);
-  }catch(_){ }
-}
 function configureMessageReviewHeader(entry){
   $('messageDialogTitle').textContent=tr('clear');
   $('messageDialogPlace').textContent=messageReviewPlace(entry);
