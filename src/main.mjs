@@ -13,6 +13,7 @@ import { createRuntimeSettings } from './runtime/settings.mjs';
 import { createAudioService } from './runtime/audio.mjs';
 import { createNavigationController } from './ui/navigation.mjs';
 import { createRenderCoordinator } from './ui/render.mjs';
+import { createEventBinder } from './ui/events.mjs';
 import { createSpeedUnlockService } from './runtime/progression.mjs';
 
 /** Development ESM entry point. The published build still uses index.html. */
@@ -37,6 +38,7 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
   });
   const uiApi = Object.freeze({
     board: options => createBoardView(options),
+    events: options => createEventBinder(options),
     navigation,
     render: options => createRenderCoordinator({ store, ...options }),
     messages: options => createMessagePresenter({ catalog: createMessageCatalog(data.clearContent), ...ui.messages, ...options })

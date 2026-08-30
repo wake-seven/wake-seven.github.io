@@ -10,6 +10,7 @@ import { createBoardView } from '../src/ui/board.mjs';
 import { createMessagePresenter } from '../src/ui/messages.mjs';
 import { createNavigationController } from '../src/ui/navigation.mjs';
 import { createRenderCoordinator } from '../src/ui/render.mjs';
+import { createEventBinder } from '../src/ui/events.mjs';
 import { createSpeedUnlockService } from '../src/runtime/progression.mjs';
 
 const runtime = createDevelopmentRuntime({ triangles: [{ cells: [0, 1, 2] }] });
@@ -73,4 +74,10 @@ const disconnect = renderer.connect();
 runtime.store.updateSection('navigation', { stageIndex: 4 });
 disconnect();
 assert.equal(renderCount, 2);
+const eventTarget = { added: [], addEventListener(type, listener, options) { this.added.push({ type, listener, options }); }, removeEventListener(type, listener) { this.added = this.added.filter(item => item.type !== type || item.listener !== listener); } };
+const events = createEventBinder({ target: eventTarget, handlers: { change: () => {} } });
+assert.equal(events.bindAll(), 1);
+assert.equal(events.size, 1);
+assert.equal(events.unbindAll(), 1);
+assert.equal(events.size, 0);
 console.log('Validated development ES module entry point.');
