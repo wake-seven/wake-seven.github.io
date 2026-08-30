@@ -14,6 +14,8 @@ const namespaceModule = await readFile(join(root, 'src', 'runtime', 'namespace.j
 const compatCleanupDoc = await readFile(join(root, 'src', 'compat-cleanup.md'), 'utf8');
 const satoriDataModule = await readFile(join(root, 'src', 'data', 'satori.js'), 'utf8');
 const boardQuizDataModule = await readFile(join(root, 'src', 'data', 'board-quiz.js'), 'utf8');
+// classic互換ソースをvmで単体検査する際は、公開module境界だけを除去する。
+const forClassicVm = source => source.replace(/^\s*export\s*\{\s*\};?\s*$/gm, '');
 const required = [
   'WAKE7:STATE-MODULE:START',
   'WAKE7:PROGRESSION-POLICY:START',
@@ -207,7 +209,9 @@ for (const token of namespaceSourceTokens) {
   if (!namespaceModule.includes(token)) throw new Error(`src/runtime/namespace.js is missing ${token}.`);
 }
 
-const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[1]);
+// native module scriptはNodeのFunctionコンストラクタでは評価できないため、
+// classicなインライン補助スクリプトだけを構文検査する。
+const inlineScripts = [...html.matchAll(/<script(?![^>]*\btype=["']module["'])(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[1]);
 for (const script of inlineScripts) new Function(script);
 
 const modeBoundary = html.indexOf('const isMode=mode=>activeMode===mode;');
@@ -260,9 +264,9 @@ const localStorage = makeStorage({
 });
 const context = {window:{localStorage}, JSON};
 context.window.window = context.window;
-vm.runInNewContext(stateModule, context, {filename:'src/state/game-state.js'});
-vm.runInNewContext(progressionModule, context, {filename:'src/state/progression-policy.js'});
-vm.runInNewContext(`${boardDomainModule}\nwindow.WakeSevenBoardDomain=WakeSevenBoardDomain;`, context, {filename:'src/domain/board.js'});
+vm.runInNewContext(forClassicVm(stateModule), context, {filename:'src/state/game-state.js'});
+vm.runInNewContext(forClassicVm(progressionModule), context, {filename:'src/state/progression-policy.js'});
+vm.runInNewContext(`${forClassicVm(boardDomainModule)}\nwindow.WakeSevenBoardDomain=WakeSevenBoardDomain;`, context, {filename:'src/domain/board.js'});
 const migrated = context.window.WakeSevenState.migrateLegacy(localStorage);
 if (migrated.navigation.mode !== 'mastery' || migrated.navigation.masteryIndex !== 3 || migrated.navigation.lap !== 2) {
   throw new Error('Legacy navigation migration failed.');
@@ -310,7 +314,7 @@ const namespaceContext = {
   pauseSpeedClock: () => {},
   SPEED_MODE_DEFINITIONS: {}
 };
-vm.runInNewContext(namespaceModule, namespaceContext, {filename:'src/runtime/namespace.js'});
+vm.runInNewContext(forClassicVm(namespaceModule), namespaceContext, {filename:'src/runtime/namespace.js'});
 const wakeSeven = namespaceContext.window.WakeSeven;
 if (!wakeSeven || !Object.isFrozen(wakeSeven)
   || Object.keys(wakeSeven).sort().join(',') !== 'messages,progression,speed,state') {

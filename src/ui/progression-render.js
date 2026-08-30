@@ -9,3 +9,5 @@ function renderStageNavAccent(){
   if(!isMode('speed')){$('shortestLabel').textContent=tr('shortestDisplay');$('moveUnit').textContent=tr('moveUnit');$('academyClearSuffix').textContent=tr('academyClearSuffix');$('movesLabel').textContent=tr('moves');$('moves').textContent=moves;$('movesUnit').textContent=tr('moveUnit');}
   renderRankBadge();
 }
+// 公開native moduleの構文境界。
+export {};

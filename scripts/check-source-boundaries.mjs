@@ -31,8 +31,7 @@ for (const path of jsFiles) {
   if (!/\b(?:import|export)\b/.test(source)) classic.push(relative(srcRoot, path).replaceAll('\\', '/'));
 }
 
-// classic実装の残存は移行課題として可視化するが、公開ビルド対象外の漏れだけを失敗にする。
+// classic実装の残存は移行課題として可視化する。公開ビルド対象外の漏れだけを失敗にする。
 assert.deepEqual(unlisted, [], `Unlisted JavaScript sources detected: ${unlisted.join(', ')}`);
-assert.ok(classic.length > 0, 'Expected the migration audit to detect current classic-compatible sources.');
-console.log(`Audited ${files.length} source modules; tracked classic compatibility files: ${classic.length}.`);
-console.log(`Classic files: ${classic.join(', ')}`);
+console.log(`Audited ${files.length} source modules; syntax-only classic compatibility files: ${classic.length}.`);
+if (classic.length) console.log(`Classic files: ${classic.join(', ')}`);

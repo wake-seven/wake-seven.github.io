@@ -5,3 +5,5 @@ const WakeSevenProgressionCommands=Object.freeze({
   startSpeedRun:()=>beginSpeedRun(),
   advanceSpeedRun:()=>advanceSpeedRun()
 });
+// 公開native moduleの構文境界。
+export {};

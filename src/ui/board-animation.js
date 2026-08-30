@@ -31,3 +31,5 @@ function updateAutoSwipePreview(clones,progress,turnDelta){
     }
   }
 }
+// 公開native moduleの構文境界。
+export {};

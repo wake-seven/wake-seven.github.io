@@ -8,3 +8,5 @@ function renderCurrentView({includeBoard=false,includePicker=true}={}){
   renderStageNav();
   if(includePicker&&!$('stagePicker').hidden)renderStagePicker();
 }
+// 公開native moduleの構文境界。
+export {};

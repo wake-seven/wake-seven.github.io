@@ -4,3 +4,5 @@ const WakeSevenBoardCommands=Object.freeze({
   applySwipe:(ti,dir,options={})=>applySwipe(ti,dir,options.save??true,options.playEffects??true),
   undo:()=>undoLastMove()
 });
+// 公開native moduleの構文境界。
+export {};

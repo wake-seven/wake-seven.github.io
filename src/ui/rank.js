@@ -104,3 +104,5 @@ function openRankDialogFrom(dialogId,sealId){
   $(dialogId).hidden=true;
   openRankDialog({dialogId,focusId:sealId});
 }
+// 公開native moduleの構文境界。
+export {};

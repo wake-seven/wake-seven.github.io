@@ -1539,3 +1539,5 @@ const UI_TEXT={
     flipVertical:'상하 반전'
   }
 };
+// 公開native moduleの構文境界。
+export {};

@@ -1656,6 +1656,8 @@
     notify
   });
 })(window);
+// 公開native moduleの構文境界。
+export {};
 
 // <!-- WAKE7:PROGRESSION-POLICY:START -->
 /* コース進行と速解きの宣言ポリシー。公開版では単体HTMLへ埋め込む。 */
@@ -1714,6 +1716,8 @@
 
   global.WakeSevenProgression = Object.freeze({create});
 })(window);
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 盤面ドメイン =====
 /*
@@ -1802,6 +1806,8 @@ const WakeSevenBoardDomain=(()=>{
   }
   return Object.freeze({create});
 })();
+// 公開native moduleの構文境界。
+export {};
 
 // ===== クリア後メッセージデータ =====
 // ===== クリア後・開始前メッセージデータ =====
@@ -1879,6 +1885,8 @@ const CLEAR_CONTENT={
   mastery3_13:{tip:{ja:'メニューの「最短2手の9パターン」と「攻略のコツ」では、盤面をスワイプするとゲーム中の盤面と並べて見比べられます。',en:'In “2-move boards” and “Quick tips” in the Menu, swipe a board to compare it side by side with the game board.',zh:'在菜单的“最少2步棋盘”和“攻略提示”中，滑动棋盘可与游戏中的棋盘并排比较。',ko:'메뉴의 “최단 2수 보드”와 “공략 팁”에서는 보드를 스와이프해 게임 보드와 나란히 비교할 수 있어요.'}},
   mastery3_14:{quiz:{ja:{q:'達磨大師が開いたとされる仏教の宗派は？',a:['禅宗','浄土宗','真言宗','日蓮宗'],correct:0,note:'達磨大師は、中国禅宗の開祖とされています。'},en:{q:'Which Buddhist school is Bodhidharma said to have founded?',a:['Zen','Pure Land','Shingon','Nichiren'],correct:0,note:'Bodhidharma is regarded as the founder of Chinese Zen Buddhism.'},zh:{q:'达摩大师被认为开创了哪个佛教宗派？',a:['禅宗','净土宗','真言宗','日莲宗'],correct:0,note:'达摩大师被视为中国禅宗的开祖。'},ko:{q:'달마대사가 열었다고 전해지는 불교 종파는?',a:['선종','정토종','진언종','일련종'],correct:0,note:'달마대사는 중국 선종의 개조로 여겨집니다.'}}},
 };
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 基礎データ =====
 // ===== 盤面ジオメトリ定数 =====
@@ -2273,6 +2281,8 @@ EXTRA_STAGES.push(
 );
 // 悟りへの道の出題データは src/data/satori.js で構築する。
 let currentLang='ja';
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 悟り出題データ =====
 // 悟りへの道の最終出題順。直前の構築処理は基礎データ側に残す。
@@ -2373,6 +2383,8 @@ const SATORI_STAGES=[...SATORI_MIXED_STAGES];
 [SATORI_STAGES[71],SATORI_STAGES[72]]=[SATORI_STAGES[72],SATORI_STAGES[71]];
 const SATORI_ORDER_VERSION='mixed-depths-final-swap-10';
 const satoriStageIndexByState=new Map(SATORI_STAGES.map((stage,index)=>[stage.state,index]));
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 多言語UIテキスト =====
 // ===== UI_TEXT(多言語辞書) =====
@@ -3916,6 +3928,8 @@ const UI_TEXT={
     flipVertical:'상하 반전'
   }
 };
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 盤面クイズデータ =====
 // ===== 盤面クイズデータ =====
@@ -3931,6 +3945,8 @@ const BOARD_QUIZ_COPY={
 Object.assign(BOARD_QUIZ_COPY.en,{chooseThree:'Which board takes 3 moves?',largeTriangle:'A large triangle of fallen daruma can take either 3 or 4 moves, depending on their directions.'});
 Object.assign(BOARD_QUIZ_COPY.zh,{chooseThree:'哪一个最少需要3步？',largeTriangle:'倒下的大三角形会因方向不同而需要3步或4步。'});
 Object.assign(BOARD_QUIZ_COPY.ko,{chooseThree:'어느 보드가 최단 3수일까요?',largeTriangle:'누운 다루마의 큰 삼각형은 방향에 따라 최단 3수 또는 4수가 됩니다.'});
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 固定挿絵・SVGデータ =====
 // ===== 固定挿絵・SVGデータ =====
@@ -4018,6 +4034,9 @@ const TRAINING_WELCOME_ART_SVG=`<svg id="trainingWelcomeArt" viewBox="0 0 320 22
   </g>
 </svg>`;
 
+// 公開バンドルではnative moduleへ連結されることを明示する境界。
+export {};
+
 // ===== 実行設定 =====
 // ===== 実行設定 =====
 // 設定の初期化と旧保存キーからの読み込みだけを担当する。
@@ -4054,6 +4073,9 @@ function initializeRuntimeSettings(){
     darumaColorChosen=storage.get(STORAGE_KEYS.darumaColorChosen)==='1';
   }catch(_){ }
 }
+
+// 公開バンドルではnative moduleへ連結されることを明示する境界。
+export {};
 
 // ===== サウンド =====
 // ===== サウンド =====
@@ -4105,6 +4127,8 @@ function updateSoundToggle(){
     ?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M16 9.5a4 4 0 0 1 0 5M18.5 7a7.5 7.5 0 0 1 0 10"/></svg>'
     :'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="m4 4 16 16"/></svg>';
 }
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 速解き解放状態 =====
 // 速解き解放状態の読み込みと、旧保存形式からの移行。
@@ -4148,6 +4172,8 @@ function initializeSpeedUnlockState({initialUnlocks,storage,storageKeys,awakened
     trainingTrial,intermediateTrial,masteryTrial
   });
 }
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 実行状態 =====
 // ===== 共通ユーティリティ =====
@@ -5031,6 +5057,8 @@ function hexPath(r){
   }
   return p+'Z';
 }
+// 公開native moduleの構文境界。
+export {};
 
 // ===== スピードランランタイム =====
 // ===== スピードラン(速解き)ランタイム =====
@@ -5369,6 +5397,8 @@ function completeSpeedStage(){
   const delay=celebrateClear();
   clearTimer=setTimeout(WakeSevenProgressionCommands.advanceSpeedRun,delay+120);
 }
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 盤面アニメーション補助 =====
 // ===== 盤面アニメーション補助 =====
@@ -5404,6 +5434,8 @@ function updateAutoSwipePreview(clones,progress,turnDelta){
     }
   }
 }
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 盤面UI =====
 // ===== 盤面SVG構築・入門/学園ダイアログ・最短2手レッスン =====
@@ -7491,6 +7523,8 @@ const GameBoard=Object.freeze({
   repaint:()=>paint(),
   reset:(state,par)=>setPosition(state,par)
 });
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 盤面コマンド =====
 // 盤面操作のコマンド入口。実装本体は当面 board-ui.js に残し、入力経路だけを統一する。
@@ -7499,6 +7533,8 @@ const WakeSevenBoardCommands=Object.freeze({
   applySwipe:(ti,dir,options={})=>applySwipe(ti,dir,options.save??true,options.playEffects??true),
   undo:()=>undoLastMove()
 });
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 進行コマンド =====
 // 進行操作のコマンド入口。実装本体は既存ランタイムに残し、
@@ -7508,6 +7544,8 @@ const WakeSevenProgressionCommands=Object.freeze({
   startSpeedRun:()=>beginSpeedRun(),
   advanceSpeedRun:()=>advanceSpeedRun()
 });
+// 公開native moduleの構文境界。
+export {};
 
 // ===== クイズUI =====
 // ===== 共通クイズUI =====
@@ -7585,6 +7623,8 @@ function bindBoardQuizAnswerEvents(root,{config,correct,states,copy,note,noteKey
     if(requireAnswer)$('clearNext').disabled=false;
   }));
 }
+// 公開native moduleの構文境界。
+export {};
 
 // ===== クリアフロー =====
 // ===== クリア内容の選択 =====
@@ -7616,6 +7656,8 @@ function stageClearArtAt(mode,index){
   return entry.art||'';
 }
 function stageClearArt(){return isMode('satori')?'':stageClearArtAt(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);}
+// 公開native moduleの構文境界。
+export {};
 
 // ===== メッセージUI =====
 // ===== メッセージUIの宣言データ =====
@@ -7682,6 +7724,8 @@ function renderAwakeningMilestone(entry,{seal,rankText,masterText,boardNote}){$(
 function renderIntroMilestone(entry,{seal,masterText}){const data=INTRO_MILESTONE_COPY[entry.master];if(!data)return;seal.hidden=entry.master==='trainingWelcome';if(entry.master==='satoriIntro'){$('messageMasterSealLabel').innerHTML=satoriSealSvg();setSealColor(seal,5);}else if(entry.master==='secondLapIntro'){$('messageMasterSealLabel').textContent=secondLapMark();seal.classList.add('second-lap-mark');}configureMilestoneHeader(entry,tr(data[0]));masterText.hidden=false;masterText.textContent=tr(data[1]);}
 function renderVolumeMilestone(entry,volume,{seal,rankText,masterText}){const nextRules=VOLUME_NEXT_RULES[currentLang]||[];const clearName=currentLang==='ja'?'名人への道・'+volumeLabel(volume)+'　'+masterSubtitle(volume):volumeLabel(volume)+'　'+masterSubtitle(volume);$('messageMasterSealLabel').textContent=rankForVolume(volume);setSealColor(seal,volume);configureMilestoneHeader(entry,tr('volumeClearTitle',{n:clearName}));rankText.hidden=false;rankText.textContent=rankEarnedText(rankForVolume(volume));masterText.hidden=false;masterText.textContent=nextRules[volume-1]||tr('volumeClearText');}
 const MILESTONE_RENDERERS=Object.freeze({primary:(entry,view)=>renderPrimaryMilestone(entry,view),mastery:(entry,view)=>renderMasteryMilestone(entry,view),satori:(entry,view)=>renderSatoriMilestone(entry,view),awakening:(entry,view)=>renderAwakeningMilestone(entry,view),satoriIntro:(entry,view)=>renderIntroMilestone(entry,view),secondLapIntro:(entry,view)=>renderIntroMilestone(entry,view),trainingWelcome:(entry,view)=>renderIntroMilestone(entry,view),volume:(entry,view,volume)=>renderVolumeMilestone(entry,volume,view)});
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 進行表示 =====
 // ステージ進行に関する表示補助。状態更新は行わず、現在の状態を画面へ反映する。
@@ -7695,6 +7739,8 @@ function renderStageNavAccent(){
   if(!isMode('speed')){$('shortestLabel').textContent=tr('shortestDisplay');$('moveUnit').textContent=tr('moveUnit');$('academyClearSuffix').textContent=tr('academyClearSuffix');$('movesLabel').textContent=tr('moves');$('moves').textContent=moves;$('movesUnit').textContent=tr('moveUnit');}
   renderRankBadge();
 }
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 節目ダイアログ =====
 // 節目ダイアログの表示条件をまとめる。報酬付与や遷移は progression-ui.js 側が担当する。
@@ -7725,6 +7771,8 @@ function masterDialogVisibility(kind,needsMasteryTrial){
     start:['satori','awakening'].includes(kind)||(kind==='mastery'&&!needsMasteryTrial)
   };
 }
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 進行UI =====
 // ===== ヒントシステム・段位・名人ロードマップ =====
@@ -9434,6 +9482,8 @@ const GameDialogs=Object.freeze({
   ranks:options=>openRankDialog(options),
   mastery:kind=>showMasterDialog(kind)
 });
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 画面描画境界 =====
 // 称号表示と称号一覧ダイアログ。
@@ -9542,6 +9592,8 @@ function openRankDialogFrom(dialogId,sealId){
   $(dialogId).hidden=true;
   openRankDialog({dialogId,focusId:sealId});
 }
+// 公開native moduleの構文境界。
+export {};
 
 // ===== イベントと起動 =====
 /* ---- 画面描画の境界 ----
@@ -9554,6 +9606,8 @@ function renderCurrentView({includeBoard=false,includePicker=true}={}){
   renderStageNav();
   if(includePicker&&!$('stagePicker').hidden)renderStagePicker();
 }
+// 公開native moduleの構文境界。
+export {};
 
 // ===== 公開API名前空間 =====
 // ===== デバッグツール =====
@@ -10763,6 +10817,8 @@ if(document.documentElement.classList.contains('embed')&&window.parent!==window)
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(reportEmbedHeight);
   reportEmbedHeight();
 }
+// 公開native moduleの構文境界。
+export {};
 
 // ===== runtime/namespace.js =====
 /* 公開APIの境界。既存のグローバル関数は互換のため残し、外部からはこの名前空間を入口にする。 */
@@ -10800,6 +10856,8 @@ if(document.documentElement.classList.contains('embed')&&window.parent!==window)
 
   global.WakeSeven = Object.freeze({state: stateApi, progression: progressionApi, messages: messagesApi, speed: speedApi});
 })(window);
+// 公開native moduleの構文境界。
+export {};
 </script>
 <!-- WAKE7:APPLICATION-MODULES:END -->
 </body>

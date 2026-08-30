@@ -82,3 +82,6 @@ const TRAINING_WELCOME_ART_SVG=`<svg id="trainingWelcomeArt" viewBox="0 0 320 22
     <ellipse cx="0" cy="-36" rx="32" ry="6.5" fill="#E4C88F" stroke="#241D1A" stroke-width="2.2"/>
   </g>
 </svg>`;
+
+// 公開バンドルではnative moduleへ連結されることを明示する境界。
+export {};

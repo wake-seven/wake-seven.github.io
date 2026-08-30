@@ -26,3 +26,5 @@ function masterDialogVisibility(kind,needsMasteryTrial){
     start:['satori','awakening'].includes(kind)||(kind==='mastery'&&!needsMasteryTrial)
   };
 }
+// 公開native moduleの構文境界。
+export {};

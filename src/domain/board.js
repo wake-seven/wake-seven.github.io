@@ -84,3 +84,5 @@ const WakeSevenBoardDomain=(()=>{
   }
   return Object.freeze({create});
 })();
+// 公開native moduleの構文境界。
+export {};

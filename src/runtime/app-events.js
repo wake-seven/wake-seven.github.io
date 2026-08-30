@@ -1205,3 +1205,5 @@ if(document.documentElement.classList.contains('embed')&&window.parent!==window)
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(reportEmbedHeight);
   reportEmbedHeight();
 }
+// 公開native moduleの構文境界。
+export {};

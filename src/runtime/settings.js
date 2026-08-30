@@ -33,3 +33,6 @@ function initializeRuntimeSettings(){
     darumaColorChosen=storage.get(STORAGE_KEYS.darumaColorChosen)==='1';
   }catch(_){ }
 }
+
+// 公開バンドルではnative moduleへ連結されることを明示する境界。
+export {};

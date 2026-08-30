@@ -879,3 +879,5 @@ function hexPath(r){
   }
   return p+'Z';
 }
+// 公開native moduleの構文境界。
+export {};

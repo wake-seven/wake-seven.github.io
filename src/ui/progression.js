@@ -1705,3 +1705,5 @@ const GameDialogs=Object.freeze({
   ranks:options=>openRankDialog(options),
   mastery:kind=>showMasterDialog(kind)
 });
+// 公開native moduleの構文境界。
+export {};

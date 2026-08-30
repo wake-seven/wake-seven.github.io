@@ -39,3 +39,5 @@ function initializeSpeedUnlockState({initialUnlocks,storage,storageKeys,awakened
     trainingTrial,intermediateTrial,masteryTrial
   });
 }
+// 公開native moduleの構文境界。
+export {};

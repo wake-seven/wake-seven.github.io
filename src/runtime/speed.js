@@ -334,3 +334,5 @@ function completeSpeedStage(){
   const delay=celebrateClear();
   clearTimer=setTimeout(WakeSevenProgressionCommands.advanceSpeedRun,delay+120);
 }
+// 公開native moduleの構文境界。
+export {};

@@ -27,3 +27,5 @@ function stageClearArtAt(mode,index){
   return entry.art||'';
 }
 function stageClearArt(){return isMode('satori')?'':stageClearArtAt(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);}
+// 公開native moduleの構文境界。
+export {};
