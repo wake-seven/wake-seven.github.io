@@ -22,7 +22,7 @@ function debugGrantRainbowDaruma(){
   darumaColor='rainbow';
   darumaColorChosen=false;
   try{
-    storage.set('wake7-rainbow-daruma-granted','1');
+    storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');
     storage.set('wake7-daruma-color','rainbow');
     storage.remove('wake7-daruma-color-chosen');
   }catch(_){ }
@@ -43,10 +43,10 @@ function debugPrepareSecondLapCheckpoint(){
   satoriDesignGranted=setUnlock('satoriDesignGranted',true);
   try{
     storage.set('wake7-second-lap-unlocked','1');
-    storage.remove('wake7-awakened-granted');
+    storage.remove(STORAGE_KEYS.awakenedGranted);
     for(const variant of ['standard','training9','mastery15','mastery24','satori73'])clearSpeedSession(variant);
-    storage.set('wake7-master-gold-granted','1');
-    storage.set('wake7-satori-design-granted','1');
+    storage.set(STORAGE_KEYS.masterGoldGranted,'1');
+    storage.set(STORAGE_KEYS.satoriDesignGranted,'1');
   }catch(_){ }
   activateCampaignLap(2);
 }
@@ -65,8 +65,8 @@ function debugPrepareFirstLapCheckpoint(){
   speedMasteryTrialCleared=false;
   try{
     storage.remove('wake7-second-lap-unlocked');
-    storage.remove('wake7-second-lap-active');
-    storage.remove('wake7-awakened-granted');
+    storage.remove(STORAGE_KEYS.secondLapActive);
+    storage.remove(STORAGE_KEYS.awakenedGranted);
   storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
   storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
   storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
@@ -1055,11 +1055,11 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
     storage.remove('wake7-satori-cleared');
     storage.remove('wake7-current-stage');
     storage.remove('wake7-active-session');
-    storage.remove('wake7-second-lap-active');
+    storage.remove(STORAGE_KEYS.secondLapActive);
     storage.remove('wake7-second-lap-unlocked');
     storage.remove('wake7-active-lap');
     for(const lap of [1,2])for(const part of ['primary','extra','satori'])storage.remove('wake7-lap'+lap+'-'+part+'-cleared');
-    storage.remove('wake7-awakened-granted');
+    storage.remove(STORAGE_KEYS.awakenedGranted);
     if(!preserveRewards){
       // デバッグの完全リセットでは、ゲノム側で選んだ表示設定も初期化する。
       storage.remove('wakeSevenGenomeBoardSize');
@@ -1070,10 +1070,10 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
       storage.remove('wake7-board-layout-chosen');
       storage.remove('wake7-daruma-color');
       storage.remove('wake7-daruma-color-chosen');
-      storage.remove('wake7-master-gold-granted');
-      storage.remove('wake7-satori-design-granted');
-      storage.remove('wake7-rainbow-daruma-granted');
-      storage.remove('wake7-speed-unlocked');
+      storage.remove(STORAGE_KEYS.masterGoldGranted);
+      storage.remove(STORAGE_KEYS.satoriDesignGranted);
+      storage.remove(STORAGE_KEYS.rainbowDarumaGranted);
+      storage.remove(STORAGE_KEYS.speedUnlocked);
       storage.remove(STORAGE_KEYS.speedTrainingUnlocked);
       storage.remove(STORAGE_KEYS.speedIntermediateUnlocked);
       storage.remove(STORAGE_KEYS.speedMasteryUnlocked);

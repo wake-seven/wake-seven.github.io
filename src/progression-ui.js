@@ -1470,7 +1470,7 @@ function grantMasterDialogRewards(kind){
     darumaColor='rainbow';
     darumaColorChosen=false;
     try{
-      storage.set('wake7-rainbow-daruma-granted','1');
+      storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');
       storage.remove('wake7-daruma-color-chosen');
     }catch(_){ }
     updateMasterTheme();
@@ -1480,7 +1480,7 @@ function grantMasterDialogRewards(kind){
     awakenedGranted=setUnlock('awakened',true);
     threeDUnlocked=setUnlock('threeD',true);
     try{
-      storage.set('wake7-awakened-granted','1');
+      storage.set(STORAGE_KEYS.awakenedGranted,'1');
       storage.set(STORAGE_KEYS.threeDUnlocked,'1');
     }catch(_){ }
     persistLapProgress();

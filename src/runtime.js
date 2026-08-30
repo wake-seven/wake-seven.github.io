@@ -326,17 +326,17 @@ if(!gameState.settings.darumaColor)try{
   darumaColorChosen=storage.get(STORAGE_KEYS.darumaColorChosen)==='1';
 }catch(_){ }
 let masterGoldGranted=gameState.unlocks.masterGoldGranted===true;
-if(!masterGoldGranted)try{masterGoldGranted=storage.get('wake7-master-gold-granted')==='1';}catch(_){ }
+if(!masterGoldGranted)try{masterGoldGranted=storage.get(STORAGE_KEYS.masterGoldGranted)==='1';}catch(_){ }
 let satoriDesignGranted=gameState.unlocks.satoriDesignGranted===true;
-if(!satoriDesignGranted)try{satoriDesignGranted=storage.get('wake7-satori-design-granted')==='1';}catch(_){ }
+if(!satoriDesignGranted)try{satoriDesignGranted=storage.get(STORAGE_KEYS.satoriDesignGranted)==='1';}catch(_){ }
 let secondLapActive=false;
-try{secondLapActive=storage.get('wake7-second-lap-active')==='1';}catch(_){ }
+try{secondLapActive=storage.get(STORAGE_KEYS.secondLapActive)==='1';}catch(_){ }
 let awakenedGranted=gameState.unlocks.awakened===true;
-if(!awakenedGranted)try{awakenedGranted=storage.get('wake7-awakened-granted')==='1';}catch(_){ }
+if(!awakenedGranted)try{awakenedGranted=storage.get(STORAGE_KEYS.awakenedGranted)==='1';}catch(_){ }
 // 速解きモードは、進行状況をリセットしても残す独立した解放要素。
 let speedModeUnlocked=false;
-try{speedModeUnlocked=storage.get('wake7-speed-unlocked')==='1'||awakenedGranted;}catch(_){speedModeUnlocked=awakenedGranted;}
-if(speedModeUnlocked)try{storage.set('wake7-speed-unlocked','1');}catch(_){ }
+try{speedModeUnlocked=storage.get(STORAGE_KEYS.speedUnlocked)==='1'||awakenedGranted;}catch(_){speedModeUnlocked=awakenedGranted;}
+if(speedModeUnlocked)try{storage.set(STORAGE_KEYS.speedUnlocked,'1');}catch(_){ }
 // この印がない保存データだけを、旧「速解き一括解放」仕様として移行する。
 const hasSpeedTrialModel=storage.get(STORAGE_KEYS.speedTrialModelVersion)==='3';
 // 速解きは解放された範囲ごとに選択できる。旧版の一括解放は、互換性のため全て解放済みとして移行する。
@@ -418,8 +418,8 @@ let threeDUnlocked=gameState.unlocks.threeD===true;
 if(!threeDUnlocked)try{threeDUnlocked=storage.get('wake7-3d-unlocked')==='1';}catch(_){ }
 // 七色だるまは二周目の名人達成報酬。旧版で覚者まで到達済みなら移行して保持する。
 let rainbowDarumaGranted=gameState.unlocks.rainbowDarumaGranted===true;
-try{rainbowDarumaGranted=rainbowDarumaGranted||storage.get('wake7-rainbow-daruma-granted')==='1'||awakenedGranted;}catch(_){rainbowDarumaGranted=awakenedGranted;}
-if(rainbowDarumaGranted)try{storage.set('wake7-rainbow-daruma-granted','1');}catch(_){ }
+try{rainbowDarumaGranted=rainbowDarumaGranted||storage.get(STORAGE_KEYS.rainbowDarumaGranted)==='1'||awakenedGranted;}catch(_){rainbowDarumaGranted=awakenedGranted;}
+if(rainbowDarumaGranted)try{storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');}catch(_){ }
 let secondLapUnlocked=gameState.unlocks.secondLap===true;
 try{secondLapUnlocked=secondLapUnlocked||storage.get('wake7-second-lap-unlocked')==='1'||secondLapActive||awakenedGranted;}catch(_){secondLapUnlocked=secondLapActive||awakenedGranted;}
 let activeLap=gameState.navigation.lap===2?2:1;
@@ -633,7 +633,7 @@ function updateMasterTheme(){
   // 悟り制覇の瞬間は、白黒と縦配置をセットで新しい褒美として見せる。
   if(isSatoriMastered()&&!satoriDesignGranted){
     boardTheme='satori';boardLayout='tilted';satoriDesignGranted=setUnlock('satoriDesignGranted',true);
-    try{storage.set('wake7-satori-design-granted','1');}catch(_){ }
+    try{storage.set(STORAGE_KEYS.satoriDesignGranted,'1');}catch(_){ }
   }
   if(hasMasterReward()&&!boardThemeChosen)boardTheme=hasSatoriReward()?'satori':'gold';
   if(hasSatoriReward()&&!boardLayoutChosen)boardLayout='tilted';
