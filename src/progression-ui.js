@@ -1147,7 +1147,71 @@ const MESSAGE_RENDERERS=Object.freeze({
   text:entry=>{ $('messageDialogText').hidden=false;$('messageDialogTitle').textContent=tr('clear');$('messageDialogPlace').textContent=messageReviewPlace(entry);$('messageDialogTextBody').textContent=entry.text; }
 });
 function renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule){
-  renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule);
+  illustration.classList.toggle('move-graph',art==='moveGraph'); illustration.classList.toggle('board-card',art.startsWith('twoMoveCard:')||art.startsWith('guideCard:')); illustration.classList.toggle('controls-art',art==='controls'); illustration.classList.toggle('navigation-art',art==='navigation'); illustration.classList.toggle('menu-art',art==='menuButtons'); illustration.classList.toggle('rank-badge-art',art==='rankBadgeArt'); illustration.classList.toggle('unwritten-art',art==='unwritten'); illustration.classList.toggle('cheer-art',art==='cheer'); illustration.classList.toggle('intro-guide-art',art==='introGuide'); illustration.classList.toggle('two-move-lesson-art',!!twoMoveLesson);
+  stopClearGuideBoard('messageClearGuideBoard');stopClearGuideBoard('messageTwoMoveLessonBoard'); illustration.innerHTML=art==='introGuide'?'<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':twoMoveLesson?'<svg id="messageTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):''; if(art==='introGuide')buildClearGuideBoard('messageClearGuideBoard');if(twoMoveLesson)buildTwoMoveLessonBoard('messageTwoMoveLessonBoard',twoMoveLesson);illustration.hidden=!art;lessonCopy.hidden=!twoMoveLesson;lessonRule.hidden=!twoMoveLesson;
+}
+function renderMessageReview(){
+  const entry=messageReviewEntries[messageReviewIndex];if(!entry)return;
+  const art=messageReviewArt(entry),twoMoveLesson=lessonVariantFromArt(art),illustration=$('messageIllustration'),lessonCopy=$('messageTwoMoveLessonCopy'),lessonRule=$('messageTwoMoveLessonRule'),roadmap=$('messageRoadmap'),roadmapNote=$('messageRoadmapNote'),boardNote=$('messageMasterBoardNote'),rules=$('messageRules'),seal=$('messageMasterSeal'),rankText=$('messageRankText'),masterText=$('messageMasterText');
+  const view=messageReviewView();
+  $('messagePrev').textContent='← '+tr('prev');
+  $('messageNext').textContent=tr('next')+' →';
+  $('closeMessages').textContent=tr('close');
+  $('messageStageContext').textContent=messageReviewStageContext(entry);
+  $('messageDialogPlace').hidden=true;
+  renderMasteryBoard('messageMasteryBoard',['mastery','satori','awakening'].includes(entry.master),['satori','awakening'].includes(entry.master)?'satori-tilted':'gold');
+  roadmap.hidden=!entry.master||['primary','mastery','satori','satoriIntro','secondLapIntro','awakening','trainingWelcome'].includes(entry.master);roadmapNote.hidden=true;boardNote.hidden=true;rules.hidden=true;
+  seal.hidden=!entry.master;
+  seal.classList.add('rank-seal');
+  seal.classList.remove('rank-frame-seal','second-lap-mark');
+  seal.tabIndex=0;
+  rankText.hidden=true;masterText.hidden=true;
+  const messageClearEntry=configureMessageReviewType(entry);
+  const twoMoveCard=messageClearEntry?.twoMoveCard,guideCard=messageClearEntry?.guideCard;
+  configureMessageReviewLinks(entry,messageClearEntry);
+  if(isMilestoneMessage(entry)){
+    const volume=milestoneVolume(entry);
+    const current=entry.master==='primary'?2:entry.master==='mastery'?6:Math.min(5,volume+2);
+    if(entry.master!=='mastery')roadmap.innerHTML=masterRoadmapMarkup(current);
+    if(entry.master==='primary'){
+      MILESTONE_RENDERERS.primary(entry,view);
+    }else if(entry.master==='mastery'){
+      MILESTONE_RENDERERS.mastery(entry,view);
+    }else if(entry.master==='satori'){
+      MILESTONE_RENDERERS.satori(entry,view);
+    }else if(entry.master==='awakening'){
+      MILESTONE_RENDERERS.awakening(entry,view);
+    }else if(entry.master==='satoriIntro'){
+      MILESTONE_RENDERERS[entry.master](entry,view);
+    }else if(entry.master==='secondLapIntro'){
+      MILESTONE_RENDERERS[entry.master](entry,view);
+    }else if(entry.master==='trainingWelcome'){
+      MILESTONE_RENDERERS[entry.master](entry,view);
+    }else{
+      MILESTONE_RENDERERS.volume(entry,view,volume);
+    }
+  }else{
+    const type=entry.quiz!==undefined?'quiz':entry.boardQuiz?'boardQuiz':'text';
+    MESSAGE_RENDERERS[type](entry);
+  }
+  illustration.classList.toggle('move-graph',art==='moveGraph');
+  illustration.classList.toggle('board-card',art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'));
+  illustration.classList.toggle('controls-art',art==='controls');
+  illustration.classList.toggle('navigation-art',art==='navigation');
+  illustration.classList.toggle('menu-art',art==='menuButtons');
+  illustration.classList.toggle('rank-badge-art',art==='rankBadgeArt');
+  illustration.classList.toggle('unwritten-art',art==='unwritten');
+  illustration.classList.toggle('cheer-art',art==='cheer');
+  illustration.classList.toggle('intro-guide-art',art==='introGuide');
+  illustration.classList.toggle('two-move-lesson-art',!!twoMoveLesson);
+  stopClearGuideBoard('messageClearGuideBoard');
+  stopClearGuideBoard('messageTwoMoveLessonBoard');
+  illustration.innerHTML=art==='introGuide'?'<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
+    :twoMoveLesson?'<svg id="messageTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
+    :art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'';
+  if(art==='introGuide')buildClearGuideBoard('messageClearGuideBoard');
+  if(twoMoveLesson)buildTwoMoveLessonBoard('messageTwoMoveLessonBoard',twoMoveLesson);
+  illustration.hidden=!art;
   lessonCopy.hidden=!twoMoveLesson;
   lessonRule.hidden=!twoMoveLesson;
   if(twoMoveLesson){
