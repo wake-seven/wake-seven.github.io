@@ -2138,3 +2138,8 @@ $('tutorialReset').addEventListener('click',()=>{
 $('shuffle').addEventListener('click',()=>{
   if(!busy&&isMode('free'))startFree();
 });
+
+const GameBoard=Object.freeze({
+  repaint:()=>paint(),
+  reset:(state,par)=>setPosition(state,par)
+});

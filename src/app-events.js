@@ -10,7 +10,7 @@ function debugClearCurrent(extraMoves=0){
   svg.classList.remove('clear-pending','celebrating');
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   $('clearNext').hidden=true;
-  paint();
+  GameBoard.repaint();
   // 即クリアでも、通常操作と同じくメッセージ一覧の開始位置を更新する。
   if(extraMoves===0&&!isMode('satori')&&!isMode('free')&&!isMode('custom')){
     rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);
@@ -225,7 +225,7 @@ $('clearClose').addEventListener('click',()=>{
 });
 $('optimalRetry').addEventListener('click',()=>{
   $('optimalFailDialog').hidden=true;
-  setPosition(currentInitialState,currentInitialPar);
+  GameBoard.reset(currentInitialState,currentInitialPar);
   renderStageNav();
 });
 $('clearMessages').addEventListener('click',()=>GameDialogs.messages({resume:true}));
