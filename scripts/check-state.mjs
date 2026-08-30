@@ -5,15 +5,15 @@ import { dirname, join } from 'node:path';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const html = await readFile(join(root, 'index.html'), 'utf8');
-const stateModule = await readFile(join(root, 'src', 'game-state.js'), 'utf8');
-const progressionModule = await readFile(join(root, 'src', 'progression-policy.js'), 'utf8');
-const boardDomainModule = await readFile(join(root, 'src', 'domain-board.js'), 'utf8');
-const coreDataModule = await readFile(join(root, 'src', 'core-data.js'), 'utf8');
-const runtimeModule = await readFile(join(root, 'src', 'runtime.js'), 'utf8');
-const namespaceModule = await readFile(join(root, 'src', 'namespace-api.js'), 'utf8');
+const stateModule = await readFile(join(root, 'src', 'state', 'game-state.js'), 'utf8');
+const progressionModule = await readFile(join(root, 'src', 'state', 'progression-policy.js'), 'utf8');
+const boardDomainModule = await readFile(join(root, 'src', 'domain', 'board.js'), 'utf8');
+const coreDataModule = await readFile(join(root, 'src', 'data', 'core-data.js'), 'utf8');
+const runtimeModule = await readFile(join(root, 'src', 'runtime', 'runtime.js'), 'utf8');
+const namespaceModule = await readFile(join(root, 'src', 'runtime', 'namespace.js'), 'utf8');
 const compatCleanupDoc = await readFile(join(root, 'src', 'compat-cleanup.md'), 'utf8');
-const satoriDataModule = await readFile(join(root, 'src', 'data-satori.js'), 'utf8');
-const boardQuizDataModule = await readFile(join(root, 'src', 'data-board-quiz.js'), 'utf8');
+const satoriDataModule = await readFile(join(root, 'src', 'data', 'satori.js'), 'utf8');
+const boardQuizDataModule = await readFile(join(root, 'src', 'data', 'board-quiz.js'), 'utf8');
 const required = [
   'WAKE7:STATE-MODULE:START',
   'WAKE7:PROGRESSION-POLICY:START',
@@ -154,23 +154,23 @@ if (!html.includes('const WakeSevenProgressionCommands=Object.freeze(')
 }
 
 const sourceModules = [
-  ['src/domain-board.js', ['const WakeSevenBoardDomain=']],
-  ['src/data-board-quiz.js', ['const BOARD_QUIZ_COPY=']],
-  ['src/data-satori.js', ['const SATORI_STAGES=', "const SATORI_ORDER_VERSION='"]],
-  ['src/data-assets.js', ['academyEnrollArtSvg']],
-  ['src/runtime-settings.js', ['initializeRuntimeSettings']],
-  ['src/runtime-audio.js', ['playTone', 'playClearSound']],
-  ['src/runtime-progression.js', ['initializeSpeedUnlockState']],
-  ['src/quiz-ui.js', ['boardQuizPatternState', 'boardQuizPresentation', 'boardQuizMarkup', 'bindBoardQuizAnswerEvents']],
-  ['src/commands-board.js', ['const WakeSevenBoardCommands=Object.freeze(']],
-  ['src/commands-progression.js', ['const WakeSevenProgressionCommands=Object.freeze(']],
-  ['src/clear-flow.js', ['stageClearTextAt', 'clearEntryForCurrent', 'stageClearArtAt']],
-  ['src/message-ui.js', ['buildMessageReviewEntries', 'openMessageReview', 'moveMessageReview']],
-  ['src/progression-render.js', ['renderStageNavAccent']],
-  ['src/master-dialog.js', ['masterDialogTrialState', 'masterDialogBoardTheme', 'masterDialogBoardOptions']],
-  ['src/progression-ui.js', ['showClearDialog', 'renderClearTip']],
-  ['src/rank-ui.js', ['rankFrameSvg', 'renderRankList', 'openRankDialog']],
-  ['src/ui-render.js', ['renderCurrentView']]
+  ['src/domain/board.js', ['const WakeSevenBoardDomain=']],
+  ['src/data/board-quiz.js', ['const BOARD_QUIZ_COPY=']],
+  ['src/data/satori.js', ['const SATORI_STAGES=', "const SATORI_ORDER_VERSION='"]],
+  ['src/data/assets.js', ['academyEnrollArtSvg']],
+  ['src/runtime/settings.js', ['initializeRuntimeSettings']],
+  ['src/runtime/audio.js', ['playTone', 'playClearSound']],
+  ['src/runtime/progression.js', ['initializeSpeedUnlockState']],
+  ['src/ui/quiz.js', ['boardQuizPatternState', 'boardQuizPresentation', 'boardQuizMarkup', 'bindBoardQuizAnswerEvents']],
+  ['src/commands/board.js', ['const WakeSevenBoardCommands=Object.freeze(']],
+  ['src/commands/progression.js', ['const WakeSevenProgressionCommands=Object.freeze(']],
+  ['src/ui/clear-flow.js', ['stageClearTextAt', 'clearEntryForCurrent', 'stageClearArtAt']],
+  ['src/ui/message.js', ['buildMessageReviewEntries', 'openMessageReview', 'moveMessageReview']],
+  ['src/ui/progression-render.js', ['renderStageNavAccent']],
+  ['src/ui/master-dialog.js', ['masterDialogTrialState', 'masterDialogBoardTheme', 'masterDialogBoardOptions']],
+  ['src/ui/progression.js', ['showClearDialog', 'renderClearTip']],
+  ['src/ui/rank.js', ['rankFrameSvg', 'renderRankList', 'openRankDialog']],
+  ['src/ui/render.js', ['renderCurrentView']]
 ];
 for (const [moduleName, names] of sourceModules) {
   const moduleSource = await readFile(join(root, moduleName), 'utf8');
@@ -189,7 +189,7 @@ for (const token of [
   "const SATORI_ORDER_VERSION='",
   'const satoriStageIndexByState=new Map(SATORI_STAGES.map('
 ]) {
-  if (!satoriDataModule.includes(token)) throw new Error(`src/data-satori.js is missing ${token}`);
+  if (!satoriDataModule.includes(token)) throw new Error(`src/data/satori.js is missing ${token}`);
 }
 const quizLocales = [...boardQuizDataModule.matchAll(/^\s{2}(ja|en|zh|ko):\{/gm)].map(([, locale]) => locale);
 if (quizLocales.length !== 4 || new Set(quizLocales).size !== 4
@@ -204,7 +204,7 @@ const namespaceSourceTokens = [
   'const speedApi = Object.freeze'
 ];
 for (const token of namespaceSourceTokens) {
-  if (!namespaceModule.includes(token)) throw new Error(`src/namespace-api.js is missing ${token}.`);
+  if (!namespaceModule.includes(token)) throw new Error(`src/runtime/namespace.js is missing ${token}.`);
 }
 
 const inlineScripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[1]);
@@ -260,9 +260,9 @@ const localStorage = makeStorage({
 });
 const context = {window:{localStorage}, JSON};
 context.window.window = context.window;
-vm.runInNewContext(stateModule, context, {filename:'src/game-state.js'});
-vm.runInNewContext(progressionModule, context, {filename:'src/progression-policy.js'});
-vm.runInNewContext(`${boardDomainModule}\nwindow.WakeSevenBoardDomain=WakeSevenBoardDomain;`, context, {filename:'src/domain-board.js'});
+vm.runInNewContext(stateModule, context, {filename:'src/state/game-state.js'});
+vm.runInNewContext(progressionModule, context, {filename:'src/state/progression-policy.js'});
+vm.runInNewContext(`${boardDomainModule}\nwindow.WakeSevenBoardDomain=WakeSevenBoardDomain;`, context, {filename:'src/domain/board.js'});
 const migrated = context.window.WakeSevenState.migrateLegacy(localStorage);
 if (migrated.navigation.mode !== 'mastery' || migrated.navigation.masteryIndex !== 3 || migrated.navigation.lap !== 2) {
   throw new Error('Legacy navigation migration failed.');
@@ -310,7 +310,7 @@ const namespaceContext = {
   pauseSpeedClock: () => {},
   SPEED_MODE_DEFINITIONS: {}
 };
-vm.runInNewContext(namespaceModule, namespaceContext, {filename:'src/namespace-api.js'});
+vm.runInNewContext(namespaceModule, namespaceContext, {filename:'src/runtime/namespace.js'});
 const wakeSeven = namespaceContext.window.WakeSeven;
 if (!wakeSeven || !Object.isFrozen(wakeSeven)
   || Object.keys(wakeSeven).sort().join(',') !== 'messages,progression,speed,state') {
@@ -377,7 +377,7 @@ const migrationFixtures = [
     name: 'mastery session and speed trial',
     entries: {
       'wake7-active-lap': '1', 'wake7-extra-cleared': '[1,4]',
-      'wake7-speed-active-variant': 'mastery15',
+      'wake7-speed-active-variant': 'training18',
       'wake7-speed-mastery-unlocked': '1', 'wake7-speed-mastery-trial-cleared': '1',
       'wake7-active-session': JSON.stringify({mode:'mastery',extra:true,index:4,board:{o:[0,1,2,0,1,2,0]}})
     },
@@ -385,7 +385,7 @@ const migrationFixtures = [
       if (state.navigation.mode !== 'mastery' || state.navigation.masteryIndex !== 4)
         throw new Error('Fixture mastery navigation migration failed.');
       if (state.progress.lap1.mastery.join(',') !== '1,4') throw new Error('Fixture mastery progress migration failed.');
-      if (state.speed.activeVariant !== 'mastery15' || !state.unlocks.speedMastery
+      if (state.speed.activeVariant !== 'training18' || !state.unlocks.speedMastery
         || !state.unlocks.speedMasteryTrialCleared)
         throw new Error('Fixture speed migration failed.');
     }
@@ -405,7 +405,8 @@ const progression = context.window.WakeSevenProgression.create({
   academyTotal:20,developmentStart:12,developmentTotal:8,
   trainingStart:20,trainingTotal:27,basicStart:3
 });
-if (progression.speedModes.mastery15.total !== 18 || progression.speedModes.satori73.allowsUndo !== false) {
+if (progression.speedModes.training18.total !== 18 || progression.speedModes.mastery27.total !== 27 || progression.speedModes.satori73.allowsUndo !== false
+  || progression.speedModes.mastery15.id !== 'training18' || progression.speedModes.mastery24.id !== 'mastery27') {
   throw new Error('Speed policy generation failed.');
 }
 if (!progression.canEnter('training',{lap:1,trials:{training:true}}) || progression.canEnter('satori',{lap:1,mastered:false,trials:{mastery:true}})) {

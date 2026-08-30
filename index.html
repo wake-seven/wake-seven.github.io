@@ -1541,7 +1541,7 @@
         speedIntermediateTrialCleared: storage.getItem(LEGACY_STORAGE_KEYS.speedIntermediateTrialCleared) === '1',
         speedMasteryTrialCleared: storage.getItem(LEGACY_STORAGE_KEYS.speedMasteryTrialCleared) === '1'
       },
-      speed: { activeVariant: storage.getItem(LEGACY_STORAGE_KEYS.speedActiveVariant) || 'training9' },
+      speed: { activeVariant: ({mastery15:'training18',mastery24:'mastery27'}[storage.getItem(LEGACY_STORAGE_KEYS.speedActiveVariant)] || storage.getItem(LEGACY_STORAGE_KEYS.speedActiveVariant) || 'training9') },
       legacySession: session && typeof session === 'object' ? session : null
     });
     write(state, storage);
@@ -1665,8 +1665,8 @@
   const SPEED_BLUEPRINTS = Object.freeze([
     {id:'standard',visible:false,labelKey:'speedMode',introKey:'speedSatoriIntro',jaLabel:null,order:'mixed',source:'satori',total:'satori',unlockKey:'speedSatori',showsRemaining:false,allowsUndo:false},
     {id:'training9',visible:true,labelKey:'speedTrainingLabel',introKey:'speedTrainingIntro',jaLabel:'九番',order:'shuffle',source:'twoMove',total:9,unlockKey:'speedTraining',showsRemaining:true,allowsUndo:true,trial:'training'},
-    {id:'mastery15',visible:true,labelKey:'speedIntermediateLabel',introKey:'speedIntermediateIntro',jaLabel:'十八番',order:'shuffle',source:'training',total:'trainingExam',unlockKey:'speedIntermediate',showsRemaining:true,allowsUndo:true,trial:'intermediate'},
-    {id:'mastery24',visible:true,labelKey:'speedMasteryLabel',introKey:'speedMasteryIntro',jaLabel:'二十七番',order:'sample',source:'satori',total:27,unlockKey:'speedMastery',showsRemaining:false,allowsUndo:true,trial:'mastery'},
+    {id:'training18',legacyIds:['mastery15'],visible:true,labelKey:'speedIntermediateLabel',introKey:'speedIntermediateIntro',jaLabel:'十八番',order:'shuffle',source:'training',total:'trainingExam',unlockKey:'speedIntermediate',showsRemaining:true,allowsUndo:true,trial:'intermediate'},
+    {id:'mastery27',legacyIds:['mastery24'],visible:true,labelKey:'speedMasteryLabel',introKey:'speedMasteryIntro',jaLabel:'二十七番',order:'sample',source:'satori',total:27,unlockKey:'speedMastery',showsRemaining:false,allowsUndo:true,trial:'mastery'},
     {id:'satori73',visible:true,labelKey:'speedSatoriLabel',introKey:'speedSatoriIntro',jaLabel:'七十三番',order:'mixed',source:'satori',total:'satori',unlockKey:'speedSatori',showsRemaining:false,allowsUndo:false}
   ]);
 
@@ -1678,9 +1678,9 @@
 
   function create({satoriTotal,trainingExamTotal,academyTotal,developmentStart,developmentTotal,trainingStart,trainingTotal,basicStart}) {
     const totalFor = value => value === 'satori' ? satoriTotal : value === 'trainingExam' ? trainingExamTotal : value;
-    const speedModes = Object.freeze(Object.fromEntries(SPEED_BLUEPRINTS.map(blueprint => {
+    const speedModes = Object.freeze(Object.fromEntries(SPEED_BLUEPRINTS.flatMap(blueprint => {
       const definition = Object.freeze({...blueprint,total:totalFor(blueprint.total)});
-      return [definition.id,definition];
+      return [[definition.id,definition], ...(definition.legacyIds || []).map(legacyId => [legacyId,definition])];
     })));
     const publicSpeedIds = Object.freeze(SPEED_BLUEPRINTS.filter(definition => definition.visible).map(definition => definition.id));
 
@@ -2271,7 +2271,7 @@ const MASTER_FOUR_MOVE_STAGES=FOUR_MOVE_STAGES.filter(stage=>MASTER_FOUR_MOVE_ST
 EXTRA_STAGES.push(
   ...MASTER_FOUR_MOVE_STAGES.slice().reverse()
 );
-// 悟りへの道の出題データは src/data-satori.js で構築する。
+// 悟りへの道の出題データは src/data/satori.js で構築する。
 let currentLang='ja';
 
 // ===== 悟り出題データ =====
@@ -2497,7 +2497,7 @@ const UI_TEXT={
     masteryText:'金色の盤面を獲得しました。\nメニューから盤面の色を選べます。',
     masteryStart:'フリーモードへ →',
     pathInfoTitle:'名人への道',
-    pathInfoText:'「序」から「極」まで、各15問。全60問の道のりです。',
+    pathInfoText:'「序」から「急」まで、各15問。全45問の道のりです。',
     pathInfoStart:'序を始める →',
     breakthroughSeal:'突破',
     masterySeal:'名人',
@@ -2584,7 +2584,7 @@ const UI_TEXT={
     trainingShapeRuleRibbonCondition:'同じ向きの三角を除き、時計回りに遅れてる方が左向き',
     trainingShapeRuleDiamondCondition:'対角が違う向き',
     trainingShapeRuleCenterOuterCondition:'向きに関係なし',
-    roadmapNote:'・習：だるま修行の道（24問） ： クリア済\n・序～極：名人への道（各15問、計60問）',
+    roadmapNote:'・習：だるま修行の道（24問） ： クリア済\n・序～急：名人への道（各15問、計45問）',
     roadmapCount:'{n}問',
     cheerCaption:'もうすぐ名人です！\nさらに難しくなるけど、だるまさんも応援してます!',
     quizTitle:'だるまクイズ',
@@ -2892,7 +2892,7 @@ const UI_TEXT={
     masteryText:'You earned the golden board.\nChoose board colors from the Menu.',
     masteryStart:'Go to Free Play →',
     pathInfoTitle:'Path to Mastery',
-    pathInfoText:'Four volumes of 15 puzzles await: 60 puzzles in all.',
+    pathInfoText:'Three volumes of 15 puzzles await: 45 puzzles in all.',
     pathInfoStart:'Begin Volume 1 →',
     breakthroughSeal:'PASS',
     masterySeal:'MASTER',
@@ -2978,7 +2978,7 @@ const UI_TEXT={
     trainingShapeRuleRibbonCondition:'Ignore the matching pair — the one lagging clockwise faces left.',
     trainingShapeRuleDiamondCondition:'The diagonal pair faces opposite ways.',
     trainingShapeRuleCenterOuterCondition:'Any orientation works.',
-    roadmapNote:'I: Daruma Training (24) / II–V: Path to Mastery (15 each, 60 total)',
+    roadmapNote:'Training: Daruma Training (24) / I–III: Path to Mastery (15 each, 45 total)',
     roadmapCount:'{n} puzzles',
     cheerCaption:'You are nearing the end.\nIt gets harder from here, but the daruma are cheering for you.',
     quizTitle:'Daruma Quiz',
@@ -3269,7 +3269,7 @@ const UI_TEXT={
     masteryText:'已获得金色棋盘。\n可在菜单中选择棋盘颜色。',
     masteryStart:'进入自由模式 →',
     pathInfoTitle:'名人之路',
-    pathInfoText:'共有四卷，每卷15题，总计60题。',
+    pathInfoText:'共有三卷，每卷15题，总计45题。',
     pathInfoStart:'开始第一卷 →',
     breakthroughSeal:'突破',
     masterySeal:'名人',
@@ -3361,7 +3361,7 @@ const UI_TEXT={
     trainingShapeRuleRibbonCondition:'排除同向的一对，顺时针落后的那个朝左',
     trainingShapeRuleDiamondCondition:'对角朝向不同',
     trainingShapeRuleCenterOuterCondition:'朝向不影响',
-    roadmapNote:'习：不倒翁修行（24题）／序～极：名人之路（每卷15题，共60题）',
+    roadmapNote:'习：不倒翁修行（24题）／序～急：名人之路（每卷15题，共45题）',
     roadmapCount:'{n}题',
     cheerCaption:'快到最后了。\n接下来会更难，但不倒翁也在为你加油。',
     quizTitle:'不倒翁小测验',
@@ -3649,7 +3649,7 @@ const UI_TEXT={
     masteryText:'황금 보드를 얻었습니다.\n메뉴에서 보드 색을 고를 수 있습니다.',
     masteryStart:'자유 모드로 →',
     pathInfoTitle:'명인의 길',
-    pathInfoText:'1권부터 4권까지, 각 15문제. 모두 60문제입니다.',
+    pathInfoText:'1권부터 3권까지, 각 15문제. 모두 45문제입니다.',
     pathInfoStart:'1권 시작 →',
     breakthroughSeal:'돌파',
     masterySeal:'명인',
@@ -3741,7 +3741,7 @@ const UI_TEXT={
     trainingShapeRuleRibbonCondition:'같은 방향인 것을 제외하고, 시계 방향으로 뒤처진 쪽이 왼쪽을 향함',
     trainingShapeRuleDiamondCondition:'대각선끼리 다른 방향',
     trainingShapeRuleCenterOuterCondition:'방향은 상관없음',
-    roadmapNote:'습: 다루마 수행(24문제) / 서~극: 명인의 길(각 15문제, 총 60문제)',
+    roadmapNote:'습: 다루마 수행(24문제) / 서~급: 명인의 길(각 15문제, 총 45문제)',
     roadmapCount:'{n}문제',
     cheerCaption:'마지막이 가까워졌어요.\n더 어려워지지만 다루마도 응원하고 있어요.',
     quizTitle:'다루마 퀴즈',
@@ -4958,7 +4958,7 @@ const isThirdVolume=()=>isMode('mastery')&&extraIndex>=30&&extraIndex<45;
 // 三巻構成では最後の「不立文字」に、従来の終盤ルールをまとめる。
 const isFourthVolume=()=>isThirdVolume();
 
-// 速解きランタイムは src/speed-runtime.js に分離しています。
+// 速解きランタイムは src/runtime/speed.js に分離しています。
 
 // ===== 残り手数チェック(第四巻) =====
 const FOURTH_CHECKS_STORAGE_KEY=STORAGE_KEYS.fourthChecks;
@@ -8578,8 +8578,8 @@ function renderClearTip(){
     document.querySelector('#clearDialog .clear-dialog-heading').after(illustration);
   }
 }
-// メッセージ見直しUIは src/message-ui.js に分離済み。
-// 盤面クイズの翻訳データは src/data-board-quiz.js に分離。
+// メッセージ見直しUIは src/ui/message.js に分離済み。
+// 盤面クイズの翻訳データは src/data/board-quiz.js に分離。
 function volumeLabel(n){
   const labels={
     ja:['序','破','急'],
@@ -10764,7 +10764,7 @@ if(document.documentElement.classList.contains('embed')&&window.parent!==window)
   reportEmbedHeight();
 }
 
-// ===== namespace-api.js =====
+// ===== runtime/namespace.js =====
 /* 公開APIの境界。既存のグローバル関数は互換のため残し、外部からはこの名前空間を入口にする。 */
 (function attachWakeSevenNamespace(global) {
   'use strict';
