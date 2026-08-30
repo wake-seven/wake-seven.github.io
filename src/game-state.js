@@ -11,6 +11,34 @@
   const STORAGE_KEY = 'wake7-state-vnext';
   const VERSION = 1;
   const MODES = Object.freeze(['tutorial', 'stage', 'mastery', 'satori', 'speed', 'free', 'custom']);
+  const STORAGE_KEYS = Object.freeze({
+    language: 'wake7-language', sound: 'wake7-sound',
+    boardTheme: 'wake7-board-theme', boardThemeChosen: 'wake7-board-theme-chosen',
+    boardLayout: 'wake7-board-layout', boardLayoutChosen: 'wake7-board-layout-chosen',
+    darumaColor: 'wake7-daruma-color', darumaColorChosen: 'wake7-daruma-color-chosen',
+    cleared: 'wake7-cleared', extraCleared: 'wake7-extra-cleared', satoriCleared: 'wake7-satori-cleared',
+    currentStage: 'wake7-current-stage', activeSession: 'wake7-active-session', activeLap: 'wake7-active-lap',
+    introSeen: 'wake7-intro-seen', tutorialComplete: 'wake7-tutorial-complete', tutorialStep: 'wake7-tutorial-step',
+    messageReview: 'wake7-message-review', messageReviewLast: 'wake7-message-review-last-clear',
+    speedSession: 'wake7-speed-session', speedActiveVariant: 'wake7-speed-active-variant', speedBestMs: 'wake7-speed-best-ms', speedHistory: 'wake7-speed-history',
+    speedUnlocked: 'wake7-speed-unlocked', speedTrainingUnlocked: 'wake7-speed-training-unlocked', speedIntermediateUnlocked: 'wake7-speed-intermediate-unlocked',
+    speedMasteryUnlocked: 'wake7-speed-mastery-unlocked', speedSatoriUnlocked: 'wake7-speed-satori-unlocked', speedUnlockModelVersion: 'wake7-speed-unlock-model-version',
+    speedTrainingTrialCleared: 'wake7-speed-training-trial-cleared', speedIntermediateTrialCleared: 'wake7-speed-intermediate-trial-cleared',
+    speedMasteryTrialCleared: 'wake7-speed-mastery-trial-cleared', speedTrialModelVersion: 'wake7-speed-trial-model-version',
+    stagesLayoutVersion: 'wake7-stages-layout-version', threeDUnlocked: 'wake7-3d-unlocked',
+    masterGoldGranted: 'wake7-master-gold-granted', satoriDesignGranted: 'wake7-satori-design-granted',
+    secondLapActive: 'wake7-second-lap-active', secondLapUnlocked: 'wake7-second-lap-unlocked',
+    rainbowDarumaGranted: 'wake7-rainbow-daruma-granted', awakenedGranted: 'wake7-awakened-granted',
+    satoriOrderVersion: 'wake7-satori-order-version', speedLastTab: 'wake7-speed-last-tab', speedNewTab: 'wake7-speed-new-tab',
+    fourthChecks: 'wake7-fourth-checks'
+  });
+  const storage = {
+    get(key, fallback = null) { try { const value = global.localStorage.getItem(key); return value === null ? fallback : value; } catch (_) { return fallback; } },
+    set(key, value) { try { global.localStorage.setItem(key, value); return true; } catch (_) { return false; } },
+    remove(key) { try { global.localStorage.removeItem(key); return true; } catch (_) { return false; } },
+    json(key, fallback = null) { try { const raw = global.localStorage.getItem(key); return raw === null ? fallback : JSON.parse(raw); } catch (_) { return fallback; } },
+    setJson(key, value) { try { global.localStorage.setItem(key, JSON.stringify(value)); return true; } catch (_) { return false; } }
+  };
 
   const clone = value => JSON.parse(JSON.stringify(value));
   const asArray = value => Array.isArray(value) ? value : [];
@@ -137,8 +165,10 @@
 
   global.WakeSevenState = Object.freeze({
     STORAGE_KEY,
+    STORAGE_KEYS,
     VERSION,
     MODES,
+    storage,
     create,
     read,
     write,

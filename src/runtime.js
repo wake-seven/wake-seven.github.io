@@ -93,28 +93,8 @@ function setUnlock(key,value){
  * モード判定と保存キーが各所に散らばりやすい。新しい解放要素・速解き派生
  * モード・問題ごとの案内を追加するときは、まずここを経由する。
  */
-const STORAGE_KEYS=Object.freeze({
-  language:'wake7-language',sound:'wake7-sound',
-  boardTheme:'wake7-board-theme',boardThemeChosen:'wake7-board-theme-chosen',
-  boardLayout:'wake7-board-layout',boardLayoutChosen:'wake7-board-layout-chosen',
-  darumaColor:'wake7-daruma-color',darumaColorChosen:'wake7-daruma-color-chosen',
-  cleared:'wake7-cleared',extraCleared:'wake7-extra-cleared',satoriCleared:'wake7-satori-cleared',
-  currentStage:'wake7-current-stage',activeSession:'wake7-active-session',activeLap:'wake7-active-lap',
-  introSeen:'wake7-intro-seen',tutorialComplete:'wake7-tutorial-complete',tutorialStep:'wake7-tutorial-step',messageReview:'wake7-message-review',messageReviewLast:'wake7-message-review-last-clear',
-  speedSession:'wake7-speed-session',speedActiveVariant:'wake7-speed-active-variant',speedBestMs:'wake7-speed-best-ms',speedHistory:'wake7-speed-history',
-  speedUnlocked:'wake7-speed-unlocked',speedTrainingUnlocked:'wake7-speed-training-unlocked',speedIntermediateUnlocked:'wake7-speed-intermediate-unlocked',speedMasteryUnlocked:'wake7-speed-mastery-unlocked',speedSatoriUnlocked:'wake7-speed-satori-unlocked',speedUnlockModelVersion:'wake7-speed-unlock-model-version',speedTrainingTrialCleared:'wake7-speed-training-trial-cleared',speedIntermediateTrialCleared:'wake7-speed-intermediate-trial-cleared',speedMasteryTrialCleared:'wake7-speed-mastery-trial-cleared',speedTrialModelVersion:'wake7-speed-trial-model-version',stagesLayoutVersion:'wake7-stages-layout-version',threeDUnlocked:'wake7-3d-unlocked',
-  masterGoldGranted:'wake7-master-gold-granted',satoriDesignGranted:'wake7-satori-design-granted',
-  secondLapActive:'wake7-second-lap-active',secondLapUnlocked:'wake7-second-lap-unlocked',
-  rainbowDarumaGranted:'wake7-rainbow-daruma-granted',awakenedGranted:'wake7-awakened-granted',
-  satoriOrderVersion:'wake7-satori-order-version'
-});
-const storage={
-  get(key,fallback=null){try{const value=localStorage.getItem(key);return value===null?fallback:value;}catch(_){return fallback;}},
-  set(key,value){try{localStorage.setItem(key,value);return true;}catch(_){return false;}},
-  remove(key){try{localStorage.removeItem(key);return true;}catch(_){return false;}},
-  json(key,fallback=null){try{const raw=localStorage.getItem(key);return raw===null?fallback:JSON.parse(raw);}catch(_){return fallback;}},
-  setJson(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch(_){return false;}}
-};
+const STORAGE_KEYS=WakeSevenState.STORAGE_KEYS;
+const storage=WakeSevenState.storage;
 /*
  * New persistence boundary. Existing code still reads legacy keys during the
  * incremental migration, but every saved session is also one versioned state
@@ -140,8 +120,8 @@ function syncGameState(legacySession=null){
   if(legacySession)gameState.legacySession=legacySession;
   return window.WakeSevenState.write(gameState);
 }
-const SPEED_LAST_TAB_STORAGE_KEY='wake7-speed-last-tab';
-const SPEED_NEW_TAB_STORAGE_KEY='wake7-speed-new-tab';
+const SPEED_LAST_TAB_STORAGE_KEY=STORAGE_KEYS.speedLastTab;
+const SPEED_NEW_TAB_STORAGE_KEY=STORAGE_KEYS.speedNewTab;
 const COURSE_DEFINITIONS=Object.freeze({
   tutorial:{id:'tutorial',total:TUTORIAL_STEPS.length,label:'tutorial'},
   primary:{id:'primary',total:STAGES.length,label:'training'},
@@ -279,7 +259,7 @@ function trackAnalyticsEvent(name,parameters={}){
   if(!WAKE7_GA_ENABLED||typeof window.gtag!=='function')return;
   let analyticsLanguage=currentLang;
   try{
-    const storedLanguage=storage.get('wake7-language');
+    const storedLanguage=storage.get(STORAGE_KEYS.language);
     if(UI_TEXT[storedLanguage])analyticsLanguage=storedLanguage;
   }catch(_){ }
   window.gtag('event',name,Object.assign({
@@ -311,24 +291,24 @@ let boardTheme=['default','gold','satori'].includes(gameState.settings.boardThem
 let boardLayout=gameState.settings.boardTheme==='tilted'||gameState.settings.boardLayout==='tilted'?'tilted':'normal';
 // Legacy settings are only a fallback while upgrading an incomplete vNext document.
 if(!gameState.settings.boardTheme||!gameState.settings.boardLayout)try{
-  const savedTheme=storage.get('wake7-board-theme');
+  const savedTheme=storage.get(STORAGE_KEYS.boardTheme);
   // 旧「縦配置」テーマは、通常色 + 縦配置へ移行する。
   if(savedTheme==='tilted')boardLayout='tilted';
   else if(['default','gold','satori'].includes(savedTheme))boardTheme=savedTheme;
-  const savedLayout=storage.get('wake7-board-layout');
+  const savedLayout=storage.get(STORAGE_KEYS.boardLayout);
   if(['normal','tilted'].includes(savedLayout))boardLayout=savedLayout;
 }catch(_){ }
 let boardThemeChosen=false;
-try{boardThemeChosen=storage.get('wake7-board-theme-chosen')==='1';}catch(_){ }
+try{boardThemeChosen=storage.get(STORAGE_KEYS.boardThemeChosen)==='1';}catch(_){ }
 let boardLayoutChosen=false;
-try{boardLayoutChosen=storage.get('wake7-board-layout-chosen')==='1';}catch(_){ }
+try{boardLayoutChosen=storage.get(STORAGE_KEYS.boardLayoutChosen)==='1';}catch(_){ }
 let darumaColor=['red','rainbow'].includes(gameState.settings.darumaColor)?gameState.settings.darumaColor:'red',darumaColorChosen=false;
 if(!gameState.settings.darumaColor)try{
-  const savedDarumaColor=storage.get('wake7-daruma-color');
+  const savedDarumaColor=storage.get(STORAGE_KEYS.darumaColor);
   // 旧版の特別色は、七色のだるまへ移行する。
   if(['red','rainbow'].includes(savedDarumaColor))darumaColor=savedDarumaColor;
   else if(['indigo','gold','green'].includes(savedDarumaColor))darumaColor='rainbow';
-  darumaColorChosen=storage.get('wake7-daruma-color-chosen')==='1';
+  darumaColorChosen=storage.get(STORAGE_KEYS.darumaColorChosen)==='1';
 }catch(_){ }
 let masterGoldGranted=gameState.unlocks.masterGoldGranted===true;
 if(!masterGoldGranted)try{masterGoldGranted=storage.get('wake7-master-gold-granted')==='1';}catch(_){ }
@@ -649,7 +629,7 @@ function updateMasterTheme(){
   document.body.dataset.boardTheme=boardTheme;
   document.body.dataset.boardLayout=boardLayout;
   applyBoardTheme();
-  try{storage.set('wake7-board-theme',boardTheme);storage.set('wake7-board-layout',boardLayout);storage.set('wake7-daruma-color',darumaColor);}catch(_){ }
+  try{storage.set(STORAGE_KEYS.boardTheme,boardTheme);storage.set(STORAGE_KEYS.boardLayout,boardLayout);storage.set(STORAGE_KEYS.darumaColor,darumaColor);}catch(_){ }
 }
 const BOARD_THEME_TONES={
   gold:{stand:{fill:'#F6DE93',stroke:'#C89C35'},fallen:{fill:'#D7B75F',stroke:'#A67D28'}},
@@ -1185,7 +1165,7 @@ function completeSpeedStage(){
   clearTimer=setTimeout(advanceSpeedRun,delay+120);
 }
 // ===== 残り手数チェック(第四巻) =====
-const FOURTH_CHECKS_STORAGE_KEY='wake7-fourth-checks';
+const FOURTH_CHECKS_STORAGE_KEY=STORAGE_KEYS.fourthChecks;
 let fourthCheckUsage={};
 try{fourthCheckUsage=JSON.parse(storage.get(FOURTH_CHECKS_STORAGE_KEY)||'{}')||{};}catch(_){fourthCheckUsage={};}
 let fourthHintPreview=false,fourthDistanceRevealed=false,fourthHintDistance=null,fourthChecksUsed=0;
