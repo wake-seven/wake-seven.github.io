@@ -12,6 +12,8 @@ const coreDataModule = await readFile(join(root, 'src', 'core-data.js'), 'utf8')
 const runtimeModule = await readFile(join(root, 'src', 'runtime.js'), 'utf8');
 const namespaceModule = await readFile(join(root, 'src', 'namespace-api.js'), 'utf8');
 const compatCleanupDoc = await readFile(join(root, 'src', 'compat-cleanup.md'), 'utf8');
+const satoriDataModule = await readFile(join(root, 'src', 'data-satori.js'), 'utf8');
+const boardQuizDataModule = await readFile(join(root, 'src', 'data-board-quiz.js'), 'utf8');
 const required = [
   'WAKE7:STATE-MODULE:START',
   'WAKE7:PROGRESSION-POLICY:START',
@@ -174,6 +176,21 @@ for (const [moduleName, names] of sourceModules) {
       throw new Error(`${moduleName} is missing ${name}().`);
     }
   }
+}
+
+// 大きなデータを処理側へ戻さないための境界検査。順序変更は保存済み進行に影響するので、
+// SATORI_STAGES の最終化処理とバージョンを同じデータモジュール内に固定する。
+for (const token of [
+  'const SATORI_STAGES=[...SATORI_MIXED_STAGES];',
+  "const SATORI_ORDER_VERSION='",
+  'const satoriStageIndexByState=new Map(SATORI_STAGES.map('
+]) {
+  if (!satoriDataModule.includes(token)) throw new Error(`src/data-satori.js is missing ${token}`);
+}
+const quizLocales = [...boardQuizDataModule.matchAll(/^\s{2}(ja|en|zh|ko):\{/gm)].map(([, locale]) => locale);
+if (quizLocales.length !== 4 || new Set(quizLocales).size !== 4
+  || !['ja', 'en', 'zh', 'ko'].every(locale => quizLocales.includes(locale))) {
+  throw new Error(`BOARD_QUIZ_COPY must define exactly ja/en/zh/ko locales: ${quizLocales.join(', ')}.`);
 }
 const namespaceSourceTokens = [
   'global.WakeSeven = Object.freeze',

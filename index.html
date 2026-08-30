@@ -2271,7 +2271,11 @@ const MASTER_FOUR_MOVE_STAGES=FOUR_MOVE_STAGES.filter(stage=>MASTER_FOUR_MOVE_ST
 EXTRA_STAGES.push(
   ...MASTER_FOUR_MOVE_STAGES.slice().reverse()
 );
-// 悟りへの道：対称な盤面をひとつと数えた73種を集める。
+// 悟りへの道の出題データは src/data-satori.js で構築する。
+let currentLang='ja';
+
+// ===== 悟り出題データ =====
+// 悟りへの道の最終出題順。直前の構築処理は基礎データ側に残す。
 function satoriStagesAtDepth(depth){
   const seen=new Set(),stages=[];
   for(const state of SOLVER.byDepth[depth]){
@@ -2365,10 +2369,6 @@ const SATORI_MIXED_STAGES=[
     ?satoriThreeStages[satoriMixedThreeIndex++]
     :satoriFourStages[satoriMixedFourIndex++])
 ];
-let currentLang='ja';
-
-// ===== 悟り出題データ =====
-// 悟りへの道の最終出題順。直前の構築処理は基礎データ側に残す。
 const SATORI_STAGES=[...SATORI_MIXED_STAGES];
 [SATORI_STAGES[71],SATORI_STAGES[72]]=[SATORI_STAGES[72],SATORI_STAGES[71]];
 const SATORI_ORDER_VERSION='mixed-depths-final-swap-10';

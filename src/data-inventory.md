@@ -46,3 +46,22 @@
 - `CLEAR_CONTENT` のキー、`BOARD_QUIZ_COPY` の言語キー、挿絵識別子を欠落させない。
 - 生成後の `index.html` における宣言順を `scripts/build-index.mjs` で固定する。
 
+## 現在のデータ境界（2026-08）
+
+`SATORI_STAGES` と `BOARD_QUIZ_COPY` は、すでに実行処理から分離されたデータモジュールです。現時点では、さらに細かく分けるよりも、次の依存関係を契約として固定する方が安全です。
+
+```text
+core-data.js
+  └─ solver / canonicalState / progressOptionCounts
+       └─ data-satori.js
+            └─ SATORI_STAGES（最終73問・順序固定）
+
+data-board-quiz.js
+  └─ BOARD_QUIZ_COPY（ja/en/zh/koの表示文）
+       └─ quiz-ui.js / progression-ui.js
+```
+
+`data-satori.js` を候補生成・難易度順・移行用旧順・最終順へ分割する場合は、各段階の配列を値コピーにして、`SATORI_ORDER_VERSION` と盤面状態の対応を同じ変更に含めます。`BOARD_QUIZ_COPY` は言語別の文言だけを保持し、出題状態や描画関数を戻さないことを境界とします。
+
+この境界は `scripts/check-state.mjs` で、モジュールの生成順、最終配列の宣言、順序バージョン、クイズの全言語キーを検査します。
+
