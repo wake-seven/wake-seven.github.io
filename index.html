@@ -1116,6 +1116,9 @@
 <template id="rank-list-row-template">
   <div class="rank-row"><b class="rank-title" data-rank-title></b><span class="rank-condition" data-rank-condition></span></div>
 </template>
+<template id="message-cheer-caption-template">
+  <p class="cheer-caption" data-cheer-caption></p>
+</template>
 <template id="chain-template-training-middle-spin">
   <div class="status-metric remaining training-spin-counter" data-spin-counter><span data-spin-label></span><b data-spin-number></b><span data-spin-unit></span></div>
   <div class="two-move-detail-board-area"><div class="two-move-detail-board" data-spin-board-wrap><svg data-spin-board viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>
@@ -1196,6 +1199,7 @@
     <div class="dialog-actions"><button class="chip" id="messagePrev">← 前へ</button><button class="chip" id="closeMessages">閉じる</button><button class="chip" id="messageNext">次へ →</button></div>
   </div>
 </div>
+<template id="tipGuidePlayItemTemplate"><button class="chip on" type="button" data-state=""></button></template>
 <div class="game-dialog-backdrop" id="optimalFailDialog" hidden>
   <div class="game-dialog" role="dialog" aria-modal="true" aria-labelledby="optimalFailTitle">
     <h2 id="optimalFailTitle">おしい！あと1手短縮できればクリア。</h2>
@@ -7789,7 +7793,7 @@ function configureMilestoneHeader(entry,title){$('messageDialogTitle').textConte
 function prepareMessageReview(entry){const art=messageReviewArt(entry),twoMoveLesson=lessonVariantFromArt(art),messageClearEntry=configureMessageReviewType(entry);configureMessageReviewLinks(entry,messageClearEntry);return {art,twoMoveLesson,messageClearEntry};}
 function milestoneRenderer(entry){return MILESTONE_RENDERERS[entry.master]||MILESTONE_RENDERERS.volume;}
 function messageReviewRenderer(entry){if(entry.quiz!==undefined)return MESSAGE_RENDERERS.quiz;if(entry.boardQuiz)return MESSAGE_RENDERERS.boardQuiz;return MESSAGE_RENDERERS.text;}
-function renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule){const classByArt={'move-graph':art==='moveGraph','board-card':art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'),'controls-art':art==='controls','navigation-art':art==='navigation','menu-art':art==='menuButtons','rank-badge-art':art==='rankBadgeArt','unwritten-art':art==='unwritten','cheer-art':art==='cheer','intro-guide-art':art==='introGuide','two-move-lesson-art':!!twoMoveLesson};Object.entries(classByArt).forEach(([className,enabled])=>illustration.classList.toggle(className,enabled));stopClearGuideBoard('messageClearGuideBoard');stopClearGuideBoard('messageTwoMoveLessonBoard');illustration.innerHTML=art==='introGuide'?'<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':twoMoveLesson?'<svg id="messageTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'';if(art==='introGuide')buildClearGuideBoard('messageClearGuideBoard');if(twoMoveLesson)buildTwoMoveLessonBoard('messageTwoMoveLessonBoard',twoMoveLesson);illustration.hidden=!art;lessonCopy.hidden=!twoMoveLesson;lessonRule.hidden=!twoMoveLesson;}
+function renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule){const classByArt={'move-graph':art==='moveGraph','board-card':art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'),'controls-art':art==='controls','navigation-art':art==='navigation','menu-art':art==='menuButtons','rank-badge-art':art==='rankBadgeArt','unwritten-art':art==='unwritten','cheer-art':art==='cheer','intro-guide-art':art==='introGuide','two-move-lesson-art':!!twoMoveLesson};Object.entries(classByArt).forEach(([className,enabled])=>illustration.classList.toggle(className,enabled));stopClearGuideBoard('messageClearGuideBoard');stopClearGuideBoard('messageTwoMoveLessonBoard');illustration.innerHTML=art==='introGuide'?'<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':twoMoveLesson?'<svg id="messageTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>':art?tipArt(art):'';if(art==='cheer'){const template=document.getElementById('message-cheer-caption-template');if(template){const caption=template.content.cloneNode(true);caption.querySelector('[data-cheer-caption]').textContent=tr('cheerCaption');illustration.append(caption);}}if(art==='introGuide')buildClearGuideBoard('messageClearGuideBoard');if(twoMoveLesson)buildTwoMoveLessonBoard('messageTwoMoveLessonBoard',twoMoveLesson);illustration.hidden=!art;lessonCopy.hidden=!twoMoveLesson;lessonRule.hidden=!twoMoveLesson;}
 function renderMessageLesson(twoMoveLesson,illustration,lessonCopy,lessonRule){if(twoMoveLesson){renderTwoMoveLessonRule('messageTwoMoveLessonRule');renderTwoMoveLessonCopy('messageTwoMoveLessonCopy',twoMoveLesson);$('messageDialogText').after(illustration);illustration.before(lessonRule);illustration.after(lessonCopy);}else{lessonRule.replaceChildren();lessonCopy.replaceChildren();}}
 function renderMessageQuiz(quiz){renderQuizInto({root:'messageQuiz',options:'messageQuizOptions',note:'messageQuizNote',title:'messageQuizTitle',question:'messageQuizQuestion'},quiz);}
 function openMessageReview({resume=false,returnTarget=null}={}){messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries();if(resume){let lastKey='',lastClearKey='';try{lastKey=storage.get(MESSAGE_REVIEW_STORAGE_KEY)||'';lastClearKey=storage.get(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY)||'';}catch(_){}if(!lastClearKey&&isSatoriMastered()){const satoriEntry=messageReviewEntries.findIndex(entry=>entry.satori);if(satoriEntry>=0){messageReviewIndex=satoriEntry;const key=messageReviewEntryKey(messageReviewEntries[satoriEntry]);try{storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);}catch(_){}}else messageReviewIndex=0;}else{const saved=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===lastKey);messageReviewIndex=saved>=0?saved:0;}}else{const currentExtra=isMode('mastery'),currentIndex=isMode('mastery')?extraIndex:stageIndex;const exact=messageReviewEntries.findIndex(entry=>entry.extra===currentExtra&&entry.index===currentIndex);messageReviewIndex=exact>=0?exact:0;}renderMessageReview();$('messageDialog').hidden=false;$('closeMessages').focus();}
@@ -10298,10 +10302,18 @@ function renderTipGuide(){
     ?tipText.replace('ほかは最短3手','<strong>ほかは最短3手</strong>')
     :tipText;
   const names={ja:['小三角','大三角'],en:['Small triangle','Large triangle'],zh:['小三角','大三角'],ko:['작은 삼각형','큰 삼각형']}[currentLang]||['小三角','大三角'];
-  $('tipGuidePlay').innerHTML=tipGuideStates[tipGuideIndex].map((state,index)=>{
+  const playRoot=$('tipGuidePlay');
+  playRoot.replaceChildren();
+  const playTemplate=$('tipGuidePlayItemTemplate');
+  tipGuideStates[tipGuideIndex].forEach((state,index)=>{
     const label=tipGuideIndex===GUIDE_DOUBLE_INDEX?names[index]+'　'+tr('playThisBoard'):tr('playThisBoard');
-    return '<button class="chip on" type="button" data-state="'+enc(state)+'">'+label+'</button>';
-  }).join('');
+    const button=playTemplate?.content?.firstElementChild?.cloneNode(true)||document.createElement('button');
+    button.className='chip on';
+    button.type='button';
+    button.dataset.state=enc(state);
+    button.textContent=label;
+    playRoot.append(button);
+  });
   $('tipGuidePrev').textContent='← '+tr('prev');
   $('tipGuideNext').textContent=tr('next')+' →';
   $('closeTipGuide').textContent=(returnToClearCard||tipGuideReturnTarget)?tr('backToClear'):tr('close');
@@ -10464,8 +10476,9 @@ function applyLanguage(lang){
   $('prevStage').textContent='← '+tr('prev');
   $('nextStage').textContent=tr('next')+' →';
   if(!$('speedModeOptions').hidden)renderSpeedModeOptions();
-  $('menuAllPatterns').innerHTML=tr('allPatternsMenu')+'<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span>';
-  $('menuOpen3D').innerHTML=tr('threeDMenu')+'<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span>';
+  const updateExternalMenuLabel=(id,key)=>{const button=$(id),label=button.firstChild;if(label?.nodeType===3)label.nodeValue=tr(key);else button.prepend(document.createTextNode(tr(key)));};
+  updateExternalMenuLabel('menuAllPatterns','allPatternsMenu');
+  updateExternalMenuLabel('menuOpen3D','threeDMenu');
   updateSoundToggle();
   if(!$('twoMoveLessonDialog').hidden)openTwoMoveLessonDialog();
   if(!$('speedPauseDialog').hidden)renderSpeedPauseStats();

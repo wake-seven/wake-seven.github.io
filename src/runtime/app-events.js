@@ -648,10 +648,18 @@ function renderTipGuide(){
     ?tipText.replace('ほかは最短3手','<strong>ほかは最短3手</strong>')
     :tipText;
   const names={ja:['小三角','大三角'],en:['Small triangle','Large triangle'],zh:['小三角','大三角'],ko:['작은 삼각형','큰 삼각형']}[currentLang]||['小三角','大三角'];
-  $('tipGuidePlay').innerHTML=tipGuideStates[tipGuideIndex].map((state,index)=>{
+  const playRoot=$('tipGuidePlay');
+  playRoot.replaceChildren();
+  const playTemplate=$('tipGuidePlayItemTemplate');
+  tipGuideStates[tipGuideIndex].forEach((state,index)=>{
     const label=tipGuideIndex===GUIDE_DOUBLE_INDEX?names[index]+'　'+tr('playThisBoard'):tr('playThisBoard');
-    return '<button class="chip on" type="button" data-state="'+enc(state)+'">'+label+'</button>';
-  }).join('');
+    const button=playTemplate?.content?.firstElementChild?.cloneNode(true)||document.createElement('button');
+    button.className='chip on';
+    button.type='button';
+    button.dataset.state=enc(state);
+    button.textContent=label;
+    playRoot.append(button);
+  });
   $('tipGuidePrev').textContent='← '+tr('prev');
   $('tipGuideNext').textContent=tr('next')+' →';
   $('closeTipGuide').textContent=(returnToClearCard||tipGuideReturnTarget)?tr('backToClear'):tr('close');
@@ -814,8 +822,9 @@ function applyLanguage(lang){
   $('prevStage').textContent='← '+tr('prev');
   $('nextStage').textContent=tr('next')+' →';
   if(!$('speedModeOptions').hidden)renderSpeedModeOptions();
-  $('menuAllPatterns').innerHTML=tr('allPatternsMenu')+'<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span>';
-  $('menuOpen3D').innerHTML=tr('threeDMenu')+'<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span>';
+  const updateExternalMenuLabel=(id,key)=>{const button=$(id),label=button.firstChild;if(label?.nodeType===3)label.nodeValue=tr(key);else button.prepend(document.createTextNode(tr(key)));};
+  updateExternalMenuLabel('menuAllPatterns','allPatternsMenu');
+  updateExternalMenuLabel('menuOpen3D','threeDMenu');
   updateSoundToggle();
   if(!$('twoMoveLessonDialog').hidden)openTwoMoveLessonDialog();
   if(!$('speedPauseDialog').hidden)renderSpeedPauseStats();
