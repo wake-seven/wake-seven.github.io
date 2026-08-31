@@ -401,6 +401,8 @@ const CHAIN_STEPS={
     onAction(){loadStage(TRAINING_STAGE_START+TRAINING_UPPER_COUNT+TRAINING_MIDDLE_COUNT);}
   },
 };
+// CHAIN_STEPS は問題単位ではなく、次の節・クラス開始を示す節目メッセージ。
+Object.values(CHAIN_STEPS).forEach(step=>{step.kind='milestone';});
 let chainCleanup=null, chainActiveStep=null, chainActiveName=null;
 function openChainedDialog(name){
   const step=CHAIN_STEPS[name];

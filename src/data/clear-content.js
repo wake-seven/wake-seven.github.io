@@ -73,5 +73,8 @@ const CLEAR_CONTENT={
   mastery3_13:{tip:{ja:'メニューの「最短2手の9パターン」と「攻略のコツ」では、盤面をスワイプするとゲーム中の盤面と並べて見比べられます。',en:'In “2-move boards” and “Quick tips” in the Menu, swipe a board to compare it side by side with the game board.',zh:'在菜单的“最少2步棋盘”和“攻略提示”中，滑动棋盘可与游戏中的棋盘并排比较。',ko:'메뉴의 “최단 2수 보드”와 “공략 팁”에서는 보드를 스와이프해 게임 보드와 나란히 비교할 수 있어요.'}},
   mastery3_14:{quiz:{ja:{q:'達磨大師が開いたとされる仏教の宗派は？',a:['禅宗','浄土宗','真言宗','日蓮宗'],correct:0,note:'達磨大師は、中国禅宗の開祖とされています。'},en:{q:'Which Buddhist school is Bodhidharma said to have founded?',a:['Zen','Pure Land','Shingon','Nichiren'],correct:0,note:'Bodhidharma is regarded as the founder of Chinese Zen Buddhism.'},zh:{q:'达摩大师被认为开创了哪个佛教宗派？',a:['禅宗','净土宗','真言宗','日莲宗'],correct:0,note:'达摩大师被视为中国禅宗的开祖。'},ko:{q:'달마대사가 열었다고 전해지는 불교 종파는?',a:['선종','정토종','진언종','일련종'],correct:0,note:'달마대사는 중국 선종의 개조로 여겨집니다.'}}},
 };
+// 表示種別をデータ上で明示する。通常の問題クリア後メッセージと、
+// 次の節・クラスへ進む節目ダイアログを同じ入口で監査できるようにする。
+Object.values(CLEAR_CONTENT).forEach(entry=>{entry.kind=entry.dialog?'milestone':'clear';});
 // 公開native moduleの構文境界。
 export {};
