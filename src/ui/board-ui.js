@@ -1224,6 +1224,8 @@ function loadTutorialStep(index=0){
   clearTimeout(tutorialAdvanceTimer);
   setActiveMode('tutorial');editingBoard=false;
   tutorialStep=Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index));
+  // 前の段階で消した誤操作棒は、次の段階では再表示する。
+  svg.querySelectorAll('.grip-marker.narrow-hidden').forEach(marker=>marker.classList.remove('narrow-hidden'));
   WakeSevenState.setNavigationIndex(gameState,'tutorial',tutorialStep);
   storage.set(STORAGE_KEYS.tutorialStep,String(tutorialStep));
   const step=TUTORIAL_STEPS[tutorialStep];
@@ -1796,6 +1798,7 @@ function handleBoardPointerDown(e){
   }));
   drag={
     id:e.pointerId,ti,kc:t,items,rawDeg:0,deg:0,
+    maxAbsDeg:0,
     last:r>=MINR?Math.atan2(p.y-t.y,p.x-t.x):null,
     start:p,t0:performance.now(),tutorialReleaseCue:false
   };
@@ -1826,6 +1829,7 @@ function handleBoardPointerMove(e){
   drag.last=a;
   drag.rawDeg+=d*180/Math.PI;
   drag.deg=drag.rawDeg;
+  drag.maxAbsDeg=Math.max(drag.maxAbsDeg,Math.abs(drag.rawDeg));
   // 回転が始まったら、つかんだ3枚を強調する枠を解除する。
   svg.classList.remove('selecting','rotation-started');
   svg.classList.add('rotation-started');
@@ -1913,6 +1917,20 @@ function finishDrag(e,cancel=false,forcedTurns=null){
     $('gripPrompt').hidden=false;
     animateTutorialRewind(dg,target,dir);
     return;
+  }
+  // いったん120°以上回してから元の角度(0°)へ戻した場合も、
+  // 違う棒なら「そこじゃないよ」と判定する。rawDegだけでは往復で0に
+  // 戻ってしまうため、ドラッグ中の最大絶対角を別に記録しておく。
+  if(isMode('tutorial')&&!dir&&dg.maxAbsDeg>=120){
+    const expected=tutorialSolvingMoves()[0];
+    if(expected&&dg.ti!==expected.ti){
+      cancelTutorialHint(true);
+      $('gripPromptText').textContent=tr('tutorialWrongPlacePrompt');
+      $('gripPrompt').hidden=false;
+      svg.querySelector('.grip-marker[data-tri="'+dg.ti+'"]').classList.add('narrow-hidden');
+      animateTutorialRewind(dg,0,dg.rawDeg>=0?1:-1);
+      return;
+    }
   }
   if(isMode('tutorial')&&!dir){
     paint();
