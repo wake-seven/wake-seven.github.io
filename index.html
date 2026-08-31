@@ -5541,8 +5541,9 @@ function buildBoard(){
   });
   baseTiles=tileEls.slice();
 }
-let introTimer=0;
+let introTimer=0,introRun=0;
 function buildIntroBoard(){
+  const run=++introRun,alive=()=>run===introRun;
   const intro=$('introBoard'),NS_='http://www.w3.org/2000/svg';
   intro.replaceChildren();
   const start=dec(STAGES[0].state),tiles=[];
@@ -5589,8 +5590,9 @@ function buildIntroBoard(){
     const c=TRI[0].cells,old=tiles.slice();
     const rotateDuration=2000;
     // 指の水色の点が触れた瞬間に、6本の棒を消す(どれを回すか、もう決まったことを伝える)。
-    setTimeout(()=>{swipe.style.display='';grips.forEach(marker=>marker.style.display='none');},1050);
+    setTimeout(()=>{if(!alive())return;swipe.style.display='';grips.forEach(marker=>marker.style.display='none');},1050);
     setTimeout(()=>{
+      if(!alive())return;
       // 本編と同じく、3体をひとつの塊として軸のまわりに回す。
       const unit=rotationUnit;
       for(let i=0;i<3;i++)unit.appendChild(old[c[(i+1)%3]]);
@@ -5600,6 +5602,7 @@ function buildIntroBoard(){
       unit.animate([{transform:'rotate(0deg)'},{transform:'rotate(-120deg)'}],
         {duration:rotateDuration,easing:'cubic-bezier(.33,0,.67,1)',fill:'forwards'});
       setTimeout(()=>{
+        if(!alive())return;
         for(let i=0;i<3;i++){
           const from=c[(i+1)%3],to=c[i],el=old[from];
           el.style.transform=tileTransform(CELL[to].x,CELL[to].y,0);
@@ -5617,7 +5620,7 @@ function buildIntroBoard(){
       },rotateDuration);
     },1750);
     // 次のサイクルへ戻る直前だけ、盤面全体を短くフェードアウトして切替を見せる。
-    setTimeout(()=>{intro.classList.add('welcome-cycle-fade');},1750+rotateDuration+820+400);
+    setTimeout(()=>{if(alive())intro.classList.add('welcome-cycle-fade');},1750+rotateDuration+820+400);
   };
   play();clearInterval(introTimer);introTimer=setInterval(play,5400);
 }
