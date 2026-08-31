@@ -8818,6 +8818,13 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
   root.classList.remove('quiz-success');
   if(!config){root.hidden=true;if(requireAnswer)$('clearNext').disabled=false;return;}
+  // 状態更新や再表示で同じ問題を再描画しても、4つの手数選択肢を再シャッフルしない。
+  // 表示中に別順へ入れ替わると、初期順が見えてから動いたように感じられるため。
+  const stateKey=config.state?enc(Uint8Array.from(config.state)):config.pattern||config.patterns?.join(',')||'';
+  const boardQuizKey=JSON.stringify([config.kind,stateKey,config.questionKey,config.correct,config.patterns,currentLang]);
+  if(root.dataset.boardQuizKey===boardQuizKey&&root.childElementCount){root.hidden=false;return;}
+  root.dataset.boardQuizKey=boardQuizKey;
+  root.hidden=true;
   const copy=BOARD_QUIZ_COPY[currentLang]||BOARD_QUIZ_COPY.ja;
   const state=config.state?enc(Uint8Array.from(config.state)):config.options?null:boardQuizPatternState(config.pattern||config.patterns[0]);
   let {states,correct,question,moveChoiceOrder}=boardQuizPresentation(config,state,copy);
@@ -8829,7 +8836,6 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const noteKey=config.kind==='moves'?'movesNote':config.topic;
   const detailPatterns=config.patterns||(config.pattern?[config.pattern]:[]);
   const guideLinks=(config.guidePages||[]).map(page=>'<button class="clear-tip-link" id="'+rootId+'Guide'+page+'" type="button" data-guide-page="'+page+'" hidden>'+tr('tipGuideTitle').replace('を見る','')+' '+(page+1)+' / '+GUIDE_TIP_INDEX.length+' →</button>').join('');
-  root.hidden=false;
   const {boardMarkup,detailLinks}=boardQuizMarkup(config,states,moveChoiceOrder,copy,rootId,detailPatterns);
   const shellTemplate=document.getElementById('boardQuizShellTemplate');
   if(shellTemplate){
@@ -8842,6 +8848,8 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   }else{
     root.innerHTML='<div class="quiz-label">'+copy.title+'</div><p class="board-quiz-question">'+question+'</p>'+boardMarkup+'<p class="board-quiz-note"></p>'+detailLinks+guideLinks;
   }
+  // 完成した順番のDOMを一度に公開し、旧選択肢が描画される隙間を作らない。
+  root.hidden=false;
   const note=root.querySelector('.board-quiz-note');
   let animating=false;
   const updateCard=index=>{
