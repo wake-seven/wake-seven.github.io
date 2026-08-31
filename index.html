@@ -7446,6 +7446,20 @@ function finishDrag(e,cancel=false,forcedTurns=null){
       return;
     }
   }
+  // 学園の補助輪でも、120°以上回した後に0°へ戻った往復を見逃さない。
+  // 正しい棒かどうかは最短距離が縮むかで判定し、違う棒は従来どおり候補から落とす。
+  if(!dir&&dg.maxAbsDeg>=120&&(isGuidedBasicStage()||isFallingRodStage())&&guidedBasicCandidateTis){
+    const before=SOLVER.dist[enc(ori)];
+    const correctPlace=[1,-1].some(candidate=>SOLVER.dist[enc(rollOnce(ori,dg.ti,candidate))]===before-1);
+    if(!correctPlace){
+      guidedBasicCandidateTis.delete(dg.ti);
+      fallenRodTis.add(dg.ti);
+      $('gripPromptText').textContent=tr('assistedWrongPlace');
+      $('gripPrompt').hidden=false;
+      animateGuidedBasicRewind(dg);
+      return;
+    }
+  }
   if(isMode('tutorial')&&!dir){
     paint();
     setTimeout(showTutorialCue,120);
