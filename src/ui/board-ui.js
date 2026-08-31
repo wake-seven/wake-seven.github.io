@@ -212,7 +212,11 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       // 現在は主マーカー1本だが、将来複数マーカーを追加しても残らないようにする。
       board.querySelectorAll('.grip-marker,.intro-swipe').forEach(grip=>{grip.style.display='none';});
       // 水色の持ち手をつかんだ瞬間、回る3枚を本編と同じ見え方で強調する。
-      t.cells.forEach(index=>cycleTiles[index].classList.add('welcome-selected'));
+      t.cells.forEach(index=>{
+        const tile=cycleTiles[index];
+        tile.classList.add('welcome-touch-flash');
+        setTimeout(()=>tile.classList.remove('welcome-touch-flash'),380);
+      });
       const unit=rotationUnit;
       // 指で少し行き過ぎてから離し、次の120°位置へぴたりと収まる感覚を再現する。
       const overshootAmount=8;
@@ -225,7 +229,6 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       // 使い回すunitは先に挿入済みのため、最前面に出すには回転開始のたびに一度前面へ出し直す。
       board.appendChild(unit);
       // タッチの瞬間だけ枠を見せ、回転が始まったら解除する。
-      t.cells.forEach(index=>cycleTiles[index].classList.remove('welcome-selected'));
       unit.animate([
         {transform:'rotate(0deg)',offset:0},
         {transform:'rotate('+overshoot+'deg)',offset:Number(overshootFrac)},
@@ -468,7 +471,7 @@ function buildTrainingMiddleSpinBoard(boardId,counterId,startState=TRAINING_MIDD
     guide.appendChild(g);tiles[i]=g;
   });
   // 学園のクラス開始ダイアログ(buildAcademyWelcomeBoard)と同じく、回っている3枚を枠で強調し、つかんでいる指の点も表示する。
-  cells.forEach(c=>tiles[c].classList.add('welcome-selected'));
+  cells.forEach(c=>tiles[c].classList.remove('welcome-touch-flash'));
   const spinItems=cells.map(c=>({el:tiles[c],turn:startBoard[c]}));
   const group=document.createElementNS(NS_,'g');
   spinItems.forEach(item=>group.appendChild(item.el));
@@ -525,7 +528,7 @@ function buildTrainingMiddleSpinBoard(boardId,counterId,startState=TRAINING_MIDD
       tiles[i].setAttribute('class','tile '+(startBoard[i]?'fallen':'stand'));
       tiles[i].style.transform=tileTransform(c.x,c.y,startBoard[i]);
     });
-    cells.forEach(c=>tiles[c].classList.add('welcome-selected'));
+    cells.forEach(c=>tiles[c].classList.remove('welcome-touch-flash'));
   };
   const play=async()=>{
     if(!isCurrent()||!guide.isConnected)return;
@@ -535,7 +538,11 @@ function buildTrainingMiddleSpinBoard(boardId,counterId,startState=TRAINING_MIDD
     await wait(500);
     if(!isCurrent()||!guide.isConnected)return;
     // タッチ後に回転を始めるので、ここで枠の強調を解除する。
-    cells.forEach(c=>tiles[c].classList.remove('welcome-selected'));
+    cells.forEach(c=>{
+      const tile=tiles[c];
+      tile.classList.add('welcome-touch-flash');
+      setTimeout(()=>tile.classList.remove('welcome-touch-flash'),380);
+    });
     // 回転する3枚のgroupを毎周、必ず最後の子要素に付け直す。iOS Safariでは早い段階で
     // 挿入した要素がその後追加された兄弟より背面に描画されることがあるための対策。
     guide.appendChild(group);
