@@ -347,7 +347,7 @@ const UI_TEXT={
     developmentFourStartText:'次からは、「あと4くるり」の問題です。',
     developmentFourStartStart:'はじめる',
     academyCompleteTitle:'だるま学園 卒業！',
-    academyCompleteText:'だるま学園を卒業し、だるま修行の旅に出ます。\nここからは補助なしで「2くるり」にチャレンジしよう。',
+    academyCompleteText:'だるま学園を卒業し、だるま修行の旅に出ます。',
     academyCompleteStart:'だるま修行へ →',
     trainingWelcomeTitle:'だるま修行 出発！',
     trainingWelcomeText:'ここからは補助なし。自分の力で解いてみよう',
