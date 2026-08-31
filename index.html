@@ -813,10 +813,6 @@
   #board.selecting .pivot{opacity:.22}
   #board.selecting .pivot.active{opacity:1}
   /* 持ち手をつかんだ後も、回転対象の3枚を枠で追い続けられるようにする。 */
-  #board.spinning:not(.rotation-started) .tile.selected .hex{
-    stroke:#8BE8FA;stroke-width:4.5;stroke-linejoin:round;
-    filter:drop-shadow(0 0 7px rgba(98,215,244,.98));
-  }
   /* 入学案内でも、本編で持ち手をつかんだときと同じく回る3枚を強調する。 */
   #academyWelcomeBoard .tile.welcome-touch-flash .hex,#trainingMiddleSpinBoard .tile.welcome-touch-flash .hex,#developmentWelcomeSpinBoard .tile.welcome-touch-flash .hex{animation:welcomeTileFlash .38s ease-out}
   @keyframes welcomeTileFlash{0%,100%{stroke:#8BE8FA;stroke-width:4.5;filter:drop-shadow(0 0 7px rgba(98,215,244,.9))}50%{stroke:#C9F7FF;stroke-width:2.5;filter:drop-shadow(0 0 12px rgba(98,215,244,1))}}
