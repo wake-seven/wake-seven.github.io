@@ -283,13 +283,13 @@ function cloneDialogTemplate(body,id){
   body.append(template.content.cloneNode(true));
   return true;
 }
-function shapeGridRenderer(states,shapeNames,nameKey,labelKey){
+function shapeGridRenderer(states,shapeNames,nameKey,labelKey,footerKey){
   return body=>{
     body.innerHTML='<div class="training-departure-goal-frame">'
       +(labelKey?'<p class="chain-label">'+tr(labelKey)+'</p>':'')
       +'<div class="training-departure-goal-boards">'
       +states.map((state,i)=>'<div class="training-departure-goal-card">'+miniBoardSvg(state,{outline:true})+'<p>'+tr(nameKey(shapeNames[i]))+'</p></div>').join('')
-      +'</div></div>';
+      +'</div>'+(footerKey?'<p class="chain-text-left training-goal-footer">'+tr(footerKey)+'</p>':'')+'</div>';
   };
 }
 function academyBoardStep(variant,titleKey,textKey,actionKey,onAction){
@@ -366,7 +366,7 @@ const CHAIN_STEPS={
   },
   trainingUpperGoal:{
     kindKey:'trainingUpperGoalKind', titleKey:'trainingUpperGoalTitle', actionKey:'trainingUpperGoalStart',
-    render:shapeGridRenderer(TRAINING_UPPER_GOAL_STATES,TRAINING_UPPER_GOAL_SHAPES,s=>'twoMoveTip3'+s+'Name'),
+    render:shapeGridRenderer(TRAINING_UPPER_GOAL_STATES,TRAINING_UPPER_GOAL_SHAPES,s=>'twoMoveTip3'+s+'Name',null,'trainingUpperGoalText'),
     onAction(){loadStage(TRAINING_STAGE_START);}
   },
   trainingMiddleSpin:{

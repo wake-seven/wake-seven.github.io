@@ -2774,6 +2774,7 @@ const UI_TEXT={
     trainingWelcomeStart:'はじめる',
     trainingUpperGoalKind:'だるま修行・上巻 開始',
     trainingUpperGoalTitle:'上巻ではこんな形が登場するよ',
+    trainingUpperGoalText:'「あと2くるり」の修行だよ！',
     trainingUpperGoalStart:'はじめる',
     trainingMiddleGoalKind:'だるま修行・中巻 開始',
     trainingMiddleGoalTitle:'中巻ではこんな形が登場するよ',
@@ -3145,6 +3146,7 @@ const UI_TEXT={
     trainingWelcomeStart:'Start',
     trainingUpperGoalKind:'DARUMA TRAINING · VOL. 1 START',
     trainingUpperGoalTitle:'Here are the shapes you\'ll see in Volume 1',
+    trainingUpperGoalText:'This is your two-turn training!',
     trainingUpperGoalStart:'Start',
     trainingMiddleGoalKind:'DARUMA TRAINING · VOL. 2 START',
     trainingMiddleGoalTitle:'Here are the shapes you\'ll see in Volume 2',
@@ -3525,6 +3527,7 @@ const UI_TEXT={
     trainingWelcomeStart:'开始',
     trainingUpperGoalKind:'不倒翁修行·上卷 开始',
     trainingUpperGoalTitle:'上卷会出现这样的形状哦',
+    trainingUpperGoalText:'这是「还差2圈」的修行！',
     trainingUpperGoalStart:'开始',
     trainingMiddleGoalKind:'不倒翁修行·中卷 开始',
     trainingMiddleGoalTitle:'中卷会出现这样的形状哦',
@@ -3905,6 +3908,7 @@ const UI_TEXT={
     trainingWelcomeStart:'시작',
     trainingUpperGoalKind:'다루마 수행·상권 시작',
     trainingUpperGoalTitle:'상권에는 이런 모양이 나와',
+    trainingUpperGoalText:'앞으로 2바퀴 수행이야!',
     trainingUpperGoalStart:'시작',
     trainingMiddleGoalKind:'다루마 수행·중권 시작',
     trainingMiddleGoalTitle:'중권에는 이런 모양이 나와',
@@ -5788,13 +5792,13 @@ function cloneDialogTemplate(body,id){
   body.append(template.content.cloneNode(true));
   return true;
 }
-function shapeGridRenderer(states,shapeNames,nameKey,labelKey){
+function shapeGridRenderer(states,shapeNames,nameKey,labelKey,footerKey){
   return body=>{
     body.innerHTML='<div class="training-departure-goal-frame">'
       +(labelKey?'<p class="chain-label">'+tr(labelKey)+'</p>':'')
       +'<div class="training-departure-goal-boards">'
       +states.map((state,i)=>'<div class="training-departure-goal-card">'+miniBoardSvg(state,{outline:true})+'<p>'+tr(nameKey(shapeNames[i]))+'</p></div>').join('')
-      +'</div></div>';
+      +'</div>'+(footerKey?'<p class="chain-text-left training-goal-footer">'+tr(footerKey)+'</p>':'')+'</div>';
   };
 }
 function academyBoardStep(variant,titleKey,textKey,actionKey,onAction){
@@ -5871,7 +5875,7 @@ const CHAIN_STEPS={
   },
   trainingUpperGoal:{
     kindKey:'trainingUpperGoalKind', titleKey:'trainingUpperGoalTitle', actionKey:'trainingUpperGoalStart',
-    render:shapeGridRenderer(TRAINING_UPPER_GOAL_STATES,TRAINING_UPPER_GOAL_SHAPES,s=>'twoMoveTip3'+s+'Name'),
+    render:shapeGridRenderer(TRAINING_UPPER_GOAL_STATES,TRAINING_UPPER_GOAL_SHAPES,s=>'twoMoveTip3'+s+'Name',null,'trainingUpperGoalText'),
     onAction(){loadStage(TRAINING_STAGE_START);}
   },
   trainingMiddleSpin:{
