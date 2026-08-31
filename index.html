@@ -7303,7 +7303,10 @@ function handleBoardPointerMove(e){
   // 最初の補助輪では、正しい向きへ120°近く回せたときだけ「はなす」合図を出す。
   }else if(isMode('tutorial')&&(tutorialCue==='grab'||(tutorialCue==='chain'&&moves===0))){
     const expected=tutorialSolvingMoves()[0];
-    const readyToRelease=!!expected&&drag.ti===expected.ti&&drag.rawDeg*expected.dir>=102;
+    // 「はなそう」は正解棒の約120°付近だけで表示する。方向は固定せず、
+    // 逆回転でも同じ角度に到達すれば案内を出せるようにする。
+    const angle=Math.abs(drag.rawDeg);
+    const readyToRelease=!!expected&&drag.ti===expected.ti&&angle>=102&&angle<=138;
     if(readyToRelease&&!drag.tutorialReleaseCue){
       drag.tutorialReleaseCue=true;
       // 120°まで回せたら、持ち手と矢印を片づけて「はなす」だけを伝える。
