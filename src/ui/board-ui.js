@@ -1094,7 +1094,7 @@ function setPosition(state,par){
   const nextOri=dec(state);
   replaceBoardState({ori:nextOri,spin:Int16Array.from(nextOri),tiles:baseTiles.slice(),best:par,moves:0,history:[]}); clearShown=false;
   clearTimeout(boardArrivalTimer);
-  busy=false; drag=null;boardTouchActive=false; svg.classList.remove('spinning','selecting','clear-pending','celebrating','arriving');
+  busy=false; drag=null;boardTouchActive=false; svg.classList.remove('spinning','selecting','rotation-started','clear-pending','celebrating','arriving');
   svg.classList.remove('tutorial-grab-step','tutorial-clear-step','invalid-grab');
   svg.querySelectorAll('.grip-marker.tutorial-target').forEach(marker=>marker.classList.remove('tutorial-target'));
   $('gripPrompt').classList.remove('tutorial-prompt-top');
@@ -1314,7 +1314,7 @@ function restoreSavedBoard(data){
   loadFourthChecks();
   fourthDistanceRevealed=!!data.fourthDistanceRevealed;
   fourthHintPreview=false;fourthHintDistance=null;busy=false;drag=null;boardTouchActive=false;
-  svg.classList.remove('spinning','selecting','clear-pending','celebrating');
+  svg.classList.remove('spinning','selecting','rotation-started','clear-pending','celebrating');
   svg.classList.toggle('clear-pending',clearShown&&isSolved());
   baseTiles.forEach(el=>el.classList.remove('selected'));
   $('clearNext').hidden=!clearShown;
@@ -1435,7 +1435,7 @@ function restoreFreeSession(){
   tileEls=s.tileEls.slice();moves=s.moves;best=s.best;
   history=s.history.map(cloneHistoryEntry);
   currentInitialState=s.initialState;currentInitialPar=s.initialPar;clearShown=s.clearShown;
-  busy=false;drag=null;boardTouchActive=false;svg.classList.remove('spinning','selecting','clear-pending','celebrating');
+  busy=false;drag=null;boardTouchActive=false;svg.classList.remove('spinning','selecting','rotation-started','clear-pending','celebrating');
   baseTiles.forEach(el=>el.classList.remove('selected'));
   svg.querySelectorAll('.pivot.active').forEach(el=>el.classList.remove('active'));
   $('msg').textContent='';
@@ -1787,6 +1787,9 @@ function handleBoardPointerMove(e){
   drag.last=a;
   drag.rawDeg+=d*180/Math.PI;
   drag.deg=drag.rawDeg;
+  // 回転が始まったら、つかんだ3枚を強調する枠を解除する。
+  svg.classList.remove('selecting','rotation-started');
+  svg.classList.add('rotation-started');
   // 5問目は、動かし始めたら「はなす位置を考える」案内に固定する。
   // 逆向きへ戻しても、案内や矢印を出し直さない。
   const tutorialCue=TUTORIAL_STEPS[tutorialStep]?.cue;
@@ -2011,7 +2014,7 @@ function animateGuidedBasicRewind(dg){
     if(progress<1){requestAnimationFrame(frame);return;}
     for(const{item} of clones)item.el.style.visibility='';
     group.remove();
-    busy=false;svg.classList.remove('spinning');paint();
+    busy=false;svg.classList.remove('spinning','rotation-started');paint();
     setTimeout(()=>{if(isAssistedLearningStage()||isFallingRodStage())$('gripPrompt').hidden=true;},450);
   };
   requestAnimationFrame(frame);

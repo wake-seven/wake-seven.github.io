@@ -813,7 +813,7 @@
   #board.selecting .pivot{opacity:.22}
   #board.selecting .pivot.active{opacity:1}
   /* 持ち手をつかんだ後も、回転対象の3枚を枠で追い続けられるようにする。 */
-  #board.spinning .tile.selected .hex{
+  #board.spinning:not(.rotation-started) .tile.selected .hex{
     stroke:#8BE8FA;stroke-width:4.5;stroke-linejoin:round;
     filter:drop-shadow(0 0 7px rgba(98,215,244,.98));
   }
