@@ -224,6 +224,8 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       unit.appendChild(touch);
       // 使い回すunitは先に挿入済みのため、最前面に出すには回転開始のたびに一度前面へ出し直す。
       board.appendChild(unit);
+      // タッチの瞬間だけ枠を見せ、回転が始まったら解除する。
+      t.cells.forEach(index=>cycleTiles[index].classList.remove('welcome-selected'));
       unit.animate([
         {transform:'rotate(0deg)',offset:0},
         {transform:'rotate('+overshoot+'deg)',offset:Number(overshootFrac)},
@@ -246,7 +248,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
         const delay=Math.round(overshootDuration*(thresholdDeg/overshootAngle));
         setTimeout(()=>{
           if(!alive())return;
-          cycleTiles[index].setAttribute('class','tile '+(willStand?'stand':'fallen')+' welcome-selected');
+          cycleTiles[index].setAttribute('class','tile '+(willStand?'stand':'fallen'));
         },delay);
       }
       // 「あと○くるり」の数字も、起きる判定と同じタイミングで切り替える。
@@ -509,7 +511,7 @@ function buildTrainingMiddleSpinBoard(boardId,counterId,startState=TRAINING_MIDD
         else done=true;
       }
       group.setAttribute('transform','rotate('+deg+' '+t.x+' '+t.y+')');
-      spinItems.forEach(item=>{previewWake(item,deg);item.el.classList.add('welcome-selected');});
+      spinItems.forEach(item=>previewWake(item,deg));
       const applications=visualTurns(deg)*dir,idx=((applications%3)+3)%3;
       setCounter(SOLVER.dist[cycleStates[idx]]===2);
       if(done){resolve();return;}
@@ -532,6 +534,8 @@ function buildTrainingMiddleSpinBoard(boardId,counterId,startState=TRAINING_MIDD
     guide.classList.remove('welcome-cycle-fade');
     await wait(500);
     if(!isCurrent()||!guide.isConnected)return;
+    // タッチ後に回転を始めるので、ここで枠の強調を解除する。
+    cells.forEach(c=>tiles[c].classList.remove('welcome-selected'));
     // 回転する3枚のgroupを毎周、必ず最後の子要素に付け直す。iOS Safariでは早い段階で
     // 挿入した要素がその後追加された兄弟より背面に描画されることがあるための対策。
     guide.appendChild(group);
