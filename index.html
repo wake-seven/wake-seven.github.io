@@ -6204,7 +6204,12 @@ function buildClearGuideBoard(id){
     swipe.style.display='none';guide.appendChild(swipe);grips.forEach(marker=>{marker.style.display='';guide.appendChild(marker);});
     tiles.forEach((g,i)=>{g.classList.remove('guide-happy');g.setAttribute('class','tile '+(start[i]?'fallen':'stand'));g.style.transform=tileTransform(CELL[i].x,CELL[i].y,start[i]);});
     const cells=TRI[0].cells,old=tiles.slice();
-    setTimeout(()=>{if(guide.isConnected)swipe.style.display='';},1050);
+    // 指が触れたタイミングで、6本の棒をすべて片づける。
+    setTimeout(()=>{
+      if(!guide.isConnected)return;
+      swipe.style.display='';
+      grips.forEach(marker=>marker.style.display='none');
+    },1050);
     setTimeout(()=>{
       if(!guide.isConnected)return;
       grips.forEach(marker=>marker.style.display='none');
@@ -6214,7 +6219,7 @@ function buildClearGuideBoard(id){
       // 使い回すunitは先に挿入済みのため、最前面に出すには回転開始のたびに一度前面へ出し直す。
       guide.appendChild(unit);
       unit.animate([{transform:'rotate(0deg)'},{transform:'rotate(-120deg)'}],
-        {duration:760,easing:'cubic-bezier(.2,.75,.2,1)',fill:'forwards'});
+        {duration:1600,easing:'cubic-bezier(.2,.75,.2,1)',fill:'forwards'});
       setTimeout(()=>{
         if(!guide.isConnected)return;
         for(let i=0;i<3;i++){
@@ -6222,10 +6227,10 @@ function buildClearGuideBoard(id){
           el.style.transform=tileTransform(CELL[to].x,CELL[to].y,0);el.setAttribute('class','tile stand');tiles[to]=el;guide.appendChild(el);
         }
         swipe.setAttribute('cx',TRI[0].x);swipe.setAttribute('cy',TRI[0].y-40);guide.appendChild(swipe);tiles.forEach(el=>el.classList.add('guide-happy'));swipe.style.display='none';
-      },760);
+      },1600);
     },1750);
   };
-  play();clearGuideTimers.set(id,setInterval(play,3500));
+  play();clearGuideTimers.set(id,setInterval(play,5000));
 }
 function lessonBestMove(state){
   const board=dec(state),distance=SOLVER.dist[enc(board)];
