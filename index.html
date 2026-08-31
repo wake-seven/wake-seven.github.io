@@ -7461,12 +7461,14 @@ function finishDrag(e,cancel=false,forcedTurns=null){
       return;
     }
     // 正しい棒を選んでいた場合は、向きが未確定でも棒の選択自体は正しいと伝える。
-    // 残りの不正解候補はグレーアウトし、次はこの棒の回転方向に集中させる。
+    // 他にも最短距離を縮められる棒があれば残し、不正解候補だけをグレーアウトする。
+    const correctGripTis=new Set([...guidedBasicCandidateTis].filter(ti=>
+      [1,-1].some(candidate=>SOLVER.dist[enc(rollOnce(ori,ti,candidate))]===before-1)));
     for(const ti of guidedBasicCandidateTis){
-      if(ti!==dg.ti)fallenRodTis.add(ti);
+      if(!correctGripTis.has(ti))fallenRodTis.add(ti);
     }
     guidedBasicCandidateTis.clear();
-    guidedBasicCandidateTis.add(dg.ti);
+    correctGripTis.forEach(ti=>guidedBasicCandidateTis.add(ti));
     $('gripPromptText').textContent=tr('assistedRightGrip');
     $('gripPrompt').hidden=false;
     animateGuidedBasicRewind(dg);
@@ -7491,13 +7493,15 @@ function finishDrag(e,cancel=false,forcedTurns=null){
         fallenRodTis.add(dg.ti);
       }
       // 棒は合っていたが向きが違った場合は、その棒が正解だと分かった合図として
-      // 他の候補棒は全てグレーアウトし、残す棒を一本に絞る。
+      // 不正解の候補だけをグレーアウトし、複数の正解棒は残す。
       if(correctPlace&&guidedBasicCandidateTis){
+        const correctGripTis=new Set([...guidedBasicCandidateTis].filter(ti=>
+          [1,-1].some(candidate=>SOLVER.dist[enc(rollOnce(ori,ti,candidate))]===before-1)));
         for(const ti of guidedBasicCandidateTis){
-          if(ti!==dg.ti)fallenRodTis.add(ti);
+          if(!correctGripTis.has(ti))fallenRodTis.add(ti);
         }
         guidedBasicCandidateTis.clear();
-        guidedBasicCandidateTis.add(dg.ti);
+        correctGripTis.forEach(ti=>guidedBasicCandidateTis.add(ti));
       }
       $('gripPromptText').textContent=tr(correctPlace?'assistedWrongDirection':'assistedWrongPlace');
       $('gripPrompt').hidden=false;
