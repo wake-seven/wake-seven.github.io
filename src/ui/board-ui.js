@@ -322,7 +322,7 @@ const CHAIN_STEPS={
     },
     onAction(){openChainedDialog('academyWelcome');}
   },
-  academyWelcome:academyBoardStep('enroll','academyWelcomeTitle','academyWelcomeText','academyWelcomeStart',()=>{}),
+  academyWelcome:{...academyBoardStep('enroll','academyWelcomeTitle','academyWelcomeText','academyWelcomeStart',()=>{}),noFrame:true},
   basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),
   developmentWelcome:{
     titleKey:'developmentWelcomeTitle', actionKey:'developmentWelcomeStart',
@@ -419,6 +419,7 @@ function openChainedDialog(name){
   $('chainDialogTitle').className=step.titleClass||'';
   $('chainDialogAction').textContent=tr(step.actionKey);
   $('chainDialogCard').classList.toggle('chain-wide',!!step.wide);
+  $('chainDialogCard').classList.toggle('chain-no-frame',!!step.noFrame);
   $('chainDialogBody').replaceChildren();
   chainCleanup=step.render($('chainDialogBody'))||null;
   $('chainDialog').hidden=false;
