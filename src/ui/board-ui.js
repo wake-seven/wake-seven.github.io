@@ -208,7 +208,9 @@ function buildAcademyWelcomeBoard(variant='enroll'){
     board.appendChild(marker);board.appendChild(touch);board.appendChild(counterLabel);board.appendChild(counterNumber);board.appendChild(counterUnit);board.appendChild(release);
     setTimeout(()=>{
       if(!alive())return;
-      marker.style.display='none';
+      // タッチ演出が始まったら、案内用の棒はすべて片づける。
+      // 現在は主マーカー1本だが、将来複数マーカーを追加しても残らないようにする。
+      board.querySelectorAll('.grip-marker,.intro-swipe').forEach(grip=>{grip.style.display='none';});
       // 水色の持ち手をつかんだ瞬間、回る3枚を本編と同じ見え方で強調する。
       t.cells.forEach(index=>cycleTiles[index].classList.add('welcome-selected'));
       const unit=rotationUnit;
