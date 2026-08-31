@@ -139,11 +139,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
   stopAcademyWelcomeBoard();
   const board=$('academyWelcomeBoard'),NS_='http://www.w3.org/2000/svg';
   board.replaceChildren();
-  // くるり数と盤面を、ひとつの案内カードとして見せる。
-  const frame=document.createElementNS(NS_,'rect');
-  frame.setAttribute('x','4');frame.setAttribute('y','-52');frame.setAttribute('width','312');frame.setAttribute('height','354');
-  frame.setAttribute('rx','0');frame.setAttribute('fill','rgba(255,255,255,.025)');frame.setAttribute('stroke','rgba(159,176,196,.4)');frame.setAttribute('stroke-width','1');
-  board.appendChild(frame);
+  // 盤面を囲う枠は使わず、数字・盤面・操作対象だけを見せる。
   // 入学は最短1手（あと1くるり）、基本クラスは最短2手（あと2くるり）のデモ盤面を使う。
   const initialState=(variant==='basic'||variant==='development'?STAGES[BASIC_STAGE_START]:STAGES[0]).state,start=dec(initialState);
   const startDistance=SOLVER.dist[enc(start)];
