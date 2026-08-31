@@ -7316,8 +7316,10 @@ function handleBoardPointerMove(e){
     }else if(!readyToRelease&&drag.tutorialReleaseCue){
       // 角度を戻したら、離す合図を取り消してもう一度回す方向を示す。
       drag.tutorialReleaseCue=false;
-      // チュートリアル2では、角度が外れたら必ず「くるりとまわして…」へ戻す。
-      $('gripPromptText').textContent=tutorialStep===1?tr('tutorialSecondArrowPrompt'):tutorialPrompt('turn');
+      // チュートリアル2/4では、角度が外れたら回転案内へ戻す。
+      const turnPrompt=tutorialStep===1?tr('tutorialSecondArrowPrompt')
+        :tutorialStep===3?tr('tutorialChainTurnPrompt'):tutorialPrompt('turn');
+      $('gripPromptText').textContent=turnPrompt;
       $('gripPrompt').hidden=false;
       if(expected)showHintArrow(expected.ti,expected.dir,false,true);
     }
