@@ -128,7 +128,8 @@ function stopAcademyWelcomeBoard(){
 function buildAcademyWelcomeBoard(variant='enroll'){
   // 入学（1くるり）も基本クラス（2くるり）も、演出のスピード感は基本同じにする。
   // ただし基本クラスの初回ダイアログだけは、1.5倍速で見せる。
-  const pace=variant==='basic'?5/1.5:5;
+  // 入門・基本とも、タッチ後の回転は同じゆっくりしたテンポで見せる。
+  const pace=5;
   const leadDelay=950,holdAfter=710;
   // 行き過ぎるまでの区間は長く見せる。戻り・収まりの区間は絶対時間を変えず素早いまま。
   const overshootBase=612,settleBase=240,snapBase=144;
