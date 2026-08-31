@@ -5314,6 +5314,11 @@ function ensureSpeedBoardView(session){
   session.view='left60';
   return session;
 }
+function randomTrainingSpeedView(){
+  // 九番勝負は同じ9パターンでも、出題ごとに6方向×表裏を変える。
+  // 対称変換なので最短手数は保ったまま、暗記ではなく盤面の読み取りを問える。
+  return SYMMETRIES[Math.floor(Math.random()*SYMMETRIES.length)];
+}
 function pendingSpeedTrial(variant=activeSpeedDefinition().id){
   // 卒業試験は一周目だけ。二周目は各コースをそのまま進める。
   if(activeLap===2)return null;
@@ -5361,7 +5366,8 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
     return;
   }
   const stage=pool[speedSession.order[speedSession.index]];
-  setPosition(transformStateBySymmetry(stage.state,SPEED_BOARD_VIEW),stage.par);
+  const view=speedVariant==='training9'?randomTrainingSpeedView():SPEED_BOARD_VIEW;
+  setPosition(transformStateBySymmetry(stage.state,view),stage.par);
   if(restoreBoard&&validSavedBoard(speedSession.board)){
     restoreSavedBoard(speedSession.board);
     // クリア演出中に閉じた場合は、同じ問題を重ねて出さず次へ進める。
