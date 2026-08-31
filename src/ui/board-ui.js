@@ -1368,6 +1368,7 @@ function persistActiveSession(){
     syncGameState();
     storage.setJson(STORAGE_KEYS.activeSession,payload);
     storage.set(STORAGE_KEYS.tutorialStep,String(tutorialStep));
+    persistDialogState();
     return;
   }
   if(isMode('speed')){
@@ -1377,6 +1378,7 @@ function persistActiveSession(){
     const payload={mode:'speed',variant:speedVariant,lap:activeLap};
     syncGameState();
     try{storage.set(STORAGE_KEYS.activeSession,JSON.stringify(payload));}catch(_){ }
+    persistDialogState();
     return;
   }
   persistLapProgress();
@@ -1387,6 +1389,7 @@ function persistActiveSession(){
   };
   syncGameState();
   try{storage.set('wake7-active-session',JSON.stringify(payload));}catch(_){ }
+  persistDialogState();
 }
 function restoreActiveSession(){
   let saved=null;

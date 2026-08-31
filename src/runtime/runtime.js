@@ -103,6 +103,57 @@ const storage=WakeSevenState.storage;
  * Versioned persistence boundary. New features should add fields here instead
  * of introducing another storage format.
  */
+// リロード時に、盤面だけでなくユーザーが見ていたダイアログも復元する。
+// 動的な内容を持つダイアログは識別子だけ保存し、起動後に通常の描画関数で再構築する。
+function captureDialogState(){
+  const visible=id=>{const el=$(id);return !!el&&!el.hidden;};
+  if(visible('chainDialog')&&chainActiveName)return {type:'chain',name:chainActiveName};
+  if(visible('clearDialog'))return {type:'clear'};
+  if(visible('messageDialog')){
+    const entry=messageReviewEntries[messageReviewIndex];
+    return {type:'message',key:entry&&typeof messageReviewEntryKey==='function'?messageReviewEntryKey(entry):null};
+  }
+  if(visible('masterDialog'))return {type:'master',kind:masterDialogKind};
+  if(visible('speedPauseDialog'))return {type:'speedPause'};
+  if(visible('speedRestartDialog'))return {type:'speedRestart'};
+  if(visible('rankDialog'))return {type:'rank'};
+  if(visible('tipGuideDialog'))return {type:'tipGuide'};
+  if(visible('twoMoveDetailDialog'))return {type:'twoMoveDetail',index:twoMoveDetailIndex,state:Number.isInteger(twoMoveDetailState)?twoMoveDetailState:enc(twoMoveDetailState)};
+  if(visible('twoMoveDialog'))return {type:'twoMove'};
+  if(visible('optimalFailDialog'))return {type:'optimalFail'};
+  for(const id of ['introDialog','resetDialog','aboutDialog','boardThemeDialog','twoMoveDialog','twoMoveDetailDialog','twoMoveLessonDialog','optimalFailDialog']){
+    if(visible(id))return {type:id};
+  }
+  return null;
+}
+const DIALOG_STATE_STORAGE_KEY='wake7-dialog-state';
+function persistDialogState(){
+  try{const state=captureDialogState();if(state)storage.setJson(DIALOG_STATE_STORAGE_KEY,{id:state.type,name:state.name,kind:state.kind,key:state.key});else storage.remove(DIALOG_STATE_STORAGE_KEY);}catch(_){ }
+}
+function restoreDialogState(state){
+  if(!state||typeof state.id!=='string')return false;
+  try{
+    if(state.id==='chain'&&CHAIN_STEPS[state.name]){openChainedDialog(state.name);return true;}
+    if(state.id==='clear'&&clearShown&&isSolved()){showClearDialog();return true;}
+    if(state.id==='message'){openMessageReview({resume:true});if(state.key){const index=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===state.key);if(index>=0){messageReviewIndex=index;renderMessageReview();}}return true;}
+    if(state.id==='master'){showMasterDialog(state.kind||'primary');return true;}
+    if(state.id==='speedPause'&&isMode('speed')){openSpeedPauseDialog();return true;}
+    if(state.id==='rank'){openRankDialog();return true;}
+    if(state.id==='tipGuide'){openTipGuide();return true;}
+    if(state.id==='twoMove'){
+      openTwoMovePatterns();return true;
+    }
+    if(state.id==='twoMoveDetail'&&Number.isInteger(state.state)&&Number.isInteger(state.index)){
+      openTwoMoveDetail(state.state,state.index);return true;
+    }
+    if(state.id==='optimalFail'){
+      renderOptimalFail();$('optimalFailDialog').hidden=false;return true;
+    }
+    if(state.id==='twoMoveLesson'){openTwoMoveLessonDialog(!!state.retry);return true;}
+    const element=$(state.id);if(element){element.hidden=false;return true;}
+  }catch(_){/* 壊れた保存状態は盤面復元を妨げない */}
+  return false;
+}
 function syncGameState(){
   WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});
   WakeSevenState.updateProgress(gameState,{

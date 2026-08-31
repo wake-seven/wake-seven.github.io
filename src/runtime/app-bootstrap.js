@@ -12,6 +12,7 @@ updateMasterTheme();
 restoreActiveSession();
 let savedLanguage=UI_TEXT[gameState.settings.language]?gameState.settings.language:'ja';
 applyLanguage(savedLanguage);
+restoreDialogState(storage.json(DIALOG_STATE_STORAGE_KEY,null));
 // 初期HTMLの仮状態ではなく、保存状態を反映した最初の画面だけを公開する。
 document.body.classList.remove('app-booting');
 if(storage.get(STORAGE_KEYS.introSeen)!=='1')setTimeout(openIntroGuide,350);
