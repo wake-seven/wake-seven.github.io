@@ -827,6 +827,8 @@
     45%{font-size:59.5px;filter:drop-shadow(0 0 7px rgba(98,215,244,.9))}
     100%{font-size:48px;filter:drop-shadow(0 0 2px rgba(98,184,210,.2))}
   }
+  /* 起動時は保存状態の復元が終わるまで、HTMLに埋め込まれた初期盤面を見せない。 */
+  body.app-booting{visibility:hidden}
   #board.hinting .tile{opacity:.58;filter:saturate(.72) brightness(.82)}
   #board.hinting .tile.selected{
     opacity:1;filter:drop-shadow(0 6px 6px rgba(0,0,0,.24)) brightness(1.04)
@@ -965,7 +967,7 @@
   .board-quiz-tools button:hover{background:#62B8D2;color:#102736}
 </style>
 </head>
-<body>
+<body class="app-booting">
 
 <header class="brand">
   <p class="sub">WAKE SEVEN</p>
@@ -11032,6 +11034,8 @@ updateMasterTheme();
 restoreActiveSession();
 let savedLanguage=UI_TEXT[gameState.settings.language]?gameState.settings.language:'ja';
 applyLanguage(savedLanguage);
+// 初期HTMLの仮状態ではなく、保存状態を反映した最初の画面だけを公開する。
+document.body.classList.remove('app-booting');
 if(storage.get(STORAGE_KEYS.introSeen)!=='1')setTimeout(openIntroGuide,350);
 else if(storage.get(STORAGE_KEYS.tutorialComplete)!=='1'&&!isMode('tutorial'))setTimeout(startTutorial,80);
 window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();persistActiveSession();});
