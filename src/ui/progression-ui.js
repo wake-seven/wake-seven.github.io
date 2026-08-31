@@ -811,7 +811,7 @@ function renderClearQuiz(){
   const root=$('clearQuiz');
   root.classList.remove('quiz-success');
   root.hidden=quiz===undefined;
-  if(quiz===undefined)return;
+  if(quiz===undefined){root.dataset.quizKey='';return;}
   renderQuizInto({root:'clearQuiz',options:'quizOptions',note:'quizNote',title:'quizTitle',question:'quizQuestion'},quiz);
 }
 let twoMoveDisplayStates=[],twoMoveDisplayPatterns=[];
