@@ -819,11 +819,13 @@
   }
   /* 入学案内でも、本編で持ち手をつかんだときと同じく回る3枚を強調する。 */
   #academyWelcomeBoard .tile.welcome-selected .hex,#trainingMiddleSpinBoard .tile.welcome-selected .hex,#developmentWelcomeSpinBoard .tile.welcome-selected .hex{stroke:#8BE8FA;stroke-width:4.5;stroke-linejoin:round}
-  #academyWelcomeBoard .welcome-counter-pulse{transform-box:fill-box;transform-origin:center;animation:welcomeCounterPulse .34s cubic-bezier(.2,.8,.25,1)}
+  /* SVG text の transform 拡大は iPhone Safari で中心が横にずれるため、
+     text-anchor=middle を保ったままフォントサイズだけを弾ませる。 */
+  #academyWelcomeBoard .welcome-counter-pulse{animation:welcomeCounterPulse .34s cubic-bezier(.2,.8,.25,1)}
   @keyframes welcomeCounterPulse{
-    0%{transform:scale(1);filter:drop-shadow(0 0 2px rgba(98,184,210,.2))}
-    45%{transform:scale(1.24);filter:drop-shadow(0 0 7px rgba(98,215,244,.9))}
-    100%{transform:scale(1);filter:drop-shadow(0 0 2px rgba(98,184,210,.2))}
+    0%{font-size:48px;filter:drop-shadow(0 0 2px rgba(98,184,210,.2))}
+    45%{font-size:59.5px;filter:drop-shadow(0 0 7px rgba(98,215,244,.9))}
+    100%{font-size:48px;filter:drop-shadow(0 0 2px rgba(98,184,210,.2))}
   }
   #board.hinting .tile{opacity:.58;filter:saturate(.72) brightness(.82)}
   #board.hinting .tile.selected{
