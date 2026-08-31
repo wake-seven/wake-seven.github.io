@@ -1945,6 +1945,17 @@ function finishDrag(e,cancel=false,forcedTurns=null){
       animateGuidedBasicRewind(dg);
       return;
     }
+    // 正しい棒を選んでいた場合は、向きが未確定でも棒の選択自体は正しいと伝える。
+    // 残りの不正解候補はグレーアウトし、次はこの棒の回転方向に集中させる。
+    for(const ti of guidedBasicCandidateTis){
+      if(ti!==dg.ti)fallenRodTis.add(ti);
+    }
+    guidedBasicCandidateTis.clear();
+    guidedBasicCandidateTis.add(dg.ti);
+    $('gripPromptText').textContent=tr('assistedRightGrip');
+    $('gripPrompt').hidden=false;
+    animateGuidedBasicRewind(dg);
+    return;
   }
   if(isMode('tutorial')&&!dir){
     paint();

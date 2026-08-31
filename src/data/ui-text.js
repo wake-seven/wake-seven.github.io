@@ -383,6 +383,7 @@ const UI_TEXT={
     trainingCompleteStart:'名人への道・序　七転八起へ →',
     assistedWrongPlace:'そこじゃないよ',
     assistedWrongDirection:'そっちじゃないよ',
+    assistedRightGrip:'棒はあってるよ',
     retryLesson:'再挑戦する',
     threeDMenu:'3Dだるまを見る',
     threeDUnlockedText:'二周目クリアの報酬として、特別な3Dページが開放されました。リアルな盤面で遊べます。',
