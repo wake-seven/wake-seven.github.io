@@ -8968,7 +8968,7 @@ function celebrateClear(){
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   // 同じクリア周期でshowClearActionsが再入しても、揺れとバーストを重ねない。
   // 既存演出を再利用する場合に0を返すと、後続ダイアログだけが前倒しになる。
-  if(svg.classList.contains('celebrating'))return reduced?0:650;
+  if(svg.classList.contains('celebrating'))return 0;
   svg.classList.add('celebrating');
   playClearSound(clearSoundKind());
   if(reduced)return 0;
@@ -8976,6 +8976,8 @@ function celebrateClear(){
   return 650;
 }
 function showClearActions(){
+  // 演出中の再入では、既に登録済みのダイアログ遷移タイマーを置き換えない。
+  if(svg.classList.contains('celebrating'))return;
   setUiEffectTimer('clear-transition','show-dialog',showClearDialog,celebrateClear());
 }
 function renderClearStageContext(){
