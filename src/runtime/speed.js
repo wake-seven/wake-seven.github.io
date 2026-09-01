@@ -162,10 +162,10 @@ function renderSpeedClock(model={}){
 }
 function startSpeedClock(){
   if(!isMode('speed')||speedManuallyPaused||speedClockStarted||document.visibilityState==='hidden'||speedAwaitingStart())return;
-  speedClockStarted=performance.now();clearInterval(speedClockTimer);speedClockTimer=setInterval(renderSpeedClock,100);renderSpeedClock();
+  startSpeedClockStateCommand(performance.now());clearInterval(speedClockTimer);speedClockTimer=setInterval(renderSpeedClock,100);renderSpeedClock();
 }
 function pauseSpeedClock(){
-  if(speedClockStarted){if(speedSession)speedSession.elapsedMs+=performance.now()-speedClockStarted;speedClockStarted=0;}
+  pauseSpeedClockStateCommand();
   clearInterval(speedClockTimer);speedClockTimer=0;renderSpeedClock();
 }
 // 速解きセッションの永続化境界。経過時間と現在盤面をここで保存する。

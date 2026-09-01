@@ -13,6 +13,11 @@ function advanceSpeedSessionCommand(){
   return true;
 }
 function setSpeedManualPauseCommand(value){speedManuallyPaused=value===true;return speedManuallyPaused;}
+function startSpeedClockStateCommand(startedAt){speedClockStarted=startedAt;return speedClockStarted;}
+function pauseSpeedClockStateCommand(now=performance.now()){
+  if(speedClockStarted){if(speedSession)speedSession.elapsedMs+=now-speedClockStarted;speedClockStarted=0;}
+  return speedSession?.elapsedMs||0;
+}
 function persistSpeedSessionCommand(){
   if(!speedSession)return false;
   const elapsed=speedElapsedMs();
