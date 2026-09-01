@@ -126,7 +126,7 @@ function captureDialogState(){
   }
   return null;
 }
-const DIALOG_STATE_STORAGE_KEY='wake7-dialog-state';
+const DIALOG_STATE_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.state;
 function persistDialogState(){
   try{const state=captureDialogState();if(state)storage.setJson(DIALOG_STATE_STORAGE_KEY,{id:state.type,name:state.name,kind:state.kind,key:state.key});else storage.remove(DIALOG_STATE_STORAGE_KEY);}catch(_){ }
 }
@@ -429,13 +429,13 @@ function grantCampaignProgressThrough(checkpoint){
 }
 // 3Dページは速解きモード初回クリアの報酬。速解きの解放同様、進行状況リセットでは残す。
 let threeDUnlocked=initialUnlocks.threeD===true;
-if(!threeDUnlocked)try{threeDUnlocked=storage.get('wake7-3d-unlocked')==='1';}catch(_){ }
+if(!threeDUnlocked)try{threeDUnlocked=storage.get(STORAGE_KEY_GROUPS.rewards.threeDUnlocked)==='1';}catch(_){ }
 // 七色だるまは二周目の名人達成報酬。覚者報酬が保存済みなら解放状態として保持する。
 let rainbowDarumaGranted=initialUnlocks.rainbowDarumaGranted===true;
 try{rainbowDarumaGranted=rainbowDarumaGranted||storage.get(STORAGE_KEYS.rainbowDarumaGranted)==='1'||awakenedGranted;}catch(_){rainbowDarumaGranted=awakenedGranted;}
 if(rainbowDarumaGranted)try{storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');}catch(_){ }
 let secondLapUnlocked=initialUnlocks.secondLap===true;
-try{secondLapUnlocked=secondLapUnlocked||storage.get('wake7-second-lap-unlocked')==='1'||secondLapActive||awakenedGranted;}catch(_){secondLapUnlocked=secondLapActive||awakenedGranted;}
+try{secondLapUnlocked=secondLapUnlocked||storage.get(STORAGE_KEY_GROUPS.progression.secondLapUnlocked)==='1'||secondLapActive||awakenedGranted;}catch(_){secondLapUnlocked=secondLapActive||awakenedGranted;}
 const initialNavigationState=WakeSevenState.sectionView(gameState,'navigation');
 let activeLap=initialNavigationState.lap===2?2:1;
 let lastStageMode={extra:false,satori:false,index:0};
@@ -559,7 +559,7 @@ function beginSecondLap(){
   secondLapUnlocked=setUnlock('secondLap',true);
   activateCampaignLap(2);
   try{
-    storage.set('wake7-second-lap-unlocked','1');
+    storage.set(STORAGE_KEY_GROUPS.progression.secondLapUnlocked,'1');
     storage.remove('wake7-current-stage');
     storage.remove('wake7-active-session');
     storage.remove(FOURTH_CHECKS_STORAGE_KEY);
@@ -810,7 +810,7 @@ const isFourthVolume=()=>isThirdVolume();
 // 速解きランタイムは src/runtime/speed.js に分離しています。
 
 // ===== 残り手数チェック(第四巻) =====
-const FOURTH_CHECKS_STORAGE_KEY=STORAGE_KEYS.fourthChecks;
+const FOURTH_CHECKS_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.fourthChecks;
 let fourthCheckUsage={};
 try{fourthCheckUsage=JSON.parse(storage.get(FOURTH_CHECKS_STORAGE_KEY)||'{}')||{};}catch(_){fourthCheckUsage={};}
 let fourthHintPreview=false,fourthDistanceRevealed=false,fourthHintDistance=null,fourthChecksUsed=0;

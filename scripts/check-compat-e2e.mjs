@@ -57,6 +57,10 @@ for (const id of canonicalIds) assert.match(all, new RegExp(`['"]${id}['"]`), `C
 
 const storageSource = sources.get('src/state/game-state.js');
 assert.match(storageSource, /STORAGE_KEY\s*=\s*'wake7-state-vnext'/, 'Unified state storage key is missing.');
+for (const group of ['navigation', 'board', 'progression', 'settings', 'speed', 'dialogs']) {
+  assert.match(storageSource, new RegExp(`${group}\\s*:`), `Unified state section is missing: ${group}`);
+}
+assert.match(storageSource, /dialogs:\s*Object\.freeze\(\{[^}]*state:/, 'Dialog persistence keys are not grouped.');
 const directStorage = all.match(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)/g) || [];
 const localStorageCalls = all.match(/localStorage\.(?:getItem|setItem|removeItem)/g) || [];
 const sessionStorageCalls = all.match(/sessionStorage\.(?:getItem|setItem|removeItem)/g) || [];

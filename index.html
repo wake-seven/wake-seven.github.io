@@ -1492,7 +1492,8 @@
     settings: Object.freeze({ language: STORAGE_KEYS.language, sound: STORAGE_KEYS.sound, boardTheme: STORAGE_KEYS.boardTheme, boardThemeChosen: STORAGE_KEYS.boardThemeChosen, boardLayout: STORAGE_KEYS.boardLayout, boardLayoutChosen: STORAGE_KEYS.boardLayoutChosen, darumaColor: STORAGE_KEYS.darumaColor, darumaColorChosen: STORAGE_KEYS.darumaColorChosen }),
     progression: Object.freeze({ cleared: STORAGE_KEYS.cleared, extraCleared: STORAGE_KEYS.extraCleared, satoriCleared: STORAGE_KEYS.satoriCleared, currentStage: STORAGE_KEYS.currentStage, activeSession: STORAGE_KEYS.activeSession, activeLap: STORAGE_KEYS.activeLap, secondLapActive: STORAGE_KEYS.secondLapActive, secondLapUnlocked: STORAGE_KEYS.secondLapUnlocked, stagesLayoutVersion: STORAGE_KEYS.stagesLayoutVersion, satoriOrderVersion: STORAGE_KEYS.satoriOrderVersion }),
     rewards: Object.freeze({ masterGoldGranted: STORAGE_KEYS.masterGoldGranted, satoriDesignGranted: STORAGE_KEYS.satoriDesignGranted, rainbowDarumaGranted: STORAGE_KEYS.rainbowDarumaGranted, awakenedGranted: STORAGE_KEYS.awakenedGranted, threeDUnlocked: STORAGE_KEYS.threeDUnlocked }),
-    speed: Object.freeze({ session: STORAGE_KEYS.speedSession, activeVariant: STORAGE_KEYS.speedActiveVariant, bestMs: STORAGE_KEYS.speedBestMs, history: STORAGE_KEYS.speedHistory, unlocked: STORAGE_KEYS.speedUnlocked, trainingUnlocked: STORAGE_KEYS.speedTrainingUnlocked, intermediateUnlocked: STORAGE_KEYS.speedIntermediateUnlocked, masteryUnlocked: STORAGE_KEYS.speedMasteryUnlocked, satoriUnlocked: STORAGE_KEYS.speedSatoriUnlocked, trainingTrialCleared: STORAGE_KEYS.speedTrainingTrialCleared, intermediateTrialCleared: STORAGE_KEYS.speedIntermediateTrialCleared, masteryTrialCleared: STORAGE_KEYS.speedMasteryTrialCleared, lastTab: STORAGE_KEYS.speedLastTab, newTab: STORAGE_KEYS.speedNewTab })
+    speed: Object.freeze({ session: STORAGE_KEYS.speedSession, activeVariant: STORAGE_KEYS.speedActiveVariant, bestMs: STORAGE_KEYS.speedBestMs, history: STORAGE_KEYS.speedHistory, unlocked: STORAGE_KEYS.speedUnlocked, trainingUnlocked: STORAGE_KEYS.speedTrainingUnlocked, intermediateUnlocked: STORAGE_KEYS.speedIntermediateUnlocked, masteryUnlocked: STORAGE_KEYS.speedMasteryUnlocked, satoriUnlocked: STORAGE_KEYS.speedSatoriUnlocked, trainingTrialCleared: STORAGE_KEYS.speedTrainingTrialCleared, intermediateTrialCleared: STORAGE_KEYS.speedIntermediateTrialCleared, masteryTrialCleared: STORAGE_KEYS.speedMasteryTrialCleared, lastTab: STORAGE_KEYS.speedLastTab, newTab: STORAGE_KEYS.speedNewTab }),
+    dialogs: Object.freeze({ state: 'wake7-dialog-state', messageReview: STORAGE_KEYS.messageReview, messageReviewLast: STORAGE_KEYS.messageReviewLast, fourthChecks: STORAGE_KEYS.fourthChecks })
   });
   let activeState = null;
   const rawStorage = global.localStorage;
@@ -4374,7 +4375,7 @@ function captureDialogState(){
   }
   return null;
 }
-const DIALOG_STATE_STORAGE_KEY='wake7-dialog-state';
+const DIALOG_STATE_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.state;
 function persistDialogState(){
   try{const state=captureDialogState();if(state)storage.setJson(DIALOG_STATE_STORAGE_KEY,{id:state.type,name:state.name,kind:state.kind,key:state.key});else storage.remove(DIALOG_STATE_STORAGE_KEY);}catch(_){ }
 }
@@ -4677,13 +4678,13 @@ function grantCampaignProgressThrough(checkpoint){
 }
 // 3Dページは速解きモード初回クリアの報酬。速解きの解放同様、進行状況リセットでは残す。
 let threeDUnlocked=initialUnlocks.threeD===true;
-if(!threeDUnlocked)try{threeDUnlocked=storage.get('wake7-3d-unlocked')==='1';}catch(_){ }
+if(!threeDUnlocked)try{threeDUnlocked=storage.get(STORAGE_KEY_GROUPS.rewards.threeDUnlocked)==='1';}catch(_){ }
 // 七色だるまは二周目の名人達成報酬。覚者報酬が保存済みなら解放状態として保持する。
 let rainbowDarumaGranted=initialUnlocks.rainbowDarumaGranted===true;
 try{rainbowDarumaGranted=rainbowDarumaGranted||storage.get(STORAGE_KEYS.rainbowDarumaGranted)==='1'||awakenedGranted;}catch(_){rainbowDarumaGranted=awakenedGranted;}
 if(rainbowDarumaGranted)try{storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');}catch(_){ }
 let secondLapUnlocked=initialUnlocks.secondLap===true;
-try{secondLapUnlocked=secondLapUnlocked||storage.get('wake7-second-lap-unlocked')==='1'||secondLapActive||awakenedGranted;}catch(_){secondLapUnlocked=secondLapActive||awakenedGranted;}
+try{secondLapUnlocked=secondLapUnlocked||storage.get(STORAGE_KEY_GROUPS.progression.secondLapUnlocked)==='1'||secondLapActive||awakenedGranted;}catch(_){secondLapUnlocked=secondLapActive||awakenedGranted;}
 const initialNavigationState=WakeSevenState.sectionView(gameState,'navigation');
 let activeLap=initialNavigationState.lap===2?2:1;
 let lastStageMode={extra:false,satori:false,index:0};
@@ -4807,7 +4808,7 @@ function beginSecondLap(){
   secondLapUnlocked=setUnlock('secondLap',true);
   activateCampaignLap(2);
   try{
-    storage.set('wake7-second-lap-unlocked','1');
+    storage.set(STORAGE_KEY_GROUPS.progression.secondLapUnlocked,'1');
     storage.remove('wake7-current-stage');
     storage.remove('wake7-active-session');
     storage.remove(FOURTH_CHECKS_STORAGE_KEY);
@@ -5058,7 +5059,7 @@ const isFourthVolume=()=>isThirdVolume();
 // 速解きランタイムは src/runtime/speed.js に分離しています。
 
 // ===== 残り手数チェック(第四巻) =====
-const FOURTH_CHECKS_STORAGE_KEY=STORAGE_KEYS.fourthChecks;
+const FOURTH_CHECKS_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.fourthChecks;
 let fourthCheckUsage={};
 try{fourthCheckUsage=JSON.parse(storage.get(FOURTH_CHECKS_STORAGE_KEY)||'{}')||{};}catch(_){fourthCheckUsage={};}
 let fourthHintPreview=false,fourthDistanceRevealed=false,fourthHintDistance=null,fourthChecksUsed=0;
@@ -8289,8 +8290,8 @@ export {};
 
 // ===== 節目ダイアログ =====
 // ===== メッセージUIの宣言データ =====
-const MESSAGE_REVIEW_STORAGE_KEY='wake7-message-review';
-const MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY='wake7-message-review-last-clear';
+const MESSAGE_REVIEW_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.messageReview;
+const MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.messageReviewLast;
 let messageReviewEntries=[],messageReviewIndex=0;
 const MESSAGE_ROADMAP_MASTERS=Object.freeze(['primary','mastery','satori','satoriIntro','secondLapIntro','awakening','trainingWelcome']);
 const MESSAGE_MASTERY_BOARD_MASTERS=Object.freeze(['mastery','satori','awakening']);
@@ -11432,38 +11433,38 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   clearedStages=lap1ClearedStages;clearedExtraStages=lap1ClearedExtraStages;clearedSatoriStages=lap1ClearedSatoriStages;
   fourthCheckUsage={};
   try{
-    storage.remove('wake7-cleared');
-    storage.remove('wake7-extra-cleared');
-    storage.remove('wake7-satori-cleared');
-    storage.remove('wake7-current-stage');
-    storage.remove('wake7-active-session');
-    storage.remove(STORAGE_KEYS.secondLapActive);
-    storage.remove('wake7-second-lap-unlocked');
-    storage.remove('wake7-active-lap');
+    storage.remove(STORAGE_KEY_GROUPS.progression.cleared);
+    storage.remove(STORAGE_KEY_GROUPS.progression.extraCleared);
+    storage.remove(STORAGE_KEY_GROUPS.progression.satoriCleared);
+    storage.remove(STORAGE_KEY_GROUPS.progression.currentStage);
+    storage.remove(STORAGE_KEY_GROUPS.progression.activeSession);
+    storage.remove(STORAGE_KEY_GROUPS.progression.secondLapActive);
+    storage.remove(STORAGE_KEY_GROUPS.progression.secondLapUnlocked);
+    storage.remove(STORAGE_KEY_GROUPS.progression.activeLap);
     for(const lap of [1,2])for(const part of ['primary','extra','satori'])storage.remove('wake7-lap'+lap+'-'+part+'-cleared');
     storage.remove(STORAGE_KEYS.awakenedGranted);
     if(!preserveRewards){
       // デバッグの完全リセットでは、ゲノム側で選んだ表示設定も初期化する。
       storage.remove('wakeSevenGenomeBoardSize');
       storage.remove('wakeSevenGenomeBoardLayout');
-      storage.remove('wake7-board-theme');
-      storage.remove('wake7-board-layout');
-      storage.remove('wake7-board-theme-chosen');
-      storage.remove('wake7-board-layout-chosen');
-      storage.remove('wake7-daruma-color');
-      storage.remove('wake7-daruma-color-chosen');
-      storage.remove(STORAGE_KEYS.masterGoldGranted);
-      storage.remove(STORAGE_KEYS.satoriDesignGranted);
-      storage.remove(STORAGE_KEYS.rainbowDarumaGranted);
-      storage.remove(STORAGE_KEYS.speedUnlocked);
-      storage.remove(STORAGE_KEYS.speedTrainingUnlocked);
-      storage.remove(STORAGE_KEYS.speedIntermediateUnlocked);
-      storage.remove(STORAGE_KEYS.speedMasteryUnlocked);
-      storage.remove(STORAGE_KEYS.speedSatoriUnlocked);
-      storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
-      storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
-      storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
-      storage.remove('wake7-3d-unlocked');
+      storage.remove(STORAGE_KEY_GROUPS.settings.boardTheme);
+      storage.remove(STORAGE_KEY_GROUPS.settings.boardLayout);
+      storage.remove(STORAGE_KEY_GROUPS.settings.boardThemeChosen);
+      storage.remove(STORAGE_KEY_GROUPS.settings.boardLayoutChosen);
+      storage.remove(STORAGE_KEY_GROUPS.settings.darumaColor);
+      storage.remove(STORAGE_KEY_GROUPS.settings.darumaColorChosen);
+      storage.remove(STORAGE_KEY_GROUPS.rewards.masterGoldGranted);
+      storage.remove(STORAGE_KEY_GROUPS.rewards.satoriDesignGranted);
+      storage.remove(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted);
+      storage.remove(STORAGE_KEY_GROUPS.speed.unlocked);
+      storage.remove(STORAGE_KEY_GROUPS.speed.trainingUnlocked);
+      storage.remove(STORAGE_KEY_GROUPS.speed.intermediateUnlocked);
+      storage.remove(STORAGE_KEY_GROUPS.speed.masteryUnlocked);
+      storage.remove(STORAGE_KEY_GROUPS.speed.satoriUnlocked);
+      storage.remove(STORAGE_KEY_GROUPS.speed.trainingTrialCleared);
+      storage.remove(STORAGE_KEY_GROUPS.speed.intermediateTrialCleared);
+      storage.remove(STORAGE_KEY_GROUPS.speed.masteryTrialCleared);
+      storage.remove(STORAGE_KEY_GROUPS.rewards.threeDUnlocked);
       for(const variant of ['standard','training9','training18','mastery27','satori73']){
         clearSpeedSession(variant);
         storage.remove(speedBestStorageKey(variant));

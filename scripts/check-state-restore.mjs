@@ -77,7 +77,7 @@ assert.equal(secondLoad.api.read(storage), null, 'unknown state versions must no
 // the same restore sequence tested above, including dialogs and initial paint.
 for (const source of [runtimeSource, published]) {
   assert.match(source, /function restoreDialogState\(state\)/, 'dialog restore function must exist');
-  assert.match(source, /wake7-dialog-state/, 'dialog state key must be present');
+  assert.match(source, /(?:wake7-dialog-state|STORAGE_KEY_GROUPS\.dialogs\.state)/, 'dialog state key must be present');
   assert.match(source, /if\(state\.id==='chain'/, 'chain dialog state must be restorable');
   assert.match(source, /if\(state\.id==='message'/, 'message dialog state must be restorable');
   assert.match(source, /if\(state\.id==='guideHub'/, 'guide hub state must be restorable');
