@@ -217,7 +217,7 @@ function speedAwaitingStart(){
 // 問題が切り替わった時に、盤面が中央から広がって現れる演出。速解きモード専用だったが、
 // 通常モード（次へ・ステージ選択・フリー等）の問題開始時にも共通で使う。
 function animateBoardArrival(){
-  clearTimeout(boardArrivalTimer);
+  clearUiContextTimer('board-arrival');
   svg.classList.add('arriving');
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
     svg.classList.remove('arriving');
@@ -233,7 +233,7 @@ function animateBoardArrival(){
       {transform:end,opacity:1}
     ],{duration:430,delay:index*32,easing:'cubic-bezier(.18,.8,.2,1)',fill:'backwards'});
   });
-  boardArrivalTimer=setTimeout(()=>svg.classList.remove('arriving'),560);
+  setUiContextTimer('board-arrival',()=>svg.classList.remove('arriving'),560);
 }
 function loadSpeedStage(restoreBoard=false,arriving=false){
   if(!speedSession)return;

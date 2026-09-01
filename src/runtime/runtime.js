@@ -75,7 +75,6 @@ const gameState=window.WakeSevenState.read()||window.WakeSevenState.create();
 WakeSevenState.purgeExternalStorage();
 const initialNavigation=WakeSevenState.navigationView(gameState);
 let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep,activeMode=initialNavigation.mode,clearShown=false,clearTimer=0,nextStageAttention=false;
-let tutorialAdvanceTimer=0,boardArrivalTimer=0;
 let pendingMasterThemeRefresh=false;
 let lastAnalyticsStageKey='';
 

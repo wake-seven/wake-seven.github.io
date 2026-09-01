@@ -13,5 +13,7 @@ function setBoardPivotActive(pivot,active){pivot?.classList.toggle('active',acti
 const uiContextTimers=new Map();
 function clearUiContextTimer(key){const id=uiContextTimers.get(key);if(id!==undefined){clearTimeout(id);uiContextTimers.delete(key);}}
 function setUiContextTimer(key,callback,delay){clearUiContextTimer(key);const id=setTimeout(()=>{uiContextTimers.delete(key);callback();},delay);uiContextTimers.set(key,id);return id;}
+function clearUiContextInterval(key){clearUiContextTimer(key);}
+function setUiContextInterval(key,callback,delay){clearUiContextInterval(key);const id=setInterval(callback,delay);uiContextTimers.set(key,id);return id;}
 function setDialogOpenState(id,open){const dialog=$(id);if(dialog)dialog.hidden=!open;return !!open;}
 export {};

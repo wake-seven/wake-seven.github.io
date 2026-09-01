@@ -32,7 +32,7 @@ function buildBoard(){
   });
   baseTiles=tileEls.slice();
 }
-let introTimer=0,introRun=0;
+let introRun=0;
 function buildIntroBoard(){
   const run=++introRun,alive=()=>run===introRun;
   const intro=$('introBoard'),NS_='http://www.w3.org/2000/svg';
@@ -113,7 +113,7 @@ function buildIntroBoard(){
     // 次のサイクルへ戻る直前だけ、盤面全体を短くフェードアウトして切替を見せる。
     setTimeout(()=>{if(alive())intro.classList.add('welcome-cycle-fade');},1750+rotateDuration+820+400);
   };
-  play();clearInterval(introTimer);introTimer=setInterval(play,5400);
+  play();setUiContextInterval('intro-board',play,5400);
 }
 function openIntroGuide(){
   buildIntroBoard();
@@ -121,10 +121,9 @@ function openIntroGuide(){
 }
 // 入門へ入る直前に、「残りくるり」が減ったところで指を離す感覚だけを見せる。
 // 盤面は実際の最短2手問題を使い、最短1手になる一回転をそのまま再生する。
-let academyWelcomeTimer=0,academyWelcomeRun=0;
+let academyWelcomeRun=0;
 function stopAcademyWelcomeBoard(){
-  clearInterval(academyWelcomeTimer);
-  academyWelcomeTimer=0;
+  clearUiContextInterval('academy-welcome-board');
   academyWelcomeRun++;
   $('academyWelcomeBoard')?.classList.remove('welcome-cycle-fade');
 }
@@ -296,7 +295,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
     setTimeout(()=>{if(alive())board.classList.add('welcome-cycle-fade');},leadDelay+rotateDur+holdAfter);
   };
   play();
-  academyWelcomeTimer=setInterval(play,leadDelay+rotateDur+holdAfter+240);
+  setUiContextInterval('academy-welcome-board',play,leadDelay+rotateDur+holdAfter+240);
 }
 // ===== 案内ダイアログ連鎖(だるま学園/だるま修行の節目) =====
 // 1つの共有ダイアログ枠(#chainDialog)を、CHAIN_STEPSに登録した「ステップ」で使い回す。
@@ -909,10 +908,10 @@ function paint(){
       // 本編の全員起きた瞬間と同じく、笑顔にして揺れ+バーストの演出を見せる。
       svg.classList.add('celebrating');
       playWakeCelebrationEffect(svg,tileEls);
-      clearTimeout(tutorialAdvanceTimer);
+      clearUiContextTimer('tutorial-advance');
       $('gripPromptText').textContent=tutorialPrompt('clear');
       $('gripPrompt').hidden=false;
-      tutorialAdvanceTimer=setTimeout(advanceTutorial,1250);
+      setUiContextTimer('tutorial-advance',advanceTutorial,1250);
     }
     return;
   }
@@ -1083,17 +1082,16 @@ function applySwipe(ti,dir,save=true,playEffects=true){
     playRotateSound(dir);
   }
 }
-let academyRemainingCalloutTimer=null;
 // だるま学園(入門・基本・発展)では、手を進めるたびに盤面中央へ大きく「あと○くるり」を短時間表示する。
 function showAcademyRemainingCallout(){
-  clearTimeout(academyRemainingCalloutTimer);
+  clearUiContextTimer('academy-remaining-callout');
   const el=$('academyRemainingCallout');
   el.querySelector('.academy-remaining-callout-label').textContent=tr('shortestDisplay');
   $('academyRemainingCalloutNumber').textContent=String(remainingForDisplay(SOLVER.dist[enc(ori)]));
   el.querySelector('.academy-remaining-callout-unit').textContent=tr('moveUnit');
   el.hidden=false;
   requestAnimationFrame(()=>el.classList.add('show'));
-  academyRemainingCalloutTimer=setTimeout(()=>{
+  setUiContextTimer('academy-remaining-callout',()=>{
     el.classList.remove('show');
     setTimeout(()=>{el.hidden=true;},260);
   },700);
@@ -1112,7 +1110,7 @@ function setPosition(state,par){
   svg.querySelectorAll('.training-shape-callout').forEach(el=>el.remove());
   clearUiContextTimer('training-shape-callout');
   initializeBoardPositionCommand(state,par);
-  clearTimeout(boardArrivalTimer);
+  clearUiContextTimer('board-arrival');
   resetBoardUiContext();
   svg.classList.remove('tutorial-grab-step','tutorial-clear-step','invalid-grab');
   svg.querySelectorAll('.grip-marker.tutorial-target').forEach(marker=>marker.classList.remove('tutorial-target'));
@@ -1198,7 +1196,7 @@ function showTutorialCue(){
   }
 }
 function loadTutorialStep(index=0){
-  clearTimeout(tutorialAdvanceTimer);
+  clearUiContextTimer('tutorial-advance');
   setActiveMode('tutorial');editingBoard=false;
   setTutorialStepCommand(index);
   // 前の段階で消した誤操作棒は、次の段階では再表示する。
@@ -2112,7 +2110,7 @@ $('reset').addEventListener('click',()=>{
 $('tutorialReset').addEventListener('click',()=>{
   if(busy||!isMode('tutorial'))return;
   // 補助輪中のリセットは、練習問題の途中ではなく「はじめる」からやり直す。
-  clearTimeout(tutorialAdvanceTimer);
+  clearUiContextTimer('tutorial-advance');
   cancelTutorialHint();
   resetTutorialCommand();
   loadTutorialStep(0);
