@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root=dirname(dirname(fileURLToPath(import.meta.url)));
+const read=path=>readFile(join(root,...path),'utf8');
+const context=await read(['src','ui','ui-context.js']);
+const board=await read(['src','ui','board-ui.js']);
+const hints=await read(['src','ui','progression-hints.js']);
+const mastery=await read(['src','ui','progression-ui.js']);
+const speed=await read(['src','runtime','speed.js']);
+for(const name of ['setUiEffectTimer','setUiEffectInterval','clearUiEffectTimers'])assert.match(context,new RegExp(`function ${name}\\(`),`${name} API is missing.`);
+for(const [text,name] of [[board,'academy/intro effect timers'],[hints,'hint effect timers'],[mastery,'mastery effect timers'],[speed,'speed clock effect timer']])assert.match(text,/setUiEffect(?:Timer|Interval)|clearUiEffectTimers/,`${name} are not scoped by effect.`);
+assert.doesNotMatch(speed,/speedClockTimer/,'Speed clock must not retain a direct timer handle.');
+console.log('Validated UI effect timer cancellation boundaries.');
