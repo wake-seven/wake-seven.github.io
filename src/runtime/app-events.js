@@ -11,8 +11,6 @@ function debugClearCurrent(extraMoves=0){
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   $('clearNext').hidden=true;
   GameBoard.repaint();
-  // デバッグ即クリアでも通常操作と同じクリア後導線を実行する。
-  showClearActions();
   // 即クリアでも、通常操作と同じくメッセージ一覧の開始位置を更新する。
   if(extraMoves===0&&!isMode('satori')&&!isMode('free')&&!isMode('custom')){
     rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);
