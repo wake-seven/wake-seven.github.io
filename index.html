@@ -991,7 +991,7 @@
       <div class="menu-divider" role="separator"></div>
       <button id="guideHub" type="button" role="menuitem">攻略</button>
       <button id="twoMovePatterns" type="button" role="menuitem" hidden aria-hidden="true">最短2手の9パターンを見る</button>
-      <button id="showTip" type="button" role="menuitem" hidden aria-hidden="true">攻略のコツ</button>
+      <button id="showTip" type="button" role="menuitem" hidden aria-hidden="true">盤面の見分け方</button>
       <button id="menuAllPatterns" type="button" role="menuitem" hidden>全パターン一覧<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span></button>
       <button id="menuOpen3D" type="button" role="menuitem" hidden>3Dだるまを見る<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span></button>
       <button id="menuSatori" type="button" role="menuitem" hidden>悟りへの道</button>
@@ -1373,7 +1373,7 @@
   <div class="game-dialog settings-dialog guide-hub-dialog" role="dialog" aria-modal="true" aria-labelledby="guideHubTitle">
     <h2 id="guideHubTitle">攻略</h2>
     <div class="settings-options guide-hub-options">
-      <button class="settings-option" id="guideHubTips" type="button">攻略のコツ</button>
+      <button class="settings-option" id="guideHubTips" type="button">盤面の見分け方</button>
       <button class="settings-option" id="guideHubPatterns" type="button">最短2手の9パターン</button>
     </div>
     <div class="dialog-actions"><button class="chip" id="guideHubClose" type="button">閉じる</button></div>
@@ -1392,7 +1392,7 @@
 </div>
 <div class="game-dialog-backdrop" id="tipGuideDialog" hidden>
   <div class="game-dialog tip-guide-dialog" role="dialog" aria-modal="true" aria-labelledby="tipGuideTitle">
-    <h2 id="tipGuideTitle">攻略のコツ</h2>
+    <h2 id="tipGuideTitle">盤面の見分け方</h2>
     <div class="tip-guide-page" id="tipGuidePage">1 / 4</div>
     <div class="tip-guide-board-area"><div class="tip-guide-art" id="tipGuideArt"></div><div class="tip-guide-board-caption" id="tipGuideBoardCaption"></div></div>
     <p class="tip-guide-text" id="tipGuideText"></p>
@@ -1927,7 +1927,7 @@ const CLEAR_CONTENT={
   mastery2_6:{quiz:{ja:{q:'「七転び八起き」、起きる回数が1回多いのはなぜ？',a:['縁起をかつぐため','最初に起き上がるぶんを数えるから','数え間違い','八が末広がりだから'],correct:1,note:'諸説ありますが、生まれたときに起き上がる1回を足す、という説がよく知られています。'},en:{q:'Why does “fall seven times, rise eight” have one more rise?',a:['For good luck','It counts the first time one rises','A counting mistake','Because eight widens at the end'],correct:1,note:'There are several theories. A familiar one counts the first time a person rises when they are born.'},zh:{q:'“七转八起”为什么起身次数多一次？',a:['为了讨吉利','把出生后第一次站起也算进去','数错了','八字末尾张开'],correct:1,note:'有多种说法。其中一种常见说法是，把出生时第一次站起也算进去。'},ko:{q:'“일곱 번 넘어져도 여덟 번 일어난다”에서 일어나는 횟수가 하나 더 많은 이유는?',a:['복을 빌기 위해서','처음 일어나는 것도 세기 때문에','숫자를 잘못 세서','8이 끝에서 넓어지기 때문에'],correct:1,note:'여러 설이 있습니다. 태어날 때 처음 일어나는 한 번을 더한다는 설이 잘 알려져 있어요.'}}},
   mastery2_7:{twoMoveCard:8},
   mastery2_8:{tip:{ja:'高崎だるまの顔は、眉毛が鶴、ヒゲが亀を表すように描かれます。「縁起だるま」「福だるま」とも呼ばれます。',en:'Takasaki daruma feature cranes and turtles, and are also called lucky daruma.',zh:'高崎不倒翁的脸上画有鹤和龟，也被称作吉祥不倒翁。',ko:'다카사키 다루마의 얼굴에는 학과 거북이 그려져 있어 복 다루마라고도 합니다.'},art:'crane'},
-  mastery2_9:{tip:{ja:'メニューの「攻略のコツ」では、特徴的な形を図解で見られます。',en:'Open “Quick tips” from the Menu to see illustrated characteristic shapes.',zh:'菜单的“攻略提示”中可以查看具有代表性的形状图解。',ko:'메뉴의 “공략 팁”에서 특징적인 모양을 그림으로 볼 수 있어요.'},link:'tips'},
+  mastery2_9:{tip:{ja:'メニューの「盤面の見分け方」では、特徴的な形を図解で見られます。',en:'Open “Quick tips” from the Menu to see illustrated characteristic shapes.',zh:'菜单的“攻略提示”中可以查看具有代表性的形状图解。',ko:'메뉴의 “공략 팁”에서 특징적인 모양을 그림으로 볼 수 있어요.'},link:'tips'},
   mastery2_10:{tip:{ja:'「棚から落ちた達磨」は、威張っていた人が落ち目になり、格好がつかなくなるたとえです。',en:'“A daruma fallen from a shelf” compares someone once proud who has fallen on hard times and looks foolish.',zh:'“从架子上掉下来的不倒翁”比喻曾经趾高气扬的人失势后难看的样子。',ko:'“선반에서 떨어진 다루마”는 으스대던 사람이 몰락해 체면을 구긴 모습을 비유합니다.'},art:'shelfFall'},
   mastery2_11:{boardQuiz:{kind:'choose',pattern:4,topic:'caterpillar',correct:0}},
   mastery2_12:{tip:{ja:'盤面は全部で73パターン\n・最短1手：1パターン\n・最短2手：9パターン\n・最短3手：39パターン\n・最短4手：24パターン\nこのステージモードで全パターンを遊べます\n（回転・左右反転で同じになる盤面は、同じパターンとして数えています。）',en:'There are 73 board patterns in all.\n1 takes one move, 9 take two, 39 take three, and 24 take four.\nPatterns equivalent through rotation or reflection are counted as one.\nTogether, the first 15 puzzles and Path to Mastery let you play every pattern.',zh:'棋盘一共有73种图案。\n最少1步：1种／2步：9种／3步：39种／4步：24种。\n旋转或左右翻转后相同的图案，按一种计算。\n最初24题和名人之路合在一起，可以玩到全部图案。',ko:'보드 패턴은 모두 73가지예요.\n최단 1수: 1가지／2수: 9가지／3수: 39가지／4수: 24가지.\n회전이나 좌우 반전으로 같은 패턴은 하나로 셉니다.\n처음 24문제와 명인의 길을 합치면 모든 패턴을 플레이할 수 있어요.'}},
@@ -1946,7 +1946,7 @@ const CLEAR_CONTENT={
   mastery3_10:{quiz:{ja:{q:'江戸時代、赤いだるまは何よけとして求められた？',a:['疱瘡（ほうそう）よけ','火事よけ','雨よけ','虫よけ'],correct:0,note:'赤い色には邪気を払う力があると信じられ、疱瘡よけとしても求められました。'},en:{q:'In the Edo period, red daruma were sought as protection against what?',a:['Smallpox','Fire','Rain','Insects'],correct:0,note:'Red was believed to ward off evil, and daruma were sought as protection against smallpox.'},zh:{q:'江户时代，人们把红色不倒翁当作什么的护身符？',a:['天花','火灾','大雨','虫害'],correct:0,note:'人们相信红色能驱邪，因此也会用红色不倒翁祈求免受天花侵扰。'},ko:{q:'에도 시대에 붉은 다루마는 무엇을 막기 위해 찾았을까?',a:['천연두','화재','비','벌레'],correct:0,note:'붉은색에는 사악한 기운을 물리치는 힘이 있다고 믿어, 천연두를 막기 위한 다루마도 찾았습니다.'}}},
   mastery3_11:{tip:{ja:'1829年の高崎の、市でだるまを売る様子が版画と文章に残されています。',en:'In 1829, prints and writing recorded daruma being sold at a market in Takasaki.',zh:'1829年的高崎，版画和文字记录了市场中售卖不倒翁的情景。',ko:'1829년 다카사키 시장에서 다루마를 팔던 모습이 판화와 글로 남아 있습니다.'},art:'market'},
   mastery3_12:{boardQuiz:{kind:'choose',pattern:7,topic:'ribbon',correct:0}},
-  mastery3_13:{tip:{ja:'メニューの「最短2手の9パターン」と「攻略のコツ」では、盤面をスワイプするとゲーム中の盤面と並べて見比べられます。',en:'In “2-move boards” and “Quick tips” in the Menu, swipe a board to compare it side by side with the game board.',zh:'在菜单的“最少2步棋盘”和“攻略提示”中，滑动棋盘可与游戏中的棋盘并排比较。',ko:'메뉴의 “최단 2수 보드”와 “공략 팁”에서는 보드를 스와이프해 게임 보드와 나란히 비교할 수 있어요.'}},
+  mastery3_13:{tip:{ja:'メニューの「最短2手の9パターン」と「盤面の見分け方」では、盤面をスワイプするとゲーム中の盤面と並べて見比べられます。',en:'In “2-move boards” and “Quick tips” in the Menu, swipe a board to compare it side by side with the game board.',zh:'在菜单的“最少2步棋盘”和“攻略提示”中，滑动棋盘可与游戏中的棋盘并排比较。',ko:'메뉴의 “최단 2수 보드”와 “공략 팁”에서는 보드를 스와이프해 게임 보드와 나란히 비교할 수 있어요.'}},
   mastery3_14:{quiz:{ja:{q:'達磨大師が開いたとされる仏教の宗派は？',a:['禅宗','浄土宗','真言宗','日蓮宗'],correct:0,note:'達磨大師は、中国禅宗の開祖とされています。'},en:{q:'Which Buddhist school is Bodhidharma said to have founded?',a:['Zen','Pure Land','Shingon','Nichiren'],correct:0,note:'Bodhidharma is regarded as the founder of Chinese Zen Buddhism.'},zh:{q:'达摩大师被认为开创了哪个佛教宗派？',a:['禅宗','净土宗','真言宗','日莲宗'],correct:0,note:'达摩大师被视为中国禅宗的开祖。'},ko:{q:'달마대사가 열었다고 전해지는 불교 종파는?',a:['선종','정토종','진언종','일련종'],correct:0,note:'달마대사는 중국 선종의 개조로 여겨집니다.'}}},
 };
 // 表示種別をデータ上で明示する。通常の問題クリア後メッセージと、
@@ -2495,10 +2495,10 @@ const UI_TEXT={
     mirror:'左右反転',
     rotate:'60°回転',
     boardLabel:'七枚のだるま盤',
-    tips:'攻略のコツ',
+    tips:'盤面の見分け方',
     guideHub:'攻略',
     guideHubTitle:'攻略',
-    guideHubTips:'攻略のコツ',
+    guideHubTips:'盤面の見分け方',
     guideHubPatterns:'最短2手の9パターン',
     makeBoard:'自作モード',
     playBoard:'この盤面で遊ぶ',
@@ -2604,7 +2604,7 @@ const UI_TEXT={
     playInFree:'フリーモードで遊ぶ →',
     backToPatterns:'一覧へ',
     stageModeReturn:'ステージモードへ',
-    tipGuideTitle:'攻略のコツを見る',
+    tipGuideTitle:'盤面の見分け方',
     playThisBoard:'この盤面で遊ぶ →',
     twoMoveDiscovery:'最短2手の9パターン　{n} / 9\nこの形と向きを、そのまま覚えておこう。',
     detailsLink:'詳しい解説はこちら →',
