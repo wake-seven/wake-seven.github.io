@@ -2026,9 +2026,13 @@ function guidedRewindPath(rawDeg){
   const remainder=rawDeg%360;
   if(Math.abs(rawDeg)>=360)return {start:remainder,end:0};
   const sign=rawDeg<0?-1:1;
-  const distanceToZero=Math.abs(rawDeg);
-  const distanceToFull=Math.abs(sign*360-rawDeg);
-  return distanceToFull<distanceToZero?{start:rawDeg,end:sign*360}:{start:rawDeg,end:0};
+  // 240°までは回した分を0°へ戻し、240°と360°の中間を越えたら
+  // 360°まで進めてから正規化する。120°刻みの操作境界に基づく分岐で、
+  // 微小な固定角度を閾値にはしない。
+  const fullTurnApproach=240+60;
+  return Math.abs(rawDeg)>fullTurnApproach
+    ?{start:rawDeg,end:sign*360}
+    :{start:rawDeg,end:0};
 }
 function animateGuidedBasicRewind(dg){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
