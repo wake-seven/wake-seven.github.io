@@ -966,8 +966,8 @@ function paint(){
     const m=$('msg');
     m.textContent='';
     m.classList.remove('show','tip','long-tip');
-    clearTimeout(clearTimer);
-    clearTimer=setTimeout(showClearActions,650);
+    clearUiEffectTimers('clear-transition');
+    setUiEffectTimer('clear-transition','show-actions',showClearActions,650);
   }
 }
 function tileTransform(x,y,turn){
@@ -1104,7 +1104,7 @@ function setPosition(state,par){
   cancelTileAnimations();
   clearHintVisuals();
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
-  clearTimeout(clearTimer);
+  clearUiEffectTimers('clear-transition');
   svg.querySelectorAll('.training-shape-callout').forEach(el=>el.remove());
   clearUiContextTimer('training-shape-callout');
   initializeBoardPositionCommand(state,par);
@@ -1314,7 +1314,7 @@ function validSavedBoard(data){
 }
 function restoreSavedBoard(data){
   if(!validSavedBoard(data))return false;
-  cancelTileAnimations();clearHintVisuals();clearTimeout(clearTimer);
+  cancelTileAnimations();clearHintVisuals();clearUiEffectTimers('clear-transition');
   replaceBoardState({ori:Uint8Array.from(data.o),spin:Int16Array.from(data.s),tiles:data.t.map(i=>baseTiles[i])});
   moves=Number.isInteger(data.m)&&data.m>=0?data.m:0;
   best=Number.isInteger(data.best)&&data.best>=0?data.best:SOLVER.dist[enc(ori)];
@@ -1435,7 +1435,7 @@ function restoreFreeSession(){
   cancelTileAnimations();
   clearHintVisuals();
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
-  clearTimeout(clearTimer);
+  clearUiEffectTimers('clear-transition');
   setActiveMode('free');editingBoard=false;
   resetFourthDistance();
   restoreFreeSessionBoardCommand(s);
@@ -2081,7 +2081,7 @@ svg.addEventListener('touchmove',handleBoardTouchMove,{passive:false});
 function undoLastMove(){
   if(busy||isFinalMasterPuzzle()||!history.length) return;
   cancelTileAnimations();
-  clearTimeout(clearTimer); clearShown=false;
+  clearUiEffectTimers('clear-transition'); clearShown=false;
   $('clearNext').hidden=true;
   svg.classList.remove('clear-pending','celebrating');
   const h=history.pop();

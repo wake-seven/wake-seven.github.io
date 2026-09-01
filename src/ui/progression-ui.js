@@ -500,7 +500,7 @@ function celebrateClear(){
   return 650;
 }
 function showClearActions(){
-  clearTimer=setTimeout(showClearDialog,celebrateClear());
+  setUiEffectTimer('clear-transition','show-dialog',showClearDialog,celebrateClear());
 }
 function renderClearStageContext(){
   const context=$('clearStageContext');

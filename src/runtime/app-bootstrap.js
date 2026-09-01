@@ -17,7 +17,7 @@ document.addEventListener('visibilitychange',()=>{
       // 非表示の間にクリア演出や、その後の次の問題へ進む処理が止まってしまうことがある
       // (裏に回った端末がタイマーの発火を止める・遅らせる等)。
       // 復帰時にクリア済みの盤面が残っていたら、保留中のタイマーは捨てて即座に確定させる。
-      clearTimeout(clearTimer);
+      clearUiEffectTimers('clear-transition');
       if(!clearShown)completeSpeedStage();else WakeSevenProgressionCommands.advanceSpeedRun();
     }
     // 非表示から戻った時はタイマーを黙って再開せず、一時停止ダイアログを出して本人の操作で再開させる。

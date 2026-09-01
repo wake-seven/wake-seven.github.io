@@ -74,7 +74,7 @@ const gameState=window.WakeSevenState.read()||window.WakeSevenState.create();
 // 旧バージョンのフラットな保存キーは現行状態へ持ち込まず破棄する。
 WakeSevenState.purgeExternalStorage();
 const initialNavigation=WakeSevenState.navigationView(gameState);
-let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep,activeMode=initialNavigation.mode,clearShown=false,clearTimer=0,nextStageAttention=false;
+let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep,activeMode=initialNavigation.mode,clearShown=false,nextStageAttention=false;
 let pendingMasterThemeRefresh=false;
 let lastAnalyticsStageKey='';
 
@@ -453,7 +453,7 @@ function focusReturnTarget(target){
   $(target.focusId).focus();
   return true;
 }
-let makerButtonBlockedUntil=0,makerRevealTimer=0;
+let makerButtonBlockedUntil=0;
 let currentInitialState=0, currentInitialPar=0;
 let savedFreeSession=null;
 const initialProgress=WakeSevenState.sectionView(gameState,'progress');

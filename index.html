@@ -4318,7 +4318,7 @@ const gameState=window.WakeSevenState.read()||window.WakeSevenState.create();
 // 旧バージョンのフラットな保存キーは現行状態へ持ち込まず破棄する。
 WakeSevenState.purgeExternalStorage();
 const initialNavigation=WakeSevenState.navigationView(gameState);
-let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep,activeMode=initialNavigation.mode,clearShown=false,clearTimer=0,nextStageAttention=false;
+let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep,activeMode=initialNavigation.mode,clearShown=false,nextStageAttention=false;
 let pendingMasterThemeRefresh=false;
 let lastAnalyticsStageKey='';
 
@@ -4697,7 +4697,7 @@ function focusReturnTarget(target){
   $(target.focusId).focus();
   return true;
 }
-let makerButtonBlockedUntil=0,makerRevealTimer=0;
+let makerButtonBlockedUntil=0;
 let currentInitialState=0, currentInitialPar=0;
 let savedFreeSession=null;
 const initialProgress=WakeSevenState.sectionView(gameState,'progress');
@@ -5471,7 +5471,7 @@ function completeSpeedStage(){
   if(speedSession&&moves===best&&!speedSession.restartedCurrent) updateSpeedOptimalClearsCommand();
   pauseSpeedClock();persistSpeedSession();
   const delay=celebrateClear();
-  clearTimer=setTimeout(WakeSevenProgressionCommands.advanceSpeedRun,delay+120);
+  setUiEffectTimer('clear-transition','advance-speed',WakeSevenProgressionCommands.advanceSpeedRun,delay+120);
 }
 // 公開native moduleの構文境界。
 export {};
@@ -6493,8 +6493,8 @@ function paint(){
     const m=$('msg');
     m.textContent='';
     m.classList.remove('show','tip','long-tip');
-    clearTimeout(clearTimer);
-    clearTimer=setTimeout(showClearActions,650);
+    clearUiEffectTimers('clear-transition');
+    setUiEffectTimer('clear-transition','show-actions',showClearActions,650);
   }
 }
 function tileTransform(x,y,turn){
@@ -6631,7 +6631,7 @@ function setPosition(state,par){
   cancelTileAnimations();
   clearHintVisuals();
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
-  clearTimeout(clearTimer);
+  clearUiEffectTimers('clear-transition');
   svg.querySelectorAll('.training-shape-callout').forEach(el=>el.remove());
   clearUiContextTimer('training-shape-callout');
   initializeBoardPositionCommand(state,par);
@@ -6841,7 +6841,7 @@ function validSavedBoard(data){
 }
 function restoreSavedBoard(data){
   if(!validSavedBoard(data))return false;
-  cancelTileAnimations();clearHintVisuals();clearTimeout(clearTimer);
+  cancelTileAnimations();clearHintVisuals();clearUiEffectTimers('clear-transition');
   replaceBoardState({ori:Uint8Array.from(data.o),spin:Int16Array.from(data.s),tiles:data.t.map(i=>baseTiles[i])});
   moves=Number.isInteger(data.m)&&data.m>=0?data.m:0;
   best=Number.isInteger(data.best)&&data.best>=0?data.best:SOLVER.dist[enc(ori)];
@@ -6962,7 +6962,7 @@ function restoreFreeSession(){
   cancelTileAnimations();
   clearHintVisuals();
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
-  clearTimeout(clearTimer);
+  clearUiEffectTimers('clear-transition');
   setActiveMode('free');editingBoard=false;
   resetFourthDistance();
   restoreFreeSessionBoardCommand(s);
@@ -7608,7 +7608,7 @@ svg.addEventListener('touchmove',handleBoardTouchMove,{passive:false});
 function undoLastMove(){
   if(busy||isFinalMasterPuzzle()||!history.length) return;
   cancelTileAnimations();
-  clearTimeout(clearTimer); clearShown=false;
+  clearUiEffectTimers('clear-transition'); clearShown=false;
   $('clearNext').hidden=true;
   svg.classList.remove('clear-pending','celebrating');
   const h=history.pop();
@@ -8748,7 +8748,7 @@ function celebrateClear(){
   return 650;
 }
 function showClearActions(){
-  clearTimer=setTimeout(showClearDialog,celebrateClear());
+  setUiEffectTimer('clear-transition','show-dialog',showClearDialog,celebrateClear());
 }
 function renderClearStageContext(){
   const context=$('clearStageContext');
@@ -9875,8 +9875,8 @@ export {};
 // クリア演出の表示と、次の問題/コースへの遷移を進行UI本体から分離する。
 function advanceAfterClear(){
   makerButtonBlockedUntil=performance.now()+600;
-  clearTimeout(makerRevealTimer);
-  makerRevealTimer=setTimeout(()=>{makerButtonBlockedUntil=0;renderStageNav();},600);
+  clearUiEffectTimers('maker-reveal');
+  setUiEffectTimer('maker-reveal','unlock',()=>{makerButtonBlockedUntil=0;renderStageNav();},600);
   if(isMode('free')) startFree();
   else if(isMode('custom')){setPosition(currentInitialState,currentInitialPar);renderStageNav();}
   else if(isMode('satori')){if(satoriIndex<SATORI_STAGES.length-1)loadSatoriStage(satoriIndex+1);else openSatoriPicker();}
@@ -11339,7 +11339,7 @@ document.addEventListener('visibilitychange',()=>{
       // 非表示の間にクリア演出や、その後の次の問題へ進む処理が止まってしまうことがある
       // (裏に回った端末がタイマーの発火を止める・遅らせる等)。
       // 復帰時にクリア済みの盤面が残っていたら、保留中のタイマーは捨てて即座に確定させる。
-      clearTimeout(clearTimer);
+      clearUiEffectTimers('clear-transition');
       if(!clearShown)completeSpeedStage();else WakeSevenProgressionCommands.advanceSpeedRun();
     }
     // 非表示から戻った時はタイマーを黙って再開せず、一時停止ダイアログを出して本人の操作で再開させる。

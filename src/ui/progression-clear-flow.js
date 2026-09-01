@@ -2,8 +2,8 @@
 // クリア演出の表示と、次の問題/コースへの遷移を進行UI本体から分離する。
 function advanceAfterClear(){
   makerButtonBlockedUntil=performance.now()+600;
-  clearTimeout(makerRevealTimer);
-  makerRevealTimer=setTimeout(()=>{makerButtonBlockedUntil=0;renderStageNav();},600);
+  clearUiEffectTimers('maker-reveal');
+  setUiEffectTimer('maker-reveal','unlock',()=>{makerButtonBlockedUntil=0;renderStageNav();},600);
   if(isMode('free')) startFree();
   else if(isMode('custom')){setPosition(currentInitialState,currentInitialPar);renderStageNav();}
   else if(isMode('satori')){if(satoriIndex<SATORI_STAGES.length-1)loadSatoriStage(satoriIndex+1);else openSatoriPicker();}

@@ -55,3 +55,5 @@
 残る直接の `hidden` 操作は、同一レンダリング処理内で複数の子要素を同時に表示制御する画面状態（クリア結果、設定項目、メッセージ本文、クイズ部品など）である。これらを一括してダイアログAPIへ置き換えると、子要素の表示順・フォーカス・既存のcleanup順序を変えるため、現時点ではUI rendererの責務として保持する。`setDialogOpenState()` は単一ダイアログの外枠開閉に限定する。
 
 `progression-hints.js` の短時間ハイライト、`progression-ui.js` の習熟盤面タイマー、各演出内部の遅延cleanupは、同一演出が複数要素を個別に破棄するため、既存の世代・Map単位のcleanupを維持している。永続gameStateへ混入しないことを確認済みで、今後は演出単位のcancel APIへ段階的に移行する。
+
+速解き完走後の遅延遷移とmakerボタン解放遅延も、それぞれ `clear-transition` / `maker-reveal` の演出IDへ移行した。盤面リセット時にはclear演出をキャンセルし、`resetBoardUiContext()` が残存する盤面アニメーションクラスを除去する。称号・クリアの速度や見た目はCSSアニメーションが担っており、JavaScriptタイマーではないためUIコンテキストへ移行しない。

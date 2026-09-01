@@ -341,7 +341,7 @@ function completeSpeedStage(){
   if(speedSession&&moves===best&&!speedSession.restartedCurrent) updateSpeedOptimalClearsCommand();
   pauseSpeedClock();persistSpeedSession();
   const delay=celebrateClear();
-  clearTimer=setTimeout(WakeSevenProgressionCommands.advanceSpeedRun,delay+120);
+  setUiEffectTimer('clear-transition','advance-speed',WakeSevenProgressionCommands.advanceSpeedRun,delay+120);
 }
 // 公開native moduleの構文境界。
 export {};
