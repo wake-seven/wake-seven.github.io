@@ -87,10 +87,19 @@ function boardQuizPresentation(config,state,copy){
   }
   return {states,correct,question,moveChoiceOrder};
 }
+function boardQuizTransformControls(index){
+  const buttons=[
+    ['rotateBack','rotateCcw'],
+    ['rotate','rotateCw'],
+    ['mirror','mirror'],
+    ['vertical','flipVertical']
+  ];
+  return '<div class="board-quiz-tools">'+buttons.map(([kind,label])=>'<button type="button" data-board-transform="'+kind+'" data-board-index="'+index+'" aria-label="'+tr(label)+'">'+transformIcon(kind)+'</button>').join('')+'</div>';
+}
 function boardQuizMarkup(config,states,moveChoiceOrder,copy,rootId,detailPatterns){
   const card=(board,index)=>{const template=document.getElementById('boardQuizCardTemplate'),wrapper=document.createElement('div');if(!template)return '<div class="board-quiz-card"><button class="board-quiz-option" type="button" data-board-answer="'+index+'"><span class="board-quiz-board">'+miniBoardSvg(board)+'</span></button></div>';const fragment=template.content.cloneNode(true),card=fragment.firstElementChild,answer=card.querySelector('.board-quiz-option');answer.dataset.boardAnswer=index;card.querySelector('.board-quiz-board').innerHTML=miniBoardSvg(board);card.querySelectorAll('[data-board-transform]').forEach(button=>{button.dataset.boardIndex=index;svgSetIcon(button,transformIcon(button.dataset.boardTransform));});wrapper.appendChild(card);return wrapper.innerHTML;};
   const boardMarkup=config.kind==='moves'
-    ?'<div class="board-quiz-single"><span class="board-quiz-board">'+miniBoardSvg(states[0])+'</span>'+controls(0)+'</div><div class="board-quiz-moves">'+moveChoiceOrder.map((choice,index)=>'<button class="board-quiz-option" type="button" data-board-answer="'+index+'">'+copy.moveChoices[choice]+'</button>').join('')+'</div>'
+    ?'<div class="board-quiz-single"><span class="board-quiz-board">'+miniBoardSvg(states[0])+'</span>'+boardQuizTransformControls(0)+'</div><div class="board-quiz-moves">'+moveChoiceOrder.map((choice,index)=>'<button class="board-quiz-option" type="button" data-board-answer="'+index+'">'+copy.moveChoices[choice]+'</button>').join('')+'</div>'
     :'<div class="board-quiz-options '+(states.length===3?'three':'')+'">'+states.map(card).join('')+'</div>';
   const detailLinks=detailPatterns.map(pattern=>'<button class="clear-tip-link" id="'+rootId+'Patterns'+pattern+'" type="button" data-board-patterns data-board-pattern="'+pattern+'" hidden>'+(detailPatterns.length>1?'最短2手の9パターン　'+pattern+' / 9 →':tr('detailsLink'))+'</button>').join('');
   return {boardMarkup,detailLinks};
