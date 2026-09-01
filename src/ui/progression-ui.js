@@ -534,8 +534,9 @@ function hasCompetingDialogForClear(){
     .some(id=>$(id)&&!$(id).hidden);
 }
 function showClearDialog(){
-  // クリア演出の遅延中に別ダイアログが開かれた場合は、古いclear遷移で上書きしない。
-  if(hasCompetingDialogForClear())return;
+  // クリア演出の遅延中に別ダイアログが残っていても、現在のクリア結果を
+  // 表示できずに終わらせない。先に古いダイアログを閉じてから描画する。
+  if(hasCompetingDialogForClear())hideGameDialogs();
   // 悟りの最終問題は、再挑戦で解いた場合も制覇ダイアログを見せる。
   // それ以外の悟り問題は、制覇後も通常のクリアダイアログにする。
   const showSatoriMastery=isMode('satori')&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered();
