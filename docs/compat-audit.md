@@ -64,6 +64,8 @@
 
 その後の分離として、クリア後チップの固定テキスト・詳細リンク欄を `progression-render.js:renderClearTipHeader()` へ移した。表示モデル（本文、リンク表示、リンク先、ラベル）の算出は `progression-ui.js` に残し、rendererはDOM更新だけを担当する。動的SVG、クイズ選択状態、称号の複数要素更新は引き続き対象外とする。
 
+pointer操作中の選択・回転・hover・不正操作フィードバック用クラスは `setBoardTransientClass()` 経由へ統一した。`drag`、`busy`、`boardTouchActive`、選択タイルは既存の専用APIを使用する。操作判定、盤面command、アニメーションの順序は変更していない。動的に生成したタイル個別のflashクラスは即時フィードバックのため、操作イベント内に保持する。
+
 称号アニメーションは、通常の序・破・急および一周目の文字称号を `masterRankSeal 1.05s ease-out both` に統一済み。`無心`・`覚者`を含むフレーム型称号は既存の `.72s` 演出を変更しない。`check-ui-effects.mjs` でこのduration/easing/fill-mode契約を監査する。クリア演出の速度は盤面WAAPI/CSSの既存仕様を維持する。
 
 ## CSS演出の最終監査

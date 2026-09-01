@@ -1322,7 +1322,8 @@ function restoreSavedBoard(data){
   loadFourthChecks();
   fourthDistanceRevealed=!!data.fourthDistanceRevealed;
   fourthHintPreview=false;fourthHintDistance=null;setBoardBusy(false);setBoardDrag(null);setBoardTouchActive(false);
-  svg.classList.remove('spinning','selecting','rotation-started','clear-pending','celebrating');
+  ['spinning','selecting','rotation-started'].forEach(className=>setBoardTransientClass(className,false));
+  svg.classList.remove('clear-pending','celebrating');
   svg.classList.toggle('clear-pending',clearShown&&isSolved());
   baseTiles.forEach(el=>setBoardTileSelected(el,false));
   $('clearNext').hidden=!clearShown;
@@ -1513,8 +1514,8 @@ function gripAt(p){
 }
 function rejectBoardGrab(event){
   invalidGrabPointerId=event.pointerId;
-  svg.classList.remove('grip-hover');
-  svg.classList.add('invalid-grab');
+  setBoardTransientClass('grip-hover',false);
+  setBoardTransientClass('invalid-grab',true);
   const tutorialCue=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]?.cue:'';
   const tutorialFindGrip=isMode('tutorial')&&(tutorialCue==='find'||tutorialCue==='chain-direction'||(tutorialCue==='chain'&&moves>0));
   $('gripPromptText').textContent=tr(tutorialFindGrip?'tutorialWrongPlacePrompt':guidedBasicCandidateTis!==null?'guidedBasicWrongGrip':'gripPrompt');
@@ -1526,7 +1527,7 @@ function clearInvalidGrab(event){
   if(invalidGrabPointerId===null||event.pointerId!==invalidGrabPointerId)return false;
   try{svg.releasePointerCapture(event.pointerId);}catch(_){}
   invalidGrabPointerId=null;
-  svg.classList.remove('invalid-grab');
+  setBoardTransientClass('invalid-grab',false);
   $('gripPrompt').hidden=true;
   if(isMode('tutorial'))setTimeout(showTutorialCue,80);
   return true;
@@ -1733,7 +1734,7 @@ function handleBoardPointerDown(e){
   }
   const ti=grip.ti,t=grip.t,selectedTiles=new Set(t.cells.map(i=>tileEls[i]));
   // 最初の3問だけ対象の3体を見分けやすくし、それ以降は全員を見渡せるよう暗転しない。
-  if(usesSwipeDimming())svg.classList.add('selecting');
+  if(usesSwipeDimming())setBoardTransientClass('selecting',true);
   for(const i of t.cells)setBoardTileSelected(tileEls[i],true);
   cancelTutorialHint(true);
   if(tutorialMove){
@@ -1765,11 +1766,11 @@ function handleBoardPointerDown(e){
   for(const item of items){setBoardTileSelected(item.el,true);svg.insertBefore(item.el,frontMarker);}
   setBoardPivotActive(svg.querySelector('.pivot[data-tri="'+ti+'"]'),true);
   svg.setPointerCapture(e.pointerId);
-  svg.classList.add('spinning');
+  setBoardTransientClass('spinning',true);
 }
 function handleBoardPointerMove(e){
   if(!drag||e.pointerId!==drag.id){
-    if(!drag&&e.pointerType==='mouse')svg.classList.toggle('grip-hover',!!gripAt(toView(e)));
+    if(!drag&&e.pointerType==='mouse')setBoardTransientClass('grip-hover',!!gripAt(toView(e)));
     // 棒をつかめていなくても、盤面上で始まったタッチならページスワイプに奪われないようにする。
     if(!drag&&boardTouchActive&&e.pointerType!=='mouse')e.preventDefault();
     return;
@@ -1789,8 +1790,8 @@ function handleBoardPointerMove(e){
   drag.deg=drag.rawDeg;
   drag.maxAbsDeg=Math.max(drag.maxAbsDeg,Math.abs(drag.rawDeg));
   // 回転が始まったら、つかんだ3枚を強調する枠を解除する。
-  svg.classList.remove('selecting','rotation-started');
-  svg.classList.add('rotation-started');
+  setBoardTransientClass('selecting',false);
+  setBoardTransientClass('rotation-started',true);
   // 5問目は、動かし始めたら「はなす位置を考える」案内に固定する。
   // 逆向きへ戻しても、案内や矢印を出し直さない。
   const tutorialCue=TUTORIAL_STEPS[tutorialStep]?.cue;
@@ -1851,14 +1852,14 @@ function handleBoardPointerMove(e){
   }
   applyBoardTheme();
 }
-function handleBoardPointerLeave(){if(!drag)svg.classList.remove('grip-hover');}
+function handleBoardPointerLeave(){if(!drag)setBoardTransientClass('grip-hover',false);}
 function resumeTutorialCue(){
   if(isMode('tutorial')&&!isSolved())setTimeout(showTutorialCue,110);
 }
 function finishDrag(e,cancel=false,forcedTurns=null){
   if(!drag||(e&&e.pointerId!==drag.id)) return;
-  const dg=drag; setBoardDrag(null);setBoardTouchActive(false); clearAxisGuide(); svg.classList.remove('spinning');
-  svg.classList.remove('selecting');
+  const dg=drag; setBoardDrag(null);setBoardTouchActive(false); clearAxisGuide(); setBoardTransientClass('spinning',false);
+  setBoardTransientClass('selecting',false);
   for(const item of dg.items)setBoardTileSelected(item.el,false);
   svg.querySelectorAll('.pivot.active').forEach(el=>setBoardPivotActive(el,false));
   try{svg.releasePointerCapture(dg.id);}catch(_){}
@@ -2020,7 +2021,7 @@ function animateGuidedBasicRewind(dg){
     paint();haptic(8);return;
   }
   setBoardBusy(true);
-  svg.classList.add('spinning'); // 巻き戻り中は水色の棒を隠し、戻り切ってから復活させる。
+  setBoardTransientClass('spinning',true); // 巻き戻り中は水色の棒を隠し、戻り切ってから復活させる。
   const duration=680;
   // 間違いの向きへぴったり120度まで揃えてから戻すのではなく、離した角度から直接0度へ戻す。
   // 表情・パネル色は、ドラッグ中の実際の表示(previewWake)と同じ角度基準の式で切り替える。
@@ -2058,7 +2059,7 @@ function animateGuidedBasicRewind(dg){
     if(progress<1){requestAnimationFrame(frame);return;}
     for(const{item} of clones)item.el.style.visibility='';
     group.remove();
-    setBoardBusy(false);svg.classList.remove('spinning','rotation-started');paint();
+    setBoardBusy(false);setBoardTransientClass('spinning',false);setBoardTransientClass('rotation-started',false);paint();
     setTimeout(()=>{if(isAssistedLearningStage()||isFallingRodStage())$('gripPrompt').hidden=true;},450);
   };
   requestAnimationFrame(frame);

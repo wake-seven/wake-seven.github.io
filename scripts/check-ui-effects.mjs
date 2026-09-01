@@ -26,6 +26,8 @@ assert.match(progressionRender,/function renderClearTipHeader\(/,'Clear tip fixe
 assert.match(boardRender,/function renderAcademyRemainingCalloutElement\(/,'Academy callout rendering must remain in the renderer boundary.');
 assert.match(events,/aboutDialogCloseBtn',\(\)=>setDialogOpenState\('aboutDialog',false\)/,'About dialog close must use the dialog state boundary.');
 assert.match(events,/settingsDialogClose',\(\)=>setDialogOpenState\('settingsDialog',false\)/,'Settings dialog close must use the dialog state boundary.');
+assert.match(context,/function setBoardTransientClass\(/,'Board transient class API is missing.');
+assert.doesNotMatch(board,/classList\.toggle\('(grip-hover|selecting)'/,'Pointer UI classes must use the transient context API.');
 assert.match(template,/rank-index-2\.animate[\s\S]{0,180}masterRankSeal 1\.05s ease-out both/,'Rank index 2 animation contract changed.');
 assert.match(template,/rank-seal:not\(\.rank-frame-seal\):not\(\.rank-index-5\):not\(\.rank-index-6\)\.animate[\s\S]{0,120}masterRankSeal 1\.05s ease-out both/,'Ordinary rank animation contract changed.');
 assert.match(template,/rank-frame-seal\.animate\{animation:masterRankSeal \.72s ease-out both\}/,'Special frame animation contract changed.');
