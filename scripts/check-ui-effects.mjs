@@ -44,6 +44,12 @@ assert.match(boardRender,/function renderBoardTileState\(/,'Tile state rendering
 assert.match(boardRender,/function renderBoardTileFlash\(/,'Tile flash rendering must remain behind a renderer boundary.');
 assert.match(boardRender,/function renderTutorialFeedback\(/,'Tutorial feedback rendering must remain behind a renderer boundary.');
 assert.match(board,/renderTutorialFeedback\(\{text:/,'Tutorial feedback must be passed to the renderer as a model.');
+assert.match(interaction,/pointerId:input\.pointerId[\s\S]{0,220}targetGroup[\s\S]{0,100}cancelled:false/,'Pointer operation context must contain identity, target group, and cancellation state.');
+assert.match(interaction,/current:\{\.\.\.input\.point\}[\s\S]{0,180}delta:\{x:0,y:0\}[\s\S]{0,120}angle:null/,'Pointer operation context must initialize coordinates, delta, and angle.');
+assert.doesNotMatch(board,/svg\.setPointerCapture|svg\.releasePointerCapture/,'Pointer handlers must use the capture API boundary.');
+assert.doesNotMatch(board,/createAutoSwipePreview/,'Legacy swipe SVG creation name must not bypass the new API.');
+assert.match(boardRender,/group\.setAttribute\('transform'/,'Swipe frame renderer must own group transform updates.');
+assert.match(boardRender,/clone\.setAttribute\('class','tile '/,'Swipe frame renderer must own tile state updates.');
 assert.match(board,/renderBoardInteractionFeedback\(\{classes:/,'Pointer handlers must pass feedback models to the renderer.');
 assert.match(board,/startBoardPointerContext\(input,t/,'Pointer down must create an operation context.');
 assert.match(board,/updateBoardPointerContext\(drag,input\)/,'Pointer move must update the operation context.');

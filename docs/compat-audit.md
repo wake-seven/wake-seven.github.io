@@ -95,6 +95,8 @@ pointer captureは `captureBoardPointer()` / `releaseBoardPointer()`、別pointe
 
 チュートリアルの案内欄（回して・はなす・そこじゃないよ等）の固定DOM反映は `renderTutorialFeedback()` へ分離した。`tutorialPrompt`、正解判定、矢印の表示条件、段階別クラスの判定はboard-ui側に残し、文言と表示タイミングを変更しない。矢印生成そのものはhint rendererとの既存境界を維持する。
 
+今回の7段階を横断する回帰監査として、`check-ui-effects.mjs` で操作コンテキスト、feedback renderer、SVG group/frame renderer、pointer capture、タイルrenderer、tutorial feedback、完了callbackのcommand接続、cancel後の無効化を検査する。旧SVG生成名とpointer captureの直接呼び出しが再導入されないことも確認する。内蔵ブラウザはこの環境では利用できないため、代表スワイプは静的契約と既存の全回帰チェックで確認する。
+
 `animateGroupedSwipe()` と `animateUndoSwipe()` は同ファイルのアニメーションセッションAPIで管理する。セッションは `id` / `type` / `pointerId` / `startedAt` / `cancelled` / `frameHandle` / `cleanup` を持ち、`cancelTileAnimations()` からも先にキャンセルされる。完了・キャンセル時のcleanupは一度だけ実行し、古いcallbackや次フレームは無効化する。盤面command、回転角、表示順、完了順序は変更していない。
 
 アニメーションフレームのDOM/SVG反映は `board-render.js:renderBoardAnimationFrame()` へ分離した。`board-ui.js` は回転角・進捗・方向を計算してモデルを渡し、rendererがグループtransformと持ち上がり/表情/色の反映を行う。座標・DOM順序・タイミングは変更していない。
