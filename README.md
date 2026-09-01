@@ -18,10 +18,10 @@
 
 - `index.html` — ゲーム本体
 - `src/index.template.html` — `index.html` の保守用テンプレート
-- `src/game-state.js` — バージョン付き統合ゲーム状態と旧保存データ移行
-- `src/progression-policy.js` — コース解放・速解き・学習用 UI の宣言ポリシー
-- `src/quiz-ui.js` — 共通クイズ描画・選択肢シャッフル・正解演出
-- `src/message-ui.js` — クリア後メッセージ・節目表示・見直し一覧
+- `src/state/game-state.js` — 統合ゲーム状態と保存境界
+- `src/state/progression-policy.js` — コース解放・速解き・学習用UIの宣言ポリシー
+- `src/ui/quiz-ui.js` — 共通クイズ描画・選択肢シャッフル・正解演出
+- `src/ui/message-ui.js` — クリア後メッセージ・節目表示・見直し一覧
 - `scripts/build-index.mjs` — 単体HTMLを生成するスクリプト
 - `all-patterns.html` — クリア後に楽しめる盤面一覧
 
@@ -36,7 +36,7 @@ npm run build
 npm run check
 ```
 
-新しい保存形式は `wake7-state-vnext` です。初回は既存の `wake7-*` キーから読み取り、従来の保存キーも残すため、移行中でも旧版へ戻せます。
+保存状態は `wake7-state-vnext` に集約しています。過去版の保存データ互換や旧キーからの移行は行いません。
 
 ## 共有について
 
