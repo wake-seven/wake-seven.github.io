@@ -29,5 +29,24 @@ function initializeBoardPositionCommand(state,par){
   clearShown=false;
   return nextOri;
 }
+function replaceBoardStateCommand(next,{paintNow=false}={}){
+  if(next.ori)ori=next.ori;
+  if(next.spin)spin=next.spin;
+  if(next.tiles)tileEls=next.tiles;
+  if(Number.isInteger(next.moves))moves=next.moves;
+  if(Number.isInteger(next.best))best=next.best;
+  if(next.history)history=next.history;
+  if(paintNow)paint();
+}
+function captureFreeSessionCommand(){
+  savedFreeSession={ori:Uint8Array.from(ori),spin:Int16Array.from(spin),tileEls:tileEls.slice(),moves,best,history:history.map(cloneHistoryEntry),initialState:currentInitialState,initialPar:currentInitialPar,clearShown};
+  return savedFreeSession;
+}
+function restoreFreeSessionBoardCommand(session){
+  if(!session)return false;
+  replaceBoardStateCommand({ori:Uint8Array.from(session.ori),spin:Int16Array.from(session.spin),tiles:session.tileEls.slice(),moves:session.moves,best:session.best,history:session.history.map(cloneHistoryEntry)});
+  currentInitialState=session.initialState;currentInitialPar=session.initialPar;clearShown=session.clearShown;
+  return true;
+}
 // 公開native moduleの構文境界。
 export {};

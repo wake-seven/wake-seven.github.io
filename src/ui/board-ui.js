@@ -1105,13 +1105,7 @@ function showAcademyRemainingCallout(){
   },700);
 }
 function replaceBoardState(next,{paintNow=false}={}){
-  if(next.ori)ori=next.ori;
-  if(next.spin)spin=next.spin;
-  if(next.tiles)tileEls=next.tiles;
-  if(Number.isInteger(next.moves))moves=next.moves;
-  if(Number.isInteger(next.best))best=next.best;
-  if(next.history)history=next.history;
-  if(paintNow)paint();
+  replaceBoardStateCommand(next,{paintNow});
 }
 function setPosition(state,par){
   loadFourthChecks();
@@ -1445,11 +1439,7 @@ function cloneHistoryEntry(h){
   return {o:Uint8Array.from(h.o),s:Int16Array.from(h.s),t:h.t.slice(),m:h.m};
 }
 function persistFreeSession(){
-  savedFreeSession={
-    ori:Uint8Array.from(ori),spin:Int16Array.from(spin),tileEls:tileEls.slice(),
-    moves,best,history:history.map(cloneHistoryEntry),
-    initialState:currentInitialState,initialPar:currentInitialPar,clearShown
-  };
+  captureFreeSessionCommand();
 }
 function restoreFreeSession(){
   if(isMode('speed'))pauseSpeedRun();
@@ -1461,10 +1451,7 @@ function restoreFreeSession(){
   clearTimeout(clearTimer);
   setActiveMode('free');editingBoard=false;
   resetFourthDistance();
-    replaceBoardState({ori:Uint8Array.from(s.ori),spin:Int16Array.from(s.spin)});
-  tileEls=s.tileEls.slice();moves=s.moves;best=s.best;
-  history=s.history.map(cloneHistoryEntry);
-  currentInitialState=s.initialState;currentInitialPar=s.initialPar;clearShown=s.clearShown;
+  restoreFreeSessionBoardCommand(s);
   busy=false;drag=null;boardTouchActive=false;svg.classList.remove('spinning','selecting','rotation-started','clear-pending','celebrating');
   baseTiles.forEach(el=>el.classList.remove('selected'));
   svg.querySelectorAll('.pivot.active').forEach(el=>el.classList.remove('active'));
