@@ -9007,7 +9007,7 @@ function celebrateClear(){
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   // 同じクリア周期でshowClearActionsが再入しても、揺れとバーストを重ねない。
   // 既存演出を再利用する場合に0を返すと、後続ダイアログだけが前倒しになる。
-  if(svg.classList.contains('celebrating'))return 0;
+  if(svg.classList.contains('celebrating'))return reduced?0:820;
   svg.classList.add('celebrating');
   playClearSound(clearSoundKind());
   if(reduced)return 0;
@@ -9017,7 +9017,8 @@ function celebrateClear(){
 }
 function showClearActions(){
   // 同じタイマーキーで再予約し、再入しても最後の1件だけを有効にする。
-  const delay=svg.classList.contains('celebrating')?0:celebrateClear();
+  // 既に演出中でも0msへ短縮しない。再入は表示を前倒ししてはいけない。
+  const delay=celebrateClear();
   setUiEffectTimer('clear-transition','show-dialog',()=>{
     showClearDialog();
     // クリア直後に盤面・メッセージの後処理が同じフレームで走っても、
