@@ -1071,16 +1071,7 @@ function wakeFeedback(elements){
 }
 function applySwipe(ti,dir,save=true,playEffects=true){
   if(usesHiddenRemaining())resetFourthDistance();
-  if(save) history.push(snapshot());
-  if(save)trackGameStart();
-  const oldSpin=Int16Array.from(spin), oldTiles=tileEls.slice(), c=TRI[ti].cells;
-  const nextOri=rollOnce(ori,ti,dir),nextSpin=oldSpin.slice(),nextTiles=oldTiles.slice();
-  for(let i=0;i<3;i++){
-    const from=dir>0?c[i]:c[(i+1)%3], to=dir>0?c[(i+1)%3]:c[i];
-    nextTiles[to]=oldTiles[from];
-    nextSpin[to]=oldSpin[from]+dir;
-  }
-  replaceBoardState({ori:nextOri,spin:nextSpin,tiles:nextTiles,moves:moves+1});
+  const {oldSpin,oldTiles,nextOri,nextSpin,nextTiles}=commitBoardMoveCommand(ti,dir,{save});
   if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){
     setTimeout(()=>{
       if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves>=5&&!isSolved())
