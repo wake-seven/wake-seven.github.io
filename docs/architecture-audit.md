@@ -57,7 +57,7 @@ npm run check
 
 このコマンドは状態復元、ダイアログ連鎖、UI演出のキャンセル、進行フロー、ESM依存、ソース境界、公開版生成物、未使用候補を検査します。生成物の更新は `npm run build` で行います。
 
-ブラウザ相当の導線契約は `npm run check:browser-flow`（`npm run check` に含む）で検査します。開始前の仮画面抑制、状態復元後のダイアログ表示、pointer正規化、別pointer無視、キャンセル時のアニメーションフレーム無効化、チュートリアル巻き戻しのsnapshot復元、リセット入口をVM上で確認します。内蔵ブラウザを利用できない実行環境では、この契約を実ブラウザ操作の代替とし、実操作未実施であることを明記します。
+ブラウザ相当の導線契約は `npm run check:browser-flow`（`npm run check` に含む）で検査します。開始前の仮画面抑制、状態復元後のダイアログ表示、pointer正規化、別pointer無視、スワイプのフレームrenderer接続、二重セッションの退役、キャンセル時のアニメーションフレーム無効化、クリア演出の二重起動防止、チュートリアル巻き戻しのsnapshot復元、リセット入口をVM/DOM契約で確認します。内蔵ブラウザを利用できない実行環境では、この契約を実ブラウザ操作の代替とし、実操作未実施であることを明記します。
 
 classic/ESMの役割は固定する。`publishedSourceFiles` は単体HTMLへ連結する `.js` 群、`developmentSourceFiles` は開発用入口から import される `.mjs` 群とし、両マニフェストのパスは重複させない。現在の同名ペア（audio、board-commands、board-domain、board-quiz、progression-commands、progression-runtime、render、satori、settings）は開発用ESMと公開互換層の意図的な境界として監査で許可する。新しい同名ペアを追加する場合は、`check-source-boundaries` の許可リストを先に更新する。
 
