@@ -282,15 +282,15 @@ function bindMenuEvents(){
     $('aboutDialog').hidden=false;
     $('aboutDialogCloseBtn').focus();
   });
-  WakeSevenEventBindings.click('aboutDialogCloseBtn',()=>{$('aboutDialog').hidden=true;});
-  $('aboutDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)$('aboutDialog').hidden=true;});
+  WakeSevenEventBindings.click('aboutDialogCloseBtn',()=>setDialogOpenState('aboutDialog',false));
+  $('aboutDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)setDialogOpenState('aboutDialog',false);});
   WakeSevenEventBindings.click('menuSettings',()=>{
     closeAppMenu();
     $('settingsDialog').hidden=false;
     $('settingsDialogClose').focus();
   });
-  WakeSevenEventBindings.click('settingsDialogClose',()=>{$('settingsDialog').hidden=true;});
-  $('settingsDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)$('settingsDialog').hidden=true;});
+  WakeSevenEventBindings.click('settingsDialogClose',()=>setDialogOpenState('settingsDialog',false));
+  $('settingsDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)setDialogOpenState('settingsDialog',false);});
   WakeSevenEventBindings.click('menuAllPatterns',()=>{window.open('all-patterns.html','_blank','noopener');});
   WakeSevenEventBindings.click('menuOpen3D',()=>{window.open('index_3D.html','_blank','noopener');});
   WakeSevenEventBindings.click('menuSatori',()=>{closeAppMenu();openSatoriPicker();});
