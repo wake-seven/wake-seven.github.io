@@ -67,7 +67,7 @@ assert.match(boardRender,/function showTrainingShapeCallout\(/,'Training SVG cal
 assert.match(boardRender,/function renderAcademyRemainingCalloutElement\(/,'Academy callout SVG/DOM display must remain behind a renderer boundary.');
 assert.match(board,/function animateGroupedSwipe\(/,'Pointer-dependent grouped swipe animation must remain available.');
 assert.match(board,/function animateUndoSwipe\(/,'Sequential undo animation must remain available.');
-assert.match(board,/function animateGuidedBasicRewind\([\s\S]{0,560}const rawDeg=dg\.deg[\s\S]{0,220}Math\.abs\(rawDeg\)<360/,'Guided rewind must preserve sub-turn animation distance.');
+assert.match(board,/function animateGuidedBasicRewind\([\s\S]{0,620}360-Math\.abs\(rewindStart\)<Math\.abs\(rewindStart\)/,'Guided rewind must choose the closer full-turn endpoint.');
 assert.match(board,/function animateGuidedBasicRewind\([\s\S]{0,700}Math\.abs\(rewindEnd-rewindStart\)<0\.5/,'Guided rewind must skip only exact full-turn angles.');
 const tutorialStart=board.indexOf('function animateTutorialRewind');
 const tutorialEnd=board.indexOf('function animateGuidedBasicRewind',tutorialStart);

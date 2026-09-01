@@ -7584,13 +7584,16 @@ function animateGuidedBasicRewind(dg){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
     paint();haptic(8);return;
   }
-  // 360°未満の往復は実際に回した角度をそのまま戻す。
-  // 360°に近い場合は0°へ戻さず、360°まで進めてから正規化する。
-  // 360°を超えた場合だけ余剰角へ戻す（390°なら30°→0°）。
+  // 現在角度から0°と±360°のどちらが近いかで着地点を決める。
+  // 360°を超えた場合は余剰角へ戻す（390°なら30°→0°）。
   const rawDeg=dg.deg;
   let rewindStart=rawDeg%360,rewindEnd=0;
-  if(Math.abs(rawDeg)<360&&Math.abs(rewindStart)>330)rewindEnd=Math.sign(rewindStart)*360;
-  else if(Math.abs(rawDeg)<360&&Math.abs(rewindStart)<30)rewindStart=rawDeg;
+  if(Math.abs(rawDeg)<360&&360-Math.abs(rewindStart)<Math.abs(rewindStart)){
+    rewindStart=rawDeg;
+    rewindEnd=Math.sign(rawDeg)*360;
+  }else if(Math.abs(rawDeg)<360){
+    rewindStart=rawDeg;
+  }
   // 360°ちょうどなど、見かけ上すでに初期角度に戻っている場合だけ省略する。
   if(Math.abs(rewindEnd-rewindStart)<0.5){paint();haptic(8);return;}
   setBoardBusy(true);
