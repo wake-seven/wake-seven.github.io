@@ -1123,9 +1123,7 @@ function setPosition(state,par){
   clearTimeout(clearTimer);
   svg.querySelectorAll('.training-shape-callout').forEach(el=>el.remove());
   clearTimeout(trainingShapeCalloutTimer);
-  currentInitialState=state; currentInitialPar=par;
-  const nextOri=dec(state);
-  replaceBoardState({ori:nextOri,spin:Int16Array.from(nextOri),tiles:baseTiles.slice(),best:par,moves:0,history:[]}); clearShown=false;
+  initializeBoardPositionCommand(state,par);
   clearTimeout(boardArrivalTimer);
   busy=false; drag=null;boardTouchActive=false; svg.classList.remove('spinning','selecting','rotation-started','clear-pending','celebrating','arriving');
   svg.classList.remove('tutorial-grab-step','tutorial-clear-step','invalid-grab');

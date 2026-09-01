@@ -22,5 +22,12 @@ function restoreBoardSnapshotCommand(snapshotValue,{paintNow=false}={}){
   replaceBoardState({ori:snapshotValue.o,spin:snapshotValue.s,tiles:snapshotValue.t,moves:snapshotValue.m},{paintNow});
   return true;
 }
+function initializeBoardPositionCommand(state,par){
+  currentInitialState=state;currentInitialPar=par;
+  const nextOri=dec(state);
+  replaceBoardState({ori:nextOri,spin:Int16Array.from(nextOri),tiles:baseTiles.slice(),best:par,moves:0,history:[]});
+  clearShown=false;
+  return nextOri;
+}
 // 公開native moduleの構文境界。
 export {};
