@@ -1985,16 +1985,19 @@ function animateTutorialRewind(dg,target,dir){
   const domOrder=[...svg.children];
   const sortedItems=[...dg.items].sort((a,b)=>domOrder.indexOf(a.el)-domOrder.indexOf(b.el));
   const domSnapshot=captureTutorialRewindDomSnapshot(sortedItems);
+  const session=startTutorialRewindSession({snapshot:domSnapshot,group,onCleanup:()=>{
+    setBoardBusy(false);paint();setUiEffectTimer('tutorial-rewind','cue',showTutorialCue,150);
+  }});
   for(const item of model.items){
     item.el.style.transform=orbitTransform(item,0,dg.kc);
     group.appendChild(item.el);
   }
-  setTimeout(()=>{
+  setTutorialRewindTimer(session,()=>{
     if(!isMode('tutorial'))return;
     for(const item of dg.items)item.el.setAttribute('class','tile '+(mod3(item.turn+dir)===0?'stand':'fallen'));
     applyBoardTheme();haptic(6);
   },245);
-  setTimeout(()=>{
+  setTutorialRewindTimer(session,()=>{
     if(!isMode('tutorial'))return;
     for(const item of dg.items)item.el.setAttribute('class','tile '+(mod3(item.turn)===0?'stand':'fallen'));
     applyBoardTheme();
@@ -2005,14 +2008,7 @@ function animateTutorialRewind(dg,target,dir){
     {transform:'rotate('+model.startAngle+'deg)',offset:0},
     {transform:'rotate('+model.endAngle+'deg)',offset:1}
   ],{duration,easing:'cubic-bezier(.2,.72,.24,1)'});
-  let restored=false;
-  animation.onfinish=animation.oncancel=()=>{
-    if(restored)return;
-    restored=true;
-    restoreTutorialRewindDomSnapshot(domSnapshot);
-    group.remove();
-    setBoardBusy(false);paint();setTimeout(showTutorialCue,150);
-  };
+  bindTutorialRewindAnimation(session,animation);
 }
 function guidedRewindPath(rawDeg){
   const remainder=rawDeg%360;

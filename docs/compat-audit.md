@@ -103,6 +103,8 @@ pointer captureは `captureBoardPointer()` / `releaseBoardPointer()`、別pointe
 
 巻き戻しで一時的にSVG groupへ移す要素は、同ファイルの `captureTutorialRewindDomSnapshot()` / `restoreTutorialRewindDomSnapshot()` でDOM親・兄弟順・inline styleを退避・復元する。finish/cancelは同じ復元処理を一度だけ通るため、水色の棒との前後関係とvisibilityを含む表示状態を維持する。
 
+チュートリアル巻き戻しのWAAPI、遅延タイマー、DOM snapshot、cleanup済み状態は `startTutorialRewindSession()` 以下の専用セッションAPIで一元管理する。cancel時はWAAPIと未実行タイマーを停止し、finish/cancelのどちらでもsnapshot復元を一度だけ実行する。完了後の案内表示だけは既存のUI演出タイマー境界へ登録し、画面遷移時に残留しないようにする。演出の速度・見た目・完了後の案内表示は変更しない。
+
 アニメーションフレームのDOM/SVG反映は `board-render.js:renderBoardAnimationFrame()` へ分離した。`board-ui.js` は回転角・進捗・方向を計算してモデルを渡し、rendererがグループtransformと持ち上がり/表情/色の反映を行う。座標・DOM順序・タイミングは変更していない。
 
 動的SVGの生成入口を `board-animation.js:createSwipeGroup()`、フレーム反映入口を `board-render.js:renderSwipeFrame()` に明示した。Grouped swipeとundo swipeは生成とフレーム反映をこれらのAPI経由で行い、pointer座標・DOM順序・タイミングは維持する。個別タイルのpointer依存アニメーションは引き続きboard-ui側に保持する。
