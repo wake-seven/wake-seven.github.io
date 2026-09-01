@@ -87,6 +87,8 @@ pointer直後の `grip-hover`、`invalid-grab`、`selecting`、`spinning`、`rot
 
 操作中の `pointerId/type`、開始/現在座標、delta、angle、対象3枚組、cancelledは `startBoardPointerContext()` / `updateBoardPointerContext()` / `finishBoardPointerContext()` で一つの操作コンテキストとして扱う。board-uiはイベント受け取りと既存処理の接続を担当し、正解判定・盤面command・アニメーションは変更していない。
 
+チュートリアル巻き戻しの横断監査として、`check-ui-effects.mjs` はモデルの全フィールド、snapshot復元、セッションのactive参照解放、タイマーのstale callback無効化、共通cancel経路を検査し、生成済み `index.html` にもモデル/renderer/cancel APIが含まれることを確認する。内蔵ブラウザ接続は2026-09-01時点で利用できなかったため、実操作の開始→巻き戻し→リセット/遷移確認は未実施とし、静的全回帰チェックで代替した。
+
 操作中の盤面フィードバック（selecting / spinning / rotation-started / grip-hover / invalid-grab）は `renderBoardInteractionFeedback()` へ表示モデルとして渡す構成にした。入力判定と文言・残り手数・hint arrowの算出はboard-ui側に残し、rendererは固定DOM/SVGのクラスと案内欄の反映だけを担当する。pointer座標依存の逐次アニメーション自体は第2段階の境界を維持する。
 
 pointer captureは `captureBoardPointer()` / `releaseBoardPointer()`、別pointerの無視は `isBoardPointerEventFor()` に統一した。pointerup/cancel/leaveのイベント順序とtouchmove抑止は変更していない。capture APIはブラウザ実装差を吸収するための境界で、操作判定や盤面状態は扱わない。
