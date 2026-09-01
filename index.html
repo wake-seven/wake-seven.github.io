@@ -8965,11 +8965,13 @@ function playWakeCelebrationEffect(targetSvg,tilesArr){
   a.onfinish=a.oncancel=()=>burst.remove();
 }
 function celebrateClear(){
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   // 同じクリア周期でshowClearActionsが再入しても、揺れとバーストを重ねない。
-  if(svg.classList.contains('celebrating'))return 0;
+  // 既存演出を再利用する場合に0を返すと、後続ダイアログだけが前倒しになる。
+  if(svg.classList.contains('celebrating'))return reduced?0:650;
   svg.classList.add('celebrating');
   playClearSound(clearSoundKind());
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return 0;
+  if(reduced)return 0;
   playWakeCelebrationEffect(svg,tileEls);
   return 650;
 }
