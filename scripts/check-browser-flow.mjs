@@ -26,6 +26,10 @@ assert.match(template, /id=["']aboutVersion["']/,
   'about dialog must expose the generated public version');
 assert.match(events, /\$\('aboutVersion'\)\.textContent='v'\+APP_VERSION/,
   'about dialog version must be rendered from APP_VERSION');
+assert.equal((published.match(/const APP_VERSION='/g)||[]).length, 1,
+  'generated public bundle must contain exactly one APP_VERSION source');
+assert.match(published, /\$\('aboutVersion'\)\.textContent='v'\+APP_VERSION/,
+  'generated public bundle must render the source APP_VERSION');
 assert.match(bootstrap, /buildBoard\(\);[\s\S]*restoreActiveSession\(\);[\s\S]*restoreDialogState\(/,
   'startup must build, restore the board, then restore dialogs');
 assert.match(bootstrap, /document\.body\.classList\.remove\('app-booting'\)/,
