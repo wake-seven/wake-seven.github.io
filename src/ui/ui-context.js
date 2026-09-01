@@ -15,5 +15,11 @@ function clearUiContextTimer(key){const id=uiContextTimers.get(key);if(id!==unde
 function setUiContextTimer(key,callback,delay){clearUiContextTimer(key);const id=setTimeout(()=>{uiContextTimers.delete(key);callback();},delay);uiContextTimers.set(key,id);return id;}
 function clearUiContextInterval(key){clearUiContextTimer(key);}
 function setUiContextInterval(key,callback,delay){clearUiContextInterval(key);const id=setInterval(callback,delay);uiContextTimers.set(key,id);return id;}
+const uiEffects=new Map();
+function uiEffectTimerKey(effect,key){return 'effect:'+effect+':'+key;}
+function registerUiEffectTimer(effect,key,id){if(!uiEffects.has(effect))uiEffects.set(effect,new Set());uiEffects.get(effect).add(uiEffectTimerKey(effect,key));return id;}
+function clearUiEffectTimers(effect){const keys=uiEffects.get(effect);if(!keys)return;keys.forEach(clearUiContextTimer);uiEffects.delete(effect);}
+function setUiEffectTimer(effect,key,callback,delay){const timerKey=uiEffectTimerKey(effect,key);clearUiContextTimer(timerKey);return registerUiEffectTimer(effect,key,setUiContextTimer(timerKey,()=>{uiEffects.get(effect)?.delete(timerKey);callback();},delay));}
+function setUiEffectInterval(effect,key,callback,delay){const timerKey=uiEffectTimerKey(effect,key);clearUiContextTimer(timerKey);return registerUiEffectTimer(effect,key,setUiContextInterval(timerKey,callback,delay));}
 function setDialogOpenState(id,open){const dialog=$(id);if(dialog)dialog.hidden=!open;return !!open;}
 export {};

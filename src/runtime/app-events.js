@@ -500,7 +500,7 @@ $('masterSpeedUnlockStart').addEventListener('click',()=>{
   enterSpeedMode(true);
 });
 $('introStart').addEventListener('click',()=>{
-  clearUiContextInterval('intro-board');
+  clearUiEffectTimers('intro');
   $('introDialog').hidden=true;
   storage.set(STORAGE_KEYS.introSeen,'1');
   GameNavigation.tutorial();
