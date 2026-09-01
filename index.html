@@ -8984,6 +8984,11 @@ function showClearActions(){
   const delay=svg.classList.contains('celebrating')?0:celebrateClear();
   setUiEffectTimer('clear-transition','show-dialog',()=>{
     showClearDialog();
+    // クリア直後に盤面・メッセージの後処理が同じフレームで走っても、
+    // 現在のクリア結果が有効なら表示状態を確定させる。
+    requestAnimationFrame(()=>{
+      if(clearShown&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
+    });
   },delay);
 }
 function renderClearStageContext(){
