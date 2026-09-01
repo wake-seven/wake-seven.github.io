@@ -5408,7 +5408,7 @@ function enterSpeedMode(forceNew=false){
 }
 function beginSpeedRun(){
   if(!isMode('speed')||!speedSession||speedSession.started)return;
-  speedSession.started=true;
+  startSpeedSessionCommand();
   loadSpeedStage(false,true);
 }
 function finishSpeedRun(){
@@ -5477,7 +5477,7 @@ function renderMasterSpeedStats(){
 function advanceSpeedRun(){
   if(!isMode('speed')||!speedSession)return;
   if(speedSession.index>=speedSession.total-1){finishSpeedRun();return;}
-  speedSession.index++;speedSession.board=null;speedSession.movedCurrent=false;speedSession.restartedCurrent=false;loadSpeedStage(false,true);
+  advanceSpeedSessionCommand();loadSpeedStage(false,true);
 }
 function completeSpeedStage(){
   clearShown=true;
@@ -7856,6 +7856,23 @@ function recordProgressClearCommand(kind,index){
   else if(kind==='primary')clearedStages.add(index);
   else return false;
   persistLapProgress();
+  return true;
+}
+export {};
+
+// ===== 速解きcommand =====
+// 速解き固有のセッション状態を書き込むcommand。時計・表示・遷移はruntime側に残す。
+function startSpeedSessionCommand(){
+  if(!speedSession||speedSession.started)return false;
+  speedSession.started=true;
+  return true;
+}
+function advanceSpeedSessionCommand(){
+  if(!speedSession||speedSession.index>=speedSession.total-1)return false;
+  speedSession.index++;
+  speedSession.board=null;
+  speedSession.movedCurrent=false;
+  speedSession.restartedCurrent=false;
   return true;
 }
 export {};

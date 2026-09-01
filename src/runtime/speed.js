@@ -276,7 +276,7 @@ function enterSpeedMode(forceNew=false){
 }
 function beginSpeedRun(){
   if(!isMode('speed')||!speedSession||speedSession.started)return;
-  speedSession.started=true;
+  startSpeedSessionCommand();
   loadSpeedStage(false,true);
 }
 function finishSpeedRun(){
@@ -345,7 +345,7 @@ function renderMasterSpeedStats(){
 function advanceSpeedRun(){
   if(!isMode('speed')||!speedSession)return;
   if(speedSession.index>=speedSession.total-1){finishSpeedRun();return;}
-  speedSession.index++;speedSession.board=null;speedSession.movedCurrent=false;speedSession.restartedCurrent=false;loadSpeedStage(false,true);
+  advanceSpeedSessionCommand();loadSpeedStage(false,true);
 }
 function completeSpeedStage(){
   clearShown=true;
