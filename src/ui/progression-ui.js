@@ -501,7 +501,8 @@ function celebrateClear(){
   playClearSound(clearSoundKind());
   if(reduced)return 0;
   playWakeCelebrationEffect(svg,tileEls);
-  return 650;
+  // 円の拡大とだるまの揺れ（820ms）が完了してからダイアログを開く。
+  return 820;
 }
 function showClearActions(){
   // 同じタイマーキーで再予約し、再入しても最後の1件だけを有効にする。
