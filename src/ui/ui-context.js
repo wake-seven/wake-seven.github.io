@@ -5,4 +5,6 @@ function resetBoardUiContext(){
   baseTiles.forEach(el=>el.classList.remove('selected'));
   svg.querySelectorAll('.pivot.active').forEach(el=>el.classList.remove('active'));
 }
+function setBoardTouchActive(value){boardTouchActive=value===true;return boardTouchActive;}
+function setBoardDrag(value){drag=value||null;return drag;}
 export {};

@@ -7230,7 +7230,7 @@ function showAxisGuide(t){
 function handleBoardPointerDown(e){
   if(busy||svg.classList.contains('arriving')||(e.pointerType==='mouse'&&e.button!==0)) return;
   // 棒をつかめたかどうかに関わらず、盤面上で始まったタッチはページスワイプに奪われたくない。
-  boardTouchActive=true;
+  setBoardTouchActive(true);
   if(isMode('tutorial')&&clearShown)return;
   if(editingBoard){
     cancelTutorialHint();
@@ -7290,12 +7290,12 @@ function handleBoardPointerDown(e){
     from,el:tileEls[from],turn:spin[from],
     dx:CELL[from].x-t.x,dy:CELL[from].y-t.y
   }));
-  drag={
+  setBoardDrag({
     id:e.pointerId,ti,kc:t,items,rawDeg:0,deg:0,
     maxAbsDeg:0,
     last:r>=MINR?Math.atan2(p.y-t.y,p.x-t.x):null,
     start:p,t0:performance.now(),tutorialReleaseCue:false
-  };
+  });
   // 回す3体は他のパネルより手前に。ただし軸の点・持ち手・スワイプ中の点線より奥に留める。
   const frontMarker=svg.querySelector('.pivot');
   for(const item of items){ item.el.classList.add('selected'); svg.insertBefore(item.el,frontMarker); }
@@ -7393,7 +7393,7 @@ function resumeTutorialCue(){
 }
 function finishDrag(e,cancel=false,forcedTurns=null){
   if(!drag||(e&&e.pointerId!==drag.id)) return;
-  const dg=drag; drag=null;boardTouchActive=false; clearAxisGuide(); svg.classList.remove('spinning');
+  const dg=drag; setBoardDrag(null);setBoardTouchActive(false); clearAxisGuide(); svg.classList.remove('spinning');
   svg.classList.remove('selecting');
   for(const item of dg.items) item.el.classList.remove('selected');
   svg.querySelectorAll('.pivot.active').forEach(el=>el.classList.remove('active'));
@@ -7708,6 +7708,8 @@ function resetBoardUiContext(){
   baseTiles.forEach(el=>el.classList.remove('selected'));
   svg.querySelectorAll('.pivot.active').forEach(el=>el.classList.remove('active'));
 }
+function setBoardTouchActive(value){boardTouchActive=value===true;return boardTouchActive;}
+function setBoardDrag(value){drag=value||null;return drag;}
 export {};
 
 // ===== 盤面コマンド =====
