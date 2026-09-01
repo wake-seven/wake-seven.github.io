@@ -85,6 +85,8 @@ pointer直後の `grip-hover`、`invalid-grab`、`selecting`、`spinning`、`rot
 
 盤面入力の正規化境界として `src/ui/board-interaction.js` を追加した。pointer座標・pointerId・移動量・回転方向・終了理由を副作用なしでモデル化し、`board-ui.js` のdown/move/endから利用する。正解判定、`applySwipe`相当の盤面command、アニメーション適用は既存側に残すため、タッチ反応と順序は変わらない。
 
+操作中の `pointerId/type`、開始/現在座標、delta、angle、対象3枚組、cancelledは `startBoardPointerContext()` / `updateBoardPointerContext()` / `finishBoardPointerContext()` で一つの操作コンテキストとして扱う。board-uiはイベント受け取りと既存処理の接続を担当し、正解判定・盤面command・アニメーションは変更していない。
+
 `animateGroupedSwipe()` と `animateUndoSwipe()` は同ファイルのアニメーションセッションAPIで管理する。セッションは `id` / `type` / `pointerId` / `startedAt` / `cancelled` / `frameHandle` / `cleanup` を持ち、`cancelTileAnimations()` からも先にキャンセルされる。完了・キャンセル時のcleanupは一度だけ実行し、古いcallbackや次フレームは無効化する。盤面command、回転角、表示順、完了順序は変更していない。
 
 アニメーションフレームのDOM/SVG反映は `board-render.js:renderBoardAnimationFrame()` へ分離した。`board-ui.js` は回転角・進捗・方向を計算してモデルを渡し、rendererがグループtransformと持ち上がり/表情/色の反映を行う。座標・DOM順序・タイミングは変更していない。

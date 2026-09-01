@@ -14,6 +14,14 @@ function normalizeBoardPointerDelta(input,center,previousAngle){
 function normalizeBoardPointerEnd(event,drag,{cancel=false,forcedTurns=null}={}){
   return {pointerId:event?.pointerId??drag?.id,cancelled:cancel,forcedTurns,rawDegrees:drag?.rawDeg||0,maxAbsDegrees:drag?.maxAbsDeg||0};
 }
+function startBoardPointerContext(input,targetGroup,details={}){
+  return Object.assign({id:input.pointerId,pointerId:input.pointerId,pointerType:input.pointerType,start:{...input.point},current:{...input.point},delta:{x:0,y:0},angle:null,targetGroup,cancelled:false},details);
+}
+function updateBoardPointerContext(context,input){
+  if(!context||context.cancelled)return null;
+  const previous=context.current;context.current={...input.point};context.delta={x:input.point.x-previous.x,y:input.point.y-previous.y};context.angle=Math.atan2(input.point.y-context.targetGroup.y,input.point.x-context.targetGroup.x);return context;
+}
+function finishBoardPointerContext(context,cancelled=false){if(!context)return false;context.cancelled=cancelled===true;return true;}
 let boardAnimationSession=null,boardAnimationSequence=0;
 function startBoardAnimationSession(type,pointerId=null,cleanup=()=>{}){
   cancelBoardAnimationSession();

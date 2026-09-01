@@ -1763,12 +1763,12 @@ function handleBoardPointerDown(e){
     from,el:tileEls[from],turn:spin[from],
     dx:CELL[from].x-t.x,dy:CELL[from].y-t.y
   }));
-  setBoardDrag({
-    id:e.pointerId,ti,kc:t,items,rawDeg:0,deg:0,
+  setBoardDrag(startBoardPointerContext(input,t,{
+    ti,kc:t,items,rawDeg:0,deg:0,
     maxAbsDeg:0,
     last:r>=MINR?Math.atan2(p.y-t.y,p.x-t.x):null,
-    start:p,t0:performance.now(),tutorialReleaseCue:false
-  });
+    t0:performance.now(),tutorialReleaseCue:false
+  }));
   // 回す3体は他のパネルより手前に。ただし軸の点・持ち手・スワイプ中の点線より奥に留める。
   const frontMarker=svg.querySelector('.pivot');
   for(const item of items){setBoardTileSelected(item.el,true);svg.insertBefore(item.el,frontMarker);}
@@ -1786,6 +1786,7 @@ function handleBoardPointerMove(e){
   // touch-action:none が効かない一部のアプリ内ブラウザ向けに、ドラッグ中は明示的にスクロール等を止める。
   e.preventDefault();
   const input=normalizeBoardPointer(e,toView),p=input.point, t=drag.kc;
+  updateBoardPointerContext(drag,input);
   const deltaModel=normalizeBoardPointerDelta(input,t,drag.last);
   const {dx,dy,distance,angle:a}=deltaModel;
   if(distance<MINR){ drag.last=null; return; }
@@ -1865,6 +1866,7 @@ function resumeTutorialCue(){
 function finishDrag(e,cancel=false,forcedTurns=null){
   if(!drag||(e&&e.pointerId!==drag.id)) return;
   const dg=drag,endModel=normalizeBoardPointerEnd(e,dg,{cancel,forcedTurns});
+  finishBoardPointerContext(dg,cancel);
   setBoardDrag(null);setBoardTouchActive(false); clearAxisGuide(); setBoardTransientClass('spinning',false);
   setBoardTransientClass('selecting',false);
   for(const item of dg.items)setBoardTileSelected(item.el,false);
