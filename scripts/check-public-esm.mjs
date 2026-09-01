@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const html = await readFile(join(root, 'index.html'), 'utf8');
 const template = await readFile(join(root, 'src', 'index.template.html'), 'utf8');
+const metricsBaseline = JSON.parse(await readFile(join(root, 'scripts', 'public-esm-metrics.json'), 'utf8'));
 const startMarker = '<!-- WAKE7:APPLICATION-MODULES:START -->';
 const endMarker = '<!-- WAKE7:APPLICATION-MODULES:END -->';
 const sourceStartMarkers = ['<!-- WAKE7:STATE-MODULE:START -->', '<!-- WAKE7:PROGRESSION-POLICY:START -->'];
@@ -51,13 +52,20 @@ const sectionSizes = [...applicationScript[0].matchAll(/^\/\/ ===== (.+) =====$/
 console.log(`Generated application payload: ${(moduleBytes / 1024).toFixed(1)} KiB; duplicate function declarations: ${duplicateDeclarations.length}.`);
 console.log(`Formatting measurement: ${lineCount} lines, comments ${(commentBytes / 1024).toFixed(1)} KiB, Japanese comments ${japaneseCommentCount}, section headings ${sectionHeadingCount}, blank-line boundaries ${blankLines}.`);
 console.log(`Largest concatenated sections: ${[...sectionSizes].sort((a, b) => b.bytes - a.bytes).slice(0, 5).map(section => `${section.name} ${(section.bytes / 1024).toFixed(1)} KiB`).join(', ')}.`);
+const percent = (current, previous) => previous ? `${current - previous >= 0 ? '+' : ''}${current - previous} (${((current - previous) / previous * 100).toFixed(1)}%)` : 'n/a';
+console.log(`Previous snapshot: bytes ${percent(moduleBytes, metricsBaseline.bytes)}, lines ${percent(lineCount, metricsBaseline.lines)}, comments ${percent(commentBytes, metricsBaseline.commentBytes)}, Japanese comments ${percent(japaneseCommentCount, metricsBaseline.japaneseComments)}, sections ${percent(sectionHeadingCount, metricsBaseline.sections)}, blank boundaries ${percent(blankLines, metricsBaseline.blankLines)}.`);
+const baselineSections = metricsBaseline.sectionBytes || {};
+const sectionDeltas = sectionSizes
+  .filter(section => Object.hasOwn(baselineSections, section.name))
+  .map(section => `${section.name} ${percent(section.bytes, baselineSections[section.name])}`);
+if (sectionDeltas.length) console.log(`Section deltas: ${sectionDeltas.slice(0, 10).join(', ')}.`);
 assert.ok(commentBytes >= 40 * 1024, 'Generated application comments were compressed away.');
 assert.ok(japaneseCommentCount >= 100, 'Generated Japanese implementation comments were lost.');
 assert.ok(sectionHeadingCount >= 20, 'Generated source section headings were lost.');
 assert.ok(blankLines >= 80, 'Generated application readability boundaries were compressed away.');
 const warnings = [];
-if (moduleBytes > 900 * 1024) warnings.push(`payload is ${(moduleBytes / 1024).toFixed(1)} KiB (soft limit 900 KiB)`);
-if (lineCount > 15000) warnings.push(`payload is ${lineCount} lines (soft limit 15000)`);
+if (moduleBytes > metricsBaseline.bytes * 1.25) warnings.push(`payload grew ${(moduleBytes / metricsBaseline.bytes * 100 - 100).toFixed(1)}% from snapshot`);
+if (lineCount > metricsBaseline.lines * 1.25) warnings.push(`payload lines grew ${(lineCount / metricsBaseline.lines * 100 - 100).toFixed(1)}% from snapshot`);
 for (const section of sectionSizes) if (section.bytes > 90 * 1024) warnings.push(`section ${section.name} is ${(section.bytes / 1024).toFixed(1)} KiB`);
 if (warnings.length) console.warn(`Bundle growth warnings: ${warnings.join('; ')}`);
 if (duplicateDeclarations.length) console.log(`Duplicate declarations (review only): ${duplicateDeclarations.slice(0, 20).join(', ')}`);
