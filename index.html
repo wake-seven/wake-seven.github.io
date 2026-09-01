@@ -4831,11 +4831,8 @@ const hasSatoriReward=()=>isSatoriMastered()||satoriDesignGranted;
 function grantMasterReward(){
   if(masterGoldGranted)return;
   masterGoldGranted=setUnlock('masterGoldGranted',true);
-  boardTheme='gold';boardThemeChosen=false;
-  try{
-    storage.set(STORAGE_KEYS.masterGoldGranted,'1');
-    storage.remove(STORAGE_KEYS.boardThemeChosen);
-  }catch(_){ }
+  grantMasterRewardSettingsCommand();
+  try{storage.set(STORAGE_KEYS.masterGoldGranted,'1');}catch(_){ }
 }
 function updateMasterTheme(){
   document.body.classList.toggle('mastered',hasMasterReward());
@@ -7806,6 +7803,22 @@ function selectBoardThemeCommand(button){
   }else return;
   updateMasterTheme();
   renderBoardThemeOptions();
+}
+function grantMasterRewardSettingsCommand(){
+  boardTheme='gold';
+  boardThemeChosen=false;
+  try{storage.remove(STORAGE_KEYS.boardThemeChosen);}catch(_){ }
+}
+function resetSettingsCommand(){
+  soundEnabled=true;boardTheme='default';boardLayout='normal';
+  boardThemeChosen=false;boardLayoutChosen=false;
+  darumaColor='red';darumaColorChosen=false;
+}
+function setLanguageCommand(lang){
+  if(!UI_TEXT[lang])return false;
+  currentLang=lang;
+  try{storage.set(STORAGE_KEY_GROUPS.settings.language,lang);}catch(_){ }
+  return true;
 }
 export {};
 
@@ -10882,9 +10895,7 @@ const LANGUAGE_TEXT_TARGETS=[
   ['masterSeal','rankCollection','aria-label'],['messageMasterSeal','rankCollection','aria-label'],
 ];
 function applyLanguage(lang){
-  if(!UI_TEXT[lang])return;
-  currentLang=lang;
-  try{storage.set(STORAGE_KEY_GROUPS.settings.language,lang);}catch(_){}
+  if(!setLanguageCommand(lang))return;
   document.documentElement.lang=lang==='zh'?'zh-CN':lang;
   document.title=tr('pageTitle');
   document.querySelector('h1').textContent=tr('title');
@@ -11169,12 +11180,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
   storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
   if(!preserveRewards){
-    boardTheme='default';
-    boardLayout='normal';
-    boardThemeChosen=false;
-    boardLayoutChosen=false;
-    darumaColor='red';
-    darumaColorChosen=false;
+    resetSettingsCommand();
     masterGoldGranted=false;
     satoriDesignGranted=false;
     rainbowDarumaGranted=false;

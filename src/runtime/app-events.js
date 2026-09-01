@@ -866,9 +866,7 @@ const LANGUAGE_TEXT_TARGETS=[
   ['masterSeal','rankCollection','aria-label'],['messageMasterSeal','rankCollection','aria-label'],
 ];
 function applyLanguage(lang){
-  if(!UI_TEXT[lang])return;
-  currentLang=lang;
-  try{storage.set(STORAGE_KEY_GROUPS.settings.language,lang);}catch(_){}
+  if(!setLanguageCommand(lang))return;
   document.documentElement.lang=lang==='zh'?'zh-CN':lang;
   document.title=tr('pageTitle');
   document.querySelector('h1').textContent=tr('title');
@@ -1153,12 +1151,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
   storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
   if(!preserveRewards){
-    boardTheme='default';
-    boardLayout='normal';
-    boardThemeChosen=false;
-    boardLayoutChosen=false;
-    darumaColor='red';
-    darumaColorChosen=false;
+    resetSettingsCommand();
     masterGoldGranted=false;
     satoriDesignGranted=false;
     rainbowDarumaGranted=false;

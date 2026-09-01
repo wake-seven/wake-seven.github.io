@@ -23,4 +23,20 @@ function selectBoardThemeCommand(button){
   updateMasterTheme();
   renderBoardThemeOptions();
 }
+function grantMasterRewardSettingsCommand(){
+  boardTheme='gold';
+  boardThemeChosen=false;
+  try{storage.remove(STORAGE_KEYS.boardThemeChosen);}catch(_){ }
+}
+function resetSettingsCommand(){
+  soundEnabled=true;boardTheme='default';boardLayout='normal';
+  boardThemeChosen=false;boardLayoutChosen=false;
+  darumaColor='red';darumaColorChosen=false;
+}
+function setLanguageCommand(lang){
+  if(!UI_TEXT[lang])return false;
+  currentLang=lang;
+  try{storage.set(STORAGE_KEY_GROUPS.settings.language,lang);}catch(_){ }
+  return true;
+}
 export {};

@@ -587,11 +587,8 @@ const hasSatoriReward=()=>isSatoriMastered()||satoriDesignGranted;
 function grantMasterReward(){
   if(masterGoldGranted)return;
   masterGoldGranted=setUnlock('masterGoldGranted',true);
-  boardTheme='gold';boardThemeChosen=false;
-  try{
-    storage.set(STORAGE_KEYS.masterGoldGranted,'1');
-    storage.remove(STORAGE_KEYS.boardThemeChosen);
-  }catch(_){ }
+  grantMasterRewardSettingsCommand();
+  try{storage.set(STORAGE_KEYS.masterGoldGranted,'1');}catch(_){ }
 }
 function updateMasterTheme(){
   document.body.classList.toggle('mastered',hasMasterReward());
