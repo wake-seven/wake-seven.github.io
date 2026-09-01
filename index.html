@@ -7105,10 +7105,8 @@ function clearInvalidGrab(event){
 function flashGrabbedTiles(t){
   for(const cell of t.cells){
     const tile=tileEls[cell];
-    tile.classList.remove('grab-flash');
     // 同じ場所を続けてつかんだ場合も、毎回光るようにアニメーションを再始動する。
-    void tile.getBoundingClientRect();
-    tile.classList.add('grab-flash');
+    renderBoardTileFlash(tile);
     setTimeout(()=>tile.classList.remove('grab-flash'),380);
   }
 }
@@ -7229,7 +7227,7 @@ function previewWake(item,deg){
   let angle=(item.turn*120+deg)%360;
   if(angle>180) angle-=360;
   if(angle<-180) angle+=360;
-  item.el.setAttribute('class','tile selected '+(Math.abs(angle)<=22?'stand':'fallen'));
+  renderBoardTileState(item.el,{state:'selected '+(Math.abs(angle)<=22?'stand':'fallen')});
 }
 function effectiveTurn(turns){
   const n=((turns%3)+3)%3;
@@ -7777,6 +7775,18 @@ function renderBoardInteractionFeedback({classes={},promptText,promptVisible}={}
   Object.entries(classes).forEach(([className,active])=>svg?.classList.toggle(className,active===true));
   if(promptText!==undefined){const text=$('gripPromptText');if(text)text.textContent=promptText;}
   if(promptVisible!==undefined){const prompt=$('gripPrompt');if(prompt)prompt.hidden=promptVisible!==true;}
+}
+// タイル1枚の表示状態だけを反映する。状態判定やpointer座標計算は呼び出し側に残す。
+function renderBoardTileState(tile,{state='stand',visibility,transform}={}){
+  if(!tile)return;
+  tile.setAttribute('class','tile '+state);
+  if(visibility!==undefined)tile.style.visibility=visibility;
+  if(transform!==undefined)tile.style.transform=transform;
+}
+function renderBoardTileFlash(tile,active=true){
+  if(!tile)return;
+  tile.classList.remove('grab-flash');
+  if(active){void tile.getBoundingClientRect();tile.classList.add('grab-flash');}
 }
 export {};
 

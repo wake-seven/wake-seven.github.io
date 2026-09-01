@@ -63,4 +63,16 @@ function renderBoardInteractionFeedback({classes={},promptText,promptVisible}={}
   if(promptText!==undefined){const text=$('gripPromptText');if(text)text.textContent=promptText;}
   if(promptVisible!==undefined){const prompt=$('gripPrompt');if(prompt)prompt.hidden=promptVisible!==true;}
 }
+// タイル1枚の表示状態だけを反映する。状態判定やpointer座標計算は呼び出し側に残す。
+function renderBoardTileState(tile,{state='stand',visibility,transform}={}){
+  if(!tile)return;
+  tile.setAttribute('class','tile '+state);
+  if(visibility!==undefined)tile.style.visibility=visibility;
+  if(transform!==undefined)tile.style.transform=transform;
+}
+function renderBoardTileFlash(tile,active=true){
+  if(!tile)return;
+  tile.classList.remove('grab-flash');
+  if(active){void tile.getBoundingClientRect();tile.classList.add('grab-flash');}
+}
 export {};

@@ -1536,10 +1536,8 @@ function clearInvalidGrab(event){
 function flashGrabbedTiles(t){
   for(const cell of t.cells){
     const tile=tileEls[cell];
-    tile.classList.remove('grab-flash');
     // 同じ場所を続けてつかんだ場合も、毎回光るようにアニメーションを再始動する。
-    void tile.getBoundingClientRect();
-    tile.classList.add('grab-flash');
+    renderBoardTileFlash(tile);
     setTimeout(()=>tile.classList.remove('grab-flash'),380);
   }
 }
@@ -1660,7 +1658,7 @@ function previewWake(item,deg){
   let angle=(item.turn*120+deg)%360;
   if(angle>180) angle-=360;
   if(angle<-180) angle+=360;
-  item.el.setAttribute('class','tile selected '+(Math.abs(angle)<=22?'stand':'fallen'));
+  renderBoardTileState(item.el,{state:'selected '+(Math.abs(angle)<=22?'stand':'fallen')});
 }
 function effectiveTurn(turns){
   const n=((turns%3)+3)%3;

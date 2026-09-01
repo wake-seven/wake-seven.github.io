@@ -40,6 +40,8 @@ for(const name of ['captureBoardPointer','releaseBoardPointer','isBoardPointerEv
 assert.match(board,/normalizeBoardPointer\(e,toView\)/,'Board pointer handlers must use the normalized input boundary.');
 assert.match(board,/normalizeBoardPointerEnd\(e,dg/,'Board pointer end must use the normalized input boundary.');
 assert.match(boardRender,/function renderBoardInteractionFeedback\(/,'Pointer feedback rendering must remain behind a renderer boundary.');
+assert.match(boardRender,/function renderBoardTileState\(/,'Tile state rendering must remain behind a renderer boundary.');
+assert.match(boardRender,/function renderBoardTileFlash\(/,'Tile flash rendering must remain behind a renderer boundary.');
 assert.match(board,/renderBoardInteractionFeedback\(\{classes:/,'Pointer handlers must pass feedback models to the renderer.');
 assert.match(board,/startBoardPointerContext\(input,t/,'Pointer down must create an operation context.');
 assert.match(board,/updateBoardPointerContext\(drag,input\)/,'Pointer move must update the operation context.');
