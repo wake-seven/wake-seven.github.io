@@ -40,7 +40,7 @@ const UI_TEXT={
     rotate:'60°回転',
     boardLabel:'七枚のだるま盤',
     tips:'盤面の見分け方',
-    guideHub:'攻略',
+    guideHub:'攻略のコツ',
     guideHubTitle:'攻略',
     guideHubTips:'盤面の見分け方',
     guideHubPatterns:'最短2手の9パターン',
