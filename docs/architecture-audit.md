@@ -23,6 +23,20 @@
 
 状態は `navigation`、`board`、`progression`、`settings`、`speed`、`ui` の領域に分けて保持します。永続キーの参照口は `WakeSevenState.STORAGE_KEY_GROUPS` の `settings`、`progression`、`rewards`、`speed`、`dialogs` に集約しています。ダイアログの表示中状態とメッセージ見直し位置も `dialogs` 群を経由し、通常の盤面/UI一時状態とは分離します。既存キー名や保存形式は変更していません。
 
+## 開発用ESMの薄い境界
+
+開発用ESMの `store`、`persistence`、`session`、`environment`、`application` は、公開版のグローバル実装への単なる転送ではありません。各々を独立したテスト注入点として使い、状態更新、保存形式、セッションライフサイクル、ホスト依存、イベント/描画接続を分離しています。
+
+| モジュール | 保持理由 |
+| --- | --- |
+| `src/state/store.mjs` | 状態購読とセクション更新をブラウザ非依存で検査する境界 |
+| `src/state/persistence.mjs` | 保存キー・バージョン検証を storage adapter から分離する境界 |
+| `src/runtime/session.mjs` | 復元・保存・破棄の生命周期を persistence と分離する境界 |
+| `src/runtime/environment.mjs` | `window`/`document`/storage の注入と解決を一箇所にする境界 |
+| `src/runtime/application.mjs` | store・events・renderer・session の接続/解除を管理する境界 |
+
+これらは現在 `src/main.mjs` と `scripts/check-esm.mjs` から利用されているため、統合すると開発用の依存注入・回帰テスト境界を失います。単なる委譲ラッパーとして削除できるものはありません。
+
 ## 意図的にイベント側へ残す処理
 
 次の処理は、pointer座標・DOM順序・逐次アニメーションのタイミングに依存するため、無理に汎用rendererへ移しません。
