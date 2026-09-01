@@ -51,7 +51,7 @@ assert.match(board, /startTutorialRewindSession\(/, 'tutorial rewind must use it
 assert.match(tutorial, /cancelTutorialRewindSession\(/, 'tutorial rewind must have a cancellation path');
 assert.match(tutorial, /captureTutorialRewindDomSnapshot|restoreTutorialRewindDomSnapshot/,
   'tutorial rewind must snapshot and restore DOM order');
-assert.match(progression, /if\(svg\.classList\.contains\('celebrating'\)\)return (?:0|reduced\?0:650);/,
+assert.match(progression, /if\(svg\.classList\.contains\('celebrating'\)\)return (?:0|reduced\?0:820);/,
   'clear celebration must be idempotent');
 assert.match(board, /if\(isSolved\(\)&&!clearShown\)/,
   'board paint must guard against duplicate clear transitions');
