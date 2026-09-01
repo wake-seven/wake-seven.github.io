@@ -18,10 +18,11 @@
 
 - `index.html` — ゲーム本体
 - `src/index.template.html` — `index.html` の保守用テンプレート
+- `src/` — 開発用ESMと公開版へ連結する保守用ソース
 - `src/state/game-state.js` — 統合ゲーム状態と保存境界
 - `src/state/progression-policy.js` — コース解放・速解き・学習用UIの宣言ポリシー
-- `src/ui/quiz-ui.js` — 共通クイズ描画・選択肢シャッフル・正解演出
-- `src/ui/message-ui.js` — クリア後メッセージ・節目表示・見直し一覧
+- `src/main.mjs` — 開発用ESMの入口
+- `scripts/` — 公開版生成と自動監査
 - `scripts/build-index.mjs` — 単体HTMLを生成するスクリプト
 - `all-patterns.html` — クリア後に楽しめる盤面一覧
 - `docs/architecture-audit.md` — 公開境界・保存方針・アーキテクチャ監査

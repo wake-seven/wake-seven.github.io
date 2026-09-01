@@ -1,7 +1,5 @@
 # 現行アーキテクチャ監査
 
-最終確認日: 2026-09-01
-
 この文書は、頻繁に変わる実装詳細を列挙するものではなく、公開境界と「意図的に残している複雑性」を記録するための短い監査メモです。実装の正しさは `npm run check` が検査します。
 
 ## 公開境界
@@ -31,7 +29,7 @@
 | --- | --- |
 | `src/state/store.mjs` | 状態購読とセクション更新をブラウザ非依存で検査する境界 |
 | `src/state/persistence.mjs` | 保存キー・バージョン検証を storage adapter から分離する境界 |
-| `src/runtime/session.mjs` | 復元・保存・破棄の生命周期を persistence と分離する境界 |
+| `src/runtime/session.mjs` | 復元・保存・破棄のライフサイクルを persistence と分離する境界 |
 | `src/runtime/environment.mjs` | `window`/`document`/storage の注入と解決を一箇所にする境界 |
 | `src/runtime/application.mjs` | store・events・renderer・session の接続/解除を管理する境界 |
 
@@ -58,8 +56,6 @@ npm run check
 ```
 
 このコマンドは状態復元、ダイアログ連鎖、UI演出のキャンセル、進行フロー、ESM依存、ソース境界、公開版生成物、未使用候補を検査します。生成物の更新は `npm run build` で行います。
-
-2026-09-01時点の監査結果は、未使用候補0件、公開版の重複関数宣言0件、通常UI fallbackなしです。内蔵ブラウザは利用できない環境のため、実際のスワイプ操作確認は未実施です。
 
 ブラウザ相当の導線契約は `npm run check:browser-flow`（`npm run check` に含む）で検査します。開始前の仮画面抑制、状態復元後のダイアログ表示、pointer正規化、別pointer無視、キャンセル時のアニメーションフレーム無効化、チュートリアル巻き戻しのsnapshot復元、リセット入口をVM上で確認します。内蔵ブラウザを利用できない実行環境では、この契約を実ブラウザ操作の代替とし、実操作未実施であることを明記します。
 
