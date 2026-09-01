@@ -7,6 +7,11 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const html = await readFile(join(root, 'index.html'), 'utf8');
 const template = await readFile(join(root, 'src', 'index.template.html'), 'utf8');
 const metricsBaseline = JSON.parse(await readFile(join(root, 'scripts', 'public-esm-metrics.json'), 'utf8'));
+assert.equal(metricsBaseline.schemaVersion, 1, 'Bundle metrics baseline schema is unsupported.');
+for (const key of ['bytes', 'lines', 'commentBytes', 'japaneseComments', 'sections', 'blankLines']) {
+  assert.ok(Number.isFinite(metricsBaseline[key]) && metricsBaseline[key] >= 0, `Bundle metrics baseline is missing: ${key}`);
+}
+assert.ok(metricsBaseline.sectionBytes && typeof metricsBaseline.sectionBytes === 'object', 'Bundle metrics section baseline is missing.');
 const startMarker = '<!-- WAKE7:APPLICATION-MODULES:START -->';
 const endMarker = '<!-- WAKE7:APPLICATION-MODULES:END -->';
 const sourceStartMarkers = ['<!-- WAKE7:STATE-MODULE:START -->', '<!-- WAKE7:PROGRESSION-POLICY:START -->'];
