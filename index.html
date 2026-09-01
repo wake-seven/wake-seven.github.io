@@ -5303,17 +5303,13 @@ function pauseSpeedClock(){
 }
 // 速解きセッションの永続化境界。経過時間と現在盤面をここで保存する。
 function persistSpeedSession(){
-  if(!speedSession)return;
-  const elapsed=speedElapsedMs();
-  const payload={...speedSession,variant:activeSpeedDefinition().id,elapsedMs:elapsed,board:isMode('speed')?serializeActiveBoard():speedSession.board};
-  storage.setJson(speedSessionStorageKey(),payload);
-  storage.set(STORAGE_KEYS.speedActiveVariant,payload.variant);
+  persistSpeedSessionCommand();
 }
-function clearSpeedSession(variant=speedVariant){storage.remove(speedSessionStorageKey(variant));}
+function clearSpeedSession(variant=speedVariant){clearSpeedSessionCommand(variant);}
 function pauseSpeedRun(){if(!isMode('speed'))return;pauseSpeedClock();persistSpeedSession();}
 function openSpeedPauseDialog(){
   if(!isMode('speed'))return;
-  speedManuallyPaused=true;
+  setSpeedManualPauseCommand(true);
   pauseSpeedClock();persistSpeedSession();
   renderSpeedPauseStats();
   setVisible(getSpeedUiRefs().speedPauseDialog,true);
@@ -5374,7 +5370,7 @@ function animateBoardArrival(){
 }
 function loadSpeedStage(restoreBoard=false,arriving=false){
   if(!speedSession)return;
-  speedManuallyPaused=false;
+  setSpeedManualPauseCommand(false);
   setActiveMode('speed');editingBoard=false;
   const pool=speedStagePool(activeSpeedDefinition());
   if(!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent){
@@ -5427,7 +5423,7 @@ function finishSpeedRun(){
   clearSpeedSession();
   storage.remove(STORAGE_KEYS.speedActiveVariant);
   // 速解き自体の完走では報酬を付けない。3Dページは二周目制覇の報酬。
-  speedSession={...speedSession,completed:true,elapsedMs:elapsed,bestMs:bestTime,optimalClears,runNumber:history.length};
+  completeSpeedSessionCommand({elapsedMs:elapsed,bestMs:bestTime,optimalClears,runNumber:history.length});
   if(trialVariant){
     // 卒業試験は、最短手数を問わず全問を完走すれば合格。
     grantSpeedTrialCleared(trialVariant);
@@ -7875,6 +7871,20 @@ function advanceSpeedSessionCommand(){
   speedSession.restartedCurrent=false;
   return true;
 }
+function setSpeedManualPauseCommand(value){speedManuallyPaused=value===true;return speedManuallyPaused;}
+function persistSpeedSessionCommand(){
+  if(!speedSession)return false;
+  const elapsed=speedElapsedMs();
+  const payload={...speedSession,variant:activeSpeedDefinition().id,elapsedMs:elapsed,board:isMode('speed')?serializeActiveBoard():speedSession.board};
+  storage.setJson(speedSessionStorageKey(),payload);storage.set(STORAGE_KEYS.speedActiveVariant,payload.variant);
+  return true;
+}
+function clearSpeedSessionCommand(variant=speedVariant){storage.remove(speedSessionStorageKey(variant));return true;}
+function completeSpeedSessionCommand(result){
+  if(!speedSession)return false;
+  speedSession={...speedSession,...result,completed:true};
+  return true;
+}
 export {};
 
 // ===== クイズUI =====
@@ -10245,7 +10255,7 @@ function debugOpenSpeedExam(variant,index){
   speedSession.index=Math.max(0,Math.min(speedSession.total-1,index));
   speedSession.optimalClears=speedSession.index;
   speedSession.requiredTrial=variant;
-  speedManuallyPaused=false;
+    setSpeedManualPauseCommand(false);
   try{
     if(variant==='training9')storage.set(STORAGE_KEYS.speedTrainingUnlocked,'1');
     if(variant==='training18')storage.set(STORAGE_KEYS.speedIntermediateUnlocked,'1');
@@ -10358,12 +10368,12 @@ function bindMenuEvents(){
 // 速解きの再開・再スタートは、イベントから直接状態を書き換えず操作単位へ集約する。
 function resumeSpeedRun(){
   $('speedPauseDialog').hidden=true;
-  speedManuallyPaused=false;
+  setSpeedManualPauseCommand(false);
   startSpeedClock();
 }
 function confirmSpeedRestart(){
   $('speedRestartDialog').hidden=true;
-  speedManuallyPaused=false;
+  setSpeedManualPauseCommand(false);
   clearSpeedSession();
   enterSpeedMode(true);
 }

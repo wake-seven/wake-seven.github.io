@@ -191,7 +191,7 @@ function debugOpenSpeedExam(variant,index){
   speedSession.index=Math.max(0,Math.min(speedSession.total-1,index));
   speedSession.optimalClears=speedSession.index;
   speedSession.requiredTrial=variant;
-  speedManuallyPaused=false;
+    setSpeedManualPauseCommand(false);
   try{
     if(variant==='training9')storage.set(STORAGE_KEYS.speedTrainingUnlocked,'1');
     if(variant==='training18')storage.set(STORAGE_KEYS.speedIntermediateUnlocked,'1');
@@ -304,12 +304,12 @@ function bindMenuEvents(){
 // 速解きの再開・再スタートは、イベントから直接状態を書き換えず操作単位へ集約する。
 function resumeSpeedRun(){
   $('speedPauseDialog').hidden=true;
-  speedManuallyPaused=false;
+  setSpeedManualPauseCommand(false);
   startSpeedClock();
 }
 function confirmSpeedRestart(){
   $('speedRestartDialog').hidden=true;
-  speedManuallyPaused=false;
+  setSpeedManualPauseCommand(false);
   clearSpeedSession();
   enterSpeedMode(true);
 }

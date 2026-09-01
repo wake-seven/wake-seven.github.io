@@ -12,4 +12,18 @@ function advanceSpeedSessionCommand(){
   speedSession.restartedCurrent=false;
   return true;
 }
+function setSpeedManualPauseCommand(value){speedManuallyPaused=value===true;return speedManuallyPaused;}
+function persistSpeedSessionCommand(){
+  if(!speedSession)return false;
+  const elapsed=speedElapsedMs();
+  const payload={...speedSession,variant:activeSpeedDefinition().id,elapsedMs:elapsed,board:isMode('speed')?serializeActiveBoard():speedSession.board};
+  storage.setJson(speedSessionStorageKey(),payload);storage.set(STORAGE_KEYS.speedActiveVariant,payload.variant);
+  return true;
+}
+function clearSpeedSessionCommand(variant=speedVariant){storage.remove(speedSessionStorageKey(variant));return true;}
+function completeSpeedSessionCommand(result){
+  if(!speedSession)return false;
+  speedSession={...speedSession,...result,completed:true};
+  return true;
+}
 export {};

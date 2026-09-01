@@ -171,17 +171,13 @@ function pauseSpeedClock(){
 }
 // 速解きセッションの永続化境界。経過時間と現在盤面をここで保存する。
 function persistSpeedSession(){
-  if(!speedSession)return;
-  const elapsed=speedElapsedMs();
-  const payload={...speedSession,variant:activeSpeedDefinition().id,elapsedMs:elapsed,board:isMode('speed')?serializeActiveBoard():speedSession.board};
-  storage.setJson(speedSessionStorageKey(),payload);
-  storage.set(STORAGE_KEYS.speedActiveVariant,payload.variant);
+  persistSpeedSessionCommand();
 }
-function clearSpeedSession(variant=speedVariant){storage.remove(speedSessionStorageKey(variant));}
+function clearSpeedSession(variant=speedVariant){clearSpeedSessionCommand(variant);}
 function pauseSpeedRun(){if(!isMode('speed'))return;pauseSpeedClock();persistSpeedSession();}
 function openSpeedPauseDialog(){
   if(!isMode('speed'))return;
-  speedManuallyPaused=true;
+  setSpeedManualPauseCommand(true);
   pauseSpeedClock();persistSpeedSession();
   renderSpeedPauseStats();
   setVisible(getSpeedUiRefs().speedPauseDialog,true);
@@ -242,7 +238,7 @@ function animateBoardArrival(){
 }
 function loadSpeedStage(restoreBoard=false,arriving=false){
   if(!speedSession)return;
-  speedManuallyPaused=false;
+  setSpeedManualPauseCommand(false);
   setActiveMode('speed');editingBoard=false;
   const pool=speedStagePool(activeSpeedDefinition());
   if(!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent){
@@ -295,7 +291,7 @@ function finishSpeedRun(){
   clearSpeedSession();
   storage.remove(STORAGE_KEYS.speedActiveVariant);
   // 速解き自体の完走では報酬を付けない。3Dページは二周目制覇の報酬。
-  speedSession={...speedSession,completed:true,elapsedMs:elapsed,bestMs:bestTime,optimalClears,runNumber:history.length};
+  completeSpeedSessionCommand({elapsedMs:elapsed,bestMs:bestTime,optimalClears,runNumber:history.length});
   if(trialVariant){
     // 卒業試験は、最短手数を問わず全問を完走すれば合格。
     grantSpeedTrialCleared(trialVariant);
