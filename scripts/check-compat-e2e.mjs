@@ -176,6 +176,9 @@ if (ordinaryCandidates.length) console.log(ordinaryCandidates.slice(0, 30).join(
 // 公開版で公開する最小APIの形状を静的に確認する。
 const namespaceSource = sources.get('src/runtime/namespace.js');
 assert.match(namespaceSource, /global\.WakeSeven\s*=\s*Object\.freeze\(\{\s*state:\s*stateApi,\s*progression:\s*progressionApi,\s*messages:\s*messagesApi,\s*speed:\s*speedApi\s*\}\)/, 'WakeSeven public namespace shape is missing.');
+for (const api of ['stateApi', 'progressionApi', 'messagesApi', 'speedApi']) {
+  assert.match(namespaceSource, new RegExp(`const ${api}\\s*=\\s*Object\\.freeze\\(`), `WakeSeven API must be immutable: ${api}`);
+}
 for (const property of ['current', 'navigation', 'settings', 'progress', 'persist', 'updateNavigation', 'updateSettings']) {
   assert.match(namespaceSource, new RegExp(`\\b${property}\\b`), `WakeSeven.state API is missing: ${property}`);
 }

@@ -11,6 +11,19 @@
 | `src/state/game-state.js:attachWakeSevenState` | 公開状態初期化 | 公開版の`WakeSevenState` APIを読み込み時に初期化する。 |
 | `src/state/progression-policy.js:attachWakeSevenProgression` | 公開進行初期化 | 公開版の`WakeSevenProgression` APIを読み込み時に初期化する。 |
 
+## 公開API契約
+
+公開版では、外部から利用する入口を `window.WakeSeven` に限定する。各領域の責務と公開メンバーは次の通り。
+
+| API | 責務 | 公開メンバー |
+| --- | --- | --- |
+| `WakeSeven.state` | 現在の状態の参照・保存・設定更新 | `current`, `navigation`, `settings`, `progress`, `persist`, `updateNavigation`, `updateSettings` |
+| `WakeSeven.progression` | 進行ポリシーと現在コンテキストの参照 | `definition`, `context`, `uiPolicy` |
+| `WakeSeven.messages` | クリア後メッセージ一覧の表示・参照 | `openReview`, `renderReview`, `entries` |
+| `WakeSeven.speed` | 速解きの時計制御と定義参照 | `pause`, `startClock`, `pauseClock`, `definitions` |
+
+各APIオブジェクトと名前空間は `Object.freeze` で固定する。内部のグローバル関数やDOM要素を新たに公開APIへ追加しない。変更時はこの表と `check:compat-e2e` の契約検査を同時に更新する。
+
 ## 解消済みの未使用候補
 
 - `src/ui/svg.js:svgClear` — 実行時参照がないため削除。
