@@ -7105,6 +7105,15 @@ function orbitTransform(item,deg,kc){
   const x=kc.x+item.dx*co-item.dy*si, y=kc.y+item.dx*si+item.dy*co;
   return tileTransformDeg(x,y,item.turn*120+deg);
 }
+function completeGroupedSwipeAnimation(session,dg,dir,waking){
+  if(!isBoardAnimationSessionActive(session))return;
+  applySwipe(dg.ti,dir,true,false);
+  finishBoardAnimationSession(session);
+  paint();
+  haptic(SOLVER.dist[enc(ori)]===0?[20,32,42]:10);
+  playRotateSound(dir);
+  wakeFeedback(waking);
+}
 function animateGroupedSwipe(dg,target,dir,waking){
   const {group,clones}=createAutoSwipePreview(dg.items,dg.kc);
   setBoardBusy(true);
@@ -7126,14 +7135,15 @@ function animateGroupedSwipe(dg,target,dir,waking){
     renderBoardAnimationFrame({group,pivot:dg.kc,deg,progress:turnProgress,preview:{kind:'grouped',clones,dir}});
     if(progress<1){requestBoardAnimationFrame(session,frame);return;}
     // 効果音や振動より先に、盤面の見た目を確定する。
-    applySwipe(dg.ti,dir,true,false);
-    finishBoardAnimationSession(session);
-    paint();
-    haptic(SOLVER.dist[enc(ori)]===0?[20,32,42]:10);
-    playRotateSound(dir);
-    wakeFeedback(waking);
+    completeGroupedSwipeAnimation(session,dg,dir,waking);
   };
   requestBoardAnimationFrame(session,frame);
+}
+function completeUndoSwipeAnimation(session,target,reverseDir){
+  if(!finishBoardAnimationSession(session))return;
+  restoreBoardSnapshotCommand(target);
+  paint();
+  haptic(7);playRotateSound(reverseDir);
 }
 function findSwipeThatReached(beforeState,afterState){
   const before=dec(beforeState);
@@ -7168,10 +7178,7 @@ function animateUndoSwipe(target){
     const deg=reverseDir*120*ease(progress);
     renderBoardAnimationFrame({group,pivot,deg,progress,preview:{kind:'undo',clones}});
     if(progress<1){requestBoardAnimationFrame(session,frame);return;}
-    finishBoardAnimationSession(session);
-    restoreBoardSnapshotCommand(target);
-    setBoardBusy(false);paint();
-    haptic(7);playRotateSound(reverseDir);
+    completeUndoSwipeAnimation(session,target,reverseDir);
   };
   requestBoardAnimationFrame(session,frame);
 }

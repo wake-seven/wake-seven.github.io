@@ -42,6 +42,10 @@ assert.match(board,/startBoardAnimationSession\('undo-swipe'/,'Undo swipe must u
 assert.match(boardRender,/function renderBoardAnimationFrame\(/,'Board animation frame rendering must remain in the renderer boundary.');
 assert.match(board,/renderBoardAnimationFrame\(\{group,pivot:dg\.kc/,'Grouped swipe must pass computed frame models to the renderer.');
 assert.match(board,/renderBoardAnimationFrame\(\{group,pivot,deg,progress,preview:\{kind:'undo'/,'Undo swipe must pass computed frame models to the renderer.');
+assert.match(board,/function completeGroupedSwipeAnimation\(/,'Grouped animation completion must be separated from the frame callback.');
+assert.match(board,/function completeUndoSwipeAnimation\(/,'Undo animation completion must be separated from the frame callback.');
+assert.match(board,/completeGroupedSwipeAnimation\(session,dg,dir,waking\)/,'Grouped animation frame callback must delegate completion.');
+assert.match(board,/completeUndoSwipeAnimation\(session,target,reverseDir\)/,'Undo animation frame callback must delegate completion.');
 assert.match(board,/function cancelTileAnimations\(\)\{\s*cancelBoardAnimationSession\(\)/,'Animation cancellation must cancel the active session first.');
 assert.match(template,/rank-index-2\.animate[\s\S]{0,180}masterRankSeal 1\.05s ease-out both/,'Rank index 2 animation contract changed.');
 assert.match(template,/rank-seal:not\(\.rank-frame-seal\):not\(\.rank-index-5\):not\(\.rank-index-6\)\.animate[\s\S]{0,120}masterRankSeal 1\.05s ease-out both/,'Ordinary rank animation contract changed.');

@@ -86,3 +86,5 @@ pointer直後の `grip-hover`、`invalid-grab`、`selecting`、`spinning`、`rot
 `animateGroupedSwipe()` と `animateUndoSwipe()` は同ファイルのアニメーションセッションAPIで管理する。セッションは `id` / `type` / `pointerId` / `startedAt` / `cancelled` / `frameHandle` / `cleanup` を持ち、`cancelTileAnimations()` からも先にキャンセルされる。完了・キャンセル時のcleanupは一度だけ実行し、古いcallbackや次フレームは無効化する。盤面command、回転角、表示順、完了順序は変更していない。
 
 アニメーションフレームのDOM/SVG反映は `board-render.js:renderBoardAnimationFrame()` へ分離した。`board-ui.js` は回転角・進捗・方向を計算してモデルを渡し、rendererがグループtransformと持ち上がり/表情/色の反映を行う。座標・DOM順序・タイミングは変更していない。
+
+アニメーション完了時の盤面確定と結果通知は `completeGroupedSwipeAnimation()` / `completeUndoSwipeAnimation()` へ分離した。frame callbackは完了処理へ委譲し、通常回転は `applySwipe()`、undoは `restoreBoardSnapshotCommand()` を経由する。セッションのactive判定と一度だけのfinishで二重callbackを防止し、クリア判定・表示更新・効果音の順序を維持する。
