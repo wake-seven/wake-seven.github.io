@@ -74,3 +74,9 @@ pointer操作中の選択・回転・hover・不正操作フィードバック�
 
 変更しなかった `.rank-frame-seal.animate`（`.72s`）は、無心・覚者の大きなSVGフレーム用であり、通常称号と同じtransformを適用すると表示領域が二段階に膨らむ既知の問題を再発させる。`masterSeal` の円形演出と `masterSpark` の装飾も別系統で、通常称号の見え方を変更せずに統一する対象ではない。クリア演出のWAAPIはJavaScriptの完了順序と結び付いているため、CSSのduration変更は行わない。
 盤面復元経路の監査では、`replaceBoardState()` の呼び出しは `replaceBoardStateCommand()` への薄いラッパーに統一され、低レベルの `ori` / `spin` / `tileEls` 書き込みは `src/commands/board-commands.js` に限定されていることを確認した。保存盤面、makerリセット、undo、free/custom復元はいずれもこの境界を通る。動的SVGの生成とpointer直後の表示は対象外として保持する。
+
+## 動的SVG・pointer即時フィードバック最終監査
+
+動的SVG生成は、`buildBoard()` の盤面初期化、`animateGroupedSwipe()` のpointer座標に応じた3枚の逐次回転、`animateUndoSwipe()` の履歴復元アニメーション、各種ガイド盤面の生成に分類される。前者の初期化とガイド表示は既存renderer/command境界で呼び出しを分けており、後二者はpointer座標・現在のdrag・回転中のDOM順序・完了callbackに依存するため、描画だけを別rendererへ移すと操作順序が変わる。今回は保持する。
+
+pointer直後の `grip-hover`、`invalid-grab`、`selecting`、`spinning`、`rotation-started` は `setBoardTransientClass()` 経由へ移行済み。個々のタイルのflash、SVGグループの一時移動、pointer captureの解除は即時反応と逐次アニメーションの一部であり、rendererへ分離しない。`check-ui-effects.mjs` は、分離済みのガイドrendererと、保持すべきpointerアニメーションの入口が失われていないことを監査する。

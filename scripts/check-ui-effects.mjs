@@ -37,4 +37,8 @@ assert.match(template,/rank-seal:not\(\.rank-frame-seal\):not\(\.rank-index-5\):
 assert.match(template,/rank-frame-seal\.animate\{animation:masterRankSeal \.72s ease-out both\}/,'Special frame animation contract changed.');
 assert.doesNotMatch(board,/clearTimeout\(clearTimer\)|clearTimer\s*=/,'Clear transitions must not retain a direct timer handle.');
 assert.doesNotMatch(clearFlow,/makerRevealTimer/,'Maker reveal must not retain a direct timer handle.');
+assert.match(boardRender,/function showTrainingShapeCallout\(/,'Training SVG callout must remain behind a renderer boundary.');
+assert.match(boardRender,/function renderAcademyRemainingCalloutElement\(/,'Academy callout SVG/DOM display must remain behind a renderer boundary.');
+assert.match(board,/function animateGroupedSwipe\(/,'Pointer-dependent grouped swipe animation must remain available.');
+assert.match(board,/function animateUndoSwipe\(/,'Sequential undo animation must remain available.');
 console.log('Validated UI effect timer cancellation boundaries.');
