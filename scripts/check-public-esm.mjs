@@ -8,6 +8,8 @@ const html = await readFile(join(root, 'index.html'), 'utf8');
 const template = await readFile(join(root, 'src', 'index.template.html'), 'utf8');
 const startMarker = '<!-- WAKE7:APPLICATION-MODULES:START -->';
 const endMarker = '<!-- WAKE7:APPLICATION-MODULES:END -->';
+const sourceStartMarkers = ['<!-- WAKE7:STATE-MODULE:START -->', '<!-- WAKE7:PROGRESSION-POLICY:START -->'];
+const sourceEndMarkers = ['<!-- WAKE7:STATE-MODULE:END -->', '<!-- WAKE7:PROGRESSION-POLICY:END -->'];
 const start = html.indexOf(startMarker);
 const end = html.indexOf(endMarker);
 assert.ok(start >= 0 && end > start, 'Generated index.html is missing the application module markers.');
@@ -20,6 +22,11 @@ assert.match(applicationScript[0], /<script\b[^>]*\btype=["']module["'][^>]*>/i,
   'The bundled application script must be <script type="module">.');
 assert.doesNotMatch(applicationScript[0], /<script\b(?![^>]*\btype=["']module["'])[^>]*>/i,
   'A classic application script remains in the generated application region.');
+for (const marker of sourceStartMarkers) {
+  assert.match(applicationScript[0], new RegExp(`//\\s*${marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`),
+    `Generated application is missing source boundary comment: ${marker}`);
+}
+for (const marker of sourceEndMarkers) assert.ok(html.includes(marker), `Generated HTML is missing source boundary comment: ${marker}`);
 
 // 生成HTMLの構造重複を検出する。重複idは導線イベントが別要素へ結び付くため、
 // 単なるサイズ増加より優先して失敗させる。
@@ -34,8 +41,15 @@ const duplicateDeclarations = [...new Set(declarations.filter((name, index) => d
 const moduleBytes = Buffer.byteLength(applicationScript[0], 'utf8');
 const commentBytes = Buffer.byteLength((applicationScript[0].match(/\/\/[^\r\n]*|\/\*[\s\S]*?\*\//g) || []).join('\n'), 'utf8');
 const blankLines = (applicationScript[0].match(/\n\s*\n/g) || []).length;
+const comments = applicationScript[0].match(/\/\/[^\r\n]*|\/\*[\s\S]*?\*\//g) || [];
+const japaneseCommentCount = comments.filter(comment => /[ぁ-んァ-ン一-龯]/.test(comment)).length;
+const sectionHeadingCount = (applicationScript[0].match(/^\/\/ ===== .+ =====$/gm) || []).length;
 console.log(`Generated application payload: ${(moduleBytes / 1024).toFixed(1)} KiB; duplicate function declarations: ${duplicateDeclarations.length}.`);
-console.log(`Formatting measurement: comments ${(commentBytes / 1024).toFixed(1)} KiB, blank-line boundaries ${blankLines}.`);
+console.log(`Formatting measurement: comments ${(commentBytes / 1024).toFixed(1)} KiB, Japanese comments ${japaneseCommentCount}, section headings ${sectionHeadingCount}, blank-line boundaries ${blankLines}.`);
+assert.ok(commentBytes >= 40 * 1024, 'Generated application comments were compressed away.');
+assert.ok(japaneseCommentCount >= 100, 'Generated Japanese implementation comments were lost.');
+assert.ok(sectionHeadingCount >= 20, 'Generated source section headings were lost.');
+assert.ok(blankLines >= 80, 'Generated application readability boundaries were compressed away.');
 if (duplicateDeclarations.length) console.log(`Duplicate declarations (review only): ${duplicateDeclarations.slice(0, 20).join(', ')}`);
 
 for (const api of [
