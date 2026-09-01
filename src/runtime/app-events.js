@@ -275,6 +275,7 @@ function bindClearDialogEvents(){
 }
 bindClearDialogEvents();
 function bindMenuEvents(){
+  WakeSevenEventBindings.click('guideHub',()=>{closeAppMenu();openGuideHub();});
   WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();openStagePicker();});
   WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();GameDialogs.ranks();});
   WakeSevenEventBindings.click('menuAbout',()=>{
@@ -749,6 +750,19 @@ function closeTipGuide(){
   }
   $('menuToggle').focus();
 }
+WakeSevenEventBindings.click('guideHubTips',()=>{closeGuideHub();returnToClearCard=false;openTipGuide();});
+WakeSevenEventBindings.click('guideHubPatterns',()=>{closeGuideHub();openTwoMovePatterns();});
+WakeSevenEventBindings.click('guideHubClose',closeGuideHub);
+$('guideHubDialog').addEventListener('click',event=>{if(event.target===$('guideHubDialog'))closeGuideHub();});
+function openGuideHub(){
+  hideGameDialogs();
+  $('guideHubDialog').hidden=false;
+  $('guideHubTips').focus();
+}
+function closeGuideHub(){
+  $('guideHubDialog').hidden=true;
+  $('menuToggle').focus();
+}
 function startTipGuideDrag(event){
   if(event.target.closest('[data-tip-transform]'))return;
   if(tipGuideGuard.isBusy()||tipGuideDrag||(event.pointerType==='mouse'&&event.button!==0))return;
@@ -813,7 +827,7 @@ const LANGUAGE_TEXT_TARGETS=[
   ['speedPauseStageMode','stageModeReturn'],['speedPauseFreeMode','stagePickerFree'],['speedPauseCustomMode','stagePickerCustom'],
   ['shortestLabel','shortestDisplay'],['moveUnit','moveUnit'],['academyClearSuffix','academyClearSuffix'],['movesLabel','moves'],['movesUnit','moveUnit'],
   ['stageMode','stageMode'],['freeMode','freeMode'],
-  ['menuStagePicker','stagePicker'],['menuRankList','rankListMenu'],['menuSettings','settings'],
+  ['menuStagePicker','stagePicker'],['menuRankList','rankListMenu'],['menuSettings','settings'],['guideHub','guideHub'],
   ['settingsDialogTitle','settings'],['settingsDialogClose','close'],['menuAbout','menuAbout'],
   ['aboutDialogTitle','menuAbout'],['aboutDialogCloseBtn','close'],
   ['menuBoardTheme','boardTheme'],['boardThemeTitle','boardTheme'],
@@ -837,6 +851,7 @@ const LANGUAGE_TEXT_TARGETS=[
   ['debugSecondTrainingUpper','debugTrainingUpper'],['debugSecondTrainingMiddle','debugTrainingMiddle'],['debugSecondTrainingLower','debugTrainingLower'],
   ['debugSecondExtra14','debugExtra14'],['debugSecondExtra29','debugExtra29'],['debugSecondExtra44','debugExtra44'],['debugSecondSatori72','debugSatori72'],
   ['board','boardLabel','aria-label'],['showTip','tips'],
+  ['guideHubTitle','guideHubTitle'],['guideHubTips','guideHubTips'],['guideHubPatterns','guideHubPatterns'],['guideHubClose','close'],
   ['resetProgress','resetProgress'],['resetDialogTitle','resetProgress'],['resetDialogText','resetConfirm'],
   ['resetDialogClose','close','aria-label'],['resetDialogConfirm','resetProgress'],['resetDialogAll','resetEverything'],
   ['twoMovePatterns','twoMovePatterns'],['twoMoveTitle','twoMoveTitle'],['twoMoveText','twoMoveText'],

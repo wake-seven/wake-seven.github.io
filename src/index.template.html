@@ -989,8 +989,9 @@
       <button id="customMode" class="maker-link" type="button" role="menuitem">自作モード</button>
       <button id="menuSpeed" type="button" role="menuitem" hidden>速解きモード</button>
       <div class="menu-divider" role="separator"></div>
-      <button id="twoMovePatterns" type="button" role="menuitem">最短2手の9パターンを見る</button>
-      <button id="showTip" type="button" role="menuitem">攻略のコツ</button>
+      <button id="guideHub" type="button" role="menuitem">攻略</button>
+      <button id="twoMovePatterns" type="button" role="menuitem" hidden aria-hidden="true">最短2手の9パターンを見る</button>
+      <button id="showTip" type="button" role="menuitem" hidden aria-hidden="true">攻略のコツ</button>
       <button id="menuAllPatterns" type="button" role="menuitem" hidden>全パターン一覧<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span></button>
       <button id="menuOpen3D" type="button" role="menuitem" hidden>3Dだるまを見る<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span></button>
       <button id="menuSatori" type="button" role="menuitem" hidden>悟りへの道</button>
@@ -1365,6 +1366,17 @@
       <div class="two-move-grid" id="twoMoveGrid"></div>
     </div>
     <div class="dialog-actions"><button class="chip" id="closeTwoMovePatterns">閉じる</button></div>
+  </div>
+</div>
+
+<div class="game-dialog-backdrop" id="guideHubDialog" hidden>
+  <div class="game-dialog settings-dialog guide-hub-dialog" role="dialog" aria-modal="true" aria-labelledby="guideHubTitle">
+    <h2 id="guideHubTitle">攻略</h2>
+    <div class="settings-options guide-hub-options">
+      <button class="settings-option" id="guideHubTips" type="button">攻略のコツ</button>
+      <button class="settings-option" id="guideHubPatterns" type="button">最短2手の9パターン</button>
+    </div>
+    <div class="dialog-actions"><button class="chip" id="guideHubClose" type="button">閉じる</button></div>
   </div>
 </div>
 <div class="game-dialog-backdrop" id="twoMoveDetailDialog" hidden>

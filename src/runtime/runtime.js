@@ -118,6 +118,7 @@ function captureDialogState(){
   if(visible('speedRestartDialog'))return {type:'speedRestart'};
   if(visible('rankDialog'))return {type:'rank'};
   if(visible('tipGuideDialog'))return {type:'tipGuide'};
+  if(visible('guideHubDialog'))return {type:'guideHub'};
   if(visible('twoMoveDetailDialog'))return {type:'twoMoveDetail',index:twoMoveDetailIndex,state:Number.isInteger(twoMoveDetailState)?twoMoveDetailState:enc(twoMoveDetailState)};
   if(visible('twoMoveDialog'))return {type:'twoMove'};
   if(visible('optimalFailDialog'))return {type:'optimalFail'};
@@ -140,6 +141,7 @@ function restoreDialogState(state){
     if(state.id==='speedPause'&&isMode('speed')){openSpeedPauseDialog();return true;}
     if(state.id==='rank'){openRankDialog();return true;}
     if(state.id==='tipGuide'){openTipGuide();return true;}
+    if(state.id==='guideHub'){openGuideHub();return true;}
     if(state.id==='twoMove'){
       openTwoMovePatterns();return true;
     }

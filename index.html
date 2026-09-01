@@ -989,8 +989,9 @@
       <button id="customMode" class="maker-link" type="button" role="menuitem">自作モード</button>
       <button id="menuSpeed" type="button" role="menuitem" hidden>速解きモード</button>
       <div class="menu-divider" role="separator"></div>
-      <button id="twoMovePatterns" type="button" role="menuitem">最短2手の9パターンを見る</button>
-      <button id="showTip" type="button" role="menuitem">攻略のコツ</button>
+      <button id="guideHub" type="button" role="menuitem">攻略</button>
+      <button id="twoMovePatterns" type="button" role="menuitem" hidden aria-hidden="true">最短2手の9パターンを見る</button>
+      <button id="showTip" type="button" role="menuitem" hidden aria-hidden="true">攻略のコツ</button>
       <button id="menuAllPatterns" type="button" role="menuitem" hidden>全パターン一覧<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span></button>
       <button id="menuOpen3D" type="button" role="menuitem" hidden>3Dだるまを見る<span class="new-tab-mark" aria-hidden="true"></span><span class="visually-hidden">（新しいタブで開く）</span></button>
       <button id="menuSatori" type="button" role="menuitem" hidden>悟りへの道</button>
@@ -1365,6 +1366,17 @@
       <div class="two-move-grid" id="twoMoveGrid"></div>
     </div>
     <div class="dialog-actions"><button class="chip" id="closeTwoMovePatterns">閉じる</button></div>
+  </div>
+</div>
+
+<div class="game-dialog-backdrop" id="guideHubDialog" hidden>
+  <div class="game-dialog settings-dialog guide-hub-dialog" role="dialog" aria-modal="true" aria-labelledby="guideHubTitle">
+    <h2 id="guideHubTitle">攻略</h2>
+    <div class="settings-options guide-hub-options">
+      <button class="settings-option" id="guideHubTips" type="button">攻略のコツ</button>
+      <button class="settings-option" id="guideHubPatterns" type="button">最短2手の9パターン</button>
+    </div>
+    <div class="dialog-actions"><button class="chip" id="guideHubClose" type="button">閉じる</button></div>
   </div>
 </div>
 <div class="game-dialog-backdrop" id="twoMoveDetailDialog" hidden>
@@ -2484,6 +2496,10 @@ const UI_TEXT={
     rotate:'60°回転',
     boardLabel:'七枚のだるま盤',
     tips:'攻略のコツ',
+    guideHub:'攻略',
+    guideHubTitle:'攻略',
+    guideHubTips:'攻略のコツ',
+    guideHubPatterns:'最短2手の9パターン',
     makeBoard:'自作モード',
     playBoard:'この盤面で遊ぶ',
     nextPuzzle:'次の問題へ →',
@@ -2884,6 +2900,10 @@ const UI_TEXT={
     debugSpeedJumpFinish:'Speed',
     boardLabel:'Seven-daruma puzzle board',
     tips:'Quick tip',
+    guideHub:'Guide',
+    guideHubTitle:'Guide',
+    guideHubTips:'Quick tips',
+    guideHubPatterns:'Nine 2-move patterns',
     makeBoard:'Board Maker',
     playBoard:'Play this board',
     nextPuzzle:'Next puzzle →',
@@ -3265,6 +3285,10 @@ const UI_TEXT={
     debugSpeedJumpFinish:'速',
     boardLabel:'七个不倒翁的谜题棋盘',
     tips:'攻略提示',
+    guideHub:'攻略',
+    guideHubTitle:'攻略',
+    guideHubTips:'攻略提示',
+    guideHubPatterns:'最少2步的9种图案',
     makeBoard:'制作棋盘',
     playBoard:'玩这个棋盘',
     nextPuzzle:'下一题 →',
@@ -3649,6 +3673,10 @@ const UI_TEXT={
     debugSpeedJumpFinish:'속',
     boardLabel:'일곱 다루마 퍼즐판',
     tips:'공략 팁',
+    guideHub:'공략',
+    guideHubTitle:'공략',
+    guideHubTips:'공략 팁',
+    guideHubPatterns:'최단 2수의 9가지 패턴',
     makeBoard:'보드 만들기',
     playBoard:'이 보드로 플레이',
     nextPuzzle:'다음 문제 →',
@@ -4374,6 +4402,7 @@ function captureDialogState(){
   if(visible('speedRestartDialog'))return {type:'speedRestart'};
   if(visible('rankDialog'))return {type:'rank'};
   if(visible('tipGuideDialog'))return {type:'tipGuide'};
+  if(visible('guideHubDialog'))return {type:'guideHub'};
   if(visible('twoMoveDetailDialog'))return {type:'twoMoveDetail',index:twoMoveDetailIndex,state:Number.isInteger(twoMoveDetailState)?twoMoveDetailState:enc(twoMoveDetailState)};
   if(visible('twoMoveDialog'))return {type:'twoMove'};
   if(visible('optimalFailDialog'))return {type:'optimalFail'};
@@ -4396,6 +4425,7 @@ function restoreDialogState(state){
     if(state.id==='speedPause'&&isMode('speed')){openSpeedPauseDialog();return true;}
     if(state.id==='rank'){openRankDialog();return true;}
     if(state.id==='tipGuide'){openTipGuide();return true;}
+    if(state.id==='guideHub'){openGuideHub();return true;}
     if(state.id==='twoMove'){
       openTwoMovePatterns();return true;
     }
@@ -8909,6 +8939,7 @@ function hideGameDialogs(){
   $('speedRestartDialog').hidden=true;
   $('boardThemeDialog').hidden=true;
   $('settingsDialog').hidden=true;
+  $('guideHubDialog').hidden=true;
   $('aboutDialog').hidden=true;
   $('rankDialog').hidden=true;
   $('twoMoveDialog').hidden=true;
@@ -10299,6 +10330,7 @@ function bindClearDialogEvents(){
 }
 bindClearDialogEvents();
 function bindMenuEvents(){
+  WakeSevenEventBindings.click('guideHub',()=>{closeAppMenu();openGuideHub();});
   WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();openStagePicker();});
   WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();GameDialogs.ranks();});
   WakeSevenEventBindings.click('menuAbout',()=>{
@@ -10773,6 +10805,19 @@ function closeTipGuide(){
   }
   $('menuToggle').focus();
 }
+WakeSevenEventBindings.click('guideHubTips',()=>{closeGuideHub();returnToClearCard=false;openTipGuide();});
+WakeSevenEventBindings.click('guideHubPatterns',()=>{closeGuideHub();openTwoMovePatterns();});
+WakeSevenEventBindings.click('guideHubClose',closeGuideHub);
+$('guideHubDialog').addEventListener('click',event=>{if(event.target===$('guideHubDialog'))closeGuideHub();});
+function openGuideHub(){
+  hideGameDialogs();
+  $('guideHubDialog').hidden=false;
+  $('guideHubTips').focus();
+}
+function closeGuideHub(){
+  $('guideHubDialog').hidden=true;
+  $('menuToggle').focus();
+}
 function startTipGuideDrag(event){
   if(event.target.closest('[data-tip-transform]'))return;
   if(tipGuideGuard.isBusy()||tipGuideDrag||(event.pointerType==='mouse'&&event.button!==0))return;
@@ -10837,7 +10882,7 @@ const LANGUAGE_TEXT_TARGETS=[
   ['speedPauseStageMode','stageModeReturn'],['speedPauseFreeMode','stagePickerFree'],['speedPauseCustomMode','stagePickerCustom'],
   ['shortestLabel','shortestDisplay'],['moveUnit','moveUnit'],['academyClearSuffix','academyClearSuffix'],['movesLabel','moves'],['movesUnit','moveUnit'],
   ['stageMode','stageMode'],['freeMode','freeMode'],
-  ['menuStagePicker','stagePicker'],['menuRankList','rankListMenu'],['menuSettings','settings'],
+  ['menuStagePicker','stagePicker'],['menuRankList','rankListMenu'],['menuSettings','settings'],['guideHub','guideHub'],
   ['settingsDialogTitle','settings'],['settingsDialogClose','close'],['menuAbout','menuAbout'],
   ['aboutDialogTitle','menuAbout'],['aboutDialogCloseBtn','close'],
   ['menuBoardTheme','boardTheme'],['boardThemeTitle','boardTheme'],
@@ -10861,6 +10906,7 @@ const LANGUAGE_TEXT_TARGETS=[
   ['debugSecondTrainingUpper','debugTrainingUpper'],['debugSecondTrainingMiddle','debugTrainingMiddle'],['debugSecondTrainingLower','debugTrainingLower'],
   ['debugSecondExtra14','debugExtra14'],['debugSecondExtra29','debugExtra29'],['debugSecondExtra44','debugExtra44'],['debugSecondSatori72','debugSatori72'],
   ['board','boardLabel','aria-label'],['showTip','tips'],
+  ['guideHubTitle','guideHubTitle'],['guideHubTips','guideHubTips'],['guideHubPatterns','guideHubPatterns'],['guideHubClose','close'],
   ['resetProgress','resetProgress'],['resetDialogTitle','resetProgress'],['resetDialogText','resetConfirm'],
   ['resetDialogClose','close','aria-label'],['resetDialogConfirm','resetProgress'],['resetDialogAll','resetEverything'],
   ['twoMovePatterns','twoMovePatterns'],['twoMoveTitle','twoMoveTitle'],['twoMoveText','twoMoveText'],

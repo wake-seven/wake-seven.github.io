@@ -798,6 +798,7 @@ function hideGameDialogs(){
   $('speedRestartDialog').hidden=true;
   $('boardThemeDialog').hidden=true;
   $('settingsDialog').hidden=true;
+  $('guideHubDialog').hidden=true;
   $('aboutDialog').hidden=true;
   $('rankDialog').hidden=true;
   $('twoMoveDialog').hidden=true;
