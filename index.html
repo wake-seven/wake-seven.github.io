@@ -7584,13 +7584,15 @@ function animateGuidedBasicRewind(dg){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
     paint();haptic(8);return;
   }
-  // 360°未満の往復は実際に回した角度をそのまま戻し、急な小回転へ短縮しない。
-  // 360°を超えた場合だけ余剰角へ戻す（390°なら30°）。
+  // 360°未満の往復は実際に回した角度をそのまま戻す。
+  // 360°に近い場合は0°へ戻さず、360°まで進めてから正規化する。
+  // 360°を超えた場合だけ余剰角へ戻す（390°なら30°→0°）。
   const rawDeg=dg.deg;
-  let rewindDeg=rawDeg%360;
-  if(Math.abs(rawDeg)<360&&Math.abs(rewindDeg)<30)rewindDeg=rawDeg;
+  let rewindStart=rawDeg%360,rewindEnd=0;
+  if(Math.abs(rawDeg)<360&&Math.abs(rewindStart)>330)rewindEnd=Math.sign(rewindStart)*360;
+  else if(Math.abs(rawDeg)<360&&Math.abs(rewindStart)<30)rewindStart=rawDeg;
   // 360°ちょうどなど、見かけ上すでに初期角度に戻っている場合だけ省略する。
-  if(Math.abs(rewindDeg)<0.5){paint();haptic(8);return;}
+  if(Math.abs(rewindEnd-rewindStart)<0.5){paint();haptic(8);return;}
   setBoardBusy(true);
   setBoardTransientClass('spinning',true); // 巻き戻り中は水色の棒を隠し、戻り切ってから復活させる。
   const duration=680;
@@ -7613,7 +7615,7 @@ function animateGuidedBasicRewind(dg){
   const frame=now=>{
     if(start===null)start=now;
     const progress=Math.min(1,(now-start)/duration);
-    const deg=rewindDeg*(1-ease(progress));
+    const deg=rewindStart+(rewindEnd-rewindStart)*ease(progress);
     group.setAttribute('transform','rotate('+deg+' '+dg.kc.x+' '+dg.kc.y+')');
     for(const{item,clone,hex} of clones){
       let angle=(item.turn*120+deg)%360;
