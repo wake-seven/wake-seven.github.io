@@ -153,7 +153,7 @@ const sourceModules = [
   ['src/runtime/progression-runtime.js', ['initializeSpeedUnlockState']],
   ['src/ui/quiz.js', ['boardQuizPatternState', 'boardQuizPresentation', 'boardQuizMarkup', 'bindBoardQuizAnswerEvents']],
   ['src/commands/board-commands.js', ['const WakeSevenBoardCommands=Object.freeze(']],
-  ['src/commands/progression-commands-legacy.js', ['const WakeSevenProgressionCommands=Object.freeze(']],
+  ['src/commands/progression-command-entry.js', ['const WakeSevenProgressionCommands=Object.freeze(']],
   ['src/ui/clear-flow.js', ['stageClearTextAt', 'clearEntryForCurrent', 'stageClearArtAt']],
   ['src/ui/message.js', ['buildMessageReviewEntries', 'openMessageReview', 'moveMessageReview']],
   ['src/ui/progression-render.js', ['renderStageNavAccent']],
