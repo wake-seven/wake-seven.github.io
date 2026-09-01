@@ -7584,8 +7584,10 @@ function animateGuidedBasicRewind(dg){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
     paint();haptic(8);return;
   }
+  // 360°回転して見かけ上0°に戻った角度も、最短の符号付き角度へ正規化する。
+  const rewindDeg=((dg.deg+180)%360+360)%360-180;
   // すでに初期角度に戻っている場合は、空回りするアニメーションを作らない。
-  if(Math.abs(dg.deg)<0.5){paint();haptic(8);return;}
+  if(Math.abs(rewindDeg)<0.5){paint();haptic(8);return;}
   setBoardBusy(true);
   setBoardTransientClass('spinning',true); // 巻き戻り中は水色の棒を隠し、戻り切ってから復活させる。
   const duration=680;
@@ -7608,7 +7610,7 @@ function animateGuidedBasicRewind(dg){
   const frame=now=>{
     if(start===null)start=now;
     const progress=Math.min(1,(now-start)/duration);
-    const deg=dg.deg*(1-ease(progress));
+    const deg=rewindDeg*(1-ease(progress));
     group.setAttribute('transform','rotate('+deg+' '+dg.kc.x+' '+dg.kc.y+')');
     for(const{item,clone,hex} of clones){
       let angle=(item.turn*120+deg)%360;
