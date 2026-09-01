@@ -505,10 +505,12 @@ function celebrateClear(){
   return 820;
 }
 function showClearActions(){
-  // 同じタイマーキーで再予約し、再入しても最後の1件だけを有効にする。
-  // 既に演出中でも0msへ短縮しない。再入は表示を前倒ししてはいけない。
+  // クリア1回分につき、演出開始とダイアログ予約を1回だけ行う。
+  if(!beginClearFlow())return;
   const delay=celebrateClear();
   setUiEffectTimer('clear-transition','show-dialog',()=>{
+    if(!clearShown||!isSolved()){resetClearFlow();return;}
+    finishClearFlowDialog();
     showClearDialog();
     // クリア直後に盤面・メッセージの後処理が同じフレームで走っても、
     // 現在のクリア結果が有効なら表示状態を確定させる。
@@ -543,6 +545,7 @@ function hasCompetingDialogForClear(){
     .some(id=>$(id)&&!$(id).hidden);
 }
 function showClearDialog(){
+  finishClearFlowDialog();
   // クリア演出の遅延中に別ダイアログが残っていても、現在のクリア結果を
   // 表示できずに終わらせない。先に古いダイアログを閉じてから描画する。
   if(hasCompetingDialogForClear())hideGameDialogs();

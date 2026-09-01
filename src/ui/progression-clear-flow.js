@@ -1,5 +1,18 @@
 // ===== クリア後の状態遷移 =====
 // クリア演出の表示と、次の問題/コースへの遷移を進行UI本体から分離する。
+// クリア1回分の「演出中→ダイアログ表示済み」をここで管理する。
+// clearShown は保存・進行用の状態なので、表示予約の重複防止には使わない。
+let clearFlowPhase='idle';
+function resetClearFlow(){
+  clearFlowPhase='idle';
+  clearUiEffectTimers('clear-transition');
+}
+function beginClearFlow(){
+  if(clearFlowPhase!=='idle')return false;
+  clearFlowPhase='celebrating';
+  return true;
+}
+function finishClearFlowDialog(){clearFlowPhase='dialog';}
 function advanceAfterClear(){
   makerButtonBlockedUntil=performance.now()+600;
   clearUiEffectTimers('maker-reveal');

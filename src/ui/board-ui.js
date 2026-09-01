@@ -932,6 +932,7 @@ function paint(){
     return;
   }
   if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){
+    resetClearFlow();
     clearShown=true;
     svg.classList.add('clear-pending');
     if(requiresOptimalClear()&&moves!==best){
@@ -1107,7 +1108,7 @@ function setPosition(state,par){
   cancelTileAnimations();
   clearHintVisuals();
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
-  clearUiEffectTimers('clear-transition');
+  resetClearFlow();
   svg.querySelectorAll('.training-shape-callout').forEach(el=>el.remove());
   clearUiContextTimer('training-shape-callout');
   initializeBoardPositionCommand(state,par);
@@ -2078,7 +2079,7 @@ svg.addEventListener('touchmove',handleBoardTouchMove,{passive:false});
 function undoLastMove(){
   if(busy||isFinalMasterPuzzle()||!history.length) return;
   cancelTileAnimations();
-  clearUiEffectTimers('clear-transition'); clearShown=false;
+  resetClearFlow(); clearShown=false;
   $('clearNext').hidden=true;
   svg.classList.remove('clear-pending','celebrating');
   const h=history.pop();
