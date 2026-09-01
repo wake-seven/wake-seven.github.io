@@ -67,4 +67,10 @@ assert.match(boardRender,/function showTrainingShapeCallout\(/,'Training SVG cal
 assert.match(boardRender,/function renderAcademyRemainingCalloutElement\(/,'Academy callout SVG/DOM display must remain behind a renderer boundary.');
 assert.match(board,/function animateGroupedSwipe\(/,'Pointer-dependent grouped swipe animation must remain available.');
 assert.match(board,/function animateUndoSwipe\(/,'Sequential undo animation must remain available.');
+const tutorialStart=board.indexOf('function animateTutorialRewind');
+const tutorialEnd=board.indexOf('function animateGuidedBasicRewind',tutorialStart);
+const tutorialRewind=tutorialStart>=0&&tutorialEnd>tutorialStart?board.slice(tutorialStart,tutorialEnd):'';
+assert.match(tutorialRewind,/rotate\('\+dg\.deg\+'deg\)',offset:0/,'Tutorial rewind must start from the released angle.');
+assert.match(tutorialRewind,/rotate\(0deg\)',offset:1/,'Tutorial rewind must return directly to the initial angle.');
+assert.doesNotMatch(tutorialRewind,/offset:\.36|offset:\.56/,'Tutorial rewind must not pass through an intermediate 120-degree waypoint.');
 console.log('Validated UI effect timer cancellation boundaries.');

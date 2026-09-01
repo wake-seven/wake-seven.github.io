@@ -7566,10 +7566,9 @@ function animateTutorialRewind(dg,target,dir){
     applyBoardTheme();
   },440);
   group.style.transformOrigin=dg.kc.x+'px '+dg.kc.y+'px';
+  // 中間の120°位置へ寄せず、指を離した現在角度からそのまま元の位置へ戻す。
   const animation=group.animate([
     {transform:'rotate('+dg.deg+'deg)',offset:0},
-    {transform:'rotate('+target+'deg)',offset:.36},
-    {transform:'rotate('+target+'deg)',offset:.56},
     {transform:'rotate(0deg)',offset:1}
   ],{duration,easing:'cubic-bezier(.2,.72,.24,1)'});
   animation.onfinish=animation.oncancel=()=>{
