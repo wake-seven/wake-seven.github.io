@@ -500,8 +500,19 @@ $('introStart').addEventListener('click',()=>{
 });
 $('chainDialogAction').addEventListener('click',()=>{
   const step=chainActiveStep;
+  const name=chainActiveName;
+  // onAction が次の連続ダイアログを開く場合だけ、現在のステップを履歴に積む。
+  // 問題開始などで連鎖が終わる場合は、下の判定で履歴を破棄する。
+  if(name)chainHistory.push(name);
   closeChainDialog();
+  chainTransitioning=true;
   step.onAction();
+  chainTransitioning=false;
+  if($('chainDialog').hidden)chainHistory=[];
+});
+$('chainDialogPrev').addEventListener('click',()=>{
+  const previous=chainHistory.pop();
+  if(previous)openChainedDialog(previous);
 });
 for(let i=0;i<2;i++)$('twoMoveLessonTab'+i).addEventListener('click',()=>{
   twoMoveLessonTipIndex=i;

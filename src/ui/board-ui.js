@@ -436,9 +436,14 @@ const CHAIN_STEPS={
 // CHAIN_STEPS は問題単位ではなく、次の節・クラス開始を示す節目メッセージ。
 Object.values(CHAIN_STEPS).forEach(step=>{step.kind='milestone';});
 let chainCleanup=null, chainActiveStep=null, chainActiveName=null;
+// 連続ダイアログ内だけで使う戻り履歴。単独で開いた節目には前へを出さない。
+let chainHistory=[];
+let chainTransitioning=false;
 function openChainedDialog(name){
   const step=CHAIN_STEPS[name];
   if(!step){showMasterDialog(name);return;}
+  // 盤面や別のダイアログから新しく始まる連鎖では、前の連鎖の履歴を持ち込まない。
+  if($('chainDialog').hidden&&!chainActiveName&&!chainTransitioning)chainHistory=[];
   if(chainCleanup){chainCleanup();chainCleanup=null;}
   chainActiveStep=step;chainActiveName=name;
   $('chainDialogKind').hidden=!step.kindKey;
@@ -446,6 +451,9 @@ function openChainedDialog(name){
   $('chainDialogTitle').textContent=tr(step.titleKey);
   $('chainDialogTitle').className=step.titleClass||'';
   $('chainDialogAction').textContent=tr(step.actionKey);
+  const previous=$('chainDialogPrev');
+  previous.hidden=chainHistory.length===0;
+  previous.textContent='← '+tr('prev');
   $('chainDialogCard').classList.toggle('chain-wide',!!step.wide);
   $('chainDialogCard').classList.toggle('chain-no-frame',!!step.noFrame);
   $('chainDialogBody').replaceChildren();
