@@ -5541,6 +5541,17 @@ function normalizeBoardPointerDelta(input,center,previousAngle){
 function normalizeBoardPointerEnd(event,drag,{cancel=false,forcedTurns=null}={}){
   return {pointerId:event?.pointerId??drag?.id,cancelled:cancel,forcedTurns,rawDegrees:drag?.rawDeg||0,maxAbsDegrees:drag?.maxAbsDeg||0};
 }
+let boardAnimationSession=null,boardAnimationSequence=0;
+function startBoardAnimationSession(type,pointerId=null,cleanup=()=>{}){
+  cancelBoardAnimationSession();
+  const session={id:++boardAnimationSequence,type,pointerId,startedAt:performance.now(),cancelled:false,frameHandle:0,cleanup,cleaned:false};
+  boardAnimationSession=session;
+  return session;
+}
+function isBoardAnimationSessionActive(session){return boardAnimationSession===session&&!session.cancelled&&!session.cleaned;}
+function requestBoardAnimationFrame(session,callback){if(!isBoardAnimationSessionActive(session))return 0;session.frameHandle=requestAnimationFrame(now=>{session.frameHandle=0;if(isBoardAnimationSessionActive(session))callback(now);});return session.frameHandle;}
+function finishBoardAnimationSession(session){if(!session||session.cleaned)return false;session.cleaned=true;if(session.frameHandle)cancelAnimationFrame(session.frameHandle);session.frameHandle=0;session.cleanup?.();if(boardAnimationSession===session)boardAnimationSession=null;return true;}
+function cancelBoardAnimationSession(session=boardAnimationSession){if(!session||session.cleaned)return false;session.cancelled=true;return finishBoardAnimationSession(session);}
 export {};
 
 // ===== 盤面renderer =====
@@ -6596,6 +6607,7 @@ function reorientBoard(permutation,flip=false,rotationDeg=0){
   }
 }
 function cancelTileAnimations(){
+  cancelBoardAnimationSession();
   for(const el of baseTiles) for(const a of el.getAnimations()) a.cancel();
 }
 function wakeFeedback(elements){
@@ -7096,6 +7108,7 @@ function orbitTransform(item,deg,kc){
 function animateGroupedSwipe(dg,target,dir,waking){
   const {group,clones}=createAutoSwipePreview(dg.items,dg.kc);
   setBoardBusy(true);
+  const session=startBoardAnimationSession('grouped-swipe',dg.id,()=>{group.remove();for(const item of dg.items)item.el.style.visibility='';setBoardBusy(false);});
   const duration=Math.max(190,Math.min(620,Math.abs(target-dg.deg)*4.65));
   const previewState=rollOnce(ori,dg.ti,dir);
   showMoves(moves+1);
@@ -7103,6 +7116,7 @@ function animateGroupedSwipe(dg,target,dir,waking){
   let start=null;
   const ease=t=>1-Math.pow(1-t,3);
   const frame=now=>{
+    if(!isBoardAnimationSessionActive(session))return;
     if(start===null)start=now;
     const progress=Math.min(1,(now-start)/duration);
     const deg=dg.deg+(target-dg.deg)*ease(progress);
@@ -7111,18 +7125,16 @@ function animateGroupedSwipe(dg,target,dir,waking){
     // 終端付近まで古い表情が残り、回転後に遅れて変わるように見えるのを防ぐ。
     const turnProgress=Math.abs(target-dg.deg)<.001?1:Math.abs(deg-dg.deg)/Math.abs(target-dg.deg);
     updateAutoSwipePreview(clones,turnProgress,dir);
-    if(progress<1){requestAnimationFrame(frame);return;}
+    if(progress<1){requestBoardAnimationFrame(session,frame);return;}
     // 効果音や振動より先に、盤面の見た目を確定する。
     applySwipe(dg.ti,dir,true,false);
-    group.remove();
-    for(const item of dg.items)item.el.style.visibility='';
-    setBoardBusy(false);
+    finishBoardAnimationSession(session);
     paint();
     haptic(SOLVER.dist[enc(ori)]===0?[20,32,42]:10);
     playRotateSound(dir);
     wakeFeedback(waking);
   };
-  requestAnimationFrame(frame);
+  requestBoardAnimationFrame(session,frame);
 }
 function findSwipeThatReached(beforeState,afterState){
   const before=dec(beforeState);
@@ -7146,23 +7158,24 @@ function animateUndoSwipe(target){
   });
   const {group,clones}=createAutoSwipePreview(items,pivot);
   setBoardBusy(true);
+  const session=startBoardAnimationSession('undo-swipe',null,()=>{group.remove();for(const item of items)item.el.style.visibility='';setBoardBusy(false);});
   const duration=420;
   let started=null;
   const ease=t=>1-Math.pow(1-t,3);
   const frame=now=>{
+    if(!isBoardAnimationSessionActive(session))return;
     if(started===null)started=now;
     const progress=Math.min(1,(now-started)/duration);
     const deg=reverseDir*120*ease(progress);
     group.setAttribute('transform','rotate('+deg+' '+pivot.x+' '+pivot.y+')');
     updateAutoSwipePreview(clones,progress,reverseDir);
-    if(progress<1){requestAnimationFrame(frame);return;}
-    group.remove();
-    for(const item of items)item.el.style.visibility='';
+    if(progress<1){requestBoardAnimationFrame(session,frame);return;}
+    finishBoardAnimationSession(session);
     restoreBoardSnapshotCommand(target);
     setBoardBusy(false);paint();
     haptic(7);playRotateSound(reverseDir);
   };
-  requestAnimationFrame(frame);
+  requestBoardAnimationFrame(session,frame);
 }
 function restartWithAnimation(){
   const beforeOri=Uint8Array.from(ori),beforeSpin=Int16Array.from(spin);

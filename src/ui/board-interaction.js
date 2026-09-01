@@ -14,4 +14,15 @@ function normalizeBoardPointerDelta(input,center,previousAngle){
 function normalizeBoardPointerEnd(event,drag,{cancel=false,forcedTurns=null}={}){
   return {pointerId:event?.pointerId??drag?.id,cancelled:cancel,forcedTurns,rawDegrees:drag?.rawDeg||0,maxAbsDegrees:drag?.maxAbsDeg||0};
 }
+let boardAnimationSession=null,boardAnimationSequence=0;
+function startBoardAnimationSession(type,pointerId=null,cleanup=()=>{}){
+  cancelBoardAnimationSession();
+  const session={id:++boardAnimationSequence,type,pointerId,startedAt:performance.now(),cancelled:false,frameHandle:0,cleanup,cleaned:false};
+  boardAnimationSession=session;
+  return session;
+}
+function isBoardAnimationSessionActive(session){return boardAnimationSession===session&&!session.cancelled&&!session.cleaned;}
+function requestBoardAnimationFrame(session,callback){if(!isBoardAnimationSessionActive(session))return 0;session.frameHandle=requestAnimationFrame(now=>{session.frameHandle=0;if(isBoardAnimationSessionActive(session))callback(now);});return session.frameHandle;}
+function finishBoardAnimationSession(session){if(!session||session.cleaned)return false;session.cleaned=true;if(session.frameHandle)cancelAnimationFrame(session.frameHandle);session.frameHandle=0;session.cleanup?.();if(boardAnimationSession===session)boardAnimationSession=null;return true;}
+function cancelBoardAnimationSession(session=boardAnimationSession){if(!session||session.cleaned)return false;session.cancelled=true;return finishBoardAnimationSession(session);}
 export {};
