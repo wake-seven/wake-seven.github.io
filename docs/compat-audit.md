@@ -93,6 +93,8 @@ pointer captureは `captureBoardPointer()` / `releaseBoardPointer()`、別pointe
 
 タイルの固定表示反映は `renderBoardTileState()`（stand/fallen、visibility、transform）と `renderBoardTileFlash()`（flash再始動）へ分離した。状態判定・pointer座標計算・flashの発火条件はboard-ui側に残し、個別WAAPIのタイミングは変更しない。回転中のorbit transform、DOM順序変更、pointer直後の即時判定は操作順序に依存するため保持する。
 
+チュートリアルの案内欄（回して・はなす・そこじゃないよ等）の固定DOM反映は `renderTutorialFeedback()` へ分離した。`tutorialPrompt`、正解判定、矢印の表示条件、段階別クラスの判定はboard-ui側に残し、文言と表示タイミングを変更しない。矢印生成そのものはhint rendererとの既存境界を維持する。
+
 `animateGroupedSwipe()` と `animateUndoSwipe()` は同ファイルのアニメーションセッションAPIで管理する。セッションは `id` / `type` / `pointerId` / `startedAt` / `cancelled` / `frameHandle` / `cleanup` を持ち、`cancelTileAnimations()` からも先にキャンセルされる。完了・キャンセル時のcleanupは一度だけ実行し、古いcallbackや次フレームは無効化する。盤面command、回転角、表示順、完了順序は変更していない。
 
 アニメーションフレームのDOM/SVG反映は `board-render.js:renderBoardAnimationFrame()` へ分離した。`board-ui.js` は回転角・進捗・方向を計算してモデルを渡し、rendererがグループtransformと持ち上がり/表情/色の反映を行う。座標・DOM順序・タイミングは変更していない。

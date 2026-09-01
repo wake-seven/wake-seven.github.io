@@ -1747,8 +1747,7 @@ function handleBoardPointerDown(e){
     if(soloSecondMove){
       $('gripPrompt').hidden=true;
     }else{
-      $('gripPromptText').textContent=tutorialPrompt('turn');
-      $('gripPrompt').hidden=false;
+      renderTutorialFeedback({text:tutorialPrompt('turn')});
       if(!(tutorialStepData?.cue==='chain'&&moves>0)&&tutorialStepData?.cue!=='chain-direction')showHintArrow(tutorialMove.ti,tutorialMove.dir,false,true);
     }
   }
@@ -1802,8 +1801,7 @@ function handleBoardPointerMove(e){
     if(!drag.tutorialStarted&&Math.abs(drag.rawDeg)>=3){
       drag.tutorialStarted=true;
       cancelTutorialHint(true);
-      $('gripPromptText').textContent=tutorialPrompt('release');
-      $('gripPrompt').hidden=false;
+      renderTutorialFeedback({text:tutorialPrompt('release')});
     }
   // 最初の補助輪では、正しい向きへ120°近く回せたときだけ「はなす」合図を出す。
   }else if(isMode('tutorial')&&(tutorialCue==='grab'||(tutorialCue==='chain'&&moves===0))){
@@ -1816,16 +1814,14 @@ function handleBoardPointerMove(e){
       drag.tutorialReleaseCue=true;
       // 120°まで回せたら、持ち手と矢印を片づけて「はなす」だけを伝える。
       cancelTutorialHint(true);
-      $('gripPromptText').textContent=tutorialPrompt('release');
-      $('gripPrompt').hidden=false;
+      renderTutorialFeedback({text:tutorialPrompt('release')});
     }else if(!readyToRelease&&drag.tutorialReleaseCue){
       // 角度を戻したら、離す合図を取り消してもう一度回す方向を示す。
       drag.tutorialReleaseCue=false;
       // チュートリアル2/4では、角度が外れたら回転案内へ戻す。
       const turnPrompt=tutorialStep===1?tr('tutorialSecondArrowPrompt')
         :tutorialStep===3?tr('tutorialChainTurnPrompt'):tutorialPrompt('turn');
-      $('gripPromptText').textContent=turnPrompt;
-      $('gripPrompt').hidden=false;
+      renderTutorialFeedback({text:turnPrompt});
       if(expected)showHintArrow(expected.ti,expected.dir,false,true);
     }
   }
@@ -1876,8 +1872,7 @@ function finishDrag(e,cancel=false,forcedTurns=null){
   const waking=dir?dg.items.filter(item=>mod3(item.turn)!==0&&mod3(item.turn+dir)===0).map(item=>item.el):[];
   if(isMode('tutorial')&&dir&&!tutorialMoveAllowed(dg.ti,dir)){
     cancelTutorialHint(true);
-    $('gripPromptText').textContent=tr(TUTORIAL_STEPS[tutorialStep]?.cue==='chain-direction'?'tutorialWrongPlacePrompt':'tutorialWrongPrompt');
-    $('gripPrompt').hidden=false;
+    renderTutorialFeedback({text:tr(TUTORIAL_STEPS[tutorialStep]?.cue==='chain-direction'?'tutorialWrongPlacePrompt':'tutorialWrongPrompt')});
     animateTutorialRewind(dg,target,dir);
     return;
   }
@@ -1888,8 +1883,7 @@ function finishDrag(e,cancel=false,forcedTurns=null){
     const expected=tutorialSolvingMoves()[0];
     if(expected&&dg.ti!==expected.ti){
       cancelTutorialHint(true);
-      $('gripPromptText').textContent=tr('tutorialWrongPlacePrompt');
-      $('gripPrompt').hidden=false;
+      renderTutorialFeedback({text:tr('tutorialWrongPlacePrompt')});
       svg.querySelector('.grip-marker[data-tri="'+dg.ti+'"]').classList.add('narrow-hidden');
       animateTutorialRewind(dg,0,dg.rawDeg>=0?1:-1);
       return;

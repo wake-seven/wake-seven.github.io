@@ -75,4 +75,8 @@ function renderBoardTileFlash(tile,active=true){
   tile.classList.remove('grab-flash');
   if(active){void tile.getBoundingClientRect();tile.classList.add('grab-flash');}
 }
+// チュートリアルの案内欄と段階クラスを表示モデルから反映する。
+function renderTutorialFeedback({text,visible=true,classes={}}={}){
+  renderBoardInteractionFeedback({promptText:text,promptVisible:visible,classes});
+}
 export {};
