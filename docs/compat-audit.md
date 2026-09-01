@@ -93,6 +93,8 @@ pointer直後の `grip-hover`、`invalid-grab`、`selecting`、`spinning`、`rot
 
 アニメーションフレームのDOM/SVG反映は `board-render.js:renderBoardAnimationFrame()` へ分離した。`board-ui.js` は回転角・進捗・方向を計算してモデルを渡し、rendererがグループtransformと持ち上がり/表情/色の反映を行う。座標・DOM順序・タイミングは変更していない。
 
+動的SVGの生成入口を `board-animation.js:createSwipeGroup()`、フレーム反映入口を `board-render.js:renderSwipeFrame()` に明示した。Grouped swipeとundo swipeは生成とフレーム反映をこれらのAPI経由で行い、pointer座標・DOM順序・タイミングは維持する。個別タイルのpointer依存アニメーションは引き続きboard-ui側に保持する。
+
 アニメーション完了時の盤面確定と結果通知は `completeGroupedSwipeAnimation()` / `completeUndoSwipeAnimation()` へ分離した。frame callbackは完了処理へ委譲し、通常回転は `applySwipe()`、undoは `restoreBoardSnapshotCommand()` を経由する。セッションのactive判定と一度だけのfinishで二重callbackを防止し、クリア判定・表示更新・効果音の順序を維持する。
 
 盤面アニメーションのキャンセル入口は `cancelBoardAnimation()` に統一した。pointercancel、リセット・undo開始（`cancelTileAnimations()`）、ステージ/位置変更、ダイアログ全体のcloseから同じセッションキャンセルを通り、active判定で遅延callbackと次フレームを無効化する。チュートリアル巻き戻しの個別WAAPIは、reduced-motion分岐と段階的な表情更新を持つ別系統のため、今回のセッションへ統合せず保持する。

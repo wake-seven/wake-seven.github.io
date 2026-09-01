@@ -45,7 +45,7 @@ function renderAcademyRemainingCalloutElement(element,{label='',number='',unit='
   element.hidden=false;
 }
 // 自動回転中の1フレームをDOM/SVGへ反映する。角度・進捗の計算と操作判定は呼び出し側に残す。
-function renderBoardAnimationFrame({group,pivot,deg,progress,preview}){
+function renderSwipeFrame({group,pivot,deg,progress,preview}){
   if(group&&pivot)group.setAttribute('transform','rotate('+deg+' '+pivot.x+' '+pivot.y+')');
   if(preview?.kind==='grouped')updateAutoSwipePreview(preview.clones,progress,preview.dir);
   if(preview?.kind==='undo')for(const{item,clone,hex}of preview.clones){

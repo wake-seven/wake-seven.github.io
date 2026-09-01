@@ -1558,7 +1558,7 @@ function completeGroupedSwipeAnimation(session,dg,dir,waking){
   wakeFeedback(waking);
 }
 function animateGroupedSwipe(dg,target,dir,waking){
-  const {group,clones}=createAutoSwipePreview(dg.items,dg.kc);
+  const {group,clones}=createSwipeGroup(dg.items,dg.kc);
   setBoardBusy(true);
   const session=startBoardAnimationSession('grouped-swipe',dg.id,()=>{group.remove();for(const item of dg.items)item.el.style.visibility='';setBoardBusy(false);});
   const duration=Math.max(190,Math.min(620,Math.abs(target-dg.deg)*4.65));
@@ -1575,7 +1575,7 @@ function animateGroupedSwipe(dg,target,dir,waking){
     // 自動回転では半分を越えた時点で次の状態へ切り替える。
     // 終端付近まで古い表情が残り、回転後に遅れて変わるように見えるのを防ぐ。
     const turnProgress=Math.abs(target-dg.deg)<.001?1:Math.abs(deg-dg.deg)/Math.abs(target-dg.deg);
-    renderBoardAnimationFrame({group,pivot:dg.kc,deg,progress:turnProgress,preview:{kind:'grouped',clones,dir}});
+    renderSwipeFrame({group,pivot:dg.kc,deg,progress:turnProgress,preview:{kind:'grouped',clones,dir}});
     if(progress<1){requestBoardAnimationFrame(session,frame);return;}
     // 効果音や振動より先に、盤面の見た目を確定する。
     completeGroupedSwipeAnimation(session,dg,dir,waking);
@@ -1608,7 +1608,7 @@ function animateUndoSwipe(target){
     const el=tileEls[cell];
     return {el,cell,turn:spin[cell],dx:CELL[cell].x-pivot.x,dy:CELL[cell].y-pivot.y};
   });
-  const {group,clones}=createAutoSwipePreview(items,pivot);
+  const {group,clones}=createSwipeGroup(items,pivot);
   setBoardBusy(true);
   const session=startBoardAnimationSession('undo-swipe',null,()=>{group.remove();for(const item of items)item.el.style.visibility='';setBoardBusy(false);});
   const duration=420;
@@ -1619,7 +1619,7 @@ function animateUndoSwipe(target){
     if(started===null)started=now;
     const progress=Math.min(1,(now-started)/duration);
     const deg=reverseDir*120*ease(progress);
-    renderBoardAnimationFrame({group,pivot,deg,progress,preview:{kind:'undo',clones}});
+    renderSwipeFrame({group,pivot,deg,progress,preview:{kind:'undo',clones}});
     if(progress<1){requestBoardAnimationFrame(session,frame);return;}
     completeUndoSwipeAnimation(session,target,reverseDir);
   };

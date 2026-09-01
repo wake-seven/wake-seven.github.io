@@ -4,7 +4,7 @@
 function animationTileState(turn){
   return mod3(turn)===0?'stand':'fallen';
 }
-function createAutoSwipePreview(items,pivot){
+function createSwipeGroup(items,pivot){
   const group=document.createElementNS('http://www.w3.org/2000/svg','g');
   group.setAttribute('class','auto-swipe-group');
   const clones=[];
