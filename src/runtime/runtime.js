@@ -233,6 +233,9 @@ function getGameContext(){
   return {mode:'primary',course:courseDefinitionForMode('stage'),index:WakeSevenState.navigationIndex(navigation,'stage'),position:stageIndex+1,total:STAGES.length,lap:activeLap};
 }
 function runtimeContext(){return getGameContext();}
+// UI/補助モジュールから実行状態を読むための薄い境界。
+// 個別のランタイム変数を直接参照する箇所を増やさず、読み取り専用のスナップショットを渡す。
+function runtimeSnapshot(){return Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,language:currentLang,speedVariant});}
 function runtimeStageKey(){
   const ctx=getGameContext();
   return ctx.position===null?ctx.mode:ctx.mode+':'+ctx.index;

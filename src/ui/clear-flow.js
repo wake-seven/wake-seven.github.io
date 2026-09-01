@@ -4,7 +4,8 @@
 function twoMoveDiscoveryText(card){
   const position=TWO_MOVE_PATTERN_POSITION[card];
   const key=TWO_MOVE_CLEAR_MESSAGE_KEYS[position];
-  return currentLang==='ja'&&key?tr(key,{n:position}):tr('twoMoveDiscovery',{n:position});
+  const {language}=runtimeSnapshot();
+  return language==='ja'&&key?tr(key,{n:position}):tr('twoMoveDiscovery',{n:position});
 }
 function stageClearTextAt(mode,index){
   const entry=clearContentAt(mode,index);
@@ -13,10 +14,11 @@ function stageClearTextAt(mode,index){
   if(entry.guideCard)return resolveLocaleText(entry.guideCard.text);
   return entry.tip?resolveLocaleText(entry.tip):'';
 }
-function stageClearText(){return isMode('free')||isMode('custom')||isMode('satori')?'':stageClearTextAt(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);}
+function stageClearText(){const {mode,masteryIndex,stageIndex}=runtimeSnapshot();return mode==='free'||mode==='custom'||mode==='satori'?'':stageClearTextAt(mode==='mastery',mode==='mastery'?masteryIndex:stageIndex);}
 function clearEntryForCurrent(){
-  if(isMode('mastery'))return clearContentAt(true,extraIndex);
-  if(isMode('free')||isMode('custom')||isMode('satori'))return undefined;
+  const {mode,masteryIndex,stageIndex}=runtimeSnapshot();
+  if(mode==='mastery')return clearContentAt(true,masteryIndex);
+  if(mode==='free'||mode==='custom'||mode==='satori')return undefined;
   return clearContentAt(false,stageIndex);
 }
 function stageClearArtAt(mode,index){
@@ -26,6 +28,6 @@ function stageClearArtAt(mode,index){
   if(entry.guideCard)return 'guideCard:'+entry.guideCard.state.join('');
   return entry.art||'';
 }
-function stageClearArt(){return isMode('satori')?'':stageClearArtAt(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);}
+function stageClearArt(){const {mode,masteryIndex,stageIndex}=runtimeSnapshot();return mode==='satori'?'':stageClearArtAt(mode==='mastery',mode==='mastery'?masteryIndex:stageIndex);}
 // 公開native moduleの構文境界。
 export {};

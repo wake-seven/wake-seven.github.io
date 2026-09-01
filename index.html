@@ -4199,10 +4199,11 @@ function playClearSound(kind='normal'){
   (tunes[kind]||tunes.normal).forEach(([tone,delay])=>playTone(tone,.18,.032,delay));
 }
 function clearSoundKind(){
-  if(isMode('free')||isMode('custom')||isMode('speed'))return 'normal';
-  if(isMode('satori')&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';
-  if(!isMode('mastery')&&stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
-  if(isMode('mastery')&&(extraIndex+1)%MASTER_VOLUME_SIZE===0)return extraIndex===EXTRA_STAGES.length-1?'mastery':'volume';
+  const {mode,satoriIndex,stageIndex,masteryIndex}=runtimeSnapshot();
+  if(mode==='free'||mode==='custom'||mode==='speed')return 'normal';
+  if(mode==='satori'&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';
+  if(mode!=='mastery'&&stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
+  if(mode==='mastery'&&(masteryIndex+1)%MASTER_VOLUME_SIZE===0)return masteryIndex===EXTRA_STAGES.length-1?'mastery':'volume';
   return 'normal';
 }
 function updateSoundToggle(){
@@ -4476,6 +4477,9 @@ function getGameContext(){
   return {mode:'primary',course:courseDefinitionForMode('stage'),index:WakeSevenState.navigationIndex(navigation,'stage'),position:stageIndex+1,total:STAGES.length,lap:activeLap};
 }
 function runtimeContext(){return getGameContext();}
+// UI/補助モジュールから実行状態を読むための薄い境界。
+// 個別のランタイム変数を直接参照する箇所を増やさず、読み取り専用のスナップショットを渡す。
+function runtimeSnapshot(){return Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,language:currentLang,speedVariant});}
 function runtimeStageKey(){
   const ctx=getGameContext();
   return ctx.position===null?ctx.mode:ctx.mode+':'+ctx.index;
@@ -7885,7 +7889,8 @@ export {};
 function twoMoveDiscoveryText(card){
   const position=TWO_MOVE_PATTERN_POSITION[card];
   const key=TWO_MOVE_CLEAR_MESSAGE_KEYS[position];
-  return currentLang==='ja'&&key?tr(key,{n:position}):tr('twoMoveDiscovery',{n:position});
+  const {language}=runtimeSnapshot();
+  return language==='ja'&&key?tr(key,{n:position}):tr('twoMoveDiscovery',{n:position});
 }
 function stageClearTextAt(mode,index){
   const entry=clearContentAt(mode,index);
@@ -7894,10 +7899,11 @@ function stageClearTextAt(mode,index){
   if(entry.guideCard)return resolveLocaleText(entry.guideCard.text);
   return entry.tip?resolveLocaleText(entry.tip):'';
 }
-function stageClearText(){return isMode('free')||isMode('custom')||isMode('satori')?'':stageClearTextAt(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);}
+function stageClearText(){const {mode,masteryIndex,stageIndex}=runtimeSnapshot();return mode==='free'||mode==='custom'||mode==='satori'?'':stageClearTextAt(mode==='mastery',mode==='mastery'?masteryIndex:stageIndex);}
 function clearEntryForCurrent(){
-  if(isMode('mastery'))return clearContentAt(true,extraIndex);
-  if(isMode('free')||isMode('custom')||isMode('satori'))return undefined;
+  const {mode,masteryIndex,stageIndex}=runtimeSnapshot();
+  if(mode==='mastery')return clearContentAt(true,masteryIndex);
+  if(mode==='free'||mode==='custom'||mode==='satori')return undefined;
   return clearContentAt(false,stageIndex);
 }
 function stageClearArtAt(mode,index){
@@ -7907,7 +7913,7 @@ function stageClearArtAt(mode,index){
   if(entry.guideCard)return 'guideCard:'+entry.guideCard.state.join('');
   return entry.art||'';
 }
-function stageClearArt(){return isMode('satori')?'':stageClearArtAt(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);}
+function stageClearArt(){const {mode,masteryIndex,stageIndex}=runtimeSnapshot();return mode==='satori'?'':stageClearArtAt(mode==='mastery',mode==='mastery'?masteryIndex:stageIndex);}
 // 公開native moduleの構文境界。
 export {};
 
@@ -8014,15 +8020,18 @@ export {};
 // ===== 節目ダイアログ =====
 // 節目ダイアログの表示条件をまとめる。報酬付与や遷移は progression-ui.js 側が担当する。
 function masterDialogTrialState(kind){
+  const {lap}=runtimeSnapshot();
+  const secondLap=lap===2;
   return {
-    mastery:kind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared,
-    intermediate:kind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared,
-    primary:kind==='primary'&&!secondLapActive&&!speedTrainingTrialCleared
+    mastery:kind==='mastery'&&!secondLap&&!speedMasteryTrialCleared,
+    intermediate:kind==='intermediate'&&!secondLap&&!speedIntermediateTrialCleared,
+    primary:kind==='primary'&&!secondLap&&!speedTrainingTrialCleared
   };
 }
 function masterDialogBoardTheme(kind){
+  const {lap}=runtimeSnapshot();
   if(kind==='awakening')return 'gold-3d';
-  if((kind==='mastery'&&secondLapActive)||kind==='satori')return 'satori-tilted';
+  if((kind==='mastery'&&lap===2)||kind==='satori')return 'satori-tilted';
   return 'gold';
 }
 function masterDialogBoardOptions(kind,needsMasteryTrial,theme){

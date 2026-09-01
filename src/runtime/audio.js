@@ -33,10 +33,11 @@ function playClearSound(kind='normal'){
   (tunes[kind]||tunes.normal).forEach(([tone,delay])=>playTone(tone,.18,.032,delay));
 }
 function clearSoundKind(){
-  if(isMode('free')||isMode('custom')||isMode('speed'))return 'normal';
-  if(isMode('satori')&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';
-  if(!isMode('mastery')&&stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
-  if(isMode('mastery')&&(extraIndex+1)%MASTER_VOLUME_SIZE===0)return extraIndex===EXTRA_STAGES.length-1?'mastery':'volume';
+  const {mode,satoriIndex,stageIndex,masteryIndex}=runtimeSnapshot();
+  if(mode==='free'||mode==='custom'||mode==='speed')return 'normal';
+  if(mode==='satori'&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';
+  if(mode!=='mastery'&&stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
+  if(mode==='mastery'&&(masteryIndex+1)%MASTER_VOLUME_SIZE===0)return masteryIndex===EXTRA_STAGES.length-1?'mastery':'volume';
   return 'normal';
 }
 function updateSoundToggle(){

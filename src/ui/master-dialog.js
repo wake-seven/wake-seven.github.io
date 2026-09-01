@@ -1,14 +1,17 @@
 // 節目ダイアログの表示条件をまとめる。報酬付与や遷移は progression-ui.js 側が担当する。
 function masterDialogTrialState(kind){
+  const {lap}=runtimeSnapshot();
+  const secondLap=lap===2;
   return {
-    mastery:kind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared,
-    intermediate:kind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared,
-    primary:kind==='primary'&&!secondLapActive&&!speedTrainingTrialCleared
+    mastery:kind==='mastery'&&!secondLap&&!speedMasteryTrialCleared,
+    intermediate:kind==='intermediate'&&!secondLap&&!speedIntermediateTrialCleared,
+    primary:kind==='primary'&&!secondLap&&!speedTrainingTrialCleared
   };
 }
 function masterDialogBoardTheme(kind){
+  const {lap}=runtimeSnapshot();
   if(kind==='awakening')return 'gold-3d';
-  if((kind==='mastery'&&secondLapActive)||kind==='satori')return 'satori-tilted';
+  if((kind==='mastery'&&lap===2)||kind==='satori')return 'satori-tilted';
   return 'gold';
 }
 function masterDialogBoardOptions(kind,needsMasteryTrial,theme){
