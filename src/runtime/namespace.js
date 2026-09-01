@@ -1,6 +1,8 @@
 /* 公開APIの境界。既存のグローバル関数は互換のため残し、外部からはこの名前空間を入口にする。 */
 (function attachWakeSevenNamespace(global) {
   'use strict';
+  // 公開名前空間は単一の初期化入口。重複読込で外部参照を差し替えない。
+  if (global.WakeSeven?.state) return;
 
   const stateApi = Object.freeze({
     get current() { return gameState; },

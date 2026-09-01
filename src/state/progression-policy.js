@@ -1,6 +1,8 @@
 /* コース進行と速解きの宣言ポリシー。公開版では単体HTMLへ埋め込む。 */
 (function attachWakeSevenProgression(global) {
   'use strict';
+  // 進行ポリシーは状態APIの後に一度だけ公開する。
+  if (global.WakeSevenProgression?.create) return;
 
   const SPEED_BLUEPRINTS = Object.freeze([
     {id:'standard',visible:false,labelKey:'speedMode',introKey:'speedSatoriIntro',jaLabel:null,order:'mixed',source:'satori',total:'satori',unlockKey:'speedSatori',showsRemaining:false,allowsUndo:false},

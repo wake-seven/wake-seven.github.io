@@ -22,6 +22,14 @@ async function collect(directory) {
 }
 await collect(srcRoot);
 
+const manifest = await readFile(join(root, 'scripts', 'application-manifest.mjs'), 'utf8');
+assert.ok(manifest.indexOf("state/game-state.js") < manifest.indexOf("runtime/namespace.js"), 'State API must initialize before the public namespace.');
+assert.ok(manifest.indexOf("state/progression-policy.js") < manifest.indexOf("runtime/namespace.js"), 'Progression API must initialize before the public namespace.');
+assert.match(sources.get('src/runtime/namespace.js'), /Object\.freeze\(\{state: stateApi, progression: progressionApi, messages: messagesApi, speed: speedApi\}\)/, 'Public API namespace must remain minimal and frozen.');
+for (const [file, token] of [['src/state/game-state.js', 'WakeSevenState?.create'], ['src/state/progression-policy.js', 'WakeSevenProgression?.create'], ['src/runtime/namespace.js', 'WakeSeven?.state']]) {
+  assert.match(sources.get(file), new RegExp(`global\\.${token.replace(/[.?]/g, '\\$&')}`), `Duplicate ${file} initialization must be guarded.`);
+}
+
 const all = [...sources.entries()].map(([file, source]) => `${file}\n${source}`).join('\n');
 // 過去保存データ互換は提供しない。移行関数や旧並び替え識別子が復活したら失敗させる。
 for (const token of ['migrateTutorialState', 'migrateSatoriOrder', 'LEGACY_SATORI_STAGES', 'speedUnlockModelVersion', 'speedTrialModelVersion', 'probability-2', 'optimal-path-5']) {

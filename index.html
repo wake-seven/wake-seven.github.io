@@ -1460,6 +1460,8 @@
  */
 (function attachWakeSevenState(global) {
   'use strict';
+  // 状態ストアは一度だけ初期化し、公開参照の差し替えを防ぐ。
+  if (global.WakeSevenState?.create) return;
 
   const STORAGE_KEY = 'wake7-state-vnext';
   const VERSION = 1;
@@ -1728,6 +1730,8 @@ export {};
 /* コース進行と速解きの宣言ポリシー。公開版では単体HTMLへ埋め込む。 */
 (function attachWakeSevenProgression(global) {
   'use strict';
+  // 進行ポリシーは状態APIの後に一度だけ公開する。
+  if (global.WakeSevenProgression?.create) return;
 
   const SPEED_BLUEPRINTS = Object.freeze([
     {id:'standard',visible:false,labelKey:'speedMode',introKey:'speedSatoriIntro',jaLabel:null,order:'mixed',source:'satori',total:'satori',unlockKey:'speedSatori',showsRemaining:false,allowsUndo:false},
@@ -11584,6 +11588,8 @@ export {};
 /* 公開APIの境界。既存のグローバル関数は互換のため残し、外部からはこの名前空間を入口にする。 */
 (function attachWakeSevenNamespace(global) {
   'use strict';
+  // 公開名前空間は単一の初期化入口。重複読込で外部参照を差し替えない。
+  if (global.WakeSeven?.state) return;
 
   const stateApi = Object.freeze({
     get current() { return gameState; },

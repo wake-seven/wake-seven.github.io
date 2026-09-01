@@ -7,6 +7,8 @@
  */
 (function attachWakeSevenState(global) {
   'use strict';
+  // 状態ストアは一度だけ初期化し、公開参照の差し替えを防ぐ。
+  if (global.WakeSevenState?.create) return;
 
   const STORAGE_KEY = 'wake7-state-vnext';
   const VERSION = 1;
