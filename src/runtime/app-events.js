@@ -206,8 +206,7 @@ $('debugSecondSatori72').addEventListener('click',()=>debugUnlockSatori(72,true)
 function debugSkipTutorial(){
   if(!DEBUG_MODE)return;
   storage.set(STORAGE_KEYS.introSeen,'1');
-  storage.set(STORAGE_KEYS.tutorialComplete,'1');
-  storage.remove(STORAGE_KEYS.tutorialStep);
+  completeTutorialCommand();
   GameNavigation.stage(0);
   setTimeout(()=>openChainedDialog('academyEnroll'),260);
 }
@@ -1139,7 +1138,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
     if(resetIntro){
       storage.remove(STORAGE_KEYS.introSeen);
       storage.remove(STORAGE_KEYS.tutorialComplete);
-      storage.remove(STORAGE_KEYS.tutorialStep);
+      resetTutorialCommand();
     }
   }catch(_){}
   // 盤面デザインや速解きの解放を残すリセットでも、卒業試験はコース進行

@@ -1215,11 +1215,9 @@ function showTutorialCue(){
 function loadTutorialStep(index=0){
   clearTimeout(tutorialAdvanceTimer);
   setActiveMode('tutorial');editingBoard=false;
-  tutorialStep=Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index));
+  setTutorialStepCommand(index);
   // 前の段階で消した誤操作棒は、次の段階では再表示する。
   svg.querySelectorAll('.grip-marker.narrow-hidden').forEach(marker=>marker.classList.remove('narrow-hidden'));
-  WakeSevenState.setNavigationIndex(gameState,'tutorial',tutorialStep);
-  storage.set(STORAGE_KEYS.tutorialStep,String(tutorialStep));
   const step=TUTORIAL_STEPS[tutorialStep];
   setPosition(step.state,step.par);
   $('gripPrompt').classList.add('tutorial-prompt-top');
@@ -1236,8 +1234,7 @@ function startTutorial(){
 function advanceTutorial(){
   if(!isMode('tutorial'))return;
   if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}
-  storage.set(STORAGE_KEYS.tutorialComplete,'1');
-  storage.remove(STORAGE_KEYS.tutorialStep);
+  completeTutorialCommand();
   loadStage(0);
   setTimeout(()=>openChainedDialog('academyEnroll'),260);
 }
@@ -1356,10 +1353,7 @@ function restoreSavedBoard(data){
 }
 function persistActiveSession(){
   if(isMode('tutorial')){
-    const payload={mode:'tutorial',step:tutorialStep};
-    syncGameState();
-    storage.setJson(STORAGE_KEYS.activeSession,payload);
-    storage.set(STORAGE_KEYS.tutorialStep,String(tutorialStep));
+    persistTutorialSessionCommand();
     persistDialogState();
     return;
   }
@@ -2144,9 +2138,7 @@ $('tutorialReset').addEventListener('click',()=>{
   // 補助輪中のリセットは、練習問題の途中ではなく「はじめる」からやり直す。
   clearTimeout(tutorialAdvanceTimer);
   cancelTutorialHint();
-  tutorialStep=0;
-  storage.remove(STORAGE_KEYS.tutorialStep);
-  storage.remove(STORAGE_KEYS.introSeen);
+  resetTutorialCommand();
   loadTutorialStep(0);
   openIntroGuide();
 });

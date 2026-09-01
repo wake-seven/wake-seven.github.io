@@ -6,7 +6,7 @@ export const applicationModuleFiles = [
   'domain/board-domain.js', 'data/clear-content.js', 'data/core-data.js', 'data/satori.js',
   'data/ui-text.js', 'data/board-quiz.js', 'data/assets.js', 'runtime/settings.js',
   'runtime/audio.js', 'runtime/progression-runtime.js', 'runtime/runtime.js', 'runtime/speed.js',
-  'ui/board-animation.js', 'ui/board-geometry.js', 'ui/board-ui.js', 'ui/board-render.js', 'commands/board-commands.js', 'commands/progression-commands-legacy.js', 'commands/settings-commands.js', 'commands/progression-commands.js', 'commands/speed-commands.js',
+  'ui/board-animation.js', 'ui/board-geometry.js', 'ui/board-ui.js', 'ui/board-render.js', 'commands/board-commands.js', 'commands/progression-commands-legacy.js', 'commands/settings-commands.js', 'commands/progression-commands.js', 'commands/speed-commands.js', 'commands/speed-record-commands.js', 'commands/tutorial-commands.js',
   'ui/quiz.js', 'ui/clear-flow.js', 'ui/message.js', 'ui/progression-render.js',
   'ui/master-dialog.js', 'ui/progression-ui.js', 'ui/progression-commands.js', 'ui/progression-roadmap.js', 'ui/progression-hints.js', 'ui/progression-clear-flow.js', 'ui/progression-navigation.js', 'ui/rank.js', 'ui/svg.js', 'ui/render.js',
   'runtime/event-bindings.js', 'runtime/app-events.js', 'runtime/app-bootstrap.js', 'runtime/namespace.js', 'ui/dom.js', 'ui/template.js'
