@@ -69,9 +69,9 @@ function debugPrepareFirstLapCheckpoint(){
     storage.remove(STORAGE_KEY_GROUPS.progression.secondLapUnlocked);
   storage.remove(STORAGE_KEY_GROUPS.progression.secondLapActive);
   storage.remove(STORAGE_KEY_GROUPS.rewards.awakenedGranted);
-  storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
-  storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
-  storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
+  storage.remove(STORAGE_KEY_GROUPS.speed.trainingTrialCleared);
+  storage.remove(STORAGE_KEY_GROUPS.speed.intermediateTrialCleared);
+  storage.remove(STORAGE_KEY_GROUPS.speed.masteryTrialCleared);
   }catch(_){ }
   activateCampaignLap(1);
 }
@@ -177,15 +177,15 @@ function debugOpenSpeedExam(variant,index){
   speedVariant=variant;
   if(variant==='training9'){
     speedTrainingTrialCleared=false;
-    storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
+    storage.remove(STORAGE_KEY_GROUPS.speed.trainingTrialCleared);
   }
   if(variant==='training18'){
     speedIntermediateTrialCleared=false;
-    storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
+    storage.remove(STORAGE_KEY_GROUPS.speed.intermediateTrialCleared);
   }
   if(variant==='mastery27'){
     speedMasteryTrialCleared=false;
-    storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
+    storage.remove(STORAGE_KEY_GROUPS.speed.masteryTrialCleared);
   }
   speedSession=newSpeedSession();
   speedSession.index=Math.max(0,Math.min(speedSession.total-1,index));
@@ -193,9 +193,9 @@ function debugOpenSpeedExam(variant,index){
   speedSession.requiredTrial=variant;
     setSpeedManualPauseCommand(false);
   try{
-    if(variant==='training9')storage.set(STORAGE_KEYS.speedTrainingUnlocked,'1');
-    if(variant==='training18')storage.set(STORAGE_KEYS.speedIntermediateUnlocked,'1');
-    if(variant==='mastery27')storage.set(STORAGE_KEYS.speedMasteryUnlocked,'1');
+    if(variant==='training9')storage.set(STORAGE_KEY_GROUPS.speed.trainingUnlocked,'1');
+    if(variant==='training18')storage.set(STORAGE_KEY_GROUPS.speed.intermediateUnlocked,'1');
+    if(variant==='mastery27')storage.set(STORAGE_KEY_GROUPS.speed.masteryUnlocked,'1');
   }catch(_){ }
   loadSpeedStage(false);
 }
@@ -205,7 +205,7 @@ $('debugSpeedMastery26').addEventListener('click',()=>debugOpenSpeedExam('master
 $('debugSecondSatori72').addEventListener('click',()=>debugUnlockSatori(72,true));
 function debugSkipTutorial(){
   if(!DEBUG_MODE)return;
-  storage.set(STORAGE_KEYS.introSeen,'1');
+  storage.set(STORAGE_KEY_GROUPS.progression.introSeen,'1');
   completeTutorialCommand();
   GameNavigation.stage(0);
   setTimeout(()=>openChainedDialog('academyEnroll'),260);
@@ -502,7 +502,7 @@ $('masterSpeedUnlockStart').addEventListener('click',()=>{
 $('introStart').addEventListener('click',()=>{
   clearUiEffectTimers('intro');
   $('introDialog').hidden=true;
-  storage.set(STORAGE_KEYS.introSeen,'1');
+  storage.set(STORAGE_KEY_GROUPS.progression.introSeen,'1');
   GameNavigation.tutorial();
 });
 $('chainDialogAction').addEventListener('click',()=>{
@@ -1102,7 +1102,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
     storage.remove(STORAGE_KEY_GROUPS.progression.secondLapUnlocked);
     storage.remove(STORAGE_KEY_GROUPS.progression.activeLap);
     for(const lap of [1,2])for(const part of ['primary','extra','satori'])storage.remove(STORAGE_KEY_GROUPS.progression.lapCleared(lap,part));
-    storage.remove(STORAGE_KEYS.awakenedGranted);
+    storage.remove(STORAGE_KEY_GROUPS.rewards.awakenedGranted);
     if(!preserveRewards){
       // デバッグの完全リセットでは、ゲノム側で選んだ表示設定も初期化する。
       storage.remove('wakeSevenGenomeBoardSize');
@@ -1130,14 +1130,14 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
         storage.remove(speedBestStorageKey(variant));
         storage.remove(speedHistoryStorageKey(variant));
       }
-      storage.remove(STORAGE_KEYS.speedActiveVariant);
+      storage.remove(STORAGE_KEY_GROUPS.speed.activeVariant);
     }
     storage.remove(FOURTH_CHECKS_STORAGE_KEY);
     storage.remove(MESSAGE_REVIEW_STORAGE_KEY);
     storage.remove(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY);
     if(resetIntro){
-      storage.remove(STORAGE_KEYS.introSeen);
-      storage.remove(STORAGE_KEYS.tutorialComplete);
+      storage.remove(STORAGE_KEY_GROUPS.progression.introSeen);
+      storage.remove(STORAGE_KEY_GROUPS.progression.tutorialComplete);
       resetTutorialCommand();
     }
   }catch(_){}
@@ -1146,9 +1146,9 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   speedTrainingTrialCleared=false;
   speedIntermediateTrialCleared=false;
   speedMasteryTrialCleared=false;
-  storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
-  storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
-  storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
+  storage.remove(STORAGE_KEY_GROUPS.speed.trainingTrialCleared);
+  storage.remove(STORAGE_KEY_GROUPS.speed.intermediateTrialCleared);
+  storage.remove(STORAGE_KEY_GROUPS.speed.masteryTrialCleared);
   if(!preserveRewards){
     resetSettingsCommand();
     masterGoldGranted=false;

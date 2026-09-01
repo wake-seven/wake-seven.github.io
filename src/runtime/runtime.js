@@ -174,8 +174,8 @@ function syncGameState(){
   if(typeof serializeActiveBoard==='function')WakeSevenState.updateBoard(gameState,serializeActiveBoard());
   return window.WakeSevenState.write(gameState);
 }
-const SPEED_LAST_TAB_STORAGE_KEY=STORAGE_KEYS.speedLastTab;
-const SPEED_NEW_TAB_STORAGE_KEY=STORAGE_KEYS.speedNewTab;
+const SPEED_LAST_TAB_STORAGE_KEY=STORAGE_KEY_GROUPS.speed.lastTab;
+const SPEED_NEW_TAB_STORAGE_KEY=STORAGE_KEY_GROUPS.speed.newTab;
 const COURSE_DEFINITIONS=Object.freeze({
   tutorial:{id:'tutorial',total:TUTORIAL_STEPS.length,label:'tutorial',indexKey:'tutorialStep'},
   primary:{id:'primary',total:STAGES.length,label:'training',indexKey:'stageIndex'},
@@ -384,8 +384,8 @@ function syncSpeedUnlockFlag(){
   setUnlock('speedIntermediate',speedIntermediateUnlocked);
   setUnlock('speedMastery',speedMasteryUnlocked);
   setUnlock('speedSatori',speedSatoriUnlocked);
-  if(speedModeUnlocked)storage.set(STORAGE_KEYS.speedUnlocked,'1');
-  else storage.remove(STORAGE_KEYS.speedUnlocked);
+  if(speedModeUnlocked)storage.set(STORAGE_KEY_GROUPS.speed.unlocked,'1');
+  else storage.remove(STORAGE_KEY_GROUPS.speed.unlocked);
 }
 function unlockSpeedVariant(id){
   const wasUnlocked=speedVariantUnlocked(id);
@@ -396,19 +396,19 @@ function unlockSpeedVariant(id){
   syncSpeedUnlockFlag();
   if(!wasUnlocked)storage.set(SPEED_NEW_TAB_STORAGE_KEY,id);
   try{
-    if(speedTrainingUnlocked)storage.set(STORAGE_KEYS.speedTrainingUnlocked,'1');
-    if(speedIntermediateUnlocked)storage.set(STORAGE_KEYS.speedIntermediateUnlocked,'1');
-    if(speedMasteryUnlocked)storage.set(STORAGE_KEYS.speedMasteryUnlocked,'1');
-    if(speedSatoriUnlocked)storage.set(STORAGE_KEYS.speedSatoriUnlocked,'1');
+    if(speedTrainingUnlocked)storage.set(STORAGE_KEY_GROUPS.speed.trainingUnlocked,'1');
+    if(speedIntermediateUnlocked)storage.set(STORAGE_KEY_GROUPS.speed.intermediateUnlocked,'1');
+    if(speedMasteryUnlocked)storage.set(STORAGE_KEY_GROUPS.speed.masteryUnlocked,'1');
+    if(speedSatoriUnlocked)storage.set(STORAGE_KEY_GROUPS.speed.satoriUnlocked,'1');
   }catch(_){ }
 }
 // 卒業試験1つ分の合格を、称号判定用の「試験フラグ」と速解きモード側の「解放フラグ」の
 // 両方へ一括で反映する。どちらか片方だけ更新してズレる不具合（称号が付かない／メニューに出ない等）を防ぐため、
 // 卒業試験に合格させる処理は必ずここを通す。
 function grantSpeedTrialCleared(variant){
-  if(variant==='training9'){speedTrainingTrialCleared=setUnlock('speedTrainingTrialCleared',true);storage.set(STORAGE_KEYS.speedTrainingTrialCleared,'1');}
-  else if(variant==='training18'){speedIntermediateTrialCleared=setUnlock('speedIntermediateTrialCleared',true);storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,'1');}
-  else if(variant==='mastery27'){speedMasteryTrialCleared=setUnlock('speedMasteryTrialCleared',true);storage.set(STORAGE_KEYS.speedMasteryTrialCleared,'1');}
+  if(variant==='training9'){speedTrainingTrialCleared=setUnlock('speedTrainingTrialCleared',true);storage.set(STORAGE_KEY_GROUPS.speed.trainingTrialCleared,'1');}
+  else if(variant==='training18'){speedIntermediateTrialCleared=setUnlock('speedIntermediateTrialCleared',true);storage.set(STORAGE_KEY_GROUPS.speed.intermediateTrialCleared,'1');}
+  else if(variant==='mastery27'){speedMasteryTrialCleared=setUnlock('speedMasteryTrialCleared',true);storage.set(STORAGE_KEY_GROUPS.speed.masteryTrialCleared,'1');}
   else return;
   unlockSpeedVariant(variant);
 }
@@ -432,8 +432,8 @@ let threeDUnlocked=initialUnlocks.threeD===true;
 if(!threeDUnlocked)try{threeDUnlocked=storage.get(STORAGE_KEY_GROUPS.rewards.threeDUnlocked)==='1';}catch(_){ }
 // 七色だるまは二周目の名人達成報酬。覚者報酬が保存済みなら解放状態として保持する。
 let rainbowDarumaGranted=initialUnlocks.rainbowDarumaGranted===true;
-try{rainbowDarumaGranted=rainbowDarumaGranted||storage.get(STORAGE_KEYS.rainbowDarumaGranted)==='1'||awakenedGranted;}catch(_){rainbowDarumaGranted=awakenedGranted;}
-if(rainbowDarumaGranted)try{storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');}catch(_){ }
+try{rainbowDarumaGranted=rainbowDarumaGranted||storage.get(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted)==='1'||awakenedGranted;}catch(_){rainbowDarumaGranted=awakenedGranted;}
+if(rainbowDarumaGranted)try{storage.set(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');}catch(_){ }
 let secondLapUnlocked=initialUnlocks.secondLap===true;
 try{secondLapUnlocked=secondLapUnlocked||storage.get(STORAGE_KEY_GROUPS.progression.secondLapUnlocked)==='1'||secondLapActive||awakenedGranted;}catch(_){secondLapUnlocked=secondLapActive||awakenedGranted;}
 const initialNavigationState=WakeSevenState.sectionView(gameState,'navigation');
@@ -519,8 +519,8 @@ if(storage.get(STORAGE_KEY_GROUPS.progression.stagesLayoutVersion)!==STAGES_LAYO
     storage.remove(STORAGE_KEY_GROUPS.progression.lapCleared(1,'extra'));
     storage.remove(STORAGE_KEY_GROUPS.progression.lapCleared(2,'extra'));
     storage.remove(STORAGE_KEY_GROUPS.progression.currentStage);
-    storage.set(STORAGE_KEYS.speedTrainingTrialCleared,'0');
-    storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,'0');
+    storage.set(STORAGE_KEY_GROUPS.speed.trainingTrialCleared,'0');
+    storage.set(STORAGE_KEY_GROUPS.speed.intermediateTrialCleared,'0');
   }catch(_){}
   storage.set(STORAGE_KEY_GROUPS.progression.stagesLayoutVersion,STAGES_LAYOUT_VERSION);
 }
@@ -586,7 +586,7 @@ function grantMasterReward(){
   if(masterGoldGranted)return;
   masterGoldGranted=setUnlock('masterGoldGranted',true);
   grantMasterRewardSettingsCommand();
-  try{storage.set(STORAGE_KEYS.masterGoldGranted,'1');}catch(_){ }
+  try{storage.set(STORAGE_KEY_GROUPS.rewards.masterGoldGranted,'1');}catch(_){ }
 }
 function updateMasterTheme(){
   document.body.classList.toggle('mastered',hasMasterReward());
@@ -594,7 +594,7 @@ function updateMasterTheme(){
   // 悟り制覇の瞬間は、白黒と縦配置をセットで新しい褒美として見せる。
   if(isSatoriMastered()&&!satoriDesignGranted){
     boardTheme='satori';boardLayout='tilted';satoriDesignGranted=setUnlock('satoriDesignGranted',true);
-    try{storage.set(STORAGE_KEYS.satoriDesignGranted,'1');}catch(_){ }
+    try{storage.set(STORAGE_KEY_GROUPS.rewards.satoriDesignGranted,'1');}catch(_){ }
   }
   if(hasMasterReward()&&!boardThemeChosen)boardTheme=hasSatoriReward()?'satori':'gold';
   if(hasSatoriReward()&&!boardLayoutChosen)boardLayout='tilted';
@@ -605,7 +605,7 @@ function updateMasterTheme(){
   document.body.dataset.boardTheme=boardTheme;
   document.body.dataset.boardLayout=boardLayout;
   applyBoardTheme();
-  try{storage.set(STORAGE_KEYS.boardTheme,boardTheme);storage.set(STORAGE_KEYS.boardLayout,boardLayout);storage.set(STORAGE_KEYS.darumaColor,darumaColor);}catch(_){ }
+  try{storage.set(STORAGE_KEY_GROUPS.settings.boardTheme,boardTheme);storage.set(STORAGE_KEY_GROUPS.settings.boardLayout,boardLayout);storage.set(STORAGE_KEY_GROUPS.settings.darumaColor,darumaColor);}catch(_){ }
 }
 const BOARD_THEME_TONES={
   gold:{stand:{fill:'#F6DE93',stroke:'#C89C35'},fallen:{fill:'#D7B75F',stroke:'#A67D28'}},
