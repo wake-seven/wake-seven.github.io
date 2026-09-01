@@ -13,6 +13,7 @@ const [template, bootstrap, events, board, interaction, tutorial, published] = a
 const progression = await read('src/ui/progression-ui.js');
 const speed = await read('src/runtime/speed.js');
 const runtime = await read('src/runtime/runtime.js');
+const message = await read('src/ui/message.js');
 
 // Browser-like flow contracts: the shell must exist before bootstrap restores
 // state, and each user-visible transition must have a named integration point.
@@ -55,6 +56,49 @@ assert.match(board, /syncGameState\(\);[\s\S]{0,240}STORAGE_KEY_GROUPS\.progress
   'active session must be persisted after the state snapshot');
 assert.match(template, /body\.app-booting\{visibility:hidden\}/,
   'initial placeholder must remain hidden during reload restoration');
+
+// Clear/message dialog navigation contract.  This is deliberately a source
+// contract rather than a DOM simulator: it ensures every route has an explicit
+// close/advance/review boundary and that a reload can reconstruct the dialog
+// without losing the cleared position.
+for (const id of ['clearClose', 'clearNext', 'clearTipLink', 'clearMessages',
+  'messageDialog', 'messagePrev', 'messageNext', 'closeMessages', 'messageRankLink']) {
+  assert.match(template, new RegExp(`id=["']${id}["']`), `dialog navigation DOM contract is missing: ${id}`);
+}
+assert.match(events, /WakeSevenEventBindings\.click\('clearClose',[\s\S]*hideGameDialogs\(\)[\s\S]*renderStageNav\(\)/,
+  'clear close must hide the dialog and return to the stage navigation');
+assert.match(events, /WakeSevenEventBindings\.click\('clearNext',[\s\S]*hideGameDialogs\(\)[\s\S]*advanceAfterClear\(\)/,
+  'clear next must hide the dialog before advancing');
+assert.match(events, /WakeSevenEventBindings\.click\('clearTipLink',handleClearTipLink\)/,
+  'clear review/details link must have a named route handler');
+assert.match(events, /clearMessages.*GameDialogs\.messages\(\{resume:true\}\)/,
+  'clear message review must resume the saved review position');
+assert.match(events, /messageDialogReturn[\s\S]*focusReturnTarget\(returnTarget\)/,
+  'closing message review must restore its return dialog and focus target');
+assert.match(events, /messagePrev.*moveMessageReview\(-1\)/,
+  'message previous control must move within the review collection');
+assert.match(events, /messageNext.*moveMessageReview\(1\)/,
+  'message next control must move within the review collection');
+assert.match(message, /openMessageReview\(\{resume=false,returnTarget=null\}=\{\}\)/,
+  'message review must accept an explicit return target');
+assert.match(message, /updateMessageReviewNavigation\(entry\)/,
+  'message review must persist the current entry while navigating');
+assert.match(progression, /if\(isMode\('free'\)\)[\s\S]*tr\('another'\)/,
+  'free clear must use its own next-action route');
+assert.match(progression, /else if\(isMode\('custom'\)\)[\s\S]*tr\('again'\)/,
+  'custom clear must use its own next-action route');
+assert.match(progression, /else if\(isMode\('satori'\)[\s\S]*satoriIndex===SATORI_STAGES\.length-1\?[\s\S]*tr\('satoriChoose'\)/,
+  'satori clear must choose between the next puzzle and completion route');
+assert.match(progression, /else if\(isMode\('mastery'\)[\s\S]*extraIndex===EXTRA_STAGES\.length-1\?[\s\S]*tr\('toFree'\)/,
+  'mastery clear must choose between the next pattern and free route');
+assert.match(runtime, /if\(visible\('clearDialog'\)\)return \{type:'clear'\}/,
+  'clear dialog visibility must be captured for reload restoration');
+assert.match(runtime, /if\(visible\('messageDialog'\)[\s\S]*return \{type:'message'/,
+  'message dialog and its review position must be captured for reload restoration');
+assert.match(runtime, /state\.id==='clear'[\s\S]*clearShown&&isSolved\(\)[\s\S]*showClearDialog\(\)/,
+  'restoring a clear dialog must require the solved board and clear state');
+assert.match(runtime, /state\.id==='message'[\s\S]*openMessageReview\(\{resume:true\}\)/,
+  'restoring message review must rebuild it through the normal resume route');
 
 // Execute the pure pointer/session boundary in a VM. This is intentionally a
 // browser-equivalent contract rather than a full DOM simulator: it verifies
