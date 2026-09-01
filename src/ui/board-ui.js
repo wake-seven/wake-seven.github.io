@@ -1982,9 +1982,7 @@ function animateTutorialRewind(model,visualItems){
   svg.appendChild(group);
   // 元のDOM位置(水色の棒より前)を覚えておき、終了後に同じ位置へ戻す。末尾に付け直すと
   // 棒(grip-marker)より後ろになってしまい、棒が裏に隠れて見えなくなるため。
-  const domOrder=[...svg.children];
-  const sortedItems=[...visualItems].sort((a,b)=>domOrder.indexOf(a.el)-domOrder.indexOf(b.el));
-  const domSnapshot=captureTutorialRewindDomSnapshot(sortedItems);
+  const domSnapshot=captureTutorialRewindDomSnapshot(visualItems);
   const session=startTutorialRewindSession({snapshot:domSnapshot,group,onCleanup:()=>{
     setBoardBusy(false);paint();setUiEffectTimer('tutorial-rewind','cue',showTutorialCue,150);
   }});

@@ -5,7 +5,12 @@ function createTutorialRewindModel({startAngle=0,endAngle=0,direction=1,pivot,it
 
 // 巻き戻し中に一時的にgroupへ移す要素のDOM位置とインライン表示を退避する。
 function captureTutorialRewindDomSnapshot(items=[]){
-  return items.map(item=>({
+  const ordered=[...items].sort((a,b)=>{
+    if(a.el?.parentNode!==b.el?.parentNode)return 0;
+    const children=[...(a.el?.parentNode?.children||[])];
+    return children.indexOf(a.el)-children.indexOf(b.el);
+  });
+  return ordered.map(item=>({
     el:item.el,
     parent:item.el?.parentNode||null,
     nextSibling:item.el?.nextSibling||null,

@@ -51,7 +51,7 @@ for(const name of ['captureTutorialRewindDomSnapshot','restoreTutorialRewindDomS
 for(const name of ['startTutorialRewindSession','setTutorialRewindTimer','bindTutorialRewindAnimation','finishTutorialRewindSession','cancelTutorialRewindSession','cancelActiveTutorialRewindSession'])assert.match(tutorialAnimation,new RegExp(`function ${name}\\(`),`${name} session API is missing.`);
 assert.match(board,/createTutorialRewindModel\(\{startAngle:dg\.deg,endAngle:target,direction:dir,pivot:dg\.kc,items:dg\.items\.map/,'Tutorial rewind must receive a normalized operation model.');
 assert.match(board,/function animateTutorialRewind\(model,visualItems\)/,'Tutorial rewind animation must receive an operation model separate from visual items.');
-assert.match(board,/captureTutorialRewindDomSnapshot\(sortedItems\)/,'Tutorial rewind must snapshot DOM order before grouping.');
+assert.match(board,/captureTutorialRewindDomSnapshot\(visualItems\)/,'Tutorial rewind must snapshot DOM order before grouping.');
 assert.match(board,/startTutorialRewindSession\(\{snapshot:domSnapshot,group/,'Tutorial rewind must start a dedicated session.');
 assert.match(board,/setTutorialRewindTimer\(session,/,'Tutorial rewind timers must use the dedicated session.');
 assert.match(board,/renderTutorialRewindAppearance\(visualItems,model\.direction\)/,'Tutorial rewind appearance updates must use the renderer boundary.');
@@ -64,6 +64,7 @@ assert.match(tutorialAnimation,/return \{startAngle,endAngle,direction,pivot,ite
 assert.match(tutorialAnimation,/activeTutorialRewindSession===session\)activeTutorialRewindSession=null/,'Tutorial rewind sessions must clear their active reference after cleanup.');
 assert.match(tutorialAnimation,/if\(session\.cleaned\|\|session\.cancelled\)return/,'Tutorial rewind timers must ignore stale callbacks.');
 assert.match(tutorialAnimation,/restoreTutorialRewindDomSnapshot\(session\.snapshot\)/,'Tutorial rewind session cleanup must restore its DOM snapshot.');
+assert.match(tutorialAnimation,/const ordered=\[\.\.\.items\]\.sort/,'Tutorial rewind snapshot API must own DOM ordering.');
 assert.match(published,/function createTutorialRewindModel\(/,'Generated index must include the tutorial rewind model.');
 assert.match(published,/function cancelActiveTutorialRewindSession\(/,'Generated index must include the tutorial rewind cancellation API.');
 assert.match(published,/function renderTutorialRewindAppearance\(/,'Generated index must include the tutorial rewind renderer.');
@@ -119,6 +120,7 @@ assert.match(board,/function animateGuidedBasicRewind\([\s\S]{0,700}Math\.abs\(r
 const tutorialStart=board.indexOf('function animateTutorialRewind');
 const tutorialEnd=board.indexOf('function animateGuidedBasicRewind',tutorialStart);
 const tutorialRewind=tutorialStart>=0&&tutorialEnd>tutorialStart?board.slice(tutorialStart,tutorialEnd):'';
+assert.doesNotMatch(tutorialRewind,/const domOrder=/,'Tutorial rewind animation must not calculate DOM ordering at the call site.');
 assert.match(tutorialRewind,/rotate\('\+model\.startAngle\+'deg\)',offset:0/,'Tutorial rewind must start from the released angle model.');
 assert.match(tutorialRewind,/rotate\('\+model\.endAngle\+'deg\)',offset:1/,'Tutorial rewind must return directly to the initial angle model.');
 assert.doesNotMatch(tutorialRewind,/offset:\.36|offset:\.56/,'Tutorial rewind must not pass through an intermediate 120-degree waypoint.');
