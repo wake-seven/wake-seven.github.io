@@ -68,7 +68,7 @@ assert.match(boardRender,/function renderAcademyRemainingCalloutElement\(/,'Acad
 assert.match(board,/function animateGroupedSwipe\(/,'Pointer-dependent grouped swipe animation must remain available.');
 assert.match(board,/function animateUndoSwipe\(/,'Sequential undo animation must remain available.');
 assert.match(board,/function animateGuidedBasicRewind\([\s\S]{0,320}const rewindDeg=dg\.deg%360/,'Guided rewind must normalize full-turn angles without shortening partial turns.');
-assert.match(board,/function animateGuidedBasicRewind\([\s\S]{0,420}Math\.abs\(rewindDeg\)<0\.5/,'Guided rewind must skip zero-angle animations.');
+assert.match(board,/function animateGuidedBasicRewind\([\s\S]{0,460}Math\.abs\(rewindDeg\)<18/,'Guided rewind must skip near-zero-angle animations.');
 const tutorialStart=board.indexOf('function animateTutorialRewind');
 const tutorialEnd=board.indexOf('function animateGuidedBasicRewind',tutorialStart);
 const tutorialRewind=tutorialStart>=0&&tutorialEnd>tutorialStart?board.slice(tutorialStart,tutorialEnd):'';
