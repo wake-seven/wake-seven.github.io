@@ -1020,7 +1020,7 @@ function reorientBoard(permutation,flip=false,rotationDeg=0){
   applyTransform();
   paint();
   if(reduced)return;
-  busy=true;
+  setBoardBusy(true);
   let remaining=baseTiles.length;
   const finished=new Set();
   for(const el of baseTiles){
@@ -1047,7 +1047,7 @@ function reorientBoard(permutation,flip=false,rotationDeg=0){
     const done=()=>{
       if(finished.has(el))return;
       finished.add(el);
-      if(--remaining===0){busy=false;paint();}
+      if(--remaining===0){setBoardBusy(false);paint();}
     };
     animation.onfinish=done;animation.oncancel=done;
   }
@@ -1192,7 +1192,7 @@ function showTutorialCue(){
     svg.querySelector('.pivot[data-tri="'+move.ti+'"]')?.classList.add('hi');
   }else if(step.cue==='axis'){
     svg.classList.add('hinting');
-    for(const cell of TRI[move.ti].cells)tileEls[cell].classList.add('selected');
+    for(const cell of TRI[move.ti].cells)setBoardTileSelected(tileEls[cell],true);
     svg.querySelector('.pivot[data-tri="'+move.ti+'"]')?.classList.add('hi');
     showAxisGuide(TRI[move.ti]);
   }
@@ -1328,10 +1328,10 @@ function restoreSavedBoard(data){
   clearShown=!!data.clearShown||isSolved();
   loadFourthChecks();
   fourthDistanceRevealed=!!data.fourthDistanceRevealed;
-  fourthHintPreview=false;fourthHintDistance=null;busy=false;drag=null;boardTouchActive=false;
+  fourthHintPreview=false;fourthHintDistance=null;setBoardBusy(false);setBoardDrag(null);setBoardTouchActive(false);
   svg.classList.remove('spinning','selecting','rotation-started','clear-pending','celebrating');
   svg.classList.toggle('clear-pending',clearShown&&isSolved());
-  baseTiles.forEach(el=>el.classList.remove('selected'));
+  baseTiles.forEach(el=>setBoardTileSelected(el,false));
   $('clearNext').hidden=!clearShown;
   paint();
   return true;
@@ -1555,7 +1555,7 @@ function orbitTransform(item,deg,kc){
 }
 function animateGroupedSwipe(dg,target,dir,waking){
   const {group,clones}=createAutoSwipePreview(dg.items,dg.kc);
-  busy=true;
+  setBoardBusy(true);
   const duration=Math.max(190,Math.min(620,Math.abs(target-dg.deg)*4.65));
   const previewState=rollOnce(ori,dg.ti,dir);
   showMoves(moves+1);
@@ -1576,7 +1576,7 @@ function animateGroupedSwipe(dg,target,dir,waking){
     applySwipe(dg.ti,dir,true,false);
     group.remove();
     for(const item of dg.items)item.el.style.visibility='';
-    busy=false;
+    setBoardBusy(false);
     paint();
     haptic(SOLVER.dist[enc(ori)]===0?[20,32,42]:10);
     playRotateSound(dir);
@@ -1605,7 +1605,7 @@ function animateUndoSwipe(target){
     return {el,cell,turn:spin[cell],dx:CELL[cell].x-pivot.x,dy:CELL[cell].y-pivot.y};
   });
   const {group,clones}=createAutoSwipePreview(items,pivot);
-  busy=true;
+  setBoardBusy(true);
   const duration=420;
   let started=null;
   const ease=t=>1-Math.pow(1-t,3);
@@ -1619,7 +1619,7 @@ function animateUndoSwipe(target){
     group.remove();
     for(const item of items)item.el.style.visibility='';
     restoreBoardSnapshotCommand(target);
-    busy=false;paint();
+    setBoardBusy(false);paint();
     haptic(7);playRotateSound(reverseDir);
   };
   requestAnimationFrame(frame);
@@ -1634,7 +1634,7 @@ function restartWithAnimation(){
   if(isMode('speed')&&speedSession)persistSpeedSession();
   renderStageNav();
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  busy=true;
+  setBoardBusy(true);
   let remaining=baseTiles.length;
   const targetOri=Uint8Array.from(ori),targetSpin=Int16Array.from(spin);
   // パネルの場所は動かさず、それぞれの向きだけ最短方向へ整える。
@@ -1647,7 +1647,7 @@ function restartWithAnimation(){
       {transform:tileTransformDeg(CELL[cell].x,CELL[cell].y,targetDeg)}
     ],{duration:300,easing:'cubic-bezier(.18,.78,.22,1)'});
     animation.onfinish=animation.oncancel=()=>{
-      if(--remaining===0){busy=false;paint();}
+      if(--remaining===0){setBoardBusy(false);paint();}
     };
   }
   setTimeout(()=>{
@@ -1741,7 +1741,7 @@ function handleBoardPointerDown(e){
   const ti=grip.ti,t=grip.t,selectedTiles=new Set(t.cells.map(i=>tileEls[i]));
   // 最初の3問だけ対象の3体を見分けやすくし、それ以降は全員を見渡せるよう暗転しない。
   if(usesSwipeDimming())svg.classList.add('selecting');
-  for(const i of t.cells) tileEls[i].classList.add('selected');
+  for(const i of t.cells)setBoardTileSelected(tileEls[i],true);
   cancelTutorialHint(true);
   if(tutorialMove){
     const soloSecondMove=tutorialStepData?.cue==='chain-direction'&&moves>0;
@@ -1753,7 +1753,7 @@ function handleBoardPointerDown(e){
       if(!(tutorialStepData?.cue==='chain'&&moves>0)&&tutorialStepData?.cue!=='chain-direction')showHintArrow(tutorialMove.ti,tutorialMove.dir,false,true);
     }
   }
-  baseTiles.forEach(el=>el.classList.toggle('selected',selectedTiles.has(el)));
+  baseTiles.forEach(el=>setBoardTileSelected(el,selectedTiles.has(el)));
   flashGrabbedTiles(t);
   cancelTileAnimations();
   const r=Math.hypot(p.x-t.x,p.y-t.y);
@@ -1769,8 +1769,8 @@ function handleBoardPointerDown(e){
   });
   // 回す3体は他のパネルより手前に。ただし軸の点・持ち手・スワイプ中の点線より奥に留める。
   const frontMarker=svg.querySelector('.pivot');
-  for(const item of items){ item.el.classList.add('selected'); svg.insertBefore(item.el,frontMarker); }
-  svg.querySelector('.pivot[data-tri="'+ti+'"]').classList.add('active');
+  for(const item of items){setBoardTileSelected(item.el,true);svg.insertBefore(item.el,frontMarker);}
+  setBoardPivotActive(svg.querySelector('.pivot[data-tri="'+ti+'"]'),true);
   svg.setPointerCapture(e.pointerId);
   svg.classList.add('spinning');
 }
@@ -1866,8 +1866,8 @@ function finishDrag(e,cancel=false,forcedTurns=null){
   if(!drag||(e&&e.pointerId!==drag.id)) return;
   const dg=drag; setBoardDrag(null);setBoardTouchActive(false); clearAxisGuide(); svg.classList.remove('spinning');
   svg.classList.remove('selecting');
-  for(const item of dg.items) item.el.classList.remove('selected');
-  svg.querySelectorAll('.pivot.active').forEach(el=>el.classList.remove('active'));
+  for(const item of dg.items)setBoardTileSelected(item.el,false);
+  svg.querySelectorAll('.pivot.active').forEach(el=>setBoardPivotActive(el,false));
   try{svg.releasePointerCapture(dg.id);}catch(_){}
 
   let turns=cancel?0:forcedTurns===null?Math.round(dg.deg/120):forcedTurns;
@@ -1968,18 +1968,18 @@ function finishDrag(e,cancel=false,forcedTurns=null){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){wakeFeedback(waking);resumeTutorialCue();return;}
   const delta=Math.abs(target-dg.deg);
   if(delta<.1){wakeFeedback(waking);resumeTutorialCue();return;}
-  busy=true; let done=0;
+  setBoardBusy(true); let done=0;
   for(const item of dg.items){
     const a=item.el.animate([
       {transform:orbitTransform(item,dg.deg,dg.kc)},
       {transform:orbitTransform(item,target,dg.kc)}
     ],{duration:Math.max(190,Math.min(620,delta*4.65)),easing:'cubic-bezier(.2,.75,.25,1)'});
-    a.onfinish=a.oncancel=()=>{ if(++done===3){busy=false;paint();wakeFeedback(waking);resumeTutorialCue();} };
+    a.onfinish=a.oncancel=()=>{ if(++done===3){setBoardBusy(false);paint();wakeFeedback(waking);resumeTutorialCue();} };
   }
 }
 function animateTutorialRewind(dg,target,dir){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){paint();setTimeout(showTutorialCue,520);return;}
-  busy=true;
+  setBoardBusy(true);
   const duration=720;
   // 3枚を個別にanimate()すると僅かなずれでばらばらに見えるため、1つのgroupへ一時的に
   // まとめて入れ、group側の回転を1つだけ再生することで常に揃って動くようにする。
@@ -2019,14 +2019,14 @@ function animateTutorialRewind(dg,target,dir){
       item.el.style.transform='';
     }
     group.remove();
-    busy=false;paint();setTimeout(showTutorialCue,150);
+    setBoardBusy(false);paint();setTimeout(showTutorialCue,150);
   };
 }
 function animateGuidedBasicRewind(dg){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
     paint();haptic(8);return;
   }
-  busy=true;
+  setBoardBusy(true);
   svg.classList.add('spinning'); // 巻き戻り中は水色の棒を隠し、戻り切ってから復活させる。
   const duration=680;
   // 間違いの向きへぴったり120度まで揃えてから戻すのではなく、離した角度から直接0度へ戻す。
@@ -2065,7 +2065,7 @@ function animateGuidedBasicRewind(dg){
     if(progress<1){requestAnimationFrame(frame);return;}
     for(const{item} of clones)item.el.style.visibility='';
     group.remove();
-    busy=false;svg.classList.remove('spinning','rotation-started');paint();
+    setBoardBusy(false);svg.classList.remove('spinning','rotation-started');paint();
     setTimeout(()=>{if(isAssistedLearningStage()||isFallingRodStage())$('gripPrompt').hidden=true;},450);
   };
   requestAnimationFrame(frame);

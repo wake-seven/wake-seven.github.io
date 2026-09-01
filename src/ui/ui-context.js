@@ -7,4 +7,7 @@ function resetBoardUiContext(){
 }
 function setBoardTouchActive(value){boardTouchActive=value===true;return boardTouchActive;}
 function setBoardDrag(value){drag=value||null;return drag;}
+function setBoardBusy(value){busy=value===true;return busy;}
+function setBoardTileSelected(tile,selected){tile?.classList.toggle('selected',selected===true);}
+function setBoardPivotActive(pivot,active){pivot?.classList.toggle('active',active===true);}
 export {};
