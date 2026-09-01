@@ -379,7 +379,7 @@ const CHAIN_STEPS={
     onAction(){loadStage(stageIndex+1);}
   },
   trainingWelcome:{
-    wide:true, titleKey:'trainingWelcomeTitle', actionKey:'trainingWelcomeStart',
+    wide:true, titleKey:'trainingWelcomeTitle', actionKey:'trainingWelcomeNext',
     render(body){
       cloneDialogTemplate(body,'chain-template-training-welcome','<div class="training-welcome-art-wrap"></div><p class="chain-text-left" id="chainDialogText"></p>');
       body.querySelector('[data-chain-dialog-text]')?.setAttribute('id','chainDialogText');
