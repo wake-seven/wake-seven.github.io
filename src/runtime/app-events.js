@@ -24,7 +24,7 @@ function debugGrantRainbowDaruma(){
   darumaColor='rainbow';
   darumaColorChosen=false;
   try{
-    storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');
+    storage.set(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');
     storage.set(STORAGE_KEY_GROUPS.settings.darumaColor,'rainbow');
     storage.remove(STORAGE_KEY_GROUPS.settings.darumaColorChosen);
   }catch(_){ }
@@ -45,10 +45,10 @@ function debugPrepareSecondLapCheckpoint(){
   satoriDesignGranted=setUnlock('satoriDesignGranted',true);
   try{
     storage.set(STORAGE_KEY_GROUPS.progression.secondLapUnlocked,'1');
-    storage.remove(STORAGE_KEYS.awakenedGranted);
+    storage.remove(STORAGE_KEY_GROUPS.rewards.awakenedGranted);
     for(const variant of ['standard','training9','training18','mastery27','satori73'])clearSpeedSession(variant);
-    storage.set(STORAGE_KEYS.masterGoldGranted,'1');
-    storage.set(STORAGE_KEYS.satoriDesignGranted,'1');
+    storage.set(STORAGE_KEY_GROUPS.rewards.masterGoldGranted,'1');
+    storage.set(STORAGE_KEY_GROUPS.rewards.satoriDesignGranted,'1');
   }catch(_){ }
   activateCampaignLap(2);
 }
@@ -67,8 +67,8 @@ function debugPrepareFirstLapCheckpoint(){
   speedMasteryTrialCleared=false;
   try{
     storage.remove(STORAGE_KEY_GROUPS.progression.secondLapUnlocked);
-    storage.remove(STORAGE_KEYS.secondLapActive);
-    storage.remove(STORAGE_KEYS.awakenedGranted);
+  storage.remove(STORAGE_KEY_GROUPS.progression.secondLapActive);
+  storage.remove(STORAGE_KEY_GROUPS.rewards.awakenedGranted);
   storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
   storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
   storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
@@ -83,10 +83,10 @@ function debugUnlockStageCheckpoint(index,secondLap=false){
   if(index>=TRAINING_STAGE_START&&!secondLap)grantSpeedTrialCleared('training9');
   for(let i=0;i<index;i++)clearedStages.add(i);
   try{
-    storage.set('wake7-cleared',JSON.stringify([...clearedStages]));
+      storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...clearedStages]));
     if(secondLap){
-      storage.set('wake7-extra-cleared','[]');
-      storage.set('wake7-satori-cleared','[]');
+      storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,'[]');
+      storage.set(STORAGE_KEY_GROUPS.progression.satoriCleared,'[]');
     }
   }catch(_){}
   persistLapProgress();updateMasterTheme();
@@ -114,9 +114,9 @@ function debugUnlockExtra(count,secondLap=false){
   else STAGES.forEach((_,i)=>clearedStages.add(i));
   for(let i=0;i<count;i++)clearedExtraStages.add(i);
   try{
-    storage.set('wake7-cleared',JSON.stringify([...clearedStages]));
-    storage.set('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
-    if(secondLap)storage.set('wake7-satori-cleared','[]');
+    storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...clearedStages]));
+    storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,JSON.stringify([...clearedExtraStages]));
+    if(secondLap)storage.set(STORAGE_KEY_GROUPS.progression.satoriCleared,'[]');
   }catch(_){}
   persistLapProgress();updateMasterTheme();
   if(count>0)rememberClearedMessage(true,count-1);
@@ -136,9 +136,9 @@ function debugUnlockSatori(count,secondLap=false){
   else{STAGES.forEach((_,i)=>clearedStages.add(i));EXTRA_STAGES.forEach((_,i)=>clearedExtraStages.add(i));}
   for(let i=0;i<count;i++)clearedSatoriStages.add(i);
   try{
-    storage.set('wake7-cleared',JSON.stringify([...clearedStages]));
-    storage.set('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
-    storage.set('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));
+    storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...clearedStages]));
+    storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,JSON.stringify([...clearedExtraStages]));
+    storage.set(STORAGE_KEY_GROUPS.progression.satoriCleared,JSON.stringify([...clearedSatoriStages]));
   }catch(_){}
   persistLapProgress();updateMasterTheme();
   if(secondLap){debugGrantRainbowDaruma();updateMasterTheme();}
@@ -170,8 +170,8 @@ function debugOpenSpeedExam(variant,index){
     grantCampaignProgressThrough('mastery');
   }
   try{
-    storage.set('wake7-cleared',JSON.stringify([...clearedStages]));
-    storage.set('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
+    storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...clearedStages]));
+    storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,JSON.stringify([...clearedExtraStages]));
   }catch(_){ }
   persistLapProgress();updateMasterTheme();
   speedVariant=variant;
@@ -1101,7 +1101,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
     storage.remove(STORAGE_KEY_GROUPS.progression.secondLapActive);
     storage.remove(STORAGE_KEY_GROUPS.progression.secondLapUnlocked);
     storage.remove(STORAGE_KEY_GROUPS.progression.activeLap);
-    for(const lap of [1,2])for(const part of ['primary','extra','satori'])storage.remove('wake7-lap'+lap+'-'+part+'-cleared');
+    for(const lap of [1,2])for(const part of ['primary','extra','satori'])storage.remove(STORAGE_KEY_GROUPS.progression.lapCleared(lap,part));
     storage.remove(STORAGE_KEYS.awakenedGranted);
     if(!preserveRewards){
       // デバッグの完全リセットでは、ゲノム側で選んだ表示設定も初期化する。

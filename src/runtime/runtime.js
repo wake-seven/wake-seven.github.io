@@ -513,11 +513,11 @@ if(storage.get(STORAGE_KEY_GROUPS.progression.stagesLayoutVersion)!==STAGES_LAYO
   speedTrainingTrialCleared=false;speedIntermediateTrialCleared=false;
   try{
     storage.remove(STORAGE_KEY_GROUPS.progression.cleared);
-    storage.remove('wake7-lap1-primary-cleared');
-    storage.remove('wake7-lap2-primary-cleared');
+    storage.remove(STORAGE_KEY_GROUPS.progression.lapCleared(1,'primary'));
+    storage.remove(STORAGE_KEY_GROUPS.progression.lapCleared(2,'primary'));
     storage.remove(STORAGE_KEY_GROUPS.progression.extraCleared);
-    storage.remove('wake7-lap1-extra-cleared');
-    storage.remove('wake7-lap2-extra-cleared');
+    storage.remove(STORAGE_KEY_GROUPS.progression.lapCleared(1,'extra'));
+    storage.remove(STORAGE_KEY_GROUPS.progression.lapCleared(2,'extra'));
     storage.remove(STORAGE_KEY_GROUPS.progression.currentStage);
     storage.set(STORAGE_KEYS.speedTrainingTrialCleared,'0');
     storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,'0');
@@ -526,9 +526,9 @@ if(storage.get(STORAGE_KEY_GROUPS.progression.stagesLayoutVersion)!==STAGES_LAYO
 }
 function persistLapProgress(){
   for(const [lap,primary,extra,satori] of [[1,lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages],[2,lap2ClearedStages,lap2ClearedExtraStages,lap2ClearedSatoriStages]]){
-    storage.setJson('wake7-lap'+lap+'-primary-cleared',[...primary]);
-    storage.setJson('wake7-lap'+lap+'-extra-cleared',[...extra]);
-    storage.setJson('wake7-lap'+lap+'-satori-cleared',[...satori]);
+    storage.setJson(STORAGE_KEY_GROUPS.progression.lapCleared(lap,'primary'),[...primary]);
+    storage.setJson(STORAGE_KEY_GROUPS.progression.lapCleared(lap,'extra'),[...extra]);
+    storage.setJson(STORAGE_KEY_GROUPS.progression.lapCleared(lap,'satori'),[...satori]);
   }
   storage.setJson(STORAGE_KEY_GROUPS.progression.cleared,[...clearedStages]);
   storage.setJson(STORAGE_KEY_GROUPS.progression.extraCleared,[...clearedExtraStages]);

@@ -85,9 +85,9 @@ function openSpeedPicker(){
   storage.set(SPEED_LAST_TAB_STORAGE_KEY,speedVariant);
   showMasterDialog('speedIntro');
 }
-const SPEED_SESSION_KEY=STORAGE_KEYS.speedSession;
-const SPEED_BEST_KEY=STORAGE_KEYS.speedBestMs;
-const SPEED_HISTORY_KEY=STORAGE_KEYS.speedHistory;
+const SPEED_SESSION_KEY=STORAGE_KEY_GROUPS.speed.session;
+const SPEED_BEST_KEY=STORAGE_KEY_GROUPS.speed.bestMs;
+const SPEED_HISTORY_KEY=STORAGE_KEY_GROUPS.speed.history;
 function speedStorageKey(base,variant=speedVariant){return variant==='standard'?base:base+'-'+variant;}
 function speedSessionStorageKey(variant=speedVariant){return speedStorageKey(SPEED_SESSION_KEY,variant);}
 function speedBestStorageKey(variant=speedVariant){return speedStorageKey(SPEED_BEST_KEY,variant);}
@@ -131,7 +131,7 @@ function readSpeedSession(variant=speedVariant){
   return data;
 }
 function readActiveSpeedSession(){
-  const lastVariant=storage.get(STORAGE_KEYS.speedActiveVariant,'');
+  const lastVariant=storage.get(STORAGE_KEY_GROUPS.speed.activeVariant,'');
   if(SPEED_MODE_DEFINITIONS[lastVariant]){
     const saved=readSpeedSession(lastVariant);
     if(saved)return saved;

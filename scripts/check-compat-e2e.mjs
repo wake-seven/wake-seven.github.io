@@ -61,6 +61,11 @@ for (const group of ['navigation', 'board', 'progression', 'settings', 'speed', 
   assert.match(storageSource, new RegExp(`${group}\\s*:`), `Unified state section is missing: ${group}`);
 }
 assert.match(storageSource, /dialogs:\s*Object\.freeze\(\{[^}]*state:/, 'Dialog persistence keys are not grouped.');
+for (const [file, source] of sources) {
+  if (file === 'src/state/game-state.js') continue;
+  assert.doesNotMatch(source, /storage\.(?:get|set|remove|json|setJson)\(\s*['"]wake7-[a-z0-9-]+['"]\s*(?:[,)]|$)/,
+    `Direct persistence key remains outside STORAGE_KEY_GROUPS: ${file}`);
+}
 const directStorage = all.match(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)/g) || [];
 const localStorageCalls = all.match(/localStorage\.(?:getItem|setItem|removeItem)/g) || [];
 const sessionStorageCalls = all.match(/sessionStorage\.(?:getItem|setItem|removeItem)/g) || [];

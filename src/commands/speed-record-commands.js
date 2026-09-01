@@ -14,7 +14,7 @@ function recordSpeedCompletionCommand(elapsed,optimalClears){
   history.unshift({elapsedMs:time,optimalClears,total:speedSession.total||activeSpeedDefinition().total,completedAt:Date.now()});
   storage.setJson(speedHistoryStorageKey(),history.slice(0,20));
   clearSpeedSessionCommand();
-  storage.remove(STORAGE_KEYS.speedActiveVariant);
+  storage.remove(STORAGE_KEY_GROUPS.speed.activeVariant);
   completeSpeedSessionCommand({elapsedMs:time,bestMs:bestTime,optimalClears,runNumber:history.length});
   return {bestTime,history,runNumber:history.length};
 }

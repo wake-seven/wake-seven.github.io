@@ -22,7 +22,7 @@ function persistSpeedSessionCommand(){
   if(!speedSession)return false;
   const elapsed=speedElapsedMs();
   const payload={...speedSession,variant:activeSpeedDefinition().id,elapsedMs:elapsed,board:isMode('speed')?serializeActiveBoard():speedSession.board};
-  storage.setJson(speedSessionStorageKey(),payload);storage.set(STORAGE_KEYS.speedActiveVariant,payload.variant);
+  storage.setJson(speedSessionStorageKey(),payload);storage.set(STORAGE_KEY_GROUPS.speed.activeVariant,payload.variant);
   return true;
 }
 function clearSpeedSessionCommand(variant=speedVariant){storage.remove(speedSessionStorageKey(variant));return true;}

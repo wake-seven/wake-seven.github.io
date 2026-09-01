@@ -20,6 +20,7 @@
 現行の保存キーは `wake7-state-vnext` です。過去ユーザーの保存データ、旧速解きID、旧モードフラグの移行処理は提供しません。正式な速解きIDは `training9`、`training18`、`mastery27`、`satori73` です。
 
 状態は `navigation`、`board`、`progression`、`settings`、`speed`、`ui` の領域に分けて保持します。永続キーの参照口は `WakeSevenState.STORAGE_KEY_GROUPS` の `settings`、`progression`、`rewards`、`speed`、`dialogs` に集約しています。ダイアログの表示中状態とメッセージ見直し位置も `dialogs` 群を経由し、通常の盤面/UI一時状態とは分離します。既存キー名や保存形式は変更していません。
+周回別クリアキーのような動的キーも `progression.lapCleared(lap, part)` を入口にします。解析用 `sessionStorage` はゲーム状態とは別の用途のため、保存境界の対象外です。
 
 ## 開発用ESMの薄い境界
 

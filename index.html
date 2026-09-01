@@ -1490,7 +1490,7 @@
   // 分野別の参照口。平坦な STORAGE_KEYS は既存モジュールとの互換用に維持する。
   const STORAGE_KEY_GROUPS = Object.freeze({
     settings: Object.freeze({ language: STORAGE_KEYS.language, sound: STORAGE_KEYS.sound, boardTheme: STORAGE_KEYS.boardTheme, boardThemeChosen: STORAGE_KEYS.boardThemeChosen, boardLayout: STORAGE_KEYS.boardLayout, boardLayoutChosen: STORAGE_KEYS.boardLayoutChosen, darumaColor: STORAGE_KEYS.darumaColor, darumaColorChosen: STORAGE_KEYS.darumaColorChosen }),
-    progression: Object.freeze({ cleared: STORAGE_KEYS.cleared, extraCleared: STORAGE_KEYS.extraCleared, satoriCleared: STORAGE_KEYS.satoriCleared, currentStage: STORAGE_KEYS.currentStage, activeSession: STORAGE_KEYS.activeSession, activeLap: STORAGE_KEYS.activeLap, secondLapActive: STORAGE_KEYS.secondLapActive, secondLapUnlocked: STORAGE_KEYS.secondLapUnlocked, stagesLayoutVersion: STORAGE_KEYS.stagesLayoutVersion, satoriOrderVersion: STORAGE_KEYS.satoriOrderVersion, introSeen: STORAGE_KEYS.introSeen, tutorialComplete: STORAGE_KEYS.tutorialComplete, tutorialStep: STORAGE_KEYS.tutorialStep }),
+    progression: Object.freeze({ cleared: STORAGE_KEYS.cleared, extraCleared: STORAGE_KEYS.extraCleared, satoriCleared: STORAGE_KEYS.satoriCleared, currentStage: STORAGE_KEYS.currentStage, activeSession: STORAGE_KEYS.activeSession, activeLap: STORAGE_KEYS.activeLap, secondLapActive: STORAGE_KEYS.secondLapActive, secondLapUnlocked: STORAGE_KEYS.secondLapUnlocked, stagesLayoutVersion: STORAGE_KEYS.stagesLayoutVersion, satoriOrderVersion: STORAGE_KEYS.satoriOrderVersion, introSeen: STORAGE_KEYS.introSeen, tutorialComplete: STORAGE_KEYS.tutorialComplete, tutorialStep: STORAGE_KEYS.tutorialStep, lapCleared: (lap, part) => 'wake7-lap' + lap + '-' + part + '-cleared' }),
     rewards: Object.freeze({ masterGoldGranted: STORAGE_KEYS.masterGoldGranted, satoriDesignGranted: STORAGE_KEYS.satoriDesignGranted, rainbowDarumaGranted: STORAGE_KEYS.rainbowDarumaGranted, awakenedGranted: STORAGE_KEYS.awakenedGranted, threeDUnlocked: STORAGE_KEYS.threeDUnlocked }),
     speed: Object.freeze({ session: STORAGE_KEYS.speedSession, activeVariant: STORAGE_KEYS.speedActiveVariant, bestMs: STORAGE_KEYS.speedBestMs, history: STORAGE_KEYS.speedHistory, unlocked: STORAGE_KEYS.speedUnlocked, trainingUnlocked: STORAGE_KEYS.speedTrainingUnlocked, intermediateUnlocked: STORAGE_KEYS.speedIntermediateUnlocked, masteryUnlocked: STORAGE_KEYS.speedMasteryUnlocked, satoriUnlocked: STORAGE_KEYS.speedSatoriUnlocked, trainingTrialCleared: STORAGE_KEYS.speedTrainingTrialCleared, intermediateTrialCleared: STORAGE_KEYS.speedIntermediateTrialCleared, masteryTrialCleared: STORAGE_KEYS.speedMasteryTrialCleared, lastTab: STORAGE_KEYS.speedLastTab, newTab: STORAGE_KEYS.speedNewTab }),
     dialogs: Object.freeze({ state: 'wake7-dialog-state', messageReview: STORAGE_KEYS.messageReview, messageReviewLast: STORAGE_KEYS.messageReviewLast, fourthChecks: STORAGE_KEYS.fourthChecks })
@@ -4762,11 +4762,11 @@ if(storage.get(STORAGE_KEY_GROUPS.progression.stagesLayoutVersion)!==STAGES_LAYO
   speedTrainingTrialCleared=false;speedIntermediateTrialCleared=false;
   try{
     storage.remove(STORAGE_KEY_GROUPS.progression.cleared);
-    storage.remove('wake7-lap1-primary-cleared');
-    storage.remove('wake7-lap2-primary-cleared');
+    storage.remove(STORAGE_KEY_GROUPS.progression.lapCleared(1,'primary'));
+    storage.remove(STORAGE_KEY_GROUPS.progression.lapCleared(2,'primary'));
     storage.remove(STORAGE_KEY_GROUPS.progression.extraCleared);
-    storage.remove('wake7-lap1-extra-cleared');
-    storage.remove('wake7-lap2-extra-cleared');
+    storage.remove(STORAGE_KEY_GROUPS.progression.lapCleared(1,'extra'));
+    storage.remove(STORAGE_KEY_GROUPS.progression.lapCleared(2,'extra'));
     storage.remove(STORAGE_KEY_GROUPS.progression.currentStage);
     storage.set(STORAGE_KEYS.speedTrainingTrialCleared,'0');
     storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,'0');
@@ -4775,9 +4775,9 @@ if(storage.get(STORAGE_KEY_GROUPS.progression.stagesLayoutVersion)!==STAGES_LAYO
 }
 function persistLapProgress(){
   for(const [lap,primary,extra,satori] of [[1,lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages],[2,lap2ClearedStages,lap2ClearedExtraStages,lap2ClearedSatoriStages]]){
-    storage.setJson('wake7-lap'+lap+'-primary-cleared',[...primary]);
-    storage.setJson('wake7-lap'+lap+'-extra-cleared',[...extra]);
-    storage.setJson('wake7-lap'+lap+'-satori-cleared',[...satori]);
+    storage.setJson(STORAGE_KEY_GROUPS.progression.lapCleared(lap,'primary'),[...primary]);
+    storage.setJson(STORAGE_KEY_GROUPS.progression.lapCleared(lap,'extra'),[...extra]);
+    storage.setJson(STORAGE_KEY_GROUPS.progression.lapCleared(lap,'satori'),[...satori]);
   }
   storage.setJson(STORAGE_KEY_GROUPS.progression.cleared,[...clearedStages]);
   storage.setJson(STORAGE_KEY_GROUPS.progression.extraCleared,[...clearedExtraStages]);
@@ -5220,9 +5220,9 @@ function openSpeedPicker(){
   storage.set(SPEED_LAST_TAB_STORAGE_KEY,speedVariant);
   showMasterDialog('speedIntro');
 }
-const SPEED_SESSION_KEY=STORAGE_KEYS.speedSession;
-const SPEED_BEST_KEY=STORAGE_KEYS.speedBestMs;
-const SPEED_HISTORY_KEY=STORAGE_KEYS.speedHistory;
+const SPEED_SESSION_KEY=STORAGE_KEY_GROUPS.speed.session;
+const SPEED_BEST_KEY=STORAGE_KEY_GROUPS.speed.bestMs;
+const SPEED_HISTORY_KEY=STORAGE_KEY_GROUPS.speed.history;
 function speedStorageKey(base,variant=speedVariant){return variant==='standard'?base:base+'-'+variant;}
 function speedSessionStorageKey(variant=speedVariant){return speedStorageKey(SPEED_SESSION_KEY,variant);}
 function speedBestStorageKey(variant=speedVariant){return speedStorageKey(SPEED_BEST_KEY,variant);}
@@ -5266,7 +5266,7 @@ function readSpeedSession(variant=speedVariant){
   return data;
 }
 function readActiveSpeedSession(){
-  const lastVariant=storage.get(STORAGE_KEYS.speedActiveVariant,'');
+  const lastVariant=storage.get(STORAGE_KEY_GROUPS.speed.activeVariant,'');
   if(SPEED_MODE_DEFINITIONS[lastVariant]){
     const saved=readSpeedSession(lastVariant);
     if(saved)return saved;
@@ -8087,7 +8087,7 @@ function persistSpeedSessionCommand(){
   if(!speedSession)return false;
   const elapsed=speedElapsedMs();
   const payload={...speedSession,variant:activeSpeedDefinition().id,elapsedMs:elapsed,board:isMode('speed')?serializeActiveBoard():speedSession.board};
-  storage.setJson(speedSessionStorageKey(),payload);storage.set(STORAGE_KEYS.speedActiveVariant,payload.variant);
+  storage.setJson(speedSessionStorageKey(),payload);storage.set(STORAGE_KEY_GROUPS.speed.activeVariant,payload.variant);
   return true;
 }
 function clearSpeedSessionCommand(variant=speedVariant){storage.remove(speedSessionStorageKey(variant));return true;}
@@ -8115,7 +8115,7 @@ function recordSpeedCompletionCommand(elapsed,optimalClears){
   history.unshift({elapsedMs:time,optimalClears,total:speedSession.total||activeSpeedDefinition().total,completedAt:Date.now()});
   storage.setJson(speedHistoryStorageKey(),history.slice(0,20));
   clearSpeedSessionCommand();
-  storage.remove(STORAGE_KEYS.speedActiveVariant);
+  storage.remove(STORAGE_KEY_GROUPS.speed.activeVariant);
   completeSpeedSessionCommand({elapsedMs:time,bestMs:bestTime,optimalClears,runNumber:history.length});
   return {bestTime,history,runNumber:history.length};
 }
@@ -10365,7 +10365,7 @@ function debugGrantRainbowDaruma(){
   darumaColor='rainbow';
   darumaColorChosen=false;
   try{
-    storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');
+    storage.set(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');
     storage.set(STORAGE_KEY_GROUPS.settings.darumaColor,'rainbow');
     storage.remove(STORAGE_KEY_GROUPS.settings.darumaColorChosen);
   }catch(_){ }
@@ -10386,10 +10386,10 @@ function debugPrepareSecondLapCheckpoint(){
   satoriDesignGranted=setUnlock('satoriDesignGranted',true);
   try{
     storage.set(STORAGE_KEY_GROUPS.progression.secondLapUnlocked,'1');
-    storage.remove(STORAGE_KEYS.awakenedGranted);
+    storage.remove(STORAGE_KEY_GROUPS.rewards.awakenedGranted);
     for(const variant of ['standard','training9','training18','mastery27','satori73'])clearSpeedSession(variant);
-    storage.set(STORAGE_KEYS.masterGoldGranted,'1');
-    storage.set(STORAGE_KEYS.satoriDesignGranted,'1');
+    storage.set(STORAGE_KEY_GROUPS.rewards.masterGoldGranted,'1');
+    storage.set(STORAGE_KEY_GROUPS.rewards.satoriDesignGranted,'1');
   }catch(_){ }
   activateCampaignLap(2);
 }
@@ -10408,8 +10408,8 @@ function debugPrepareFirstLapCheckpoint(){
   speedMasteryTrialCleared=false;
   try{
     storage.remove(STORAGE_KEY_GROUPS.progression.secondLapUnlocked);
-    storage.remove(STORAGE_KEYS.secondLapActive);
-    storage.remove(STORAGE_KEYS.awakenedGranted);
+  storage.remove(STORAGE_KEY_GROUPS.progression.secondLapActive);
+  storage.remove(STORAGE_KEY_GROUPS.rewards.awakenedGranted);
   storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
   storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
   storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
@@ -10424,10 +10424,10 @@ function debugUnlockStageCheckpoint(index,secondLap=false){
   if(index>=TRAINING_STAGE_START&&!secondLap)grantSpeedTrialCleared('training9');
   for(let i=0;i<index;i++)clearedStages.add(i);
   try{
-    storage.set('wake7-cleared',JSON.stringify([...clearedStages]));
+      storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...clearedStages]));
     if(secondLap){
-      storage.set('wake7-extra-cleared','[]');
-      storage.set('wake7-satori-cleared','[]');
+      storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,'[]');
+      storage.set(STORAGE_KEY_GROUPS.progression.satoriCleared,'[]');
     }
   }catch(_){}
   persistLapProgress();updateMasterTheme();
@@ -10455,9 +10455,9 @@ function debugUnlockExtra(count,secondLap=false){
   else STAGES.forEach((_,i)=>clearedStages.add(i));
   for(let i=0;i<count;i++)clearedExtraStages.add(i);
   try{
-    storage.set('wake7-cleared',JSON.stringify([...clearedStages]));
-    storage.set('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
-    if(secondLap)storage.set('wake7-satori-cleared','[]');
+    storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...clearedStages]));
+    storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,JSON.stringify([...clearedExtraStages]));
+    if(secondLap)storage.set(STORAGE_KEY_GROUPS.progression.satoriCleared,'[]');
   }catch(_){}
   persistLapProgress();updateMasterTheme();
   if(count>0)rememberClearedMessage(true,count-1);
@@ -10477,9 +10477,9 @@ function debugUnlockSatori(count,secondLap=false){
   else{STAGES.forEach((_,i)=>clearedStages.add(i));EXTRA_STAGES.forEach((_,i)=>clearedExtraStages.add(i));}
   for(let i=0;i<count;i++)clearedSatoriStages.add(i);
   try{
-    storage.set('wake7-cleared',JSON.stringify([...clearedStages]));
-    storage.set('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
-    storage.set('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));
+    storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...clearedStages]));
+    storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,JSON.stringify([...clearedExtraStages]));
+    storage.set(STORAGE_KEY_GROUPS.progression.satoriCleared,JSON.stringify([...clearedSatoriStages]));
   }catch(_){}
   persistLapProgress();updateMasterTheme();
   if(secondLap){debugGrantRainbowDaruma();updateMasterTheme();}
@@ -10511,8 +10511,8 @@ function debugOpenSpeedExam(variant,index){
     grantCampaignProgressThrough('mastery');
   }
   try{
-    storage.set('wake7-cleared',JSON.stringify([...clearedStages]));
-    storage.set('wake7-extra-cleared',JSON.stringify([...clearedExtraStages]));
+    storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...clearedStages]));
+    storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,JSON.stringify([...clearedExtraStages]));
   }catch(_){ }
   persistLapProgress();updateMasterTheme();
   speedVariant=variant;
@@ -11442,7 +11442,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
     storage.remove(STORAGE_KEY_GROUPS.progression.secondLapActive);
     storage.remove(STORAGE_KEY_GROUPS.progression.secondLapUnlocked);
     storage.remove(STORAGE_KEY_GROUPS.progression.activeLap);
-    for(const lap of [1,2])for(const part of ['primary','extra','satori'])storage.remove('wake7-lap'+lap+'-'+part+'-cleared');
+    for(const lap of [1,2])for(const part of ['primary','extra','satori'])storage.remove(STORAGE_KEY_GROUPS.progression.lapCleared(lap,part));
     storage.remove(STORAGE_KEYS.awakenedGranted);
     if(!preserveRewards){
       // デバッグの完全リセットでは、ゲノム側で選んだ表示設定も初期化する。
@@ -11542,8 +11542,8 @@ applyLanguage(savedLanguage);
 restoreDialogState(storage.json(DIALOG_STATE_STORAGE_KEY,null));
 // 初期HTMLの仮状態ではなく、保存状態を反映した最初の画面だけを公開する。
 document.body.classList.remove('app-booting');
-if(storage.get(STORAGE_KEYS.introSeen)!=='1')setTimeout(openIntroGuide,350);
-else if(storage.get(STORAGE_KEYS.tutorialComplete)!=='1'&&!isMode('tutorial'))setTimeout(startTutorial,80);
+if(storage.get(STORAGE_KEY_GROUPS.progression.introSeen)!=='1')setTimeout(openIntroGuide,350);
+else if(storage.get(STORAGE_KEY_GROUPS.progression.tutorialComplete)!=='1'&&!isMode('tutorial'))setTimeout(startTutorial,80);
 window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();persistActiveSession();});
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'){if(isMode('speed'))pauseSpeedClock();persistActiveSession();}
