@@ -15,6 +15,7 @@ const progressionRender=await read(['src','ui','progression-render.js']);
 const boardRender=await read(['src','ui','board-render.js']);
 const template=await read(['src','index.template.html']);
 const events=await read(['src','runtime','app-events.js']);
+const commands=await read(['src','commands','board-commands.js']);
 for(const name of ['setUiEffectTimer','setUiEffectInterval','clearUiEffectTimers'])assert.match(context,new RegExp(`function ${name}\\(`),`${name} API is missing.`);
 for(const [text,name] of [[board,'academy/intro effect timers'],[hints,'hint effect timers'],[mastery,'mastery effect timers'],[speed,'speed clock effect timer']])assert.match(text,/setUiEffect(?:Timer|Interval)|clearUiEffectTimers/,`${name} are not scoped by effect.`);
 assert.doesNotMatch(speed,/speedClockTimer/,'Speed clock must not retain a direct timer handle.');
@@ -28,6 +29,9 @@ assert.match(events,/aboutDialogCloseBtn',\(\)=>setDialogOpenState\('aboutDialog
 assert.match(events,/settingsDialogClose',\(\)=>setDialogOpenState\('settingsDialog',false\)/,'Settings dialog close must use the dialog state boundary.');
 assert.match(context,/function setBoardTransientClass\(/,'Board transient class API is missing.');
 assert.doesNotMatch(board,/classList\.toggle\('(grip-hover|selecting)'/,'Pointer UI classes must use the transient context API.');
+assert.match(board,/function replaceBoardState\(next,\{paintNow=false\}\=\{\}\)\{\s*replaceBoardStateCommand\(next,\{paintNow\}\);/,'Board state restoration must use the board command boundary.');
+assert.match(commands,/function replaceBoardStateCommand\(/,'Low-level board state writes must remain in board commands.');
+assert.match(board,/function restoreSavedBoard[\s\S]{0,500}replaceBoardState\(/,'Saved board restoration must use the wrapper command.');
 assert.match(template,/rank-index-2\.animate[\s\S]{0,180}masterRankSeal 1\.05s ease-out both/,'Rank index 2 animation contract changed.');
 assert.match(template,/rank-seal:not\(\.rank-frame-seal\):not\(\.rank-index-5\):not\(\.rank-index-6\)\.animate[\s\S]{0,120}masterRankSeal 1\.05s ease-out both/,'Ordinary rank animation contract changed.');
 assert.match(template,/rank-frame-seal\.animate\{animation:masterRankSeal \.72s ease-out both\}/,'Special frame animation contract changed.');

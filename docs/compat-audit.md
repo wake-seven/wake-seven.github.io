@@ -73,3 +73,4 @@ pointer操作中の選択・回転・hover・不正操作フィードバック�
 2026-09-01に称号・クリア演出のCSSを全件確認した。通常称号の開始状態は `opacity:0; transform:translateY(-0.375rem)`、終了状態は `opacity:1; transform:translateY(0)` で、`1.05s ease-out both` に統一されている。これは修了演出を基準にした現在の仕様と一致するため、今回の段階では数値を変更しない。
 
 変更しなかった `.rank-frame-seal.animate`（`.72s`）は、無心・覚者の大きなSVGフレーム用であり、通常称号と同じtransformを適用すると表示領域が二段階に膨らむ既知の問題を再発させる。`masterSeal` の円形演出と `masterSpark` の装飾も別系統で、通常称号の見え方を変更せずに統一する対象ではない。クリア演出のWAAPIはJavaScriptの完了順序と結び付いているため、CSSのduration変更は行わない。
+盤面復元経路の監査では、`replaceBoardState()` の呼び出しは `replaceBoardStateCommand()` への薄いラッパーに統一され、低レベルの `ori` / `spin` / `tileEls` 書き込みは `src/commands/board-commands.js` に限定されていることを確認した。保存盤面、makerリセット、undo、free/custom復元はいずれもこの境界を通る。動的SVGの生成とpointer直後の表示は対象外として保持する。
