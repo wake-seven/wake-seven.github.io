@@ -142,8 +142,7 @@ const tutorialStartAt = all.indexOf('startTutorial()');
 assert.ok(introStartAt >= 0 && tutorialStartAt > introStartAt, 'Start button must lead into tutorial initialization.');
 for (const token of [
   'loadTutorialStep(',
-  'storage.set(STORAGE_KEYS.tutorialStep',
-  'storage.remove(STORAGE_KEYS.tutorialStep',
+  'STORAGE_KEY_GROUPS.progression.tutorialStep',
   'beginSecondLap()',
   'activateCampaignLap(2)',
   'secondLapIntro',

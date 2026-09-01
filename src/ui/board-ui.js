@@ -1207,8 +1207,8 @@ function loadTutorialStep(index=0){
   persistActiveSession();
 }
 function startTutorial(){
-  if(storage.get(STORAGE_KEYS.tutorialComplete)==='1'){loadStage(0);return;}
-  const savedStep=Number(storage.get(STORAGE_KEYS.tutorialStep,'0'));
+  if(storage.get(STORAGE_KEY_GROUPS.progression.tutorialComplete)==='1'){loadStage(0);return;}
+  const savedStep=Number(storage.get(STORAGE_KEY_GROUPS.progression.tutorialStep,'0'));
   loadTutorialStep(Number.isInteger(savedStep)?savedStep:0);
 }
 function advanceTutorial(){
@@ -1269,7 +1269,7 @@ function loadSatoriStage(index){
   WakeSevenState.setNavigationIndex(gameState,'satori',satoriIndex);
   lastStageMode={extra:false,satori:true,index:satoriIndex};
   const stage=SATORI_STAGES[satoriIndex];
-  try{storage.set('wake7-current-stage',JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}
+  try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}
   setPosition(campaignStageState(stage.state),stage.par);
   renderCurrentView();
   animateBoardArrival();
@@ -1277,11 +1277,11 @@ function loadSatoriStage(index){
   syncGameState();
 }
 function persistCurrentStage(extra,index){
-  try{storage.set('wake7-current-stage',JSON.stringify({extra,index,lap:activeLap}));}catch(_){}
+  try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({extra,index,lap:activeLap}));}catch(_){}
 }
 function restoreCurrentStage(){
   let saved=null;
-  try{saved=JSON.parse(storage.get('wake7-current-stage')||'null');}catch(_){}
+  try{saved=JSON.parse(storage.get(STORAGE_KEY_GROUPS.progression.currentStage)||'null');}catch(_){}
   if(saved&&(saved.lap===1||saved.lap===2))activateCampaignLap(saved.lap);
   if(saved&&saved.satori===true&&Number.isInteger(saved.index)
     &&saved.index>=0&&saved.index<SATORI_STAGES.length&&canEnterSatori()){
@@ -1344,7 +1344,7 @@ function persistActiveSession(){
     persistSpeedSession();
     const payload={mode:'speed',variant:speedVariant,lap:activeLap};
     syncGameState();
-    try{storage.set(STORAGE_KEYS.activeSession,JSON.stringify(payload));}catch(_){ }
+    try{storage.set(STORAGE_KEY_GROUPS.progression.activeSession,JSON.stringify(payload));}catch(_){ }
     persistDialogState();
     return;
   }
@@ -1355,14 +1355,14 @@ function persistActiveSession(){
     lastStageMode,board:serializeActiveBoard()
   };
   syncGameState();
-  try{storage.set('wake7-active-session',JSON.stringify(payload));}catch(_){ }
+  try{storage.set(STORAGE_KEY_GROUPS.progression.activeSession,JSON.stringify(payload));}catch(_){ }
   persistDialogState();
 }
 function restoreActiveSession(){
   let saved=null;
-  try{saved=JSON.parse(storage.get('wake7-active-session')||'null');}catch(_){ }
-  if(saved?.mode==='tutorial'&&storage.get(STORAGE_KEYS.tutorialComplete)!=='1'){
-    loadTutorialStep(Number.isInteger(saved.step)?saved.step:Number(storage.get(STORAGE_KEYS.tutorialStep,'0'))||0);
+  try{saved=JSON.parse(storage.get(STORAGE_KEY_GROUPS.progression.activeSession)||'null');}catch(_){ }
+  if(saved?.mode==='tutorial'&&storage.get(STORAGE_KEY_GROUPS.progression.tutorialComplete)!=='1'){
+    loadTutorialStep(Number.isInteger(saved.step)?saved.step:Number(storage.get(STORAGE_KEY_GROUPS.progression.tutorialStep,'0'))||0);
     return;
   }
   // 速解きは「最後に遊んでいたモード」として保存されていた場合だけ再開する。
@@ -1372,7 +1372,7 @@ function restoreActiveSession(){
     if(savedSpeed&&speedVariantUnlocked(savedSpeed.variant)){
       speedVariant=savedSpeed.variant;speedSession=ensureSpeedBoardView(savedSpeed);loadSpeedStage(true);return;
     }
-    try{storage.remove(STORAGE_KEYS.activeSession);}catch(_){ }
+    try{storage.remove(STORAGE_KEY_GROUPS.progression.activeSession);}catch(_){ }
     restoreCurrentStage();return;
   }
   if(!saved||!validSavedBoard(saved.board)){restoreCurrentStage();return;}

@@ -26,7 +26,7 @@ function selectBoardThemeCommand(button){
 function grantMasterRewardSettingsCommand(){
   boardTheme='gold';
   boardThemeChosen=false;
-  try{storage.remove(STORAGE_KEYS.boardThemeChosen);}catch(_){ }
+  try{storage.remove(STORAGE_KEY_GROUPS.settings.boardThemeChosen);}catch(_){ }
 }
 function resetSettingsCommand(){
   soundEnabled=true;boardTheme='default';boardLayout='normal';

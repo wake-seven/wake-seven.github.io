@@ -330,7 +330,7 @@ function trackAnalyticsEvent(name,parameters={}){
   if(!WAKE7_GA_ENABLED||typeof window.gtag!=='function')return;
   let analyticsLanguage=currentLang;
   try{
-    const storedLanguage=storage.get(STORAGE_KEYS.language);
+    const storedLanguage=storage.get(STORAGE_KEY_GROUPS.settings.language);
     if(UI_TEXT[storedLanguage])analyticsLanguage=storedLanguage;
   }catch(_){ }
   window.gtag('event',name,Object.assign({
@@ -360,13 +360,13 @@ function trackGameStart(){
 initializeRuntimeSettings();
 const initialUnlocks=WakeSevenState.sectionView(gameState,'unlocks');
 let masterGoldGranted=initialUnlocks.masterGoldGranted===true;
-if(!masterGoldGranted)try{masterGoldGranted=storage.get(STORAGE_KEYS.masterGoldGranted)==='1';}catch(_){ }
+if(!masterGoldGranted)try{masterGoldGranted=storage.get(STORAGE_KEY_GROUPS.rewards.masterGoldGranted)==='1';}catch(_){ }
 let satoriDesignGranted=initialUnlocks.satoriDesignGranted===true;
-if(!satoriDesignGranted)try{satoriDesignGranted=storage.get(STORAGE_KEYS.satoriDesignGranted)==='1';}catch(_){ }
+if(!satoriDesignGranted)try{satoriDesignGranted=storage.get(STORAGE_KEY_GROUPS.rewards.satoriDesignGranted)==='1';}catch(_){ }
 let secondLapActive=false;
-try{secondLapActive=storage.get(STORAGE_KEYS.secondLapActive)==='1';}catch(_){ }
+try{secondLapActive=storage.get(STORAGE_KEY_GROUPS.progression.secondLapActive)==='1';}catch(_){ }
 let awakenedGranted=initialUnlocks.awakened===true;
-if(!awakenedGranted)try{awakenedGranted=storage.get(STORAGE_KEYS.awakenedGranted)==='1';}catch(_){ }
+if(!awakenedGranted)try{awakenedGranted=storage.get(STORAGE_KEY_GROUPS.rewards.awakenedGranted)==='1';}catch(_){ }
 // 速解きモードは、進行状況をリセットしても残す独立した解放要素。
 const speedUnlockState=initializeSpeedUnlockState({initialUnlocks,storage,storageKeys:STORAGE_KEYS,awakenedGranted});
 let speedModeUnlocked=speedUnlockState.modeUnlocked;
@@ -505,24 +505,24 @@ secondLapActive=activeLap===2;
 // clearedSatoriStagesやコスメティック系のフラグは対象外。
 // 名人への道の45問構成(3くるり30+4くるり15)も組み替えたため、clearedExtraStages系も対象に含める。
 const STAGES_LAYOUT_VERSION='2026-08-master-path-reshuffle';
-if(storage.get(STORAGE_KEYS.stagesLayoutVersion)!==STAGES_LAYOUT_VERSION){
+if(storage.get(STORAGE_KEY_GROUPS.progression.stagesLayoutVersion)!==STAGES_LAYOUT_VERSION){
   lap1ClearedStages=new Set();lap2ClearedStages=new Set();
   clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;
   lap1ClearedExtraStages=new Set();lap2ClearedExtraStages=new Set();
   clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
   speedTrainingTrialCleared=false;speedIntermediateTrialCleared=false;
   try{
-    storage.remove(STORAGE_KEYS.cleared);
+    storage.remove(STORAGE_KEY_GROUPS.progression.cleared);
     storage.remove('wake7-lap1-primary-cleared');
     storage.remove('wake7-lap2-primary-cleared');
-    storage.remove(STORAGE_KEYS.extraCleared);
+    storage.remove(STORAGE_KEY_GROUPS.progression.extraCleared);
     storage.remove('wake7-lap1-extra-cleared');
     storage.remove('wake7-lap2-extra-cleared');
-    storage.remove(STORAGE_KEYS.currentStage);
+    storage.remove(STORAGE_KEY_GROUPS.progression.currentStage);
     storage.set(STORAGE_KEYS.speedTrainingTrialCleared,'0');
     storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,'0');
   }catch(_){}
-  storage.set(STORAGE_KEYS.stagesLayoutVersion,STAGES_LAYOUT_VERSION);
+  storage.set(STORAGE_KEY_GROUPS.progression.stagesLayoutVersion,STAGES_LAYOUT_VERSION);
 }
 function persistLapProgress(){
   for(const [lap,primary,extra,satori] of [[1,lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages],[2,lap2ClearedStages,lap2ClearedExtraStages,lap2ClearedSatoriStages]]){
@@ -530,14 +530,14 @@ function persistLapProgress(){
     storage.setJson('wake7-lap'+lap+'-extra-cleared',[...extra]);
     storage.setJson('wake7-lap'+lap+'-satori-cleared',[...satori]);
   }
-  storage.setJson(STORAGE_KEYS.cleared,[...clearedStages]);
-  storage.setJson(STORAGE_KEYS.extraCleared,[...clearedExtraStages]);
-  storage.setJson(STORAGE_KEYS.satoriCleared,[...clearedSatoriStages]);
-  storage.set(STORAGE_KEYS.activeLap,String(activeLap));
-  if(secondLapUnlocked)storage.set(STORAGE_KEYS.secondLapUnlocked,'1');
-  else storage.remove(STORAGE_KEYS.secondLapUnlocked);
-  if(activeLap===2)storage.set(STORAGE_KEYS.secondLapActive,'1');
-  else storage.remove(STORAGE_KEYS.secondLapActive);
+  storage.setJson(STORAGE_KEY_GROUPS.progression.cleared,[...clearedStages]);
+  storage.setJson(STORAGE_KEY_GROUPS.progression.extraCleared,[...clearedExtraStages]);
+  storage.setJson(STORAGE_KEY_GROUPS.progression.satoriCleared,[...clearedSatoriStages]);
+  storage.set(STORAGE_KEY_GROUPS.progression.activeLap,String(activeLap));
+  if(secondLapUnlocked)storage.set(STORAGE_KEY_GROUPS.progression.secondLapUnlocked,'1');
+  else storage.remove(STORAGE_KEY_GROUPS.progression.secondLapUnlocked);
+  if(activeLap===2)storage.set(STORAGE_KEY_GROUPS.progression.secondLapActive,'1');
+  else storage.remove(STORAGE_KEY_GROUPS.progression.secondLapActive);
 }
 function activateCampaignLap(lap){
   if(lap===2&&!secondLapUnlocked)return false;
@@ -560,8 +560,8 @@ function beginSecondLap(){
   activateCampaignLap(2);
   try{
     storage.set(STORAGE_KEY_GROUPS.progression.secondLapUnlocked,'1');
-    storage.remove('wake7-current-stage');
-    storage.remove('wake7-active-session');
+    storage.remove(STORAGE_KEY_GROUPS.progression.currentStage);
+    storage.remove(STORAGE_KEY_GROUPS.progression.activeSession);
     storage.remove(FOURTH_CHECKS_STORAGE_KEY);
     storage.remove(MESSAGE_REVIEW_STORAGE_KEY);
     storage.remove(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY);

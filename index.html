@@ -1490,7 +1490,7 @@
   // 分野別の参照口。平坦な STORAGE_KEYS は既存モジュールとの互換用に維持する。
   const STORAGE_KEY_GROUPS = Object.freeze({
     settings: Object.freeze({ language: STORAGE_KEYS.language, sound: STORAGE_KEYS.sound, boardTheme: STORAGE_KEYS.boardTheme, boardThemeChosen: STORAGE_KEYS.boardThemeChosen, boardLayout: STORAGE_KEYS.boardLayout, boardLayoutChosen: STORAGE_KEYS.boardLayoutChosen, darumaColor: STORAGE_KEYS.darumaColor, darumaColorChosen: STORAGE_KEYS.darumaColorChosen }),
-    progression: Object.freeze({ cleared: STORAGE_KEYS.cleared, extraCleared: STORAGE_KEYS.extraCleared, satoriCleared: STORAGE_KEYS.satoriCleared, currentStage: STORAGE_KEYS.currentStage, activeSession: STORAGE_KEYS.activeSession, activeLap: STORAGE_KEYS.activeLap, secondLapActive: STORAGE_KEYS.secondLapActive, secondLapUnlocked: STORAGE_KEYS.secondLapUnlocked, stagesLayoutVersion: STORAGE_KEYS.stagesLayoutVersion, satoriOrderVersion: STORAGE_KEYS.satoriOrderVersion }),
+    progression: Object.freeze({ cleared: STORAGE_KEYS.cleared, extraCleared: STORAGE_KEYS.extraCleared, satoriCleared: STORAGE_KEYS.satoriCleared, currentStage: STORAGE_KEYS.currentStage, activeSession: STORAGE_KEYS.activeSession, activeLap: STORAGE_KEYS.activeLap, secondLapActive: STORAGE_KEYS.secondLapActive, secondLapUnlocked: STORAGE_KEYS.secondLapUnlocked, stagesLayoutVersion: STORAGE_KEYS.stagesLayoutVersion, satoriOrderVersion: STORAGE_KEYS.satoriOrderVersion, introSeen: STORAGE_KEYS.introSeen, tutorialComplete: STORAGE_KEYS.tutorialComplete, tutorialStep: STORAGE_KEYS.tutorialStep }),
     rewards: Object.freeze({ masterGoldGranted: STORAGE_KEYS.masterGoldGranted, satoriDesignGranted: STORAGE_KEYS.satoriDesignGranted, rainbowDarumaGranted: STORAGE_KEYS.rainbowDarumaGranted, awakenedGranted: STORAGE_KEYS.awakenedGranted, threeDUnlocked: STORAGE_KEYS.threeDUnlocked }),
     speed: Object.freeze({ session: STORAGE_KEYS.speedSession, activeVariant: STORAGE_KEYS.speedActiveVariant, bestMs: STORAGE_KEYS.speedBestMs, history: STORAGE_KEYS.speedHistory, unlocked: STORAGE_KEYS.speedUnlocked, trainingUnlocked: STORAGE_KEYS.speedTrainingUnlocked, intermediateUnlocked: STORAGE_KEYS.speedIntermediateUnlocked, masteryUnlocked: STORAGE_KEYS.speedMasteryUnlocked, satoriUnlocked: STORAGE_KEYS.speedSatoriUnlocked, trainingTrialCleared: STORAGE_KEYS.speedTrainingTrialCleared, intermediateTrialCleared: STORAGE_KEYS.speedIntermediateTrialCleared, masteryTrialCleared: STORAGE_KEYS.speedMasteryTrialCleared, lastTab: STORAGE_KEYS.speedLastTab, newTab: STORAGE_KEYS.speedNewTab }),
     dialogs: Object.freeze({ state: 'wake7-dialog-state', messageReview: STORAGE_KEYS.messageReview, messageReviewLast: STORAGE_KEYS.messageReviewLast, fourthChecks: STORAGE_KEYS.fourthChecks })
@@ -4579,7 +4579,7 @@ function trackAnalyticsEvent(name,parameters={}){
   if(!WAKE7_GA_ENABLED||typeof window.gtag!=='function')return;
   let analyticsLanguage=currentLang;
   try{
-    const storedLanguage=storage.get(STORAGE_KEYS.language);
+    const storedLanguage=storage.get(STORAGE_KEY_GROUPS.settings.language);
     if(UI_TEXT[storedLanguage])analyticsLanguage=storedLanguage;
   }catch(_){ }
   window.gtag('event',name,Object.assign({
@@ -4609,13 +4609,13 @@ function trackGameStart(){
 initializeRuntimeSettings();
 const initialUnlocks=WakeSevenState.sectionView(gameState,'unlocks');
 let masterGoldGranted=initialUnlocks.masterGoldGranted===true;
-if(!masterGoldGranted)try{masterGoldGranted=storage.get(STORAGE_KEYS.masterGoldGranted)==='1';}catch(_){ }
+if(!masterGoldGranted)try{masterGoldGranted=storage.get(STORAGE_KEY_GROUPS.rewards.masterGoldGranted)==='1';}catch(_){ }
 let satoriDesignGranted=initialUnlocks.satoriDesignGranted===true;
-if(!satoriDesignGranted)try{satoriDesignGranted=storage.get(STORAGE_KEYS.satoriDesignGranted)==='1';}catch(_){ }
+if(!satoriDesignGranted)try{satoriDesignGranted=storage.get(STORAGE_KEY_GROUPS.rewards.satoriDesignGranted)==='1';}catch(_){ }
 let secondLapActive=false;
-try{secondLapActive=storage.get(STORAGE_KEYS.secondLapActive)==='1';}catch(_){ }
+try{secondLapActive=storage.get(STORAGE_KEY_GROUPS.progression.secondLapActive)==='1';}catch(_){ }
 let awakenedGranted=initialUnlocks.awakened===true;
-if(!awakenedGranted)try{awakenedGranted=storage.get(STORAGE_KEYS.awakenedGranted)==='1';}catch(_){ }
+if(!awakenedGranted)try{awakenedGranted=storage.get(STORAGE_KEY_GROUPS.rewards.awakenedGranted)==='1';}catch(_){ }
 // 速解きモードは、進行状況をリセットしても残す独立した解放要素。
 const speedUnlockState=initializeSpeedUnlockState({initialUnlocks,storage,storageKeys:STORAGE_KEYS,awakenedGranted});
 let speedModeUnlocked=speedUnlockState.modeUnlocked;
@@ -4754,24 +4754,24 @@ secondLapActive=activeLap===2;
 // clearedSatoriStagesやコスメティック系のフラグは対象外。
 // 名人への道の45問構成(3くるり30+4くるり15)も組み替えたため、clearedExtraStages系も対象に含める。
 const STAGES_LAYOUT_VERSION='2026-08-master-path-reshuffle';
-if(storage.get(STORAGE_KEYS.stagesLayoutVersion)!==STAGES_LAYOUT_VERSION){
+if(storage.get(STORAGE_KEY_GROUPS.progression.stagesLayoutVersion)!==STAGES_LAYOUT_VERSION){
   lap1ClearedStages=new Set();lap2ClearedStages=new Set();
   clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;
   lap1ClearedExtraStages=new Set();lap2ClearedExtraStages=new Set();
   clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
   speedTrainingTrialCleared=false;speedIntermediateTrialCleared=false;
   try{
-    storage.remove(STORAGE_KEYS.cleared);
+    storage.remove(STORAGE_KEY_GROUPS.progression.cleared);
     storage.remove('wake7-lap1-primary-cleared');
     storage.remove('wake7-lap2-primary-cleared');
-    storage.remove(STORAGE_KEYS.extraCleared);
+    storage.remove(STORAGE_KEY_GROUPS.progression.extraCleared);
     storage.remove('wake7-lap1-extra-cleared');
     storage.remove('wake7-lap2-extra-cleared');
-    storage.remove(STORAGE_KEYS.currentStage);
+    storage.remove(STORAGE_KEY_GROUPS.progression.currentStage);
     storage.set(STORAGE_KEYS.speedTrainingTrialCleared,'0');
     storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,'0');
   }catch(_){}
-  storage.set(STORAGE_KEYS.stagesLayoutVersion,STAGES_LAYOUT_VERSION);
+  storage.set(STORAGE_KEY_GROUPS.progression.stagesLayoutVersion,STAGES_LAYOUT_VERSION);
 }
 function persistLapProgress(){
   for(const [lap,primary,extra,satori] of [[1,lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages],[2,lap2ClearedStages,lap2ClearedExtraStages,lap2ClearedSatoriStages]]){
@@ -4779,14 +4779,14 @@ function persistLapProgress(){
     storage.setJson('wake7-lap'+lap+'-extra-cleared',[...extra]);
     storage.setJson('wake7-lap'+lap+'-satori-cleared',[...satori]);
   }
-  storage.setJson(STORAGE_KEYS.cleared,[...clearedStages]);
-  storage.setJson(STORAGE_KEYS.extraCleared,[...clearedExtraStages]);
-  storage.setJson(STORAGE_KEYS.satoriCleared,[...clearedSatoriStages]);
-  storage.set(STORAGE_KEYS.activeLap,String(activeLap));
-  if(secondLapUnlocked)storage.set(STORAGE_KEYS.secondLapUnlocked,'1');
-  else storage.remove(STORAGE_KEYS.secondLapUnlocked);
-  if(activeLap===2)storage.set(STORAGE_KEYS.secondLapActive,'1');
-  else storage.remove(STORAGE_KEYS.secondLapActive);
+  storage.setJson(STORAGE_KEY_GROUPS.progression.cleared,[...clearedStages]);
+  storage.setJson(STORAGE_KEY_GROUPS.progression.extraCleared,[...clearedExtraStages]);
+  storage.setJson(STORAGE_KEY_GROUPS.progression.satoriCleared,[...clearedSatoriStages]);
+  storage.set(STORAGE_KEY_GROUPS.progression.activeLap,String(activeLap));
+  if(secondLapUnlocked)storage.set(STORAGE_KEY_GROUPS.progression.secondLapUnlocked,'1');
+  else storage.remove(STORAGE_KEY_GROUPS.progression.secondLapUnlocked);
+  if(activeLap===2)storage.set(STORAGE_KEY_GROUPS.progression.secondLapActive,'1');
+  else storage.remove(STORAGE_KEY_GROUPS.progression.secondLapActive);
 }
 function activateCampaignLap(lap){
   if(lap===2&&!secondLapUnlocked)return false;
@@ -4809,8 +4809,8 @@ function beginSecondLap(){
   activateCampaignLap(2);
   try{
     storage.set(STORAGE_KEY_GROUPS.progression.secondLapUnlocked,'1');
-    storage.remove('wake7-current-stage');
-    storage.remove('wake7-active-session');
+    storage.remove(STORAGE_KEY_GROUPS.progression.currentStage);
+    storage.remove(STORAGE_KEY_GROUPS.progression.activeSession);
     storage.remove(FOURTH_CHECKS_STORAGE_KEY);
     storage.remove(MESSAGE_REVIEW_STORAGE_KEY);
     storage.remove(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY);
@@ -6865,8 +6865,8 @@ function loadTutorialStep(index=0){
   persistActiveSession();
 }
 function startTutorial(){
-  if(storage.get(STORAGE_KEYS.tutorialComplete)==='1'){loadStage(0);return;}
-  const savedStep=Number(storage.get(STORAGE_KEYS.tutorialStep,'0'));
+  if(storage.get(STORAGE_KEY_GROUPS.progression.tutorialComplete)==='1'){loadStage(0);return;}
+  const savedStep=Number(storage.get(STORAGE_KEY_GROUPS.progression.tutorialStep,'0'));
   loadTutorialStep(Number.isInteger(savedStep)?savedStep:0);
 }
 function advanceTutorial(){
@@ -6927,7 +6927,7 @@ function loadSatoriStage(index){
   WakeSevenState.setNavigationIndex(gameState,'satori',satoriIndex);
   lastStageMode={extra:false,satori:true,index:satoriIndex};
   const stage=SATORI_STAGES[satoriIndex];
-  try{storage.set('wake7-current-stage',JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}
+  try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}
   setPosition(campaignStageState(stage.state),stage.par);
   renderCurrentView();
   animateBoardArrival();
@@ -6935,11 +6935,11 @@ function loadSatoriStage(index){
   syncGameState();
 }
 function persistCurrentStage(extra,index){
-  try{storage.set('wake7-current-stage',JSON.stringify({extra,index,lap:activeLap}));}catch(_){}
+  try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({extra,index,lap:activeLap}));}catch(_){}
 }
 function restoreCurrentStage(){
   let saved=null;
-  try{saved=JSON.parse(storage.get('wake7-current-stage')||'null');}catch(_){}
+  try{saved=JSON.parse(storage.get(STORAGE_KEY_GROUPS.progression.currentStage)||'null');}catch(_){}
   if(saved&&(saved.lap===1||saved.lap===2))activateCampaignLap(saved.lap);
   if(saved&&saved.satori===true&&Number.isInteger(saved.index)
     &&saved.index>=0&&saved.index<SATORI_STAGES.length&&canEnterSatori()){
@@ -7002,7 +7002,7 @@ function persistActiveSession(){
     persistSpeedSession();
     const payload={mode:'speed',variant:speedVariant,lap:activeLap};
     syncGameState();
-    try{storage.set(STORAGE_KEYS.activeSession,JSON.stringify(payload));}catch(_){ }
+    try{storage.set(STORAGE_KEY_GROUPS.progression.activeSession,JSON.stringify(payload));}catch(_){ }
     persistDialogState();
     return;
   }
@@ -7013,14 +7013,14 @@ function persistActiveSession(){
     lastStageMode,board:serializeActiveBoard()
   };
   syncGameState();
-  try{storage.set('wake7-active-session',JSON.stringify(payload));}catch(_){ }
+  try{storage.set(STORAGE_KEY_GROUPS.progression.activeSession,JSON.stringify(payload));}catch(_){ }
   persistDialogState();
 }
 function restoreActiveSession(){
   let saved=null;
-  try{saved=JSON.parse(storage.get('wake7-active-session')||'null');}catch(_){ }
-  if(saved?.mode==='tutorial'&&storage.get(STORAGE_KEYS.tutorialComplete)!=='1'){
-    loadTutorialStep(Number.isInteger(saved.step)?saved.step:Number(storage.get(STORAGE_KEYS.tutorialStep,'0'))||0);
+  try{saved=JSON.parse(storage.get(STORAGE_KEY_GROUPS.progression.activeSession)||'null');}catch(_){ }
+  if(saved?.mode==='tutorial'&&storage.get(STORAGE_KEY_GROUPS.progression.tutorialComplete)!=='1'){
+    loadTutorialStep(Number.isInteger(saved.step)?saved.step:Number(storage.get(STORAGE_KEY_GROUPS.progression.tutorialStep,'0'))||0);
     return;
   }
   // 速解きは「最後に遊んでいたモード」として保存されていた場合だけ再開する。
@@ -7030,7 +7030,7 @@ function restoreActiveSession(){
     if(savedSpeed&&speedVariantUnlocked(savedSpeed.variant)){
       speedVariant=savedSpeed.variant;speedSession=ensureSpeedBoardView(savedSpeed);loadSpeedStage(true);return;
     }
-    try{storage.remove(STORAGE_KEYS.activeSession);}catch(_){ }
+    try{storage.remove(STORAGE_KEY_GROUPS.progression.activeSession);}catch(_){ }
     restoreCurrentStage();return;
   }
   if(!saved||!validSavedBoard(saved.board)){restoreCurrentStage();return;}
@@ -8021,7 +8021,7 @@ function selectBoardThemeCommand(button){
 function grantMasterRewardSettingsCommand(){
   boardTheme='gold';
   boardThemeChosen=false;
-  try{storage.remove(STORAGE_KEYS.boardThemeChosen);}catch(_){ }
+  try{storage.remove(STORAGE_KEY_GROUPS.settings.boardThemeChosen);}catch(_){ }
 }
 function resetSettingsCommand(){
   soundEnabled=true;boardTheme='default';boardLayout='normal';
@@ -8042,12 +8042,12 @@ function grantMasterDialogRewardsCommand(kind){
   if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
   if(kind==='mastery'&&secondLapActive&&!rainbowDarumaGranted){
     rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);darumaColor='rainbow';darumaColorChosen=false;
-    try{storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');storage.remove('wake7-daruma-color-chosen');}catch(_){ }
+    try{storage.set(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');storage.remove(STORAGE_KEY_GROUPS.settings.darumaColorChosen);}catch(_){ }
     updateMasterTheme();renderStageNav();
   }
   if(kind==='awakening'&&!awakenedGranted){
     awakenedGranted=setUnlock('awakened',true);threeDUnlocked=setUnlock('threeD',true);
-    try{storage.set(STORAGE_KEYS.awakenedGranted,'1');storage.set(STORAGE_KEYS.threeDUnlocked,'1');}catch(_){ }
+    try{storage.set(STORAGE_KEY_GROUPS.rewards.awakenedGranted,'1');storage.set(STORAGE_KEY_GROUPS.rewards.threeDUnlocked,'1');}catch(_){ }
     persistLapProgress();updateMasterTheme();renderStageNav();rememberSpecialMessage('awakening');
   }
 }
@@ -8127,24 +8127,24 @@ export {};
 function setTutorialStepCommand(index){
   tutorialStep=Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index));
   WakeSevenState.setNavigationIndex(gameState,'tutorial',tutorialStep);
-  storage.set(STORAGE_KEYS.tutorialStep,String(tutorialStep));
+  storage.set(STORAGE_KEY_GROUPS.progression.tutorialStep,String(tutorialStep));
   return tutorialStep;
 }
 function completeTutorialCommand(){
-  storage.set(STORAGE_KEYS.tutorialComplete,'1');
-  storage.remove(STORAGE_KEYS.tutorialStep);
+  storage.set(STORAGE_KEY_GROUPS.progression.tutorialComplete,'1');
+  storage.remove(STORAGE_KEY_GROUPS.progression.tutorialStep);
   return true;
 }
 function resetTutorialCommand(){
   tutorialStep=0;
-  storage.remove(STORAGE_KEYS.tutorialStep);
-  storage.remove(STORAGE_KEYS.introSeen);
+  storage.remove(STORAGE_KEY_GROUPS.progression.tutorialStep);
+  storage.remove(STORAGE_KEY_GROUPS.progression.introSeen);
   return true;
 }
 function persistTutorialSessionCommand(step=tutorialStep){
   syncGameState();
-  storage.setJson(STORAGE_KEYS.activeSession,{mode:'tutorial',step});
-  storage.set(STORAGE_KEYS.tutorialStep,String(step));
+  storage.setJson(STORAGE_KEY_GROUPS.progression.activeSession,{mode:'tutorial',step});
+  storage.set(STORAGE_KEY_GROUPS.progression.tutorialStep,String(step));
   return true;
 }
 export {};
