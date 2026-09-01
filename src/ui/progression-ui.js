@@ -751,15 +751,16 @@ function renderClearTip(){
   if(art==='introGuide')buildClearGuideBoard('clearGuideBoard');
   if(twoMoveLesson)buildTwoMoveLessonBoard('clearTwoMoveLessonBoard',twoMoveLesson);
   illustration.hidden=!art;
-  lessonCopy.hidden=!twoMoveLesson;
-  lessonRule.hidden=!twoMoveLesson;
+  // 上巻5問目は案内文を本文へ統合したため、旧ルール行と重複する実演コピーは出さない。
+  const showLessonCopy=!!twoMoveLesson&&art!=='twoMoveLessonTwo';
+  lessonCopy.hidden=!showLessonCopy;
+  lessonRule.hidden=true;
   if(twoMoveLesson){
-    renderTwoMoveLessonRule('clearTwoMoveLessonRule');
-    renderTwoMoveLessonCopy('clearTwoMoveLessonCopy',twoMoveLesson);
-    // 「次からは…」→ 鉄則 → 実演 → 具体策、の順で読めるようにする。
+    if(showLessonCopy)renderTwoMoveLessonCopy('clearTwoMoveLessonCopy',twoMoveLesson);
+    else lessonCopy.replaceChildren();
+    // 本文の案内 → 実演 → 具体策、の順で読めるようにする。
     $('clearDialogText').after(illustration);
-    illustration.before(lessonRule);
-    illustration.after(lessonCopy);
+    if(showLessonCopy)illustration.after(lessonCopy);
   }else{
     // 節目以外のクリアでは、前回の最短2手レッスンを残さない。
     lessonRule.replaceChildren();

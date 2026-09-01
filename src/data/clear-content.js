@@ -15,7 +15,7 @@ const CLEAR_CONTENT={
   academy3_6before:{dialog:'developmentFourStart'},
   // だるま修行・上巻
   training1_2:{tip:{ja:'「やり直す」ボタンで盤面を最初に戻せます\n「1手戻す」ボタンで一つ前の手に戻れます',en:'Restart returns to the starting board. Undo takes back your last move.',zh:'“重新开始”会回到初始棋盘。“撤销一步”会回到上一步。',ko:'다시 시작은 처음 보드로 돌아갑니다. 한 수 되돌리기는 바로 전 수로 돌아갑니다.'},art:'controls'},
-  training1_5:{tip:{ja:'次からは、後半の基本問題です。',en:'The next puzzles introduce the second basic idea.',zh:'从下一题开始，进入后半段基本问题。',ko:'다음 문제부터는 후반 기본 문제입니다.'},art:'twoMoveLessonTwo'},
+  training1_5:{tip:{ja:'上巻の後半では、外側の寝た1枚に、2枚を合わせにいこう',en:'In the second half of Volume 1, match two daruma to the one fallen on the outside.',zh:'上卷后半段，把两个不倒翁对齐到外圈倒下的一个。',ko:'상권 후반에는 바깥쪽에 누운 1개에 2개를 맞추러 가자.'},art:'twoMoveLessonTwo'},
   training1_7:{tip:{ja:'一度クリアした問題は、「← 前へ」「次へ →」と、その真ん中のボタンでいつでも戻れます。',en:'Use Previous, Next, or the button between them to revisit cleared puzzles at any time.',zh:'已通过的关卡可随时用“上一题”“下一题”或中间的按钮返回。',ko:'성공한 문제는 이전, 다음 또는 그 사이의 버튼으로 언제든 다시 갈 수 있어요.'},art:'navigation'},
   training1_9:{tip:{ja:'次からは、最短3くるりの問題です。',en:'The next puzzles take three turns.',zh:'接下来是最少3转的问题。',ko:'다음부터는 최단 3번 문제입니다.'}},
   // だるま学園卒業→だるま修行の間に挟む案内ダイアログ。stageIndexで言えばacademy3_8とtraining1_1の境目。
