@@ -503,10 +503,18 @@ function celebrateClear(){
   playWakeCelebrationEffect(svg,tileEls);
   return 650;
 }
+let clearDialogTransitionScheduled=false;
 function showClearActions(){
-  // 演出中の再入では、既に登録済みのダイアログ遷移タイマーを置き換えない。
-  if(svg.classList.contains('celebrating'))return;
-  setUiEffectTimer('clear-transition','show-dialog',showClearDialog,celebrateClear());
+  // 盤面を読み替えた後は、前のクリア周期の予約だけを破棄して再利用する。
+  if(!svg.classList.contains('clear-pending')&&!svg.classList.contains('celebrating'))clearDialogTransitionScheduled=false;
+  // 演出の再入とダイアログ遷移の予約を分離し、表示タイマーを欠落させない。
+  if(clearDialogTransitionScheduled)return;
+  clearDialogTransitionScheduled=true;
+  const delay=celebrateClear();
+  setUiEffectTimer('clear-transition','show-dialog',()=>{
+    clearDialogTransitionScheduled=false;
+    showClearDialog();
+  },delay);
 }
 function renderClearStageContext(){
   const context=$('clearStageContext');
