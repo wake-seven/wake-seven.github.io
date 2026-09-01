@@ -47,7 +47,7 @@ assert.match(boardRender,/function renderTutorialFeedback\(/,'Tutorial feedback 
 assert.match(boardRender,/function renderTutorialRewindAppearance\(/,'Tutorial rewind appearance rendering must remain behind a renderer boundary.');
 assert.match(tutorialAnimation,/function createTutorialRewindModel\(/,'Tutorial rewind display model is missing.');
 for(const name of ['captureTutorialRewindDomSnapshot','restoreTutorialRewindDomSnapshot'])assert.match(tutorialAnimation,new RegExp(`function ${name}\\(`),`${name} API is missing.`);
-for(const name of ['startTutorialRewindSession','setTutorialRewindTimer','bindTutorialRewindAnimation','finishTutorialRewindSession','cancelTutorialRewindSession'])assert.match(tutorialAnimation,new RegExp(`function ${name}\\(`),`${name} session API is missing.`);
+for(const name of ['startTutorialRewindSession','setTutorialRewindTimer','bindTutorialRewindAnimation','finishTutorialRewindSession','cancelTutorialRewindSession','cancelActiveTutorialRewindSession'])assert.match(tutorialAnimation,new RegExp(`function ${name}\\(`),`${name} session API is missing.`);
 assert.match(board,/createTutorialRewindModel\(\{startAngle:dg\.deg,endAngle:target,direction:dir,pivot:dg\.kc,items:dg\.items\.map/,'Tutorial rewind must receive a normalized operation model.');
 assert.match(board,/function animateTutorialRewind\(model,visualItems\)/,'Tutorial rewind animation must receive an operation model separate from visual items.');
 assert.match(board,/captureTutorialRewindDomSnapshot\(sortedItems\)/,'Tutorial rewind must snapshot DOM order before grouping.');
@@ -58,6 +58,7 @@ assert.match(board,/bindTutorialRewindAnimation\(session,animation\)/,'Tutorial 
 assert.match(board,/setUiEffectTimer\('tutorial-rewind','cue',showTutorialCue,150\)/,'Tutorial rewind completion cue must use the UI effect timer boundary.');
 assert.match(tutorialAnimation,/if\(session\.cleaned\)return false/,'Tutorial rewind cleanup must be idempotent.');
 assert.match(tutorialAnimation,/session\.animation\?\.cancel\(\)/,'Tutorial rewind cancellation must cancel the WAAPI animation.');
+assert.match(interaction,/cancelActiveTutorialRewindSession\(reason\)/,'Board animation cancellation must also cancel tutorial rewind sessions.');
 assert.match(board,/renderTutorialFeedback\(\{text:/,'Tutorial feedback must be passed to the renderer as a model.');
 assert.match(interaction,/pointerId:input\.pointerId[\s\S]{0,220}targetGroup[\s\S]{0,100}cancelled:false/,'Pointer operation context must contain identity, target group, and cancellation state.');
 assert.match(interaction,/current:\{\.\.\.input\.point\}[\s\S]{0,180}delta:\{x:0,y:0\}[\s\S]{0,120}angle:null/,'Pointer operation context must initialize coordinates, delta, and angle.');

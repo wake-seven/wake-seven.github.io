@@ -107,6 +107,8 @@ pointer captureは `captureBoardPointer()` / `releaseBoardPointer()`、別pointe
 
 チュートリアル巻き戻しのWAAPI、遅延タイマー、DOM snapshot、cleanup済み状態は `startTutorialRewindSession()` 以下の専用セッションAPIで一元管理する。cancel時はWAAPIと未実行タイマーを停止し、finish/cancelのどちらでもsnapshot復元を一度だけ実行する。完了後の案内表示だけは既存のUI演出タイマー境界へ登録し、画面遷移時に残留しないようにする。演出の速度・見た目・完了後の案内表示は変更しない。
 
+アクティブな巻き戻しセッションは `cancelActiveTutorialRewindSession()` で共有キャンセルできる。盤面アニメーションの共通キャンセル境界から呼び出すため、pointercancel、リセット、undo、位置/モード遷移、ダイアログ閉鎖で同じ終了処理を通り、古いWAAPI・遅延タイマー・DOM移動が残らない。
+
 巻き戻し中の立つ/寝る状態とテーマ色は `board-render.js:renderTutorialRewindAppearance()` に分離し、`board-ui.js` はターン差分だけを渡す。rendererは進行・保存・操作を行わず、従来どおり245ms/440msの表示タイミングとテーマ適用順を維持する。
 
 アニメーションフレームのDOM/SVG反映は `board-render.js:renderBoardAnimationFrame()` へ分離した。`board-ui.js` は回転角・進捗・方向を計算してモデルを渡し、rendererがグループtransformと持ち上がり/表情/色の反映を行う。座標・DOM順序・タイミングは変更していない。

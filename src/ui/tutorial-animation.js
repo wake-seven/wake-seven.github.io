@@ -26,8 +26,12 @@ function restoreTutorialRewindDomSnapshot(snapshot=[]){
 }
 
 let tutorialRewindSessionSerial=0;
+let activeTutorialRewindSession=null;
 function startTutorialRewindSession({snapshot=[],group=null,onCleanup=()=>{}}={}){
-  return {id:++tutorialRewindSessionSerial,snapshot,group,onCleanup,animation:null,timers:[],cancelled:false,cleaned:false,cancelling:false};
+  if(activeTutorialRewindSession&&!activeTutorialRewindSession.cleaned)cancelTutorialRewindSession(activeTutorialRewindSession);
+  const session={id:++tutorialRewindSessionSerial,snapshot,group,onCleanup,animation:null,timers:[],cancelled:false,cleaned:false,cancelling:false};
+  activeTutorialRewindSession=session;
+  return session;
 }
 function setTutorialRewindTimer(session,callback,delay){
   const timer=setTimeout(()=>{
@@ -52,6 +56,7 @@ function cleanupTutorialRewindSession(session){
   session.timers.length=0;
   restoreTutorialRewindDomSnapshot(session.snapshot);
   session.group?.remove();
+  if(activeTutorialRewindSession===session)activeTutorialRewindSession=null;
   session.onCleanup({cancelled:session.cancelled});
   return true;
 }
@@ -65,5 +70,8 @@ function cancelTutorialRewindSession(session){
   try{session.animation?.cancel();}catch{}
   session.cancelling=false;
   return cleanupTutorialRewindSession(session);
+}
+function cancelActiveTutorialRewindSession(reason='cancelled'){
+  return activeTutorialRewindSession?cancelTutorialRewindSession(activeTutorialRewindSession):false;
 }
 export {};

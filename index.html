@@ -5563,7 +5563,7 @@ function isBoardAnimationSessionActive(session){return boardAnimationSession===s
 function requestBoardAnimationFrame(session,callback){if(!isBoardAnimationSessionActive(session))return 0;session.frameHandle=requestAnimationFrame(now=>{session.frameHandle=0;if(isBoardAnimationSessionActive(session))callback(now);});return session.frameHandle;}
 function finishBoardAnimationSession(session){if(!session||session.cleaned)return false;session.cleaned=true;if(session.frameHandle)cancelAnimationFrame(session.frameHandle);session.frameHandle=0;session.cleanup?.();if(boardAnimationSession===session)boardAnimationSession=null;return true;}
 function cancelBoardAnimationSession(session=boardAnimationSession){if(!session||session.cleaned)return false;session.cancelled=true;return finishBoardAnimationSession(session);}
-function cancelBoardAnimation(reason='cancelled'){return cancelBoardAnimationSession();}
+function cancelBoardAnimation(reason='cancelled'){cancelActiveTutorialRewindSession(reason);return cancelBoardAnimationSession();}
 export {};
 
 // ===== 盤面renderer =====
@@ -5595,8 +5595,12 @@ function restoreTutorialRewindDomSnapshot(snapshot=[]){
 }
 
 let tutorialRewindSessionSerial=0;
+let activeTutorialRewindSession=null;
 function startTutorialRewindSession({snapshot=[],group=null,onCleanup=()=>{}}={}){
-  return {id:++tutorialRewindSessionSerial,snapshot,group,onCleanup,animation:null,timers:[],cancelled:false,cleaned:false,cancelling:false};
+  if(activeTutorialRewindSession&&!activeTutorialRewindSession.cleaned)cancelTutorialRewindSession(activeTutorialRewindSession);
+  const session={id:++tutorialRewindSessionSerial,snapshot,group,onCleanup,animation:null,timers:[],cancelled:false,cleaned:false,cancelling:false};
+  activeTutorialRewindSession=session;
+  return session;
 }
 function setTutorialRewindTimer(session,callback,delay){
   const timer=setTimeout(()=>{
@@ -5621,6 +5625,7 @@ function cleanupTutorialRewindSession(session){
   session.timers.length=0;
   restoreTutorialRewindDomSnapshot(session.snapshot);
   session.group?.remove();
+  if(activeTutorialRewindSession===session)activeTutorialRewindSession=null;
   session.onCleanup({cancelled:session.cancelled});
   return true;
 }
@@ -5634,6 +5639,9 @@ function cancelTutorialRewindSession(session){
   try{session.animation?.cancel();}catch{}
   session.cancelling=false;
   return cleanupTutorialRewindSession(session);
+}
+function cancelActiveTutorialRewindSession(reason='cancelled'){
+  return activeTutorialRewindSession?cancelTutorialRewindSession(activeTutorialRewindSession):false;
 }
 export {};
 

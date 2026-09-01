@@ -36,5 +36,5 @@ function isBoardAnimationSessionActive(session){return boardAnimationSession===s
 function requestBoardAnimationFrame(session,callback){if(!isBoardAnimationSessionActive(session))return 0;session.frameHandle=requestAnimationFrame(now=>{session.frameHandle=0;if(isBoardAnimationSessionActive(session))callback(now);});return session.frameHandle;}
 function finishBoardAnimationSession(session){if(!session||session.cleaned)return false;session.cleaned=true;if(session.frameHandle)cancelAnimationFrame(session.frameHandle);session.frameHandle=0;session.cleanup?.();if(boardAnimationSession===session)boardAnimationSession=null;return true;}
 function cancelBoardAnimationSession(session=boardAnimationSession){if(!session||session.cleaned)return false;session.cancelled=true;return finishBoardAnimationSession(session);}
-function cancelBoardAnimation(reason='cancelled'){return cancelBoardAnimationSession();}
+function cancelBoardAnimation(reason='cancelled'){cancelActiveTutorialRewindSession(reason);return cancelBoardAnimationSession();}
 export {};
