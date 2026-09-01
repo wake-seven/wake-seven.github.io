@@ -1,11 +1,10 @@
 // 盤面上の補助表示だけを担当するrenderer。盤面状態の変更・保存・操作判定は行わない。
-let trainingShapeCalloutTimer=null;
 function showTrainingShapeCallout(){
   const position=TWO_MOVE_CANONICAL_POSITION.get(canonicalState(enc(ori)));
   const shape=position?TWO_MOVE_TIP3_SHAPES[position]:null;
   if(!shape)return;
   svg.querySelectorAll('.training-shape-callout').forEach(el=>el.remove());
-  clearTimeout(trainingShapeCalloutTimer);
+  clearUiContextTimer('training-shape-callout');
   const NS_='http://www.w3.org/2000/svg';
   const g=document.createElementNS(NS_,'g');
   g.setAttribute('class','training-shape-callout');
@@ -32,7 +31,7 @@ function showTrainingShapeCallout(){
   rect.setAttribute('rx',(box.height+padY*2)/2);
   g.insertBefore(rect,text);
   requestAnimationFrame(()=>g.classList.add('show'));
-  trainingShapeCalloutTimer=setTimeout(()=>{
+  setUiContextTimer('training-shape-callout',()=>{
     g.classList.remove('show');
     setTimeout(()=>g.remove(),260);
   },1000);

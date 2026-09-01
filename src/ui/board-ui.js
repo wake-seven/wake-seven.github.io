@@ -458,11 +458,11 @@ function openChainedDialog(name){
   $('chainDialogCard').classList.toggle('chain-no-frame',!!step.noFrame);
   $('chainDialogBody').replaceChildren();
   chainCleanup=step.render($('chainDialogBody'))||null;
-  $('chainDialog').hidden=false;
+  setDialogOpenState('chainDialog',true);
 }
 function closeChainDialog(){
   if(chainCleanup){chainCleanup();chainCleanup=null;}
-  $('chainDialog').hidden=true;
+  setDialogOpenState('chainDialog',false);
   chainActiveStep=null;chainActiveName=null;
 }
 const clearGuideTimers=new Map();
@@ -1110,7 +1110,7 @@ function setPosition(state,par){
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   clearTimeout(clearTimer);
   svg.querySelectorAll('.training-shape-callout').forEach(el=>el.remove());
-  clearTimeout(trainingShapeCalloutTimer);
+  clearUiContextTimer('training-shape-callout');
   initializeBoardPositionCommand(state,par);
   clearTimeout(boardArrivalTimer);
   resetBoardUiContext();

@@ -10,4 +10,8 @@ function setBoardDrag(value){drag=value||null;return drag;}
 function setBoardBusy(value){busy=value===true;return busy;}
 function setBoardTileSelected(tile,selected){tile?.classList.toggle('selected',selected===true);}
 function setBoardPivotActive(pivot,active){pivot?.classList.toggle('active',active===true);}
+const uiContextTimers=new Map();
+function clearUiContextTimer(key){const id=uiContextTimers.get(key);if(id!==undefined){clearTimeout(id);uiContextTimers.delete(key);}}
+function setUiContextTimer(key,callback,delay){clearUiContextTimer(key);const id=setTimeout(()=>{uiContextTimers.delete(key);callback();},delay);uiContextTimers.set(key,id);return id;}
+function setDialogOpenState(id,open){const dialog=$(id);if(dialog)dialog.hidden=!open;return !!open;}
 export {};

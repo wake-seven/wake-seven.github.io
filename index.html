@@ -5987,11 +5987,11 @@ function openChainedDialog(name){
   $('chainDialogCard').classList.toggle('chain-no-frame',!!step.noFrame);
   $('chainDialogBody').replaceChildren();
   chainCleanup=step.render($('chainDialogBody'))||null;
-  $('chainDialog').hidden=false;
+  setDialogOpenState('chainDialog',true);
 }
 function closeChainDialog(){
   if(chainCleanup){chainCleanup();chainCleanup=null;}
-  $('chainDialog').hidden=true;
+  setDialogOpenState('chainDialog',false);
   chainActiveStep=null;chainActiveName=null;
 }
 const clearGuideTimers=new Map();
@@ -6639,7 +6639,7 @@ function setPosition(state,par){
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   clearTimeout(clearTimer);
   svg.querySelectorAll('.training-shape-callout').forEach(el=>el.remove());
-  clearTimeout(trainingShapeCalloutTimer);
+  clearUiContextTimer('training-shape-callout');
   initializeBoardPositionCommand(state,par);
   clearTimeout(boardArrivalTimer);
   resetBoardUiContext();
@@ -7660,13 +7660,12 @@ export {};
 
 // ===== 盤面renderer =====
 // 盤面上の補助表示だけを担当するrenderer。盤面状態の変更・保存・操作判定は行わない。
-let trainingShapeCalloutTimer=null;
 function showTrainingShapeCallout(){
   const position=TWO_MOVE_CANONICAL_POSITION.get(canonicalState(enc(ori)));
   const shape=position?TWO_MOVE_TIP3_SHAPES[position]:null;
   if(!shape)return;
   svg.querySelectorAll('.training-shape-callout').forEach(el=>el.remove());
-  clearTimeout(trainingShapeCalloutTimer);
+  clearUiContextTimer('training-shape-callout');
   const NS_='http://www.w3.org/2000/svg';
   const g=document.createElementNS(NS_,'g');
   g.setAttribute('class','training-shape-callout');
@@ -7693,7 +7692,7 @@ function showTrainingShapeCallout(){
   rect.setAttribute('rx',(box.height+padY*2)/2);
   g.insertBefore(rect,text);
   requestAnimationFrame(()=>g.classList.add('show'));
-  trainingShapeCalloutTimer=setTimeout(()=>{
+  setUiContextTimer('training-shape-callout',()=>{
     g.classList.remove('show');
     setTimeout(()=>g.remove(),260);
   },1000);
@@ -7713,6 +7712,10 @@ function setBoardDrag(value){drag=value||null;return drag;}
 function setBoardBusy(value){busy=value===true;return busy;}
 function setBoardTileSelected(tile,selected){tile?.classList.toggle('selected',selected===true);}
 function setBoardPivotActive(pivot,active){pivot?.classList.toggle('active',active===true);}
+const uiContextTimers=new Map();
+function clearUiContextTimer(key){const id=uiContextTimers.get(key);if(id!==undefined){clearTimeout(id);uiContextTimers.delete(key);}}
+function setUiContextTimer(key,callback,delay){clearUiContextTimer(key);const id=setTimeout(()=>{uiContextTimers.delete(key);callback();},delay);uiContextTimers.set(key,id);return id;}
+function setDialogOpenState(id,open){const dialog=$(id);if(dialog)dialog.hidden=!open;return !!open;}
 export {};
 
 // ===== 盤面コマンド =====
