@@ -6629,7 +6629,9 @@ function paint(){
     m.textContent='';
     m.classList.remove('show','tip','long-tip');
     clearUiEffectTimers('clear-transition');
-    setUiEffectTimer('clear-transition','show-actions',showClearActions,650);
+    // クリア演出の開始とダイアログ表示を同じ予約にまとめる。
+    // 中継タイマーを挟むと、再描画や別ダイアログの後始末で表示予約が欠落する。
+    showClearActions();
   }
 }
 function tileTransform(x,y,turn){
