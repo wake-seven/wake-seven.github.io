@@ -24,6 +24,7 @@
 - `src/ui/message-ui.js` — クリア後メッセージ・節目表示・見直し一覧
 - `scripts/build-index.mjs` — 単体HTMLを生成するスクリプト
 - `all-patterns.html` — クリア後に楽しめる盤面一覧
+- `docs/architecture-audit.md` — 公開境界・保存方針・アーキテクチャ監査
 
 進行状況や設定は、ブラウザの Local Storage に保存されます。外部サーバーへの送信やアカウント登録はありません。
 
