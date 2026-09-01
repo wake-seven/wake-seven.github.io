@@ -35,6 +35,9 @@ const all = [...sources.entries()].map(([file, source]) => `${file}\n${source}`)
 for (const token of ['migrateTutorialState', 'migrateSatoriOrder', 'LEGACY_SATORI_STAGES', 'speedUnlockModelVersion', 'speedTrialModelVersion', 'probability-2', 'optimal-path-5']) {
   assert.ok(!all.includes(token), `Removed compatibility token remains: ${token}`);
 }
+for (const token of ['satoriCatalogFromLegacy', 'boardQuizCatalogFromLegacy', 'messageCatalogFromLegacy']) {
+  assert.ok(!all.includes(token), `Removed ESM legacy adapter remains: ${token}`);
+}
 assert.match(sources.get('src/ui/dom.js'), /function setText/);
 assert.match(sources.get('src/ui/dom.js'), /function createRefs/);
 assert.match(sources.get('src/runtime/speed.js'), /speedViewRefs/);

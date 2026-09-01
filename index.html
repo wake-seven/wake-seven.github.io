@@ -2409,12 +2409,12 @@ function satoriOptimalPathCount(state,steps){
 function satoriOptimalClearProbability(stage){
   return satoriOptimalPathCount(stage.state,stage.par)/(12**stage.par);
 }
-// ひとつ前の並び。保存済みの悟り進行を、盤面そのものを基準に移し替えるために残す。
+// ひとつ前の並び。比較検証用の固定データとして残す。
 const SATORI_GLOBAL_OPTIMAL_STAGES=[...SATORI_CATALOG].sort((a,b)=>{
   const delta=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
   return delta||a.par-b.par||a.state-b.state;
 });
-// 一時的に採用していた「手数優先」の並び。保存済み進行の移行にだけ使う。
+// 一時的に採用していた「手数優先」の並び。比較検証用に残す。
 const SATORI_DEPTH_OPTIMAL_STAGES=[...SATORI_CATALOG].sort((a,b)=>{
   // まず最短手数の少ない順。その同じ手数の中だけ、最短で解ける確率順にする。
   // 3手の問題が4手の問題より後になることはない。
@@ -2423,7 +2423,7 @@ const SATORI_DEPTH_OPTIMAL_STAGES=[...SATORI_CATALOG].sort((a,b)=>{
   const delta=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
   return delta||a.state-b.state;
 });
-// 以前の確率順。保存済みの悟り進行を盤面基準で移行するためにも残す。
+// 以前の確率順。比較検証用の固定データとして残す。
 const SATORI_HUMAN_TIE_STAGES=[...SATORI_CATALOG].sort((a,b)=>{
   const probability=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
   if(probability)return probability;
@@ -4618,7 +4618,7 @@ if(!awakenedGranted)try{awakenedGranted=storage.get(STORAGE_KEYS.awakenedGranted
 // 速解きモードは、進行状況をリセットしても残す独立した解放要素。
 const speedUnlockState=initializeSpeedUnlockState({initialUnlocks,storage,storageKeys:STORAGE_KEYS,awakenedGranted});
 let speedModeUnlocked=speedUnlockState.modeUnlocked;
-// 速解きは解放された範囲ごとに選択できる。旧版の一括解放は移行時に全て解放済みへ変換する。
+// 速解きは解放された範囲ごとに選択できる。解放状態は現行の統合状態ストアから復元する。
 let speedTrainingUnlocked=speedUnlockState.training;
 let speedIntermediateUnlocked=speedUnlockState.intermediate;
 let speedMasteryUnlocked=speedUnlockState.mastery;
@@ -4678,7 +4678,7 @@ function grantCampaignProgressThrough(checkpoint){
 // 3Dページは速解きモード初回クリアの報酬。速解きの解放同様、進行状況リセットでは残す。
 let threeDUnlocked=initialUnlocks.threeD===true;
 if(!threeDUnlocked)try{threeDUnlocked=storage.get('wake7-3d-unlocked')==='1';}catch(_){ }
-// 七色だるまは二周目の名人達成報酬。旧版で覚者まで到達済みなら移行して保持する。
+// 七色だるまは二周目の名人達成報酬。覚者報酬が保存済みなら解放状態として保持する。
 let rainbowDarumaGranted=initialUnlocks.rainbowDarumaGranted===true;
 try{rainbowDarumaGranted=rainbowDarumaGranted||storage.get(STORAGE_KEYS.rainbowDarumaGranted)==='1'||awakenedGranted;}catch(_){rainbowDarumaGranted=awakenedGranted;}
 if(rainbowDarumaGranted)try{storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');}catch(_){ }
@@ -7980,7 +7980,8 @@ function applyBoardOrientationCommand(permutation,flip=false){
 export {};
 
 // ===== 進行command =====
-// 進行操作のコマンド入口。実装本体は既存ランタイムに残し、
+// 進行操作の公開コマンド入口。ファイル名は旧分割時の互換名だが、
+// 実装本体は既存ランタイムに残し、
 // イベントや他モジュールからの呼び出し経路だけをここへ集約する。
 // 将来の状態ストア移行時も、呼び出し側はこのAPIを維持できる。
 const WakeSevenProgressionCommands=Object.freeze({

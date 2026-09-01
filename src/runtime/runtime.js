@@ -370,7 +370,7 @@ if(!awakenedGranted)try{awakenedGranted=storage.get(STORAGE_KEYS.awakenedGranted
 // 速解きモードは、進行状況をリセットしても残す独立した解放要素。
 const speedUnlockState=initializeSpeedUnlockState({initialUnlocks,storage,storageKeys:STORAGE_KEYS,awakenedGranted});
 let speedModeUnlocked=speedUnlockState.modeUnlocked;
-// 速解きは解放された範囲ごとに選択できる。旧版の一括解放は移行時に全て解放済みへ変換する。
+// 速解きは解放された範囲ごとに選択できる。解放状態は現行の統合状態ストアから復元する。
 let speedTrainingUnlocked=speedUnlockState.training;
 let speedIntermediateUnlocked=speedUnlockState.intermediate;
 let speedMasteryUnlocked=speedUnlockState.mastery;
@@ -430,7 +430,7 @@ function grantCampaignProgressThrough(checkpoint){
 // 3Dページは速解きモード初回クリアの報酬。速解きの解放同様、進行状況リセットでは残す。
 let threeDUnlocked=initialUnlocks.threeD===true;
 if(!threeDUnlocked)try{threeDUnlocked=storage.get('wake7-3d-unlocked')==='1';}catch(_){ }
-// 七色だるまは二周目の名人達成報酬。旧版で覚者まで到達済みなら移行して保持する。
+// 七色だるまは二周目の名人達成報酬。覚者報酬が保存済みなら解放状態として保持する。
 let rainbowDarumaGranted=initialUnlocks.rainbowDarumaGranted===true;
 try{rainbowDarumaGranted=rainbowDarumaGranted||storage.get(STORAGE_KEYS.rainbowDarumaGranted)==='1'||awakenedGranted;}catch(_){rainbowDarumaGranted=awakenedGranted;}
 if(rainbowDarumaGranted)try{storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');}catch(_){ }

@@ -9,4 +9,3 @@ export function createBoardQuizCatalog(copy = {}) {
     all: () => clone(records)
   });
 }
-export const boardQuizCatalogFromLegacy = copy => createBoardQuizCatalog(copy);

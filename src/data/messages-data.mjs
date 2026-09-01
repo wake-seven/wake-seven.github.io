@@ -22,4 +22,3 @@ export function createMessageCatalog(clearContent = {}) {
     }
   });
 }
-export const messageCatalogFromLegacy = clearContent => createMessageCatalog(clearContent);

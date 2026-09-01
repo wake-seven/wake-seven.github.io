@@ -10,4 +10,3 @@ export function createSatoriCatalog(stages = []) {
     findByState: state => clone(records.find(stage => stage?.state === state) ?? null)
   });
 }
-export const satoriCatalogFromLegacy = stages => createSatoriCatalog(stages);

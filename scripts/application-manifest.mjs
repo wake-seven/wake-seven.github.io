@@ -1,5 +1,5 @@
 // 公開バンドルへ含める開発ソースの唯一の一覧。
-// 移行途中のclassicスクリプトも、暗黙に拾わずここで明示的に管理する。
+// 公開バンドルへ含めるスクリプトを暗黙に拾わず、ここで明示的に管理する。
 export const stateModuleFiles = ['state/game-state.js'];
 export const progressionPolicyFiles = ['state/progression-policy.js'];
 export const applicationModuleFiles = [

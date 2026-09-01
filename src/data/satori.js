@@ -50,12 +50,12 @@ function satoriOptimalPathCount(state,steps){
 function satoriOptimalClearProbability(stage){
   return satoriOptimalPathCount(stage.state,stage.par)/(12**stage.par);
 }
-// ひとつ前の並び。保存済みの悟り進行を、盤面そのものを基準に移し替えるために残す。
+// ひとつ前の並び。比較検証用の固定データとして残す。
 const SATORI_GLOBAL_OPTIMAL_STAGES=[...SATORI_CATALOG].sort((a,b)=>{
   const delta=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
   return delta||a.par-b.par||a.state-b.state;
 });
-// 一時的に採用していた「手数優先」の並び。保存済み進行の移行にだけ使う。
+// 一時的に採用していた「手数優先」の並び。比較検証用に残す。
 const SATORI_DEPTH_OPTIMAL_STAGES=[...SATORI_CATALOG].sort((a,b)=>{
   // まず最短手数の少ない順。その同じ手数の中だけ、最短で解ける確率順にする。
   // 3手の問題が4手の問題より後になることはない。
@@ -64,7 +64,7 @@ const SATORI_DEPTH_OPTIMAL_STAGES=[...SATORI_CATALOG].sort((a,b)=>{
   const delta=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
   return delta||a.state-b.state;
 });
-// 以前の確率順。保存済みの悟り進行を盤面基準で移行するためにも残す。
+// 以前の確率順。比較検証用の固定データとして残す。
 const SATORI_HUMAN_TIE_STAGES=[...SATORI_CATALOG].sort((a,b)=>{
   const probability=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
   if(probability)return probability;
