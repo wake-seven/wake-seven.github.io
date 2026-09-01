@@ -48,11 +48,12 @@ assert.match(boardRender,/function renderTutorialRewindAppearance\(/,'Tutorial r
 assert.match(tutorialAnimation,/function createTutorialRewindModel\(/,'Tutorial rewind display model is missing.');
 for(const name of ['captureTutorialRewindDomSnapshot','restoreTutorialRewindDomSnapshot'])assert.match(tutorialAnimation,new RegExp(`function ${name}\\(`),`${name} API is missing.`);
 for(const name of ['startTutorialRewindSession','setTutorialRewindTimer','bindTutorialRewindAnimation','finishTutorialRewindSession','cancelTutorialRewindSession'])assert.match(tutorialAnimation,new RegExp(`function ${name}\\(`),`${name} session API is missing.`);
-assert.match(board,/createTutorialRewindModel\(\{startAngle:dg\.deg,endAngle:0,direction:dir,pivot:dg\.kc/,'Tutorial rewind must receive a normalized display model.');
+assert.match(board,/createTutorialRewindModel\(\{startAngle:dg\.deg,endAngle:target,direction:dir,pivot:dg\.kc,items:dg\.items\.map/,'Tutorial rewind must receive a normalized operation model.');
+assert.match(board,/function animateTutorialRewind\(model,visualItems\)/,'Tutorial rewind animation must receive an operation model separate from visual items.');
 assert.match(board,/captureTutorialRewindDomSnapshot\(sortedItems\)/,'Tutorial rewind must snapshot DOM order before grouping.');
 assert.match(board,/startTutorialRewindSession\(\{snapshot:domSnapshot,group/,'Tutorial rewind must start a dedicated session.');
 assert.match(board,/setTutorialRewindTimer\(session,/,'Tutorial rewind timers must use the dedicated session.');
-assert.match(board,/renderTutorialRewindAppearance\(dg\.items,dir\)/,'Tutorial rewind appearance updates must use the renderer boundary.');
+assert.match(board,/renderTutorialRewindAppearance\(visualItems,model\.direction\)/,'Tutorial rewind appearance updates must use the renderer boundary.');
 assert.match(board,/bindTutorialRewindAnimation\(session,animation\)/,'Tutorial rewind animation must use the dedicated session.');
 assert.match(board,/setUiEffectTimer\('tutorial-rewind','cue',showTutorialCue,150\)/,'Tutorial rewind completion cue must use the UI effect timer boundary.');
 assert.match(tutorialAnimation,/if\(session\.cleaned\)return false/,'Tutorial rewind cleanup must be idempotent.');

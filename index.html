@@ -7513,7 +7513,7 @@ function finishDrag(e,cancel=false,forcedTurns=null){
   if(isMode('tutorial')&&dir&&!tutorialMoveAllowed(dg.ti,dir)){
     cancelTutorialHint(true);
     renderTutorialFeedback({text:tr(TUTORIAL_STEPS[tutorialStep]?.cue==='chain-direction'?'tutorialWrongPlacePrompt':'tutorialWrongPrompt')});
-    animateTutorialRewind(dg,target,dir);
+    animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:target,direction:dir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue||''}),dg.items);
     return;
   }
   // いったん120°以上回してから元の角度(0°)へ戻した場合も、
@@ -7525,7 +7525,8 @@ function finishDrag(e,cancel=false,forcedTurns=null){
       cancelTutorialHint(true);
       renderTutorialFeedback({text:tr('tutorialWrongPlacePrompt')});
       svg.querySelector('.grip-marker[data-tri="'+dg.ti+'"]').classList.add('narrow-hidden');
-      animateTutorialRewind(dg,0,dg.rawDeg>=0?1:-1);
+      const rewindDir=dg.rawDeg>=0?1:-1;
+      animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:rewindDir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue||''}),dg.items);
       return;
     }
   }
@@ -7609,10 +7610,9 @@ function finishDrag(e,cancel=false,forcedTurns=null){
     a.onfinish=a.oncancel=()=>{ if(++done===3){setBoardBusy(false);paint();wakeFeedback(waking);resumeTutorialCue();} };
   }
 }
-function animateTutorialRewind(dg,target,dir){
+function animateTutorialRewind(model,visualItems){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){paint();setTimeout(showTutorialCue,520);return;}
   setBoardBusy(true);
-  const model=createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:dir,pivot:dg.kc,items:dg.items,duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue||''});
   const duration=model.duration;
   // 3枚を個別にanimate()すると僅かなずれでばらばらに見えるため、1つのgroupへ一時的に
   // まとめて入れ、group側の回転を1つだけ再生することで常に揃って動くようにする。
@@ -7623,24 +7623,24 @@ function animateTutorialRewind(dg,target,dir){
   // 元のDOM位置(水色の棒より前)を覚えておき、終了後に同じ位置へ戻す。末尾に付け直すと
   // 棒(grip-marker)より後ろになってしまい、棒が裏に隠れて見えなくなるため。
   const domOrder=[...svg.children];
-  const sortedItems=[...dg.items].sort((a,b)=>domOrder.indexOf(a.el)-domOrder.indexOf(b.el));
+  const sortedItems=[...visualItems].sort((a,b)=>domOrder.indexOf(a.el)-domOrder.indexOf(b.el));
   const domSnapshot=captureTutorialRewindDomSnapshot(sortedItems);
   const session=startTutorialRewindSession({snapshot:domSnapshot,group,onCleanup:()=>{
     setBoardBusy(false);paint();setUiEffectTimer('tutorial-rewind','cue',showTutorialCue,150);
   }});
-  for(const item of model.items){
-    item.el.style.transform=orbitTransform(item,0,dg.kc);
+  for(const item of visualItems){
+    item.el.style.transform=orbitTransform(item,0,model.pivot);
     group.appendChild(item.el);
   }
   setTutorialRewindTimer(session,()=>{
     if(!isMode('tutorial'))return;
-    renderTutorialRewindAppearance(dg.items,dir);haptic(6);
+    renderTutorialRewindAppearance(visualItems,model.direction);haptic(6);
   },245);
   setTutorialRewindTimer(session,()=>{
     if(!isMode('tutorial'))return;
-    renderTutorialRewindAppearance(dg.items,0);
+    renderTutorialRewindAppearance(visualItems,0);
   },440);
-  group.style.transformOrigin=dg.kc.x+'px '+dg.kc.y+'px';
+  group.style.transformOrigin=model.pivot.x+'px '+model.pivot.y+'px';
   // 中間の120°位置へ寄せず、指を離した現在角度からそのまま元の位置へ戻す。
   const animation=group.animate([
     {transform:'rotate('+model.startAngle+'deg)',offset:0},

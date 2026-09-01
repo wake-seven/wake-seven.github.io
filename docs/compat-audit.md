@@ -101,6 +101,8 @@ pointer captureは `captureBoardPointer()` / `releaseBoardPointer()`、別pointe
 
 チュートリアル巻き戻しの表示モデルは `src/ui/tutorial-animation.js:createTutorialRewindModel()` で生成する。`startAngle` / `endAngle` / `direction` / `pivot` / `items` / `duration` / `cue` を演出側へ渡し、`board-ui.js` は入力判定と状態遷移を保持する。モデル生成は副作用を持たず、既存の指を離した角度から初期位置へ戻る見た目とタイミングを変更しない。
 
+巻き戻し開始時は、pointerイベントや座標を含まない操作モデルを生成する。`animateTutorialRewind(model, visualItems)` は角度・方向・pivot等の正規化モデルと、描画対象の明示的なvisual itemsを受け取り、イベントオブジェクトを参照しない。操作判定とDOMイベント接続は呼び出し側に残す。
+
 巻き戻しで一時的にSVG groupへ移す要素は、同ファイルの `captureTutorialRewindDomSnapshot()` / `restoreTutorialRewindDomSnapshot()` でDOM親・兄弟順・inline styleを退避・復元する。finish/cancelは同じ復元処理を一度だけ通るため、水色の棒との前後関係とvisibilityを含む表示状態を維持する。
 
 チュートリアル巻き戻しのWAAPI、遅延タイマー、DOM snapshot、cleanup済み状態は `startTutorialRewindSession()` 以下の専用セッションAPIで一元管理する。cancel時はWAAPIと未実行タイマーを停止し、finish/cancelのどちらでもsnapshot復元を一度だけ実行する。完了後の案内表示だけは既存のUI演出タイマー境界へ登録し、画面遷移時に残留しないようにする。演出の速度・見た目・完了後の案内表示は変更しない。
