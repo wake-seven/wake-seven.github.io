@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const srcRoot = join(root, 'src');
 const auditDoc = await readFile(join(root, 'docs', 'compat-audit.md'), 'utf8');
+const archiveReadme = await readFile(join(root, 'docs', 'archive', 'README.md'), 'utf8');
 for (const heading of ['# 状態境界・未使用候補監査']) {
   assert.match(auditDoc, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `Compatibility audit documentation is missing: ${heading}`);
 }
@@ -23,6 +24,7 @@ async function collect(directory) {
 await collect(srcRoot);
 
 const manifest = await readFile(join(root, 'scripts', 'application-manifest.mjs'), 'utf8');
+const publicHtml = await readFile(join(root, 'index.html'), 'utf8');
 assert.ok(manifest.indexOf("state/game-state.js") < manifest.indexOf("runtime/namespace.js"), 'State API must initialize before the public namespace.');
 assert.ok(manifest.indexOf("state/progression-policy.js") < manifest.indexOf("runtime/namespace.js"), 'Progression API must initialize before the public namespace.');
 assert.match(sources.get('src/runtime/namespace.js'), /Object\.freeze\(\{state: stateApi, progression: progressionApi, messages: messagesApi, speed: speedApi\}\)/, 'Public API namespace must remain minimal and frozen.');
@@ -38,6 +40,16 @@ for (const token of ['migrateTutorialState', 'migrateSatoriOrder', 'LEGACY_SATOR
 for (const token of ['satoriCatalogFromLegacy', 'boardQuizCatalogFromLegacy', 'messageCatalogFromLegacy']) {
   assert.ok(!all.includes(token), `Removed ESM legacy adapter remains: ${token}`);
 }
+for (const [file, token] of [
+  ['src/ui/board-render.js', 'renderAxisGuide'],
+  ['src/ui/tutorial-animation.js', 'startTutorialRewindSession'],
+  ['src/ui/progression-render.js', 'renderClearShapeRuleContent'],
+  ['src/ui/board-interaction.js', 'cancelBoardAnimation']
+]) {
+  assert.match(sources.get(file), new RegExp(`function ${token}\\(`), `Current boundary is missing: ${file}:${token}`);
+  assert.match(publicHtml, new RegExp(`function ${token}\\(`), `Generated HTML is missing: ${file}:${token}`);
+}
+assert.match(archiveReadme, /現在の実装やビルドの入力ではありません/);
 assert.match(sources.get('src/ui/dom.js'), /function setText/);
 assert.match(sources.get('src/ui/dom.js'), /function createRefs/);
 assert.match(sources.get('src/runtime/speed.js'), /speedViewRefs/);
