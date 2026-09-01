@@ -2,12 +2,18 @@ import assert from 'node:assert/strict';
 import { readdir, readFile } from 'node:fs/promises';
 import { dirname, extname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { trackedSourceFiles } from './application-manifest.mjs';
+import { developmentSourceFiles, publishedSourceFiles, trackedSourceFiles } from './application-manifest.mjs';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const srcRoot = join(root, 'src');
 const expected = new Set(trackedSourceFiles);
 const files = [];
+assert.ok(developmentSourceFiles.every(path => path.endsWith('.mjs')), 'Development source must be ESM-only.');
+assert.ok(publishedSourceFiles.every(path => path.endsWith('.js')), 'Published concatenation source must remain classic-compatible modules.');
+assert.deepEqual(developmentSourceFiles.filter(path => publishedSourceFiles.includes(path)), [], 'Development ESM and published source manifests must not overlap.');
+const intentionalDuals = new Set(['audio', 'board-commands', 'board-domain', 'board-quiz', 'progression-commands', 'progression-runtime', 'render', 'satori', 'settings']);
+const duals = new Set(developmentSourceFiles.map(path => path.replace(/\.mjs$/, '')).filter(path => publishedSourceFiles.some(published => published.replace(/\.js$/, '') === path)).map(path => path.split('/').pop()));
+assert.deepEqual([...duals].sort(), [...intentionalDuals].sort(), 'Classic/ESM duplicate implementation set changed; classify it before adding new code.');
 
 async function collect(directory) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {

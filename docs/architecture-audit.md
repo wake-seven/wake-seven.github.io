@@ -45,6 +45,8 @@ npm run check
 
 2026-09-01時点の監査結果は、未使用候補0件、公開版の重複関数宣言0件、通常UI fallbackなしです。内蔵ブラウザは利用できない環境のため、実際のスワイプ操作確認は未実施です。
 
+classic/ESMの役割は固定する。`publishedSourceFiles` は単体HTMLへ連結する `.js` 群、`developmentSourceFiles` は開発用入口から import される `.mjs` 群とし、両マニフェストのパスは重複させない。現在の同名ペア（audio、board-commands、board-domain、board-quiz、progression-commands、progression-runtime、render、satori、settings）は開発用ESMと公開互換層の意図的な境界として監査で許可する。新しい同名ペアを追加する場合は、`check-source-boundaries` の許可リストを先に更新する。
+
 ## 履歴資料
 
 `docs/archive/` は過去の調査・計画メモです。現行仕様の根拠やビルド入力ではありません。現在の実装と異なる記述を含むため、保守時に参照する必要はありません。

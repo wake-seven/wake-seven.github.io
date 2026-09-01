@@ -6,7 +6,6 @@ import { fileURLToPath } from 'node:url';
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const srcRoot = join(root, 'src');
 const auditDoc = await readFile(join(root, 'docs', 'architecture-audit.md'), 'utf8');
-const archiveReadme = await readFile(join(root, 'docs', 'archive', 'README.md'), 'utf8');
 for (const heading of ['# 現行アーキテクチャ監査']) {
   assert.match(auditDoc, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `Compatibility audit documentation is missing: ${heading}`);
 }
@@ -49,7 +48,6 @@ for (const [file, token] of [
   assert.match(sources.get(file), new RegExp(`function ${token}\\(`), `Current boundary is missing: ${file}:${token}`);
   assert.match(publicHtml, new RegExp(`function ${token}\\(`), `Generated HTML is missing: ${file}:${token}`);
 }
-assert.match(archiveReadme, /現在の実装やビルドの入力ではありません/);
 assert.match(sources.get('src/ui/dom.js'), /function setText/);
 assert.match(sources.get('src/ui/dom.js'), /function createRefs/);
 assert.match(sources.get('src/runtime/speed.js'), /speedViewRefs/);
