@@ -613,11 +613,13 @@ function tipGuideBoard(state,cx=105,cy=59,scale=1){
     +'<g class="tip-guide-daruma" transform="rotate('+miniAngle(state[i])+')"><g transform="translate(0 1) scale(.42)"><use href="#daruma-body"/><use href="#'+(state[i]===0?'face-open':'face-shut')+'"/></g></g></g>').join('')+'</g>';
 }
 function tipGuideBestLabel(n){
-  return ({ja:'最短'+n+'手',en:'Best: '+n+' moves',zh:'最少'+n+'步',ko:'최단 '+n+'수'}[currentLang]||('最短'+n+'手'));
+  const {language}=runtimeSnapshot();
+  return ({ja:'最短'+n+'手',en:'Best: '+n+' moves',zh:'最少'+n+'步',ko:'최단 '+n+'수'}[language]||('最短'+n+'手'));
 }
 function tipGuideSvg(index,states){
   const labels={ja:['小三角の寝ダルマ','大三角の寝ダルマ'],en:['Small triangle of fallen daruma','Large triangle of fallen daruma'],zh:['倒下的小三角','倒下的大三角'],ko:['누운 다루마의 작은 삼각형','누운 다루마의 큰 삼각형']};
-  const l=labels[currentLang]||labels.ja;
+  const {language}=runtimeSnapshot();
+  const l=labels[language]||labels.ja;
   const best=tipGuideBestLabel;
   const boards=[
     ()=>tipGuideBoard(states[0]),
@@ -641,14 +643,15 @@ function tipGuideDoubleVisualMarkup(state){
 }
 function tipGuideDoubleMarkup(states){
   const labels={ja:['小三角の寝ダルマ','大三角の寝ダルマ'],en:['Small triangle of fallen daruma','Large triangle of fallen daruma'],zh:['倒下的小三角','倒下的大三角'],ko:['누운 다루마의 작은 삼각형','누운 다루마의 큰 삼각형']};
-  const names=labels[currentLang]||labels.ja;
+  const {language}=runtimeSnapshot();
+  const names=labels[language]||labels.ja;
   const best=[1,4];
   return states.map((state,index)=>'<div class="tip-guide-double-board"><div class="tip-guide-double-visual">'+tipGuideDoubleVisualMarkup(state)+'</div><div class="tip-guide-double-caption">'+names[index]+'<strong>'+tipGuideBestLabel(best[index])+'</strong></div>'+tipGuideControls(index,1)+'</div>').join('');
 }
 function renderTipGuide(model={}){
   const guideIndex=Number.isInteger(model.index)?model.index:tipGuideIndex;
   const guideStates=model.states||tipGuideStates;
-  const guideLang=model.lang||currentLang;
+  const guideLang=model.lang||runtimeSnapshot().language;
   const tips=PLAY_TIPS[guideLang]||PLAY_TIPS.ja;
   $('tipGuideTitle').textContent=tr('tipGuideTitle');
   $('tipGuidePage').textContent=(guideIndex+1)+' / '+GUIDE_TIP_INDEX.length;
@@ -910,9 +913,10 @@ function applyLanguage(lang){
     renderClearQuiz();
     renderBoardQuiz('boardQuiz',boardQuizConfigForCurrent(),{requireAnswer:true});
     const action=$('clearNext');
-    if(isMode('free'))action.textContent=tr('another');
-    else if(isMode('custom'))action.textContent=tr('again');
-    else if(isMode('mastery'))action.textContent=extraIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');
+    const {mode,masteryIndex,stageIndex}=runtimeSnapshot();
+    if(mode==='free')action.textContent=tr('another');
+    else if(mode==='custom')action.textContent=tr('again');
+    else if(mode==='mastery')action.textContent=masteryIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');
     else if(stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');
     else if(stageIndex===STAGES.length-1)action.textContent=tr('toFree');
     else action.textContent=tr('nextPuzzle');
@@ -927,7 +931,7 @@ $('languageToggle').addEventListener('click',e=>{
   menu.classList.toggle('show',open);
   $('languageToggle').setAttribute('aria-expanded',String(open));
   if(open){
-    const selected=menu.querySelector('[data-lang="'+currentLang+'"]');
+    const selected=menu.querySelector('[data-lang="'+runtimeSnapshot().language+'"]');
     if(selected)selected.focus();
   }
 });
