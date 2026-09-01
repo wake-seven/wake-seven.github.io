@@ -397,8 +397,7 @@ function renderStageNav(){
       $('academyClearSuffix').textContent=showsRemaining?tr('academyClearSuffix'):'';
       $('speedClockInline').hidden=false;
       setText('speedClockLabel','');
-      $('movesLabel').textContent=tr('moves');$('moves').textContent=moves;$('movesUnit').textContent=tr('moveUnit');
-      document.querySelector('.status-metric.moves').hidden=isTwoMoveLessonSpeedStage();
+      renderMovesMetric(moves,isTwoMoveLessonSpeedStage());
       if(showsRemaining)showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
       renderSpeedClock();
     }else if(isMode('free')){

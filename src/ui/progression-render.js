@@ -7,6 +7,15 @@ function getProgressionRenderRefs(){
     'movesLabel','moves','movesUnit'
   ]);
 }
+// ステージ上部の手数表示だけを担当するrenderer。進行状態の変更や遷移は行わない。
+function renderMovesMetric(moveCount,hidden=false){
+  const refs=getProgressionRenderRefs();
+  const metric=document.querySelector('.status-metric.moves');
+  if(metric)metric.hidden=hidden;
+  setText(refs.movesLabel,tr('moves'));
+  setText(refs.moves,moveCount);
+  setText(refs.movesUnit,tr('moveUnit'));
+}
 function renderStageNavAccent(){
   let accentFrac=0;
   if(isMode('speed'))accentFrac=(speedSession.index+1)/(speedSession.total||activeSpeedDefinition().total);
