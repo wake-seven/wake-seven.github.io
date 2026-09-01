@@ -387,7 +387,7 @@ const CHAIN_STEPS={
       if(art)art.innerHTML=TRAINING_WELCOME_ART_SVG;
       $('chainDialogText').textContent=tr('trainingWelcomeText');
     },
-    onAction(){openChainedDialog('trainingUpperPractice');}
+    onAction(){openChainedDialog('trainingUpperGoal');}
   },
   trainingUpperPractice:{
     kindKey:'trainingUpperPracticeKind', titleKey:'trainingUpperPracticeText', actionKey:'trainingWelcomeNext',
@@ -397,12 +397,12 @@ const CHAIN_STEPS={
       buildTwoMoveLessonBoard('trainingUpperPracticeBoard','joinOne');
       return ()=>stopClearGuideBoard('trainingUpperPracticeBoard');
     },
-    onAction(){openChainedDialog('trainingUpperGoal');}
+    onAction(){loadStage(TRAINING_STAGE_START);}
   },
   trainingUpperGoal:{
     kindKey:'trainingUpperGoalKind', titleKey:'trainingUpperGoalText', actionKey:'trainingUpperGoalStart',
     render:shapeGridRenderer(TRAINING_UPPER_GOAL_STATES,TRAINING_UPPER_GOAL_SHAPES,s=>'twoMoveTip3'+s+'Name',null,'trainingUpperGoalTitle'),
-    onAction(){loadStage(TRAINING_STAGE_START);}
+    onAction(){openChainedDialog('trainingUpperPractice');}
   },
   trainingMiddleSpin:{
     kindKey:'trainingMiddleGoalKind', titleKey:'trainingMiddleSpinTitle', actionKey:'trainingWelcomeNext',
