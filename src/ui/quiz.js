@@ -33,11 +33,17 @@ function boardQuizPatternState(position){return TWO_MOVE_STAGES[TWO_MOVE_PATTERN
 // 問題データの state は、公開カタログでは整数エンコード、古い定義では
 // 7枚の配列の場合がある。両方を同じ整数状態へ正規化する。
 function boardQuizStateValue(value){
-  if(Number.isInteger(value))return value;
-  if(Array.isArray(value)||ArrayBuffer.isView(value))return enc(Uint8Array.from(value));
+  if(Number.isInteger(value)&&value>=0&&value<NS)return value;
+  if((Array.isArray(value)||ArrayBuffer.isView(value))&&value.length===N&&[...value].every(item=>Number.isInteger(item)&&item>=0&&item<3))return enc(Uint8Array.from(value));
   return null;
 }
 function boardQuizMatchingStates(state,match,limit=Infinity,accept=()=>true){const target=dec(state),candidates=[];for(let next=0;next<NS;next++){const distance=SOLVER.dist[next];if(distance===255||!match(distance))continue;const board=dec(next);if(board.some((value,index)=>(value===0)!==(target[index]===0))||!accept(board))continue;let changes=0;board.forEach((value,index)=>{if(value!==0&&value!==target[index])changes++;});candidates.push({state:next,distance,changes});}candidates.sort((a,b)=>a.distance-b.distance||a.changes-b.changes||a.state-b.state);return candidates.slice(0,limit).map(candidate=>candidate.state);}
+function boardQuizEnoughMatchingStates(state,match,limit,accept=()=>true){
+  const preferred=boardQuizMatchingStates(state,match,limit,accept);
+  if(preferred.length>=limit)return preferred;
+  const fallback=boardQuizMatchingStates(state,match,NS,()=>true);
+  return [...new Set([...preferred,...fallback])].slice(0,limit);
+}
 function boardQuizSameShapeState(state,shapeState){const shape=dec(shapeState);for(const symmetry of SYMMETRIES){const transformed=transformStateBySymmetry(state,symmetry),board=dec(transformed);if(board.every((value,index)=>(value===0)===(shape[index]===0)))return transformed;}return state;}
 function boardQuizCenterIsNotOdd(board){if(board[3]===0)return true;const count=[0,0,0];board.forEach(value=>{if(value!==0)count[value]++;});return count[board[3]]===Math.max(...count);}
 function boardQuizConfigForCurrent(){
@@ -54,7 +60,7 @@ function boardQuizConfigForCurrent(){
   if(!config)return null;
   // 問題定義の pattern は表示順の番号。描画時に都度参照せず、
   // 現在の盤面状態を設定取得時に確定してクイズへ渡す。
-  if(config.pattern&&!config.state){
+  if(config.pattern&&config.state===undefined){
     const stage=TWO_MOVE_STAGES[TWO_MOVE_PATTERN_ORDER[config.pattern-1]];
     if(stage?.state!==undefined)return Object.assign({},config,{state:stage.state});
   }
@@ -72,14 +78,15 @@ function boardQuizPresentation(config,state,copy){
     const good=[state];
     if(config.patterns)good.push(boardQuizSameShapeState(boardQuizPatternState(config.patterns[1]),state));
     for(const candidate of boardQuizMatchingStates(state,distance=>distance===2,Infinity,accept))if(!good.includes(candidate))good.push(candidate);
-    const wrong=boardQuizMatchingStates(state,distance=>distance>=3,2,accept);
+    const wrong=boardQuizEnoughMatchingStates(state,distance=>distance>=3,2,accept);
     states=[...wrong];
     for(const index of config.correct)states.splice(index,0,good.shift());
     correct=config.correct;
     question=copy.chooseTwo||copy.choose;
   }else if(config.options){
     states=config.options.map(option=>{
-      const reference=enc(Uint8Array.from(option.state));
+      const reference=boardQuizStateValue(option.state);
+      if(reference===null)throw new Error('Invalid board quiz option state');
       return SOLVER.dist[reference]===option.distance?reference:boardQuizMatchingStates(reference,distance=>distance===option.distance,1)[0]??reference;
     });
     correct=[config.correct];
@@ -87,7 +94,7 @@ function boardQuizPresentation(config,state,copy){
   }else{
     const targetDistance=config.targetDistance||2;
     const target=SOLVER.dist[state]===targetDistance?state:boardQuizMatchingStates(state,distance=>distance===targetDistance,1)[0]??state;
-    states=boardQuizMatchingStates(target,distance=>distance>targetDistance,1);
+    states=boardQuizEnoughMatchingStates(target,distance=>distance>targetDistance,1);
     states.splice(config.correct,0,target);
     correct=[config.correct];
     question=targetDistance===3?(copy.chooseThree||copy.choose):copy.choose;

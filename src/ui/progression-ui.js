@@ -936,10 +936,16 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   // ステージ定義の state は整数エンコード、明示的な選択肢の state は
   // 7枚の配列。整数を Uint8Array.from(number) に渡すと「その長さの
   // 空配列」と解釈され、全員起きた状態 (0) になってしまう。
-  const state=typeof config.state==='number'
-    ?config.state
-    :config.state?enc(Uint8Array.from(config.state))
-    :config.options?null:boardQuizPatternState(config.pattern||config.patterns[0]);
+  const state=config.options
+    ?null
+    :boardQuizStateValue(config.state!==undefined
+      ?config.state
+      :boardQuizPatternState(config.pattern||config.patterns?.[0]));
+  if(state===null){
+    root.hidden=true;root.replaceChildren();root.dataset.boardQuizKey='';
+    if(requireAnswer)$('clearNext').disabled=false;
+    return;
+  }
   let {states,correct,question,moveChoiceOrder}=boardQuizPresentation(config,state,copy);
   if(config.kind!=='moves'){
     const order=shuffledIndices(states.length);
