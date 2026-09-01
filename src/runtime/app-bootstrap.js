@@ -1,4 +1,10 @@
 // 起動・復元・ページライフサイクル。画面イベントの定義とは分離する。
+const canShowDeferredBootDialog=()=>[
+  'introDialog','chainDialog','clearDialog','messageDialog','masterDialog',
+  'speedPauseDialog','speedRestartDialog','rankDialog','tipGuideDialog',
+  'guideHubDialog','twoMoveDialog','twoMoveDetailDialog','optimalFailDialog',
+  'resetDialog','aboutDialog','settingsDialog','boardThemeDialog'
+].every(id=>$(id)?.hidden!==false);
 buildBoard();
 updateMasterTheme();
 restoreActiveSession();
@@ -7,8 +13,8 @@ applyLanguage(savedLanguage);
 restoreDialogState(storage.json(DIALOG_STATE_STORAGE_KEY,null));
 // 初期HTMLの仮状態ではなく、保存状態を反映した最初の画面だけを公開する。
 document.body.classList.remove('app-booting');
-if(storage.get(STORAGE_KEY_GROUPS.progression.introSeen)!=='1')setTimeout(openIntroGuide,350);
-else if(storage.get(STORAGE_KEY_GROUPS.progression.tutorialComplete)!=='1'&&!isMode('tutorial'))setTimeout(startTutorial,80);
+if(storage.get(STORAGE_KEY_GROUPS.progression.introSeen)!=='1')setTimeout(()=>{if(canShowDeferredBootDialog())openIntroGuide();},350);
+else if(storage.get(STORAGE_KEY_GROUPS.progression.tutorialComplete)!=='1'&&!isMode('tutorial'))setTimeout(()=>{if(canShowDeferredBootDialog())startTutorial();},80);
 window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();persistActiveSession();});
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'){if(isMode('speed'))pauseSpeedClock();persistActiveSession();}

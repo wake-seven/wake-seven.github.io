@@ -1167,7 +1167,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   setActiveMode('stage');speedSession=null;pauseSpeedClock();
   updateMasterTheme();
   GameNavigation.stage(0);
-  if(showIntro)setTimeout(openIntroGuide,80);
+  if(showIntro)setTimeout(()=>{if(typeof canShowDeferredBootDialog==='function'&&canShowDeferredBootDialog())openIntroGuide();},80);
 }
 $('resetProgress').addEventListener('click',()=>{
   $('settingsDialog').hidden=true;

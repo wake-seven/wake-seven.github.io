@@ -147,7 +147,7 @@ for (const token of [
   assert.match(all, new RegExp(token.replace(/[()$']/g, '\\$&')), `Play-flow recovery action is missing: ${token}`);
 }
 const introStartAt = all.indexOf("$('introStart').addEventListener('click'");
-const tutorialStartAt = all.indexOf('startTutorial()');
+const tutorialStartAt = all.indexOf('startTutorial()', introStartAt);
 assert.ok(introStartAt >= 0 && tutorialStartAt > introStartAt, 'Start button must lead into tutorial initialization.');
 for (const token of [
   'loadTutorialStep(',
