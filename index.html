@@ -5976,7 +5976,7 @@ const CHAIN_STEPS={
     onAction(){openChainedDialog('trainingUpperGoal');}
   },
   trainingUpperPractice:{
-    kindKey:'trainingUpperPracticeKind', titleKey:'trainingUpperPracticeText', actionKey:'trainingWelcomeNext',
+    kindKey:'trainingUpperPracticeKind', titleKey:'trainingUpperPracticeText', actionKey:'trainingUpperGoalStart',
     render(body){
       cloneDialogTemplate(body,'chain-template-training-upper-practice','<p class="chain-text-highlight" id="chainDialogText"></p><div class="two-move-detail-board-area"><div class="two-move-detail-board"><svg id="trainingUpperPracticeBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>');
       body.querySelector('[data-chain-dialog-text]')?.setAttribute('id','chainDialogText');
@@ -5986,7 +5986,7 @@ const CHAIN_STEPS={
     onAction(){loadStage(TRAINING_STAGE_START);}
   },
   trainingUpperGoal:{
-    kindKey:'trainingUpperGoalKind', titleKey:'trainingUpperGoalText', actionKey:'trainingUpperGoalStart',
+    kindKey:'trainingUpperGoalKind', titleKey:'trainingUpperGoalText', actionKey:'trainingWelcomeNext',
     render:shapeGridRenderer(TRAINING_UPPER_GOAL_STATES,TRAINING_UPPER_GOAL_SHAPES,s=>'twoMoveTip3'+s+'Name',null,'trainingUpperGoalTitle'),
     onAction(){openChainedDialog('trainingUpperPractice');}
   },
