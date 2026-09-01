@@ -598,7 +598,14 @@ function showClearDialog(){
   renderClearQuiz();
   action.hidden=false;
   action.disabled=false;
-  renderBoardQuiz('boardQuiz',boardQuizConfigForCurrent(),{requireAnswer:true});
+  // 盤面クイズはクリア後の追加コンテンツ。描画に失敗しても、
+  // クリア結果と次の操作まで巻き込んでダイアログを失わないようにする。
+  try{renderBoardQuiz('boardQuiz',boardQuizConfigForCurrent(),{requireAnswer:true});}
+  catch(error){
+    console.error('clear board quiz render failed',error);
+    $('boardQuiz').hidden=true;
+    action.disabled=false;
+  }
   $('clearDialog').hidden=false;
 }
 function renderOptimalFail(){

@@ -16,7 +16,10 @@ function advanceAfterClear(){
 let returnToClearCard=false,twoMovePatternsReturnTarget=null,twoMoveDetailReturnTarget=null,guideHubReturn=false;
 function returnToClearDialog(){
   returnToClearCard=false;$('clearDialogMessage').textContent=clearDialogHeading();renderClearStageContext();renderClearTip();renderClearQuiz();
-  $('clearNext').disabled=false;renderBoardQuiz('boardQuiz',boardQuizConfigForCurrent(),{requireAnswer:true});$('clearNext').hidden=false;$('clearDialog').hidden=false;$('clearTipLink').focus();
+  $('clearNext').disabled=false;
+  try{renderBoardQuiz('boardQuiz',boardQuizConfigForCurrent(),{requireAnswer:true});}
+  catch(error){console.error('clear board quiz render failed',error);$('boardQuiz').hidden=true;}
+  $('clearNext').hidden=false;$('clearDialog').hidden=false;$('clearTipLink').focus();
 }
 
 // Keep this extracted fragment explicit in the source audit while it remains
