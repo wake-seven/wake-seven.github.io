@@ -6418,7 +6418,7 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
       // 使い回すunitは先に挿入済みのため、最前面に出すには回転開始のたびに一度前面へ出し直す。
       guide.appendChild(unit);
       unit.animate([{transform:'rotate(0deg)'},{transform:'rotate('+(move.dir*120)+'deg)'}],
-        {duration:400,easing:'cubic-bezier(.2,.75,.2,1)',fill:'forwards'});
+        {duration:1200,easing:'cubic-bezier(.2,.75,.2,1)',fill:'forwards'});
       setTimeout(()=>{
         if(!isCurrent()||!guide.isConnected)return;
         for(let i=0;i<3;i++){
@@ -6427,12 +6427,12 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
           tile.setAttribute('class','tile '+(after[to]?'fallen':'stand'));tiles[to]=tile;guide.appendChild(tile);
         }
         swipe.setAttribute('cx',swipeStart.x.toFixed(2));swipe.setAttribute('cy',swipeStart.y.toFixed(2));guide.appendChild(swipe);swipe.style.display='none';
-      },400);
+      },1200);
     },2450);
     // 次の初期盤面へ戻す直前に短く消し、ループの切り替わりを明確にする。
-    setTimeout(()=>{if(isCurrent()&&guide.isConnected)guide.style.opacity='0';},3350);
+    setTimeout(()=>{if(isCurrent()&&guide.isConnected)guide.style.opacity='0';},4300);
   };
-  play();clearGuideTimers.set(id,setInterval(play,3600));
+  play();clearGuideTimers.set(id,setInterval(play,4700));
 }
 // ===== 描画・座標変換・スワイプアニメーション =====
 function paint(){
