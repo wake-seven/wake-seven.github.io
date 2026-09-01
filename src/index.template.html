@@ -93,6 +93,11 @@
   .app-menu-list .chip.on{background:#183952;color:#62B8D2}
   .app-menu-list .menu-reset{color:#8291A4}
   .menu-divider{height:0.0625rem;margin:0.1875rem 0.4375rem;background:rgba(255,255,255,.12)}
+  .settings-dialog{width:min(100%,20.625rem)}
+  .settings-options{display:grid;gap:0.5rem;margin-top:1rem}
+  .settings-option{width:100%;min-height:2.75rem;padding:0.625rem 0.75rem;border:1px solid rgba(255,255,255,.15);border-radius:0.5625rem;background:rgba(255,255,255,.045);color:#D4E6EC;font:inherit;font-weight:700;font-size:.8125rem;cursor:pointer}
+  .settings-option:hover{border-color:#62B8D2;background:rgba(98,184,210,.1);color:var(--washi)}
+  .settings-option.menu-reset{color:#8291A4}
   .language-picker{position:absolute;z-index:20;top:1.6875rem;right:0}
   .sound-toggle{position:absolute;z-index:20;top:1.8125rem;left:0;display:grid;place-items:center;width:1.875rem;height:1.875rem;padding:0;border:0;background:transparent;color:#9FB0C4;cursor:pointer}
   .sound-toggle svg{width:1.375rem;height:1.375rem;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -994,9 +999,7 @@
       <button id="clearMessages" type="button" role="menuitem">クリア後のメッセージ</button>
       <button id="menuRankList" type="button" role="menuitem">称号一覧</button>
       <div class="menu-divider" role="separator"></div>
-      <button id="menuBoardTheme" type="button" role="menuitem" hidden>盤面の色</button>
-      <button id="menuAbout" type="button" role="menuitem">このゲームについて</button>
-      <button id="resetProgress" class="menu-reset" type="button" role="menuitem">進行状況をリセット</button>
+      <button id="menuSettings" type="button" role="menuitem">設定</button>
     </div>
   </div>
   <div class="language-picker">
@@ -1320,6 +1323,17 @@
     <p><span id="linkWelcome">リンク・紹介はご自由に。</span> <button id="shareGame" type="button" aria-label="共有する"><span class="share-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg></span><span id="shareGameLabel">共有する</span></button></p>
     <p><a id="analyticsNotice" href="https://policies.google.com/technologies/partner-sites?hl=ja" target="_blank" rel="noopener">Google Analyticsでアクセス解析しています。</a></p>
     <div class="dialog-actions"><button class="chip" id="aboutDialogCloseBtn">閉じる</button></div>
+  </div>
+</div>
+<div class="game-dialog-backdrop" id="settingsDialog" hidden>
+  <div class="game-dialog settings-dialog" role="dialog" aria-modal="true" aria-labelledby="settingsDialogTitle">
+    <h2 id="settingsDialogTitle">設定</h2>
+    <div class="settings-options">
+      <button class="settings-option" id="menuBoardTheme" type="button">盤面のデザイン</button>
+      <button class="settings-option" id="menuAbout" type="button">このゲームについて</button>
+      <button class="settings-option menu-reset" id="resetProgress" type="button">進行状況をリセット</button>
+    </div>
+    <div class="dialog-actions"><button class="chip" id="settingsDialogClose">閉じる</button></div>
   </div>
 </div>
 <div class="game-dialog-backdrop" id="boardThemeDialog" hidden>

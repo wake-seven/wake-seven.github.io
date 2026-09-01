@@ -279,11 +279,19 @@ function bindMenuEvents(){
   WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();GameDialogs.ranks();});
   WakeSevenEventBindings.click('menuAbout',()=>{
     closeAppMenu();
+    $('settingsDialog').hidden=true;
     $('aboutDialog').hidden=false;
     $('aboutDialogCloseBtn').focus();
   });
   WakeSevenEventBindings.click('aboutDialogCloseBtn',()=>{$('aboutDialog').hidden=true;});
   $('aboutDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)$('aboutDialog').hidden=true;});
+  WakeSevenEventBindings.click('menuSettings',()=>{
+    closeAppMenu();
+    $('settingsDialog').hidden=false;
+    $('settingsDialogClose').focus();
+  });
+  WakeSevenEventBindings.click('settingsDialogClose',()=>{$('settingsDialog').hidden=true;});
+  $('settingsDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)$('settingsDialog').hidden=true;});
   WakeSevenEventBindings.click('menuAllPatterns',()=>{window.open('all-patterns.html','_blank','noopener');});
   WakeSevenEventBindings.click('menuOpen3D',()=>{window.open('index_3D.html','_blank','noopener');});
   WakeSevenEventBindings.click('menuSatori',()=>{closeAppMenu();openSatoriPicker();});
@@ -805,7 +813,8 @@ const LANGUAGE_TEXT_TARGETS=[
   ['speedPauseStageMode','stageModeReturn'],['speedPauseFreeMode','stagePickerFree'],['speedPauseCustomMode','stagePickerCustom'],
   ['shortestLabel','shortestDisplay'],['moveUnit','moveUnit'],['academyClearSuffix','academyClearSuffix'],['movesLabel','moves'],['movesUnit','moveUnit'],
   ['stageMode','stageMode'],['freeMode','freeMode'],
-  ['menuStagePicker','stagePicker'],['menuRankList','rankListMenu'],['menuAbout','menuAbout'],
+  ['menuStagePicker','stagePicker'],['menuRankList','rankListMenu'],['menuSettings','settings'],
+  ['settingsDialogTitle','settings'],['settingsDialogClose','close'],['menuAbout','menuAbout'],
   ['aboutDialogTitle','menuAbout'],['aboutDialogCloseBtn','close'],
   ['menuBoardTheme','boardTheme'],['boardThemeTitle','boardTheme'],
   ['boardThemeColorLabel','boardThemeColor'],['boardThemeLayoutLabel','boardThemeLayout'],
@@ -931,6 +940,7 @@ $('twoMovePatterns').addEventListener('click',()=>{
   openTwoMovePatterns();
 });
 $('menuBoardTheme').addEventListener('click',()=>{
+  $('settingsDialog').hidden=true;
   closeAppMenu();
   openBoardThemeDialog();
 });
@@ -1172,6 +1182,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   if(showIntro)setTimeout(openIntroGuide,80);
 }
 $('resetProgress').addEventListener('click',()=>{
+  $('settingsDialog').hidden=true;
   const canKeepRewards=hasMasterReward();
   $('resetDialogText').textContent=tr(canKeepRewards?'resetConfirmKeepRewards':'resetConfirmEarly');
   $('resetDialogAll').hidden=!canKeepRewards;
