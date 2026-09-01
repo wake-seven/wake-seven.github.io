@@ -62,6 +62,8 @@ npm run check
 
 `scripts/public-esm-metrics.json` は意図的な大規模変更の比較基準です。通常の変更では自動更新せず、監査が前回比だけを表示します。公開構成を大きく変える場合に限り、生成物を確認したうえで基準値を手動更新し、その理由をコミットメッセージやレビューに残します。baselineとの差が大きい場合も失敗ではなく警告として扱い、変更の妥当性を確認する運用です。
 
+baselineの更新は `npm run metrics:update -- --reason "変更理由"` という明示コマンドだけで行います。スクリプトは更新前後に `check-public-esm` を実行し、後段の検査に失敗した場合は元のbaselineへ戻します。通常の `npm run check` や `npm run build` はbaselineを変更しません。
+
 ブラウザ相当の導線契約は `npm run check:browser-flow`（`npm run check` に含む）で検査します。開始前の仮画面抑制、状態復元後のダイアログ表示、pointer正規化、別pointer無視、スワイプのフレームrenderer接続、二重セッションの退役、キャンセル時のアニメーションフレーム無効化、クリア演出の二重起動防止、チュートリアル巻き戻しのsnapshot復元、リセット入口をVM/DOM契約で確認します。内蔵ブラウザを利用できない実行環境では、この契約を実ブラウザ操作の代替とし、実操作未実施であることを明記します。
 
 classic/ESMの役割は固定する。`publishedSourceFiles` は単体HTMLへ連結する `.js` 群、`developmentSourceFiles` は開発用入口から import される `.mjs` 群とし、両マニフェストのパスは重複させない。現行処理に `legacy` を冠したファイル名・公開関数名は追加せず、互換専用でない境界は役割を表す名前にする。同名ペアは開発用ESMと公開互換層の意図的な境界として監査で許可し、追加時は `check-source-boundaries` の許可リストを先に更新する。

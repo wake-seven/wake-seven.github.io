@@ -42,6 +42,8 @@ npm run check
 
 Aboutダイアログに表示する公開版バージョンは `src/runtime/runtime.js` の `APP_VERSION` だけを更新します。形式は `YYYY.MM.DD-HH:mm`（日本時間）です。`npm run build` で生成版にも反映され、Pages上の版を画面から識別できます。テンプレートや生成物へ別のバージョン値を直接書かないでください。
 
+公開版の構成を意図的に大きく変更した場合だけ、生成物を確認してから `npm run metrics:update -- --reason "変更理由"` を実行し、baseline更新前後の `npm run check:public-esm` が通ることを確認します。通常の `npm run check` はbaselineを更新しません。更新理由はコミットメッセージまたはレビューにも残します。
+
 保存状態は `wake7-state-vnext` に集約しています。過去版の保存データ互換や旧キーからの移行は行いません。
 
 ## 共有について
