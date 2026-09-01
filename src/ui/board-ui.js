@@ -387,6 +387,16 @@ const CHAIN_STEPS={
       if(art)art.innerHTML=TRAINING_WELCOME_ART_SVG;
       $('chainDialogText').textContent=tr('trainingWelcomeText');
     },
+    onAction(){openChainedDialog('trainingUpperPractice');}
+  },
+  trainingUpperPractice:{
+    kindKey:'trainingUpperPracticeKind', titleKey:'trainingUpperPracticeText', actionKey:'trainingWelcomeNext',
+    render(body){
+      cloneDialogTemplate(body,'chain-template-training-upper-practice','<p class="chain-text-highlight" id="chainDialogText"></p><div class="two-move-detail-board-area"><div class="two-move-detail-board"><svg id="trainingUpperPracticeBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>');
+      body.querySelector('[data-chain-dialog-text]')?.setAttribute('id','chainDialogText');
+      buildTwoMoveLessonBoard('trainingUpperPracticeBoard','joinOne');
+      return ()=>stopClearGuideBoard('trainingUpperPracticeBoard');
+    },
     onAction(){openChainedDialog('trainingUpperGoal');}
   },
   trainingUpperGoal:{

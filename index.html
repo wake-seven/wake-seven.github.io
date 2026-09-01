@@ -1155,6 +1155,10 @@
   <div class="status-metric remaining training-spin-counter" data-spin-counter><span data-spin-label></span><b data-spin-number></b><span data-spin-unit></span></div>
   <div class="two-move-detail-board-area"><div class="two-move-detail-board" data-spin-board-wrap><svg data-spin-board viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>
 </template>
+<template id="chain-template-training-upper-practice">
+  <p class="chain-text-highlight" id="chainDialogText"></p>
+  <div class="two-move-detail-board-area"><div class="two-move-detail-board"><svg id="trainingUpperPracticeBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>
+</template>
 <template id="chain-template-development-welcome-spin">
   <p class="chain-text-left" data-spin-hint></p>
   <div class="development-welcome-frame">
@@ -2783,6 +2787,8 @@ const UI_TEXT={
     trainingUpperGoalTitle:'上巻ではこんな形が登場するよ',
     trainingUpperGoalText:'「あと2くるり」の修行だよ！',
     trainingUpperGoalStart:'はじめる',
+    trainingUpperPracticeKind:'だるま修行・上巻 前半',
+    trainingUpperPracticeText:'上巻前半では、外側の寝た2枚に、1枚を合わせにいこう',
     trainingMiddleGoalKind:'だるま修行・中巻 開始',
     trainingMiddleGoalTitle:'中巻ではこんな形が登場するよ',
     trainingMiddleGoalStart:'はじめる',
@@ -3156,6 +3162,8 @@ const UI_TEXT={
     trainingUpperGoalTitle:'Here are the shapes you\'ll see in Volume 1',
     trainingUpperGoalText:'This is your two-turn training!',
     trainingUpperGoalStart:'Start',
+    trainingUpperPracticeKind:'Daruma Training · Volume 1 · First Half',
+    trainingUpperPracticeText:'In the first half of Volume 1, match one daruma to the two fallen on the outside.',
     trainingMiddleGoalKind:'DARUMA TRAINING · VOL. 2 START',
     trainingMiddleGoalTitle:'Here are the shapes you\'ll see in Volume 2',
     trainingMiddleGoalStart:'Start',
@@ -3537,6 +3545,8 @@ const UI_TEXT={
     trainingUpperGoalTitle:'上卷会出现这样的形状哦',
     trainingUpperGoalText:'这是「还差2圈」的修行！',
     trainingUpperGoalStart:'开始',
+    trainingUpperPracticeKind:'不倒翁修行・上卷前半',
+    trainingUpperPracticeText:'上卷前半段，把一个不倒翁对齐到外圈倒下的两个。',
     trainingMiddleGoalKind:'不倒翁修行·中卷 开始',
     trainingMiddleGoalTitle:'中卷会出现这样的形状哦',
     trainingMiddleGoalStart:'开始',
@@ -3918,6 +3928,8 @@ const UI_TEXT={
     trainingUpperGoalTitle:'상권에는 이런 모양이 나와',
     trainingUpperGoalText:'앞으로 2바퀴 수행이야!',
     trainingUpperGoalStart:'시작',
+    trainingUpperPracticeKind:'다루마 수행・상권 전반',
+    trainingUpperPracticeText:'상권 전반에는 바깥쪽에 누운 2개에 1개를 맞추러 가자.',
     trainingMiddleGoalKind:'다루마 수행·중권 시작',
     trainingMiddleGoalTitle:'중권에는 이런 모양이 나와',
     trainingMiddleGoalStart:'시작',
@@ -5960,6 +5972,16 @@ const CHAIN_STEPS={
       const art=body.querySelector('[data-training-welcome-art]');
       if(art)art.innerHTML=TRAINING_WELCOME_ART_SVG;
       $('chainDialogText').textContent=tr('trainingWelcomeText');
+    },
+    onAction(){openChainedDialog('trainingUpperPractice');}
+  },
+  trainingUpperPractice:{
+    kindKey:'trainingUpperPracticeKind', titleKey:'trainingUpperPracticeText', actionKey:'trainingWelcomeNext',
+    render(body){
+      cloneDialogTemplate(body,'chain-template-training-upper-practice','<p class="chain-text-highlight" id="chainDialogText"></p><div class="two-move-detail-board-area"><div class="two-move-detail-board"><svg id="trainingUpperPracticeBoard" viewBox="14 0 293 310" aria-hidden="true"></svg></div></div>');
+      body.querySelector('[data-chain-dialog-text]')?.setAttribute('id','chainDialogText');
+      buildTwoMoveLessonBoard('trainingUpperPracticeBoard','joinOne');
+      return ()=>stopClearGuideBoard('trainingUpperPracticeBoard');
     },
     onAction(){openChainedDialog('trainingUpperGoal');}
   },
