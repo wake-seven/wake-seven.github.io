@@ -36,7 +36,7 @@ assert.match(board,/function restoreSavedBoard[\s\S]{0,500}replaceBoardState\(/,
 for(const name of ['normalizeBoardPointer','normalizeBoardPointerDelta','normalizeBoardPointerEnd'])assert.match(interaction,new RegExp(`function ${name}\\(`),`${name} input boundary is missing.`);
 assert.match(board,/normalizeBoardPointer\(e,toView\)/,'Board pointer handlers must use the normalized input boundary.');
 assert.match(board,/normalizeBoardPointerEnd\(e,dg/,'Board pointer end must use the normalized input boundary.');
-for(const name of ['startBoardAnimationSession','requestBoardAnimationFrame','finishBoardAnimationSession','cancelBoardAnimationSession'])assert.match(interaction,new RegExp(`function ${name}\\(`),`${name} animation session API is missing.`);
+for(const name of ['startBoardAnimationSession','requestBoardAnimationFrame','finishBoardAnimationSession','cancelBoardAnimationSession','cancelBoardAnimation'])assert.match(interaction,new RegExp(`function ${name}\\(`),`${name} animation session API is missing.`);
 assert.match(board,/startBoardAnimationSession\('grouped-swipe'/,'Grouped swipe must use an animation session.');
 assert.match(board,/startBoardAnimationSession\('undo-swipe'/,'Undo swipe must use an animation session.');
 assert.match(boardRender,/function renderBoardAnimationFrame\(/,'Board animation frame rendering must remain in the renderer boundary.');
@@ -46,7 +46,10 @@ assert.match(board,/function completeGroupedSwipeAnimation\(/,'Grouped animation
 assert.match(board,/function completeUndoSwipeAnimation\(/,'Undo animation completion must be separated from the frame callback.');
 assert.match(board,/completeGroupedSwipeAnimation\(session,dg,dir,waking\)/,'Grouped animation frame callback must delegate completion.');
 assert.match(board,/completeUndoSwipeAnimation\(session,target,reverseDir\)/,'Undo animation frame callback must delegate completion.');
-assert.match(board,/function cancelTileAnimations\(\)\{\s*cancelBoardAnimationSession\(\)/,'Animation cancellation must cancel the active session first.');
+assert.match(board,/function cancelTileAnimations\(\)\{\s*cancelBoardAnimation\(/,'Animation cancellation must cancel the active session first.');
+assert.match(board,/function handleBoardPointerCancel\(e\)\{cancelBoardAnimation\(/,'Pointer cancel must use the shared animation cancellation boundary.');
+assert.match(board,/function setPosition\(state,par\)\{\s*cancelBoardAnimation\(/,'Position changes must cancel active board animations.');
+assert.match(mastery,/function hideGameDialogs\(\)\{\s*cancelBoardAnimation\(/,'Dialog changes must cancel active board animations.');
 assert.match(template,/rank-index-2\.animate[\s\S]{0,180}masterRankSeal 1\.05s ease-out both/,'Rank index 2 animation contract changed.');
 assert.match(template,/rank-seal:not\(\.rank-frame-seal\):not\(\.rank-index-5\):not\(\.rank-index-6\)\.animate[\s\S]{0,120}masterRankSeal 1\.05s ease-out both/,'Ordinary rank animation contract changed.');
 assert.match(template,/rank-frame-seal\.animate\{animation:masterRankSeal \.72s ease-out both\}/,'Special frame animation contract changed.');

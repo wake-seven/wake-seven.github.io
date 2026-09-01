@@ -775,6 +775,7 @@ function volumeLabel(n){
   return (labels[currentLang]||labels.ja)[n-1]||String(n);
 }
 function hideGameDialogs(){
+  cancelBoardAnimation('dialog-close');
   closeChainDialog();
   closeTwoMoveLessonDialog();
   stopClearGuideBoard('clearGuideBoard');

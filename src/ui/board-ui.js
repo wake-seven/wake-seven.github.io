@@ -1050,7 +1050,7 @@ function reorientBoard(permutation,flip=false,rotationDeg=0){
   }
 }
 function cancelTileAnimations(){
-  cancelBoardAnimationSession();
+  cancelBoardAnimation('tile-animation-cancel');
   for(const el of baseTiles) for(const a of el.getAnimations()) a.cancel();
 }
 function wakeFeedback(elements){
@@ -1096,6 +1096,7 @@ function replaceBoardState(next,{paintNow=false}={}){
   replaceBoardStateCommand(next,{paintNow});
 }
 function setPosition(state,par){
+  cancelBoardAnimation('position-change');
   loadFourthChecks();
   resetFourthDistance();
   cancelTutorialHint();
@@ -2071,7 +2072,7 @@ function animateGuidedBasicRewind(dg){
   requestAnimationFrame(frame);
 }
 function handleBoardPointerUp(e){if(!clearInvalidGrab(e))finishDrag(e);}
-function handleBoardPointerCancel(e){if(!clearInvalidGrab(e))finishDrag(e,true);}
+function handleBoardPointerCancel(e){cancelBoardAnimation('pointercancel');if(!clearInvalidGrab(e))finishDrag(e,true);}
 svg.addEventListener('pointerdown',handleBoardPointerDown);
 svg.addEventListener('pointermove',handleBoardPointerMove);
 svg.addEventListener('pointerleave',handleBoardPointerLeave);
