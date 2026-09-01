@@ -37,6 +37,8 @@ for(const name of ['normalizeBoardPointer','normalizeBoardPointerDelta','normali
 for(const name of ['startBoardPointerContext','updateBoardPointerContext','finishBoardPointerContext'])assert.match(interaction,new RegExp(`function ${name}\\(`),`${name} pointer context API is missing.`);
 assert.match(board,/normalizeBoardPointer\(e,toView\)/,'Board pointer handlers must use the normalized input boundary.');
 assert.match(board,/normalizeBoardPointerEnd\(e,dg/,'Board pointer end must use the normalized input boundary.');
+assert.match(boardRender,/function renderBoardInteractionFeedback\(/,'Pointer feedback rendering must remain behind a renderer boundary.');
+assert.match(board,/renderBoardInteractionFeedback\(\{classes:/,'Pointer handlers must pass feedback models to the renderer.');
 assert.match(board,/startBoardPointerContext\(input,t/,'Pointer down must create an operation context.');
 assert.match(board,/updateBoardPointerContext\(drag,input\)/,'Pointer move must update the operation context.');
 assert.match(board,/finishBoardPointerContext\(dg,cancel\)/,'Pointer end must finish the operation context.');

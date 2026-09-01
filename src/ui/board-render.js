@@ -57,4 +57,10 @@ function renderBoardAnimationFrame({group,pivot,deg,progress,preview}){
     if(hex){const tone=BOARD_THEME_TONES[boardTheme]?.[state];hex.style.fill=tone?.fill||'';hex.style.stroke=tone?.stroke||'';}
   }
 }
+// 操作中の固定フィードバックを表示する。入力値の判定や盤面変更は行わない。
+function renderBoardInteractionFeedback({classes={},promptText,promptVisible}={}){
+  Object.entries(classes).forEach(([className,active])=>svg?.classList.toggle(className,active===true));
+  if(promptText!==undefined){const text=$('gripPromptText');if(text)text.textContent=promptText;}
+  if(promptVisible!==undefined){const prompt=$('gripPrompt');if(prompt)prompt.hidden=promptVisible!==true;}
+}
 export {};
