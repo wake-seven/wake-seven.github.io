@@ -124,7 +124,6 @@ function readSpeedHistory(){
   const entries=storage.json(speedHistoryStorageKey(),[]);
   return Array.isArray(entries)?entries.filter(entry=>Number.isFinite(entry?.elapsedMs)&&entry.elapsedMs>=0).slice(0,20):[];
 }
-function writeSpeedHistory(entries){storage.setJson(speedHistoryStorageKey(),entries.slice(0,20));}
 function readSpeedSession(variant=speedVariant){
   const data=storage.json(speedSessionStorageKey(variant),null);
   if(!validSpeedSession(data))return null;
@@ -282,16 +281,10 @@ function finishSpeedRun(){
     ||pendingSpeedTrial(speedSession?.variant||speedVariant);
   const elapsed=Math.round(speedSession.elapsedMs);
   const optimalClears=speedOptimalClears();
-  let bestTime=0;
-  bestTime=Number(storage.get(speedBestStorageKey(),'0'))||0;
-  if(!bestTime||elapsed<bestTime){bestTime=elapsed;storage.set(speedBestStorageKey(),String(bestTime));}
-  const history=readSpeedHistory();
-  history.unshift({elapsedMs:elapsed,optimalClears,total:speedSession.total||activeSpeedDefinition().total,completedAt:Date.now()});
-  writeSpeedHistory(history);
-  clearSpeedSession();
-  storage.remove(STORAGE_KEYS.speedActiveVariant);
+  const record=recordSpeedCompletionCommand(elapsed,optimalClears);
+  if(!record)return;
+  const {bestTime,history}=record;
   // 速解き自体の完走では報酬を付けない。3Dページは二周目制覇の報酬。
-  completeSpeedSessionCommand({elapsedMs:elapsed,bestMs:bestTime,optimalClears,runNumber:history.length});
   if(trialVariant){
     // 卒業試験は、最短手数を問わず全問を完走すれば合格。
     grantSpeedTrialCleared(trialVariant);
@@ -345,7 +338,7 @@ function advanceSpeedRun(){
 }
 function completeSpeedStage(){
   clearShown=true;
-  if(speedSession&&moves===best&&!speedSession.restartedCurrent) speedSession.optimalClears=speedOptimalClears()+1;
+  if(speedSession&&moves===best&&!speedSession.restartedCurrent) updateSpeedOptimalClearsCommand();
   pauseSpeedClock();persistSpeedSession();
   const delay=celebrateClear();
   clearTimer=setTimeout(WakeSevenProgressionCommands.advanceSpeedRun,delay+120);
