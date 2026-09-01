@@ -1700,7 +1700,7 @@ function handleBoardPointerDown(e){
   if(editingBoard){
     cancelTutorialHint();
     e.preventDefault();
-    const p=toView(e);
+    const input=normalizeBoardPointer(e,toView),p=input.point;
     let cell=0,distance=Infinity;
     CELL.forEach((c,i)=>{
       const d=Math.hypot(p.x-c.x,p.y-c.y);
@@ -1721,7 +1721,7 @@ function handleBoardPointerDown(e){
     svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   }
   e.preventDefault();
-  const p=toView(e);
+  const input=normalizeBoardPointer(e,toView),p=input.point;
   const grip=gripAt(p);
   if(!grip){rejectBoardGrab(e);return;}
   const tutorialStepData=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]:null;
@@ -1777,14 +1777,12 @@ function handleBoardPointerMove(e){
   }
   // touch-action:none が効かない一部のアプリ内ブラウザ向けに、ドラッグ中は明示的にスクロール等を止める。
   e.preventDefault();
-  const p=toView(e), t=drag.kc;
-  const dx=p.x-t.x, dy=p.y-t.y;
-  if(Math.hypot(dx,dy)<MINR){ drag.last=null; return; }
-  const a=Math.atan2(dy,dx);
+  const input=normalizeBoardPointer(e,toView),p=input.point, t=drag.kc;
+  const deltaModel=normalizeBoardPointerDelta(input,t,drag.last);
+  const {dx,dy,distance,angle:a}=deltaModel;
+  if(distance<MINR){ drag.last=null; return; }
   if(drag.last===null){ drag.last=a; return; }
-  let d=a-drag.last;
-  while(d>Math.PI) d-=2*Math.PI;
-  while(d<-Math.PI) d+=2*Math.PI;
+  const d=deltaModel.delta;
   drag.last=a;
   drag.rawDeg+=d*180/Math.PI;
   drag.deg=drag.rawDeg;
@@ -1858,13 +1856,14 @@ function resumeTutorialCue(){
 }
 function finishDrag(e,cancel=false,forcedTurns=null){
   if(!drag||(e&&e.pointerId!==drag.id)) return;
-  const dg=drag; setBoardDrag(null);setBoardTouchActive(false); clearAxisGuide(); setBoardTransientClass('spinning',false);
+  const dg=drag,endModel=normalizeBoardPointerEnd(e,dg,{cancel,forcedTurns});
+  setBoardDrag(null);setBoardTouchActive(false); clearAxisGuide(); setBoardTransientClass('spinning',false);
   setBoardTransientClass('selecting',false);
   for(const item of dg.items)setBoardTileSelected(item.el,false);
   svg.querySelectorAll('.pivot.active').forEach(el=>setBoardPivotActive(el,false));
   try{svg.releasePointerCapture(dg.id);}catch(_){}
 
-  let turns=cancel?0:forcedTurns===null?Math.round(dg.deg/120):forcedTurns;
+  let turns=endModel.cancelled?0:endModel.forcedTurns===null?Math.round(dg.deg/120):endModel.forcedTurns;
   if(forcedTurns===null&&!turns&&Math.abs(dg.deg)>=18&&performance.now()-dg.t0<320)
     turns=dg.deg>0?1:-1;
   const target=turns*120;
