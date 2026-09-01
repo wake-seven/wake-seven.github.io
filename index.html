@@ -7584,8 +7584,9 @@ function animateGuidedBasicRewind(dg){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
     paint();haptic(8);return;
   }
-  // 360°回転して見かけ上0°に戻った角度も、最短の符号付き角度へ正規化する。
-  const rewindDeg=((dg.deg+180)%360+360)%360-180;
+  // 360°回転して見かけ上0°に戻った角度だけを0°へ正規化する。
+  // 240°などの大きな往復は、最短の-120°へ置き換えず、回した方向へ戻す。
+  const rewindDeg=dg.deg%360;
   // すでに初期角度に戻っている場合は、空回りするアニメーションを作らない。
   if(Math.abs(rewindDeg)<0.5){paint();haptic(8);return;}
   setBoardBusy(true);
