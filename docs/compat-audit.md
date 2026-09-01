@@ -83,6 +83,8 @@ pointer操作中の選択・回転・hover・不正操作フィードバック�
 
 回転軸の補助線生成は `board-render.js:renderAxisGuide()` へ分離した。`board-ui.js` は既存の表示条件と座標データを渡し、rendererがSVG要素だけを生成する。盤面状態・pointer判定・イベント処理はrendererへ渡さない。
 
+リセット時の各タイルWAAPIは `startBoardAnimationSession('restart-tiles', ...)` で管理する。セッションcleanupで子アニメーションと145msのsettleタイマーを停止し、完了時だけ一度paintする。既存の300msアニメーション、145msの立つ/寝る切替、リセット後の盤面状態は変更しない。
+
 pointer直後の `grip-hover`、`invalid-grab`、`selecting`、`spinning`、`rotation-started` は `setBoardTransientClass()` 経由へ移行済み。個々のタイルのflash、SVGグループの一時移動、pointer captureの解除は即時反応と逐次アニメーションの一部であり、rendererへ分離しない。`check-ui-effects.mjs` は、分離済みのガイドrendererと、保持すべきpointerアニメーションの入口が失われていないことを監査する。
 
 盤面入力の正規化境界として `src/ui/board-interaction.js` を追加した。pointer座標・pointerId・移動量・回転方向・終了理由を副作用なしでモデル化し、`board-ui.js` のdown/move/endから利用する。正解判定、`applySwipe`相当の盤面command、アニメーション適用は既存側に残すため、タッチ反応と順序は変わらない。

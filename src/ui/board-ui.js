@@ -1637,6 +1637,13 @@ function restartWithAnimation(){
   let remaining=baseTiles.length;
   const targetOri=Uint8Array.from(ori),targetSpin=Int16Array.from(spin);
   // パネルの場所は動かさず、それぞれの向きだけ最短方向へ整える。
+  const animations=[];
+  const session=startBoardAnimationSession('restart-tiles',null,()=>{
+    clearUiEffectTimers('board-restart');
+    for(const animation of animations)animation.cancel();
+    setBoardBusy(false);
+  });
+  let finished=false;
   for(let cell=0;cell<N;cell++){
     const el=tileEls[cell];
     el.setAttribute('class','tile '+(beforeOri[cell]===0?'stand':'fallen'));
@@ -1645,12 +1652,14 @@ function restartWithAnimation(){
       {transform:tileTransform(CELL[cell].x,CELL[cell].y,beforeSpin[cell])},
       {transform:tileTransformDeg(CELL[cell].x,CELL[cell].y,targetDeg)}
     ],{duration:300,easing:'cubic-bezier(.18,.78,.22,1)'});
+    animations.push(animation);
     animation.onfinish=animation.oncancel=()=>{
-      if(--remaining===0){setBoardBusy(false);paint();}
+      if(!isBoardAnimationSessionActive(session)||finished)return;
+      if(--remaining===0){finished=true;finishBoardAnimationSession(session);paint();}
     };
   }
-  setTimeout(()=>{
-    if(!busy)return;
+  setUiEffectTimer('board-restart','settle',()=>{
+    if(!isBoardAnimationSessionActive(session))return;
     for(let cell=0;cell<N;cell++)tileEls[cell].setAttribute('class','tile '+(targetOri[cell]===0?'stand':'fallen'));
   },145);
 }
