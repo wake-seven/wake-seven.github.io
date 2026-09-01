@@ -61,3 +61,9 @@
 `check-ui-effects.mjs` は、clear/makerの直接タイマーハンドルが再導入されていないこと、代表的なキャンセル経路と盤面クラスcleanupが残っていることを回帰監査する。
 
 称号アニメーションは、通常の序・破・急および一周目の文字称号を `masterRankSeal 1.05s ease-out both` に統一済み。`無心`・`覚者`を含むフレーム型称号は既存の `.72s` 演出を変更しない。`check-ui-effects.mjs` でこのduration/easing/fill-mode契約を監査する。クリア演出の速度は盤面WAAPI/CSSの既存仕様を維持する。
+
+## CSS演出の最終監査
+
+2026-09-01に称号・クリア演出のCSSを全件確認した。通常称号の開始状態は `opacity:0; transform:translateY(-0.375rem)`、終了状態は `opacity:1; transform:translateY(0)` で、`1.05s ease-out both` に統一されている。これは修了演出を基準にした現在の仕様と一致するため、今回の段階では数値を変更しない。
+
+変更しなかった `.rank-frame-seal.animate`（`.72s`）は、無心・覚者の大きなSVGフレーム用であり、通常称号と同じtransformを適用すると表示領域が二段階に膨らむ既知の問題を再発させる。`masterSeal` の円形演出と `masterSpark` の装飾も別系統で、通常称号の見え方を変更せずに統一する対象ではない。クリア演出のWAAPIはJavaScriptの完了順序と結び付いているため、CSSのduration変更は行わない。
