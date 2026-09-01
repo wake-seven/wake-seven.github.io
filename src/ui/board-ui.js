@@ -2022,20 +2022,19 @@ function animateTutorialRewind(dg,target,dir){
     setBoardBusy(false);paint();setTimeout(showTutorialCue,150);
   };
 }
+function guidedRewindPath(rawDeg){
+  const remainder=rawDeg%360;
+  if(Math.abs(rawDeg)>=360)return {start:remainder,end:0};
+  const sign=rawDeg<0?-1:1;
+  const distanceToZero=Math.abs(rawDeg);
+  const distanceToFull=Math.abs(sign*360-rawDeg);
+  return distanceToFull<distanceToZero?{start:rawDeg,end:sign*360}:{start:rawDeg,end:0};
+}
 function animateGuidedBasicRewind(dg){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
     paint();haptic(8);return;
   }
-  // 現在角度から0°と±360°のどちらが近いかで着地点を決める。
-  // 360°を超えた場合は余剰角へ戻す（390°なら30°→0°）。
-  const rawDeg=dg.deg;
-  let rewindStart=rawDeg%360,rewindEnd=0;
-  if(Math.abs(rawDeg)<360&&360-Math.abs(rewindStart)<Math.abs(rewindStart)){
-    rewindStart=rawDeg;
-    rewindEnd=Math.sign(rawDeg)*360;
-  }else if(Math.abs(rawDeg)<360){
-    rewindStart=rawDeg;
-  }
+  const {start:rewindStart,end:rewindEnd}=guidedRewindPath(dg.deg);
   // 360°ちょうどなど、見かけ上すでに初期角度に戻っている場合だけ省略する。
   if(Math.abs(rewindEnd-rewindStart)<0.5){paint();haptic(8);return;}
   setBoardBusy(true);
