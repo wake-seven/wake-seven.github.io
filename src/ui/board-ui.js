@@ -1675,26 +1675,7 @@ function clearAxisGuide(){
 }
 function showAxisGuide(t){
   clearAxisGuide();
-  const NS_='http://www.w3.org/2000/svg';
-  const g=document.createElementNS(NS_,'g');
-  g.setAttribute('class','axis-guide');
-  const rays=document.createElementNS(NS_,'g');
-  rays.setAttribute('class','axis-rays');
-  for(const i of t.cells){
-    const c=CELL[i], ratio=.57;
-    const line=document.createElementNS(NS_,'line');
-    line.setAttribute('class','ray');
-    line.setAttribute('x1',t.x);line.setAttribute('y1',t.y);
-    line.setAttribute('x2',t.x+(c.x-t.x)*ratio);
-    line.setAttribute('y2',t.y+(c.y-t.y)*ratio);
-    rays.appendChild(line);
-  }
-  g.appendChild(rays);
-  const ring=document.createElementNS(NS_,'circle');
-  ring.setAttribute('class','axis-ring');
-  ring.setAttribute('cx',t.x);ring.setAttribute('cy',t.y);ring.setAttribute('r',7);
-  g.appendChild(ring);
-  svg.appendChild(g);
+  renderAxisGuide(svg,t,CELL);
 }
 // ===== ドラッグ/スワイプ操作(ポインタイベント) =====
 function handleBoardPointerDown(e){

@@ -87,4 +87,24 @@ function renderTutorialRewindAppearance(items=[],turnOffset=0){
   }
   applyBoardTheme();
 }
+// 回転軸の補助線を生成する。座標計算は呼び出し側から受け取り、盤面状態は変更しない。
+function renderAxisGuide(root,triangle,cellPositions=[],ratio=.57){
+  if(!root||!triangle)return null;
+  const NS_='http://www.w3.org/2000/svg';
+  const g=document.createElementNS(NS_,'g');g.setAttribute('class','axis-guide');
+  const rays=document.createElementNS(NS_,'g');rays.setAttribute('class','axis-rays');
+  for(const i of triangle.cells){
+    const c=cellPositions[i];
+    if(!c)continue;
+    const line=document.createElementNS(NS_,'line');line.setAttribute('class','ray');
+    line.setAttribute('x1',triangle.x);line.setAttribute('y1',triangle.y);
+    line.setAttribute('x2',triangle.x+(c.x-triangle.x)*ratio);
+    line.setAttribute('y2',triangle.y+(c.y-triangle.y)*ratio);
+    rays.appendChild(line);
+  }
+  g.appendChild(rays);
+  const ring=document.createElementNS(NS_,'circle');ring.setAttribute('class','axis-ring');
+  ring.setAttribute('cx',triangle.x);ring.setAttribute('cy',triangle.y);ring.setAttribute('r',7);
+  g.appendChild(ring);root.appendChild(g);return g;
+}
 export {};

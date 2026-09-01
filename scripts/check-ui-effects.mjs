@@ -46,6 +46,7 @@ assert.match(boardRender,/function renderBoardTileState\(/,'Tile state rendering
 assert.match(boardRender,/function renderBoardTileFlash\(/,'Tile flash rendering must remain behind a renderer boundary.');
 assert.match(boardRender,/function renderTutorialFeedback\(/,'Tutorial feedback rendering must remain behind a renderer boundary.');
 assert.match(boardRender,/function renderTutorialRewindAppearance\(/,'Tutorial rewind appearance rendering must remain behind a renderer boundary.');
+assert.match(boardRender,/function renderAxisGuide\(/,'Axis guide SVG generation must remain behind a renderer boundary.');
 assert.match(tutorialAnimation,/function createTutorialRewindModel\(/,'Tutorial rewind display model is missing.');
 for(const name of ['captureTutorialRewindDomSnapshot','restoreTutorialRewindDomSnapshot'])assert.match(tutorialAnimation,new RegExp(`function ${name}\\(`),`${name} API is missing.`);
 for(const name of ['startTutorialRewindSession','setTutorialRewindTimer','bindTutorialRewindAnimation','finishTutorialRewindSession','cancelTutorialRewindSession','cancelActiveTutorialRewindSession'])assert.match(tutorialAnimation,new RegExp(`function ${name}\\(`),`${name} session API is missing.`);
@@ -55,6 +56,7 @@ assert.match(board,/captureTutorialRewindDomSnapshot\(visualItems\)/,'Tutorial r
 assert.match(board,/startTutorialRewindSession\(\{snapshot:domSnapshot,group/,'Tutorial rewind must start a dedicated session.');
 assert.match(board,/setTutorialRewindTimer\(session,/,'Tutorial rewind timers must use the dedicated session.');
 assert.match(board,/renderTutorialRewindAppearance\(visualItems,model\.direction\)/,'Tutorial rewind appearance updates must use the renderer boundary.');
+assert.match(board,/renderAxisGuide\(svg,t,CELL\)/,'Axis guide SVG generation must use the renderer boundary.');
 assert.match(board,/bindTutorialRewindAnimation\(session,animation\)/,'Tutorial rewind animation must use the dedicated session.');
 assert.match(board,/setUiEffectTimer\('tutorial-rewind','cue',showTutorialCue,150\)/,'Tutorial rewind completion cue must use the UI effect timer boundary.');
 assert.match(tutorialAnimation,/if\(session\.cleaned\)return false/,'Tutorial rewind cleanup must be idempotent.');
