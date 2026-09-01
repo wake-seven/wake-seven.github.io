@@ -7587,10 +7587,11 @@ function animateGuidedBasicRewind(dg){
   // 360°付近だけは反対側の小さい角度へ折り返す。
   // 240°などの大きな往復は、最短の-120°へ置き換えず、回した方向へ戻す。
   let rewindDeg=dg.deg%360;
-  if(Math.abs(rewindDeg)>342)rewindDeg-=Math.sign(rewindDeg)*360;
+  const nearZeroThreshold=30;
+  if(Math.abs(rewindDeg)>360-nearZeroThreshold)rewindDeg-=Math.sign(rewindDeg)*360;
   // すでに初期角度に戻っている場合は、空回りするアニメーションを作らない。
   // pointerの丸め誤差や数度の揺れは0°相当として、不要な小回転を見せない。
-  if(Math.abs(rewindDeg)<18){paint();haptic(8);return;}
+  if(Math.abs(rewindDeg)<nearZeroThreshold){paint();haptic(8);return;}
   setBoardBusy(true);
   setBoardTransientClass('spinning',true); // 巻き戻り中は水色の棒を隠し、戻り切ってから復活させる。
   const duration=680;

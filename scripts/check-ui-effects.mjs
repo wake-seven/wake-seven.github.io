@@ -67,8 +67,8 @@ assert.match(boardRender,/function showTrainingShapeCallout\(/,'Training SVG cal
 assert.match(boardRender,/function renderAcademyRemainingCalloutElement\(/,'Academy callout SVG/DOM display must remain behind a renderer boundary.');
 assert.match(board,/function animateGroupedSwipe\(/,'Pointer-dependent grouped swipe animation must remain available.');
 assert.match(board,/function animateUndoSwipe\(/,'Sequential undo animation must remain available.');
-assert.match(board,/function animateGuidedBasicRewind\([\s\S]{0,360}let rewindDeg=dg\.deg%360[\s\S]{0,120}Math\.abs\(rewindDeg\)>342/,'Guided rewind must shorten angles near a full turn without shortening 240-degree turns.');
-assert.match(board,/function animateGuidedBasicRewind\([\s\S]{0,460}Math\.abs\(rewindDeg\)<18/,'Guided rewind must skip near-zero-angle animations.');
+assert.match(board,/function animateGuidedBasicRewind\([\s\S]{0,420}let rewindDeg=dg\.deg%360[\s\S]{0,180}360-nearZeroThreshold/,'Guided rewind must shorten angles near a full turn without shortening 240-degree turns.');
+assert.match(board,/function animateGuidedBasicRewind\([\s\S]{0,520}Math\.abs\(rewindDeg\)<nearZeroThreshold/,'Guided rewind must skip near-zero-angle animations.');
 const tutorialStart=board.indexOf('function animateTutorialRewind');
 const tutorialEnd=board.indexOf('function animateGuidedBasicRewind',tutorialStart);
 const tutorialRewind=tutorialStart>=0&&tutorialEnd>tutorialStart?board.slice(tutorialStart,tutorialEnd):'';
