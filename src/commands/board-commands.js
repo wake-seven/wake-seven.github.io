@@ -17,5 +17,10 @@ function commitBoardMoveCommand(ti,dir,{save=true}={}){
   replaceBoardState({ori:nextOri,spin:nextSpin,tiles:nextTiles,moves:moves+1});
   return {oldSpin,oldTiles,nextOri,nextSpin,nextTiles};
 }
+function restoreBoardSnapshotCommand(snapshotValue,{paintNow=false}={}){
+  if(!snapshotValue||!snapshotValue.o)return false;
+  replaceBoardState({ori:snapshotValue.o,spin:snapshotValue.s,tiles:snapshotValue.t,moves:snapshotValue.m},{paintNow});
+  return true;
+}
 // 公開native moduleの構文境界。
 export {};

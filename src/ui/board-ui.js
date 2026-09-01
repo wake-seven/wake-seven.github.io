@@ -1626,7 +1626,7 @@ function findSwipeThatReached(beforeState,afterState){
 function animateUndoSwipe(target){
   const move=findSwipeThatReached(enc(target.o),enc(ori));
   if(!move){
-    replaceBoardState({ori:target.o,spin:target.s,tiles:target.t,moves:target.m},{paintNow:true});
+    restoreBoardSnapshotCommand(target,{paintNow:true});
     return;
   }
   const c=TRI[move.ti].cells;
@@ -1650,7 +1650,7 @@ function animateUndoSwipe(target){
     if(progress<1){requestAnimationFrame(frame);return;}
     group.remove();
     for(const item of items)item.el.style.visibility='';
-    replaceBoardState({ori:target.o,spin:target.s,tiles:target.t,moves:target.m});
+    restoreBoardSnapshotCommand(target);
     busy=false;paint();
     haptic(7);playRotateSound(reverseDir);
   };
