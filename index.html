@@ -8964,6 +8964,8 @@ function playWakeCelebrationEffect(targetSvg,tilesArr){
   a.onfinish=a.oncancel=()=>burst.remove();
 }
 function celebrateClear(){
+  // 同じクリア周期でshowClearActionsが再入しても、揺れとバーストを重ねない。
+  if(svg.classList.contains('celebrating'))return 0;
   svg.classList.add('celebrating');
   playClearSound(clearSoundKind());
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return 0;
