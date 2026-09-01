@@ -14,7 +14,7 @@ import { createEventBinder } from '../src/ui/events.mjs';
 import { createSessionService } from '../src/runtime/session.mjs';
 import { createUiLifecycle } from '../src/ui/lifecycle.mjs';
 import { createUiStateView } from '../src/ui/state-view.mjs';
-import { createSpeedUnlockService, DEFAULT_SPEED_UNLOCK_KEYS } from '../src/runtime/progression-runtime.mjs';
+import { createSpeedUnlockService } from '../src/runtime/progression-runtime.mjs';
 import { DEFAULT_SETTING_KEYS } from '../src/runtime/settings.mjs';
 import { createStagePickerViewModel, createClearMessageViewModel, createSpeedViewModel } from '../src/ui/view-models.mjs';
 import { createRuntimeEnvironment } from '../src/runtime/environment.mjs';
@@ -33,7 +33,7 @@ const injectedRuntime = createDevelopmentRuntime({ environment: { windowRef: {},
 assert.equal(injectedRuntime.settings.values.boardTheme, 'default');
 assert.equal(createRuntimeEnvironment({ windowRef: {}, documentRef: {}, storage: null }).windowRef !== undefined, true);
 assert.equal(DEFAULT_SETTING_KEYS.boardTheme, 'wake7-board-theme');
-assert.equal(DEFAULT_SPEED_UNLOCK_KEYS.speedUnlocked, 'wake7-speed-unlocked');
+assert.equal(createSpeedUnlockService({ initialUnlocks: { speedTraining: true } }).initialize().training, true);
 assert.equal(createGuideModel({ index: 1, total: 4 }).kind, 'guide');
 const board = Uint8Array.from([0, 1, 2, 0, 1, 2, 1]);
 assert.deepEqual(Array.from(runtime.board.decode(runtime.board.encode(board))), Array.from(board));

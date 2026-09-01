@@ -162,7 +162,7 @@ function syncGameState(){
     lap1:{primary:[...lap1ClearedStages],mastery:[...lap1ClearedExtraStages],satori:[...lap1ClearedSatoriStages]},
     lap2:{primary:[...lap2ClearedStages],mastery:[...lap2ClearedExtraStages],satori:[...lap2ClearedSatoriStages]}
   });
-  WakeSevenState.updateSettings(gameState,{language:currentLang,sound:soundEnabled,boardTheme,boardLayout,darumaColor});
+  WakeSevenState.updateSettings(gameState,{language:currentLang,sound:soundEnabled,boardTheme,boardLayout,boardThemeChosen,boardLayoutChosen,darumaColor,darumaColorChosen});
   WakeSevenState.updateUnlocks(gameState,{
     secondLap:secondLapUnlocked,awakened:awakenedGranted,threeD:threeDUnlocked,
     speedTraining:speedTrainingUnlocked,speedIntermediate:speedIntermediateUnlocked,
@@ -523,27 +523,6 @@ if(storage.get(STORAGE_KEYS.stagesLayoutVersion)!==STAGES_LAYOUT_VERSION){
   }catch(_){}
   storage.set(STORAGE_KEYS.stagesLayoutVersion,STAGES_LAYOUT_VERSION);
 }
-// 速解きの段階解放を導入した直後だけ、旧実装が一括で保存してしまった
-// 解放フラグを、実際の一周目の到達状況から作り直す。
-if(storage.get(STORAGE_KEYS.speedUnlockModelVersion)!=='3'){
-  speedTrainingUnlocked=STAGES.every((_,i)=>lap1ClearedStages.has(i));
-  speedIntermediateUnlocked=lap1ClearedExtraStages.has(29);
-  speedMasteryUnlocked=EXTRA_STAGES.every((_,i)=>lap1ClearedExtraStages.has(i));
-  speedSatoriUnlocked=SATORI_STAGES.every((_,i)=>lap1ClearedSatoriStages.has(i));
-  // 旧仕様で既に関門より先へ進んでいた人は、新しい試験を通過済みとして扱う。
-  speedTrainingTrialCleared=speedTrainingTrialCleared||lap1ClearedExtraStages.size>0;
-  speedIntermediateTrialCleared=speedIntermediateTrialCleared||lap1ClearedExtraStages.has(30);
-  speedMasteryTrialCleared=speedMasteryTrialCleared||lap1ClearedSatoriStages.size>0;
-  syncSpeedUnlockFlag();
-  storage.set(STORAGE_KEYS.speedTrainingUnlocked,speedTrainingUnlocked?'1':'0');
-  storage.set(STORAGE_KEYS.speedIntermediateUnlocked,speedIntermediateUnlocked?'1':'0');
-  storage.set(STORAGE_KEYS.speedMasteryUnlocked,speedMasteryUnlocked?'1':'0');
-  storage.set(STORAGE_KEYS.speedSatoriUnlocked,speedSatoriUnlocked?'1':'0');
-  storage.set(STORAGE_KEYS.speedTrainingTrialCleared,speedTrainingTrialCleared?'1':'0');
-  storage.set(STORAGE_KEYS.speedIntermediateTrialCleared,speedIntermediateTrialCleared?'1':'0');
-  storage.set(STORAGE_KEYS.speedMasteryTrialCleared,speedMasteryTrialCleared?'1':'0');
-  storage.set(STORAGE_KEYS.speedUnlockModelVersion,'3');
-}
 function persistLapProgress(){
   for(const [lap,primary,extra,satori] of [[1,lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages],[2,lap2ClearedStages,lap2ClearedExtraStages,lap2ClearedSatoriStages]]){
     storage.setJson('wake7-lap'+lap+'-primary-cleared',[...primary]);
@@ -591,39 +570,6 @@ function beginSecondLap(){
   updateMasterTheme();
   loadStage(0);
 }
-function migrateSatoriOrder(){
-  let version='';
-  try{version=storage.get('wake7-satori-order-version')||'';}catch(_){}
-  if(version===SATORI_ORDER_VERSION)return;
-  const sourceStages=version==='probability-2'?SATORI_PROBABILITY_ASCENDING
-    :version==='probability-3'?SATORI_PROBABILITY_DESCENDING
-    :version==='expected-4'?SATORI_EXPECTED_STAGES
-    :version==='optimal-path-5'?SATORI_GLOBAL_OPTIMAL_STAGES
-    :version==='optimal-path-by-depth-6'?SATORI_DEPTH_OPTIMAL_STAGES
-    :version==='optimal-path-7'?SATORI_GLOBAL_OPTIMAL_STAGES
-    :version==='optimal-path-human-ties-8'?SATORI_HUMAN_TIE_STAGES
-    :version==='mixed-depths-from-26-9'?SATORI_MIXED_STAGES
-    :LEGACY_SATORI_STAGES;
-  const remapIndex=index=>{
-    const stage=sourceStages[index];
-    return stage?satoriStageIndexByState.get(stage.state):undefined;
-  };
-  clearedSatoriStages=new Set([...clearedSatoriStages].map(remapIndex).filter(Number.isInteger));
-  for(const key of ['wake7-current-stage','wake7-active-session']){
-    try{
-      const saved=JSON.parse(storage.get(key)||'null');
-      if(saved&&saved.satori===true&&Number.isInteger(saved.index)){
-        const next=remapIndex(saved.index);
-        if(Number.isInteger(next)){saved.index=next;storage.set(key,JSON.stringify(saved));}
-      }
-    }catch(_){}
-  }
-  try{
-    storage.set('wake7-satori-cleared',JSON.stringify([...clearedSatoriStages]));
-    storage.set('wake7-satori-order-version',SATORI_ORDER_VERSION);
-  }catch(_){}
-}
-migrateSatoriOrder();
 if(activeLap===2)lap2ClearedSatoriStages=clearedSatoriStages;
 else lap1ClearedSatoriStages=clearedSatoriStages;
 const isMastered=()=>EXTRA_STAGES.every((_,i)=>clearedExtraStages.has(i));

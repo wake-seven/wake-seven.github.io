@@ -23,6 +23,10 @@ async function collect(directory) {
 await collect(srcRoot);
 
 const all = [...sources.entries()].map(([file, source]) => `${file}\n${source}`).join('\n');
+// 過去保存データ互換は提供しない。移行関数や旧並び替え識別子が復活したら失敗させる。
+for (const token of ['migrateTutorialState', 'migrateSatoriOrder', 'LEGACY_SATORI_STAGES', 'speedUnlockModelVersion', 'speedTrialModelVersion', 'probability-2', 'optimal-path-5']) {
+  assert.ok(!all.includes(token), `Removed compatibility token remains: ${token}`);
+}
 assert.match(sources.get('src/ui/dom.js'), /function setText/);
 assert.match(sources.get('src/ui/dom.js'), /function createRefs/);
 assert.match(sources.get('src/runtime/speed.js'), /speedViewRefs/);

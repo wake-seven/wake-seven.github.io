@@ -146,7 +146,7 @@ if (!html.includes('const WakeSevenProgressionCommands=Object.freeze(')
 const sourceModules = [
   ['src/domain/board-domain.js', ['const WakeSevenBoardDomain=']],
   ['src/data/board-quiz.js', ['const BOARD_QUIZ_COPY=']],
-  ['src/data/satori.js', ['const SATORI_STAGES=', "const SATORI_ORDER_VERSION='"]],
+  ['src/data/satori.js', ['const SATORI_STAGES=', 'const SATORI_CATALOG=']],
   ['src/data/assets.js', ['academyEnrollArtSvg']],
   ['src/runtime/settings.js', ['initializeRuntimeSettings']],
   ['src/runtime/audio.js', ['playTone', 'playClearSound']],
@@ -176,7 +176,6 @@ for (const [moduleName, names] of sourceModules) {
 // SATORI_STAGES の最終化処理とバージョンを同じデータモジュール内に固定する。
 for (const token of [
   'const SATORI_STAGES=[...SATORI_MIXED_STAGES];',
-  "const SATORI_ORDER_VERSION='",
   'const satoriStageIndexByState=new Map(SATORI_STAGES.map('
 ]) {
   if (!satoriDataModule.includes(token)) throw new Error(`src/data/satori.js is missing ${token}`);

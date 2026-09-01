@@ -1,12 +1,4 @@
 // 起動・復元・ページライフサイクル。画面イベントの定義とは分離する。
-function migrateTutorialState(){
-  if(storage.get(STORAGE_KEYS.tutorialComplete)!==null||storage.get(STORAGE_KEYS.introSeen)!=='1')return;
-  if(storage.json(STORAGE_KEYS.activeSession,null)?.mode==='tutorial')return;
-  const progressKeys=[STORAGE_KEYS.cleared,STORAGE_KEYS.extraCleared,STORAGE_KEYS.satoriCleared,STORAGE_KEYS.currentStage,STORAGE_KEYS.activeSession];
-  if(progressKeys.some(key=>storage.get(key)!==null))storage.set(STORAGE_KEYS.tutorialComplete,'1');
-}
-
-migrateTutorialState();
 buildBoard();
 updateMasterTheme();
 restoreActiveSession();

@@ -13,12 +13,12 @@ function satoriStagesAtDepth(depth){
 }
 // 最短手数ぶん、毎手12通りを完全にランダムに選んだときの最短クリア確率で並べる。
 // 最短4手に入った途端に急に易しくなることを避ける。
-const LEGACY_SATORI_STAGES=[1,2,3,4].flatMap(satoriStagesAtDepth);
-const SATORI_PROBABILITY_ASCENDING=[...LEGACY_SATORI_STAGES].sort((a,b)=>{
+const SATORI_CATALOG=[1,2,3,4].flatMap(satoriStagesAtDepth);
+const SATORI_PROBABILITY_ASCENDING=[...SATORI_CATALOG].sort((a,b)=>{
   const ae=progressOptionCounts(a),be=progressOptionCounts(b);
   return ae.progress-be.progress||be.worse-ae.worse||a.state-b.state;
 });
-const SATORI_PROBABILITY_DESCENDING=[...LEGACY_SATORI_STAGES].sort((a,b)=>{
+const SATORI_PROBABILITY_DESCENDING=[...SATORI_CATALOG].sort((a,b)=>{
   const ae=progressOptionCounts(a),be=progressOptionCounts(b);
   return be.progress-ae.progress||ae.worse-be.worse||a.state-b.state;
 });
@@ -27,9 +27,9 @@ function satoriExpectedNextDistance(stage){
   return stage.par+(ae.worse-ae.progress)/12;
 }
 const SATORI_EXPECTED_STAGES=[
-  ...LEGACY_SATORI_STAGES.filter(stage=>stage.par===1),
-  ...LEGACY_SATORI_STAGES.filter(stage=>stage.par===2),
-  ...LEGACY_SATORI_STAGES.filter(stage=>stage.par>=3).sort((a,b)=>{
+  ...SATORI_CATALOG.filter(stage=>stage.par===1),
+  ...SATORI_CATALOG.filter(stage=>stage.par===2),
+  ...SATORI_CATALOG.filter(stage=>stage.par>=3).sort((a,b)=>{
     const delta=satoriExpectedNextDistance(a)-satoriExpectedNextDistance(b);
     return delta||a.par-b.par||a.state-b.state;
   })
@@ -51,12 +51,12 @@ function satoriOptimalClearProbability(stage){
   return satoriOptimalPathCount(stage.state,stage.par)/(12**stage.par);
 }
 // ひとつ前の並び。保存済みの悟り進行を、盤面そのものを基準に移し替えるために残す。
-const SATORI_GLOBAL_OPTIMAL_STAGES=[...LEGACY_SATORI_STAGES].sort((a,b)=>{
+const SATORI_GLOBAL_OPTIMAL_STAGES=[...SATORI_CATALOG].sort((a,b)=>{
   const delta=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
   return delta||a.par-b.par||a.state-b.state;
 });
 // 一時的に採用していた「手数優先」の並び。保存済み進行の移行にだけ使う。
-const SATORI_DEPTH_OPTIMAL_STAGES=[...LEGACY_SATORI_STAGES].sort((a,b)=>{
+const SATORI_DEPTH_OPTIMAL_STAGES=[...SATORI_CATALOG].sort((a,b)=>{
   // まず最短手数の少ない順。その同じ手数の中だけ、最短で解ける確率順にする。
   // 3手の問題が4手の問題より後になることはない。
   const depth=a.par-b.par;
@@ -65,7 +65,7 @@ const SATORI_DEPTH_OPTIMAL_STAGES=[...LEGACY_SATORI_STAGES].sort((a,b)=>{
   return delta||a.state-b.state;
 });
 // 以前の確率順。保存済みの悟り進行を盤面基準で移行するためにも残す。
-const SATORI_HUMAN_TIE_STAGES=[...LEGACY_SATORI_STAGES].sort((a,b)=>{
+const SATORI_HUMAN_TIE_STAGES=[...SATORI_CATALOG].sort((a,b)=>{
   const probability=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
   if(probability)return probability;
   const ae=progressOptionCounts(a),be=progressOptionCounts(b);

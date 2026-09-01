@@ -1,26 +1,15 @@
-/** Speed-trial unlock migration service for the ESM runtime. */
-export const DEFAULT_SPEED_UNLOCK_KEYS = Object.freeze({ speedUnlocked: 'wake7-speed-unlocked', speedTrialModelVersion: 'wake7-speed-trial-model-version', speedTrainingUnlocked: 'wake7-speed-training-unlocked', speedIntermediateUnlocked: 'wake7-speed-intermediate-unlocked', speedMasteryUnlocked: 'wake7-speed-mastery-unlocked', speedSatoriUnlocked: 'wake7-speed-satori-unlocked', speedTrainingTrialCleared: 'wake7-speed-training-trial-cleared', speedIntermediateTrialCleared: 'wake7-speed-intermediate-trial-cleared', speedMasteryTrialCleared: 'wake7-speed-mastery-trial-cleared' });
-export function createSpeedUnlockService({ storage, storageKeys = DEFAULT_SPEED_UNLOCK_KEYS, awakenedGranted = false } = {}) {
-  const get = key => { try { return storage?.getItem ? storage.getItem(key) : storage?.get?.(key); } catch { return null; } };
-  const set = (key, value = '1') => { try { if (storage?.setItem) storage.setItem(key, value); else storage?.set?.(key, value); } catch {} };
-  const initialize = () => {
-    const modeUnlocked = get(storageKeys.speedUnlocked) === '1' || awakenedGranted;
-    if (modeUnlocked) set(storageKeys.speedUnlocked);
-    const hasTrialModel = get(storageKeys.speedTrialModelVersion) === '3';
-    let training = get('wake7-speed-training-unlocked') === '1';
-    let intermediate = get(storageKeys.speedIntermediateUnlocked) === '1';
-    let mastery = get('wake7-speed-mastery-unlocked') === '1';
-    let satori = get('wake7-speed-satori-unlocked') === '1';
-    const trainingTrial = get(storageKeys.speedTrainingTrialCleared) === '1';
-    const intermediateTrial = get(storageKeys.speedIntermediateTrialCleared) === '1';
-    const masteryTrial = get(storageKeys.speedMasteryTrialCleared) === '1';
-    if (modeUnlocked && !hasTrialModel) training = intermediate = mastery = satori = true;
-    set(storageKeys.speedTrialModelVersion, '3');
-    if (modeUnlocked && !hasTrialModel) {
-      set(storageKeys.speedTrainingUnlocked); set(storageKeys.speedIntermediateUnlocked);
-      set(storageKeys.speedMasteryUnlocked); set(storageKeys.speedSatoriUnlocked);
-    }
-    return Object.freeze({ modeUnlocked, training, intermediate, mastery, satori, trainingTrial, intermediateTrial, masteryTrial });
-  };
+/** Speed-trial unlock state service for the ESM runtime. */
+export function createSpeedUnlockService({ initialUnlocks = {}, awakenedGranted = false } = {}) {
+  const initialize = () => Object.freeze({
+    modeUnlocked: initialUnlocks.speedTraining === true || initialUnlocks.speedIntermediate === true
+      || initialUnlocks.speedMastery === true || initialUnlocks.speedSatori === true || awakenedGranted === true,
+    training: initialUnlocks.speedTraining === true,
+    intermediate: initialUnlocks.speedIntermediate === true,
+    mastery: initialUnlocks.speedMastery === true,
+    satori: initialUnlocks.speedSatori === true,
+    trainingTrial: initialUnlocks.speedTrainingTrialCleared === true,
+    intermediateTrial: initialUnlocks.speedIntermediateTrialCleared === true,
+    masteryTrial: initialUnlocks.speedMasteryTrialCleared === true
+  });
   return Object.freeze({ initialize });
 }

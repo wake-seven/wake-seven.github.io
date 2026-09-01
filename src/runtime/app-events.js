@@ -72,7 +72,6 @@ function debugPrepareFirstLapCheckpoint(){
   storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
   storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
   storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
-    storage.set(STORAGE_KEYS.speedTrialModelVersion,'3');
   }catch(_){ }
   activateCampaignLap(1);
 }
@@ -1144,11 +1143,9 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
       storage.remove(STORAGE_KEYS.speedIntermediateUnlocked);
       storage.remove(STORAGE_KEYS.speedMasteryUnlocked);
       storage.remove(STORAGE_KEYS.speedSatoriUnlocked);
-      storage.remove(STORAGE_KEYS.speedUnlockModelVersion);
       storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
       storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
       storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
-      storage.remove(STORAGE_KEYS.speedTrialModelVersion);
       storage.remove('wake7-3d-unlocked');
       for(const variant of ['standard','training9','training18','mastery27','satori73']){
         clearSpeedSession(variant);
@@ -1174,7 +1171,6 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   storage.remove(STORAGE_KEYS.speedTrainingTrialCleared);
   storage.remove(STORAGE_KEYS.speedIntermediateTrialCleared);
   storage.remove(STORAGE_KEYS.speedMasteryTrialCleared);
-  storage.set(STORAGE_KEYS.speedTrialModelVersion,'3');
   if(!preserveRewards){
     boardTheme='default';
     boardLayout='normal';

@@ -18,7 +18,7 @@ import { createEventBinder } from './ui/events.mjs';
 import { createStagePickerViewModel, createClearMessageViewModel, createSpeedViewModel, createStagePickerModel, createSpeedRunModel, createGuideModel } from './ui/view-models.mjs';
 import { createUiLifecycle } from './ui/lifecycle.mjs';
 import { createUiStateView } from './ui/state-view.mjs';
-import { createSpeedUnlockService, DEFAULT_SPEED_UNLOCK_KEYS } from './runtime/progression-runtime.mjs';
+import { createSpeedUnlockService } from './runtime/progression-runtime.mjs';
 import { createRuntimeEnvironment } from './runtime/environment.mjs';
 import { createApplicationController } from './runtime/application.mjs';
 
@@ -42,7 +42,7 @@ export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data =
   const settings = createRuntimeSettings({ state: store.state, storage: browserStorage, keys: DEFAULT_SETTING_KEYS });
   const audio = createAudioService({ enabled: store.state.settings?.sound, documentRef: browserDocument, windowRef: browserWindow });
   const session = createSessionService({ persistence });
-  const speedUnlocks = createSpeedUnlockService({ storage: browserStorage, storageKeys: DEFAULT_SPEED_UNLOCK_KEYS });
+  const speedUnlocks = createSpeedUnlockService({ initialUnlocks: store.state.unlocks });
   const application = createApplicationController({ store, session });
   const commandApi = Object.freeze({
     board: createBoardCommands(commands.board),
