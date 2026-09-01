@@ -1994,13 +1994,11 @@ function animateTutorialRewind(dg,target,dir){
   }
   setTutorialRewindTimer(session,()=>{
     if(!isMode('tutorial'))return;
-    for(const item of dg.items)item.el.setAttribute('class','tile '+(mod3(item.turn+dir)===0?'stand':'fallen'));
-    applyBoardTheme();haptic(6);
+    renderTutorialRewindAppearance(dg.items,dir);haptic(6);
   },245);
   setTutorialRewindTimer(session,()=>{
     if(!isMode('tutorial'))return;
-    for(const item of dg.items)item.el.setAttribute('class','tile '+(mod3(item.turn)===0?'stand':'fallen'));
-    applyBoardTheme();
+    renderTutorialRewindAppearance(dg.items,0);
   },440);
   group.style.transformOrigin=dg.kc.x+'px '+dg.kc.y+'px';
   // 中間の120°位置へ寄せず、指を離した現在角度からそのまま元の位置へ戻す。

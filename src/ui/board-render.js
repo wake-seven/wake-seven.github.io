@@ -79,4 +79,12 @@ function renderBoardTileFlash(tile,active=true){
 function renderTutorialFeedback({text,visible=true,classes={}}={}){
   renderBoardInteractionFeedback({promptText:text,promptVisible:visible,classes});
 }
+// チュートリアル巻き戻し中のだるま状態とテーマ色を反映するrenderer。
+function renderTutorialRewindAppearance(items=[],turnOffset=0){
+  for(const item of items){
+    const state=mod3(item.turn+turnOffset)===0?'stand':'fallen';
+    renderBoardTileState(item.el,{state});
+  }
+  applyBoardTheme();
+}
 export {};
