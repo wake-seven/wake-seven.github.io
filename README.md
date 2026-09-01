@@ -38,6 +38,8 @@ npm run build
 npm run check
 ```
 
+`npm run check` には、公開HTMLの生成物監査とブラウザ相当の導線検査（`npm run check:browser-flow`）も含まれます。
+
 保存状態は `wake7-state-vnext` に集約しています。過去版の保存データ互換や旧キーからの移行は行いません。
 
 ## 共有について

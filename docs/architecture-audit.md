@@ -57,9 +57,11 @@ npm run check
 
 このコマンドは状態復元、ダイアログ連鎖、UI演出のキャンセル、進行フロー、ESM依存、ソース境界、公開版生成物、未使用候補を検査します。生成物の更新は `npm run build` で行います。
 
+公開版生成物の監査は、コメント・セクション見出し・空白境界を保持していることと、セクション別連結サイズを計測します。サイズや行数の上限は警告方式で、保守上の可読性を守りつつ内容の変化を機械的に追跡します。現行の実装値を文書へ固定するのではなく、詳細は `npm run check:public-esm` の出力を参照します。
+
 ブラウザ相当の導線契約は `npm run check:browser-flow`（`npm run check` に含む）で検査します。開始前の仮画面抑制、状態復元後のダイアログ表示、pointer正規化、別pointer無視、スワイプのフレームrenderer接続、二重セッションの退役、キャンセル時のアニメーションフレーム無効化、クリア演出の二重起動防止、チュートリアル巻き戻しのsnapshot復元、リセット入口をVM/DOM契約で確認します。内蔵ブラウザを利用できない実行環境では、この契約を実ブラウザ操作の代替とし、実操作未実施であることを明記します。
 
-classic/ESMの役割は固定する。`publishedSourceFiles` は単体HTMLへ連結する `.js` 群、`developmentSourceFiles` は開発用入口から import される `.mjs` 群とし、両マニフェストのパスは重複させない。現在の同名ペア（audio、board-commands、board-domain、board-quiz、progression-commands、progression-runtime、render、satori、settings）は開発用ESMと公開互換層の意図的な境界として監査で許可する。新しい同名ペアを追加する場合は、`check-source-boundaries` の許可リストを先に更新する。
+classic/ESMの役割は固定する。`publishedSourceFiles` は単体HTMLへ連結する `.js` 群、`developmentSourceFiles` は開発用入口から import される `.mjs` 群とし、両マニフェストのパスは重複させない。現行処理に `legacy` を冠したファイル名・公開関数名は追加せず、互換専用でない境界は役割を表す名前にする。同名ペアは開発用ESMと公開互換層の意図的な境界として監査で許可し、追加時は `check-source-boundaries` の許可リストを先に更新する。
 
 ## 履歴資料
 
