@@ -440,17 +440,16 @@ function renderStageNav(){
   }
   function renderStageNavPrevNext(){
     const customPlaying=isMode('custom')&&!editingBoard;
-    if(isMode('speed')){$('prevStage').hidden=false;$('nextStage').hidden=false;$('prevStage').disabled=true;$('nextStage').disabled=true;}
-    else if(isMode('satori')){
-      $('prevStage').hidden=false;$('nextStage').hidden=false;
-      $('prevStage').disabled=false;
-      $('nextStage').disabled=satoriIndex===SATORI_STAGES.length-1
-        ?!(activeLap===1&&secondLapUnlocked)
-        :!clearedSatoriStages.has(satoriIndex);
-    }
-    else{$('prevStage').hidden=false;$('nextStage').hidden=isMode('custom')&&!customPlaying;}
-    const highlightNext=nextStageAttention&&isCampaignMode()&&!$('nextStage').hidden&&!$('nextStage').disabled;
-    $('nextStage').classList.toggle('next-attention',highlightNext);
+    const speed=isMode('speed'),satori=isMode('satori');
+    const nextDisabled=satori
+      ?(satoriIndex===SATORI_STAGES.length-1?!(activeLap===1&&secondLapUnlocked):!clearedSatoriStages.has(satoriIndex))
+      :speed?true:undefined;
+    renderStageNavPager({
+      nextHidden:!speed&&!satori&&isMode('custom')&&!customPlaying,
+      prevDisabled:speed||satori?(!satori||false):undefined,
+      nextDisabled,
+      highlightNext:nextStageAttention&&isCampaignMode()&&!$('nextStage').hidden&&!$('nextStage').disabled
+    });
   }
   function renderStageNavGuidance(){
     renderMainBoardGuidance();

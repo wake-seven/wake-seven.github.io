@@ -16,6 +16,16 @@ function renderMovesMetric(moveCount,hidden=false){
   setText(refs.moves,moveCount);
   setText(refs.movesUnit,tr('moveUnit'));
 }
+// ステージナビゲーションの前後ボタン表示だけを担当するrenderer。
+// 有効/無効の判定は呼び出し側で行い、ここでは渡された結果をDOMへ反映する。
+function renderStageNavPager({prevHidden=false,nextHidden=false,prevDisabled,nextDisabled,highlightNext=false}={}){
+  const prev=$('prevStage'),next=$('nextStage');
+  if(!prev||!next)return;
+  prev.hidden=prevHidden;next.hidden=nextHidden;
+  if(prevDisabled!==undefined)prev.disabled=prevDisabled;
+  if(nextDisabled!==undefined)next.disabled=nextDisabled;
+  next.classList.toggle('next-attention',highlightNext);
+}
 function renderStageNavAccent(){
   let accentFrac=0;
   if(isMode('speed'))accentFrac=(speedSession.index+1)/(speedSession.total||activeSpeedDefinition().total);

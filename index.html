@@ -8005,6 +8005,16 @@ function renderMovesMetric(moveCount,hidden=false){
   setText(refs.moves,moveCount);
   setText(refs.movesUnit,tr('moveUnit'));
 }
+// ステージナビゲーションの前後ボタン表示だけを担当するrenderer。
+// 有効/無効の判定は呼び出し側で行い、ここでは渡された結果をDOMへ反映する。
+function renderStageNavPager({prevHidden=false,nextHidden=false,prevDisabled,nextDisabled,highlightNext=false}={}){
+  const prev=$('prevStage'),next=$('nextStage');
+  if(!prev||!next)return;
+  prev.hidden=prevHidden;next.hidden=nextHidden;
+  if(prevDisabled!==undefined)prev.disabled=prevDisabled;
+  if(nextDisabled!==undefined)next.disabled=nextDisabled;
+  next.classList.toggle('next-attention',highlightNext);
+}
 function renderStageNavAccent(){
   let accentFrac=0;
   if(isMode('speed'))accentFrac=(speedSession.index+1)/(speedSession.total||activeSpeedDefinition().total);
@@ -8504,17 +8514,16 @@ function renderStageNav(){
   }
   function renderStageNavPrevNext(){
     const customPlaying=isMode('custom')&&!editingBoard;
-    if(isMode('speed')){$('prevStage').hidden=false;$('nextStage').hidden=false;$('prevStage').disabled=true;$('nextStage').disabled=true;}
-    else if(isMode('satori')){
-      $('prevStage').hidden=false;$('nextStage').hidden=false;
-      $('prevStage').disabled=false;
-      $('nextStage').disabled=satoriIndex===SATORI_STAGES.length-1
-        ?!(activeLap===1&&secondLapUnlocked)
-        :!clearedSatoriStages.has(satoriIndex);
-    }
-    else{$('prevStage').hidden=false;$('nextStage').hidden=isMode('custom')&&!customPlaying;}
-    const highlightNext=nextStageAttention&&isCampaignMode()&&!$('nextStage').hidden&&!$('nextStage').disabled;
-    $('nextStage').classList.toggle('next-attention',highlightNext);
+    const speed=isMode('speed'),satori=isMode('satori');
+    const nextDisabled=satori
+      ?(satoriIndex===SATORI_STAGES.length-1?!(activeLap===1&&secondLapUnlocked):!clearedSatoriStages.has(satoriIndex))
+      :speed?true:undefined;
+    renderStageNavPager({
+      nextHidden:!speed&&!satori&&isMode('custom')&&!customPlaying,
+      prevDisabled:speed||satori?(!satori||false):undefined,
+      nextDisabled,
+      highlightNext:nextStageAttention&&isCampaignMode()&&!$('nextStage').hidden&&!$('nextStage').disabled
+    });
   }
   function renderStageNavGuidance(){
     renderMainBoardGuidance();
