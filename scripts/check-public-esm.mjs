@@ -44,12 +44,22 @@ const blankLines = (applicationScript[0].match(/\n\s*\n/g) || []).length;
 const comments = applicationScript[0].match(/\/\/[^\r\n]*|\/\*[\s\S]*?\*\//g) || [];
 const japaneseCommentCount = comments.filter(comment => /[ぁ-んァ-ン一-龯]/.test(comment)).length;
 const sectionHeadingCount = (applicationScript[0].match(/^\/\/ ===== .+ =====$/gm) || []).length;
+const lineCount = applicationScript[0].split(/\r?\n/).length;
+const sectionSizes = [...applicationScript[0].matchAll(/^\/\/ ===== (.+) =====$/gm)].map((match, index, headings) => ({
+  name: match[1], bytes: Buffer.byteLength(applicationScript[0].slice(match.index, headings[index + 1]?.index ?? applicationScript[0].length), 'utf8')
+}));
 console.log(`Generated application payload: ${(moduleBytes / 1024).toFixed(1)} KiB; duplicate function declarations: ${duplicateDeclarations.length}.`);
-console.log(`Formatting measurement: comments ${(commentBytes / 1024).toFixed(1)} KiB, Japanese comments ${japaneseCommentCount}, section headings ${sectionHeadingCount}, blank-line boundaries ${blankLines}.`);
+console.log(`Formatting measurement: ${lineCount} lines, comments ${(commentBytes / 1024).toFixed(1)} KiB, Japanese comments ${japaneseCommentCount}, section headings ${sectionHeadingCount}, blank-line boundaries ${blankLines}.`);
+console.log(`Largest concatenated sections: ${[...sectionSizes].sort((a, b) => b.bytes - a.bytes).slice(0, 5).map(section => `${section.name} ${(section.bytes / 1024).toFixed(1)} KiB`).join(', ')}.`);
 assert.ok(commentBytes >= 40 * 1024, 'Generated application comments were compressed away.');
 assert.ok(japaneseCommentCount >= 100, 'Generated Japanese implementation comments were lost.');
 assert.ok(sectionHeadingCount >= 20, 'Generated source section headings were lost.');
 assert.ok(blankLines >= 80, 'Generated application readability boundaries were compressed away.');
+const warnings = [];
+if (moduleBytes > 900 * 1024) warnings.push(`payload is ${(moduleBytes / 1024).toFixed(1)} KiB (soft limit 900 KiB)`);
+if (lineCount > 15000) warnings.push(`payload is ${lineCount} lines (soft limit 15000)`);
+for (const section of sectionSizes) if (section.bytes > 90 * 1024) warnings.push(`section ${section.name} is ${(section.bytes / 1024).toFixed(1)} KiB`);
+if (warnings.length) console.warn(`Bundle growth warnings: ${warnings.join('; ')}`);
 if (duplicateDeclarations.length) console.log(`Duplicate declarations (review only): ${duplicateDeclarations.slice(0, 20).join(', ')}`);
 
 for (const api of [
