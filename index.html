@@ -4697,7 +4697,6 @@ function focusReturnTarget(target){
   $(target.focusId).focus();
   return true;
 }
-let tutorialHintTimers=[];
 let makerButtonBlockedUntil=0,makerRevealTimer=0;
 let currentInitialState=0, currentInitialPar=0;
 let savedFreeSession=null;
@@ -5992,13 +5991,11 @@ function closeChainDialog(){
   setDialogOpenState('chainDialog',false);
   chainActiveStep=null;chainActiveName=null;
 }
-const clearGuideTimers=new Map();
 const clearGuideRuns=new Map();
 // 呼び出しのたびに世代を進めることで、前の呼び出しが仕込んだsetTimeout群が
 // 後から発火しても盤面をいじらないようにする(パターン送りで前のアニメが混ざる不具合の対策)。
 function stopClearGuideBoard(id){
-  clearInterval(clearGuideTimers.get(id));
-  clearGuideTimers.delete(id);
+  clearUiEffectTimers('clear-guide:'+id);
   clearGuideRuns.set(id,(clearGuideRuns.get(id)||0)+1);
 }
 // 上巻開始: 1本の棒を連続で(途切れず)回し続け、「あと3くるり」⇄「あと2くるり」が
@@ -6310,7 +6307,7 @@ function buildClearGuideBoard(id){
       },1600);
     },1750);
   };
-  play();clearGuideTimers.set(id,setInterval(play,5000));
+  play();setUiEffectInterval('clear-guide:'+id,'cycle',play,5000);
 }
 function lessonBestMove(state){
   const board=dec(state),distance=SOLVER.dist[enc(board)];
@@ -6416,7 +6413,7 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
     // 次の初期盤面へ戻す直前に短く消し、ループの切り替わりを明確にする。
     setTimeout(()=>{if(isCurrent()&&guide.isConnected)guide.style.opacity='0';},4300);
   };
-  play();clearGuideTimers.set(id,setInterval(play,4700));
+  play();setUiEffectInterval('clear-guide:'+id,'cycle',play,4700);
 }
 // ===== 描画・座標変換・スワイプアニメーション =====
 function paint(){
@@ -9273,7 +9270,6 @@ function masteryBoardSvg(tilted=false,forceStandardColor=false){
   const layout=tilted?'<g transform="rotate(-30 160 155)">'+tiles+'</g>':tiles;
   return '<svg viewBox="14 0 293 310" aria-hidden="true">'+layout+'</svg>';
 }
-const masteryBoardTimers=new Map();
 const masteryBoardRuns=new Map();
 function animateMasteryBoard(id){
   const board=$(id);
@@ -9295,15 +9291,15 @@ function animateMasteryBoard(id){
       animation.onfinish=()=>{
         if(run!==masteryBoardRuns.get(id))return;
         tile.style.transform=final;tile.dataset.cell=to;
-        if(--remaining===0)masteryBoardTimers.set(id,setTimeout(play,130));
+        if(--remaining===0)setUiEffectTimer('mastery-board:'+id,'cycle',play,130);
       };
     });
   };
-  masteryBoardTimers.set(id,setTimeout(play,180));
+    setUiEffectTimer('mastery-board:'+id,'cycle',play,180);
 }
 function renderMasteryBoard(id,show,theme='gold',animate=true){
   const board=$(id);
-  clearTimeout(masteryBoardTimers.get(id));
+  clearUiEffectTimers('mastery-board:'+id);
   masteryBoardRuns.set(id,(masteryBoardRuns.get(id)||0)+1);
   board.getAnimations?.({subtree:true}).forEach(animation=>animation.cancel());
   board.classList.toggle('satori-theme',show&&theme.startsWith('satori'));
@@ -9857,15 +9853,15 @@ function showHintArrow(ti,dir,both=false,persistent=false){
   const g=document.createElementNS(NS_,'g');g.setAttribute('class','hint-arrow'+(persistent?' tutorial':''));
   g.innerHTML=(persistent?'<path class="arc-border" d="'+arcD+'"/>':'')+'<path class="arc" pathLength="100" d="'+arcD+'"/>'+(persistent?'<path class="arc-glow" pathLength="100" d="'+arcD+'"/>':'')+'<path class="head" d="M '+tip.x.toFixed(2)+' '+tip.y.toFixed(2)+' L '+w1.x.toFixed(2)+' '+w1.y.toFixed(2)+' L '+w2.x.toFixed(2)+' '+w2.y.toFixed(2)+' Z"/>'+secondHead;
   svg.appendChild(g);
-  if(!persistent)setTimeout(()=>{if(g.isConnected){clearHintVisuals();if(usesHiddenRemaining()){fourthHintPreview=false;fourthDistanceRevealed=true;fourthHintDistance=null;showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]));}}},1400);
+  if(!persistent)setUiEffectTimer('hint','preview',()=>{if(g.isConnected){clearHintVisuals();if(usesHiddenRemaining()){fourthHintPreview=false;fourthDistanceRevealed=true;fourthHintDistance=null;showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]));}}},1400);
 }
 function showBestMoveHint(persistent=false){
   if(busy||isSolved()||masterHintsDisabled())return;
   const dist=SOLVER.dist,d=dist[enc(ori)];
   if(usesHiddenRemaining()){fourthHintPreview=true;fourthDistanceRevealed=false;fourthHintDistance=Math.max(0,d-1);showRemaining(remainingForDisplay(d));}
-  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){const next=rollOnce(ori,ti,dir);if(dist[enc(next)]!==d-1)continue;const el=svg.querySelector('.pivot[data-tri="'+ti+'"]');el.classList.add('hi');setTimeout(()=>el.classList.remove('hi'),1100);showHintArrow(ti,dir,false,persistent);return;}
+  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){const next=rollOnce(ori,ti,dir);if(dist[enc(next)]!==d-1)continue;const el=svg.querySelector('.pivot[data-tri="'+ti+'"]');el.classList.add('hi');setUiEffectTimer('hint','pivot',()=>el.classList.remove('hi'),1100);showHintArrow(ti,dir,false,persistent);return;}
 }
-function cancelTutorialHint(preserveSelection=false){tutorialHintTimers.forEach(clearTimeout);tutorialHintTimers=[];clearAxisGuide();clearHintVisuals(preserveSelection);svg.querySelectorAll('.pivot.hi').forEach(el=>el.classList.remove('hi'));}
+function cancelTutorialHint(preserveSelection=false){clearUiEffectTimers('hint');clearAxisGuide();clearHintVisuals(preserveSelection);svg.querySelectorAll('.pivot.hi').forEach(el=>el.classList.remove('hi'));}
 function scheduleStageOneTutorial(){cancelTutorialHint();}
 function scheduleBasicLessonAssist(){cancelTutorialHint();}
 $('hint').addEventListener('click',()=>{cancelTutorialHint();if(isFourthVolume())revealFourthDistance();else showBestMoveHint();});

@@ -1022,7 +1022,6 @@ function masteryBoardSvg(tilted=false,forceStandardColor=false){
   const layout=tilted?'<g transform="rotate(-30 160 155)">'+tiles+'</g>':tiles;
   return '<svg viewBox="14 0 293 310" aria-hidden="true">'+layout+'</svg>';
 }
-const masteryBoardTimers=new Map();
 const masteryBoardRuns=new Map();
 function animateMasteryBoard(id){
   const board=$(id);
@@ -1044,15 +1043,15 @@ function animateMasteryBoard(id){
       animation.onfinish=()=>{
         if(run!==masteryBoardRuns.get(id))return;
         tile.style.transform=final;tile.dataset.cell=to;
-        if(--remaining===0)masteryBoardTimers.set(id,setTimeout(play,130));
+        if(--remaining===0)setUiEffectTimer('mastery-board:'+id,'cycle',play,130);
       };
     });
   };
-  masteryBoardTimers.set(id,setTimeout(play,180));
+    setUiEffectTimer('mastery-board:'+id,'cycle',play,180);
 }
 function renderMasteryBoard(id,show,theme='gold',animate=true){
   const board=$(id);
-  clearTimeout(masteryBoardTimers.get(id));
+  clearUiEffectTimers('mastery-board:'+id);
   masteryBoardRuns.set(id,(masteryBoardRuns.get(id)||0)+1);
   board.getAnimations?.({subtree:true}).forEach(animation=>animation.cancel());
   board.classList.toggle('satori-theme',show&&theme.startsWith('satori'));

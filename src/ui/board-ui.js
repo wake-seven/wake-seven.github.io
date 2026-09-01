@@ -464,13 +464,11 @@ function closeChainDialog(){
   setDialogOpenState('chainDialog',false);
   chainActiveStep=null;chainActiveName=null;
 }
-const clearGuideTimers=new Map();
 const clearGuideRuns=new Map();
 // 呼び出しのたびに世代を進めることで、前の呼び出しが仕込んだsetTimeout群が
 // 後から発火しても盤面をいじらないようにする(パターン送りで前のアニメが混ざる不具合の対策)。
 function stopClearGuideBoard(id){
-  clearInterval(clearGuideTimers.get(id));
-  clearGuideTimers.delete(id);
+  clearUiEffectTimers('clear-guide:'+id);
   clearGuideRuns.set(id,(clearGuideRuns.get(id)||0)+1);
 }
 // 上巻開始: 1本の棒を連続で(途切れず)回し続け、「あと3くるり」⇄「あと2くるり」が
@@ -782,7 +780,7 @@ function buildClearGuideBoard(id){
       },1600);
     },1750);
   };
-  play();clearGuideTimers.set(id,setInterval(play,5000));
+  play();setUiEffectInterval('clear-guide:'+id,'cycle',play,5000);
 }
 function lessonBestMove(state){
   const board=dec(state),distance=SOLVER.dist[enc(board)];
@@ -888,7 +886,7 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
     // 次の初期盤面へ戻す直前に短く消し、ループの切り替わりを明確にする。
     setTimeout(()=>{if(isCurrent()&&guide.isConnected)guide.style.opacity='0';},4300);
   };
-  play();clearGuideTimers.set(id,setInterval(play,4700));
+  play();setUiEffectInterval('clear-guide:'+id,'cycle',play,4700);
 }
 // ===== 描画・座標変換・スワイプアニメーション =====
 function paint(){

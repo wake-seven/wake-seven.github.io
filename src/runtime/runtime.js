@@ -453,7 +453,6 @@ function focusReturnTarget(target){
   $(target.focusId).focus();
   return true;
 }
-let tutorialHintTimers=[];
 let makerButtonBlockedUntil=0,makerRevealTimer=0;
 let currentInitialState=0, currentInitialPar=0;
 let savedFreeSession=null;

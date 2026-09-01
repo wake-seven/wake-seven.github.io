@@ -23,15 +23,15 @@ function showHintArrow(ti,dir,both=false,persistent=false){
   const g=document.createElementNS(NS_,'g');g.setAttribute('class','hint-arrow'+(persistent?' tutorial':''));
   g.innerHTML=(persistent?'<path class="arc-border" d="'+arcD+'"/>':'')+'<path class="arc" pathLength="100" d="'+arcD+'"/>'+(persistent?'<path class="arc-glow" pathLength="100" d="'+arcD+'"/>':'')+'<path class="head" d="M '+tip.x.toFixed(2)+' '+tip.y.toFixed(2)+' L '+w1.x.toFixed(2)+' '+w1.y.toFixed(2)+' L '+w2.x.toFixed(2)+' '+w2.y.toFixed(2)+' Z"/>'+secondHead;
   svg.appendChild(g);
-  if(!persistent)setTimeout(()=>{if(g.isConnected){clearHintVisuals();if(usesHiddenRemaining()){fourthHintPreview=false;fourthDistanceRevealed=true;fourthHintDistance=null;showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]));}}},1400);
+  if(!persistent)setUiEffectTimer('hint','preview',()=>{if(g.isConnected){clearHintVisuals();if(usesHiddenRemaining()){fourthHintPreview=false;fourthDistanceRevealed=true;fourthHintDistance=null;showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]));}}},1400);
 }
 function showBestMoveHint(persistent=false){
   if(busy||isSolved()||masterHintsDisabled())return;
   const dist=SOLVER.dist,d=dist[enc(ori)];
   if(usesHiddenRemaining()){fourthHintPreview=true;fourthDistanceRevealed=false;fourthHintDistance=Math.max(0,d-1);showRemaining(remainingForDisplay(d));}
-  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){const next=rollOnce(ori,ti,dir);if(dist[enc(next)]!==d-1)continue;const el=svg.querySelector('.pivot[data-tri="'+ti+'"]');el.classList.add('hi');setTimeout(()=>el.classList.remove('hi'),1100);showHintArrow(ti,dir,false,persistent);return;}
+  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){const next=rollOnce(ori,ti,dir);if(dist[enc(next)]!==d-1)continue;const el=svg.querySelector('.pivot[data-tri="'+ti+'"]');el.classList.add('hi');setUiEffectTimer('hint','pivot',()=>el.classList.remove('hi'),1100);showHintArrow(ti,dir,false,persistent);return;}
 }
-function cancelTutorialHint(preserveSelection=false){tutorialHintTimers.forEach(clearTimeout);tutorialHintTimers=[];clearAxisGuide();clearHintVisuals(preserveSelection);svg.querySelectorAll('.pivot.hi').forEach(el=>el.classList.remove('hi'));}
+function cancelTutorialHint(preserveSelection=false){clearUiEffectTimers('hint');clearAxisGuide();clearHintVisuals(preserveSelection);svg.querySelectorAll('.pivot.hi').forEach(el=>el.classList.remove('hi'));}
 function scheduleStageOneTutorial(){cancelTutorialHint();}
 function scheduleBasicLessonAssist(){cancelTutorialHint();}
 $('hint').addEventListener('click',()=>{cancelTutorialHint();if(isFourthVolume())revealFourthDistance();else showBestMoveHint();});
