@@ -28,6 +28,7 @@ assert.match(board,/clearUiEffectTimers\('clear-transition'\)/,'Board transition
 assert.match(board,/resetBoardUiContext\(\)/,'Board reset must clear transient animation classes.');
 assert.match(progressionRender,/function renderClearStageContextElement\(/,'Clear context rendering must remain in the renderer boundary.');
 assert.match(progressionRender,/function renderClearTipHeader\(/,'Clear tip fixed DOM rendering must remain in the renderer boundary.');
+assert.match(progressionRender,/function renderClearShapeRuleContent\(/,'Clear shape rule rendering must remain in the renderer boundary.');
 assert.match(boardRender,/function renderAcademyRemainingCalloutElement\(/,'Academy callout rendering must remain in the renderer boundary.');
 assert.match(events,/aboutDialogCloseBtn',\(\)=>setDialogOpenState\('aboutDialog',false\)/,'About dialog close must use the dialog state boundary.');
 assert.match(events,/settingsDialogClose',\(\)=>setDialogOpenState\('settingsDialog',false\)/,'Settings dialog close must use the dialog state boundary.');

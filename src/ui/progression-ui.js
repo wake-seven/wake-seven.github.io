@@ -1188,16 +1188,7 @@ function createAnimGuard(){
 let clearShapeRuleState=null,clearShapeRuleShape=null,clearShapeRuleIsDevelopment=false;
 const clearShapeRuleGuard=createAnimGuard();
 function renderClearShapeRule(){
-  const shape=clearShapeRuleShape;
-  $('clearShapeRuleIntro').textContent=tr(clearShapeRuleIsDevelopment?'developmentShapeRuleIntro':'trainingShapeRuleIntro');
-  $('clearShapeRuleName').textContent=tr('twoMoveTip3'+shape+'Name');
-  $('clearShapeRuleBoard').innerHTML=miniBoardSvg(clearShapeRuleState,{outline:true});
-  // 発展クラスでは、条件の解説エリア(見出し+条件文)ごと出さない。
-  $('clearShapeRuleBox').hidden=clearShapeRuleIsDevelopment;
-  if(!clearShapeRuleIsDevelopment){
-    $('clearShapeRuleHeading').textContent=tr('trainingShapeRuleHeading');
-    $('clearShapeRuleCondition').textContent=tr('trainingShapeRule'+shape+'Condition');
-  }
+  renderClearShapeRuleContent({state:clearShapeRuleState,shape:clearShapeRuleShape,isDevelopment:clearShapeRuleIsDevelopment});
 }
 function transformClearShapeRule(angle=0,mirror=false){
   if(clearShapeRuleGuard.isBusy())return;
