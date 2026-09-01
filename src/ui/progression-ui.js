@@ -919,16 +919,22 @@ function transformIcon(kind){
 function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
   root.classList.remove('quiz-success');
-  if(!config){root.hidden=true;if(requireAnswer)$('clearNext').disabled=false;return;}
+  if(!config){root.hidden=true;root.replaceChildren();root.dataset.boardQuizKey='';if(requireAnswer)$('clearNext').disabled=false;return;}
   // 状態更新や再表示で同じ問題を再描画しても、4つの手数選択肢を再シャッフルしない。
   // 表示中に別順へ入れ替わると、初期順が見えてから動いたように感じられるため。
-  const stateKey=config.state?enc(Uint8Array.from(config.state)):config.pattern||config.patterns?.join(',')||'';
+  const stateKey=config.state!==undefined?boardQuizStateValue(config.state):config.pattern||config.patterns?.join(',')||'';
   const boardQuizKey=JSON.stringify([config.kind,stateKey,config.questionKey,config.correct,config.patterns,currentLang]);
   if(root.dataset.boardQuizKey===boardQuizKey&&root.childElementCount){root.hidden=false;return;}
   root.dataset.boardQuizKey=boardQuizKey;
   root.hidden=true;
   const copy=BOARD_QUIZ_COPY[currentLang]||BOARD_QUIZ_COPY.ja;
-  const state=config.state?enc(Uint8Array.from(config.state)):config.options?null:boardQuizPatternState(config.pattern||config.patterns[0]);
+  // ステージ定義の state は整数エンコード、明示的な選択肢の state は
+  // 7枚の配列。整数を Uint8Array.from(number) に渡すと「その長さの
+  // 空配列」と解釈され、全員起きた状態 (0) になってしまう。
+  const state=typeof config.state==='number'
+    ?config.state
+    :config.state?enc(Uint8Array.from(config.state))
+    :config.options?null:boardQuizPatternState(config.pattern||config.patterns[0]);
   let {states,correct,question,moveChoiceOrder}=boardQuizPresentation(config,state,copy);
   if(config.kind!=='moves'){
     const order=shuffledIndices(states.length);

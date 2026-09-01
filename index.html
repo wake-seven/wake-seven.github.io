@@ -8187,6 +8187,13 @@ function renderQuizInto(ids,quiz){
   root.hidden=wasHidden;
 }
 function boardQuizPatternState(position){return TWO_MOVE_STAGES[TWO_MOVE_PATTERN_ORDER[position-1]].state;}
+// 問題データの state は、公開カタログでは整数エンコード、古い定義では
+// 7枚の配列の場合がある。両方を同じ整数状態へ正規化する。
+function boardQuizStateValue(value){
+  if(Number.isInteger(value))return value;
+  if(Array.isArray(value)||ArrayBuffer.isView(value))return enc(Uint8Array.from(value));
+  return null;
+}
 function boardQuizMatchingStates(state,match,limit=Infinity,accept=()=>true){const target=dec(state),candidates=[];for(let next=0;next<NS;next++){const distance=SOLVER.dist[next];if(distance===255||!match(distance))continue;const board=dec(next);if(board.some((value,index)=>(value===0)!==(target[index]===0))||!accept(board))continue;let changes=0;board.forEach((value,index)=>{if(value!==0&&value!==target[index])changes++;});candidates.push({state:next,distance,changes});}candidates.sort((a,b)=>a.distance-b.distance||a.changes-b.changes||a.state-b.state);return candidates.slice(0,limit).map(candidate=>candidate.state);}
 function boardQuizSameShapeState(state,shapeState){const shape=dec(shapeState);for(const symmetry of SYMMETRIES){const transformed=transformStateBySymmetry(state,symmetry),board=dec(transformed);if(board.every((value,index)=>(value===0)===(shape[index]===0)))return transformed;}return state;}
 function boardQuizCenterIsNotOdd(board){if(board[3]===0)return true;const count=[0,0,0];board.forEach(value=>{if(value!==0)count[value]++;});return count[board[3]]===Math.max(...count);}
@@ -9423,16 +9430,22 @@ function transformIcon(kind){
 function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
   root.classList.remove('quiz-success');
-  if(!config){root.hidden=true;if(requireAnswer)$('clearNext').disabled=false;return;}
+  if(!config){root.hidden=true;root.replaceChildren();root.dataset.boardQuizKey='';if(requireAnswer)$('clearNext').disabled=false;return;}
   // 状態更新や再表示で同じ問題を再描画しても、4つの手数選択肢を再シャッフルしない。
   // 表示中に別順へ入れ替わると、初期順が見えてから動いたように感じられるため。
-  const stateKey=config.state?enc(Uint8Array.from(config.state)):config.pattern||config.patterns?.join(',')||'';
+  const stateKey=config.state!==undefined?boardQuizStateValue(config.state):config.pattern||config.patterns?.join(',')||'';
   const boardQuizKey=JSON.stringify([config.kind,stateKey,config.questionKey,config.correct,config.patterns,currentLang]);
   if(root.dataset.boardQuizKey===boardQuizKey&&root.childElementCount){root.hidden=false;return;}
   root.dataset.boardQuizKey=boardQuizKey;
   root.hidden=true;
   const copy=BOARD_QUIZ_COPY[currentLang]||BOARD_QUIZ_COPY.ja;
-  const state=config.state?enc(Uint8Array.from(config.state)):config.options?null:boardQuizPatternState(config.pattern||config.patterns[0]);
+  // ステージ定義の state は整数エンコード、明示的な選択肢の state は
+  // 7枚の配列。整数を Uint8Array.from(number) に渡すと「その長さの
+  // 空配列」と解釈され、全員起きた状態 (0) になってしまう。
+  const state=typeof config.state==='number'
+    ?config.state
+    :config.state?enc(Uint8Array.from(config.state))
+    :config.options?null:boardQuizPatternState(config.pattern||config.patterns[0]);
   let {states,correct,question,moveChoiceOrder}=boardQuizPresentation(config,state,copy);
   if(config.kind!=='moves'){
     const order=shuffledIndices(states.length);
