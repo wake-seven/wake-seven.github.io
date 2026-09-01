@@ -15,7 +15,7 @@
 
 ## 2. 保存キー
 
-当時の計画では、旧キーを `wake7-state-vnext` へ移行する案を検討していました。現在は過去ユーザーの保存データ互換を提供せず、`WakeSevenState.migrateLegacy()` も存在しません。現行仕様は `docs/compat-audit.md` を参照してください。
+当時の計画では、旧キーを `wake7-state-vnext` へ移行する案を検討していました。現在は過去ユーザーの保存データ互換を提供せず、`WakeSevenState.migrateLegacy()` も存在しません。現行仕様は `docs/architecture-audit.md` を参照してください。
 
 ### 継続利用している旧キー群
 

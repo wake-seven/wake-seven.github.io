@@ -5,9 +5,9 @@ import { fileURLToPath } from 'node:url';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const srcRoot = join(root, 'src');
-const auditDoc = await readFile(join(root, 'docs', 'compat-audit.md'), 'utf8');
+const auditDoc = await readFile(join(root, 'docs', 'architecture-audit.md'), 'utf8');
 const archiveReadme = await readFile(join(root, 'docs', 'archive', 'README.md'), 'utf8');
-for (const heading of ['# 状態境界・未使用候補監査']) {
+for (const heading of ['# 現行アーキテクチャ監査']) {
   assert.match(auditDoc, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `Compatibility audit documentation is missing: ${heading}`);
 }
 const sources = new Map();
