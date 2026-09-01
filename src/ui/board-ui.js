@@ -1013,13 +1013,7 @@ function reorientBoard(permutation,flip=false,rotationDeg=0){
   clearHintVisuals();
   if(usesHiddenRemaining())resetFourthDistance();
   const applyTransform=()=>{
-    const transformed=transformPosition(ori,spin,tileEls,permutation,flip);
-    replaceBoardState({ori:transformed.o,spin:transformed.s,tiles:transformed.t});
-    history=history.map(h=>{
-      const next=transformPosition(h.o,h.s,h.t,permutation,flip);
-      return {o:next.o,s:next.s,t:next.t,m:h.m};
-    });
-    currentInitialState=transformStateCode(currentInitialState,permutation,flip);
+    applyBoardOrientationCommand(permutation,flip);
   };
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const before=new Map(tileEls.map((el,i)=>[el,{cell:i,spin:spin[i]}]));

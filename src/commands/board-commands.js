@@ -48,5 +48,15 @@ function restoreFreeSessionBoardCommand(session){
   currentInitialState=session.initialState;currentInitialPar=session.initialPar;clearShown=session.clearShown;
   return true;
 }
+function applyBoardOrientationCommand(permutation,flip=false){
+  const transformed=transformPosition(ori,spin,tileEls,permutation,flip);
+  replaceBoardStateCommand({ori:transformed.o,spin:transformed.s,tiles:transformed.t});
+  history=history.map(h=>{
+    const next=transformPosition(h.o,h.s,h.t,permutation,flip);
+    return {o:next.o,s:next.s,t:next.t,m:h.m};
+  });
+  currentInitialState=transformStateCode(currentInitialState,permutation,flip);
+  return transformed;
+}
 // 公開native moduleの構文境界。
 export {};

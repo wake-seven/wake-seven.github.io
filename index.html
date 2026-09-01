@@ -6542,13 +6542,7 @@ function reorientBoard(permutation,flip=false,rotationDeg=0){
   clearHintVisuals();
   if(usesHiddenRemaining())resetFourthDistance();
   const applyTransform=()=>{
-    const transformed=transformPosition(ori,spin,tileEls,permutation,flip);
-    replaceBoardState({ori:transformed.o,spin:transformed.s,tiles:transformed.t});
-    history=history.map(h=>{
-      const next=transformPosition(h.o,h.s,h.t,permutation,flip);
-      return {o:next.o,s:next.s,t:next.t,m:h.m};
-    });
-    currentInitialState=transformStateCode(currentInitialState,permutation,flip);
+    applyBoardOrientationCommand(permutation,flip);
   };
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const before=new Map(tileEls.map((el,i)=>[el,{cell:i,spin:spin[i]}]));
@@ -7761,6 +7755,16 @@ function restoreFreeSessionBoardCommand(session){
   replaceBoardStateCommand({ori:Uint8Array.from(session.ori),spin:Int16Array.from(session.spin),tiles:session.tileEls.slice(),moves:session.moves,best:session.best,history:session.history.map(cloneHistoryEntry)});
   currentInitialState=session.initialState;currentInitialPar=session.initialPar;clearShown=session.clearShown;
   return true;
+}
+function applyBoardOrientationCommand(permutation,flip=false){
+  const transformed=transformPosition(ori,spin,tileEls,permutation,flip);
+  replaceBoardStateCommand({ori:transformed.o,spin:transformed.s,tiles:transformed.t});
+  history=history.map(h=>{
+    const next=transformPosition(h.o,h.s,h.t,permutation,flip);
+    return {o:next.o,s:next.s,t:next.t,m:h.m};
+  });
+  currentInitialState=transformStateCode(currentInitialState,permutation,flip);
+  return transformed;
 }
 // 公開native moduleの構文境界。
 export {};
