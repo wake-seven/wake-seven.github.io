@@ -99,6 +99,8 @@ pointer captureは `captureBoardPointer()` / `releaseBoardPointer()`、別pointe
 
 `animateGroupedSwipe()` と `animateUndoSwipe()` は同ファイルのアニメーションセッションAPIで管理する。セッションは `id` / `type` / `pointerId` / `startedAt` / `cancelled` / `frameHandle` / `cleanup` を持ち、`cancelTileAnimations()` からも先にキャンセルされる。完了・キャンセル時のcleanupは一度だけ実行し、古いcallbackや次フレームは無効化する。盤面command、回転角、表示順、完了順序は変更していない。
 
+チュートリアル巻き戻しの表示モデルは `src/ui/tutorial-animation.js:createTutorialRewindModel()` で生成する。`startAngle` / `endAngle` / `direction` / `pivot` / `items` / `duration` / `cue` を演出側へ渡し、`board-ui.js` は入力判定と状態遷移を保持する。モデル生成は副作用を持たず、既存の指を離した角度から初期位置へ戻る見た目とタイミングを変更しない。
+
 アニメーションフレームのDOM/SVG反映は `board-render.js:renderBoardAnimationFrame()` へ分離した。`board-ui.js` は回転角・進捗・方向を計算してモデルを渡し、rendererがグループtransformと持ち上がり/表情/色の反映を行う。座標・DOM順序・タイミングは変更していない。
 
 動的SVGの生成入口を `board-animation.js:createSwipeGroup()`、フレーム反映入口を `board-render.js:renderSwipeFrame()` に明示した。Grouped swipeとundo swipeは生成とフレーム反映をこれらのAPI経由で行い、pointer座標・DOM順序・タイミングは維持する。個別タイルのpointer依存アニメーションは引き続きboard-ui側に保持する。

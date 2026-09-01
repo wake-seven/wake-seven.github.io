@@ -1972,7 +1972,8 @@ function finishDrag(e,cancel=false,forcedTurns=null){
 function animateTutorialRewind(dg,target,dir){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){paint();setTimeout(showTutorialCue,520);return;}
   setBoardBusy(true);
-  const duration=720;
+  const model=createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:dir,pivot:dg.kc,items:dg.items,duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue||''});
+  const duration=model.duration;
   // 3枚を個別にanimate()すると僅かなずれでばらばらに見えるため、1つのgroupへ一時的に
   // まとめて入れ、group側の回転を1つだけ再生することで常に揃って動くようにする。
   const NS_='http://www.w3.org/2000/svg';
@@ -1984,7 +1985,7 @@ function animateTutorialRewind(dg,target,dir){
   const domOrder=[...svg.children];
   const sortedItems=[...dg.items].sort((a,b)=>domOrder.indexOf(a.el)-domOrder.indexOf(b.el));
   const restoreAnchor=sortedItems[sortedItems.length-1].el.nextSibling;
-  for(const item of dg.items){
+  for(const item of model.items){
     item.el.style.transform=orbitTransform(item,0,dg.kc);
     group.appendChild(item.el);
   }
@@ -2001,8 +2002,8 @@ function animateTutorialRewind(dg,target,dir){
   group.style.transformOrigin=dg.kc.x+'px '+dg.kc.y+'px';
   // 中間の120°位置へ寄せず、指を離した現在角度からそのまま元の位置へ戻す。
   const animation=group.animate([
-    {transform:'rotate('+dg.deg+'deg)',offset:0},
-    {transform:'rotate(0deg)',offset:1}
+    {transform:'rotate('+model.startAngle+'deg)',offset:0},
+    {transform:'rotate('+model.endAngle+'deg)',offset:1}
   ],{duration,easing:'cubic-bezier(.2,.72,.24,1)'});
   animation.onfinish=animation.oncancel=()=>{
     for(const item of sortedItems){

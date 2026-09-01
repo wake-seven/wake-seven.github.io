@@ -18,6 +18,7 @@ const events=await read(['src','runtime','app-events.js']);
 const commands=await read(['src','commands','board-commands.js']);
 const interaction=await read(['src','ui','board-interaction.js']);
 const animation=await read(['src','ui','board-animation.js']);
+const tutorialAnimation=await read(['src','ui','tutorial-animation.js']);
 for(const name of ['setUiEffectTimer','setUiEffectInterval','clearUiEffectTimers'])assert.match(context,new RegExp(`function ${name}\\(`),`${name} API is missing.`);
 for(const [text,name] of [[board,'academy/intro effect timers'],[hints,'hint effect timers'],[mastery,'mastery effect timers'],[speed,'speed clock effect timer']])assert.match(text,/setUiEffect(?:Timer|Interval)|clearUiEffectTimers/,`${name} are not scoped by effect.`);
 assert.doesNotMatch(speed,/speedClockTimer/,'Speed clock must not retain a direct timer handle.');
@@ -43,6 +44,8 @@ assert.match(boardRender,/function renderBoardInteractionFeedback\(/,'Pointer fe
 assert.match(boardRender,/function renderBoardTileState\(/,'Tile state rendering must remain behind a renderer boundary.');
 assert.match(boardRender,/function renderBoardTileFlash\(/,'Tile flash rendering must remain behind a renderer boundary.');
 assert.match(boardRender,/function renderTutorialFeedback\(/,'Tutorial feedback rendering must remain behind a renderer boundary.');
+assert.match(tutorialAnimation,/function createTutorialRewindModel\(/,'Tutorial rewind display model is missing.');
+assert.match(board,/createTutorialRewindModel\(\{startAngle:dg\.deg,endAngle:0,direction:dir,pivot:dg\.kc/,'Tutorial rewind must receive a normalized display model.');
 assert.match(board,/renderTutorialFeedback\(\{text:/,'Tutorial feedback must be passed to the renderer as a model.');
 assert.match(interaction,/pointerId:input\.pointerId[\s\S]{0,220}targetGroup[\s\S]{0,100}cancelled:false/,'Pointer operation context must contain identity, target group, and cancellation state.');
 assert.match(interaction,/current:\{\.\.\.input\.point\}[\s\S]{0,180}delta:\{x:0,y:0\}[\s\S]{0,120}angle:null/,'Pointer operation context must initialize coordinates, delta, and angle.');
@@ -95,7 +98,7 @@ assert.match(board,/function animateGuidedBasicRewind\([\s\S]{0,700}Math\.abs\(r
 const tutorialStart=board.indexOf('function animateTutorialRewind');
 const tutorialEnd=board.indexOf('function animateGuidedBasicRewind',tutorialStart);
 const tutorialRewind=tutorialStart>=0&&tutorialEnd>tutorialStart?board.slice(tutorialStart,tutorialEnd):'';
-assert.match(tutorialRewind,/rotate\('\+dg\.deg\+'deg\)',offset:0/,'Tutorial rewind must start from the released angle.');
-assert.match(tutorialRewind,/rotate\(0deg\)',offset:1/,'Tutorial rewind must return directly to the initial angle.');
+assert.match(tutorialRewind,/rotate\('\+model\.startAngle\+'deg\)',offset:0/,'Tutorial rewind must start from the released angle model.');
+assert.match(tutorialRewind,/rotate\('\+model\.endAngle\+'deg\)',offset:1/,'Tutorial rewind must return directly to the initial angle model.');
 assert.doesNotMatch(tutorialRewind,/offset:\.36|offset:\.56/,'Tutorial rewind must not pass through an intermediate 120-degree waypoint.');
 console.log('Validated UI effect timer cancellation boundaries.');
