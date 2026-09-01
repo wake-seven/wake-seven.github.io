@@ -24,7 +24,6 @@ await collect(srcRoot);
 
 const all = [...sources.entries()].map(([file, source]) => `${file}\n${source}`).join('\n');
 assert.match(sources.get('src/ui/dom.js'), /function setText/);
-assert.match(sources.get('src/ui/template.js'), /function mountTemplate/);
 assert.match(sources.get('src/ui/dom.js'), /function createRefs/);
 assert.match(sources.get('src/runtime/speed.js'), /speedViewRefs/);
 assert.match(sources.get('src/ui/rank.js'), /setText\('rankDialogTitle'/);

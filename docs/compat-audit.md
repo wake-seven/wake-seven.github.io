@@ -10,8 +10,12 @@
 | `src/runtime/namespace.js:attachWakeSevenNamespace` | 公開名前空間初期化 | 公開版の`window.WakeSeven` APIを読み込み時に初期化する。 |
 | `src/state/game-state.js:attachWakeSevenState` | 公開状態初期化 | 公開版の`WakeSevenState` APIを読み込み時に初期化する。 |
 | `src/state/progression-policy.js:attachWakeSevenProgression` | 公開進行初期化 | 公開版の`WakeSevenProgression` APIを読み込み時に初期化する。 |
-| `src/ui/svg.js:svgClear` | 保持 | SVG描画領域を空にする共通API。現時点では直接参照がなくても、UI renderer APIの公開境界として残す。 |
-| `src/ui/template.js:mountTemplate` | 保持 | テンプレートをDOMへマウントする共通API。監査スクリプトでも存在を確認している。 |
+
+## 解消済みの未使用候補
+
+- `src/ui/svg.js:svgClear` — 実行時参照がないため削除。
+- `src/ui/template.js:mountTemplate` — 実行時参照がないため削除。
+- `src/ui/template.js:cloneTemplate` — `mountTemplate` 専用で、他の実行時参照がないため併せて削除。
 
 ## 導線監査
 
@@ -23,4 +27,4 @@
 - 通常ステージ、クリア後、速解きの主要DOMと遷移関数が残っている
 - 速解きIDが正式ID（`training9` / `training18` / `mastery27` / `satori73`）だけで構成されている
 
-この監査はDOM構造、イベント接続、正式IDの使用、公開APIの最低限の形状を静的に確認する。実ブラウザのクリック・スワイプ確認は、内蔵ブラウザで別途実施する。公開境界として分類された初期化関数、通常の未使用候補、下書きメッセージは、この検査では削除しない。
+この監査はDOM構造、イベント接続、正式IDの使用、公開APIの最低限の形状を静的に確認する。実ブラウザのクリック・スワイプ確認は、内蔵ブラウザで別途実施する。公開境界として分類された初期化関数と下書きメッセージは、この検査では削除しない。

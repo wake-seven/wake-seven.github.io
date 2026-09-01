@@ -6,6 +6,5 @@ function svgMount(root,markup=''){
   if(markup)root.insertAdjacentHTML('afterbegin',markup);
   return root;
 }
-function svgClear(root){return svgMount(root,'');}
 function svgSetIcon(root,markup=''){return svgMount(root,markup);}
 export {};
