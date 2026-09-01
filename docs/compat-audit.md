@@ -89,6 +89,8 @@ pointer直後の `grip-hover`、`invalid-grab`、`selecting`、`spinning`、`rot
 
 操作中の盤面フィードバック（selecting / spinning / rotation-started / grip-hover / invalid-grab）は `renderBoardInteractionFeedback()` へ表示モデルとして渡す構成にした。入力判定と文言・残り手数・hint arrowの算出はboard-ui側に残し、rendererは固定DOM/SVGのクラスと案内欄の反映だけを担当する。pointer座標依存の逐次アニメーション自体は第2段階の境界を維持する。
 
+pointer captureは `captureBoardPointer()` / `releaseBoardPointer()`、別pointerの無視は `isBoardPointerEventFor()` に統一した。pointerup/cancel/leaveのイベント順序とtouchmove抑止は変更していない。capture APIはブラウザ実装差を吸収するための境界で、操作判定や盤面状態は扱わない。
+
 `animateGroupedSwipe()` と `animateUndoSwipe()` は同ファイルのアニメーションセッションAPIで管理する。セッションは `id` / `type` / `pointerId` / `startedAt` / `cancelled` / `frameHandle` / `cleanup` を持ち、`cancelTileAnimations()` からも先にキャンセルされる。完了・キャンセル時のcleanupは一度だけ実行し、古いcallbackや次フレームは無効化する。盤面command、回転角、表示順、完了順序は変更していない。
 
 アニメーションフレームのDOM/SVG反映は `board-render.js:renderBoardAnimationFrame()` へ分離した。`board-ui.js` は回転角・進捗・方向を計算してモデルを渡し、rendererがグループtransformと持ち上がり/表情/色の反映を行う。座標・DOM順序・タイミングは変更していない。

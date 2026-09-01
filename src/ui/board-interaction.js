@@ -22,6 +22,9 @@ function updateBoardPointerContext(context,input){
   const previous=context.current;context.current={...input.point};context.delta={x:input.point.x-previous.x,y:input.point.y-previous.y};context.angle=Math.atan2(input.point.y-context.targetGroup.y,input.point.x-context.targetGroup.x);return context;
 }
 function finishBoardPointerContext(context,cancelled=false){if(!context)return false;context.cancelled=cancelled===true;return true;}
+function captureBoardPointer(element,pointerId){try{element?.setPointerCapture(pointerId);return true;}catch(_){return false;}}
+function releaseBoardPointer(element,pointerId){try{if(element?.hasPointerCapture?.(pointerId))element.releasePointerCapture(pointerId);return true;}catch(_){return false;}}
+function isBoardPointerEventFor(context,event){return !!context&&!!event&&event.pointerId===context.pointerId&&!context.cancelled;}
 let boardAnimationSession=null,boardAnimationSequence=0;
 function startBoardAnimationSession(type,pointerId=null,cleanup=()=>{}){
   cancelBoardAnimationSession();

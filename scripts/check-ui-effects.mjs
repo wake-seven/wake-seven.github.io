@@ -36,6 +36,7 @@ assert.match(commands,/function replaceBoardStateCommand\(/,'Low-level board sta
 assert.match(board,/function restoreSavedBoard[\s\S]{0,500}replaceBoardState\(/,'Saved board restoration must use the wrapper command.');
 for(const name of ['normalizeBoardPointer','normalizeBoardPointerDelta','normalizeBoardPointerEnd'])assert.match(interaction,new RegExp(`function ${name}\\(`),`${name} input boundary is missing.`);
 for(const name of ['startBoardPointerContext','updateBoardPointerContext','finishBoardPointerContext'])assert.match(interaction,new RegExp(`function ${name}\\(`),`${name} pointer context API is missing.`);
+for(const name of ['captureBoardPointer','releaseBoardPointer','isBoardPointerEventFor'])assert.match(interaction,new RegExp(`function ${name}\\(`),`${name} pointer capture API is missing.`);
 assert.match(board,/normalizeBoardPointer\(e,toView\)/,'Board pointer handlers must use the normalized input boundary.');
 assert.match(board,/normalizeBoardPointerEnd\(e,dg/,'Board pointer end must use the normalized input boundary.');
 assert.match(boardRender,/function renderBoardInteractionFeedback\(/,'Pointer feedback rendering must remain behind a renderer boundary.');
@@ -43,6 +44,9 @@ assert.match(board,/renderBoardInteractionFeedback\(\{classes:/,'Pointer handler
 assert.match(board,/startBoardPointerContext\(input,t/,'Pointer down must create an operation context.');
 assert.match(board,/updateBoardPointerContext\(drag,input\)/,'Pointer move must update the operation context.');
 assert.match(board,/finishBoardPointerContext\(dg,cancel\)/,'Pointer end must finish the operation context.');
+assert.match(board,/captureBoardPointer\(svg,e\.pointerId\)/,'Pointer down must use the capture boundary.');
+assert.match(board,/releaseBoardPointer\(svg,dg\.id\)/,'Pointer end must use the release boundary.');
+assert.match(board,/isBoardPointerEventFor\(drag,e\)/,'Other pointers must be ignored through the pointer boundary.');
 for(const name of ['startBoardAnimationSession','requestBoardAnimationFrame','finishBoardAnimationSession','cancelBoardAnimationSession','cancelBoardAnimation'])assert.match(interaction,new RegExp(`function ${name}\\(`),`${name} animation session API is missing.`);
 assert.match(board,/startBoardAnimationSession\('grouped-swipe'/,'Grouped swipe must use an animation session.');
 assert.match(board,/startBoardAnimationSession\('undo-swipe'/,'Undo swipe must use an animation session.');

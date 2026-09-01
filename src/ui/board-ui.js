@@ -1522,11 +1522,11 @@ function rejectBoardGrab(event){
   $('gripPromptText').textContent=tr(tutorialFindGrip?'tutorialWrongPlacePrompt':guidedBasicCandidateTis!==null?'guidedBasicWrongGrip':'gripPrompt');
   $('gripPrompt').hidden=false;
   haptic(4);
-  try{svg.setPointerCapture(event.pointerId);}catch(_){}
+  captureBoardPointer(svg,event.pointerId);
 }
 function clearInvalidGrab(event){
   if(invalidGrabPointerId===null||event.pointerId!==invalidGrabPointerId)return false;
-  try{svg.releasePointerCapture(event.pointerId);}catch(_){}
+  releaseBoardPointer(svg,event.pointerId);
   invalidGrabPointerId=null;
   renderBoardInteractionFeedback({classes:{'invalid-grab':false}});
   $('gripPrompt').hidden=true;
@@ -1772,11 +1772,11 @@ function handleBoardPointerDown(e){
   const frontMarker=svg.querySelector('.pivot');
   for(const item of items){setBoardTileSelected(item.el,true);svg.insertBefore(item.el,frontMarker);}
   setBoardPivotActive(svg.querySelector('.pivot[data-tri="'+ti+'"]'),true);
-  svg.setPointerCapture(e.pointerId);
+  captureBoardPointer(svg,e.pointerId);
   renderBoardInteractionFeedback({classes:{spinning:true}});
 }
 function handleBoardPointerMove(e){
-  if(!drag||e.pointerId!==drag.id){
+  if(!isBoardPointerEventFor(drag,e)){
     if(!drag&&e.pointerType==='mouse')renderBoardInteractionFeedback({classes:{'grip-hover':!!gripAt(toView(e))}});
     // 棒をつかめていなくても、盤面上で始まったタッチならページスワイプに奪われないようにする。
     if(!drag&&boardTouchActive&&e.pointerType!=='mouse')e.preventDefault();
@@ -1862,13 +1862,13 @@ function resumeTutorialCue(){
   if(isMode('tutorial')&&!isSolved())setTimeout(showTutorialCue,110);
 }
 function finishDrag(e,cancel=false,forcedTurns=null){
-  if(!drag||(e&&e.pointerId!==drag.id)) return;
+  if(!drag||(e&&!isBoardPointerEventFor(drag,e))) return;
   const dg=drag,endModel=normalizeBoardPointerEnd(e,dg,{cancel,forcedTurns});
   finishBoardPointerContext(dg,cancel);
   setBoardDrag(null);setBoardTouchActive(false); clearAxisGuide(); renderBoardInteractionFeedback({classes:{spinning:false,selecting:false}});
   for(const item of dg.items)setBoardTileSelected(item.el,false);
   svg.querySelectorAll('.pivot.active').forEach(el=>setBoardPivotActive(el,false));
-  try{svg.releasePointerCapture(dg.id);}catch(_){}
+  releaseBoardPointer(svg,dg.id);
 
   let turns=endModel.cancelled?0:endModel.forcedTurns===null?Math.round(dg.deg/120):endModel.forcedTurns;
   if(forcedTurns===null&&!turns&&Math.abs(dg.deg)>=18&&performance.now()-dg.t0<320)
