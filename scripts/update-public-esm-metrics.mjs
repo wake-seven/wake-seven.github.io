@@ -7,6 +7,11 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const baselinePath = join(root, 'scripts', 'public-esm-metrics.json');
 const reasonIndex = process.argv.indexOf('--reason');
 const reason = reasonIndex >= 0 ? process.argv[reasonIndex + 1] : '';
+if (process.argv.includes('--help') || process.argv.includes('-h')) {
+  console.log('Usage: npm run metrics:update -- --reason "why the public bundle changed"');
+  console.log('Updates the checked-in public ESM metrics baseline after before/after validation.');
+  process.exit(0);
+}
 if (!reason || reason.startsWith('--')) {
   console.error('Usage: npm run metrics:update -- --reason "why the public bundle changed"');
   process.exit(2);
