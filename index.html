@@ -6405,10 +6405,14 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
     grips.forEach(marker=>{marker.style.display='';guide.appendChild(marker);});
     swipe.style.display='none';guide.appendChild(swipe);
     // まず盤面を十分に観察してから、つかむ位置と回転を見せる。
-    setTimeout(()=>{if(isCurrent()&&guide.isConnected)swipe.style.display='';},1450);
     setTimeout(()=>{
       if(!isCurrent()||!guide.isConnected)return;
-      grips.forEach(marker=>marker.style.display='none');
+      // タッチ点を出す瞬間に、案内用の6本の棒も消す。
+      swipe.style.display='';
+      grips.forEach(marker=>{marker.style.display='none';});
+    },1450);
+    setTimeout(()=>{
+      if(!isCurrent()||!guide.isConnected)return;
       const old=tiles.slice(),cells=t.cells,unit=rotationUnit;
       for(let i=0;i<3;i++){
         const from=move.dir>0?cells[i]:cells[(i+1)%3];
