@@ -13,7 +13,7 @@ function advanceAfterClear(){
   else if(stageIndex===STAGES.length-1) restoreFreeSession();
   else{const before=clearContentBefore(false,stageIndex+1);if(before?.dialog){openChainedDialog(before.dialog);return;}loadStage(stageIndex+1);}
 }
-let returnToClearCard=false,twoMovePatternsReturnTarget=null,twoMoveDetailReturnTarget=null;
+let returnToClearCard=false,twoMovePatternsReturnTarget=null,twoMoveDetailReturnTarget=null,guideHubReturn=false;
 function returnToClearDialog(){
   returnToClearCard=false;$('clearDialogMessage').textContent=clearDialogHeading();renderClearStageContext();renderClearTip();renderClearQuiz();
   $('clearNext').disabled=false;renderBoardQuiz('boardQuiz',boardQuizConfigForCurrent(),{requireAnswer:true});$('clearNext').hidden=false;$('clearDialog').hidden=false;$('clearTipLink').focus();

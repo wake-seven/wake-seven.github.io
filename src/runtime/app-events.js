@@ -748,13 +748,15 @@ function closeTipGuide(){
     focusReturnTarget(target);
     return;
   }
+  if(guideHubReturn){guideHubReturn=false;openGuideHub();return;}
   $('menuToggle').focus();
 }
-WakeSevenEventBindings.click('guideHubTips',()=>{closeGuideHub();returnToClearCard=false;openTipGuide();});
-WakeSevenEventBindings.click('guideHubPatterns',()=>{closeGuideHub();openTwoMovePatterns();});
+WakeSevenEventBindings.click('guideHubTips',()=>{closeGuideHub();returnToClearCard=false;guideHubReturn=true;openTipGuide();});
+WakeSevenEventBindings.click('guideHubPatterns',()=>{closeGuideHub();guideHubReturn=true;openTwoMovePatterns();});
 WakeSevenEventBindings.click('guideHubClose',closeGuideHub);
 $('guideHubDialog').addEventListener('click',event=>{if(event.target===$('guideHubDialog'))closeGuideHub();});
 function openGuideHub(){
+  guideHubReturn=false;
   hideGameDialogs();
   $('guideHubDialog').hidden=false;
   $('guideHubTips').focus();
@@ -1000,6 +1002,7 @@ function closeTwoMovePatterns(){
     focusReturnTarget(target);
     return;
   }
+  if(guideHubReturn){guideHubReturn=false;openGuideHub();return;}
   $('menuToggle').focus();
 }
 $('closeTwoMovePatterns').addEventListener('click',closeTwoMovePatterns);

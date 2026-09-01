@@ -9812,7 +9812,7 @@ function advanceAfterClear(){
   else if(stageIndex===STAGES.length-1) restoreFreeSession();
   else{const before=clearContentBefore(false,stageIndex+1);if(before?.dialog){openChainedDialog(before.dialog);return;}loadStage(stageIndex+1);}
 }
-let returnToClearCard=false,twoMovePatternsReturnTarget=null,twoMoveDetailReturnTarget=null;
+let returnToClearCard=false,twoMovePatternsReturnTarget=null,twoMoveDetailReturnTarget=null,guideHubReturn=false;
 function returnToClearDialog(){
   returnToClearCard=false;$('clearDialogMessage').textContent=clearDialogHeading();renderClearStageContext();renderClearTip();renderClearQuiz();
   $('clearNext').disabled=false;renderBoardQuiz('boardQuiz',boardQuizConfigForCurrent(),{requireAnswer:true});$('clearNext').hidden=false;$('clearDialog').hidden=false;$('clearTipLink').focus();
@@ -10803,13 +10803,15 @@ function closeTipGuide(){
     focusReturnTarget(target);
     return;
   }
+  if(guideHubReturn){guideHubReturn=false;openGuideHub();return;}
   $('menuToggle').focus();
 }
-WakeSevenEventBindings.click('guideHubTips',()=>{closeGuideHub();returnToClearCard=false;openTipGuide();});
-WakeSevenEventBindings.click('guideHubPatterns',()=>{closeGuideHub();openTwoMovePatterns();});
+WakeSevenEventBindings.click('guideHubTips',()=>{closeGuideHub();returnToClearCard=false;guideHubReturn=true;openTipGuide();});
+WakeSevenEventBindings.click('guideHubPatterns',()=>{closeGuideHub();guideHubReturn=true;openTwoMovePatterns();});
 WakeSevenEventBindings.click('guideHubClose',closeGuideHub);
 $('guideHubDialog').addEventListener('click',event=>{if(event.target===$('guideHubDialog'))closeGuideHub();});
 function openGuideHub(){
+  guideHubReturn=false;
   hideGameDialogs();
   $('guideHubDialog').hidden=false;
   $('guideHubTips').focus();
@@ -11055,6 +11057,7 @@ function closeTwoMovePatterns(){
     focusReturnTarget(target);
     return;
   }
+  if(guideHubReturn){guideHubReturn=false;openGuideHub();return;}
   $('menuToggle').focus();
 }
 $('closeTwoMovePatterns').addEventListener('click',closeTwoMovePatterns);
