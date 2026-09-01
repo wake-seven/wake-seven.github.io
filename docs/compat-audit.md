@@ -62,6 +62,8 @@
 
 固定ダイアログの閉じる操作（about/settings）は `setDialogOpenState()` を使う。`app-events.js` に残る背景クリック、連続ダイアログの遷移、pointer中の即時表示は、イベントの判定とcleanupを同じ順序で扱う必要があるため直接処理を保持する。`progression-ui.js` の複数部品を同時に切り替えるクリア・称号・クイズ表示も、状態判定とrenderer更新が結合しており、今回の細部整理では移動しない。
 
+その後の分離として、クリア後チップの固定テキスト・詳細リンク欄を `progression-render.js:renderClearTipHeader()` へ移した。表示モデル（本文、リンク表示、リンク先、ラベル）の算出は `progression-ui.js` に残し、rendererはDOM更新だけを担当する。動的SVG、クイズ選択状態、称号の複数要素更新は引き続き対象外とする。
+
 称号アニメーションは、通常の序・破・急および一周目の文字称号を `masterRankSeal 1.05s ease-out both` に統一済み。`無心`・`覚者`を含むフレーム型称号は既存の `.72s` 演出を変更しない。`check-ui-effects.mjs` でこのduration/easing/fill-mode契約を監査する。クリア演出の速度は盤面WAAPI/CSSの既存仕様を維持する。
 
 ## CSS演出の最終監査

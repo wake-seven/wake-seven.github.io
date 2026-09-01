@@ -711,11 +711,9 @@ function renderClearTip(){
   const tipsLink=!!clearEntry&&clearEntry.link==='tips';
   const patternsLink=!!clearEntry&&clearEntry.link==='patterns';
   const detailLink=$('clearTipLink');
-  $('clearDialogTextBody').textContent=text;
-  $('clearDialogText').hidden=!text;
-  detailLink.hidden=twoMoveCard===undefined&&!guideCard&&!rankLink&&!messagesLink&&!tipsLink&&!patternsLink;
-  detailLink.dataset.target=rankLink?'rank':messagesLink?'messages':tipsLink?'tips':patternsLink?'patterns':'details';
-  detailLink.textContent=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatternsLink')+' →':tr(rankLink?'rankLink':messagesLink?'clearMessagesLink':'detailsLink');
+  const detailTarget=rankLink?'rank':messagesLink?'messages':tipsLink?'tips':patternsLink?'patterns':'details';
+  const detailLabel=tipsLink?tr('tipGuideTitle')+' →':patternsLink?tr('twoMovePatternsLink')+' →':tr(rankLink?'rankLink':messagesLink?'clearMessagesLink':'detailsLink');
+  renderClearTipHeader({text,linkVisible:twoMoveCard!==undefined||!!guideCard||rankLink||messagesLink||tipsLink||patternsLink,target:detailTarget,label:detailLabel});
   const middleStart=TRAINING_STAGE_START+TRAINING_UPPER_COUNT;
   const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;
   const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;

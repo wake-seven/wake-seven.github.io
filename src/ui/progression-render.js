@@ -32,6 +32,13 @@ function renderClearStageContextElement(context,{visible=false,text=''}={}){
   context.hidden=!visible;
   context.textContent=visible?text:'';
 }
+// クリア後チップの固定テキスト・詳細リンク欄を描画する。リンク先の判定は呼び出し側で行う。
+function renderClearTipHeader({text='',linkVisible=false,target='details',label=''}={}){
+  const body=$('clearDialogTextBody'),copy=$('clearDialogText'),link=$('clearTipLink');
+  if(body)body.textContent=text;
+  if(copy)copy.hidden=!text;
+  if(link){link.hidden=!linkVisible;link.dataset.target=target;link.textContent=label;}
+}
 function renderStageNavAccent(){
   let accentFrac=0;
   if(isMode('speed'))accentFrac=(speedSession.index+1)/(speedSession.total||activeSpeedDefinition().total);
