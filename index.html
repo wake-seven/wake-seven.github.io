@@ -7822,6 +7822,23 @@ function setLanguageCommand(lang){
 }
 export {};
 
+// ===== 進行command =====
+// 進行報酬の書き込みcommand。節目ダイアログの表示処理から状態更新を分離する。
+function grantMasterDialogRewardsCommand(kind){
+  if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
+  if(kind==='mastery'&&secondLapActive&&!rainbowDarumaGranted){
+    rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);darumaColor='rainbow';darumaColorChosen=false;
+    try{storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');storage.remove('wake7-daruma-color-chosen');}catch(_){ }
+    updateMasterTheme();renderStageNav();
+  }
+  if(kind==='awakening'&&!awakenedGranted){
+    awakenedGranted=setUnlock('awakened',true);threeDUnlocked=setUnlock('threeD',true);
+    try{storage.set(STORAGE_KEYS.awakenedGranted,'1');storage.set(STORAGE_KEYS.threeDUnlocked,'1');}catch(_){ }
+    persistLapProgress();updateMasterTheme();renderStageNav();rememberSpecialMessage('awakening');
+  }
+}
+export {};
+
 // ===== クイズUI =====
 // ===== 共通クイズUI =====
 function shuffledIndices(length){const order=Array.from({length},(_,index)=>index);for(let index=order.length-1;index>0;index--){const swap=Math.floor(Math.random()*(index+1));[order[index],order[swap]]=[order[swap],order[index]];}return order;}
@@ -9372,37 +9389,7 @@ function animateTwoMovePattern(boardIndex,angle=0,mirror=false){
   animateMiniBoardTiles(card,'.mini-tile','.mini-daruma',i=>CELL[i],symmetry.permutation,before,after);
   twoMoveGuard.arm(480,()=>transformTwoMovePattern(boardIndex,angle,mirror));
 }
-// 節目ダイアログを開いたときに確定する解放・見た目報酬を、表示分岐から分離する。
-// 報酬の付与条件と永続化はここに集約し、showMasterDialog は表示内容の組み立てに専念させる。
-function grantMasterDialogRewards(kind){
-  if(kind==='satori'&&!secondLapActive){
-    unlockSpeedVariant('satori73');
-    renderStageNav();
-  }
-  if(kind==='mastery'&&secondLapActive&&!rainbowDarumaGranted){
-    rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);
-    darumaColor='rainbow';
-    darumaColorChosen=false;
-    try{
-      storage.set(STORAGE_KEYS.rainbowDarumaGranted,'1');
-      storage.remove('wake7-daruma-color-chosen');
-    }catch(_){ }
-    updateMasterTheme();
-    renderStageNav();
-  }
-  if(kind==='awakening'&&!awakenedGranted){
-    awakenedGranted=setUnlock('awakened',true);
-    threeDUnlocked=setUnlock('threeD',true);
-    try{
-      storage.set(STORAGE_KEYS.awakenedGranted,'1');
-      storage.set(STORAGE_KEYS.threeDUnlocked,'1');
-    }catch(_){ }
-    persistLapProgress();
-    updateMasterTheme();
-    renderStageNav();
-    rememberSpecialMessage('awakening');
-  }
-}
+// 報酬の確定はcommand側へ委譲し、ここは表示内容の組み立てに専念する。
 function showMasterDialog(kind='primary'){
   const masterDialog=$('masterDialog');
   // 同じ節目ダイアログを状態更新のために再描画することがあるが、
@@ -9414,7 +9401,7 @@ function showMasterDialog(kind='primary'){
   const needsMasteryTrial=trialState.mastery;
   const needsIntermediateTrial=trialState.intermediate;
   const dialogVisibility=masterDialogVisibility(kind,needsMasteryTrial);
-  grantMasterDialogRewards(kind);
+  grantMasterDialogRewardsCommand(kind);
   if(kind==='mastery'&&!needsMasteryTrial)$('menuAllPatterns').hidden=false;
   const masteryBoardTheme=masterDialogBoardTheme(kind);
   const boardOptions=masterDialogBoardOptions(kind,needsMasteryTrial,masteryBoardTheme);
