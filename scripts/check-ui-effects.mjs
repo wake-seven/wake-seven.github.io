@@ -46,6 +46,14 @@ assert.match(board,/function completeGroupedSwipeAnimation\(/,'Grouped animation
 assert.match(board,/function completeUndoSwipeAnimation\(/,'Undo animation completion must be separated from the frame callback.');
 assert.match(board,/completeGroupedSwipeAnimation\(session,dg,dir,waking\)/,'Grouped animation frame callback must delegate completion.');
 assert.match(board,/completeUndoSwipeAnimation\(session,target,reverseDir\)/,'Undo animation frame callback must delegate completion.');
+assert.match(interaction,/cancelBoardAnimationSession\(\);\s*const session=\{id:/,'Starting an animation must cancel an existing session before creating one.');
+assert.match(interaction,/session\.cleaned=true[\s\S]{0,180}session\.cleanup\?\.\(\)/,'Animation cleanup must be guarded and run once.');
+assert.match(interaction,/isBoardAnimationSessionActive\(session\)[\s\S]{0,180}callback\(now\)/,'Stale animation frames must be ignored after cancellation.');
+assert.match(board,/handleBoardPointerCancel\(e\)\{cancelBoardAnimation\(/,'Pointer cancel must invalidate an active animation session.');
+assert.match(board,/setPosition\(state,par\)\{\s*cancelBoardAnimation\(/,'Position transitions must invalidate an active animation session.');
+assert.match(board,/applySwipe\(dg\.ti,dir,true,false\)/,'Grouped animation completion must commit through applySwipe.');
+assert.match(board,/restoreBoardSnapshotCommand\(target\)/,'Undo animation completion must restore through a board command.');
+assert.doesNotMatch(boardRender,/\b(?:ori|spin|moves|history|tileEls)\s*=/,'Frame renderer must not mutate persistent board state.');
 assert.match(board,/function cancelTileAnimations\(\)\{\s*cancelBoardAnimation\(/,'Animation cancellation must cancel the active session first.');
 assert.match(board,/function handleBoardPointerCancel\(e\)\{cancelBoardAnimation\(/,'Pointer cancel must use the shared animation cancellation boundary.');
 assert.match(board,/function setPosition\(state,par\)\{\s*cancelBoardAnimation\(/,'Position changes must cancel active board animations.');

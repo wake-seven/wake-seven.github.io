@@ -90,3 +90,5 @@ pointer直後の `grip-hover`、`invalid-grab`、`selecting`、`spinning`、`rot
 アニメーション完了時の盤面確定と結果通知は `completeGroupedSwipeAnimation()` / `completeUndoSwipeAnimation()` へ分離した。frame callbackは完了処理へ委譲し、通常回転は `applySwipe()`、undoは `restoreBoardSnapshotCommand()` を経由する。セッションのactive判定と一度だけのfinishで二重callbackを防止し、クリア判定・表示更新・効果音の順序を維持する。
 
 盤面アニメーションのキャンセル入口は `cancelBoardAnimation()` に統一した。pointercancel、リセット・undo開始（`cancelTileAnimations()`）、ステージ/位置変更、ダイアログ全体のcloseから同じセッションキャンセルを通り、active判定で遅延callbackと次フレームを無効化する。チュートリアル巻き戻しの個別WAAPIは、reduced-motion分岐と段階的な表情更新を持つ別系統のため、今回のセッションへ統合せず保持する。
+
+入力・セッション・renderer・完了・キャンセルを横断する静的契約を `check-ui-effects.mjs` に追加した。二重開始/二重cleanup、pointercancel後の古いframe無効化、reset/undo/遷移時cancel、rendererの永続状態非変更、完了時のboard command経由を検査する。内蔵ブラウザはこの環境で利用できないため代表スワイプの実画面確認は未実施だが、既存のbuild/check契約はすべて成功している。
