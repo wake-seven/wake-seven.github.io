@@ -1984,7 +1984,7 @@ function animateTutorialRewind(dg,target,dir){
   // 棒(grip-marker)より後ろになってしまい、棒が裏に隠れて見えなくなるため。
   const domOrder=[...svg.children];
   const sortedItems=[...dg.items].sort((a,b)=>domOrder.indexOf(a.el)-domOrder.indexOf(b.el));
-  const restoreAnchor=sortedItems[sortedItems.length-1].el.nextSibling;
+  const domSnapshot=captureTutorialRewindDomSnapshot(sortedItems);
   for(const item of model.items){
     item.el.style.transform=orbitTransform(item,0,dg.kc);
     group.appendChild(item.el);
@@ -2005,11 +2005,11 @@ function animateTutorialRewind(dg,target,dir){
     {transform:'rotate('+model.startAngle+'deg)',offset:0},
     {transform:'rotate('+model.endAngle+'deg)',offset:1}
   ],{duration,easing:'cubic-bezier(.2,.72,.24,1)'});
+  let restored=false;
   animation.onfinish=animation.oncancel=()=>{
-    for(const item of sortedItems){
-      svg.insertBefore(item.el,restoreAnchor);
-      item.el.style.transform='';
-    }
+    if(restored)return;
+    restored=true;
+    restoreTutorialRewindDomSnapshot(domSnapshot);
     group.remove();
     setBoardBusy(false);paint();setTimeout(showTutorialCue,150);
   };

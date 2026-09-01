@@ -45,7 +45,11 @@ assert.match(boardRender,/function renderBoardTileState\(/,'Tile state rendering
 assert.match(boardRender,/function renderBoardTileFlash\(/,'Tile flash rendering must remain behind a renderer boundary.');
 assert.match(boardRender,/function renderTutorialFeedback\(/,'Tutorial feedback rendering must remain behind a renderer boundary.');
 assert.match(tutorialAnimation,/function createTutorialRewindModel\(/,'Tutorial rewind display model is missing.');
+for(const name of ['captureTutorialRewindDomSnapshot','restoreTutorialRewindDomSnapshot'])assert.match(tutorialAnimation,new RegExp(`function ${name}\\(`),`${name} API is missing.`);
 assert.match(board,/createTutorialRewindModel\(\{startAngle:dg\.deg,endAngle:0,direction:dir,pivot:dg\.kc/,'Tutorial rewind must receive a normalized display model.');
+assert.match(board,/captureTutorialRewindDomSnapshot\(sortedItems\)/,'Tutorial rewind must snapshot DOM order before grouping.');
+assert.match(board,/restoreTutorialRewindDomSnapshot\(domSnapshot\)/,'Tutorial rewind must restore DOM order on finish/cancel.');
+assert.match(board,/if\(restored\)return/,'Tutorial rewind cleanup must be idempotent.');
 assert.match(board,/renderTutorialFeedback\(\{text:/,'Tutorial feedback must be passed to the renderer as a model.');
 assert.match(interaction,/pointerId:input\.pointerId[\s\S]{0,220}targetGroup[\s\S]{0,100}cancelled:false/,'Pointer operation context must contain identity, target group, and cancellation state.');
 assert.match(interaction,/current:\{\.\.\.input\.point\}[\s\S]{0,180}delta:\{x:0,y:0\}[\s\S]{0,120}angle:null/,'Pointer operation context must initialize coordinates, delta, and angle.');

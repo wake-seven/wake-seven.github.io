@@ -5571,6 +5571,28 @@ export {};
 function createTutorialRewindModel({startAngle=0,endAngle=0,direction=1,pivot,items=[],duration=720,cue=''}){
   return {startAngle,endAngle,direction,pivot,items,duration,cue};
 }
+
+// 巻き戻し中に一時的にgroupへ移す要素のDOM位置とインライン表示を退避する。
+function captureTutorialRewindDomSnapshot(items=[]){
+  return items.map(item=>({
+    el:item.el,
+    parent:item.el?.parentNode||null,
+    nextSibling:item.el?.nextSibling||null,
+    style:item.el?.getAttribute('style')
+  }));
+}
+
+// 終了・キャンセルのどちらからも同じ復元経路を通し、棒との前後関係を戻す。
+function restoreTutorialRewindDomSnapshot(snapshot=[]){
+  for(const entry of snapshot){
+    if(!entry.el||!entry.parent)continue;
+    const reference=entry.nextSibling&&entry.nextSibling.parentNode===entry.parent
+      ?entry.nextSibling:null;
+    entry.parent.insertBefore(entry.el,reference);
+    if(entry.style===null||entry.style===undefined)entry.el.removeAttribute('style');
+    else entry.el.setAttribute('style',entry.style);
+  }
+}
 export {};
 
 // ===== UIコンテキスト =====
@@ -7560,7 +7582,7 @@ function animateTutorialRewind(dg,target,dir){
   // 棒(grip-marker)より後ろになってしまい、棒が裏に隠れて見えなくなるため。
   const domOrder=[...svg.children];
   const sortedItems=[...dg.items].sort((a,b)=>domOrder.indexOf(a.el)-domOrder.indexOf(b.el));
-  const restoreAnchor=sortedItems[sortedItems.length-1].el.nextSibling;
+  const domSnapshot=captureTutorialRewindDomSnapshot(sortedItems);
   for(const item of model.items){
     item.el.style.transform=orbitTransform(item,0,dg.kc);
     group.appendChild(item.el);
@@ -7581,11 +7603,11 @@ function animateTutorialRewind(dg,target,dir){
     {transform:'rotate('+model.startAngle+'deg)',offset:0},
     {transform:'rotate('+model.endAngle+'deg)',offset:1}
   ],{duration,easing:'cubic-bezier(.2,.72,.24,1)'});
+  let restored=false;
   animation.onfinish=animation.oncancel=()=>{
-    for(const item of sortedItems){
-      svg.insertBefore(item.el,restoreAnchor);
-      item.el.style.transform='';
-    }
+    if(restored)return;
+    restored=true;
+    restoreTutorialRewindDomSnapshot(domSnapshot);
     group.remove();
     setBoardBusy(false);paint();setTimeout(showTutorialCue,150);
   };
