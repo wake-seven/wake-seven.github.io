@@ -13,6 +13,7 @@ const speed=await read(['src','runtime','speed.js']);
 const clearFlow=await read(['src','ui','progression-clear-flow.js']);
 const progressionRender=await read(['src','ui','progression-render.js']);
 const boardRender=await read(['src','ui','board-render.js']);
+const template=await read(['src','index.template.html']);
 for(const name of ['setUiEffectTimer','setUiEffectInterval','clearUiEffectTimers'])assert.match(context,new RegExp(`function ${name}\\(`),`${name} API is missing.`);
 for(const [text,name] of [[board,'academy/intro effect timers'],[hints,'hint effect timers'],[mastery,'mastery effect timers'],[speed,'speed clock effect timer']])assert.match(text,/setUiEffect(?:Timer|Interval)|clearUiEffectTimers/,`${name} are not scoped by effect.`);
 assert.doesNotMatch(speed,/speedClockTimer/,'Speed clock must not retain a direct timer handle.');
@@ -21,6 +22,9 @@ assert.match(board,/clearUiEffectTimers\('clear-transition'\)/,'Board transition
 assert.match(board,/resetBoardUiContext\(\)/,'Board reset must clear transient animation classes.');
 assert.match(progressionRender,/function renderClearStageContextElement\(/,'Clear context rendering must remain in the renderer boundary.');
 assert.match(boardRender,/function renderAcademyRemainingCalloutElement\(/,'Academy callout rendering must remain in the renderer boundary.');
+assert.match(template,/rank-index-2\.animate[\s\S]{0,180}masterRankSeal 1\.05s ease-out both/,'Rank index 2 animation contract changed.');
+assert.match(template,/rank-seal:not\(\.rank-frame-seal\):not\(\.rank-index-5\):not\(\.rank-index-6\)\.animate[\s\S]{0,120}masterRankSeal 1\.05s ease-out both/,'Ordinary rank animation contract changed.');
+assert.match(template,/rank-frame-seal\.animate\{animation:masterRankSeal \.72s ease-out both\}/,'Special frame animation contract changed.');
 assert.doesNotMatch(board,/clearTimeout\(clearTimer\)|clearTimer\s*=/,'Clear transitions must not retain a direct timer handle.');
 assert.doesNotMatch(clearFlow,/makerRevealTimer/,'Maker reveal must not retain a direct timer handle.');
 console.log('Validated UI effect timer cancellation boundaries.');

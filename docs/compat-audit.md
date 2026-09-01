@@ -59,3 +59,5 @@
 速解き完走後の遅延遷移とmakerボタン解放遅延も、それぞれ `clear-transition` / `maker-reveal` の演出IDへ移行した。盤面リセット時にはclear演出をキャンセルし、`resetBoardUiContext()` が残存する盤面アニメーションクラスを除去する。称号・クリアの速度や見た目はCSSアニメーションが担っており、JavaScriptタイマーではないためUIコンテキストへ移行しない。
 
 `check-ui-effects.mjs` は、clear/makerの直接タイマーハンドルが再導入されていないこと、代表的なキャンセル経路と盤面クラスcleanupが残っていることを回帰監査する。
+
+称号アニメーションは、通常の序・破・急および一周目の文字称号を `masterRankSeal 1.05s ease-out both` に統一済み。`無心`・`覚者`を含むフレーム型称号は既存の `.72s` 演出を変更しない。`check-ui-effects.mjs` でこのduration/easing/fill-mode契約を監査する。クリア演出の速度は盤面WAAPI/CSSの既存仕様を維持する。
