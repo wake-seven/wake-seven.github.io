@@ -155,17 +155,40 @@ for (const [file, source] of sources) {
     if (references === 1) candidates.push(`${file}:${name}`);
   }
 }
+// 呼び出し回数だけでは判定できない公開境界・初期化入口を分類する。
+// これらは公開版のインラインスクリプトや開発用ESMの入口であり、
+// 通常の未使用候補として扱わない。
+const boundaryRoles = new Map([
+  ['src/main.mjs:createDevelopmentRuntime', 'development-entrypoint'],
+  ['src/runtime/namespace.js:attachWakeSevenNamespace', 'public-namespace-initializer'],
+  ['src/state/game-state.js:attachWakeSevenState', 'public-state-initializer'],
+  ['src/state/progression-policy.js:attachWakeSevenProgression', 'public-progression-initializer']
+]);
+const ordinaryCandidates = candidates.filter(candidate => !boundaryRoles.has(candidate));
+const boundaryCandidates = candidates.filter(candidate => boundaryRoles.has(candidate));
 console.log(`Audited canonical speed ids (${canonicalIds.join(', ')}) and ${sources.size} source files.`);
 console.log(`Storage boundary calls: localStorage=${localStorageCalls.length}, sessionStorage=${sessionStorageCalls.length}.`);
 console.log('Ordinary-HTML compatibility fallbacks: none.');
-console.log(`Potential unused function candidates (review only): ${candidates.length}.`);
-if (candidates.length) console.log(candidates.slice(0, 30).join(', '));
-const documentedCandidates = [
-  'src/main.mjs:createDevelopmentRuntime',
-  'src/runtime/namespace.js:attachWakeSevenNamespace',
-  'src/state/game-state.js:attachWakeSevenState',
-  'src/state/progression-policy.js:attachWakeSevenProgression'
-];
-for (const candidate of documentedCandidates) {
-  assert.ok(candidates.includes(candidate), `Documented audit candidate disappeared or changed: ${candidate}`);
+console.log(`Public boundary candidates (classified, not unused): ${boundaryCandidates.length}.`);
+if (boundaryCandidates.length) console.log(boundaryCandidates.map(candidate => `${candidate} [${boundaryRoles.get(candidate)}]`).join(', '));
+console.log(`Potential ordinary unused function candidates (review only): ${ordinaryCandidates.length}.`);
+if (ordinaryCandidates.length) console.log(ordinaryCandidates.slice(0, 30).join(', '));
+
+// 公開版で公開する最小APIの形状を静的に確認する。
+const namespaceSource = sources.get('src/runtime/namespace.js');
+assert.match(namespaceSource, /global\.WakeSeven\s*=\s*Object\.freeze\(\{\s*state:\s*stateApi,\s*progression:\s*progressionApi,\s*messages:\s*messagesApi,\s*speed:\s*speedApi\s*\}\)/, 'WakeSeven public namespace shape is missing.');
+for (const property of ['current', 'navigation', 'settings', 'progress', 'persist', 'updateNavigation', 'updateSettings']) {
+  assert.match(namespaceSource, new RegExp(`\\b${property}\\b`), `WakeSeven.state API is missing: ${property}`);
 }
+for (const property of ['definition', 'context', 'uiPolicy']) {
+  assert.match(namespaceSource, new RegExp(`\\b${property}\\b`), `WakeSeven.progression API is missing: ${property}`);
+}
+for (const property of ['openReview', 'renderReview', 'entries']) {
+  assert.match(namespaceSource, new RegExp(`\\b${property}\\b`), `WakeSeven.messages API is missing: ${property}`);
+}
+for (const property of ['pause', 'startClock', 'pauseClock', 'definitions']) {
+  assert.match(namespaceSource, new RegExp(`\\b${property}\\b`), `WakeSeven.speed API is missing: ${property}`);
+}
+assert.match(sources.get('src/main.mjs'), /export function createDevelopmentRuntime\s*\(/, 'Development ESM entry point is missing.');
+assert.match(sources.get('src/state/game-state.js'), /global\.WakeSevenState\s*=\s*Object\.freeze\(/, 'WakeSevenState initializer is missing.');
+assert.match(sources.get('src/state/progression-policy.js'), /global\.WakeSevenProgression\s*=\s*Object\.freeze\(/, 'WakeSevenProgression initializer is missing.');
