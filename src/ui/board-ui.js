@@ -420,12 +420,12 @@ const CHAIN_STEPS={
       buildTrainingMiddleSpinBoard('trainingMiddleSpinBoard','trainingMiddleSpinCounter');
       return ()=>stopClearGuideBoard('trainingMiddleSpinBoard');
     },
-    onAction(){openChainedDialog('trainingMiddleGoal');}
+    onAction(){loadStage(TRAINING_STAGE_START+TRAINING_UPPER_COUNT);}
   },
   trainingMiddleGoal:{
     kindKey:'trainingMiddleGoalKind', titleKey:'trainingMiddleGoalTitle', actionKey:'trainingMiddleGoalStart',
     render:shapeGridRenderer(TRAINING_MIDDLE_GOAL_STATES,TRAINING_MIDDLE_GOAL_SHAPES,s=>'shapeName'+s),
-    onAction(){loadStage(TRAINING_STAGE_START+TRAINING_UPPER_COUNT);}
+    onAction(){openChainedDialog('trainingMiddleSpin');}
   },
   trainingLowerGoal:{
     kindKey:'trainingLowerGoalKind', titleKey:'trainingLowerGoalTitle', actionKey:'trainingLowerGoalStart',

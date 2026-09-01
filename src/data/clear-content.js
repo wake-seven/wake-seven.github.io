@@ -21,7 +21,7 @@ const CLEAR_CONTENT={
   // だるま学園卒業→だるま修行の間に挟む案内ダイアログ。stageIndexで言えばacademy3_8とtraining1_1の境目。
   training1_1before:{dialog:'trainingWelcome'},
   // 上巻完了→中巻開始の間に挟む案内ダイアログ。
-  training2_1before:{dialog:'trainingMiddleSpin'},
+  training2_1before:{dialog:'trainingMiddleGoal'},
   training3_1before:{dialog:'trainingLowerGoal'},
   training3_1:{tip:{ja:'だるまは縁起物なので、お菓子もいろんな種類があります。特に「だるま最中」が定番ですね。',en:'As lucky charms, daruma also appear in many kinds of sweets. Daruma-shaped monaka are especially classic.',zh:'不倒翁是吉祥物，也有许多点心。达摩形最中尤其经典。',ko:'다루마는 길상물이라 여러 과자가 있어요. 다루마 모나카가 특히 대표적입니다.'},art:'monaka'},
   training3_2:{art:'menuButtons'},
