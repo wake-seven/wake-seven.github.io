@@ -1488,7 +1488,7 @@
     satoriOrderVersion: 'wake7-satori-order-version', speedLastTab: 'wake7-speed-last-tab', speedNewTab: 'wake7-speed-new-tab',
     fourthChecks: 'wake7-fourth-checks'
   });
-  // 分野別の参照口。平坦な STORAGE_KEYS は既存モジュールとの互換用に維持する。
+  // 分野別の参照口。平坦なキー一覧はこの初期化処理の内部に閉じ込める。
   const STORAGE_KEY_GROUPS = Object.freeze({
     settings: Object.freeze({ language: STORAGE_KEYS.language, sound: STORAGE_KEYS.sound, boardTheme: STORAGE_KEYS.boardTheme, boardThemeChosen: STORAGE_KEYS.boardThemeChosen, boardLayout: STORAGE_KEYS.boardLayout, boardLayoutChosen: STORAGE_KEYS.boardLayoutChosen, darumaColor: STORAGE_KEYS.darumaColor, darumaColorChosen: STORAGE_KEYS.darumaColorChosen }),
     progression: Object.freeze({ cleared: STORAGE_KEYS.cleared, extraCleared: STORAGE_KEYS.extraCleared, satoriCleared: STORAGE_KEYS.satoriCleared, currentStage: STORAGE_KEYS.currentStage, activeSession: STORAGE_KEYS.activeSession, activeLap: STORAGE_KEYS.activeLap, secondLapActive: STORAGE_KEYS.secondLapActive, secondLapUnlocked: STORAGE_KEYS.secondLapUnlocked, stagesLayoutVersion: STORAGE_KEYS.stagesLayoutVersion, satoriOrderVersion: STORAGE_KEYS.satoriOrderVersion, introSeen: STORAGE_KEYS.introSeen, tutorialComplete: STORAGE_KEYS.tutorialComplete, tutorialStep: STORAGE_KEYS.tutorialStep, lapCleared: (lap, part) => 'wake7-lap' + lap + '-' + part + '-cleared' }),
@@ -1703,7 +1703,6 @@
 
   global.WakeSevenState = Object.freeze({
     STORAGE_KEY,
-    STORAGE_KEYS,
     STORAGE_KEY_GROUPS,
     VERSION,
     MODES,
@@ -4147,7 +4146,7 @@ export {};
 // ===== 実行設定 =====
 // ===== 実行設定 =====
 // 設定の初期化だけを担当する。
-// gameState / storage / STORAGE_KEYS は runtime.js 側で準備された後に呼び出す。
+// gameState / storage / STORAGE_KEY_GROUPS は runtime.js 側で準備された後に呼び出す。
 let soundEnabled=false;
 let boardTheme='default';
 let boardLayout='normal';
@@ -4346,9 +4345,8 @@ function setUnlock(key,value){
 /* ---- 状態管理の境界 ----
  * 盤面の描画や操作は歴史的にこのファイルへ段階的に追加されてきたため、
  * モード判定と保存キーが各所に散らばりやすい。新しい解放要素・速解き派生
- * モード・問題ごとの案内を追加するときは、まずここを経由する。
+ * モード・問題ごとの案内を追加するときは、まずグループ入口を経由する。
  */
-const STORAGE_KEYS=WakeSevenState.STORAGE_KEYS;
 const STORAGE_KEY_GROUPS=WakeSevenState.STORAGE_KEY_GROUPS;
 const storage=WakeSevenState.storage;
 /*
@@ -4621,7 +4619,7 @@ try{secondLapActive=storage.get(STORAGE_KEY_GROUPS.progression.secondLapActive)=
 let awakenedGranted=initialUnlocks.awakened===true;
 if(!awakenedGranted)try{awakenedGranted=storage.get(STORAGE_KEY_GROUPS.rewards.awakenedGranted)==='1';}catch(_){ }
 // 速解きモードは、進行状況をリセットしても残す独立した解放要素。
-const speedUnlockState=initializeSpeedUnlockState({initialUnlocks,storage,storageKeys:STORAGE_KEYS,awakenedGranted});
+const speedUnlockState=initializeSpeedUnlockState({initialUnlocks,storage,awakenedGranted});
 let speedModeUnlocked=speedUnlockState.modeUnlocked;
 // 速解きは解放された範囲ごとに選択できる。解放状態は現行の統合状態ストアから復元する。
 let speedTrainingUnlocked=speedUnlockState.training;

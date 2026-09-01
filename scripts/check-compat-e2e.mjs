@@ -68,6 +68,8 @@ for (const [file, source] of sources) {
   assert.doesNotMatch(source, /storage\.(?:get|set|remove|json|setJson)\(\s*['"]wake7-[a-z0-9-]+['"]\s*(?:[,)]|$)/,
     `Direct persistence key remains outside STORAGE_KEY_GROUPS: ${file}`);
 }
+assert.doesNotMatch(storageSource, /global\.WakeSevenState\s*=\s*Object\.freeze\(\{[\s\S]*?STORAGE_KEYS\s*,/,
+  'Flat STORAGE_KEYS must not be exposed through the public state API.');
 const directStorage = all.match(/(?:localStorage|sessionStorage)\.(?:getItem|setItem|removeItem)/g) || [];
 const localStorageCalls = all.match(/localStorage\.(?:getItem|setItem|removeItem)/g) || [];
 const sessionStorageCalls = all.match(/sessionStorage\.(?:getItem|setItem|removeItem)/g) || [];

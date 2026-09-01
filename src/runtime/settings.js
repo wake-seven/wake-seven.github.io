@@ -1,6 +1,6 @@
 // ===== 実行設定 =====
 // 設定の初期化だけを担当する。
-// gameState / storage / STORAGE_KEYS は runtime.js 側で準備された後に呼び出す。
+// gameState / storage / STORAGE_KEY_GROUPS は runtime.js 側で準備された後に呼び出す。
 let soundEnabled=false;
 let boardTheme='default';
 let boardLayout='normal';

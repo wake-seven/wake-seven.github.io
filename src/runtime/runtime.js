@@ -96,9 +96,8 @@ function setUnlock(key,value){
 /* ---- 状態管理の境界 ----
  * 盤面の描画や操作は歴史的にこのファイルへ段階的に追加されてきたため、
  * モード判定と保存キーが各所に散らばりやすい。新しい解放要素・速解き派生
- * モード・問題ごとの案内を追加するときは、まずここを経由する。
+ * モード・問題ごとの案内を追加するときは、まずグループ入口を経由する。
  */
-const STORAGE_KEYS=WakeSevenState.STORAGE_KEYS;
 const STORAGE_KEY_GROUPS=WakeSevenState.STORAGE_KEY_GROUPS;
 const storage=WakeSevenState.storage;
 /*
@@ -371,7 +370,7 @@ try{secondLapActive=storage.get(STORAGE_KEY_GROUPS.progression.secondLapActive)=
 let awakenedGranted=initialUnlocks.awakened===true;
 if(!awakenedGranted)try{awakenedGranted=storage.get(STORAGE_KEY_GROUPS.rewards.awakenedGranted)==='1';}catch(_){ }
 // 速解きモードは、進行状況をリセットしても残す独立した解放要素。
-const speedUnlockState=initializeSpeedUnlockState({initialUnlocks,storage,storageKeys:STORAGE_KEYS,awakenedGranted});
+const speedUnlockState=initializeSpeedUnlockState({initialUnlocks,storage,awakenedGranted});
 let speedModeUnlocked=speedUnlockState.modeUnlocked;
 // 速解きは解放された範囲ごとに選択できる。解放状態は現行の統合状態ストアから復元する。
 let speedTrainingUnlocked=speedUnlockState.training;
