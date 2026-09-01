@@ -220,13 +220,13 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       // タッチ点を出して発光させた瞬間に、6本の案内棒も短く発光させてから片づける。
       // タッチ点そのものは回転中も残し、つかんだまま回していることを示す。
       touch.style.display='';
-      grips.forEach(grip=>grip.classList.add('welcome-grip-flash'));
+      grips.forEach(grip=>{
+        grip.classList.add('welcome-grip-flash');
+        // 棒の発光は見せつつ、表示自体はタッチ点と同時に消す。
+        grip.style.display='none';
+      });
       setTimeout(()=>{
-        if(!alive())return;
-        grips.forEach(grip=>{
-          grip.classList.remove('welcome-grip-flash');
-          grip.style.display='none';
-        });
+        grips.forEach(grip=>grip.classList.remove('welcome-grip-flash'));
       },260);
       // 水色の持ち手をつかんだ瞬間、回る3枚を本編と同じ見え方で強調する。
       t.cells.forEach(index=>{
@@ -748,7 +748,6 @@ function buildClearGuideBoard(id){
     },1050);
     setTimeout(()=>{
       if(!guide.isConnected)return;
-      grips.forEach(marker=>marker.style.display='none');
       const unit=rotationUnit;
       for(let i=0;i<3;i++)unit.appendChild(old[cells[(i+1)%3]]);
       unit.appendChild(swipe);
