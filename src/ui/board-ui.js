@@ -1084,10 +1084,7 @@ function applySwipe(ti,dir,save=true,playEffects=true){
 function showAcademyRemainingCallout(){
   clearUiEffectTimers('academy');
   const el=$('academyRemainingCallout');
-  el.querySelector('.academy-remaining-callout-label').textContent=tr('shortestDisplay');
-  $('academyRemainingCalloutNumber').textContent=String(remainingForDisplay(SOLVER.dist[enc(ori)]));
-  el.querySelector('.academy-remaining-callout-unit').textContent=tr('moveUnit');
-  el.hidden=false;
+  renderAcademyRemainingCalloutElement(el,{label:tr('shortestDisplay'),number:String(remainingForDisplay(SOLVER.dist[enc(ori)])),unit:tr('moveUnit')});
   requestAnimationFrame(()=>el.classList.add('show'));
   setUiEffectTimer('academy','remaining-callout',()=>{
     el.classList.remove('show');

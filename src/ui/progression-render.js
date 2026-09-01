@@ -26,6 +26,12 @@ function renderStageNavPager({prevHidden=false,nextHidden=false,prevDisabled,nex
   if(nextDisabled!==undefined)next.disabled=nextDisabled;
   next.classList.toggle('next-attention',highlightNext);
 }
+// クリアダイアログの固定コンテキスト欄だけを描画する。表示内容の判定や進行状態の変更は呼び出し側で行う。
+function renderClearStageContextElement(context,{visible=false,text=''}={}){
+  if(!context)return;
+  context.hidden=!visible;
+  context.textContent=visible?text:'';
+}
 function renderStageNavAccent(){
   let accentFrac=0;
   if(isMode('speed'))accentFrac=(speedSession.index+1)/(speedSession.total||activeSpeedDefinition().total);

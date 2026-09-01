@@ -505,15 +505,14 @@ function showClearActions(){
 function renderClearStageContext(){
   const context=$('clearStageContext');
   if(isMode('free')||isMode('custom')){
-    context.hidden=true;
-    context.textContent='';
+    renderClearStageContextElement(context,{visible:false});
     return;
   }
-  context.hidden=false;
   const showsCount=clearDialogShowsStageCount();
-  context.textContent=showsCount
+  const text=showsCount
     ?$('stageKind').textContent+'　'+$('stageNumber').textContent+' '+$('stageCount').textContent
     :$('stageKind').textContent+' '+$('stageNumber').textContent;
+  renderClearStageContextElement(context,{visible:true,text});
 }
 function clearDialogShowsStageCount(){
   return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','development'].includes(primarySectionPosition(stageIndex).section.id));

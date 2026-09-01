@@ -6611,10 +6611,7 @@ function applySwipe(ti,dir,save=true,playEffects=true){
 function showAcademyRemainingCallout(){
   clearUiEffectTimers('academy');
   const el=$('academyRemainingCallout');
-  el.querySelector('.academy-remaining-callout-label').textContent=tr('shortestDisplay');
-  $('academyRemainingCalloutNumber').textContent=String(remainingForDisplay(SOLVER.dist[enc(ori)]));
-  el.querySelector('.academy-remaining-callout-unit').textContent=tr('moveUnit');
-  el.hidden=false;
+  renderAcademyRemainingCalloutElement(el,{label:tr('shortestDisplay'),number:String(remainingForDisplay(SOLVER.dist[enc(ori)])),unit:tr('moveUnit')});
   requestAnimationFrame(()=>el.classList.add('show'));
   setUiEffectTimer('academy','remaining-callout',()=>{
     el.classList.remove('show');
@@ -7691,6 +7688,14 @@ function showTrainingShapeCallout(){
     setTimeout(()=>g.remove(),260);
   },1000);
 }
+// 学園の残り手数コールアウトに固定されたDOM欄だけを描画する。
+function renderAcademyRemainingCalloutElement(element,{label='',number='',unit=''}={}){
+  if(!element)return;
+  element.querySelector('.academy-remaining-callout-label').textContent=label;
+  element.querySelector('.academy-remaining-callout-number').textContent=number;
+  element.querySelector('.academy-remaining-callout-unit').textContent=unit;
+  element.hidden=false;
+}
 export {};
 
 // ===== UIコンテキスト =====
@@ -8188,6 +8193,12 @@ function renderStageNavPager({prevHidden=false,nextHidden=false,prevDisabled,nex
   if(prevDisabled!==undefined)prev.disabled=prevDisabled;
   if(nextDisabled!==undefined)next.disabled=nextDisabled;
   next.classList.toggle('next-attention',highlightNext);
+}
+// クリアダイアログの固定コンテキスト欄だけを描画する。表示内容の判定や進行状態の変更は呼び出し側で行う。
+function renderClearStageContextElement(context,{visible=false,text=''}={}){
+  if(!context)return;
+  context.hidden=!visible;
+  context.textContent=visible?text:'';
 }
 function renderStageNavAccent(){
   let accentFrac=0;
@@ -8753,15 +8764,14 @@ function showClearActions(){
 function renderClearStageContext(){
   const context=$('clearStageContext');
   if(isMode('free')||isMode('custom')){
-    context.hidden=true;
-    context.textContent='';
+    renderClearStageContextElement(context,{visible:false});
     return;
   }
-  context.hidden=false;
   const showsCount=clearDialogShowsStageCount();
-  context.textContent=showsCount
+  const text=showsCount
     ?$('stageKind').textContent+'　'+$('stageNumber').textContent+' '+$('stageCount').textContent
     :$('stageKind').textContent+' '+$('stageNumber').textContent;
+  renderClearStageContextElement(context,{visible:true,text});
 }
 function clearDialogShowsStageCount(){
   return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','development'].includes(primarySectionPosition(stageIndex).section.id));

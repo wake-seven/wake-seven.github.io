@@ -36,4 +36,12 @@ function showTrainingShapeCallout(){
     setTimeout(()=>g.remove(),260);
   },1000);
 }
+// 学園の残り手数コールアウトに固定されたDOM欄だけを描画する。
+function renderAcademyRemainingCalloutElement(element,{label='',number='',unit=''}={}){
+  if(!element)return;
+  element.querySelector('.academy-remaining-callout-label').textContent=label;
+  element.querySelector('.academy-remaining-callout-number').textContent=number;
+  element.querySelector('.academy-remaining-callout-unit').textContent=unit;
+  element.hidden=false;
+}
 export {};
