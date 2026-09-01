@@ -1113,14 +1113,11 @@ function setPosition(state,par){
   clearTimeout(trainingShapeCalloutTimer);
   initializeBoardPositionCommand(state,par);
   clearTimeout(boardArrivalTimer);
-  busy=false; drag=null;boardTouchActive=false; svg.classList.remove('spinning','selecting','rotation-started','clear-pending','celebrating','arriving');
+  resetBoardUiContext();
   svg.classList.remove('tutorial-grab-step','tutorial-clear-step','invalid-grab');
   svg.querySelectorAll('.grip-marker.tutorial-target').forEach(marker=>marker.classList.remove('tutorial-target'));
   $('gripPrompt').classList.remove('tutorial-prompt-top');
   $('gripPrompt').hidden=true;
-  invalidGrabPointerId=null;
-  baseTiles.forEach(el=>el.classList.remove('selected'));
-  svg.querySelectorAll('.pivot.active').forEach(el=>el.classList.remove('active'));
   $('msg').textContent='';
   $('msg').classList.remove('show','tip','long-tip');
   hideGameDialogs();
@@ -1446,9 +1443,7 @@ function restoreFreeSession(){
   setActiveMode('free');editingBoard=false;
   resetFourthDistance();
   restoreFreeSessionBoardCommand(s);
-  busy=false;drag=null;boardTouchActive=false;svg.classList.remove('spinning','selecting','rotation-started','clear-pending','celebrating');
-  baseTiles.forEach(el=>el.classList.remove('selected'));
-  svg.querySelectorAll('.pivot.active').forEach(el=>el.classList.remove('active'));
+  resetBoardUiContext();
   $('msg').textContent='';
   $('msg').classList.remove('show','tip','long-tip');
   $('clearNext').hidden=!clearShown;
