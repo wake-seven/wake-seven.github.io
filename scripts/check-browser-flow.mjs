@@ -11,6 +11,8 @@ const [template, bootstrap, events, board, interaction, tutorial, published] = a
   read('src/ui/board-ui.js'), read('src/ui/board-interaction.js'), read('src/ui/tutorial-animation.js'), read('index.html')
 ]);
 const progression = await read('src/ui/progression-ui.js');
+const speed = await read('src/runtime/speed.js');
+const runtime = await read('src/runtime/runtime.js');
 
 // Browser-like flow contracts: the shell must exist before bootstrap restores
 // state, and each user-visible transition must have a named integration point.
@@ -40,6 +42,17 @@ assert.match(progression, /if\(svg\.classList\.contains\('celebrating'\)\)return
   'clear celebration must be idempotent');
 assert.match(board, /if\(isSolved\(\)&&!clearShown\)/,
   'board paint must guard against duplicate clear transitions');
+for (const kind of ['primary', 'mastery', 'satori']) {
+  assert.match(board, new RegExp(`recordProgressClearCommand\\('${kind}'`), `clear progress command is missing: ${kind}`);
+}
+assert.match(board, /clearShown=true;[\s\S]*recordProgressClearCommand\('primary'/,
+  'normal clear must mark the transition before recording progress');
+assert.match(progression, /clearDialogUsesStageProgression\(\)/,
+  'clear dialog must distinguish free/custom completion from campaign progression');
+assert.match(speed, /pauseSpeedClock\(\);persistSpeedSession\(\);[\s\S]*advanceSpeedRun/,
+  'speed clear must persist before advancing to the next problem');
+assert.match(board, /syncGameState\(\);[\s\S]{0,240}STORAGE_KEY_GROUPS\.progression\.activeSession/,
+  'active session must be persisted after the state snapshot');
 assert.match(template, /body\.app-booting\{visibility:hidden\}/,
   'initial placeholder must remain hidden during reload restoration');
 
