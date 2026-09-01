@@ -8997,7 +8997,13 @@ function clearDialogUsesStageProgression(){
 function clearDialogHeading(){
   return tr(isMode('mastery')||isMode('satori')?'optimalClear':'clear');
 }
+function hasCompetingDialogForClear(){
+  return ['chainDialog','messageDialog','masterDialog','speedPauseDialog','speedRestartDialog','rankDialog','tipGuideDialog','guideHubDialog','twoMoveDialog','twoMoveDetailDialog','optimalFailDialog','resetDialog','aboutDialog','settingsDialog','boardThemeDialog']
+    .some(id=>$(id)&&!$(id).hidden);
+}
 function showClearDialog(){
+  // クリア演出の遅延中に別ダイアログが開かれた場合は、古いclear遷移で上書きしない。
+  if(hasCompetingDialogForClear())return;
   // 悟りの最終問題は、再挑戦で解いた場合も制覇ダイアログを見せる。
   // それ以外の悟り問題は、制覇後も通常のクリアダイアログにする。
   const showSatoriMastery=isMode('satori')&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered();
