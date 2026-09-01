@@ -3,11 +3,12 @@
   "scripts": {
     "build": "node scripts/build-index.mjs && npm run build:esm",
     "build:esm": "node scripts/build-esm.mjs",
-    "check": "node scripts/check-state.mjs && npm run check:esm && npm run check:source-boundaries && npm run check:compat-e2e && npm run check:esm-deps && npm run check:public-esm",
+    "check": "node scripts/check-state.mjs && node scripts/check-state-restore.mjs && node scripts/check-dialog-chains.mjs && npm run check:progression-flows && npm run check:esm && npm run check:source-boundaries && npm run check:compat-e2e && npm run check:esm-deps && npm run check:public-esm",
     "check:esm": "node scripts/check-esm.mjs",
     "check:public-esm": "node scripts/check-public-esm.mjs",
     "check:source-boundaries": "node scripts/check-source-boundaries.mjs",
     "check:compat-e2e": "node scripts/check-compat-e2e.mjs",
+    "check:progression-flows": "node scripts/check-progression-flows.mjs",
     "check:esm-deps": "node scripts/check-esm-dependencies.mjs"
   }
 }
