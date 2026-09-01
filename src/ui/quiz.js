@@ -33,7 +33,18 @@ function boardQuizPatternState(position){return TWO_MOVE_STAGES[TWO_MOVE_PATTERN
 function boardQuizMatchingStates(state,match,limit=Infinity,accept=()=>true){const target=dec(state),candidates=[];for(let next=0;next<NS;next++){const distance=SOLVER.dist[next];if(distance===255||!match(distance))continue;const board=dec(next);if(board.some((value,index)=>(value===0)!==(target[index]===0))||!accept(board))continue;let changes=0;board.forEach((value,index)=>{if(value!==0&&value!==target[index])changes++;});candidates.push({state:next,distance,changes});}candidates.sort((a,b)=>a.distance-b.distance||a.changes-b.changes||a.state-b.state);return candidates.slice(0,limit).map(candidate=>candidate.state);}
 function boardQuizSameShapeState(state,shapeState){const shape=dec(shapeState);for(const symmetry of SYMMETRIES){const transformed=transformStateBySymmetry(state,symmetry),board=dec(transformed);if(board.every((value,index)=>(value===0)===(shape[index]===0)))return transformed;}return state;}
 function boardQuizCenterIsNotOdd(board){if(board[3]===0)return true;const count=[0,0,0];board.forEach(value=>{if(value!==0)count[value]++;});return count[board[3]]===Math.max(...count);}
-function boardQuizConfigForCurrent(){return isMode('mastery')?(clearContentAt(true,extraIndex)?.boardQuiz||null):null;}
+function boardQuizConfigForCurrent(){
+  if(!isMode('mastery'))return null;
+  const config=clearContentAt(true,extraIndex)?.boardQuiz;
+  if(!config)return null;
+  // 問題定義の pattern は表示順の番号。描画時に都度参照せず、
+  // 現在の盤面状態を設定取得時に確定してクイズへ渡す。
+  if(config.pattern&&!config.state){
+    const stage=TWO_MOVE_STAGES[TWO_MOVE_PATTERN_ORDER[config.pattern-1]];
+    if(stage?.state!==undefined)return Object.assign({},config,{state:stage.state});
+  }
+  return config;
+}
 function boardQuizPresentation(config,state,copy){
   let states=[],correct=[],question=copy.choose,moveChoiceOrder=null;
   if(config.kind==='moves'){
