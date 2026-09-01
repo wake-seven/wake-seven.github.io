@@ -926,6 +926,7 @@ function paint(){
   const satoriFailureLimit=secondLapActive?4:best;
   if(isMode('satori')&&!isSolved()&&moves>=satoriFailureLimit&&!clearShown){
     clearShown=true;
+    hideGameDialogs();
     renderOptimalFail();
     $('optimalFailDialog').hidden=false;
     return;
@@ -935,6 +936,7 @@ function paint(){
     svg.classList.add('clear-pending');
     if(requiresOptimalClear()&&moves!==best){
       renewFourthChecks();
+      hideGameDialogs();
       renderOptimalFail();
       $('optimalFailDialog').hidden=false;
       return;
