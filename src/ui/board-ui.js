@@ -953,20 +953,17 @@ function paint(){
     }
     if(isMode('satori')){
       const wasSatoriMastered=isSatoriMastered();
-      clearedSatoriStages.add(satoriIndex);
-      persistLapProgress();
+      recordProgressClearCommand('satori',satoriIndex);
       if(isSatoriMastered())rememberClearedMessage(false,satoriIndex,true);
       if(!wasSatoriMastered&&isSatoriMastered())pendingMasterThemeRefresh=true;
       else updateMasterTheme();
       renderStageNav();
     }else if(isMode('mastery')){
-      clearedExtraStages.add(extraIndex);
-      persistLapProgress();
+      recordProgressClearCommand('mastery',extraIndex);
       rememberClearedMessage(true,extraIndex);
       updateMasterTheme();
     }else if(!isMode('free')&&!isMode('custom')){
-      clearedStages.add(stageIndex);
-      persistLapProgress();
+      recordProgressClearCommand('primary',stageIndex);
       rememberClearedMessage(false,stageIndex);
     }
     const m=$('msg');

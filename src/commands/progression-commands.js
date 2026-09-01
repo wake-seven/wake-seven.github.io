@@ -12,4 +12,14 @@ function grantMasterDialogRewardsCommand(kind){
     persistLapProgress();updateMasterTheme();renderStageNav();rememberSpecialMessage('awakening');
   }
 }
+// クリア済み集合への反映と保存を一つの境界にまとめる。
+function recordProgressClearCommand(kind,index){
+  if(!Number.isInteger(index)||index<0)return false;
+  if(kind==='satori')clearedSatoriStages.add(index);
+  else if(kind==='mastery')clearedExtraStages.add(index);
+  else if(kind==='primary')clearedStages.add(index);
+  else return false;
+  persistLapProgress();
+  return true;
+}
 export {};
