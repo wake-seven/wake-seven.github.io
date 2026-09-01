@@ -503,16 +503,10 @@ function celebrateClear(){
   playWakeCelebrationEffect(svg,tileEls);
   return 650;
 }
-let clearDialogTransitionScheduled=false;
 function showClearActions(){
-  // 盤面を読み替えた後は、前のクリア周期の予約だけを破棄して再利用する。
-  if(!svg.classList.contains('clear-pending')&&!svg.classList.contains('celebrating'))clearDialogTransitionScheduled=false;
-  // 演出の再入とダイアログ遷移の予約を分離し、表示タイマーを欠落させない。
-  if(clearDialogTransitionScheduled)return;
-  clearDialogTransitionScheduled=true;
-  const delay=celebrateClear();
+  // 同じタイマーキーで再予約し、再入しても最後の1件だけを有効にする。
+  const delay=svg.classList.contains('celebrating')?0:celebrateClear();
   setUiEffectTimer('clear-transition','show-dialog',()=>{
-    clearDialogTransitionScheduled=false;
     showClearDialog();
   },delay);
 }

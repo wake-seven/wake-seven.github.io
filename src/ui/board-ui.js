@@ -933,8 +933,6 @@ function paint(){
   }
   if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){
     clearShown=true;
-    // 新しい盤面のクリア周期では、前の盤面のダイアログ予約を引き継がない。
-    clearDialogTransitionScheduled=false;
     svg.classList.add('clear-pending');
     if(requiresOptimalClear()&&moves!==best){
       renewFourthChecks();
