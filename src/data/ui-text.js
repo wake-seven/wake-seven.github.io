@@ -41,7 +41,7 @@ const UI_TEXT={
     boardLabel:'七枚のだるま盤',
     tips:'盤面の見分け方',
     guideHub:'攻略のコツ',
-    guideHubTitle:'攻略',
+    guideHubTitle:'攻略のコツ',
     guideHubTips:'盤面の見分け方',
     guideHubPatterns:'最短2手の9パターン',
     makeBoard:'自作モード',
