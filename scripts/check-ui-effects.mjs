@@ -67,6 +67,7 @@ assert.match(boardRender,/function showTrainingShapeCallout\(/,'Training SVG cal
 assert.match(boardRender,/function renderAcademyRemainingCalloutElement\(/,'Academy callout SVG/DOM display must remain behind a renderer boundary.');
 assert.match(board,/function animateGroupedSwipe\(/,'Pointer-dependent grouped swipe animation must remain available.');
 assert.match(board,/function animateUndoSwipe\(/,'Sequential undo animation must remain available.');
+assert.match(board,/function animateGuidedBasicRewind\([\s\S]{0,260}Math\.abs\(dg\.deg\)<0\.5/,'Guided rewind must skip zero-angle animations.');
 const tutorialStart=board.indexOf('function animateTutorialRewind');
 const tutorialEnd=board.indexOf('function animateGuidedBasicRewind',tutorialStart);
 const tutorialRewind=tutorialStart>=0&&tutorialEnd>tutorialStart?board.slice(tutorialStart,tutorialEnd):'';

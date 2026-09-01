@@ -2026,6 +2026,8 @@ function animateGuidedBasicRewind(dg){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
     paint();haptic(8);return;
   }
+  // すでに初期角度に戻っている場合は、空回りするアニメーションを作らない。
+  if(Math.abs(dg.deg)<0.5){paint();haptic(8);return;}
   setBoardBusy(true);
   setBoardTransientClass('spinning',true); // 巻き戻り中は水色の棒を隠し、戻り切ってから復活させる。
   const duration=680;
