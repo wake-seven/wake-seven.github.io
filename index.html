@@ -6062,6 +6062,15 @@ function buildTrainingMiddleSpinBoard(boardId,counterId,startState=TRAINING_MIDD
     g.style.transform=tileTransform(c.x,c.y,startBoard[i]);
     guide.appendChild(g);tiles[i]=g;
   });
+  // 実演開始時は操作可能な6本を見せ、指のタッチ後にまとめて消す。
+  const grips=[];
+  TRI.forEach((triangle,triangleIndex)=>{
+    const point=gripPoint(triangle),marker=document.createElementNS(NS_,'g');
+    marker.setAttribute('class','grip-marker');marker.dataset.tri=triangleIndex;
+    marker.setAttribute('transform','translate('+point.x.toFixed(2)+' '+point.y.toFixed(2)+') rotate('+(point.angle*180/Math.PI).toFixed(2)+')');
+    marker.innerHTML='<rect x="-18" y="-4" width="36" height="8" rx="4"/>';
+    guide.appendChild(marker);grips.push(marker);
+  });
   // 学園のクラス開始ダイアログ(buildAcademyWelcomeBoard)と同じく、回っている3枚を枠で強調し、つかんでいる指の点も表示する。
   cells.forEach(c=>tiles[c].classList.remove('welcome-touch-flash'));
   const spinItems=cells.map(c=>({el:tiles[c],turn:startBoard[c]}));
@@ -6071,6 +6080,7 @@ function buildTrainingMiddleSpinBoard(boardId,counterId,startState=TRAINING_MIDD
   const touch=document.createElementNS(NS_,'circle');
   touch.setAttribute('class','intro-swipe');touch.setAttribute('r','6.5');
   touch.setAttribute('cx',grip.x);touch.setAttribute('cy',grip.y);
+  touch.style.display='none';
   group.appendChild(touch);
   guide.appendChild(group);
   const numberEl=$(counterId+'Number');
@@ -6088,7 +6098,7 @@ function buildTrainingMiddleSpinBoard(boardId,counterId,startState=TRAINING_MIDD
   // 120°で「あと2くるり」を通過し、240°より少し先(258°)まで回してから「あと3くるり」→
   // そこからは止まらずゆっくり折り返し、最後は学園のクラス開始ダイアログの着地演出と同じように
   // 小さく行き過ぎてから(114°)、120°(あと2くるり)へすっと収まる。
-  const waypoints=[0,258,114,120],durations=[1800,2100,500];
+  const waypoints=[0,258,114,120],durations=[2880,3360,800];
   // 指でなぞっている想定なので、途中で急加速・急減速しない緩やかなイージングにする。
   const easeInOut=p=>-(Math.cos(Math.PI*p)-1)/2;
   const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -6121,6 +6131,8 @@ function buildTrainingMiddleSpinBoard(boardId,counterId,startState=TRAINING_MIDD
       tiles[i].style.transform=tileTransform(c.x,c.y,startBoard[i]);
     });
     cells.forEach(c=>tiles[c].classList.remove('welcome-touch-flash'));
+    grips.forEach(marker=>{marker.style.display='';});
+    touch.style.display='none';
   };
   const play=async()=>{
     if(!isCurrent()||!guide.isConnected)return;
@@ -6129,7 +6141,9 @@ function buildTrainingMiddleSpinBoard(boardId,counterId,startState=TRAINING_MIDD
     guide.classList.remove('welcome-cycle-fade');
     await wait(500);
     if(!isCurrent()||!guide.isConnected)return;
-    // タッチ後に回転を始めるので、ここで枠の強調を解除する。
+    // タッチした瞬間に6本の棒を消し、タッチ点を残したまま回転を始める。
+    touch.style.display='';
+    grips.forEach(marker=>{marker.style.display='none';});
     cells.forEach(c=>{
       const tile=tiles[c];
       tile.classList.add('welcome-touch-flash');
