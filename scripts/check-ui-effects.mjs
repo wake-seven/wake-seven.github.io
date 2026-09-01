@@ -17,4 +17,6 @@ assert.doesNotMatch(speed,/speedClockTimer/,'Speed clock must not retain a direc
 assert.match(clearFlow,/setUiEffectTimer\('maker-reveal'/,'Maker reveal cleanup must use an effect-scoped timer.');
 assert.match(board,/clearUiEffectTimers\('clear-transition'\)/,'Board transitions must cancel delayed clear effects.');
 assert.match(board,/resetBoardUiContext\(\)/,'Board reset must clear transient animation classes.');
+assert.doesNotMatch(board,/clearTimeout\(clearTimer\)|clearTimer\s*=/,'Clear transitions must not retain a direct timer handle.');
+assert.doesNotMatch(clearFlow,/makerRevealTimer/,'Maker reveal must not retain a direct timer handle.');
 console.log('Validated UI effect timer cancellation boundaries.');

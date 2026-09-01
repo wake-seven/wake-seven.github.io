@@ -57,3 +57,5 @@
 `progression-hints.js` の短時間ハイライト、`progression-ui.js` の習熟盤面タイマー、各演出内部の遅延cleanupは、同一演出が複数要素を個別に破棄するため、既存の世代・Map単位のcleanupを維持している。永続gameStateへ混入しないことを確認済みで、今後は演出単位のcancel APIへ段階的に移行する。
 
 速解き完走後の遅延遷移とmakerボタン解放遅延も、それぞれ `clear-transition` / `maker-reveal` の演出IDへ移行した。盤面リセット時にはclear演出をキャンセルし、`resetBoardUiContext()` が残存する盤面アニメーションクラスを除去する。称号・クリアの速度や見た目はCSSアニメーションが担っており、JavaScriptタイマーではないためUIコンテキストへ移行しない。
+
+`check-ui-effects.mjs` は、clear/makerの直接タイマーハンドルが再導入されていないこと、代表的なキャンセル経路と盤面クラスcleanupが残っていることを回帰監査する。
