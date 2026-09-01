@@ -44,4 +44,17 @@ function renderAcademyRemainingCalloutElement(element,{label='',number='',unit='
   element.querySelector('.academy-remaining-callout-unit').textContent=unit;
   element.hidden=false;
 }
+// 自動回転中の1フレームをDOM/SVGへ反映する。角度・進捗の計算と操作判定は呼び出し側に残す。
+function renderBoardAnimationFrame({group,pivot,deg,progress,preview}){
+  if(group&&pivot)group.setAttribute('transform','rotate('+deg+' '+pivot.x+' '+pivot.y+')');
+  if(preview?.kind==='grouped')updateAutoSwipePreview(preview.clones,progress,preview.dir);
+  if(preview?.kind==='undo')for(const{item,clone,hex}of preview.clones){
+    let angle=(item.turn*120+deg)%360;
+    if(angle>180)angle-=360;
+    if(angle<-180)angle+=360;
+    const state=Math.abs(angle)<=22?'stand':'fallen';
+    clone.setAttribute('class','tile '+state);
+    if(hex){const tone=BOARD_THEME_TONES[boardTheme]?.[state];hex.style.fill=tone?.fill||'';hex.style.stroke=tone?.stroke||'';}
+  }
+}
 export {};

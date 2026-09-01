@@ -1563,11 +1563,10 @@ function animateGroupedSwipe(dg,target,dir,waking){
     if(start===null)start=now;
     const progress=Math.min(1,(now-start)/duration);
     const deg=dg.deg+(target-dg.deg)*ease(progress);
-    group.setAttribute('transform','rotate('+deg+' '+dg.kc.x+' '+dg.kc.y+')');
     // 自動回転では半分を越えた時点で次の状態へ切り替える。
     // 終端付近まで古い表情が残り、回転後に遅れて変わるように見えるのを防ぐ。
     const turnProgress=Math.abs(target-dg.deg)<.001?1:Math.abs(deg-dg.deg)/Math.abs(target-dg.deg);
-    updateAutoSwipePreview(clones,turnProgress,dir);
+    renderBoardAnimationFrame({group,pivot:dg.kc,deg,progress:turnProgress,preview:{kind:'grouped',clones,dir}});
     if(progress<1){requestBoardAnimationFrame(session,frame);return;}
     // 効果音や振動より先に、盤面の見た目を確定する。
     applySwipe(dg.ti,dir,true,false);
@@ -1610,8 +1609,7 @@ function animateUndoSwipe(target){
     if(started===null)started=now;
     const progress=Math.min(1,(now-started)/duration);
     const deg=reverseDir*120*ease(progress);
-    group.setAttribute('transform','rotate('+deg+' '+pivot.x+' '+pivot.y+')');
-    updateAutoSwipePreview(clones,progress,reverseDir);
+    renderBoardAnimationFrame({group,pivot,deg,progress,preview:{kind:'undo',clones}});
     if(progress<1){requestBoardAnimationFrame(session,frame);return;}
     finishBoardAnimationSession(session);
     restoreBoardSnapshotCommand(target);
