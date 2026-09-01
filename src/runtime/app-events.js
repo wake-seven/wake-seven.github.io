@@ -874,6 +874,7 @@ function applyLanguage(lang){
     else $(id).textContent=tr(key);
   });
   $('analyticsNotice').href='https://policies.google.com/technologies/partner-sites?hl='+(lang==='zh'?'zh-CN':lang);
+  $('aboutVersion').textContent='v'+APP_VERSION;
   document.querySelectorAll('[data-lang]').forEach(button=>{
     button.setAttribute('aria-checked',String(button.dataset.lang===lang));
   });

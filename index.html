@@ -1322,6 +1322,7 @@
   <div class="game-dialog about-dialog" role="dialog" aria-modal="true" aria-labelledby="aboutDialogTitle">
     <h2 id="aboutDialogTitle">このゲームについて</h2>
     <p>© 2026 WAKE SEVEN <span aria-hidden="true">·</span> <a href="https://daiwata.github.io/" target="_blank" rel="noopener">daiary</a></p>
+    <p id="aboutVersion" aria-label="公開版バージョン"></p>
     <p><span id="linkWelcome">リンク・紹介はご自由に。</span> <button id="shareGame" type="button" aria-label="共有する"><span class="share-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.5-4.4M8.2 13.2l7.5 4.4"/></svg></span><span id="shareGameLabel">共有する</span></button></p>
     <p><a id="analyticsNotice" href="https://policies.google.com/technologies/partner-sites?hl=ja" target="_blank" rel="noopener">Google Analyticsでアクセス解析しています。</a></p>
     <div class="dialog-actions"><button class="chip" id="aboutDialogCloseBtn">閉じる</button></div>
@@ -4248,6 +4249,9 @@ export {};
 
 // ===== 実行状態 =====
 // ===== 共通ユーティリティ =====
+// 公開版を識別するための単一のアプリケーションバージョン。
+// Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
+const APP_VERSION='2026.09.01';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -11215,6 +11219,7 @@ function applyLanguage(lang){
     else $(id).textContent=tr(key);
   });
   $('analyticsNotice').href='https://policies.google.com/technologies/partner-sites?hl='+(lang==='zh'?'zh-CN':lang);
+  $('aboutVersion').textContent='v'+APP_VERSION;
   document.querySelectorAll('[data-lang]').forEach(button=>{
     button.setAttribute('aria-checked',String(button.dataset.lang===lang));
   });

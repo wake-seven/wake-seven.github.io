@@ -40,6 +40,8 @@ npm run check
 
 `npm run check` には、公開HTMLの生成物監査とブラウザ相当の導線検査（`npm run check:browser-flow`）も含まれます。
 
+Aboutダイアログに表示する公開版バージョンは `src/runtime/runtime.js` の `APP_VERSION` だけを更新します。`npm run build` で生成版にも反映され、Pages上の版を画面から識別できます。テンプレートや生成物へ別のバージョン値を直接書かないでください。
+
 保存状態は `wake7-state-vnext` に集約しています。過去版の保存データ互換や旧キーからの移行は行いません。
 
 ## 共有について

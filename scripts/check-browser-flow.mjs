@@ -20,6 +20,12 @@ const message = await read('src/ui/message.js');
 for (const id of ['introDialog', 'introStart', 'tutorialReset', 'board', 'reset', 'undo', 'chainDialog', 'clearDialog']) {
   assert.match(template, new RegExp(`id=["']${id}["']`), `browser flow DOM contract is missing: ${id}`);
 }
+assert.match(runtime, /const APP_VERSION='[^']+';/,
+  'public application version must come from one source constant');
+assert.match(template, /id=["']aboutVersion["']/,
+  'about dialog must expose the generated public version');
+assert.match(events, /\$\('aboutVersion'\)\.textContent='v'\+APP_VERSION/,
+  'about dialog version must be rendered from APP_VERSION');
 assert.match(bootstrap, /buildBoard\(\);[\s\S]*restoreActiveSession\(\);[\s\S]*restoreDialogState\(/,
   'startup must build, restore the board, then restore dialogs');
 assert.match(bootstrap, /document\.body\.classList\.remove\('app-booting'\)/,
