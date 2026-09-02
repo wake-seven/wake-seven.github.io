@@ -219,9 +219,9 @@ function renderStagePicker(){
 }
 function openStagePicker(){
   pickerLap=activeLap;
-  if(isMode('satori')||(isSideCourseMode()&&lastStageMode.satori)){openSatoriPicker();return;}
-  const showingExtra=isMode('mastery')||(isSideCourseMode()&&lastStageMode.extra);
-  const showingIndex=isMode('mastery')?extraIndex:lastStageMode.index;
+  if(isMode('satori')||(isSideCourseMode()&&returnStageContext.satori)){openSatoriPicker();return;}
+  const showingExtra=isMode('mastery')||(isSideCourseMode()&&returnStageContext.extra);
+  const showingIndex=isMode('mastery')?extraIndex:returnStageContext.index;
   pickerRound=showingExtra?Math.floor(showingIndex/MASTER_VOLUME_SIZE):PRIMARY_SECTIONS.indexOf(primarySection(showingIndex))-PRIMARY_PICKER_SECTION_COUNT;
   renderStagePicker();
   $('stagePicker').hidden=false;
@@ -506,9 +506,10 @@ function celebrateClear(){
 }
 function showClearActions(){
   // クリア1回分につき、演出開始とダイアログ予約を1回だけ行う。
-  if(!beginClearFlow())return;
+  const clearCycle=beginClearFlow();
+  if(!clearCycle)return;
   const delay=celebrateClear();
-  setUiEffectTimer('clear-transition','show-dialog',()=>{
+  scheduleClearFlowDialog(()=>{
     if(!clearShown||!isSolved()){resetClearFlow();return;}
     finishClearFlowDialog();
     showClearDialog();
@@ -517,7 +518,7 @@ function showClearActions(){
     requestAnimationFrame(()=>{
       if(clearShown&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
     });
-  },delay);
+  },delay,clearCycle);
 }
 function renderClearStageContext(){
   const context=$('clearStageContext');
@@ -581,10 +582,10 @@ function showClearDialog(){
     showMasterDialog('intermediate');
     return;
   }
-  const masteryClearContext=isMode('mastery')||lastStageMode?.extra===true;
+  const masteryClearContext=isMode('mastery')||returnStageContext?.extra===true;
   const clearedMasteryIndex=masteryClearContext&&Number.isInteger(extraIndex)
     ?extraIndex
-    :(masteryClearContext&&Number.isInteger(lastStageMode?.index)?lastStageMode.index:-1);
+    :(masteryClearContext&&Number.isInteger(returnStageContext?.index)?returnStageContext.index:-1);
   if(clearedMasteryIndex>=0&&(clearedMasteryIndex+1)%MASTER_VOLUME_SIZE===0){
     showMasterDialog(clearedMasteryIndex===EXTRA_STAGES.length-1?'mastery':'volume');
     return;
@@ -1524,9 +1525,9 @@ function showMasterDialog(kind='primary'){
 function returnToStageMode(){
   if(busy)return;
   if(isMode('free'))leaveFreeMode();
-  else if(lastStageMode.satori)loadSatoriStage(lastStageMode.index);
-  else if(lastStageMode.extra)loadExtraStage(lastStageMode.index);
-  else loadStage(lastStageMode.index);
+  else if(returnStageContext.satori)loadSatoriStage(returnStageContext.index);
+  else if(returnStageContext.extra)loadExtraStage(returnStageContext.index);
+  else loadStage(returnStageContext.index);
 }
 function moveTwoMoveDetail(direction){
   if(twoMoveDetailGuard.isBusy())return;

@@ -45,9 +45,9 @@ $('stageMode').addEventListener('click',()=>{
   if(busy||(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&!isMode('speed')))return;
   if(isMode('speed')){pauseSpeedRun();returnToStageMode();return;}
   if(isMode('free'))leaveFreeMode();
-  else if(lastStageMode.satori)loadSatoriStage(lastStageMode.index);
-  else if(lastStageMode.extra)loadExtraStage(lastStageMode.index);
-  else loadStage(lastStageMode.index);
+  else if(returnStageContext.satori)loadSatoriStage(returnStageContext.index);
+  else if(returnStageContext.extra)loadExtraStage(returnStageContext.index);
+  else loadStage(returnStageContext.index);
 });
 $('stageModeReturn').addEventListener('click',()=>{
   returnToStageMode();

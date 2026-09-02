@@ -1234,7 +1234,7 @@ function loadStage(index){
   nextStageAttention=false;
   stageIndex=Math.max(0,Math.min(STAGES.length-1,index));
   WakeSevenState.setNavigationIndex(gameState,'stage',stageIndex);
-  lastStageMode={extra:false,satori:false,index:stageIndex};
+  returnStageContext={extra:false,satori:false,index:stageIndex};
   const stage=STAGES[stageIndex];
   persistCurrentStage(false,stageIndex);
   setPosition(campaignStageState(stage.state),stage.par);
@@ -1253,7 +1253,7 @@ function loadExtraStage(index){
   nextStageAttention=false;
   extraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
   WakeSevenState.setNavigationIndex(gameState,'mastery',extraIndex);
-  lastStageMode={extra:true,satori:false,index:extraIndex};
+  returnStageContext={extra:true,satori:false,index:extraIndex};
   const stage=EXTRA_STAGES[extraIndex];
   persistCurrentStage(true,extraIndex);
   setPosition(campaignStageState(stage.state),stage.par);
@@ -1272,7 +1272,7 @@ function loadSatoriStage(index){
   nextStageAttention=false;
   satoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
   WakeSevenState.setNavigationIndex(gameState,'satori',satoriIndex);
-  lastStageMode={extra:false,satori:true,index:satoriIndex};
+  returnStageContext={extra:false,satori:true,index:satoriIndex};
   const stage=SATORI_STAGES[satoriIndex];
   try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}
   setPosition(campaignStageState(stage.state),stage.par);
@@ -1357,7 +1357,7 @@ function persistActiveSession(){
   const mode=activeMode;
   const payload={
     mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,
-    lastStageMode,board:serializeActiveBoard()
+    returnStageContext,board:serializeActiveBoard()
   };
   syncGameState();
   try{storage.set(STORAGE_KEY_GROUPS.progression.activeSession,JSON.stringify(payload));}catch(_){ }
@@ -1395,8 +1395,9 @@ function restoreActiveSession(){
   }else if(saved.mode==='custom'){
     setActiveMode('custom');editingBoard=!!saved.editingBoard;
   }else{restoreCurrentStage();return;}
-  if(saved.lastStageMode&&typeof saved.lastStageMode.extra==='boolean'&&Number.isInteger(saved.lastStageMode.index)){
-    lastStageMode={extra:saved.lastStageMode.extra,satori:!!saved.lastStageMode.satori,index:saved.lastStageMode.index};
+  const savedReturnStageContext=saved.returnStageContext;
+  if(savedReturnStageContext&&typeof savedReturnStageContext.extra==='boolean'&&Number.isInteger(savedReturnStageContext.index)){
+    returnStageContext={extra:savedReturnStageContext.extra,satori:!!savedReturnStageContext.satori,index:savedReturnStageContext.index};
   }
   restoreSavedBoard(saved.board);
   renderStageNav();
@@ -1454,7 +1455,7 @@ function restoreFreeSession(){
 }
 function leaveFreeMode(){
   persistFreeSession();
-  lastStageMode.satori?loadSatoriStage(lastStageMode.index):lastStageMode.extra?loadExtraStage(lastStageMode.index):loadStage(lastStageMode.index);
+  returnStageContext.satori?loadSatoriStage(returnStageContext.index):returnStageContext.extra?loadExtraStage(returnStageContext.index):loadStage(returnStageContext.index);
 }
 function makerDistance(){
   return SOLVER.dist[enc(ori)];

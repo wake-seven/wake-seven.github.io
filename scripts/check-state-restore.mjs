@@ -48,7 +48,7 @@ const firstState = firstLoad.api.create({
     activeVariant: 'training18',
     sessions: { training18: { index: 6, elapsedMs: 1234, moves: 2, paused: true } }
   },
-  ui: { editingBoard: false, lastStageMode: 'mastery' }
+  ui: { editingBoard: false, returnStageContext: { extra: true, satori: false, index: 0 } }
 });
 assert.equal(firstLoad.api.write(firstState, storage), true, 'initial state must be writable');
 

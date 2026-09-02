@@ -172,7 +172,9 @@ function syncGameState(){
     speedTrainingTrialCleared,speedIntermediateTrialCleared,speedMasteryTrialCleared
   });
   gameState.speed={activeVariant:speedVariant,sessions:Object.fromEntries(Object.keys(SPEED_MODE_DEFINITIONS).map(variant=>[variant,readSpeedSession(variant)]).filter(([,session])=>session))};
-  gameState.ui={editingBoard,lastStageMode};
+  // activeMode is the canonical current mode. This context is only the
+  // campaign destination to restore after free/custom/speed screens.
+  gameState.ui={editingBoard,returnStageContext};
   if(typeof serializeActiveBoard==='function')WakeSevenState.updateBoard(gameState,serializeActiveBoard());
   return window.WakeSevenState.write(gameState);
 }
@@ -440,7 +442,9 @@ let secondLapUnlocked=initialUnlocks.secondLap===true;
 try{secondLapUnlocked=secondLapUnlocked||storage.get(STORAGE_KEY_GROUPS.progression.secondLapUnlocked)==='1'||secondLapActive||awakenedGranted;}catch(_){secondLapUnlocked=secondLapActive||awakenedGranted;}
 const initialNavigationState=WakeSevenState.sectionView(gameState,'navigation');
 let activeLap=initialNavigationState.lap===2?2:1;
-let lastStageMode={extra:false,satori:false,index:0};
+// activeMode owns the current screen. Keep the last campaign location under
+// an explicit name so it cannot be mistaken for a second mode state.
+let returnStageContext={extra:false,satori:false,index:0};
 let editingBoard=false;
 let masterDialogKind='primary';
 let rankDialogReturn=null;
@@ -568,7 +572,7 @@ function beginSecondLap(){
     storage.remove(MESSAGE_REVIEW_STORAGE_KEY);
     storage.remove(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY);
   }catch(_){ }
-  lastStageMode={extra:false,satori:false,index:0};
+  returnStageContext={extra:false,satori:false,index:0};
   persistLapProgress();
   updateMasterTheme();
   loadStage(0);
