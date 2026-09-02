@@ -310,6 +310,8 @@ ALL_THREE_MOVE_STAGES.sort((a,b)=>{
 const TRAINING_THREE_MOVE_STATE_IDS=[
   5,52,150,132,148,122,202,372,390,21,15,99,13,39,93,91,117,380
 ];
+// 中巻で使う後半9問だけを応用編から名人への道へ振り分けるための除外集合。
+const trainingStateSet=new Set(TRAINING_THREE_MOVE_STATE_IDS.slice(9));
 const threeMoveStageByState=new Map(ALL_THREE_MOVE_STAGES.map(stage=>[stage.state,stage]));
 // 応用クラス: 3くるりの目標となる3枚を示し、回す棒と方向は自分で探す。
 // 発展クラスと同じ3くるり素材から選ぶが、出題順は独立させる。
@@ -319,7 +321,6 @@ const APPLICATION_STAGES=ALL_THREE_MOVE_STAGES
   .map(stage=>({...stage,application:true}));
 // 中巻で使う後半9だけを名人への道から除外する。前半9は名人・3くるり30問側へ回す
 // (3くるり30問+4くるり15問=45問で名人への道の巻数は変わらない)。
-const trainingStateSet=new Set(TRAINING_THREE_MOVE_STATE_IDS.slice(9));
 function threeMoveStage(state){
   const stage=threeMoveStageByState.get(state);
   if(!stage)throw new Error('Missing three-move training pattern: '+state);
