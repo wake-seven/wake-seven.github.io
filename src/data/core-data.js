@@ -318,13 +318,13 @@ const threeMoveStageByState=new Map(ALL_THREE_MOVE_STAGES.map(stage=>[stage.stat
 // 表示側でソルバーから推測しないため、画像を見ながら問題単位で調整できる。
 const APPLICATION_STAGE_TARGETS=[
   {source:1,targetCells:[0,1,6]},
-  {source:0,targetCells:[0,1,5]},
-  {source:2,targetCells:[0,2,3]},
-  {source:3,targetCells:[0,1,6]},
-  {source:4,targetCells:[1,3,5]},
+  {source:0,targetCells:[0,1,6]},
+  {source:2,targetCells:[0,1,5]},
+  {source:3,targetCells:[0,1,5]},
+  {source:4,targetCells:[0,1,2]},
   {source:5,targetCells:[0,1,4]},
   {source:6,targetCells:[1,2,3]},
-  {source:7,targetCells:[0,1,3]}
+  {source:7,targetCells:[1,2,3]}
 ];
 const APPLICATION_STAGES=APPLICATION_STAGE_TARGETS.map(({source,targetCells})=>({
   ...TWO_MOVE_STAGES[source],application:true,targetCells:Object.freeze(targetCells)
