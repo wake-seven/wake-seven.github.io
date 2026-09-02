@@ -1,4 +1,9 @@
-// ===== ヒントシステム・段位・名人ロードマップ =====
+// ===== 進行UI（このファイルの責務） =====
+// ステージ選択、進行表示、クリア後表示をまとめる。前後移動イベントは
+// progression-navigation.js、共通の小さな表示処理は progression-render.js が担当する。
+
+// ===== ステージ選択 =====
+// ピッカーの表示内容と選択結果を組み立てる。実際の画面遷移はイベント側へ渡す。
 
 // 問題選択の区分: -2=だるま学園、-1=だるま修行、0..=名人への道、'satori'=悟りへの道。
 let pickerRound=-2,satoriPickerPage=0,pickerLap=activeLap;
@@ -282,7 +287,9 @@ $('pickerSpeedMode').addEventListener('click',()=>{
   openSpeedPicker();
 });
 
-// ===== ステージナビゲーション描画・クリア演出・メッセージ履歴 =====
+// ===== ステージナビゲーション表示 =====
+// 現在モードの状態をヘッダー、操作欄、案内へ反映する。前後ボタンのイベントは
+// progression-navigation.js、共通の表示部品は progression-render.js に分離している。
 function renderStageNav(){
   const tutorialMode=isMode('tutorial');
   const assistedLearning=isAssistedLearningStage();
@@ -463,6 +470,7 @@ function renderStageNav(){
   renderStageNavPrevNext();
   renderStageNavGuidance();
 }
+// ===== クリア後表示 =====
 // 全員起きた瞬間の演出(タイルの揺れ+金色のバースト)。本編のクリアと、各所のデモ盤面で共用する。
 function playWakeCelebrationEffect(targetSvg,tilesArr){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
@@ -620,6 +628,8 @@ function showClearDialog(){
   }
   $('clearDialog').hidden=false;
 }
+// ===== クリア後メッセージと雑学 =====
+// クリア結果に応じた文章・挿絵を組み立てる。文言データは data/clear-content.js を正とする。
 function renderOptimalFail(){
   const secondSatori=isMode('satori')&&secondLapActive;
   const over=Math.max(1,moves-best);
@@ -843,6 +853,8 @@ function hideGameDialogs(){
   twoMovePatternsReturnTarget=null;
   $('clearNext').hidden=true;
 }
+// ===== クリア後クイズ =====
+// クイズの出題と回答表示を担当する。問題データは data/board-quiz.js を正とする。
 function renderClearQuiz(){
   const clearEntry=clearEntryForCurrent();
   const quiz=clearEntry&&clearEntry.quiz?resolveLocaleText(clearEntry.quiz):undefined;
@@ -1061,7 +1073,8 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   bindBoardQuizAnswerEvents(root,{config,correct,states,copy,note,noteKey,requireAnswer,isAnimating:()=>animating});
   if(requireAnswer)$('clearNext').disabled=true;
 }
-// ===== クリア後フロー・最短2手ギャラリー・名人ダイアログ =====
+// ===== クリア後の補助表示・ダイアログ =====
+// クリア後の形レッスン、最短2手ギャラリー、名人ダイアログを扱う。
 function masteryBoardSvg(tilted=false,forceStandardColor=false){
   const tiles=CELL.map((cell,i)=>{
     const color=forceStandardColor?'':darumaBodyColor(i);
