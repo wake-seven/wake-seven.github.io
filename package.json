@@ -5,9 +5,10 @@
     "trace:generate": "node scripts/generate-trace-index.mjs",
     "trace": "node scripts/trace.mjs",
     "check:trace": "node scripts/check-trace-index.mjs",
+    "check:global-access": "node scripts/check-global-access-contract.mjs",
     "build:esm": "node scripts/build-esm.mjs",
     "metrics:update": "node scripts/update-public-esm-metrics.mjs",
-    "check": "node scripts/check-version.mjs && node scripts/check-application-targets.mjs && node scripts/check-state.mjs && node scripts/check-state-restore.mjs && node scripts/check-browser-flow.mjs && node scripts/check-dialog-chains.mjs && node scripts/check-ui-effects.mjs && npm run check:progression-flows && npm run check:esm && npm run check:source-boundaries && npm run check:compat-e2e && npm run check:esm-deps && npm run check:public-esm && npm run check:metrics-update && npm run check:refactor-policy && npm run check:trace",
+    "check": "node scripts/check-version.mjs && node scripts/check-application-targets.mjs && node scripts/check-state.mjs && node scripts/check-state-restore.mjs && node scripts/check-browser-flow.mjs && node scripts/check-dialog-chains.mjs && node scripts/check-ui-effects.mjs && npm run check:progression-flows && npm run check:esm && npm run check:source-boundaries && npm run check:compat-e2e && npm run check:esm-deps && npm run check:public-esm && npm run check:metrics-update && npm run check:refactor-policy && npm run check:trace && npm run check:global-access",
     "check:esm": "node scripts/check-esm.mjs",
     "check:public-esm": "node scripts/check-public-esm.mjs",
     "check:browser-flow": "node scripts/check-browser-flow.mjs",
@@ -17,6 +18,7 @@
     "check:compat-e2e": "node scripts/check-compat-e2e.mjs",
     "check:progression-flows": "node scripts/check-progression-flows.mjs",
     "check:esm-deps": "node scripts/check-esm-dependencies.mjs",
-    "check:metrics-update": "node scripts/check-metrics-update.mjs"
+    "check:metrics-update": "node scripts/check-metrics-update.mjs",
+    "check:global-access-report": "node scripts/check-global-access.mjs"
   }
 }
