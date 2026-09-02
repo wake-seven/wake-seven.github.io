@@ -254,3 +254,5 @@ function renderOptimalFail(){
   $('optimalRetry').textContent=tr('optimalRetry');
 }
 function tipDaruma(x,y,scale=.55){
+  return '<g transform="translate('+x+' '+y+') scale('+scale+')"><use href="#daruma-body"/><use href="#face-open"/></g>';
+}
