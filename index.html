@@ -813,7 +813,8 @@
   #board .application-target-overlay-layer{pointer-events:none}
   #board .application-target-overlay{fill:none;stroke:#8B35F0;stroke-width:5;stroke-linejoin:round;pointer-events:none;vector-effect:non-scaling-stroke}
   #academyWelcomeBoard .application-target-overlay{fill:none;stroke:#8B35F0;stroke-width:5;stroke-linejoin:round;pointer-events:none;vector-effect:non-scaling-stroke}
-  .application-target-text{color:#8B35F0;font-weight:800;background:rgba(139,53,240,.10);border-radius:.25em;padding:.04em .22em}
+  .application-target-text{color:#C477FF;font-weight:800;background:rgba(139,53,240,.24);border-radius:.25em;padding:.04em .22em}
+  #chainDialogText.application-welcome-text{color:#D8BE78}
   /* 応用クラス開始案内でも、目標の3枚そのものの境界線を強調する。 */
   #academyWelcomeBoard .tile.application-target .hex{stroke:#8B35F0 !important;stroke-width:5 !important;stroke-linejoin:round}
   /* ミニ盤面(比較カード等)の回転アニメでも、本編の.tileと同じくレイヤーを先に確保しておく。
@@ -4297,7 +4298,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-22:20';
+const APP_VERSION='2026.09.02-22:40';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -6180,6 +6181,7 @@ function academyBoardStep(variant,titleKey,textKey,actionKey,onAction){
       cloneDialogTemplate(body,'chain-template-academy-board','<p class="chain-text-highlight" id="chainDialogText"></p><div class="academy-welcome-board-wrap"><svg id="academyWelcomeBoard" viewBox="0 -60 320 370" aria-hidden="true"></svg></div>');
       body.querySelector('[data-chain-dialog-text]')?.setAttribute('id','chainDialogText');
       const copy=tr(textKey);
+      $('chainDialogText').classList.toggle('application-welcome-text',variant==='application');
       if(variant==='application'&&currentLang==='ja'){
         const marker='紫の枠';
         const at=copy.indexOf(marker);

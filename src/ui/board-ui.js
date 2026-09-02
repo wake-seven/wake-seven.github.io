@@ -366,6 +366,7 @@ function academyBoardStep(variant,titleKey,textKey,actionKey,onAction){
       cloneDialogTemplate(body,'chain-template-academy-board','<p class="chain-text-highlight" id="chainDialogText"></p><div class="academy-welcome-board-wrap"><svg id="academyWelcomeBoard" viewBox="0 -60 320 370" aria-hidden="true"></svg></div>');
       body.querySelector('[data-chain-dialog-text]')?.setAttribute('id','chainDialogText');
       const copy=tr(textKey);
+      $('chainDialogText').classList.toggle('application-welcome-text',variant==='application');
       if(variant==='application'&&currentLang==='ja'){
         const marker='紫の枠';
         const at=copy.indexOf(marker);
