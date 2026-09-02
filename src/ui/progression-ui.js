@@ -290,9 +290,56 @@ $('pickerSpeedMode').addEventListener('click',()=>{
 // ===== ステージナビゲーション表示 =====
 // 現在モードの状態をヘッダー、操作欄、案内へ反映する。前後ボタンのイベントは
 // progression-navigation.js、共通の表示部品は progression-render.js に分離している。
+// 表示処理が参照する状態を、描画開始時のスナップショットとしてまとめる。
+// この関数自体は状態やDOMを変更しない。表示項目を分離するときの入力境界にする。
+function createProgressionViewContext({
+  mode,
+  lap,
+  stage,
+  extra,
+  satori,
+  editing,
+  tutorial,
+  assisted,
+  speedRemaining,
+  speedIndex=0,
+  speedTotal=0
+}={}){
+  return Object.freeze({
+    mode,
+    activeLap:lap,
+    stageIndex:stage,
+    extraIndex:extra,
+    satoriIndex:satori,
+    editingBoard:editing===true,
+    tutorialMode:tutorial===true,
+    assistedLearning:assisted===true,
+    speedShowsRemaining:speedRemaining===true,
+    speedIndex,
+    speedTotal,
+    satoriTotal:SATORI_STAGES.length,
+    masteryTotal:EXTRA_STAGES.length,
+    academyCount:ACADEMY_STAGE_COUNT,
+    trainingCount:TRAINING_STAGE_COUNT
+  });
+}
 function renderStageNav(){
-  const tutorialMode=isMode('tutorial');
-  const assistedLearning=isAssistedLearningStage();
+  const viewContext=createProgressionViewContext({
+    mode:activeMode,
+    lap:activeLap,
+    stage:stageIndex,
+    extra:extraIndex,
+    satori:satoriIndex,
+    editing:editingBoard,
+    tutorial:isMode('tutorial'),
+    assisted:isAssistedLearningStage(),
+    speedRemaining:speedShowsRemaining(),
+    speedIndex:speedSession.index,
+    speedTotal:speedSession.total||activeSpeedDefinition().total
+  });
+  const navModel=createStageNavDisplayModel(viewContext);
+  const tutorialMode=navModel.tutorialMode;
+  const assistedLearning=navModel.assistedLearning;
   // 入門・基本は、盤面を読むことだけに集中する補助輪付き区間。
   // 「やり直す／1手戻す／次の1手を見る」と現在手数は表示しない。
   const hideLearningControls=assistedLearning;
@@ -396,6 +443,7 @@ function renderStageNav(){
     }
   }
   function renderStageNavStageText(){
+    const showRemainingModel=value=>{const model=createRemainingMovesDisplayModel({value});showRemaining(model.value,model.hidden);};
     if(isMode('speed')){
       setText('stageKind',speedVariantCopy(speedVariant).label);
       $('stageNumber').textContent=(speedSession.index+1)+' / '+(speedSession.total||activeSpeedDefinition().total);
@@ -406,22 +454,22 @@ function renderStageNav(){
       $('speedClockInline').hidden=false;
       setText('speedClockLabel','');
       renderMovesMetric(moves,isTwoMoveLessonSpeedStage());
-      if(showsRemaining)showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
+      if(showsRemaining)showRemainingModel(remainingForDisplay(SOLVER.dist[enc(ori)]));
       renderSpeedClock();
     }else if(isMode('free')){
       setText('stageKind',tr('freeKind'));
       $('stageNumber').textContent=tr('freePlay');
-      showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
+      showRemainingModel(remainingForDisplay(SOLVER.dist[enc(ori)]));
     }else if(isMode('custom')){
       setText('stageKind','CUSTOM');
       $('stageNumber').textContent=tr('makeBoard');
       const d=SOLVER.dist[enc(ori)];
       if(editingBoard)$('stagePar').textContent=d===255?'—':d;
-      else showRemaining(d,false);
+      else showRemainingModel(d);
     }else if(isMode('satori')){
       setText('stageKind',tr('satori'));
       $('stageNumber').textContent=(satoriIndex+1)+' / '+SATORI_STAGES.length;
-      showRemaining('?',false);
+      showRemainingModel('?');
     }else if(isMode('mastery')){
       const volume=Math.floor(extraIndex/MASTER_VOLUME_SIZE)+1;
       setText('stageKind',currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume));
@@ -429,7 +477,7 @@ function renderStageNav(){
       $('stageCount').textContent=(extraIndex%MASTER_VOLUME_SIZE+1)+' / '+MASTER_VOLUME_SIZE;
       $('stageCount').hidden=false;
       $('stageSubtitle').hidden=true;
-      showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
+      showRemainingModel(remainingForDisplay(SOLVER.dist[enc(ori)]));
     }else{
       const {section,position}=primarySectionPosition(stageIndex);
       const isAcademySection=['intro','basic','application','development'].includes(section.id);
@@ -443,7 +491,7 @@ function renderStageNav(){
         setText('stageKind',tr(section.labelKey));
         $('stageNumber').textContent=position+' / '+section.total;
       }
-      showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
+      showRemainingModel(remainingForDisplay(SOLVER.dist[enc(ori)]));
     }
   }
   function renderStageNavPrevNext(){
@@ -466,7 +514,7 @@ function renderStageNav(){
   renderStageNavControls();
   renderStageNavModeButtons();
   renderStageNavStageText();
-  renderStageNavAccent();
+  renderStageNavAccent(viewContext);
   renderStageNavPrevNext();
   renderStageNavGuidance();
 }

@@ -1,6 +1,21 @@
 // ステージ進行に関する表示補助。状態更新は行わず、現在の状態を画面へ反映する。
 // 描画のたびにID検索を繰り返さないよう、静的な進行UIの参照を一度だけ束ねる。
 let progressionRenderRefs=null;
+// ステージナビの表示判定を、状態やDOMに触れずに組み立てる。
+function createStageNavDisplayModel({mode,tutorialMode=false,assistedLearning=false,editingBoard=false}={}){
+  return Object.freeze({mode,tutorialMode:tutorialMode===true||mode==='tutorial',assistedLearning:assistedLearning===true,editingBoard:editingBoard===true,campaignMode:!['free','custom','speed'].includes(mode)});
+}
+// 残り手数の表示値を、DOM更新から分離する。
+function createRemainingMovesDisplayModel({value,hidden=false}={}){return Object.freeze({value,hidden:hidden===true});}
+// 進行ゲージの割合を、現在の状態から純粋に算出する。
+function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){
+  let fraction=0;
+  if(mode==='speed')fraction=(speedIndex+1)/(speedTotal||1);
+  else if(mode==='satori')fraction=(satoriIndex+1)/(satoriTotal||1);
+  else if(mode==='mastery')fraction=(extraIndex+1)/(masteryTotal||1);
+  else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);
+  return Object.freeze({fraction:Math.max(0,Math.min(1,fraction))});
+}
 function getProgressionRenderRefs(){
   return progressionRenderRefs??=createRefs([
     'stageAccentFill','shortestLabel','moveUnit','academyClearSuffix',
@@ -52,15 +67,12 @@ function renderClearShapeRuleContent({state,shape,isDevelopment=false}={}){
     if(condition)condition.textContent=tr('trainingShapeRule'+shape+'Condition');
   }
 }
-function renderStageNavAccent(){
-  let accentFrac=0;
-  if(isMode('speed'))accentFrac=(speedSession.index+1)/(speedSession.total||activeSpeedDefinition().total);
-  else if(isMode('satori'))accentFrac=(satoriIndex+1)/SATORI_STAGES.length;
-  else if(isMode('mastery'))accentFrac=(extraIndex+1)/EXTRA_STAGES.length;
-  else if(!isMode('free')&&!isMode('custom'))accentFrac=stageIndex<ACADEMY_STAGE_COUNT?(stageIndex+1)/ACADEMY_STAGE_COUNT:(stageIndex-ACADEMY_STAGE_COUNT+1)/TRAINING_STAGE_COUNT;
+function renderStageNavAccent(context={}){
+  const progress=createProgressDisplayModel(context);
+  /* 進行割合は呼び出し側のスナップショットから算出する。 */
   const refs=getProgressionRenderRefs();
-  if(refs.stageAccentFill)refs.stageAccentFill.style.width=(Math.max(0,Math.min(1,accentFrac))*100)+'%';
-  if(!isMode('speed')){
+  if(refs.stageAccentFill)refs.stageAccentFill.style.width=(progress.fraction*100)+'%';
+  if(context.mode!=='speed'){
     setText(refs.shortestLabel,tr('shortestDisplay'));
     setText(refs.moveUnit,tr('moveUnit'));
     setText(refs.academyClearSuffix,tr('academyClearSuffix'));
