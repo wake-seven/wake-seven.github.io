@@ -609,7 +609,7 @@
   @keyframes masterRankSeal{0%{opacity:0;transform:translateY(-0.375rem)}100%{opacity:1;transform:translateY(0)}}
   @keyframes masterSpark{from{opacity:.25;transform:scale(.7)}to{opacity:1;transform:scale(1.25)}}
   .mode-row{
-    width:100%;max-width:var(--content-max);display:flex;align-items:center;gap:0.5rem;margin-top:0.25rem
+    position:relative;width:100%;max-width:var(--content-max);display:flex;align-items:center;gap:0.5rem;margin-top:0.25rem
   }
   .stage-return{margin-left:auto;padding:0.375rem 0.5625rem!important;white-space:nowrap;font-size:0.625rem!important}
   .two-move-lesson-open{margin-left:auto;padding:0.4375rem 0.75rem!important;white-space:nowrap;font-size:0.75rem!important}
@@ -617,15 +617,12 @@
   .speed-pause-inline #speedPause{min-width:7.375rem;padding:0.625rem 0.75rem;font-size:0.8125rem;white-space:nowrap}
   .mode-row.speed-mode .status-metric.remaining{flex-shrink:0;white-space:nowrap}
   /* 応用編では、目標3枚を盤面の右側に小さく見本表示する。 */
-  .application-target-preview{display:flex;align-items:center;gap:.2rem;margin-left:auto;min-width:0;color:#D8BE78;font-size:.625rem;font-weight:700;line-height:1;white-space:nowrap}
+  .application-target-preview{position:absolute;right:0;top:50%;z-index:2;display:flex;align-items:center;gap:.2rem;transform:translateY(-50%);color:#D8BE78;font-size:.625rem;font-weight:700;line-height:1;white-space:nowrap;pointer-events:none}
   .application-target-preview[hidden]{display:none!important}
   /* 目標見本は「あと1くるり」の到達形を読める大きさで示す。 */
-  .application-target-preview svg{display:block;width:10.5rem;height:8.375rem;overflow:visible;flex:none}
-  .application-target-preview .mini-tile{display:none}
-  .application-target-preview .mini-tile.application-preview-target{display:block}
-  .application-target-preview .mini-tile.application-preview-target path:first-child{stroke:#8B35F0;stroke-width:5;stroke-linejoin:round}
-  .application-target-preview .mini-daruma{transform-box:view-box;transform-origin:0 0}
-  @media (max-width:560px){.application-target-preview{gap:.1rem;font-size:.5625rem}.application-target-preview svg{width:8.4rem;height:6.7rem}}
+  .application-target-preview svg{display:block;width:7rem;height:4.25rem;overflow:visible;flex:none}
+  .application-target-preview .mini-tile path:first-child{stroke:#8B35F0;stroke-width:4;stroke-linejoin:round}
+  @media (max-width:560px){.application-target-preview{gap:.1rem;font-size:.5625rem}.application-target-preview svg{width:5.75rem;height:3.5rem}}
   .mode-row.speed-mode:not(.speed-with-remaining) .status-metric.remaining,.mode-row.speed-mode:not(.speed-with-remaining) .status-separator{display:none}
   .status-metric{display:flex;align-items:baseline;gap:0.3125rem;color:#9FB0C4;font-size:0.6875rem;letter-spacing:.06em}
   /* display:flex がブラウザ標準の [hidden] より優先されるため、学習区間では明示的に隠す。 */
@@ -4333,7 +4330,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-20:51';
+const APP_VERSION='2026.09.02-20:55';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5084,11 +5081,19 @@ function renderApplicationTargetPreview(){
   const visible=!!stage&&remaining>1&&targets.length===3;
   preview.hidden=!visible;
   if(!visible){board.replaceChildren();return;}
-  board.innerHTML=miniBoardSvg(applicationGoalPreviewState(stage));
-  const targetSet=new Set(targets);
-  board.querySelectorAll('.mini-tile').forEach(tile=>{
-    tile.classList.toggle('application-preview-target',targetSet.has(Number(tile.dataset.cell)));
-  });
+  // 見本は元盤面の座標を縮小するのではなく、目標の3枚だけを
+  // 「左上・右上・下中央」の逆三角形に固定して描く。元盤面のセル番号は
+  // 目標状態から向きと色を読むためだけに使い、表示位置には使わない。
+  const goal=dec(applicationGoalPreviewState(stage));
+  const positions=[[48,28],[112,28],[80,73]],scale=.36;
+  board.setAttribute('viewBox','0 0 160 101');
+  board.innerHTML=targets.map((cell,index)=>{
+    const value=goal[cell]||0,fallen=value!==0;
+    return '<g class="mini-tile application-preview-target" data-cell="'+cell+'" transform="translate('+positions[index][0]+' '+positions[index][1]+') scale('+scale+')">'
+      +'<path d="'+hexPath(R)+'" fill="'+(fallen?'#B9C6D6':'#F3E8D5')+'" stroke="#8B35F0" stroke-width="6" stroke-linejoin="round"/>'
+      +'<g class="mini-daruma" transform="rotate('+miniAngle(value)+')"><use href="#daruma-body"/><use href="#'+(fallen?'face-shut':'face-open')+'"/></g>'
+      +'</g>';
+  }).join('');
 }
 // 直接スワイプ中はタイル自身が動くため、静止用の重ね枠を一時的に外す。
 // スワイプ完了後は paint() から renderApplicationTargetCells() が再生成する。

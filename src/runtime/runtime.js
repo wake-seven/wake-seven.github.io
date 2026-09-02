@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-20:51';
+const APP_VERSION='2026.09.02-20:55';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -752,11 +752,19 @@ function renderApplicationTargetPreview(){
   const visible=!!stage&&remaining>1&&targets.length===3;
   preview.hidden=!visible;
   if(!visible){board.replaceChildren();return;}
-  board.innerHTML=miniBoardSvg(applicationGoalPreviewState(stage));
-  const targetSet=new Set(targets);
-  board.querySelectorAll('.mini-tile').forEach(tile=>{
-    tile.classList.toggle('application-preview-target',targetSet.has(Number(tile.dataset.cell)));
-  });
+  // 見本は元盤面の座標を縮小するのではなく、目標の3枚だけを
+  // 「左上・右上・下中央」の逆三角形に固定して描く。元盤面のセル番号は
+  // 目標状態から向きと色を読むためだけに使い、表示位置には使わない。
+  const goal=dec(applicationGoalPreviewState(stage));
+  const positions=[[48,28],[112,28],[80,73]],scale=.36;
+  board.setAttribute('viewBox','0 0 160 101');
+  board.innerHTML=targets.map((cell,index)=>{
+    const value=goal[cell]||0,fallen=value!==0;
+    return '<g class="mini-tile application-preview-target" data-cell="'+cell+'" transform="translate('+positions[index][0]+' '+positions[index][1]+') scale('+scale+')">'
+      +'<path d="'+hexPath(R)+'" fill="'+(fallen?'#B9C6D6':'#F3E8D5')+'" stroke="#8B35F0" stroke-width="6" stroke-linejoin="round"/>'
+      +'<g class="mini-daruma" transform="rotate('+miniAngle(value)+')"><use href="#daruma-body"/><use href="#'+(fallen?'face-shut':'face-open')+'"/></g>'
+      +'</g>';
+  }).join('');
 }
 // 直接スワイプ中はタイル自身が動くため、静止用の重ね枠を一時的に外す。
 // スワイプ完了後は paint() から renderApplicationTargetCells() が再生成する。
