@@ -18,7 +18,7 @@
     satori:{trial:'mastery',requiresMastery:true}
   });
 
-  function create({satoriTotal,trainingExamTotal,academyTotal,developmentStart,developmentTotal,trainingStart,trainingTotal,basicStart}) {
+  function create({satoriTotal,trainingExamTotal,academyTotal,applicationStart,applicationTotal,developmentStart,developmentTotal,trainingStart,trainingTotal,basicStart}) {
     const totalFor = value => value === 'satori' ? satoriTotal : value === 'trainingExam' ? trainingExamTotal : value;
     const speedModes = Object.freeze(Object.fromEntries(SPEED_BLUEPRINTS.map(blueprint => {
       const definition = Object.freeze({...blueprint,total:totalFor(blueprint.total)});
@@ -45,6 +45,7 @@
         if(mode !== 'stage') return {id:'standard'};
         if(stageIndex < academyTotal) {
           if(stageIndex >= developmentStart) return {id:'development',assisted:true,development:lap === 1,eliminateWrongRods:lap === 1};
+          if(stageIndex >= applicationStart) return {id:'application',assisted:true,application:lap === 1,showTargetCells:lap === 1};
           if(stageIndex >= basicStart) return {id:'basic',assisted:true,guidedBasic:lap === 1,narrowRods:lap === 1};
           return {id:'intro',assisted:true,guidedBasic:lap === 1};
         }

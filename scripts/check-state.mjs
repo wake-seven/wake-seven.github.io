@@ -100,8 +100,9 @@ for (let pass = 0; pass < declaredExpressions.size; pass++) {
 const expectedCourseCounts = {
   INTRO_STAGE_COUNT: 3,
   BASIC_STAGE_COUNT: 9,
+  APPLICATION_STAGE_COUNT: 8,
   DEVELOPMENT_STAGE_COUNT: 8,
-  ACADEMY_STAGE_COUNT: 20,
+  ACADEMY_STAGE_COUNT: 28,
   TRAINING_STAGE_COUNT: 27,
   TRAINING_UPPER_COUNT: 9,
   TRAINING_MIDDLE_COUNT: 9,
@@ -119,7 +120,7 @@ if (declaredNumbers.get('ACADEMY_STAGE_COUNT') !== declaredNumbers.get('DEVELOPM
 }
 const primarySectionBlock = runtimeModule.match(/const PRIMARY_SECTIONS=Object\.freeze\(\[(.*?)\]\);/s)?.[1] || '';
 const sectionTotals = [...primarySectionBlock.matchAll(/total:([A-Z][A-Z0-9_]*)/g)].map(([, name]) => declaredNumbers.get(name));
-if (sectionTotals.length !== 6 || sectionTotals.some(value => !Number.isFinite(value))
+if (sectionTotals.length !== 7 || sectionTotals.some(value => !Number.isFinite(value))
   || sectionTotals.reduce((sum, value) => sum + value, 0) !== declaredNumbers.get('ACADEMY_STAGE_COUNT') + declaredNumbers.get('TRAINING_STAGE_COUNT')) {
   throw new Error('PRIMARY_SECTIONS totals do not match the academy and training course counts.');
 }
@@ -326,8 +327,8 @@ if (!restored || restored.navigation.stageIndex !== 4 || restored.board?.o?.join
 
 const progression = context.window.WakeSevenProgression.create({
   satoriTotal:73,trainingExamTotal:18,
-  academyTotal:20,developmentStart:12,developmentTotal:8,
-  trainingStart:20,trainingTotal:27,basicStart:3
+  academyTotal:28,applicationStart:12,applicationTotal:8,developmentStart:20,developmentTotal:8,
+  trainingStart:28,trainingTotal:27,basicStart:3
 });
 if (progression.speedModes.training18.total !== 18 || progression.speedModes.mastery27.total !== 27 || progression.speedModes.satori73.allowsUndo !== false
   || Object.keys(progression.speedModes).some(id => !['standard','training9','training18','mastery27','satori73'].includes(id))) {
@@ -337,8 +338,9 @@ if (!progression.canEnter('training',{lap:1,trials:{training:true}}) || progress
   throw new Error('Course gate policy failed.');
 }
 if (!progression.uiPolicy({mode:'stage',lap:1,stageIndex:3}).narrowRods
-  || !progression.uiPolicy({mode:'stage',lap:1,stageIndex:12}).eliminateWrongRods
-  || progression.uiPolicy({mode:'stage',lap:2,stageIndex:12}).eliminateWrongRods
+  || !progression.uiPolicy({mode:'stage',lap:1,stageIndex:12}).showTargetCells
+  || !progression.uiPolicy({mode:'stage',lap:1,stageIndex:20}).eliminateWrongRods
+  || progression.uiPolicy({mode:'stage',lap:2,stageIndex:20}).eliminateWrongRods
   || !progression.uiPolicy({mode:'speed',lap:1,stageIndex:0,speedVariant:'training9'}).speedFalling) {
   throw new Error('Learning UI policy failed.');
 }

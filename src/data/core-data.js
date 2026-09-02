@@ -55,12 +55,14 @@ const SOLVER=buildSolver('roll');
 const INTRO_STAGE_COUNT=3;
 const BASIC_STAGE_COUNT=9;
 const BASIC_STAGE_START=INTRO_STAGE_COUNT;
-// 発展クラス: 3くるり5問+4くるり3問。補助なし2くるりはだるま修行・上巻で扱う
-// (修行の入口にする方が学習導線として自然なため)。
+// 応用クラスは目標の3枚だけを示す8問。発展クラスは目標も示さない8問。
+// いずれも6本の棒から自分で回す場所を考える学習区間。
+const APPLICATION_STAGE_COUNT=8;
+const APPLICATION_STAGE_START=BASIC_STAGE_START+BASIC_STAGE_COUNT;
 const DEVELOPMENT_THREE_COUNT=5;
 const DEVELOPMENT_FOUR_COUNT=3;
 const DEVELOPMENT_STAGE_COUNT=DEVELOPMENT_THREE_COUNT+DEVELOPMENT_FOUR_COUNT;
-const DEVELOPMENT_STAGE_START=BASIC_STAGE_START+BASIC_STAGE_COUNT;
+const DEVELOPMENT_STAGE_START=APPLICATION_STAGE_START+APPLICATION_STAGE_COUNT;
 const ACADEMY_STAGE_COUNT=DEVELOPMENT_STAGE_START+DEVELOPMENT_STAGE_COUNT;
 const TRAINING_STAGE_START=ACADEMY_STAGE_COUNT;
 // だるま修行: 上巻=2くるり9(補助なし)/中巻=3くるり9(補助なし)/下巻=4くるり9(補助なし)。
@@ -169,8 +171,9 @@ function clearContentKey(mode,index){
     return 'mastery'+vol+'_'+q;
   }
   if(index<INTRO_STAGE_COUNT)return 'academy1_'+(index+1);
-  if(index<DEVELOPMENT_STAGE_START)return 'academy2_'+(index-BASIC_STAGE_START+1);
-  if(index<TRAINING_STAGE_START)return 'academy3_'+(index-DEVELOPMENT_STAGE_START+1);
+  if(index<APPLICATION_STAGE_START)return 'academy2_'+(index-BASIC_STAGE_START+1);
+  if(index<DEVELOPMENT_STAGE_START)return 'academy3_'+(index-APPLICATION_STAGE_START+1);
+  if(index<TRAINING_STAGE_START)return 'academy4_'+(index-DEVELOPMENT_STAGE_START+1);
   if(index<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)return 'training1_'+(index-TRAINING_STAGE_START+1);
   if(index<TRAINING_STAGE_START+TRAINING_UPPER_COUNT+TRAINING_MIDDLE_COUNT)return 'training2_'+(index-TRAINING_STAGE_START-TRAINING_UPPER_COUNT+1);
   return 'training3_'+(index-TRAINING_STAGE_START-TRAINING_UPPER_COUNT-TRAINING_MIDDLE_COUNT+1);
@@ -252,7 +255,7 @@ TRAINING_UPPER_VIEWS.forEach((view,index)=>{
 const GUIDED_BASIC_STAGES=BASIC_LESSON_PATTERN_ORDER.map(patternIndex=>({...TWO_MOVE_STAGES[patternIndex]}));
 STAGES.splice(BASIC_STAGE_START,0,...GUIDED_BASIC_STAGES);
 // 別視点に変えた基礎と同じ9つの型(補助なしで解く)を抜き出し、だるま修行・上巻の素材にする。
-const TRAINING_UPPER_STAGES=STAGES.splice(DEVELOPMENT_STAGE_START,TRAINING_UPPER_VIEWS.length);
+const TRAINING_UPPER_STAGES=STAGES.splice(APPLICATION_STAGE_START,TRAINING_UPPER_VIEWS.length);
 // 二周目は全コースを180°回した見え方で出題する。
 // 回転対称なので、盤面の最短手数や解法そのものは変わらない。
 const SECOND_LAP_BOARD_VIEW={permutation:makeBoardPermutation(180),flip:false};
@@ -308,6 +311,12 @@ const TRAINING_THREE_MOVE_STATE_IDS=[
   5,52,150,132,148,122,202,372,390,21,15,99,13,39,93,91,117,380
 ];
 const threeMoveStageByState=new Map(ALL_THREE_MOVE_STAGES.map(stage=>[stage.state,stage]));
+// 応用クラス: 3くるりの目標となる3枚を示し、回す棒と方向は自分で探す。
+// 発展クラスと同じ3くるり素材から選ぶが、出題順は独立させる。
+const APPLICATION_STAGES=ALL_THREE_MOVE_STAGES
+  .filter(stage=>!trainingStateSet.has(stage.state))
+  .slice(0,APPLICATION_STAGE_COUNT)
+  .map(stage=>({...stage,application:true}));
 // 中巻で使う後半9だけを名人への道から除外する。前半9は名人・3くるり30問側へ回す
 // (3くるり30問+4くるり15問=45問で名人への道の巻数は変わらない)。
 const trainingStateSet=new Set(TRAINING_THREE_MOVE_STATE_IDS.slice(9));
@@ -363,7 +372,7 @@ const TRAINING_LOWER_STAGES=[104,358,426,582,332,344,325,146,200].map(state=>({s
 // 下巻開始ダイアログで見せる6形プレビュー用: 9問の代表(長方形/気球/いも虫はそれぞれ2状態のうち1つ)。
 const TRAINING_LOWER_GOAL_SHAPES=['Crown','BowArrow','Rectangle','Balloon','LargeTriangle','Caterpillar'];
 const TRAINING_LOWER_GOAL_STATES=[104,358,426,332,325,146];
-STAGES.push(...DEVELOPMENT_STAGES,...TRAINING_UPPER_STAGES,...TRAINING_MIDDLE_STAGES,...TRAINING_LOWER_STAGES);
+STAGES.push(...APPLICATION_STAGES,...DEVELOPMENT_STAGES,...TRAINING_UPPER_STAGES,...TRAINING_MIDDLE_STAGES,...TRAINING_LOWER_STAGES);
 // 修了試験「速解き十八番勝負」の出題範囲: 上巻9(2くるり)+中巻9(3くるり)=18問。4くるりの下巻は含めない。
 const TRAINING_EXAM_STAGES=[...TRAINING_UPPER_STAGES,...TRAINING_MIDDLE_STAGES];
 const EXTRA_STAGES=ALL_THREE_MOVE_STAGES.filter(stage=>!trainingStateSet.has(stage.state)).map(stage=>({...stage}));
