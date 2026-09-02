@@ -4251,7 +4251,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-11:24';
+const APP_VERSION='2026.09.02-11:31';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -4997,7 +4997,9 @@ function computeDevelopmentCandidateTis(){
   const safeDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&!correctTis.includes(i)));
   const fallbackDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&correctTis.includes(i)));
   const decoyPool=[...safeDecoyPool,...fallbackDecoyPool];
-  const count=academyGripDisplayCount(stage.initialRodCount);
+  // 最初の盤面は問題ごとの本数で導入し、1回進んだ後は残り2〜3くるりの間を3本にそろえる。
+  // 残り1くるりに入った時だけ、全6本を見せて最後の正解候補を探せるようにする。
+  const count=moves>0?academyGripDisplayCount(3):academyGripDisplayCount(stage.initialRodCount);
   return new Set([primary,...decoyPool.slice(0,count-1)]);
 }
 // 速解き九番勝負は、毎回3本の中に少なくとも1本の正解候補を含める。
@@ -5027,9 +5029,9 @@ function refreshGuidedBasicCandidates(){
       const signature=stageIndex+':'+moves+':'+enc(ori);
       if(signature!==guidedBasicCandidateSignature){
         fallenRodTis.clear();
-        // 絞り込みは最初の1手(3くるり5問なら3→2、4くるり3問なら4→3)だけ。
-        // 一度でも進んだら(あと3くるり・2くるりになったら)6本全部を候補にする。
-        guidedBasicCandidateTis=(SOLVER.dist[enc(ori)]<stage.par)?fullSet():computeDevelopmentCandidateTis();
+        // 初回は問題ごとの候補数で始め、進んだ後も残り2〜3くるりは3本に絞る。
+        // 残り1くるりに入った時だけ6本すべてを候補にする。
+        guidedBasicCandidateTis=computeDevelopmentCandidateTis()||fullSet();
         guidedBasicCandidateSignature=signature;
       }
     }
