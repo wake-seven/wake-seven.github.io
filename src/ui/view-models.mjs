@@ -1,4 +1,4 @@
-/** classic互換rendererアダプター向けの安定したview-model契約。 */
+/** 公開版のrenderer接続用アダプターへ渡す、安定した表示モデルの契約。 */
 export const createStagePickerModel = ({ title = '', page = 0, total = 0, items = [], stages = items, selectedIndex = -1 } = {}) => Object.freeze({ kind: 'stage-picker', title, page, total, items: Object.freeze([...items]), stages: Object.freeze([...stages]), selectedIndex });
 export const createClearMessageViewModel = ({ title = '', body = '', tip = null, quiz = null, art = '', nextAction = null, canContinue = false } = {}) => Object.freeze({ kind: 'clear-message', title, body, tip, quiz, art, nextAction, canContinue });
 export const createSpeedRunModel = ({ variant = '', index = 0, total = 0, elapsedMs = 0, bestMs = 0 } = {}) => Object.freeze({ kind: 'speed-run', variant, index, total, elapsedMs, bestMs });

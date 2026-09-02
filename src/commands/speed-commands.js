@@ -1,4 +1,4 @@
-// 速解き固有のセッション状態を書き込むcommand。時計・表示・遷移はruntime側に残す。
+// 速解き固有のセッション状態を書き込む操作命令。時計・表示・遷移は実行側に残す。
 function startSpeedSessionCommand(){
   if(!speedSession||speedSession.started)return false;
   speedSession.started=true;

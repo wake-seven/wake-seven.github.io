@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-23:10';
+const APP_VERSION='2026.09.02-23:13';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -8438,7 +8438,7 @@ function setLanguageCommand(lang){
 export {};
 
 // ===== 速解き記録command =====
-// 進行報酬の書き込みcommand。節目ダイアログの表示処理から状態更新を分離する。
+// 進行報酬を書き込む操作命令。節目ダイアログの表示処理から状態更新を分離する。
 function grantMasterDialogRewardsCommand(kind){
   if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
   if(kind==='mastery'&&secondLapActive&&!rainbowDarumaGranted){
@@ -8465,7 +8465,7 @@ function recordProgressClearCommand(kind,index){
 export {};
 
 // ===== チュートリアルcommand =====
-// 速解き固有のセッション状態を書き込むcommand。時計・表示・遷移はruntime側に残す。
+// 速解き固有のセッション状態を書き込む操作命令。時計・表示・遷移は実行側に残す。
 function startSpeedSessionCommand(){
   if(!speedSession||speedSession.started)return false;
   speedSession.started=true;
@@ -8501,7 +8501,7 @@ function completeSpeedSessionCommand(result){
 export {};
 
 // ===== クイズUI =====
-// 速解きの記録データ書き込みcommand。表示用の集計・描画はruntime側に残す。
+// 速解きの記録データを書き込む操作命令。表示用の集計・描画は実行側に残す。
 function updateSpeedOptimalClearsCommand(){
   if(!speedSession)return false;
   speedSession.optimalClears=speedOptimalClears()+1;
@@ -10583,7 +10583,7 @@ export {};
 const CLEAR_FLOW_PHASE=Object.freeze({idle:'idle',celebrating:'celebrating',dialogPending:'dialog-pending',dialog:'dialog'});
 let clearFlowPhase=CLEAR_FLOW_PHASE.idle;
 // クリア周期を識別する世代番号。表示予約がキャンセルされても、古い
-// callback が後から実行された場合に現在の盤面へ作用しないようにする。
+// 完了処理が後から実行された場合に現在の盤面へ作用しないようにする。
 let clearFlowCycle=1;
 function resetClearFlow(){
   clearFlowCycle++;

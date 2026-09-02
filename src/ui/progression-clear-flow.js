@@ -6,7 +6,7 @@
 const CLEAR_FLOW_PHASE=Object.freeze({idle:'idle',celebrating:'celebrating',dialogPending:'dialog-pending',dialog:'dialog'});
 let clearFlowPhase=CLEAR_FLOW_PHASE.idle;
 // クリア周期を識別する世代番号。表示予約がキャンセルされても、古い
-// callback が後から実行された場合に現在の盤面へ作用しないようにする。
+// 完了処理が後から実行された場合に現在の盤面へ作用しないようにする。
 let clearFlowCycle=1;
 function resetClearFlow(){
   clearFlowCycle++;

@@ -1,7 +1,7 @@
 /**
- * 開発用の盤面操作コマンド境界。
- * classic実装は端で注入でき、このモジュールは
- * DOMアクセスも保存ポリシーも持たない。
+ * 開発用の盤面操作コマンドの入口。
+ * 公開版の実装は外側から注入でき、このモジュールは
+ * DOMアクセスと保存方針を持たない。
  */
 export function createBoardCommands({ getBoard, setBoard, applyMove, undoMove } = {}) {
   const current = () => typeof getBoard === 'function' ? getBoard() : null;

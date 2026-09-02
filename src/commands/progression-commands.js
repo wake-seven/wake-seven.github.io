@@ -1,4 +1,4 @@
-// 進行報酬の書き込みcommand。節目ダイアログの表示処理から状態更新を分離する。
+// 進行報酬を書き込む操作命令。節目ダイアログの表示処理から状態更新を分離する。
 function grantMasterDialogRewardsCommand(kind){
   if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
   if(kind==='mastery'&&secondLapActive&&!rainbowDarumaGranted){

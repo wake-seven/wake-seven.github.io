@@ -1,4 +1,4 @@
-// 速解きの記録データ書き込みcommand。表示用の集計・描画はruntime側に残す。
+// 速解きの記録データを書き込む操作命令。表示用の集計・描画は実行側に残す。
 function updateSpeedOptimalClearsCommand(){
   if(!speedSession)return false;
   speedSession.optimalClears=speedOptimalClears()+1;
