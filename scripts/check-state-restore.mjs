@@ -52,7 +52,7 @@ const firstState = firstLoad.api.create({
 });
 assert.equal(firstLoad.api.write(firstState, storage), true, 'initial state must be writable');
 
-// Dialog state is intentionally a separate UI snapshot, but uses the same
+// ダイアログ状態は意図的にUIスナップショットとして分離するが、同じ
 // persistent storage boundary and is restored by app-bootstrap on startup.
 storage.setItem('wake7-dialog-state', JSON.stringify({ id: 'chain', name: 'trainingWelcome', kind: null }));
 

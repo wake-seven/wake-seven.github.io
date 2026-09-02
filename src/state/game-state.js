@@ -2,7 +2,7 @@
  * WAKE SEVEN 統合状態の基盤。
  *
  * index.htmlの公開版は意図的に自己完結させている。このファイルは
- * is injected as an inline script by scripts/build-index.mjs so it remains
+ * scripts/build-index.mjsによってインラインスクリプトとして埋め込まれ、
  * ビルドなしでGitHub Pagesから利用できるよう、公開版へインライン埋め込みする。
  */
 (function attachWakeSevenState(global) {

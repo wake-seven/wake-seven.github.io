@@ -1456,7 +1456,7 @@
  * WAKE SEVEN 統合状態の基盤。
  *
  * index.htmlの公開版は意図的に自己完結させている。このファイルは
- * is injected as an inline script by scripts/build-index.mjs so it remains
+ * scripts/build-index.mjsによってインラインスクリプトとして埋め込まれ、
  * ビルドなしでGitHub Pagesから利用できるよう、公開版へインライン埋め込みする。
  */
 (function attachWakeSevenState(global) {
@@ -4250,7 +4250,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-10:24';
+const APP_VERSION='2026.09.02-10:27';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
