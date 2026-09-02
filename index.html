@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-02:14';
+const APP_VERSION='2026.09.03-02:19';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5233,6 +5233,9 @@ function renderSpeedModeOptions(){
 }
 function openSpeedPicker(){
   if(!DEBUG_MODE&&!featureUnlocked('speedRun'))return;
+  // 実行中の速解きから開始選択へ戻さない。問題切替や再描画で
+  // 同じ入口が再度呼ばれても、開始ダイアログを一瞬表示しない。
+  if(isMode('speed')&&speedSession?.started)return;
   speedVariant=preferredSpeedVariant();
   storage.set(SPEED_LAST_TAB_STORAGE_KEY,speedVariant);
   showMasterDialog('speedIntro');

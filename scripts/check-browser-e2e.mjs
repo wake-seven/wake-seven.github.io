@@ -8,12 +8,13 @@ import { fileURLToPath } from 'node:url';
 // 固定する。静的なcheck-browser-flowとは別に、実際のブラウザでこの
 // 手順を実行した結果を記録できるよう、対象DOMとデバッグ導線を検査する。
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
-const [template, events, clearFlow, bootstrap, speed, runtime] = await Promise.all([
+const [template, events, clearFlow, bootstrap, speed, speedCommands, runtime] = await Promise.all([
   readFile(join(root, 'src/index.template.html'), 'utf8'),
   readFile(join(root, 'src/runtime/app-events.js'), 'utf8'),
   readFile(join(root, 'src/ui/progression-clear-flow.js'), 'utf8'),
   readFile(join(root, 'src/runtime/app-bootstrap.js'), 'utf8'),
   readFile(join(root, 'src/runtime/speed.js'), 'utf8'),
+  readFile(join(root, 'src/commands/speed-commands.js'), 'utf8'),
   readFile(join(root, 'src/runtime/runtime.js'), 'utf8')
 ]);
 
@@ -29,6 +30,10 @@ assert.match(events, /WakeSevenEventBindings\.click\('clearNext',[\s\S]*advanceA
   'browser E2E target must use the unified clear-next command');
 assert.match(clearFlow, /function advanceAfterClear\(/,
   'browser E2E target must expose the clear-next route');
+assert.match(speedCommands, /function advanceSpeedSessionCommand\(\)[\s\S]*speedSession\.started=true/,
+  'speed next-stage transition must preserve the started state');
+assert.match(speed, /function loadSpeedStage\([\s\S]*if\(speedSession\.index>0\)speedSession\.started=true/,
+  'speed stage loading must not re-enter start-waiting state');
 assert.match(events, /\$\('debugSkipTutorial'\)\.addEventListener\('click',debugSkipTutorial\)/,
   'browser E2E target must expose the tutorial skip entry point');
 assert.match(events, /WakeSevenEventBindings\.click\('menuSpeed',[\s\S]*GameNavigation\.speedPicker\(\)/,
