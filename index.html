@@ -813,7 +813,7 @@
   #board .application-target-overlay-layer{pointer-events:none}
   #board .application-target-overlay{fill:none;stroke:#8B35F0;stroke-width:5;stroke-linejoin:round;pointer-events:none;vector-effect:non-scaling-stroke}
   #academyWelcomeBoard .application-target-overlay{fill:none;stroke:#8B35F0;stroke-width:5;stroke-linejoin:round;pointer-events:none;vector-effect:non-scaling-stroke}
-  .application-target-text{color:#8B35F0}
+  .application-target-text{color:#8B35F0;-webkit-text-stroke:1px #FFF;paint-order:stroke fill}
   /* 応用クラス開始案内でも、目標の3枚そのものの境界線を強調する。 */
   #academyWelcomeBoard .tile.application-target .hex{stroke:#8B35F0 !important;stroke-width:5 !important;stroke-linejoin:round}
   /* ミニ盤面(比較カード等)の回転アニメでも、本編の.tileと同じくレイヤーを先に確保しておく。
@@ -4297,7 +4297,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-21:05';
+const APP_VERSION='2026.09.02-21:20';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
