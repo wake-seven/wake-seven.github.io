@@ -164,9 +164,9 @@ function buildAcademyWelcomeBoard(variant='enroll'){
     g.style.transform=tileTransform(c.x,c.y,start[i]);
     board.appendChild(g);tiles[i]=g;
   });
-  // 目標パネルを通常パネルより後に描画し、隣接パネルの塗りで枠が欠けるのを防ぐ。
-  // 棒・軸はこの後に追加されるため、枠より前面のまま保たれる。
-  if(targetCells.size)tiles.forEach((tile,i)=>{if(targetCells.has(i))board.appendChild(tile);});
+  // 目標枠の順序は本編と共有する。棒・軸より背面のまま、対象パネルだけを後描画する。
+  placeApplicationTargetTiles(board,tiles,tiles.filter((_,i)=>targetCells.has(i)),{anchorSelector:'.grip-marker'});
+  renderApplicationTargetLayer(board,tiles,tiles.filter((_,i)=>targetCells.has(i)),{anchorSelector:'.grip-marker'});
   const baseWelcomeTiles=tiles.slice();
   const t=TRI[move.ti],angle=Math.atan2(t.y-CELL[3].y,t.x-CELL[3].x)*180/Math.PI,q=angle*Math.PI/180,r=32;
   const gripX=t.x+r*Math.cos(q),gripY=t.y+r*Math.sin(q);
@@ -220,7 +220,8 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       tile.style.transform=tileTransform(CELL[i].x,CELL[i].y,start[i]);
       board.appendChild(tile);
     });
-    if(targetCells.size)cycleTiles.forEach((tile,i)=>{if(targetCells.has(i))board.appendChild(tile);});
+    placeApplicationTargetTiles(board,cycleTiles,cycleTiles.filter((_,i)=>targetCells.has(i)),{anchorSelector:'.grip-marker'});
+    renderApplicationTargetLayer(board,cycleTiles,cycleTiles.filter((_,i)=>targetCells.has(i)),{anchorSelector:'.grip-marker'});
     grips.forEach(grip=>{grip.style.display='';board.appendChild(grip);});
     board.appendChild(touch);board.appendChild(counterLabel);board.appendChild(counterNumber);board.appendChild(counterUnit);board.appendChild(release);
     setTimeout(()=>{
@@ -251,18 +252,9 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       // 使っている書き方)に統一する。
       for(const index of t.cells)unit.appendChild(cycleTiles[index]);
       unit.appendChild(touch);
-      // 同じ回転グループ内では、対象パネルの枠だけを最後に描画する。
-      // 枠にパネルの塗りが重ならないため、回転中も全周が見える。
-      for(const index of t.cells){
-        if(!targetCells.has(index))continue;
-        const hex=cycleTiles[index].querySelector('.hex');
-        if(!hex)continue;
-        const frame=document.createElementNS(NS_,'path');
-        frame.setAttribute('class','application-target-overlay');
-        frame.setAttribute('d',hex.getAttribute('d')||'');
-        frame.style.transform=cycleTiles[index].style.transform;
-        unit.appendChild(frame);
-      }
+      // 回転中も共有レイヤーAPIで対象パネルの枠を生成する。
+      renderApplicationTargetLayer(unit,t.cells.map(index=>cycleTiles[index]),
+        t.cells.filter(index=>targetCells.has(index)).map(index=>cycleTiles[index]));
       // 使い回すunitは先に挿入済みのため、最前面に出すには回転開始のたびに一度前面へ出し直す。
       board.appendChild(unit);
       // タッチの瞬間だけ枠を見せ、回転が始まったら解除する。
@@ -301,7 +293,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       },wakeHappens?wakeDelay:Math.round(overshootDuration*(22/overshootAngle)));
       setTimeout(()=>{
         if(!alive())return;
-        unit.querySelectorAll('.application-target-overlay').forEach(frame=>frame.remove());
+        clearApplicationTargetLayer(unit);
         // 回転後も、目標枠をパネル自身に付けたままにする。
         // 回転した3枚を元のセル番号へ戻すと、枠だけが元位置へ戻って見えるため、
         // 物理パネルを回転先のセルへ移し、枠とパネルの対応を保つ。
@@ -327,9 +319,10 @@ function buildAcademyWelcomeBoard(variant='enroll'){
           tile.style.transform=tileTransform(CELL[destination].x,CELL[destination].y,turn);
           return {tile,target:targetCells.has(source)};
         });
-        // パネル同士の塗りで枠が隠れないよう、対象パネルだけタイル層の最後に置く。
-        finalTiles.filter(entry=>!entry.target).forEach(entry=>placeTile(entry.tile));
-        finalTiles.filter(entry=>entry.target).forEach(entry=>placeTile(entry.tile));
+        placeApplicationTargetTiles(board,finalTiles.map(entry=>entry.tile),
+          finalTiles.filter(entry=>entry.target).map(entry=>entry.tile),{anchorSelector:'.grip-marker'});
+        renderApplicationTargetLayer(board,finalTiles.map(entry=>entry.tile),
+          finalTiles.filter(entry=>entry.target).map(entry=>entry.tile),{anchorSelector:'.grip-marker'});
         release.textContent='';
         touch.style.display='none';
       },rotateDur);

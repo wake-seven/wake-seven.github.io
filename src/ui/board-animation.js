@@ -4,6 +4,50 @@
 function animationTileState(turn){
   return mod3(turn)===0?'stand':'fallen';
 }
+const APPLICATION_TARGET_FRAME_CLASS='application-target-overlay';
+const APPLICATION_TARGET_LAYER_CLASS='application-target-overlay-layer';
+// 応用編の目標枠を描画する共通API。枠をパネルの外側に一度だけ作り、
+// 対象パネルと同じ親・同じtransformの下に置くことで、隣接パネルに隠れず、
+// スワイプや開始演出でも物理パネルに追従させる。
+function clearApplicationTargetLayer(root=svg){
+  root?.querySelectorAll?.('.'+APPLICATION_TARGET_LAYER_CLASS).forEach(layer=>layer.remove());
+  root?.querySelectorAll?.('.'+APPLICATION_TARGET_FRAME_CLASS).forEach(frame=>frame.remove());
+}
+function renderApplicationTargetLayer(root,tiles,targetTiles,{anchorSelector=null}={}){
+  if(!root)return null;
+  clearApplicationTargetLayer(root);
+  const marked=new Set(targetTiles||[]);
+  const layer=document.createElementNS('http://www.w3.org/2000/svg','g');
+  layer.setAttribute('class',APPLICATION_TARGET_LAYER_CLASS);
+  for(const tile of tiles||[]){
+    if(!marked.has(tile))continue;
+    const hex=tile.querySelector?.('.hex');
+    if(!hex)continue;
+    const frame=document.createElementNS('http://www.w3.org/2000/svg','path');
+    frame.setAttribute('class',APPLICATION_TARGET_FRAME_CLASS);
+    frame.setAttribute('d',hex.getAttribute('d')||'');
+    if(tile.style.transform)frame.style.transform=tile.style.transform;
+    layer.appendChild(frame);
+  }
+  const anchor=anchorSelector?root.querySelector(anchorSelector):null;
+  if(anchor)root.insertBefore(layer,anchor);else root.appendChild(layer);
+  return layer;
+}
+// タイルの描画順はここだけで決める。棒・軸の前に目標タイルを置き、
+// 目標枠レイヤーはその直後に置くため、棒や軸より背面で全周が見える。
+function placeApplicationTargetTiles(root,tiles,targetTiles,{anchorSelector='.pivot'}={}){
+  if(!root)return;
+  const marked=new Set(targetTiles||[]);
+  const anchor=anchorSelector?root.querySelector(anchorSelector):null;
+  for(const tile of tiles||[]){
+    if(marked.has(tile))continue;
+    if(anchor)root.insertBefore(tile,anchor);else root.appendChild(tile);
+  }
+  for(const tile of tiles||[]){
+    if(!marked.has(tile))continue;
+    if(anchor)root.insertBefore(tile,anchor);else root.appendChild(tile);
+  }
+}
 // 回転中の一時グループは、通常タイルの後ろかつ軸・棒の直前に置く。
 // SVGではグループ内の要素を動かしても、グループ自身の描画順が変わらないため、
 // 末尾へ追加するのではなく、盤面のタイル層の最前面へ明示的に挿入する。
@@ -17,7 +61,7 @@ function createSwipeGroup(items,pivot){
   group.setAttribute('class','auto-swipe-group');
   // 静止時の枠は回転中のクローンと二重になり、古い位置に残って見えるため退避する。
   // アニメーション終了後のpaint()で、現在位置に再生成される。
-  svg?.querySelector('.application-target-overlay-layer')?.remove();
+  clearApplicationTargetLayer(svg);
   const clones=[];
   // 同じ回転グループ内でも、目標パネルを最後に描画する。
   // SVGは後から描画した要素が前面になるため、隣接パネルに枠を隠されない。
@@ -33,17 +77,9 @@ function createSwipeGroup(items,pivot){
     group.appendChild(clone);
     clones.push({item,clone,hex:clone.querySelector('.hex')});
   }
-  // 枠はパネルの中に置くと、隣のパネルの塗りに境界を覆われることがある。
-  // 回転グループ内の最後に枠だけを重ね、パネルと同じ変形を与える。
-  // グループ自体は軸・棒の直前なので、枠が棒を覆うことはない。
-  for(const {clone,hex} of clones){
-    if(!clone.classList.contains('application-target')||!hex)continue;
-    const frame=document.createElementNS('http://www.w3.org/2000/svg','path');
-    frame.setAttribute('class','application-target-overlay');
-    frame.setAttribute('d',hex.getAttribute('d')||'');
-    frame.style.transform=clone.style.transform;
-    group.appendChild(frame);
-  }
+  // 枠は共有APIで生成し、クローンと同じ回転グループに置く。
+  renderApplicationTargetLayer(group,clones.map(({clone})=>clone),
+    clones.filter(({clone})=>clone.classList.contains('application-target')).map(({clone})=>clone));
   placeSwipeGroupOnTop(group);
   return {group,clones};
 }

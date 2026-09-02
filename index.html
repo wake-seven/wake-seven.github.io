@@ -2303,6 +2303,28 @@ const APPLICATION_STAGE_TARGETS=[
   {source:7,targetCells:[0,1,2]},
   {source:8,targetCells:[0,3,4]}
 ];
+// 応用編の目標は問題の物理パネル番号で管理する。ここで壊れた定義を即座に検出し、
+// 表示側が不完全な目標を黙って描画することを防ぐ。
+function validateApplicationStageTargets(){
+  if(APPLICATION_STAGE_TARGETS.length!==APPLICATION_STAGE_COUNT)
+    throw new Error('Application target count does not match APPLICATION_STAGE_COUNT.');
+  const sources=new Set();
+  for(const [index,definition] of APPLICATION_STAGE_TARGETS.entries()){
+    const {source,targetCells}=definition;
+    if(!Number.isInteger(source)||source<0||source>=TWO_MOVE_STAGES.length)
+      throw new Error('Invalid application source at stage '+(index+1)+'.');
+    if(sources.has(source))throw new Error('Duplicate application source: '+source+'.');
+    sources.add(source);
+    if(TWO_MOVE_STAGES[source].par!==2)
+      throw new Error('Application source is not a two-move stage: '+source+'.');
+    if(!Array.isArray(targetCells)||targetCells.length!==3)
+      throw new Error('Application target must contain exactly three cells at stage '+(index+1)+'.');
+    const cells=new Set(targetCells);
+    if(cells.size!==targetCells.length||targetCells.some(cell=>!Number.isInteger(cell)||cell<0||cell>=N))
+      throw new Error('Invalid or duplicate application target cell at stage '+(index+1)+'.');
+  }
+}
+validateApplicationStageTargets();
 const APPLICATION_STAGES=APPLICATION_STAGE_TARGETS.map(({source,targetCells})=>({
   ...TWO_MOVE_STAGES[source],application:true,targetCells:Object.freeze(targetCells)
 }));
@@ -4300,7 +4322,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-00:20';
+const APP_VERSION='2026.09.03-00:50';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5018,36 +5040,14 @@ function bindApplicationTargetTiles(){
 function renderApplicationTargetCells(){
   if(!isApplicationTargetStage())applicationTargetTiles.clear();
   tileEls.forEach(tile=>tile.classList.toggle('application-target',applicationTargetTiles.has(tile)));
-  // パネル自身のstrokeだけでは隣接パネルの塗りに一部覆われるため、
-  // 同じ形の枠をタイル層の最前面にも置く。タイルと同じtransformを使うので、
-  // 盤面の並べ替えやスワイプ後も物理パネルに追従する。
-  svg.querySelector('.application-target-overlay-layer')?.remove();
-  const overlayLayer=document.createElementNS('http://www.w3.org/2000/svg','g');
-  overlayLayer.setAttribute('class','application-target-overlay-layer');
-  for(const tile of tileEls){
-    if(!applicationTargetTiles.has(tile))continue;
-    const hex=tile.querySelector('.hex');
-    if(!hex)continue;
-    const frame=document.createElementNS('http://www.w3.org/2000/svg','path');
-    frame.setAttribute('class','application-target-overlay');
-    frame.setAttribute('d',hex.getAttribute('d')||'');
-    frame.style.transform=tile.style.transform;
-    overlayLayer.appendChild(frame);
-  }
-  // 目標パネルを他のパネルより先に描画する。水色の棒・軸は後ろに置かず、
-  // SVGの後続要素として常に目標パネルの境界線より前に表示する。
-  const firstPivot=svg.querySelector('.pivot');
-  if(firstPivot){
-    for(const tile of tileEls){
-      if(applicationTargetTiles.has(tile))svg.insertBefore(tile,firstPivot);
-    }
-    svg.insertBefore(overlayLayer,firstPivot);
-  }else svg.appendChild(overlayLayer);
+  // 静止表示も開始アニメ・スワイプと同じ共有レイヤーAPIを使う。
+  placeApplicationTargetTiles(svg,tileEls,applicationTargetTiles,{anchorSelector:'.pivot'});
+  renderApplicationTargetLayer(svg,tileEls,applicationTargetTiles,{anchorSelector:'.pivot'});
 }
 // 直接スワイプ中はタイル自身が動くため、静止用の重ね枠を一時的に外す。
 // スワイプ完了後は paint() から renderApplicationTargetCells() が再生成する。
 function removeApplicationTargetOverlay(){
-  svg?.querySelector('.application-target-overlay-layer')?.remove();
+  clearApplicationTargetLayer(svg);
 }
 // だるま修行(上巻・中巻・下巻)全体: 「あと2くるり」に到達した瞬間、形の名前を演出する対象区間。
 const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;
@@ -5631,6 +5631,50 @@ export {};
 function animationTileState(turn){
   return mod3(turn)===0?'stand':'fallen';
 }
+const APPLICATION_TARGET_FRAME_CLASS='application-target-overlay';
+const APPLICATION_TARGET_LAYER_CLASS='application-target-overlay-layer';
+// 応用編の目標枠を描画する共通API。枠をパネルの外側に一度だけ作り、
+// 対象パネルと同じ親・同じtransformの下に置くことで、隣接パネルに隠れず、
+// スワイプや開始演出でも物理パネルに追従させる。
+function clearApplicationTargetLayer(root=svg){
+  root?.querySelectorAll?.('.'+APPLICATION_TARGET_LAYER_CLASS).forEach(layer=>layer.remove());
+  root?.querySelectorAll?.('.'+APPLICATION_TARGET_FRAME_CLASS).forEach(frame=>frame.remove());
+}
+function renderApplicationTargetLayer(root,tiles,targetTiles,{anchorSelector=null}={}){
+  if(!root)return null;
+  clearApplicationTargetLayer(root);
+  const marked=new Set(targetTiles||[]);
+  const layer=document.createElementNS('http://www.w3.org/2000/svg','g');
+  layer.setAttribute('class',APPLICATION_TARGET_LAYER_CLASS);
+  for(const tile of tiles||[]){
+    if(!marked.has(tile))continue;
+    const hex=tile.querySelector?.('.hex');
+    if(!hex)continue;
+    const frame=document.createElementNS('http://www.w3.org/2000/svg','path');
+    frame.setAttribute('class',APPLICATION_TARGET_FRAME_CLASS);
+    frame.setAttribute('d',hex.getAttribute('d')||'');
+    if(tile.style.transform)frame.style.transform=tile.style.transform;
+    layer.appendChild(frame);
+  }
+  const anchor=anchorSelector?root.querySelector(anchorSelector):null;
+  if(anchor)root.insertBefore(layer,anchor);else root.appendChild(layer);
+  return layer;
+}
+// タイルの描画順はここだけで決める。棒・軸の前に目標タイルを置き、
+// 目標枠レイヤーはその直後に置くため、棒や軸より背面で全周が見える。
+function placeApplicationTargetTiles(root,tiles,targetTiles,{anchorSelector='.pivot'}={}){
+  if(!root)return;
+  const marked=new Set(targetTiles||[]);
+  const anchor=anchorSelector?root.querySelector(anchorSelector):null;
+  for(const tile of tiles||[]){
+    if(marked.has(tile))continue;
+    if(anchor)root.insertBefore(tile,anchor);else root.appendChild(tile);
+  }
+  for(const tile of tiles||[]){
+    if(!marked.has(tile))continue;
+    if(anchor)root.insertBefore(tile,anchor);else root.appendChild(tile);
+  }
+}
 // 回転中の一時グループは、通常タイルの後ろかつ軸・棒の直前に置く。
 // SVGではグループ内の要素を動かしても、グループ自身の描画順が変わらないため、
 // 末尾へ追加するのではなく、盤面のタイル層の最前面へ明示的に挿入する。
@@ -5644,7 +5688,7 @@ function createSwipeGroup(items,pivot){
   group.setAttribute('class','auto-swipe-group');
   // 静止時の枠は回転中のクローンと二重になり、古い位置に残って見えるため退避する。
   // アニメーション終了後のpaint()で、現在位置に再生成される。
-  svg?.querySelector('.application-target-overlay-layer')?.remove();
+  clearApplicationTargetLayer(svg);
   const clones=[];
   // 同じ回転グループ内でも、目標パネルを最後に描画する。
   // SVGは後から描画した要素が前面になるため、隣接パネルに枠を隠されない。
@@ -5660,17 +5704,9 @@ function createSwipeGroup(items,pivot){
     group.appendChild(clone);
     clones.push({item,clone,hex:clone.querySelector('.hex')});
   }
-  // 枠はパネルの中に置くと、隣のパネルの塗りに境界を覆われることがある。
-  // 回転グループ内の最後に枠だけを重ね、パネルと同じ変形を与える。
-  // グループ自体は軸・棒の直前なので、枠が棒を覆うことはない。
-  for(const {clone,hex} of clones){
-    if(!clone.classList.contains('application-target')||!hex)continue;
-    const frame=document.createElementNS('http://www.w3.org/2000/svg','path');
-    frame.setAttribute('class','application-target-overlay');
-    frame.setAttribute('d',hex.getAttribute('d')||'');
-    frame.style.transform=clone.style.transform;
-    group.appendChild(frame);
-  }
+  // 枠は共有APIで生成し、クローンと同じ回転グループに置く。
+  renderApplicationTargetLayer(group,clones.map(({clone})=>clone),
+    clones.filter(({clone})=>clone.classList.contains('application-target')).map(({clone})=>clone));
   placeSwipeGroupOnTop(group);
   return {group,clones};
 }
@@ -5994,9 +6030,9 @@ function buildAcademyWelcomeBoard(variant='enroll'){
     g.style.transform=tileTransform(c.x,c.y,start[i]);
     board.appendChild(g);tiles[i]=g;
   });
-  // 目標パネルを通常パネルより後に描画し、隣接パネルの塗りで枠が欠けるのを防ぐ。
-  // 棒・軸はこの後に追加されるため、枠より前面のまま保たれる。
-  if(targetCells.size)tiles.forEach((tile,i)=>{if(targetCells.has(i))board.appendChild(tile);});
+  // 目標枠の順序は本編と共有する。棒・軸より背面のまま、対象パネルだけを後描画する。
+  placeApplicationTargetTiles(board,tiles,tiles.filter((_,i)=>targetCells.has(i)),{anchorSelector:'.grip-marker'});
+  renderApplicationTargetLayer(board,tiles,tiles.filter((_,i)=>targetCells.has(i)),{anchorSelector:'.grip-marker'});
   const baseWelcomeTiles=tiles.slice();
   const t=TRI[move.ti],angle=Math.atan2(t.y-CELL[3].y,t.x-CELL[3].x)*180/Math.PI,q=angle*Math.PI/180,r=32;
   const gripX=t.x+r*Math.cos(q),gripY=t.y+r*Math.sin(q);
@@ -6050,7 +6086,8 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       tile.style.transform=tileTransform(CELL[i].x,CELL[i].y,start[i]);
       board.appendChild(tile);
     });
-    if(targetCells.size)cycleTiles.forEach((tile,i)=>{if(targetCells.has(i))board.appendChild(tile);});
+    placeApplicationTargetTiles(board,cycleTiles,cycleTiles.filter((_,i)=>targetCells.has(i)),{anchorSelector:'.grip-marker'});
+    renderApplicationTargetLayer(board,cycleTiles,cycleTiles.filter((_,i)=>targetCells.has(i)),{anchorSelector:'.grip-marker'});
     grips.forEach(grip=>{grip.style.display='';board.appendChild(grip);});
     board.appendChild(touch);board.appendChild(counterLabel);board.appendChild(counterNumber);board.appendChild(counterUnit);board.appendChild(release);
     setTimeout(()=>{
@@ -6081,18 +6118,9 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       // 使っている書き方)に統一する。
       for(const index of t.cells)unit.appendChild(cycleTiles[index]);
       unit.appendChild(touch);
-      // 同じ回転グループ内では、対象パネルの枠だけを最後に描画する。
-      // 枠にパネルの塗りが重ならないため、回転中も全周が見える。
-      for(const index of t.cells){
-        if(!targetCells.has(index))continue;
-        const hex=cycleTiles[index].querySelector('.hex');
-        if(!hex)continue;
-        const frame=document.createElementNS(NS_,'path');
-        frame.setAttribute('class','application-target-overlay');
-        frame.setAttribute('d',hex.getAttribute('d')||'');
-        frame.style.transform=cycleTiles[index].style.transform;
-        unit.appendChild(frame);
-      }
+      // 回転中も共有レイヤーAPIで対象パネルの枠を生成する。
+      renderApplicationTargetLayer(unit,t.cells.map(index=>cycleTiles[index]),
+        t.cells.filter(index=>targetCells.has(index)).map(index=>cycleTiles[index]));
       // 使い回すunitは先に挿入済みのため、最前面に出すには回転開始のたびに一度前面へ出し直す。
       board.appendChild(unit);
       // タッチの瞬間だけ枠を見せ、回転が始まったら解除する。
@@ -6131,7 +6159,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       },wakeHappens?wakeDelay:Math.round(overshootDuration*(22/overshootAngle)));
       setTimeout(()=>{
         if(!alive())return;
-        unit.querySelectorAll('.application-target-overlay').forEach(frame=>frame.remove());
+        clearApplicationTargetLayer(unit);
         // 回転後も、目標枠をパネル自身に付けたままにする。
         // 回転した3枚を元のセル番号へ戻すと、枠だけが元位置へ戻って見えるため、
         // 物理パネルを回転先のセルへ移し、枠とパネルの対応を保つ。
@@ -6157,9 +6185,10 @@ function buildAcademyWelcomeBoard(variant='enroll'){
           tile.style.transform=tileTransform(CELL[destination].x,CELL[destination].y,turn);
           return {tile,target:targetCells.has(source)};
         });
-        // パネル同士の塗りで枠が隠れないよう、対象パネルだけタイル層の最後に置く。
-        finalTiles.filter(entry=>!entry.target).forEach(entry=>placeTile(entry.tile));
-        finalTiles.filter(entry=>entry.target).forEach(entry=>placeTile(entry.tile));
+        placeApplicationTargetTiles(board,finalTiles.map(entry=>entry.tile),
+          finalTiles.filter(entry=>entry.target).map(entry=>entry.tile),{anchorSelector:'.grip-marker'});
+        renderApplicationTargetLayer(board,finalTiles.map(entry=>entry.tile),
+          finalTiles.filter(entry=>entry.target).map(entry=>entry.tile),{anchorSelector:'.grip-marker'});
         release.textContent='';
         touch.style.display='none';
       },rotateDur);
