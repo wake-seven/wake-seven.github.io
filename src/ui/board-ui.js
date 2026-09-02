@@ -941,6 +941,37 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
   play();setUiEffectInterval('clear-guide:'+id,'cycle',play,4700);
 }
 // ===== 描画・座標変換・スワイプアニメーション =====
+// 現在の盤面を完了させる唯一の入口。盤面イベントはモード別の詳細を
+// ここへ渡し、演出・進行記録・次のアクションが別経路で競合しないようにする。
+function completeBoard({mode=activeMode,context={},animation=true,nextAction=null}={}){
+  if(mode==='speed'){completeSpeedStage();return true;}
+  const target=mode||activeMode;
+  resetClearFlow();
+  clearShown=true;
+  svg.classList.add('clear-pending');
+  if(requiresOptimalClear()&&moves!==best){
+    renewFourthChecks();hideGameDialogs();renderOptimalFail();$('optimalFailDialog').hidden=false;return false;
+  }
+  const analyticsStage=analyticsStageInfo();
+  if(analyticsStage){
+    const firstClear=target==='satori'?!clearedSatoriStages.has(satoriIndex)
+      :target==='mastery'?!clearedExtraStages.has(extraIndex)
+      :!clearedStages.has(stageIndex);
+    trackAnalyticsEvent('stage_clear',Object.assign({},analyticsStage,{moves_used:moves,first_clear:firstClear}));
+  }
+  if(target==='satori'){
+    const wasSatoriMastered=isSatoriMastered();recordProgressClearCommand('satori',satoriIndex);
+    if(isSatoriMastered())rememberClearedMessage(false,satoriIndex,true);
+    if(!wasSatoriMastered&&isSatoriMastered())pendingMasterThemeRefresh=true;else updateMasterTheme();renderStageNav();
+  }else if(target==='mastery'){
+    recordProgressClearCommand('mastery',extraIndex);rememberClearedMessage(true,extraIndex);updateMasterTheme();
+  }else if(target!=='free'&&target!=='custom'){
+    recordProgressClearCommand('primary',stageIndex);rememberClearedMessage(false,stageIndex);
+  }
+  const message=$('msg');message.textContent='';message.classList.remove('show','tip','long-tip');clearUiEffectTimers('clear-transition');
+  startClearFlow({animation,context,nextAction});
+  return true;
+}
 function paint(){
   for(let i=0;i<N;i++){
     const up=mod3(spin[i])===0;
@@ -973,8 +1004,7 @@ function paint(){
     renderSpeedClock();
   }
   if(isMode('speed')&&isSolved()&&!clearShown&&speedSession&&!speedAwaitingStart()){
-    completeSpeedStage();
-    return;
+    completeBoard({mode:'speed'});return;
   }
   // 二周目の悟りは、最短手数を手がかりにさせない。成功しない限り4手目まで続けられる。
   const satoriFailureLimit=secondLapActive?4:best;
@@ -985,49 +1015,7 @@ function paint(){
     $('optimalFailDialog').hidden=false;
     return;
   }
-  if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){
-    resetClearFlow();
-    clearShown=true;
-    svg.classList.add('clear-pending');
-    if(requiresOptimalClear()&&moves!==best){
-      renewFourthChecks();
-      hideGameDialogs();
-      renderOptimalFail();
-      $('optimalFailDialog').hidden=false;
-      return;
-    }
-    const analyticsStage=analyticsStageInfo();
-    if(analyticsStage){
-      const firstClear=isMode('satori')?!clearedSatoriStages.has(satoriIndex)
-        :isMode('mastery')?!clearedExtraStages.has(extraIndex)
-        :!clearedStages.has(stageIndex);
-      trackAnalyticsEvent('stage_clear',Object.assign({},analyticsStage,{
-        moves_used:moves,first_clear:firstClear
-      }));
-    }
-    if(isMode('satori')){
-      const wasSatoriMastered=isSatoriMastered();
-      recordProgressClearCommand('satori',satoriIndex);
-      if(isSatoriMastered())rememberClearedMessage(false,satoriIndex,true);
-      if(!wasSatoriMastered&&isSatoriMastered())pendingMasterThemeRefresh=true;
-      else updateMasterTheme();
-      renderStageNav();
-    }else if(isMode('mastery')){
-      recordProgressClearCommand('mastery',extraIndex);
-      rememberClearedMessage(true,extraIndex);
-      updateMasterTheme();
-    }else if(!isMode('free')&&!isMode('custom')){
-      recordProgressClearCommand('primary',stageIndex);
-      rememberClearedMessage(false,stageIndex);
-    }
-    const m=$('msg');
-    m.textContent='';
-    m.classList.remove('show','tip','long-tip');
-    clearUiEffectTimers('clear-transition');
-    // クリア演出の開始とダイアログ表示を同じ予約にまとめる。
-    // 中継タイマーを挟むと、再描画や別ダイアログの後始末で表示予約が欠落する。
-    startClearFlow();
-  }
+  if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){completeBoard({mode:activeMode});}
 }
 function tileTransform(x,y,turn){
   return WakeSevenBoardGeometry.tileTransform(x,y,turn);
