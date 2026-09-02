@@ -743,15 +743,35 @@ function applicationGoalPreviewState(stage){
   }
   return stage.state;
 }
+let applicationPreviewHideTimer=0;
 function renderApplicationTargetPreview(){
   const preview=$('applicationTargetPreview'),board=$('applicationTargetPreviewBoard');
   if(!preview||!board)return;
   const remaining=SOLVER.dist[enc(ori)];
   const stage=isApplicationTargetStage()?STAGES[stageIndex]:null;
   const targets=stage?.targetCells||[];
-  const visible=!!stage&&remaining>1&&targets.length===3;
-  preview.hidden=!visible;
-  if(!visible){board.replaceChildren();return;}
+  if(!stage||targets.length!==3){
+    clearTimeout(applicationPreviewHideTimer);
+    preview.classList.remove('is-fading');
+    preview.hidden=true;
+    board.replaceChildren();
+    return;
+  }
+  if(remaining<=1){
+    if(!preview.hidden&&!preview.classList.contains('is-fading')){
+      preview.classList.add('is-fading');
+      clearTimeout(applicationPreviewHideTimer);
+      applicationPreviewHideTimer=setTimeout(()=>{
+        preview.hidden=true;
+        preview.classList.remove('is-fading');
+        board.replaceChildren();
+      },300);
+    }
+    return;
+  }
+  clearTimeout(applicationPreviewHideTimer);
+  preview.classList.remove('is-fading');
+  preview.hidden=false;
   // 見本は元盤面の座標を縮小するのではなく、目標の3枚だけを
   // 「左上・右上・下中央」の逆三角形に固定して描く。元盤面のセル番号は
   // 目標状態から向きと色を読むためだけに使い、表示位置には使わない。
