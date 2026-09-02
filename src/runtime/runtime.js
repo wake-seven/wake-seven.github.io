@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-15:34';
+const APP_VERSION='2026.09.02-15:38';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -700,6 +700,8 @@ const isDevelopmentStage=()=>currentUiPolicy().development===true;
 const isSpeedFallingRodStage=()=>currentUiPolicy().speedFalling===true;
 // 発展クラス・速解き九番勝負のどちらでも、間違えた棒を落として二度と選べなくする対象区間。
 const isFallingRodStage=()=>currentUiPolicy().eliminateWrongRods===true;
+// 応用編は、目標以外を回した場合に盤面を自動で元へ戻す。
+const isWrongMoveRewindStage=()=>currentUiPolicy().rewindWrongMove===true;
 // だるま修行(上巻・中巻・下巻)全体: 「あと2くるり」に到達した瞬間、形の名前を演出する対象区間。
 const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;
 let guidedBasicCandidateTis=null,guidedBasicCandidateSignature=null;
@@ -836,14 +838,44 @@ function renderApplicationTargetCells(){
   const targets=new Set(Array.isArray(policy?.targetCells)?policy.targetCells:[]);
   if(application&&!isSolved()&&!targets.size){
     const stage=STAGES[stageIndex];
-    if(Array.isArray(stage?.targetCells))stage.targetCells.forEach(cell=>targets.add(cell));
-    if(!targets.size){
-      const move=lessonBestMove(enc(ori));
-      if(move)TRI[move.ti].cells.forEach(cell=>targets.add(cell));
+    const move=lessonBestMove(enc(ori));
+    if(move){
+      // 回す棒ではなく、回した後に同じ向きで寝る三角形を目標として示す。
+      const after=rollOnce(ori,move.ti,move.dir),operation=new Set(TRI[move.ti].cells);
+      const aligned=TRI.filter(triangle=>{
+        const [first,...rest]=triangle.cells;
+        return after[first]!==0&&rest.every(cell=>after[cell]===after[first]);
+      });
+      // 複数候補があるときは、回転操作そのものではない整列グループを優先する。
+      const target=aligned.find(triangle=>triangle.cells.some(cell=>!operation.has(cell)))||aligned[0]
+        ||TRI.find(triangle=>{
+          const [first,...rest]=triangle.cells;
+          return rest.every(cell=>after[cell]===after[first]);
+        });
+      target?.cells.forEach(cell=>targets.add(cell));
     }
+    if(!targets.size&&Array.isArray(stage?.targetCells))stage.targetCells.forEach(cell=>targets.add(cell));
+  }
+  let overlay=svg.querySelector('.application-target-overlay');
+  if(!overlay){
+    overlay=document.createElementNS('http://www.w3.org/2000/svg','g');
+    overlay.setAttribute('class','application-target-overlay');
+    svg.appendChild(overlay);
+  }
+  while(overlay.childElementCount<N){
+    const frame=document.createElementNS('http://www.w3.org/2000/svg','path');
+    frame.setAttribute('class','application-target-frame');
+    frame.setAttribute('d',hexPath(R));
+    frame.dataset.cell=overlay.childElementCount;
+    overlay.appendChild(frame);
   }
   svg.querySelectorAll('.tile').forEach(tile=>{
     tile.classList.toggle('application-target',application&&!isSolved()&&targets.has(Number(tile.dataset.cell)));
+  });
+  overlay.childNodes.forEach(frame=>{
+    const cell=Number(frame.dataset.cell),active=application&&!isSolved()&&targets.has(cell);
+    frame.style.transform=tileEls[cell]?.style.transform||'';
+    frame.style.display=active?'':'none';
   });
 }
 // 補助輪中も盤面全体を見比べられるよう、選択外の4枚は暗転させない。

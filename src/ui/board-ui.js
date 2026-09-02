@@ -1890,9 +1890,15 @@ function finishDrag(e,cancel=false,forcedTurns=null){
   }
   // 学園の補助輪でも、120°以上回した後に0°へ戻った往復を見逃さない。
   // 正しい棒かどうかは最短距離が縮むかで判定し、違う棒は従来どおり候補から落とす。
-  if(!dir&&dg.maxAbsDeg>=120&&(isGuidedBasicStage()||isFallingRodStage())&&guidedBasicCandidateTis){
+  if(!dir&&dg.maxAbsDeg>=120&&(isGuidedBasicStage()||isFallingRodStage()||isWrongMoveRewindStage())&&(guidedBasicCandidateTis||isWrongMoveRewindStage())){
     const before=SOLVER.dist[enc(ori)];
     const correctPlace=[1,-1].some(candidate=>SOLVER.dist[enc(rollOnce(ori,dg.ti,candidate))]===before-1);
+    if(isWrongMoveRewindStage()){
+      $('gripPromptText').textContent=tr(correctPlace?'assistedRightGrip':'assistedWrongPlace');
+      $('gripPrompt').hidden=false;
+      animateGuidedBasicRewind(dg);
+      return;
+    }
     if(!correctPlace){
       guidedBasicCandidateTis.delete(dg.ti);
       fallenRodTis.add(dg.ti);
@@ -1920,11 +1926,17 @@ function finishDrag(e,cancel=false,forcedTurns=null){
     setTimeout(showTutorialCue,120);
     return;
   }
-  if((isGuidedBasicStage()||isFallingRodStage())&&dir){
+  if((isGuidedBasicStage()||isFallingRodStage()||isWrongMoveRewindStage())&&dir){
     const before=SOLVER.dist[enc(ori)];
     const after=SOLVER.dist[enc(rollOnce(ori,dg.ti,dir))];
     if(after!==before-1){
       const correctPlace=[1,-1].some(candidate=>SOLVER.dist[enc(rollOnce(ori,dg.ti,candidate))]===before-1);
+      if(isWrongMoveRewindStage()){
+        $('gripPromptText').textContent=tr(correctPlace?'assistedWrongDirection':'assistedWrongPlace');
+        $('gripPrompt').hidden=false;
+        animateGuidedBasicRewind(dg);
+        return;
+      }
       // 棒そのものが違った場合は、その棒を候補から落として同じ手の間は選べなくする
       // (消すのではなくグレーアウトして残すため、fallenRodTisにも記録しておく)。
       // guidedBasicCandidateTisは学園・速解き九番勝負では常に非nullなので、ここが実質的に
