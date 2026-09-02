@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-02:49';
+const APP_VERSION='2026.09.03-02:53';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -9480,6 +9480,14 @@ function hasCompetingDialogForClear(){
 function showClearDialog(){
   finishClearFlowDialog();
   const clearContext=createClearTransitionContext(stageIndex+1);
+  // 速解きのクリアは専用のタイマー・次問遷移で処理する。
+  // 通常ステージの古い stageIndex / masteryClearContext を使って
+  // 卒業試験や名人ダイアログを表示してはいけない。
+  if(clearContext.mode==='speed'){
+    $('clearDialog').hidden=true;
+    resetClearFlow();
+    return;
+  }
   // クリア演出の遅延中に別ダイアログが残っていても、現在のクリア結果を
   // 表示できずに終わらせない。先に古いダイアログを閉じてから描画する。
   if(hasCompetingDialogForClear())closeProgressionDialog();
@@ -11080,6 +11088,9 @@ function debugClearCurrent(extraMoves=0){
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   $('clearNext').hidden=true;
   GameBoard.repaint();
+  // 速解きのデバッグ即クリアは、通常クリアダイアログではなく
+  // 実プレイと同じ専用の完了処理（保存→次問）へ接続する。
+  if(isMode('speed')){completeSpeedStage();return;}
   // デバッグ即クリアでも、通常操作と同じクリア演出・ダイアログ遷移を直ちに予約する。
   // 再描画側の予約と重なっても、同じタイマーキーで冪等に置き換わる。
   startClearFlow();

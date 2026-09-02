@@ -272,6 +272,14 @@ function hasCompetingDialogForClear(){
 function showClearDialog(){
   finishClearFlowDialog();
   const clearContext=createClearTransitionContext(stageIndex+1);
+  // 速解きのクリアは専用のタイマー・次問遷移で処理する。
+  // 通常ステージの古い stageIndex / masteryClearContext を使って
+  // 卒業試験や名人ダイアログを表示してはいけない。
+  if(clearContext.mode==='speed'){
+    $('clearDialog').hidden=true;
+    resetClearFlow();
+    return;
+  }
   // クリア演出の遅延中に別ダイアログが残っていても、現在のクリア結果を
   // 表示できずに終わらせない。先に古いダイアログを閉じてから描画する。
   if(hasCompetingDialogForClear())closeProgressionDialog();
