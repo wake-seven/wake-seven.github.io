@@ -33,7 +33,7 @@ assert.match(published, /\$\('aboutVersion'\)\.textContent='v'\+APP_VERSION/,
   'generated public bundle must render the source APP_VERSION');
 assert.doesNotMatch(runtime, /const STORAGE_KEYS=WakeSevenState\.STORAGE_KEYS/,
   'runtime must not depend on the flat STORAGE_KEYS API');
-assert.match(bootstrap, /buildBoard\(\);[\s\S]*restoreActiveSession\(\);[\s\S]*restoreDialogState\(/,
+assert.match(bootstrap, /buildBoard\(\);[\s\S]*restoreActiveSession\(\);[\s\S]*(?:restoreDialogState|restoreProgressionDialog)\(/,
   'startup must build, restore the board, then restore dialogs');
 assert.match(bootstrap, /document\.body\.classList\.remove\('app-booting'\)/,
   'startup must reveal the restored screen only after bootstrap');

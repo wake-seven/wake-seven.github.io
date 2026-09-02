@@ -10,7 +10,8 @@ updateMasterTheme();
 restoreActiveSession();
 let savedLanguage=UI_TEXT[gameState.settings.language]?gameState.settings.language:'ja';
 applyLanguage(savedLanguage);
-restoreDialogState(storage.json(DIALOG_STATE_STORAGE_KEY,null));
+// 保存済みダイアログの復元は、進行UIの共通入口へ委譲する。
+restoreProgressionDialog(storage.json(DIALOG_STATE_STORAGE_KEY,null));
 // 初期HTMLの仮状態ではなく、保存状態を反映した最初の画面だけを公開する。
 document.body.classList.remove('app-booting');
 if(storage.get(STORAGE_KEY_GROUPS.progression.introSeen)!=='1')setTimeout(()=>{if(canShowDeferredBootDialog())openIntroGuide();},350);

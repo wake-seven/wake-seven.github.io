@@ -83,7 +83,7 @@ for (const source of [runtimeSource, published]) {
   assert.match(source, /if\(state\.id==='guideHub'/, 'guide hub state must be restorable');
   assert.match(source, /if\(state\.id==='twoMove'/, 'pattern guide state must be restorable');
 }
-assert.match(bootstrapSource, /restoreActiveSession\(\);[\s\S]*restoreDialogState\(storage\.json\(DIALOG_STATE_STORAGE_KEY,null\)\);/,
+assert.match(bootstrapSource, /restoreActiveSession\(\);[\s\S]*(?:restoreDialogState|restoreProgressionDialog)\(storage\.json\(DIALOG_STATE_STORAGE_KEY,null\)\);/,
   'startup must restore the active session before the dialog');
 assert.match(bootstrapSource, /document\.body\.classList\.remove\('app-booting'\);/,
   'initial placeholder must remain hidden until restored state is applied');

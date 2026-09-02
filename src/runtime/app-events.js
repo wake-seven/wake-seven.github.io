@@ -910,7 +910,7 @@ function applyLanguage(lang){
     renderClearStageContext();
     renderClearTip();
     renderClearQuiz();
-    renderBoardQuiz('boardQuiz',boardQuizConfigForCurrent(),{requireAnswer:true});
+    showProgressionQuiz({rootId:'boardQuiz',boardQuizConfig:boardQuizConfigForCurrent(),requireAnswer:true});
     const action=$('clearNext');
     const {mode,masteryIndex,stageIndex}=runtimeSnapshot();
     if(mode==='free')action.textContent=tr('another');

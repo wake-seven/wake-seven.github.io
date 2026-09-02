@@ -811,6 +811,7 @@ function volumeLabel(n){
 }
 function hideGameDialogs(){
   cancelBoardAnimation('dialog-close');
+  closeProgressionQuiz();
   closeChainDialog();
   closeTwoMoveLessonDialog();
   stopClearGuideBoard('clearGuideBoard');
@@ -821,9 +822,6 @@ function hideGameDialogs(){
   $('messageDialog').hidden=true;
   messageDialogReturn=null;
   $('optimalFailDialog').hidden=true;
-  $('clearQuiz').hidden=true;
-  $('boardQuiz').hidden=true;
-  $('messageBoardQuiz').hidden=true;
   $('masterDialog').hidden=true;
   $('speedPauseDialog').hidden=true;
   $('speedRestartDialog').hidden=true;

@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-23:47';
+const APP_VERSION='2026.09.02-23:50';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -9807,6 +9807,7 @@ function volumeLabel(n){
 }
 function hideGameDialogs(){
   cancelBoardAnimation('dialog-close');
+  closeProgressionQuiz();
   closeChainDialog();
   closeTwoMoveLessonDialog();
   stopClearGuideBoard('clearGuideBoard');
@@ -9817,9 +9818,6 @@ function hideGameDialogs(){
   $('messageDialog').hidden=true;
   messageDialogReturn=null;
   $('optimalFailDialog').hidden=true;
-  $('clearQuiz').hidden=true;
-  $('boardQuiz').hidden=true;
-  $('messageBoardQuiz').hidden=true;
   $('masterDialog').hidden=true;
   $('speedPauseDialog').hidden=true;
   $('speedRestartDialog').hidden=true;
@@ -11965,7 +11963,7 @@ function applyLanguage(lang){
     renderClearStageContext();
     renderClearTip();
     renderClearQuiz();
-    renderBoardQuiz('boardQuiz',boardQuizConfigForCurrent(),{requireAnswer:true});
+    showProgressionQuiz({rootId:'boardQuiz',boardQuizConfig:boardQuizConfigForCurrent(),requireAnswer:true});
     const action=$('clearNext');
     const {mode,masteryIndex,stageIndex}=runtimeSnapshot();
     if(mode==='free')action.textContent=tr('another');
@@ -12261,7 +12259,8 @@ updateMasterTheme();
 restoreActiveSession();
 let savedLanguage=UI_TEXT[gameState.settings.language]?gameState.settings.language:'ja';
 applyLanguage(savedLanguage);
-restoreDialogState(storage.json(DIALOG_STATE_STORAGE_KEY,null));
+// 保存済みダイアログの復元は、進行UIの共通入口へ委譲する。
+restoreProgressionDialog(storage.json(DIALOG_STATE_STORAGE_KEY,null));
 // 初期HTMLの仮状態ではなく、保存状態を反映した最初の画面だけを公開する。
 document.body.classList.remove('app-booting');
 if(storage.get(STORAGE_KEY_GROUPS.progression.introSeen)!=='1')setTimeout(()=>{if(canShowDeferredBootDialog())openIntroGuide();},350);
