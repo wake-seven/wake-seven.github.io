@@ -4296,7 +4296,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-20:25';
+const APP_VERSION='2026.09.02-20:40';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5039,6 +5039,11 @@ function renderApplicationTargetCells(){
     }
     svg.insertBefore(overlayLayer,firstPivot);
   }else svg.appendChild(overlayLayer);
+}
+// 直接スワイプ中はタイル自身が動くため、静止用の重ね枠を一時的に外す。
+// スワイプ完了後は paint() から renderApplicationTargetCells() が再生成する。
+function removeApplicationTargetOverlay(){
+  svg?.querySelector('.application-target-overlay-layer')?.remove();
 }
 // だるま修行(上巻・中巻・下巻)全体: 「あと2くるり」に到達した瞬間、形の名前を演出する対象区間。
 const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;
@@ -7622,6 +7627,9 @@ function handleBoardPointerDown(e){
   // 回転対象の並べ替えで、対象外のパネルが目標枠を覆わないようにする。
   // 目標パネルは全タイルの後ろ、棒・軸の前に置く（枠線だけを前面に出さない）。
   renderApplicationTargetCells();
+  // タイルを直接動かすスワイプ中は、静止位置に残る重ね枠を表示しない。
+  // 回転追従する枠はタイル内の枠線だけにし、終了時の paint() で再生成する。
+  removeApplicationTargetOverlay();
   setBoardPivotActive(svg.querySelector('.pivot[data-tri="'+ti+'"]'),true);
   captureBoardPointer(svg,e.pointerId);
   renderBoardInteractionFeedback({classes:{spinning:true}});

@@ -1814,6 +1814,9 @@ function handleBoardPointerDown(e){
   // 回転対象の並べ替えで、対象外のパネルが目標枠を覆わないようにする。
   // 目標パネルは全タイルの後ろ、棒・軸の前に置く（枠線だけを前面に出さない）。
   renderApplicationTargetCells();
+  // タイルを直接動かすスワイプ中は、静止位置に残る重ね枠を表示しない。
+  // 回転追従する枠はタイル内の枠線だけにし、終了時の paint() で再生成する。
+  removeApplicationTargetOverlay();
   setBoardPivotActive(svg.querySelector('.pivot[data-tri="'+ti+'"]'),true);
   captureBoardPointer(svg,e.pointerId);
   renderBoardInteractionFeedback({classes:{spinning:true}});
