@@ -85,6 +85,8 @@ function resolveAfterClearRoute(context){
 
 // クリア後の次の進行先を実行する入口。判定は resolveAfterClearRoute に委譲する。
 function advanceAfterClear(){
+  // 遷移判定に必要な状態を先に確定する。ダイアログを閉じる処理が
+  // クイズや連鎖の後始末を行っても、次の進行先が変わらないようにする。
   makerButtonBlockedUntil=performance.now()+600;
   clearUiEffectTimers('maker-reveal');
   setUiEffectTimer('maker-reveal','unlock',()=>{makerButtonBlockedUntil=0;renderStageNav();},600);
@@ -94,6 +96,9 @@ function advanceAfterClear(){
     academyIsCleared:academyCleared(),allPrimaryIsCleared:allPrimaryCleared(),
     hasBeforeDialog:Boolean(clearContentBefore(false,nextStageIndex)?.dialog)
   });
+  // 現在のダイアログだけを閉じてから、確定済みの遷移先を開く。
+  // ボタン側では閉じる処理を行わず、クリア後遷移をこの入口に一本化する。
+  hideGameDialogs();
   if(route.kind==='free')return startFree();
   if(route.kind==='custom'){setPosition(currentInitialState,currentInitialPar);return renderStageNav();}
   if(route.kind==='satori-stage')return loadSatoriStage(route.index);

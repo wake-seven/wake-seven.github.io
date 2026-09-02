@@ -256,7 +256,6 @@ function handleClearTipLink(){
 }
 function bindClearDialogEvents(){
   WakeSevenEventBindings.click('clearNext',()=>{
-    hideGameDialogs();
     advanceAfterClear();
   });
   WakeSevenEventBindings.click('clearClose',()=>{

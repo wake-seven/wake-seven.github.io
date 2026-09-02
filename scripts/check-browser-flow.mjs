@@ -90,8 +90,10 @@ for (const id of ['clearClose', 'clearNext', 'clearTipLink', 'clearMessages',
 }
 assert.match(events, /WakeSevenEventBindings\.click\('clearClose',[\s\S]*hideGameDialogs\(\)[\s\S]*renderStageNav\(\)/,
   'clear close must hide the dialog and return to the stage navigation');
-assert.match(events, /WakeSevenEventBindings\.click\('clearNext',[\s\S]*hideGameDialogs\(\)[\s\S]*advanceAfterClear\(\)/,
-  'clear next must hide the dialog before advancing');
+assert.match(events, /WakeSevenEventBindings\.click\('clearNext',[\s\S]*advanceAfterClear\(\)/,
+  'clear next must use the unified clear-transition entry point');
+assert.match(clearFlow, /function advanceAfterClear\(\)[\s\S]*const route=resolveAfterClearRoute[\s\S]*hideGameDialogs\(\)/,
+  'clear transition must resolve its route before hiding the current dialog');
 assert.match(events, /WakeSevenEventBindings\.click\('clearTipLink',handleClearTipLink\)/,
   'clear review/details link must have a named route handler');
 assert.match(events, /clearMessages.*GameDialogs\.messages\(\{resume:true\}\)/,

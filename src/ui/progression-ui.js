@@ -10,6 +10,10 @@ const MASTER_PATH={
   zh:{subtitles:['七转八起','面壁九年','不立文字'],ranks:['毕业生','独当一面','不屈','熟练','名人','无心','觉者'],earned:'获得称号“{rank}”。'},
   ko:{subtitles:['칠전팔기','면벽구년','불립문자'],ranks:['졸업생','일인분','불굴','숙련','명인','무심','깨달은 자'],earned:'칭호 “{rank}”을(를) 획득했습니다.'}
 };
+// 公開進行で使う「本編をすべてクリア済みか」の判定は、各UIから同じ入口を参照する。
+// 分割時にこの小さな共有判定を失うと、クリア後の「次の問題へ」が
+// ダイアログを閉じるだけになるため、ここで明示的に保持する。
+const allPrimaryCleared=()=>STAGES.every((_,i)=>clearedStages.has(i));
 const masterPath=()=>MASTER_PATH[currentLang]||MASTER_PATH.ja;
 const masterSubtitle=volume=>masterPath().subtitles[volume-1]||'';
 const rankForVolume=volume=>masterPath().ranks[volume+1]||'';
