@@ -4250,7 +4250,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-10:27';
+const APP_VERSION='2026.09.02-10:34';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -4421,8 +4421,8 @@ function syncGameState(){
     speedTrainingTrialCleared,speedIntermediateTrialCleared,speedMasteryTrialCleared
   });
   gameState.speed={activeVariant:speedVariant,sessions:Object.fromEntries(Object.keys(SPEED_MODE_DEFINITIONS).map(variant=>[variant,readSpeedSession(variant)]).filter(([,session])=>session))};
-  // activeModeが現在モードの正。ここは
-  // campaign destination to restore after free/custom/speed screens.
+  // activeModeが現在モードの正。ここはfree/custom/speed画面から
+  // 復元するキャンペーン先だけを保持する。
   gameState.ui={editingBoard,returnStageContext};
   if(typeof serializeActiveBoard==='function')WakeSevenState.updateBoard(gameState,serializeActiveBoard());
   return window.WakeSevenState.write(gameState);
