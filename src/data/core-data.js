@@ -319,7 +319,8 @@ function threeMoveStage(state){
 // 発展クラス・3くるり5問: 棒を1本(soloRod)だけ正解として保証し、soloDir方向へ回すと真ん中が倒れて
 // 既知の「あと2くるり」5形(中と外/ひし形/いも虫/リボン/台形の順)に着地する。
 // りぼん(4/5)だけは名人への道「序6」の盤面を流用(長方形型の3くるり)。
-// initialRodCountは問題ごとに増える初期候補本数(1→2→3→4→6)。間違えた棒はその都度落ちる。
+// initialRodCountは問題ごとの初期候補本数。表示時は学園のルールで最大3本に制限し、
+// 残り1くるりになったときだけ6本に戻す。間違えた棒はその都度落ちる。
 const DEVELOPMENT_THREE_STAGES=[
   {state:39,soloRod:0,soloDir:-1,initialRodCount:1},
   {state:21,soloRod:0,soloDir:1,initialRodCount:2},

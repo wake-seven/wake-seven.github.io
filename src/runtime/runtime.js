@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-10:37';
+const APP_VERSION='2026.09.02-11:11';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -702,6 +702,12 @@ const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;
 let guidedBasicCandidateTis=null,guidedBasicCandidateSignature=null;
 // 基本クラス・発展クラス・速解き九番勝負で、間違えて落ちた棒(消すのではなくグレーアウトして残す)。
 let fallenRodTis=new Set();
+// 学園の補助輪で最初に見せる棒の本数。残り1くるりだけは6本、その他は最大3本にする。
+const ACADEMY_GRIP_DISPLAY_RULE=Object.freeze({oneMove:TRI.length,maxGuided:3});
+function academyGripDisplayCount(configuredCount,fallbackCount=1){
+  if(SOLVER.dist[enc(ori)]===1)return ACADEMY_GRIP_DISPLAY_RULE.oneMove;
+  return Math.min(ACADEMY_GRIP_DISPLAY_RULE.maxGuided,Math.max(1,configuredCount??fallbackCount));
+}
 // 中央の右上に来る軸（右上・中段右のペア）。「定石」として基本6/9で固定表示するのに使う。
 const TOP_RIGHT_TI=TRI.findIndex(t=>t.cells.includes(1)&&t.cells.includes(4));
 function computeGuidedBasicCandidateTis(){
@@ -715,8 +721,8 @@ function computeGuidedBasicCandidateTis(){
   // 基本6/9だけは、定石として右上の軸を必ず正解として見せる。
   const forceTopRight=stageIndex===BASIC_STAGE_START+5&&correctTis.includes(TOP_RIGHT_TI);
   const primary=forceTopRight?TOP_RIGHT_TI:correctTis[Math.floor(Math.random()*correctTis.length)];
-  // 最初の2問(0,1)は棒1本、そこから1問ごとに1本ずつ増え、6本になったら残りはずっと6本。
-  const count=Math.min(TRI.length,Math.max(1,stageIndex-BASIC_STAGE_START));
+  // 基本クラスは問題が進むほど1→2→3本と増やす。残り1くるりでは6本に戻す。
+  const count=academyGripDisplayCount(undefined,stageIndex-BASIC_STAGE_START+1);
   // ダミーは、たまたま正解になってしまう軸を避けて選ぶ（それぞれの候補内だけをシャッフルする）。
   const shuffle=arr=>{for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;};
   const safeDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&!correctTis.includes(i)));
@@ -741,7 +747,7 @@ function computeDevelopmentCandidateTis(){
   const safeDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&!correctTis.includes(i)));
   const fallbackDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&correctTis.includes(i)));
   const decoyPool=[...safeDecoyPool,...fallbackDecoyPool];
-  const count=Math.min(TRI.length,stage.initialRodCount||TRI.length);
+  const count=academyGripDisplayCount(stage.initialRodCount);
   return new Set([primary,...decoyPool.slice(0,count-1)]);
 }
 function refreshGuidedBasicCandidates(){
