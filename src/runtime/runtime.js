@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-11:11';
+const APP_VERSION='2026.09.02-11:24';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -693,7 +693,7 @@ const isAssistedLearningStage=()=>currentUiPolicy().assisted===true;
 const isNarrowedBasicStage=()=>currentUiPolicy().narrowRods===true;
 // だるま学園・発展クラス: 初期候補本数(stage.initialRodCount)だけ棒を絞り込み、間違えた棒はその都度落ちる。
 const isDevelopmentStage=()=>currentUiPolicy().development===true;
-// 速解き九番勝負: 棒を6本とも見せ、間違えた棒はその都度落ちる(発展クラスと同じ仕組み、絞り込みなし)。
+// 速解き九番勝負: 正解候補を1本含む3本だけを固定表示し、間違えた棒はその都度落ちる。
 const isSpeedFallingRodStage=()=>currentUiPolicy().speedFalling===true;
 // 発展クラス・速解き九番勝負のどちらでも、間違えた棒を落として二度と選べなくする対象区間。
 const isFallingRodStage=()=>currentUiPolicy().eliminateWrongRods===true;
@@ -750,6 +750,20 @@ function computeDevelopmentCandidateTis(){
   const count=academyGripDisplayCount(stage.initialRodCount);
   return new Set([primary,...decoyPool.slice(0,count-1)]);
 }
+// 速解き九番勝負は、毎回3本の中に少なくとも1本の正解候補を含める。
+function computeSpeedTrainingCandidateTis(){
+  const correctTis=[];
+  for(let ti=0;ti<TRI.length;ti++){
+    for(const dir of [1,-1]){
+      if(SOLVER.dist[enc(rollOnce(ori,ti,dir))]===SOLVER.dist[enc(ori)]-1){correctTis.push(ti);break;}
+    }
+  }
+  if(!correctTis.length)return null;
+  const primary=correctTis[Math.floor(Math.random()*correctTis.length)];
+  const pool=Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary);
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  return new Set([primary,...pool.slice(0,2)]);
+}
 function refreshGuidedBasicCandidates(){
   // だるま学園(入門・基本・発展)と速解き九番勝負では、絞り込みが効かない場面でも
   // 「6本全部が候補」として扱う(nullにはしない)。これにより、どの盤面・何くるりでも
@@ -777,7 +791,7 @@ function refreshGuidedBasicCandidates(){
       const signature='speedFalling:'+moves+':'+enc(ori);
       if(signature!==guidedBasicCandidateSignature){
         fallenRodTis.clear();
-        guidedBasicCandidateTis=fullSet();
+        guidedBasicCandidateTis=computeSpeedTrainingCandidateTis()||fullSet();
         guidedBasicCandidateSignature=signature;
       }
     }
