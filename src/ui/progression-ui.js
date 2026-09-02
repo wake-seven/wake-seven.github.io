@@ -2,14 +2,6 @@
 // ステージ選択、進行表示、クリア後表示をまとめる。前後移動イベントは
 // progression-navigation.js、共通の小さな表示処理は progression-render.js が担当する。
 
-// ===== ステージ選択 =====
-// ピッカーの表示内容と選択結果を組み立てる。実際の画面遷移はイベント側へ渡す。
-
-// 問題選択の区分: -2=だるま学園、-1=だるま修行、0..=名人への道、'satori'=悟りへの道。
-let pickerRound=-2,satoriPickerPage=0,pickerLap=activeLap;
-const EXTRA_ROUNDS=Math.ceil(EXTRA_STAGES.length/MASTER_VOLUME_SIZE);
-const SATORI_PICKER_PAGES=5;
-const allPrimaryCleared=()=>STAGES.every((_,i)=>clearedStages.has(i));
 // en.roadSubtitlesは現状どこからも読まれていない下書きの短縮版タイトル。
 // 未使用だからと削除しないこと(後で使う予定)。
 const MASTER_PATH={
@@ -109,7 +101,7 @@ function extraRoundLabel(round){
   if(currentLang==='ja')return (['序','破','急'][round]||String(round+1))+'　'+masterSubtitle(round+1);
   return volumeLabel(round+1)+' · '+masterSubtitle(round+1);
 }
-function closeStagePicker(){
+function closeStagePickerCore(){
   $('stagePicker').hidden=true;
 }
 function renderSatoriStagePicker(){
