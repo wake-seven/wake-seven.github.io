@@ -14,8 +14,8 @@ applyLanguage(savedLanguage);
 restoreProgressionDialog(storage.json(DIALOG_STATE_STORAGE_KEY,null));
 // 初期HTMLの仮状態ではなく、保存状態を反映した最初の画面だけを公開する。
 document.body.classList.remove('app-booting');
-if(storage.get(STORAGE_KEY_GROUPS.progression.introSeen)!=='1')setTimeout(()=>{if(canShowDeferredBootDialog())openIntroGuide();},350);
-else if(storage.get(STORAGE_KEY_GROUPS.progression.tutorialComplete)!=='1'&&!isMode('tutorial'))setTimeout(()=>{if(canShowDeferredBootDialog())startTutorial();},80);
+if(storage.get(STORAGE_KEY_GROUPS.progression.introSeen)!=='1')setUiEffectTimer('dialog-transition','boot-intro',()=>{if(canShowDeferredBootDialog())openIntroGuide();},350);
+else if(storage.get(STORAGE_KEY_GROUPS.progression.tutorialComplete)!=='1'&&!isMode('tutorial'))setUiEffectTimer('dialog-transition','boot-tutorial',()=>{if(canShowDeferredBootDialog())startTutorial();},80);
 window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();persistActiveSession();});
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'){if(isMode('speed'))pauseSpeedClock();persistActiveSession();}

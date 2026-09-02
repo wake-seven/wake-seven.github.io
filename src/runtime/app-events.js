@@ -209,7 +209,7 @@ function debugSkipTutorial(){
   storage.set(STORAGE_KEY_GROUPS.progression.introSeen,'1');
   completeTutorialCommand();
   GameNavigation.stage(0);
-  setTimeout(()=>openChainedDialog('academyEnroll'),260);
+  setUiEffectTimer('dialog-transition','academy-enroll',()=>openChainedDialog('academyEnroll'),260);
 }
 $('debugSkipTutorial').addEventListener('click',debugSkipTutorial);
 $('tutorialDebugSkip').addEventListener('click',debugSkipTutorial);
@@ -1167,7 +1167,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   setActiveMode('stage');speedSession=null;pauseSpeedClock();
   updateMasterTheme();
   GameNavigation.stage(0);
-  if(showIntro)setTimeout(()=>{if(typeof canShowDeferredBootDialog==='function'&&canShowDeferredBootDialog())openIntroGuide();},80);
+  if(showIntro)setUiEffectTimer('dialog-transition','deferred-intro',()=>{if(typeof canShowDeferredBootDialog==='function'&&canShowDeferredBootDialog())openIntroGuide();},80);
 }
 $('resetProgress').addEventListener('click',()=>{
   $('settingsDialog').hidden=true;

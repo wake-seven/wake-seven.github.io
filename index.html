@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-01:44';
+const APP_VERSION='2026.09.03-01:47';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -8104,6 +8104,20 @@ function registerUiEffectTimer(effect,key,id){if(!uiEffects.has(effect))uiEffect
 function clearUiEffectTimers(effect){const keys=uiEffects.get(effect);if(!keys)return;keys.forEach(clearUiContextTimer);uiEffects.delete(effect);}
 function setUiEffectTimer(effect,key,callback,delay){const timerKey=uiEffectTimerKey(effect,key);clearUiContextTimer(timerKey);return registerUiEffectTimer(effect,key,setUiContextTimer(timerKey,()=>{uiEffects.get(effect)?.delete(timerKey);callback();},delay));}
 function setUiEffectInterval(effect,key,callback,delay){const timerKey=uiEffectTimerKey(effect,key);clearUiContextTimer(timerKey);return registerUiEffectTimer(effect,key,setUiContextInterval(timerKey,callback,delay));}
+// 個別の演出を途中で止める入口。演出側でタイマーIDを保持しない。
+function clearUiEffectTimer(effect,key){const timerKey=uiEffectTimerKey(effect,key);clearUiContextTimer(timerKey);uiEffects.get(effect)?.delete(timerKey);}
+// タイマーと完了状態をひとまとめにした、短いUIアニメーション用のガード。
+let namedAnimationGuardSerial=0;
+function createNamedAnimationGuard(name='ui-animation'){
+  const key=name+':'+(++namedAnimationGuardSerial);let busy=false;
+  return {
+    isBusy:()=>busy,
+    begin(){busy=true;},
+    cancel(){busy=false;clearUiEffectTimer(name,key);},
+    arm(delay,commit){clearUiEffectTimer(name,key);setUiEffectTimer(name,key,()=>{if(!busy)return;commit();busy=false;},delay);},
+    reset(){busy=false;clearUiEffectTimer(name,key);}
+  };
+}
 function setDialogOpenState(id,open){const dialog=$(id);if(dialog)dialog.hidden=!open;return !!open;}
 export {};
 
@@ -8191,7 +8205,6 @@ function applicationGoalPreviewState(stage){
   }
   return stage.state;
 }
-let applicationPreviewHideTimer=0;
 function renderApplicationTargetPreview(){
   const preview=$('applicationTargetPreview'),board=$('applicationTargetPreviewBoard');
   if(!preview||!board)return;
@@ -8199,16 +8212,16 @@ function renderApplicationTargetPreview(){
   const stage=isApplicationTargetStage()?STAGES[stageIndex]:null;
   const targets=stage?.targetCells||[];
   if(!stage||targets.length!==3){
-    clearTimeout(applicationPreviewHideTimer);preview.classList.remove('is-fading');preview.hidden=true;board.replaceChildren();return;
+    clearUiEffectTimer('application-preview','hide');preview.classList.remove('is-fading');preview.hidden=true;board.replaceChildren();return;
   }
   if(remaining<=1){
     if(!preview.hidden&&!preview.classList.contains('is-fading')){
-      preview.classList.add('is-fading');clearTimeout(applicationPreviewHideTimer);
-      applicationPreviewHideTimer=setTimeout(()=>{preview.hidden=true;preview.classList.remove('is-fading');board.replaceChildren();},300);
+      preview.classList.add('is-fading');clearUiEffectTimer('application-preview','hide');
+      setUiEffectTimer('application-preview','hide',()=>{preview.hidden=true;preview.classList.remove('is-fading');board.replaceChildren();},300);
     }
     return;
   }
-  clearTimeout(applicationPreviewHideTimer);preview.classList.remove('is-fading');preview.hidden=false;
+  clearUiEffectTimer('application-preview','hide');preview.classList.remove('is-fading');preview.hidden=false;
   // 目標3枚は「左上・右上・下中央」の逆三角形に固定して描く。
   const targetValue=1;
   const positions=[[45,29],[99,29],[72,76]],scale=.60;
@@ -9092,16 +9105,8 @@ function animateTwoMoveDetail(angle=0,mirror=false){
 // 中巻の3くるり盤面は見た目だけでは形が分からないため、クリア後にここで答え合わせする。
 // 「今このアニメはまだ有効か」を守る小さいガード。busy中は新しい操作を弾き、
 // タイマー発火時にcommitコールバックを呼んでからbusyを解除する。
-function createAnimGuard(){
-  let busy=false,timer=0;
-  return {
-    isBusy:()=>busy,
-    begin(){busy=true;},
-    cancel(){busy=false;},
-    arm(delay,commit){clearTimeout(timer);timer=setTimeout(()=>{commit();busy=false;},delay);},
-    reset(){clearTimeout(timer);busy=false;}
-  };
-}
+// 盤面見本の逐次アニメーションは、共有の名前付きガードで世代管理する。
+const createAnimGuard=()=>createNamedAnimationGuard('progression-animation');
 let clearShapeRuleState=null,clearShapeRuleShape=null,clearShapeRuleIsDevelopment=false;
 const clearShapeRuleGuard=createAnimGuard();
 function renderClearShapeRule(){
@@ -9894,7 +9899,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
       turn.setAttribute('dur',duration);turn.setAttribute('fill','freeze');daruma.appendChild(turn);
       move.beginElement();turn.beginElement();
     });
-    setTimeout(()=>{
+    setUiEffectTimer('progression-quiz','transform-'+rootId+'-'+index,()=>{
       states[index]=transformStateBySymmetry(states[index],symmetry);
       updateCard(index);animating=false;
     },480);
@@ -11246,7 +11251,7 @@ function debugSkipTutorial(){
   storage.set(STORAGE_KEY_GROUPS.progression.introSeen,'1');
   completeTutorialCommand();
   GameNavigation.stage(0);
-  setTimeout(()=>openChainedDialog('academyEnroll'),260);
+  setUiEffectTimer('dialog-transition','academy-enroll',()=>openChainedDialog('academyEnroll'),260);
 }
 $('debugSkipTutorial').addEventListener('click',debugSkipTutorial);
 $('tutorialDebugSkip').addEventListener('click',debugSkipTutorial);
@@ -12204,7 +12209,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   setActiveMode('stage');speedSession=null;pauseSpeedClock();
   updateMasterTheme();
   GameNavigation.stage(0);
-  if(showIntro)setTimeout(()=>{if(typeof canShowDeferredBootDialog==='function'&&canShowDeferredBootDialog())openIntroGuide();},80);
+  if(showIntro)setUiEffectTimer('dialog-transition','deferred-intro',()=>{if(typeof canShowDeferredBootDialog==='function'&&canShowDeferredBootDialog())openIntroGuide();},80);
 }
 $('resetProgress').addEventListener('click',()=>{
   $('settingsDialog').hidden=true;
@@ -12246,8 +12251,8 @@ applyLanguage(savedLanguage);
 restoreProgressionDialog(storage.json(DIALOG_STATE_STORAGE_KEY,null));
 // 初期HTMLの仮状態ではなく、保存状態を反映した最初の画面だけを公開する。
 document.body.classList.remove('app-booting');
-if(storage.get(STORAGE_KEY_GROUPS.progression.introSeen)!=='1')setTimeout(()=>{if(canShowDeferredBootDialog())openIntroGuide();},350);
-else if(storage.get(STORAGE_KEY_GROUPS.progression.tutorialComplete)!=='1'&&!isMode('tutorial'))setTimeout(()=>{if(canShowDeferredBootDialog())startTutorial();},80);
+if(storage.get(STORAGE_KEY_GROUPS.progression.introSeen)!=='1')setUiEffectTimer('dialog-transition','boot-intro',()=>{if(canShowDeferredBootDialog())openIntroGuide();},350);
+else if(storage.get(STORAGE_KEY_GROUPS.progression.tutorialComplete)!=='1'&&!isMode('tutorial'))setUiEffectTimer('dialog-transition','boot-tutorial',()=>{if(canShowDeferredBootDialog())startTutorial();},80);
 window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();persistActiveSession();});
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'){if(isMode('speed'))pauseSpeedClock();persistActiveSession();}

@@ -706,7 +706,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
       turn.setAttribute('dur',duration);turn.setAttribute('fill','freeze');daruma.appendChild(turn);
       move.beginElement();turn.beginElement();
     });
-    setTimeout(()=>{
+    setUiEffectTimer('progression-quiz','transform-'+rootId+'-'+index,()=>{
       states[index]=transformStateBySymmetry(states[index],symmetry);
       updateCard(index);animating=false;
     },480);

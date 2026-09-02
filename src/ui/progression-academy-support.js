@@ -81,7 +81,6 @@ function applicationGoalPreviewState(stage){
   }
   return stage.state;
 }
-let applicationPreviewHideTimer=0;
 function renderApplicationTargetPreview(){
   const preview=$('applicationTargetPreview'),board=$('applicationTargetPreviewBoard');
   if(!preview||!board)return;
@@ -89,16 +88,16 @@ function renderApplicationTargetPreview(){
   const stage=isApplicationTargetStage()?STAGES[stageIndex]:null;
   const targets=stage?.targetCells||[];
   if(!stage||targets.length!==3){
-    clearTimeout(applicationPreviewHideTimer);preview.classList.remove('is-fading');preview.hidden=true;board.replaceChildren();return;
+    clearUiEffectTimer('application-preview','hide');preview.classList.remove('is-fading');preview.hidden=true;board.replaceChildren();return;
   }
   if(remaining<=1){
     if(!preview.hidden&&!preview.classList.contains('is-fading')){
-      preview.classList.add('is-fading');clearTimeout(applicationPreviewHideTimer);
-      applicationPreviewHideTimer=setTimeout(()=>{preview.hidden=true;preview.classList.remove('is-fading');board.replaceChildren();},300);
+      preview.classList.add('is-fading');clearUiEffectTimer('application-preview','hide');
+      setUiEffectTimer('application-preview','hide',()=>{preview.hidden=true;preview.classList.remove('is-fading');board.replaceChildren();},300);
     }
     return;
   }
-  clearTimeout(applicationPreviewHideTimer);preview.classList.remove('is-fading');preview.hidden=false;
+  clearUiEffectTimer('application-preview','hide');preview.classList.remove('is-fading');preview.hidden=false;
   // 目標3枚は「左上・右上・下中央」の逆三角形に固定して描く。
   const targetValue=1;
   const positions=[[45,29],[99,29],[72,76]],scale=.60;

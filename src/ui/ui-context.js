@@ -22,5 +22,19 @@ function registerUiEffectTimer(effect,key,id){if(!uiEffects.has(effect))uiEffect
 function clearUiEffectTimers(effect){const keys=uiEffects.get(effect);if(!keys)return;keys.forEach(clearUiContextTimer);uiEffects.delete(effect);}
 function setUiEffectTimer(effect,key,callback,delay){const timerKey=uiEffectTimerKey(effect,key);clearUiContextTimer(timerKey);return registerUiEffectTimer(effect,key,setUiContextTimer(timerKey,()=>{uiEffects.get(effect)?.delete(timerKey);callback();},delay));}
 function setUiEffectInterval(effect,key,callback,delay){const timerKey=uiEffectTimerKey(effect,key);clearUiContextTimer(timerKey);return registerUiEffectTimer(effect,key,setUiContextInterval(timerKey,callback,delay));}
+// 個別の演出を途中で止める入口。演出側でタイマーIDを保持しない。
+function clearUiEffectTimer(effect,key){const timerKey=uiEffectTimerKey(effect,key);clearUiContextTimer(timerKey);uiEffects.get(effect)?.delete(timerKey);}
+// タイマーと完了状態をひとまとめにした、短いUIアニメーション用のガード。
+let namedAnimationGuardSerial=0;
+function createNamedAnimationGuard(name='ui-animation'){
+  const key=name+':'+(++namedAnimationGuardSerial);let busy=false;
+  return {
+    isBusy:()=>busy,
+    begin(){busy=true;},
+    cancel(){busy=false;clearUiEffectTimer(name,key);},
+    arm(delay,commit){clearUiEffectTimer(name,key);setUiEffectTimer(name,key,()=>{if(!busy)return;commit();busy=false;},delay);},
+    reset(){busy=false;clearUiEffectTimer(name,key);}
+  };
+}
 function setDialogOpenState(id,open){const dialog=$(id);if(dialog)dialog.hidden=!open;return !!open;}
 export {};

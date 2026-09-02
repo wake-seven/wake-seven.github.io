@@ -164,16 +164,8 @@ function animateTwoMoveDetail(angle=0,mirror=false){
 // 中巻の3くるり盤面は見た目だけでは形が分からないため、クリア後にここで答え合わせする。
 // 「今このアニメはまだ有効か」を守る小さいガード。busy中は新しい操作を弾き、
 // タイマー発火時にcommitコールバックを呼んでからbusyを解除する。
-function createAnimGuard(){
-  let busy=false,timer=0;
-  return {
-    isBusy:()=>busy,
-    begin(){busy=true;},
-    cancel(){busy=false;},
-    arm(delay,commit){clearTimeout(timer);timer=setTimeout(()=>{commit();busy=false;},delay);},
-    reset(){clearTimeout(timer);busy=false;}
-  };
-}
+// 盤面見本の逐次アニメーションは、共有の名前付きガードで世代管理する。
+const createAnimGuard=()=>createNamedAnimationGuard('progression-animation');
 let clearShapeRuleState=null,clearShapeRuleShape=null,clearShapeRuleIsDevelopment=false;
 const clearShapeRuleGuard=createAnimGuard();
 function renderClearShapeRule(){
