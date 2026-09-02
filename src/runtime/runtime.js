@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-21:14';
+const APP_VERSION='2026.09.02-21:17';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -759,9 +759,9 @@ function renderApplicationTargetPreview(){
   // 目標3枚は、正しい1手のあとに同じ向きへそろう。各セルを個別に
   // 読むと、パネルの対応が崩れた場合に一枚だけ起きて見えるため、
   // 目標姿勢を先頭の目標パネルから読み、3枚へ同じ値を適用する。
-  // 見本は「左転び」に統一する。これは盤面上のセル番号ではなく、
+  // 見本は「右転び」に統一する。これは盤面上のセル番号ではなく、
   // プレイヤーが目指す完成姿勢そのものを示すための表示ルール。
-  const targetValue=2;
+  const targetValue=1;
   // 3枚は互いの辺が接する逆三角形として描く。間隔を空けると「目標の
   // 形」ではなく、離れた3枚の見本に見えてしまうため、六角形の幅/高さ
   // と同じ比率で中心を配置する。
