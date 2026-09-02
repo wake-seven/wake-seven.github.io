@@ -4282,7 +4282,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-15:44';
+const APP_VERSION='2026.09.02-15:51';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5121,10 +5121,16 @@ function renderApplicationTargetCells(){
     const stage=STAGES[stageIndex];
     const move=lessonBestMove(enc(ori));
     if(move){
-      // 一手目の後に残る最短一手を調べ、その操作対象を最終目標として示す。
-      // これにより、現在つかむ三枚ではなく、次に同じ向きで寝る三枚を強調できる。
-      const after=rollOnce(ori,move.ti,move.dir),nextMove=lessonBestMove(enc(after));
-      (nextMove?TRI[nextMove.ti]:null)?.cells.forEach(cell=>targets.add(cell));
+      // 一手目の後の盤面から、同じ向きで寝ている三枚を全セル対象で探す。
+      // 最終操作の三角形ではなく、問題中に見せたい目標グループそのものを示す。
+      const after=rollOnce(ori,move.ti,move.dir);
+      const groups=[1,2].map(orientation=>after.reduce((cells,value,cell)=>{
+        if(value===orientation)cells.push(cell);
+        return cells;
+      },[]));
+      const exact=groups.find(cells=>cells.length===3);
+      const target=exact||groups.filter(cells=>cells.length>3).sort((a,b)=>b.length-a.length)[0];
+      target?.slice(0,3).forEach(cell=>targets.add(cell));
     }
     if(!targets.size&&Array.isArray(stage?.targetCells))stage.targetCells.forEach(cell=>targets.add(cell));
   }

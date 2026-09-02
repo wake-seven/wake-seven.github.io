@@ -339,6 +339,7 @@ if (!progression.canEnter('training',{lap:1,trials:{training:true}}) || progress
 }
 if (!progression.uiPolicy({mode:'stage',lap:1,stageIndex:3}).narrowRods
   || !progression.uiPolicy({mode:'stage',lap:1,stageIndex:12}).showTargetCells
+  || !progression.uiPolicy({mode:'stage',lap:1,stageIndex:12}).rewindWrongMove
   || !progression.uiPolicy({mode:'stage',lap:1,stageIndex:20}).eliminateWrongRods
   || progression.uiPolicy({mode:'stage',lap:2,stageIndex:20}).eliminateWrongRods
   || !progression.uiPolicy({mode:'speed',lap:1,stageIndex:0,speedVariant:'training9'}).speedFalling) {
