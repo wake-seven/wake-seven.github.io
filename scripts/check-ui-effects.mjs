@@ -8,7 +8,7 @@ const read=path=>readFile(join(root,...path),'utf8');
 const context=await read(['src','ui','ui-context.js']);
 const board=await read(['src','ui','board-ui.js']);
 const hints=await read(['src','ui','progression-hints.js']);
-const mastery=await read(['src','ui','progression-ui.js']);
+const mastery=(await read(['src','ui','progression-insights.js']))+'\n'+(await read(['src','ui','progression-ui.js']));
 const speed=await read(['src','runtime','speed.js']);
 const clearFlow=await read(['src','ui','progression-clear-flow.js']);
 const progressionRender=await read(['src','ui','progression-render.js']);

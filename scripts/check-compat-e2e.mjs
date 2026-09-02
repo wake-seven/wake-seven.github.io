@@ -116,10 +116,11 @@ for (const id of ['stage-picker-row-template', 'two-move-card-template']) {
 for (const id of ['rankBadge', 'stagePickerRankBadge']) {
   assert.match(template, new RegExp(`<button[^>]+id=["']${id}["']`, 'i'), `Rank badge shell is missing: ${id}`);
 }
-assert.match(sources.get('src/ui/progression-ui.js'), /stage-picker-row-template/);
-assert.match(sources.get('src/ui/progression-ui.js'), /two-move-card-template/);
-assert.match(sources.get('src/ui/progression-ui.js'), /clearedMasteryIndex/);
-assert.match(sources.get('src/ui/progression-ui.js'), /currentLapPrimaryComplete/);
+const progressionUiSources=sources.get('src/ui/progression-insights.js')+'\n'+sources.get('src/ui/progression-ui.js');
+assert.match(progressionUiSources, /stage-picker-row-template/);
+assert.match(progressionUiSources, /two-move-card-template/);
+assert.match(progressionUiSources, /clearedMasteryIndex/);
+assert.match(progressionUiSources, /currentLapPrimaryComplete/);
 assert.match(sources.get('src/runtime/speed.js'), /const trialVariant=\(speedSession\?\.requiredTrial/);
 assert.match(sources.get('src/ui/progression-roadmap.js'), /if\(stateClass\)step\.classList\.add\(stateClass\)/);
 for (const id of ['chain-template-training-middle-spin', 'chain-template-development-welcome-spin']) {
