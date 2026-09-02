@@ -4,6 +4,8 @@
 // 演出とタイマーの段階を名前で持ち、同じクリアに対する再描画が
 // 「演出を再生し直す」「ダイアログを前倒しする」ことを防ぐ。
 const CLEAR_FLOW_PHASE=Object.freeze({idle:'idle',celebrating:'celebrating',dialogPending:'dialog-pending',dialog:'dialog'});
+const CLEAR_FLOW_ACTION=Object.freeze({start:'start',show:'show',next:'next',reset:'reset'});
+let clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.idle,action:null,context:null,route:null,cycle:1});
 let clearFlowPhase=CLEAR_FLOW_PHASE.idle;
 // クリア時の揺れと円の拡大を担当する。盤面入力や進行状態は変更しない。
 function playWakeCelebrationEffect(targetSvg,tilesArr){
@@ -37,23 +39,29 @@ let clearFlowCycle=1;
 function resetClearFlow(){
   clearFlowCycle++;
   clearFlowPhase=CLEAR_FLOW_PHASE.idle;
+  clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.idle,action:CLEAR_FLOW_ACTION.reset,context:null,route:null,cycle:clearFlowCycle});
   clearUiEffectTimers('clear-transition');
 }
 function beginClearFlow(){
   if(clearFlowPhase!==CLEAR_FLOW_PHASE.idle)return false;
   clearFlowPhase=CLEAR_FLOW_PHASE.celebrating;
+  clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.celebrating,action:CLEAR_FLOW_ACTION.start,context:null,route:null,cycle:clearFlowCycle});
   return clearFlowCycle;
 }
 function scheduleClearFlowDialog(callback,delay,cycle=clearFlowCycle){
   if(clearFlowPhase!==CLEAR_FLOW_PHASE.celebrating)return false;
   clearFlowPhase=CLEAR_FLOW_PHASE.dialogPending;
+  clearFlowState=Object.freeze({...clearFlowState,phase:CLEAR_FLOW_PHASE.dialogPending,action:CLEAR_FLOW_ACTION.show,cycle});
   setUiEffectTimer('clear-transition','show-dialog',()=>{
     if(cycle!==clearFlowCycle||clearFlowPhase!==CLEAR_FLOW_PHASE.dialogPending)return;
     callback();
   },delay);
   return true;
 }
-function finishClearFlowDialog(){clearFlowPhase=CLEAR_FLOW_PHASE.dialog;}
+function finishClearFlowDialog(){
+  clearFlowPhase=CLEAR_FLOW_PHASE.dialog;
+  clearFlowState=Object.freeze({...clearFlowState,phase:CLEAR_FLOW_PHASE.dialog,action:CLEAR_FLOW_ACTION.show});
+}
 
 // クリア後の画面が参照する進行状態を、ひとつの読み取り専用文脈に固定する。
 // 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを
@@ -62,10 +70,12 @@ function finishClearFlowDialog(){clearFlowPhase=CLEAR_FLOW_PHASE.dialog;}
 function createClearTransitionContext(nextStageIndex=stageIndex){
   const appState=WakeSevenAppContext.snapshot();
   const {mode,lap,masteryIndex}=appState;
+  const currentStageIndex=Number.isInteger(appState.stageIndex)?appState.stageIndex:stageIndex;
+  const resolvedNextStageIndex=Number.isInteger(nextStageIndex)?nextStageIndex:currentStageIndex+1;
   const currentLapPrimaryCleared=lap===2?lap2ClearedStages:lap1ClearedStages;
   return Object.freeze({
-    mode,stageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,
-    nextStageIndex,
+    mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,
+    nextStageIndex:resolvedNextStageIndex,
     solved:isSolved(),clearShown:appState.clearShown,
     academyIsCleared:academyCleared(),
     allPrimaryIsCleared:allPrimaryCleared(),
@@ -104,16 +114,19 @@ function resolveAfterClearRoute(context){
   return {kind:'stage',index:stageIndex+1};
 }
 
-// クリア後の次の進行先を実行する入口。判定は resolveAfterClearRoute に委譲する。
-function advanceAfterClear(){
+// クリア後状態を一つの入口で進める。route は action='next' の確定時だけ作り、
+// ダイアログを閉じる副作用より先に保存する。これで phase/route/action を追跡できる。
+function dispatchClearFlowAction(action){
+  if(action!==CLEAR_FLOW_ACTION.next||clearFlowState.phase!==CLEAR_FLOW_PHASE.dialog)return false;
   // 遷移判定に必要な状態を先に確定する。ダイアログを閉じる処理が
   // クイズや連鎖の後始末を行っても、次の進行先が変わらないようにする。
   makerButtonBlockedUntil=performance.now()+600;
   clearUiEffectTimers('maker-reveal');
   setUiEffectTimer('maker-reveal','unlock',()=>{makerButtonBlockedUntil=0;renderStageNav();},600);
-  const context=createClearTransitionContext(stageIndex+1);
+  const context=createClearTransitionContext(WakeSevenAppContext.snapshot().stageIndex+1);
   const nextStageIndex=context.nextStageIndex;
   const route=resolveAfterClearRoute(context);
+  clearFlowState=Object.freeze({...clearFlowState,action,context,route});
   // 現在のダイアログだけを閉じてから、確定済みの遷移先を開く。
   // ボタン側では閉じる処理を行わず、クリア後遷移をこの入口に一本化する。
   hideGameDialogs();
@@ -127,6 +140,8 @@ function advanceAfterClear(){
   if(route.kind==='before-dialog')return openProgressionDialog('chain',{name:clearContentBefore(false,nextStageIndex).dialog});
   return loadStage(route.index);
 }
+// 既存イベントからの互換入口。実際の遷移は状態機械の action dispatcher に集約する。
+function advanceAfterClear(){return dispatchClearFlowAction(CLEAR_FLOW_ACTION.next);}
 let returnToClearCard=false,twoMovePatternsReturnTarget=null,twoMoveDetailReturnTarget=null,guideHubReturn=false;
 function returnToClearDialog(){
   returnToClearCard=false;$('clearDialogMessage').textContent=clearDialogHeading();renderClearStageContext();renderClearTip();showProgressionQuiz({rootId:'clearQuiz',clearEntry:clearEntryForCurrent()});

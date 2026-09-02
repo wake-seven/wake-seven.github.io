@@ -57,6 +57,8 @@ assert.match(clearFlow, /if\(svg\.classList\.contains\('celebrating'\)\)return (
 assert.match(clearFlow, /function startClearFlow\(/, 'clear transition must have a named start entry point');
 assert.match(clearFlow, /function finishClearFlow\(/, 'clear transition must have a named finish entry point');
 assert.match(clearFlow, /function advanceAfterClear\(/, 'clear transition must have a named advance entry point');
+assert.match(clearFlow, /const CLEAR_FLOW_ACTION=Object\.freeze/, 'clear transition actions must be explicit');
+assert.match(clearFlow, /function dispatchClearFlowAction\(action\)/, 'clear transition actions must use one dispatcher');
 assert.match(board, /if\(isSolved\(\)&&!clearShown\)/,
   'board paint must guard against duplicate clear transitions');
 assert.match(board, /bindApplicationTargetTiles\(\);/,
@@ -92,7 +94,7 @@ assert.match(events, /WakeSevenEventBindings\.click\('clearClose',[\s\S]*hideGam
   'clear close must hide the dialog and return to the stage navigation');
 assert.match(events, /WakeSevenEventBindings\.click\('clearNext',[\s\S]*advanceAfterClear\(\)/,
   'clear next must use the unified clear-transition entry point');
-assert.match(clearFlow, /function advanceAfterClear\(\)[\s\S]*const route=resolveAfterClearRoute[\s\S]*hideGameDialogs\(\)/,
+assert.match(clearFlow, /function dispatchClearFlowAction\(action\)[\s\S]*const route=resolveAfterClearRoute[\s\S]*hideGameDialogs\(\)/,
   'clear transition must resolve its route before hiding the current dialog');
 assert.match(events, /WakeSevenEventBindings\.click\('clearTipLink',handleClearTipLink\)/,
   'clear review/details link must have a named route handler');
