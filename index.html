@@ -810,6 +810,8 @@
   /* 応用編の枠はパネル自身と一緒に動き、棒より背面で表示する。 */
   /* 応用編はパネル自身の境界線を強調する。棒と同じSVG階層で、スワイプにも追従する。 */
   #board .tile.application-target .hex{stroke:#8B35F0 !important;stroke-width:5 !important;stroke-linejoin:round}
+  /* 応用クラス開始案内でも、目標の3枚そのものの境界線を強調する。 */
+  #academyWelcomeBoard .tile.application-target .hex{stroke:#8B35F0 !important;stroke-width:5 !important;stroke-linejoin:round}
   /* ミニ盤面(比較カード等)の回転アニメでも、本編の.tileと同じくレイヤーを先に確保しておく。
      iOSで、新しい要素をtransformすると初回フレームだけ描画がずれることがある対策。 */
   .mini-tile,.mini-daruma,.tip-guide-tile,.tip-guide-daruma{transform-box:view-box;transform-origin:0 0;will-change:transform}
@@ -2833,7 +2835,7 @@ const UI_TEXT={
     basicWelcomeText:'あと○くるりが減ったら、指をはなそう',
     basicWelcomeStart:'はじめる',
     applicationWelcomeTitle:'応用クラスへようこそ！',
-    applicationWelcomeText:'そろえる3枚を見つけて、回す場所を自分で考えよう',
+    applicationWelcomeText:'紫の枠が付いた3枚を、回したあと同じ向きにそろえよう。どの棒をどちらに回すかは、盤面を見て考えてみてね。',
     applicationWelcomeStart:'はじめる',
     developmentWelcomeTitle:'発展クラス 開始！',
     developmentWelcomeText:'発展クラスでは「あと3くるり」「あと4くるり」にも挑戦するよ！',
@@ -3265,7 +3267,7 @@ const UI_TEXT={
     basicWelcomeText:'Release when the turns left go down.',
     basicWelcomeStart:'Start',
     applicationWelcomeTitle:'Welcome to Application Class!',
-    applicationWelcomeText:'Find the three daruma to align, then work out which bar to turn.',
+    applicationWelcomeText:'Align the three daruma with purple frames so they face the same way after the turn. Look at the board and work out which bar to turn and in which direction.',
     applicationWelcomeStart:'Start',
     developmentWelcomeTitle:'Development Class Start!',
     developmentWelcomeText:'You\'ll see puzzles marked "3 turns left" and "4 turns left"!',
@@ -3657,7 +3659,7 @@ const UI_TEXT={
     basicWelcomeText:'还差的转数减少时，就松手。',
     basicWelcomeStart:'开始',
     applicationWelcomeTitle:'欢迎来到应用班！',
-    applicationWelcomeText:'找出要对齐的3个不倒翁，再自己思考该转动哪根横杆。',
+    applicationWelcomeText:'让带紫色边框的3个不倒翁在转动后朝向一致。请观察盘面，自己找出要转动的横杆和方向。',
     applicationWelcomeStart:'开始',
     developmentWelcomeTitle:'发展班开始！',
     developmentWelcomeText:'会出现"还差3转""还差4转"的题目哦',
@@ -4049,7 +4051,7 @@ const UI_TEXT={
     basicWelcomeText:'남은 회전 수가 줄면 손을 놓으세요.',
     basicWelcomeStart:'시작하기',
     applicationWelcomeTitle:'응용반에 오신 것을 환영합니다!',
-    applicationWelcomeText:'맞춰야 할 다루마 3개를 찾고, 어느 막대를 돌릴지 스스로 생각해 보세요.',
+    applicationWelcomeText:'보라색 테두리가 있는 다루마 3개를 돌린 뒤 같은 방향으로 맞춰 보세요. 보드에서 돌릴 막대와 방향을 스스로 찾아보세요.',
     applicationWelcomeStart:'시작하기',
     developmentWelcomeTitle:'발전반 시작!',
     developmentWelcomeText:'"앞으로 3바퀴", "앞으로 4바퀴" 문제가 나와요!',
@@ -4291,7 +4293,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-18:45';
+const APP_VERSION='2026.09.02-19:05';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5914,8 +5916,13 @@ function buildAcademyWelcomeBoard(variant='enroll'){
   const board=$('academyWelcomeBoard'),NS_='http://www.w3.org/2000/svg';
   board.replaceChildren();
   // 盤面を囲う枠は使わず、数字・盤面・操作対象だけを見せる。
-  // 入学は最短1手（あと1くるり）、基本クラスは最短2手（あと2くるり）のデモ盤面を使う。
-  const initialState=(variant==='basic'||variant==='development'?STAGES[BASIC_STAGE_START]:STAGES[0]).state,start=dec(initialState);
+  // 入学は最短1手、基本・応用クラスは最短2手のデモ盤面を使う。
+  // 応用クラスでは、問題データに定義した「回したあとそろう3枚」も同じ盤面で示す。
+  const initialStage=variant==='application'
+    ?APPLICATION_STAGES[0]
+    :(variant==='basic'||variant==='development'?STAGES[BASIC_STAGE_START]:STAGES[0]);
+  const initialState=initialStage.state,start=dec(initialState);
+  const targetCells=new Set(variant==='application'?(initialStage.targetCells||[]):[]);
   const startDistance=SOLVER.dist[enc(start)];
   let move=null,after=null;
   for(let ti=0;ti<TRI.length&&!move;ti++)for(const dir of [1,-1]){
@@ -5926,7 +5933,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
   const tiles=[];
   CELL.forEach((c,i)=>{
     const g=document.createElementNS(NS_,'g');
-    g.setAttribute('class','tile '+(start[i]?'fallen':'stand'));
+    g.setAttribute('class','tile '+(start[i]?'fallen':'stand')+(targetCells.has(i)?' application-target':''));
     g.innerHTML='<path class="hex" d="'+hexPath(R)+'"/><use href="#daruma-body"/><g class="open"><use href="#face-open"/></g><g class="shut"><use href="#face-shut"/></g><g class="happy"><use href="#face-happy"/></g>';
     g.style.transform=tileTransform(c.x,c.y,start[i]);
     board.appendChild(g);tiles[i]=g;
@@ -5980,7 +5987,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
     release.textContent='';touch.style.display='none';
     const cycleTiles=baseWelcomeTiles.slice();
     cycleTiles.forEach((tile,i)=>{
-      tile.setAttribute('class','tile '+(start[i]?'fallen':'stand'));
+      tile.setAttribute('class','tile '+(start[i]?'fallen':'stand')+(targetCells.has(i)?' application-target':''));
       tile.style.transform=tileTransform(CELL[i].x,CELL[i].y,start[i]);
       board.appendChild(tile);
     });
@@ -6039,7 +6046,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
         const delay=Math.round(overshootDuration*(thresholdDeg/overshootAngle));
         setTimeout(()=>{
           if(!alive())return;
-          cycleTiles[index].setAttribute('class','tile '+(willStand?'stand':'fallen'));
+          cycleTiles[index].setAttribute('class','tile '+(willStand?'stand':'fallen')+(targetCells.has(index)?' application-target':''));
         },delay);
       }
       // 「あと○くるり」の数字も、起きる判定と同じタイミングで切り替える。
@@ -6055,7 +6062,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
         // unitは使い回すので削除しない(中身だけ全部board直下へ戻す)。
         // 回転後は全7枚を描き直す。中心の1枚を含めて必ず残るよう、移動中のDOM順に依存しない。
         baseWelcomeTiles.forEach((tile,i)=>{
-          tile.setAttribute('class','tile '+(after[i]?'fallen':'stand'));
+          tile.setAttribute('class','tile '+(after[i]?'fallen':'stand')+(targetCells.has(i)?' application-target':''));
           tile.style.transform=tileTransform(CELL[i].x,CELL[i].y,after[i]);
           board.appendChild(tile);
         });
@@ -6113,7 +6120,7 @@ const CHAIN_STEPS={
   },
   academyWelcome:{...academyBoardStep('enroll','academyWelcomeTitle','academyWelcomeText','academyWelcomeStart',()=>{}),noFrame:true},
   basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),
-  applicationWelcome:academyBoardStep('basic','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(stageIndex+1)),
+  applicationWelcome:academyBoardStep('application','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(stageIndex+1)),
   developmentWelcome:{
     titleKey:'developmentWelcomeTitle', actionKey:'developmentWelcomeStart',
     render(body){

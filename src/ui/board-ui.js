@@ -142,8 +142,13 @@ function buildAcademyWelcomeBoard(variant='enroll'){
   const board=$('academyWelcomeBoard'),NS_='http://www.w3.org/2000/svg';
   board.replaceChildren();
   // 盤面を囲う枠は使わず、数字・盤面・操作対象だけを見せる。
-  // 入学は最短1手（あと1くるり）、基本クラスは最短2手（あと2くるり）のデモ盤面を使う。
-  const initialState=(variant==='basic'||variant==='development'?STAGES[BASIC_STAGE_START]:STAGES[0]).state,start=dec(initialState);
+  // 入学は最短1手、基本・応用クラスは最短2手のデモ盤面を使う。
+  // 応用クラスでは、問題データに定義した「回したあとそろう3枚」も同じ盤面で示す。
+  const initialStage=variant==='application'
+    ?APPLICATION_STAGES[0]
+    :(variant==='basic'||variant==='development'?STAGES[BASIC_STAGE_START]:STAGES[0]);
+  const initialState=initialStage.state,start=dec(initialState);
+  const targetCells=new Set(variant==='application'?(initialStage.targetCells||[]):[]);
   const startDistance=SOLVER.dist[enc(start)];
   let move=null,after=null;
   for(let ti=0;ti<TRI.length&&!move;ti++)for(const dir of [1,-1]){
@@ -154,7 +159,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
   const tiles=[];
   CELL.forEach((c,i)=>{
     const g=document.createElementNS(NS_,'g');
-    g.setAttribute('class','tile '+(start[i]?'fallen':'stand'));
+    g.setAttribute('class','tile '+(start[i]?'fallen':'stand')+(targetCells.has(i)?' application-target':''));
     g.innerHTML='<path class="hex" d="'+hexPath(R)+'"/><use href="#daruma-body"/><g class="open"><use href="#face-open"/></g><g class="shut"><use href="#face-shut"/></g><g class="happy"><use href="#face-happy"/></g>';
     g.style.transform=tileTransform(c.x,c.y,start[i]);
     board.appendChild(g);tiles[i]=g;
@@ -208,7 +213,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
     release.textContent='';touch.style.display='none';
     const cycleTiles=baseWelcomeTiles.slice();
     cycleTiles.forEach((tile,i)=>{
-      tile.setAttribute('class','tile '+(start[i]?'fallen':'stand'));
+      tile.setAttribute('class','tile '+(start[i]?'fallen':'stand')+(targetCells.has(i)?' application-target':''));
       tile.style.transform=tileTransform(CELL[i].x,CELL[i].y,start[i]);
       board.appendChild(tile);
     });
@@ -267,7 +272,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
         const delay=Math.round(overshootDuration*(thresholdDeg/overshootAngle));
         setTimeout(()=>{
           if(!alive())return;
-          cycleTiles[index].setAttribute('class','tile '+(willStand?'stand':'fallen'));
+          cycleTiles[index].setAttribute('class','tile '+(willStand?'stand':'fallen')+(targetCells.has(index)?' application-target':''));
         },delay);
       }
       // 「あと○くるり」の数字も、起きる判定と同じタイミングで切り替える。
@@ -283,7 +288,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
         // unitは使い回すので削除しない(中身だけ全部board直下へ戻す)。
         // 回転後は全7枚を描き直す。中心の1枚を含めて必ず残るよう、移動中のDOM順に依存しない。
         baseWelcomeTiles.forEach((tile,i)=>{
-          tile.setAttribute('class','tile '+(after[i]?'fallen':'stand'));
+          tile.setAttribute('class','tile '+(after[i]?'fallen':'stand')+(targetCells.has(i)?' application-target':''));
           tile.style.transform=tileTransform(CELL[i].x,CELL[i].y,after[i]);
           board.appendChild(tile);
         });
@@ -341,7 +346,7 @@ const CHAIN_STEPS={
   },
   academyWelcome:{...academyBoardStep('enroll','academyWelcomeTitle','academyWelcomeText','academyWelcomeStart',()=>{}),noFrame:true},
   basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),
-  applicationWelcome:academyBoardStep('basic','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(stageIndex+1)),
+  applicationWelcome:academyBoardStep('application','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(stageIndex+1)),
   developmentWelcome:{
     titleKey:'developmentWelcomeTitle', actionKey:'developmentWelcomeStart',
     render(body){
