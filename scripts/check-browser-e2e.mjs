@@ -66,8 +66,22 @@ try{
     const dialogs=await visibleDialog(page);
     assert.ok(dialogs.length>0,checkpoint.name+' clear dialog');
     result.cases.push({name:checkpoint.name+'-clear-dialog',state:await snap(page),dialogs});
+    if(checkpoint.id==='debugTrainingUpper'){
+      const before=await snap(page);await click(page,'clearNext');
+      await wait(page,()=>document.querySelector('#clearDialog')?.hidden,'clear next action');
+      const after=await snap(page);assert.ok(after.stage!==before.stage||after.chain||after.speedStart||after.speedPause,'clear next must advance or open the next route');
+      result.cases.push({name:'primary-clear-next-action',before,after});
+    }
   }
   await page.locator('#debugAcademy20').dispatchEvent('click');await page.waitForTimeout(120);await page.locator('#debugSpeedTraining8').dispatchEvent('click');await wait(page,()=>!document.querySelector('#speedStartOverlay')?.hidden||!document.querySelector('#speedPause')?.hidden,'speed entry');if(await vis(page,'speedBoardStart')){await click(page,'speedBoardStart');}await wait(page,()=>document.querySelector('#speedStartOverlay')?.hidden&&!document.querySelector('#speedPause')?.hidden,'speed start');assert.equal(await vis(page,'speedStartOverlay'),false);const flashes=await page.evaluate(()=>{const a=[];const d=document.querySelector('#masterDialog');const o=new MutationObserver(()=>{if(!d.hidden)a.push(document.querySelector('#masterDialogTitle')?.textContent||'');});o.observe(d,{attributes:true,attributeFilter:['hidden']});window.__speedFlashObserver=o;window.__speedFlashLog=a;return a;});await page.locator('#debugClear').dispatchEvent('click');await wait(page,()=> (document.querySelector('#stageNumber')?.textContent||'').includes('4 / 9'),'speed advances from question 3');await page.waitForTimeout(250);const flashLog=await page.evaluate(()=>{window.__speedFlashObserver?.disconnect();return window.__speedFlashLog||[];});assert.deepEqual(flashLog,[],'speed exam dialog must not flash between questions');result.cases.push({name:'speed-question-3-to-4-no-exam-dialog-flash',state:await snap(page),flashLog});
+  await page.reload({waitUntil:'networkidle'});await wait(page,()=>document.querySelector('#speedStartOverlay')?.hidden,'speed reload restore');
+  assert.equal(await vis(page,'speedStartOverlay'),false);result.cases.push({name:'speed-reload-restoration',state:await snap(page)});
+  await page.evaluate(()=>{document.querySelector('#clearDialog')?.setAttribute('hidden','');document.querySelector('#masterDialog')?.setAttribute('hidden','');});
+  if(await vis(page,'introDialog')){await click(page,'introStart');await wait(page,()=>document.querySelector('#introDialog')?.hidden,'intro close for side modes');}
+  await page.evaluate(()=>{document.querySelector('#menuToggle')?.removeAttribute('hidden');document.querySelector('#menuToggle')?.style.setProperty('display','block');});
+  await debugClick(page,'menuToggle');await wait(page,()=>document.querySelector('#appMenu')?.hidden===false,'menu open for free mode');
+  await debugClick(page,'freeMode');await wait(page,()=>document.querySelector('#board')?.getClientRects().length>0,'free mode board');result.cases.push({name:'free-mode-entry',state:await snap(page)});
+  await debugClick(page,'menuToggle');await debugClick(page,'customMode');await wait(page,()=>document.querySelector('#playCustomBoard')?.hidden===false,'custom maker entry');result.cases.push({name:'custom-mode-entry',state:await snap(page)});
   assert.deepEqual(result.consoleErrors,[]);result.passed=true;result.finishedAt=new Date().toISOString();await mkdir(reportDir,{recursive:true});await writeFile(reportPath,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));
 }catch(e){result.error=e.message;result.finishedAt=new Date().toISOString();await mkdir(reportDir,{recursive:true});await writeFile(reportPath,JSON.stringify(result,null,2)+'\n');console.error(JSON.stringify(result,null,2));process.exitCode=1;}finally{await browser?.close().catch(()=>{});server?.kill();}
 
