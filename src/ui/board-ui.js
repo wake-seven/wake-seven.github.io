@@ -1767,7 +1767,7 @@ function handleBoardPointerDown(e){
   }));
   // 回す3体は他のパネルより手前に。ただし軸の点・持ち手・スワイプ中の点線より奥に留める。
   const frontMarker=svg.querySelector('.pivot');
-  for(const item of items){setBoardTileSelected(item.el,true);svg.insertBefore(item.el,frontMarker);}
+  for(const item of items){setBoardTileSelected(item.el,true);item.el.classList.add('swipe-active');svg.insertBefore(item.el,frontMarker);}
   // 回転対象の並べ替えで、対象外のパネルが目標枠を覆わないようにする。
   // 目標パネルは全タイルの後ろ、棒・軸の前に置く（枠線だけを前面に出さない）。
   renderApplicationTargetCells();
@@ -1863,7 +1863,7 @@ function finishDrag(e,cancel=false,forcedTurns=null){
   const dg=drag,endModel=normalizeBoardPointerEnd(e,dg,{cancel,forcedTurns});
   finishBoardPointerContext(dg,cancel);
   setBoardDrag(null);setBoardTouchActive(false); clearAxisGuide(); renderBoardInteractionFeedback({classes:{spinning:false,selecting:false}});
-  for(const item of dg.items)setBoardTileSelected(item.el,false);
+  for(const item of dg.items){setBoardTileSelected(item.el,false);item.el.classList.remove('swipe-active');}
   svg.querySelectorAll('.pivot.active').forEach(el=>setBoardPivotActive(el,false));
   releaseBoardPointer(svg,dg.id);
 
@@ -1994,7 +1994,7 @@ function animateTutorialRewind(model,visualItems){
   const NS_='http://www.w3.org/2000/svg';
   const group=document.createElementNS(NS_,'g');
   group.setAttribute('class','auto-swipe-group');
-  svg.appendChild(group);
+  placeSwipeGroupOnTop(group);
   // 元のDOM位置(水色の棒より前)を覚えておき、終了後に同じ位置へ戻す。末尾に付け直すと
   // 棒(grip-marker)より後ろになってしまい、棒が裏に隠れて見えなくなるため。
   const domSnapshot=captureTutorialRewindDomSnapshot(visualItems);
@@ -2055,7 +2055,7 @@ function animateGuidedBasicRewind(dg){
     group.appendChild(clone);
     return {item,clone,hex:clone.querySelector('.hex')};
   });
-  svg.appendChild(group);
+  placeSwipeGroupOnTop(group);
   haptic(8);
   let start=null;
   const ease=t=>1-Math.pow(1-t,3);

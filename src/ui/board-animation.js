@@ -4,6 +4,14 @@
 function animationTileState(turn){
   return mod3(turn)===0?'stand':'fallen';
 }
+// 回転中の一時グループは、通常タイルの後ろかつ軸・棒の直前に置く。
+// SVGではグループ内の要素を動かしても、グループ自身の描画順が変わらないため、
+// 末尾へ追加するのではなく、盤面のタイル層の最前面へ明示的に挿入する。
+function placeSwipeGroupOnTop(group,root=svg){
+  const marker=root?.querySelector('.pivot');
+  if(marker)root.insertBefore(group,marker);
+  else root?.appendChild(group);
+}
 function createSwipeGroup(items,pivot){
   const group=document.createElementNS('http://www.w3.org/2000/svg','g');
   group.setAttribute('class','auto-swipe-group');
@@ -22,7 +30,7 @@ function createSwipeGroup(items,pivot){
     group.appendChild(clone);
     clones.push({item,clone,hex:clone.querySelector('.hex')});
   }
-  svg.appendChild(group);
+  placeSwipeGroupOnTop(group);
   return {group,clones};
 }
 function updateAutoSwipePreview(clones,progress,turnDelta){
