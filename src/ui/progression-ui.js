@@ -301,17 +301,17 @@ function showClearDialog(contextOverride=null){
   // 入門クラス最終問題のクリアは、通常のクリアダイアログの代わりに
   // だるま学園入学と同じ演出の「基本クラスへようこそ」を毎回そのまま見せる。
   if(clearDialogUsesStageProgression()&&clearContext.stageIndex===INTRO_STAGE_COUNT-1){
-    openProgressionDialog('chain',{name:'basicWelcome'});
+    requestProgressionDialog('chain',{name:'basicWelcome'},'progression');
     return;
   }
   // 基本クラス最終問題のクリア後は、目標の3枚から回す場所を考える応用クラスへ進む。
   if(clearDialogUsesStageProgression()&&clearContext.stageIndex===APPLICATION_STAGE_START-1){
-    openProgressionDialog('chain',{name:'applicationWelcome'});
+    requestProgressionDialog('chain',{name:'applicationWelcome'},'progression');
     return;
   }
   // 応用クラス最終問題のクリア後に、発展クラス開始を案内する。
   if(clearDialogUsesStageProgression()&&clearContext.stageIndex===DEVELOPMENT_STAGE_START-1){
-    openProgressionDialog('chain',{name:'developmentWelcome'});
+    requestProgressionDialog('chain',{name:'developmentWelcome'},'progression');
     return;
   }
   if(clearDialogUsesStageProgression()&&clearContext.stageIndex===STAGES.length-1&&clearContext.currentLapPrimaryComplete){

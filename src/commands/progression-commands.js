@@ -28,19 +28,11 @@ const GameNavigation=Object.freeze({
   satori:index=>loadSatoriStage(index), free:()=>startFree(), maker:()=>enterBoardMaker(),
   stageMenu:()=>returnToStageMode(), speedPicker:()=>openSpeedPicker()
 });
-// ダイアログ要求の共通入口。呼び出し元はsourceを残せるため、
-// クリア・速解き・復元・メニューのどこから開いたかを追跡できる。
-function requestProgressionDialog({kind, options={}, source='unknown'}={}){
-  const request={...options,source};
-  if(kind==='messages')return openMessageReview(request);
-  if(kind==='ranks')return openRankDialog(request);
-  if(kind==='mastery')return showMasterDialog(request.kind||'');
-  return false;
-}
+// ダイアログ要求の実装はui/progression-dialogs.jsの単一入口へ集約する。
 const GameDialogs=Object.freeze({
-  messages:options=>requestProgressionDialog({kind:'messages',options,source:options?.source||'menu'}),
-  ranks:options=>requestProgressionDialog({kind:'ranks',options,source:options?.source||'menu'}),
-  mastery:kind=>requestProgressionDialog({kind:'mastery',options:{kind},source:'progression'})
+  messages:options=>requestProgressionDialog('messages',options,options?.source||'menu'),
+  ranks:options=>requestProgressionDialog('ranks',options,options?.source||'menu'),
+  mastery:kind=>requestProgressionDialog('mastery',{kind},'progression')
 });
 const WakeSevenProgressionCommands=Object.freeze({
   startSpeedRun:()=>beginSpeedRun(), advanceSpeedRun:()=>advanceSpeedRun(),

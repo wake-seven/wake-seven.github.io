@@ -13,26 +13,26 @@ function createProgressionMessageContext(context={}){
   });
 }
 
-// 進行に関わるダイアログの共通入口。
-// 実際の表示内容は既存の各UI実装へ委譲し、呼び出し側が個別関数を
-// 覚えなくて済むようにする。ダイアログの状態形式は runtime 側と共有する。
-function openProgressionDialog(id,context={}){
-  const messageContext=createProgressionMessageContext({...context,dialogId:context.dialogId??id});
-  const options={...context,...messageContext};
-  const name=options.name||options.dialogName||id;
-  if(id==='chain'||CHAIN_STEPS[name])return openChainedDialog(name);
-  if(id==='clear')return showClearDialog(messageContext);
-  if(id==='message')return openMessageReview({resume:!!options.resume,returnTarget:options.returnTarget||null});
-  if(id==='master')return showMasterDialog(options.kind||'primary');
-  if(id==='rank')return openRankDialog(options.returnTarget||null);
-  if(id==='tipGuide')return openTipGuide();
-  if(id==='guideHub')return openGuideHub();
-  if(id==='twoMove')return openTwoMovePatterns();
-  if(id==='twoMoveDetail')return openTwoMoveDetail(options.state,options.index);
-  if(id==='twoMoveLesson')return openTwoMoveLessonDialog(!!options.retry);
-  if(id==='speedPause')return openSpeedPauseDialog();
-  if(id==='optimalFail')return renderOptimalFail();
-  const dialog=$(id);
+// 進行に関わるダイアログの唯一の要求入口。
+// kind/context/sourceを固定し、既存の描画関数へ委譲する。
+function requestProgressionDialog(kind,context={},source='unknown'){
+  // 旧オブジェクト形式も内部呼び出しの移行期間だけ受け付ける。
+  if(kind&&typeof kind==='object'){const request=kind;kind=request.kind;source=request.source||source;context=request.options||{};}
+  const options={...(context||{}),source,...createProgressionMessageContext({...context,dialogId:context?.dialogId??kind})};
+  const name=options.name||options.dialogName||kind;
+  if(kind==='chain'||CHAIN_STEPS[name])return openChainedDialog(name);
+  if(kind==='clear')return showClearDialog(options);
+  if(kind==='message'||kind==='messages')return openMessageReview({resume:!!options.resume,returnTarget:options.returnTarget||null});
+  if(kind==='master'||kind==='mastery')return showMasterDialog(options.kind||'primary');
+  if(kind==='rank'||kind==='ranks')return openRankDialog(options.returnTarget||null);
+  if(kind==='tipGuide')return openTipGuide();
+  if(kind==='guideHub')return openGuideHub();
+  if(kind==='twoMove')return openTwoMovePatterns();
+  if(kind==='twoMoveDetail')return openTwoMoveDetail(options.state,options.index);
+  if(kind==='twoMoveLesson')return openTwoMoveLessonDialog(!!options.retry);
+  if(kind==='speedPause')return openSpeedPauseDialog();
+  if(kind==='optimalFail')return renderOptimalFail();
+  const dialog=$(kind);
   if(dialog){dialog.hidden=false;return true;}
   return false;
 }

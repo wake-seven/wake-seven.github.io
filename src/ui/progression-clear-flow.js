@@ -98,7 +98,7 @@ function createClearTransitionContext(nextStageIndex=stageIndex){
 function finishClearFlow(){
   if(clearFlowPhase!==CLEAR_FLOW_PHASE.dialogPending)return false;
   finishClearFlowDialog();
-  openProgressionDialog('clear',clearFlowState.context||{});
+  requestProgressionDialog('clear',clearFlowState.context||{},'clear');
   requestAnimationFrame(()=>{
     if(WakeSevenAppContext.isClearShown()&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
   });
@@ -146,7 +146,7 @@ function dispatchClearFlowAction(action){
   if(route.kind==='mastery-stage')return loadExtraStage(route.index);
   if(route.kind==='master-dialog')return showMasterDialog(route.section);
   if(route.kind==='restore-free')return restoreFreeSession();
-  if(route.kind==='before-dialog')return openProgressionDialog('chain',{name:clearContentBefore(false,nextStageIndex).dialog});
+  if(route.kind==='before-dialog')return requestProgressionDialog('chain',{name:clearContentBefore(false,nextStageIndex).dialog},'clear');
   return loadStage(route.index);
 }
 // 既存イベントからの互換入口。実際の遷移は状態機械の action dispatcher に集約する。
