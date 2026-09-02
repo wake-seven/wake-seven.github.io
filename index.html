@@ -619,12 +619,13 @@
   /* 応用編では、目標3枚を盤面の右側に小さく見本表示する。 */
   .application-target-preview{display:flex;align-items:center;gap:.2rem;margin-left:auto;min-width:0;color:#D8BE78;font-size:.625rem;font-weight:700;line-height:1;white-space:nowrap}
   .application-target-preview[hidden]{display:none!important}
-  .application-target-preview svg{display:block;width:4.2rem;height:3.35rem;overflow:visible;flex:none}
+  /* 目標見本は「あと1くるり」の到達形を読める大きさで示す。 */
+  .application-target-preview svg{display:block;width:10.5rem;height:8.375rem;overflow:visible;flex:none}
   .application-target-preview .mini-tile{display:none}
   .application-target-preview .mini-tile.application-preview-target{display:block}
   .application-target-preview .mini-tile.application-preview-target path:first-child{stroke:#8B35F0;stroke-width:5;stroke-linejoin:round}
   .application-target-preview .mini-daruma{transform-box:view-box;transform-origin:0 0}
-  @media (max-width:420px){.application-target-preview{gap:.1rem;font-size:.5625rem}.application-target-preview svg{width:3.7rem;height:3rem}}
+  @media (max-width:560px){.application-target-preview{gap:.1rem;font-size:.5625rem}.application-target-preview svg{width:8.4rem;height:6.7rem}}
   .mode-row.speed-mode:not(.speed-with-remaining) .status-metric.remaining,.mode-row.speed-mode:not(.speed-with-remaining) .status-separator{display:none}
   .status-metric{display:flex;align-items:baseline;gap:0.3125rem;color:#9FB0C4;font-size:0.6875rem;letter-spacing:.06em}
   /* display:flex がブラウザ標準の [hidden] より優先されるため、学習区間では明示的に隠す。 */
@@ -4332,7 +4333,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-20:45';
+const APP_VERSION='2026.09.02-20:51';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5055,8 +5056,25 @@ function renderApplicationTargetCells(){
   renderApplicationTargetLayer(svg,tileEls,applicationTargetTiles,{anchorSelector:'.pivot'});
   renderApplicationTargetPreview();
 }
-// 応用編の目標3枚を、問題ごとの初期盤面から小型見本として表示する。
+// 応用編の目標3枚を、1回正しく回した直後の小型見本として表示する。
 // 見本は操作盤面とは別の読み取り専用表示で、残り1手になったら隠す。
+// targetCellsは「1手後に同じ向きで寝る3枚」なので、初期盤面そのものではなく
+// ソルバーで距離を1つ縮めた状態を描く。これが応用編で目指す逆三角の形になる。
+function applicationGoalPreviewState(stage){
+  if(!stage)return null;
+  const start=dec(stage.state),distance=SOLVER.dist[enc(start)],targets=stage.targetCells||[];
+  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){
+    const next=rollOnce(start,ti,dir);
+    if(SOLVER.dist[enc(next)]!==distance-1)continue;
+    if(targets.length===3&&targets.every(cell=>next[cell]===next[targets[0]]))return enc(next);
+  }
+  // データが一時的に不完全でも、正解方向の見本を表示して空欄にはしない。
+  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){
+    const next=rollOnce(start,ti,dir);
+    if(SOLVER.dist[enc(next)]===distance-1)return enc(next);
+  }
+  return stage.state;
+}
 function renderApplicationTargetPreview(){
   const preview=$('applicationTargetPreview'),board=$('applicationTargetPreviewBoard');
   if(!preview||!board)return;
@@ -5066,7 +5084,7 @@ function renderApplicationTargetPreview(){
   const visible=!!stage&&remaining>1&&targets.length===3;
   preview.hidden=!visible;
   if(!visible){board.replaceChildren();return;}
-  board.innerHTML=miniBoardSvg(stage.state);
+  board.innerHTML=miniBoardSvg(applicationGoalPreviewState(stage));
   const targetSet=new Set(targets);
   board.querySelectorAll('.mini-tile').forEach(tile=>{
     tile.classList.toggle('application-preview-target',targetSet.has(Number(tile.dataset.cell)));

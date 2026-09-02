@@ -619,12 +619,13 @@
   /* 応用編では、目標3枚を盤面の右側に小さく見本表示する。 */
   .application-target-preview{display:flex;align-items:center;gap:.2rem;margin-left:auto;min-width:0;color:#D8BE78;font-size:.625rem;font-weight:700;line-height:1;white-space:nowrap}
   .application-target-preview[hidden]{display:none!important}
-  .application-target-preview svg{display:block;width:4.2rem;height:3.35rem;overflow:visible;flex:none}
+  /* 目標見本は「あと1くるり」の到達形を読める大きさで示す。 */
+  .application-target-preview svg{display:block;width:10.5rem;height:8.375rem;overflow:visible;flex:none}
   .application-target-preview .mini-tile{display:none}
   .application-target-preview .mini-tile.application-preview-target{display:block}
   .application-target-preview .mini-tile.application-preview-target path:first-child{stroke:#8B35F0;stroke-width:5;stroke-linejoin:round}
   .application-target-preview .mini-daruma{transform-box:view-box;transform-origin:0 0}
-  @media (max-width:420px){.application-target-preview{gap:.1rem;font-size:.5625rem}.application-target-preview svg{width:3.7rem;height:3rem}}
+  @media (max-width:560px){.application-target-preview{gap:.1rem;font-size:.5625rem}.application-target-preview svg{width:8.4rem;height:6.7rem}}
   .mode-row.speed-mode:not(.speed-with-remaining) .status-metric.remaining,.mode-row.speed-mode:not(.speed-with-remaining) .status-separator{display:none}
   .status-metric{display:flex;align-items:baseline;gap:0.3125rem;color:#9FB0C4;font-size:0.6875rem;letter-spacing:.06em}
   /* display:flex がブラウザ標準の [hidden] より優先されるため、学習区間では明示的に隠す。 */

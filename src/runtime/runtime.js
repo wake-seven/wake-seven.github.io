@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-20:45';
+const APP_VERSION='2026.09.02-20:51';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -724,8 +724,25 @@ function renderApplicationTargetCells(){
   renderApplicationTargetLayer(svg,tileEls,applicationTargetTiles,{anchorSelector:'.pivot'});
   renderApplicationTargetPreview();
 }
-// 応用編の目標3枚を、問題ごとの初期盤面から小型見本として表示する。
+// 応用編の目標3枚を、1回正しく回した直後の小型見本として表示する。
 // 見本は操作盤面とは別の読み取り専用表示で、残り1手になったら隠す。
+// targetCellsは「1手後に同じ向きで寝る3枚」なので、初期盤面そのものではなく
+// ソルバーで距離を1つ縮めた状態を描く。これが応用編で目指す逆三角の形になる。
+function applicationGoalPreviewState(stage){
+  if(!stage)return null;
+  const start=dec(stage.state),distance=SOLVER.dist[enc(start)],targets=stage.targetCells||[];
+  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){
+    const next=rollOnce(start,ti,dir);
+    if(SOLVER.dist[enc(next)]!==distance-1)continue;
+    if(targets.length===3&&targets.every(cell=>next[cell]===next[targets[0]]))return enc(next);
+  }
+  // データが一時的に不完全でも、正解方向の見本を表示して空欄にはしない。
+  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){
+    const next=rollOnce(start,ti,dir);
+    if(SOLVER.dist[enc(next)]===distance-1)return enc(next);
+  }
+  return stage.state;
+}
 function renderApplicationTargetPreview(){
   const preview=$('applicationTargetPreview'),board=$('applicationTargetPreviewBoard');
   if(!preview||!board)return;
@@ -735,7 +752,7 @@ function renderApplicationTargetPreview(){
   const visible=!!stage&&remaining>1&&targets.length===3;
   preview.hidden=!visible;
   if(!visible){board.replaceChildren();return;}
-  board.innerHTML=miniBoardSvg(stage.state);
+  board.innerHTML=miniBoardSvg(applicationGoalPreviewState(stage));
   const targetSet=new Set(targets);
   board.querySelectorAll('.mini-tile').forEach(tile=>{
     tile.classList.toggle('application-preview-target',targetSet.has(Number(tile.dataset.cell)));
