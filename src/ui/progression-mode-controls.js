@@ -1,4 +1,10 @@
 // ===== 進行モード操作 =====
+
+// ステージ選択ダイアログを閉じる共通入口。
+// 選択画面のDOM処理本体は progression-ui.js に残し、イベント側はこの名前だけを使う。
+function closeStagePicker(){
+  closeStagePickerCore();
+}
 // ステージ選択画面の開閉、ページ送り、フリー・自作・速解きへの切り替えを担当する。
 // 表示内容の組み立ては progression-ui.js、問題選択の描画は progression-stage-picker.js に委譲する。
 

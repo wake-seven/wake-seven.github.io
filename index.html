@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-00:50';
+const APP_VERSION='2026.09.03-01:13';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -8902,13 +8902,6 @@ function masterDialogVisibility(kind,needsMasteryTrial){
 export {};
 
 // ===== 進行ナビゲーション =====
-// ステージ選択ダイアログの公開入口。
-// 実装本体が段階的に移行する間も、呼び出し側はこの関数だけを使う。
-function closeStagePicker(){
-  closeStagePickerCore();
-}
-
-// ===== SVG表示境界 =====
 // 進行画面の補助的な鑑賞・解説UI。盤面本体の進行状態は変更しない。
 // 名人の盤面、最短2手の見本、クリア後の形ルールをここで描画する。
 function masteryBoardSvg(tilted=false,forceStandardColor=false){
@@ -9168,7 +9161,7 @@ function tipDaruma(x,y,scale=.55){
   return '<g transform="translate('+x+' '+y+') scale('+scale+')"><use href="#daruma-body"/><use href="#face-open"/></g>';
 }
 
-// ===== 画面描画境界 =====
+// ===== SVG表示境界 =====
 // ===== 進行UI（このファイルの責務） =====
 // ステージ選択、進行表示、クリア後表示をまとめる。前後移動イベントは
 // progression-navigation.js、共通の小さな表示処理は progression-render.js が担当する。
@@ -10175,8 +10168,14 @@ function moveTwoMoveDetail(direction){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== イベントと起動 =====
+// ===== 画面描画境界 =====
 // ===== 進行モード操作 =====
+
+// ステージ選択ダイアログを閉じる共通入口。
+// 選択画面のDOM処理本体は progression-ui.js に残し、イベント側はこの名前だけを使う。
+function closeStagePicker(){
+  closeStagePickerCore();
+}
 // ステージ選択画面の開閉、ページ送り、フリー・自作・速解きへの切り替えを担当する。
 // 表示内容の組み立ては progression-ui.js、問題選択の描画は progression-stage-picker.js に委譲する。
 
@@ -10228,7 +10227,7 @@ $('pickerSpeedMode').addEventListener('click',()=>{
 
 export {};
 
-// ===== 起動・ライフサイクル =====
+// ===== イベントと起動 =====
 // 進行画面のHUDとステージナビを描画する。状態遷移は行わず、表示更新だけを担当する。
 function createProgressionViewContext({
   mode,
@@ -10457,7 +10456,7 @@ function renderStageNav(){
   renderStageNavGuidance();
 }
 
-// ===== 公開API名前空間 =====
+// ===== 起動・ライフサイクル =====
 // ===== 進行クイズの公開入口 =====
 // クイズの描画・回答・終了を、クリアフローやメッセージUIから呼ぶための入口。
 // 問題の解決やDOMの細部は既存のクイズUIへ委譲し、ここでは文脈だけを受け取る。
@@ -10515,7 +10514,7 @@ function closeProgressionQuiz(){
   progressionQuizContext=null;
 }
 
-// ===== ui/progression-commands.js =====
+// ===== 公開API名前空間 =====
 // 進行画面から呼び出す公開コマンドの名前空間。
 // 描画や状態計算とは分離し、イベント配線が参照する入口だけを束ねる。
 const GameNavigation=Object.freeze({
