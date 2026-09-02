@@ -807,8 +807,9 @@
   }
   .tile.stand{filter:brightness(1.04)}
   .tile.fallen{filter:none}
-  /* 応用編は問題データで指定した3枚だけを、盤面枠より少し強い紫で示す。 */
-  #board .tile.application-target .hex{stroke:#8B35F0;stroke-width:4.5;filter:drop-shadow(0 0 2px rgba(139,53,240,.55))}
+  /* 応用編の枠はパネル自身と一緒に動き、棒より背面で表示する。 */
+  #board .tile .application-target-frame{display:none;fill:none;stroke:#8B35F0;stroke-width:4.5;stroke-linejoin:round;pointer-events:none;vector-effect:non-scaling-stroke}
+  #board .tile.application-target .application-target-frame{display:inline}
   /* ミニ盤面(比較カード等)の回転アニメでも、本編の.tileと同じくレイヤーを先に確保しておく。
      iOSで、新しい要素をtransformすると初回フレームだけ描画がずれることがある対策。 */
   .mini-tile,.mini-daruma,.tip-guide-tile,.tip-guide-daruma{transform-box:view-box;transform-origin:0 0;will-change:transform}
@@ -4290,7 +4291,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-16:28';
+const APP_VERSION='2026.09.02-17:02';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -4995,7 +4996,16 @@ const isWrongMoveRewindStage=()=>currentUiPolicy().rewindWrongMove===true;
 const isApplicationTargetStage=()=>currentUiPolicy().showTargetCells===true;
 function renderApplicationTargetCells(){
   const target=new Set(isApplicationTargetStage()?STAGES[stageIndex]?.targetCells||[]:[]);
-  tileEls.forEach((tile,index)=>tile.classList.toggle('application-target',target.has(index)));
+  tileEls.forEach((tile,index)=>{
+    tile.classList.toggle('application-target',target.has(index));
+    const frame=tile.querySelector('.application-target-frame');
+    if(frame)frame.setAttribute('display',target.has(index)?'inline':'none');
+  });
+  // 目標枠を他のパネルより前へ出す。ただし棒よりは前に出さないため、pivotの直前へ戻す。
+  if(target.size){
+    const firstPivot=svg.querySelector('.pivot');
+    if(firstPivot)tileEls.filter(tile=>tile.classList.contains('application-target')).forEach(tile=>svg.insertBefore(tile,firstPivot));
+  }
 }
 // だるま修行(上巻・中巻・下巻)全体: 「あと2くるり」に到達した瞬間、形の名前を演出する対象区間。
 const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;
@@ -5745,7 +5755,8 @@ function buildBoard(){
     g.dataset.cell=i;
     g.innerHTML='<path class="hex" d="'+hexPath(R)+'"/>'
       +'<g class="daruma-shell"><use href="#daruma-body"/><g class="open"><use href="#face-open"/></g><g class="shut"><use href="#face-shut"/></g>'
-      +'<g class="happy"><use href="#face-happy"/></g></g>';
+      +'<g class="happy"><use href="#face-happy"/></g></g>'
+      +'<path class="application-target-frame" d="'+hexPath(R)+'"/>';
     svg.appendChild(g); tileEls.push(g);
   });
   TRI.forEach((t,ti)=>{

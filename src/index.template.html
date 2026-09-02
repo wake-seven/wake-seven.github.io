@@ -807,8 +807,9 @@
   }
   .tile.stand{filter:brightness(1.04)}
   .tile.fallen{filter:none}
-  /* 応用編は問題データで指定した3枚だけを、盤面枠より少し強い紫で示す。 */
-  #board .tile.application-target .hex{stroke:#8B35F0;stroke-width:4.5;filter:drop-shadow(0 0 2px rgba(139,53,240,.55))}
+  /* 応用編の枠はパネル自身と一緒に動き、棒より背面で表示する。 */
+  #board .tile .application-target-frame{display:none;fill:none;stroke:#8B35F0;stroke-width:4.5;stroke-linejoin:round;pointer-events:none;vector-effect:non-scaling-stroke}
+  #board .tile.application-target .application-target-frame{display:inline}
   /* ミニ盤面(比較カード等)の回転アニメでも、本編の.tileと同じくレイヤーを先に確保しておく。
      iOSで、新しい要素をtransformすると初回フレームだけ描画がずれることがある対策。 */
   .mini-tile,.mini-daruma,.tip-guide-tile,.tip-guide-daruma{transform-box:view-box;transform-origin:0 0;will-change:transform}

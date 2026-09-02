@@ -9,7 +9,8 @@ function buildBoard(){
     g.dataset.cell=i;
     g.innerHTML='<path class="hex" d="'+hexPath(R)+'"/>'
       +'<g class="daruma-shell"><use href="#daruma-body"/><g class="open"><use href="#face-open"/></g><g class="shut"><use href="#face-shut"/></g>'
-      +'<g class="happy"><use href="#face-happy"/></g></g>';
+      +'<g class="happy"><use href="#face-happy"/></g></g>'
+      +'<path class="application-target-frame" d="'+hexPath(R)+'"/>';
     svg.appendChild(g); tileEls.push(g);
   });
   TRI.forEach((t,ti)=>{

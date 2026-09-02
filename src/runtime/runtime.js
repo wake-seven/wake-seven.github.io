@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-16:28';
+const APP_VERSION='2026.09.02-17:02';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -706,7 +706,16 @@ const isWrongMoveRewindStage=()=>currentUiPolicy().rewindWrongMove===true;
 const isApplicationTargetStage=()=>currentUiPolicy().showTargetCells===true;
 function renderApplicationTargetCells(){
   const target=new Set(isApplicationTargetStage()?STAGES[stageIndex]?.targetCells||[]:[]);
-  tileEls.forEach((tile,index)=>tile.classList.toggle('application-target',target.has(index)));
+  tileEls.forEach((tile,index)=>{
+    tile.classList.toggle('application-target',target.has(index));
+    const frame=tile.querySelector('.application-target-frame');
+    if(frame)frame.setAttribute('display',target.has(index)?'inline':'none');
+  });
+  // 目標枠を他のパネルより前へ出す。ただし棒よりは前に出さないため、pivotの直前へ戻す。
+  if(target.size){
+    const firstPivot=svg.querySelector('.pivot');
+    if(firstPivot)tileEls.filter(tile=>tile.classList.contains('application-target')).forEach(tile=>svg.insertBefore(tile,firstPivot));
+  }
 }
 // だるま修行(上巻・中巻・下巻)全体: 「あと2くるり」に到達した瞬間、形の名前を演出する対象区間。
 const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;
