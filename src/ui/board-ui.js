@@ -1996,7 +1996,7 @@ function finishDrag(e,cancel=false,forcedTurns=null){
   }
   if(isMode('tutorial')&&!dir){
     paint();
-    setTimeout(showTutorialCue,120);
+    setUiEffectTimer('tutorial','cue',showTutorialCue,120);
     return;
   }
   if((isGuidedBasicStage()||isFallingRodStage()||isWrongMoveRewindStage())&&dir){
@@ -2068,7 +2068,7 @@ function finishDrag(e,cancel=false,forcedTurns=null){
   }
 }
 function animateTutorialRewind(model,visualItems){
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches){paint();setTimeout(showTutorialCue,520);return;}
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){paint();setUiEffectTimer('tutorial-rewind','cue',showTutorialCue,520);return;}
   setBoardBusy(true);
   const duration=model.duration;
   // 3枚を個別にanimate()すると僅かなずれでばらばらに見えるため、1つのgroupへ一時的に
@@ -2139,9 +2139,19 @@ function animateGuidedBasicRewind(dg){
   });
   placeSwipeGroupOnTop(group);
   haptic(8);
+  // 巻き戻し中のフレームを盤面アニメーション世代に所属させる。
+  // リセット・pointercancel・別アニメーション開始後に古いrAFが盤面へ触れないようにする。
+  const session=startBoardAnimationSession('guided-rewind',null,()=>{
+    for(const{item}of clones)item.el.style.visibility='';
+    group.remove();
+    setBoardBusy(false);
+    renderBoardInteractionFeedback({classes:{spinning:false,'rotation-started':false}});
+    paint();
+  });
   let start=null;
   const ease=t=>1-Math.pow(1-t,3);
   const frame=now=>{
+    if(!isBoardAnimationSessionActive(session))return;
     if(start===null)start=now;
     const progress=Math.min(1,(now-start)/duration);
     const deg=rewindStart+(rewindEnd-rewindStart)*ease(progress);
@@ -2158,13 +2168,13 @@ function animateGuidedBasicRewind(dg){
         hex.style.stroke=tone?.stroke||'';
       }
     }
-    if(progress<1){requestAnimationFrame(frame);return;}
-    for(const{item} of clones)item.el.style.visibility='';
-    group.remove();
-    setBoardBusy(false);renderBoardInteractionFeedback({classes:{spinning:false,'rotation-started':false}});paint();
-    setTimeout(()=>{if(isAssistedLearningStage()||isFallingRodStage())$('gripPrompt').hidden=true;},450);
+    if(progress<1){requestBoardAnimationFrame(session,frame);return;}
+    finishBoardAnimationSession(session);
+    setUiEffectTimer('guided-rewind','hide-prompt',()=>{
+      if(isAssistedLearningStage()||isFallingRodStage())$('gripPrompt').hidden=true;
+    },450);
   };
-  requestAnimationFrame(frame);
+  requestBoardAnimationFrame(session,frame);
 }
 function handleBoardPointerUp(e){if(!clearInvalidGrab(e))finishDrag(e);}
 function handleBoardPointerCancel(e){cancelBoardAnimation('pointercancel');if(!clearInvalidGrab(e))finishDrag(e,true);}
