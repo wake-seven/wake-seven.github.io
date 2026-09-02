@@ -313,10 +313,9 @@ const TRAINING_THREE_MOVE_STATE_IDS=[
 // 中巻で使う後半9問だけを応用編から名人への道へ振り分けるための除外集合。
 const trainingStateSet=new Set(TRAINING_THREE_MOVE_STATE_IDS.slice(9));
 const threeMoveStageByState=new Map(ALL_THREE_MOVE_STAGES.map(stage=>[stage.state,stage]));
-// 応用クラス: 3くるりの目標となる3枚を示し、回す棒と方向は自分で探す。
-// 発展クラスと同じ3くるり素材から選ぶが、出題順は独立させる。
-const APPLICATION_STAGES=ALL_THREE_MOVE_STAGES
-  .filter(stage=>!trainingStateSet.has(stage.state))
+// 応用クラス: 2くるりの目標となる3枚を示し、回す棒と方向は自分で探す。
+// 基本編と同じ2くるり素材から選ぶが、出題順は独立させる。
+const APPLICATION_STAGES=TWO_MOVE_STAGES
   .slice(0,APPLICATION_STAGE_COUNT)
   .map(stage=>({...stage,application:true}));
 // 中巻で使う後半9だけを名人への道から除外する。前半9は名人・3くるり30問側へ回す
