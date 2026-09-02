@@ -4283,7 +4283,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-16:04';
+const APP_VERSION='2026.09.02-16:08';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5137,7 +5137,11 @@ function renderApplicationTargetCells(){
     // 後者は複数の最短経路がある型でも、目標を毎回同じ規則で選ぶための安定した規則。
     groups.sort((a,b)=>{
       const aExact=a.length===3,bExact=b.length===3;
-      return Number(bExact)-Number(aExact)||a.length-b.length||
+      // 中央セルは複数の候補グループに入りやすく、そこだけを含む候補を
+      // 先に採ると、外側3枚を示す問題で目標がずれる。中央を避けられる
+      // 候補を優先してから、3枚ちょうど・位置の安定順で比較する。
+      const aCenter=a.includes(3),bCenter=b.includes(3);
+      return Number(bExact)-Number(aExact)||Number(aCenter)-Number(bCenter)||a.length-b.length||
         b.reduce((sum,cell)=>sum+cell,0)-a.reduce((sum,cell)=>sum+cell,0);
     });
     const target=groups[0];
