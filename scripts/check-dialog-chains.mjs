@@ -46,7 +46,7 @@ for (const [from, to] of [
   ['trainingUpperGoal', 'trainingUpperPractice'],
   ['trainingMiddleGoal', 'trainingMiddleSpin']
 ]) {
-  required(new RegExp(`${from}[\\s\\S]{0,700}openChainedDialog\\('${to}'\\)`), `${from} must lead to ${to}.`);
+  required(new RegExp(from + "[\\s\\S]{0,700}(?:openChainedDialog\\('" + to + "'\\)|openProgressionDialog\\('chain',\\{name:'" + to + "'\\})"), `${from} must lead to ${to}.`);
 }
 // 上巻・中巻の実演から本編へ戻ることも、連鎖を閉じたままにしない重要契約。
 required(/trainingUpperPractice[\s\S]{0,1800}loadStage\(TRAINING_STAGE_START\)/, 'Upper-volume practice must enter the first stage.');
@@ -54,7 +54,7 @@ required(/trainingMiddleSpin[\s\S]{0,1800}loadStage\(TRAINING_STAGE_START\+TRAIN
 
 // 連鎖開始地点が登録表を経由していることを確認する。
 for (const name of ['academyEnroll', 'basicWelcome', 'applicationWelcome', 'developmentWelcome']) {
-  assert.match(events + source + progressionUi, new RegExp(`openChainedDialog\\('${name}'\\)`), `Chain entry is not connected: ${name}`);
+  assert.match(events + source + progressionUi, new RegExp(`(?:openChainedDialog\\('${name}'\\)|openProgressionDialog\\('chain',\\{name:'${name}'\\})`), `Chain entry is not connected: ${name}`);
 }
 required(/state\.id==='chain'&&CHAIN_STEPS\[state\.name\][\s\S]{0,120}openChainedDialog\(state\.name\)/, 'Saved chain dialog must restore through CHAIN_STEPS.', runtime);
 

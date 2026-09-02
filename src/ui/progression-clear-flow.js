@@ -58,7 +58,7 @@ function finishClearFlowDialog(){clearFlowPhase=CLEAR_FLOW_PHASE.dialog;}
 function finishClearFlow(){
   if(clearFlowPhase!==CLEAR_FLOW_PHASE.dialogPending)return false;
   finishClearFlowDialog();
-  showClearDialog();
+  openProgressionDialog('clear');
   requestAnimationFrame(()=>{
     if(clearShown&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
   });
@@ -101,15 +101,14 @@ function advanceAfterClear(){
   if(route.kind==='mastery-stage')return loadExtraStage(route.index);
   if(route.kind==='master-dialog')return showMasterDialog(route.section);
   if(route.kind==='restore-free')return restoreFreeSession();
-  if(route.kind==='before-dialog')return openChainedDialog(clearContentBefore(false,nextStageIndex).dialog);
+  if(route.kind==='before-dialog')return openProgressionDialog('chain',{name:clearContentBefore(false,nextStageIndex).dialog});
   return loadStage(route.index);
 }
 let returnToClearCard=false,twoMovePatternsReturnTarget=null,twoMoveDetailReturnTarget=null,guideHubReturn=false;
 function returnToClearDialog(){
-  returnToClearCard=false;$('clearDialogMessage').textContent=clearDialogHeading();renderClearStageContext();renderClearTip();renderClearQuiz();
+  returnToClearCard=false;$('clearDialogMessage').textContent=clearDialogHeading();renderClearStageContext();renderClearTip();showProgressionQuiz({rootId:'clearQuiz',clearEntry:clearEntryForCurrent()});
   $('clearNext').disabled=false;
-  try{renderBoardQuiz('boardQuiz',boardQuizConfigForCurrent(),{requireAnswer:true});}
-  catch(error){console.error('clear board quiz render failed',error);$('boardQuiz').hidden=true;}
+  showProgressionQuiz({rootId:'boardQuiz',boardQuizConfig:boardQuizConfigForCurrent(),requireAnswer:true});
   $('clearNext').hidden=false;$('clearDialog').hidden=false;$('clearTipLink').focus();
 }
 

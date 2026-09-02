@@ -549,7 +549,7 @@ function showClearDialog(){
   finishClearFlowDialog();
   // クリア演出の遅延中に別ダイアログが残っていても、現在のクリア結果を
   // 表示できずに終わらせない。先に古いダイアログを閉じてから描画する。
-  if(hasCompetingDialogForClear())hideGameDialogs();
+  if(hasCompetingDialogForClear())closeProgressionDialog();
   // 悟りの最終問題は、再挑戦で解いた場合も制覇ダイアログを見せる。
   // それ以外の悟り問題は、制覇後も通常のクリアダイアログにする。
   const showSatoriMastery=isMode('satori')&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered();
@@ -568,17 +568,17 @@ function showClearDialog(){
   // 入門クラス最終問題のクリアは、通常のクリアダイアログの代わりに
   // だるま学園入学と同じ演出の「基本クラスへようこそ」を毎回そのまま見せる。
   if(clearDialogUsesStageProgression()&&stageIndex===INTRO_STAGE_COUNT-1){
-    openChainedDialog('basicWelcome');
+    openProgressionDialog('chain',{name:'basicWelcome'});
     return;
   }
   // 基本クラス最終問題のクリア後は、目標の3枚から回す場所を考える応用クラスへ進む。
   if(clearDialogUsesStageProgression()&&stageIndex===APPLICATION_STAGE_START-1){
-    openChainedDialog('applicationWelcome');
+    openProgressionDialog('chain',{name:'applicationWelcome'});
     return;
   }
   // 応用クラス最終問題のクリア後に、発展クラス開始を案内する。
   if(clearDialogUsesStageProgression()&&stageIndex===DEVELOPMENT_STAGE_START-1){
-    openChainedDialog('developmentWelcome');
+    openProgressionDialog('chain',{name:'developmentWelcome'});
     return;
   }
   const currentLapPrimaryCleared=(activeLap===2?lap2ClearedStages:lap1ClearedStages);
@@ -606,17 +606,12 @@ function showClearDialog(){
   $('clearDialogMessage').textContent=clearDialogHeading();
   renderClearStageContext();
   renderClearTip();
-  renderClearQuiz();
+  showProgressionQuiz({rootId:'clearQuiz',clearEntry:clearEntryForCurrent()});
   action.hidden=false;
   action.disabled=false;
   // 盤面クイズはクリア後の追加コンテンツ。描画に失敗しても、
   // クリア結果と次の操作まで巻き込んでダイアログを失わないようにする。
-  try{renderBoardQuiz('boardQuiz',boardQuizConfigForCurrent(),{requireAnswer:true});}
-  catch(error){
-    console.error('clear board quiz render failed',error);
-    $('boardQuiz').hidden=true;
-    action.disabled=false;
-  }
+  showProgressionQuiz({rootId:'boardQuiz',boardQuizConfig:boardQuizConfigForCurrent(),requireAnswer:true});
   $('clearDialog').hidden=false;
 }
 // ===== クリア後メッセージと雑学 =====
