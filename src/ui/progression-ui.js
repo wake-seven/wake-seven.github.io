@@ -334,8 +334,8 @@ function renderStageNav(){
     tutorial:isMode('tutorial'),
     assisted:isAssistedLearningStage(),
     speedRemaining:speedShowsRemaining(),
-    speedIndex:speedSession.index,
-    speedTotal:speedSession.total||activeSpeedDefinition().total
+    speedIndex:speedSession?.index??0,
+    speedTotal:speedSession?.total||activeSpeedDefinition().total
   });
   const navModel=createStageNavDisplayModel(viewContext);
   const tutorialMode=navModel.tutorialMode;

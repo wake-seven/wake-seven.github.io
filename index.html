@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-23:50';
+const APP_VERSION='2026.09.02-23:51';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -9330,8 +9330,8 @@ function renderStageNav(){
     tutorial:isMode('tutorial'),
     assisted:isAssistedLearningStage(),
     speedRemaining:speedShowsRemaining(),
-    speedIndex:speedSession.index,
-    speedTotal:speedSession.total||activeSpeedDefinition().total
+    speedIndex:speedSession?.index??0,
+    speedTotal:speedSession?.total||activeSpeedDefinition().total
   });
   const navModel=createStageNavDisplayModel(viewContext);
   const tutorialMode=navModel.tutorialMode;
