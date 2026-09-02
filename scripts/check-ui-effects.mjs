@@ -26,7 +26,7 @@ assert.doesNotMatch(speed,/speedClockTimer/,'Speed clock must not retain a direc
 assert.match(clearFlow,/setUiEffectTimer\('maker-reveal'/,'Maker reveal cleanup must use an effect-scoped timer.');
 assert.match(clearFlow,/CLEAR_FLOW_PHASE=Object\.freeze\(\{idle:'idle',celebrating:'celebrating',dialogPending:'dialog-pending',dialog:'dialog'\}\)/,'Clear flow phases must be explicit.');
 assert.match(clearFlow,/function scheduleClearFlowDialog\(callback,delay(?:,cycle=clearFlowCycle)?\)/,'Clear dialog scheduling must use the clear-flow boundary.');
-assert.match(mastery,/scheduleClearFlowDialog\(\(\)=>\{/,'Clear dialog must be scheduled through the clear-flow boundary.');
+assert.match(clearFlow,/scheduleClearFlowDialog\(\(\)=>\{/,'Clear dialog must be scheduled through the clear-flow boundary.');
 assert.match(board,/clearUiEffectTimers\('clear-transition'\)/,'Board transitions must cancel delayed clear effects.');
 assert.match(board,/resetBoardUiContext\(\)/,'Board reset must clear transient animation classes.');
 assert.match(progressionRender,/function renderClearStageContextElement\(/,'Clear context rendering must remain in the renderer boundary.');

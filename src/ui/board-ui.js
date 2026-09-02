@@ -1026,7 +1026,7 @@ function paint(){
     clearUiEffectTimers('clear-transition');
     // クリア演出の開始とダイアログ表示を同じ予約にまとめる。
     // 中継タイマーを挟むと、再描画や別ダイアログの後始末で表示予約が欠落する。
-    showClearActions();
+    startClearFlow();
   }
 }
 function tileTransform(x,y,turn){

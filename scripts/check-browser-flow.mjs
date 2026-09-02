@@ -6,9 +6,10 @@ import vm from 'node:vm';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const read = name => readFile(join(root, name), 'utf8');
-const [template, bootstrap, events, board, interaction, tutorial, published] = await Promise.all([
+const [template, bootstrap, events, board, interaction, tutorial, published, clearFlow] = await Promise.all([
   read('src/index.template.html'), read('src/runtime/app-bootstrap.js'), read('src/runtime/app-events.js'),
-  read('src/ui/board-ui.js'), read('src/ui/board-interaction.js'), read('src/ui/tutorial-animation.js'), read('index.html')
+  read('src/ui/board-ui.js'), read('src/ui/board-interaction.js'), read('src/ui/tutorial-animation.js'), read('index.html'),
+  read('src/ui/progression-clear-flow.js')
 ]);
 const progression = await read('src/ui/progression-ui.js');
 const speed = await read('src/runtime/speed.js');
@@ -51,8 +52,11 @@ assert.match(board, /startTutorialRewindSession\(/, 'tutorial rewind must use it
 assert.match(tutorial, /cancelTutorialRewindSession\(/, 'tutorial rewind must have a cancellation path');
 assert.match(tutorial, /captureTutorialRewindDomSnapshot|restoreTutorialRewindDomSnapshot/,
   'tutorial rewind must snapshot and restore DOM order');
-assert.match(progression, /if\(svg\.classList\.contains\('celebrating'\)\)return (?:0|reduced\?0:820);/,
+assert.match(clearFlow, /if\(svg\.classList\.contains\('celebrating'\)\)return (?:0|reduced\?0:820);/,
   'clear celebration must be idempotent');
+assert.match(clearFlow, /function startClearFlow\(/, 'clear transition must have a named start entry point');
+assert.match(clearFlow, /function finishClearFlow\(/, 'clear transition must have a named finish entry point');
+assert.match(clearFlow, /function advanceAfterClear\(/, 'clear transition must have a named advance entry point');
 assert.match(board, /if\(isSolved\(\)&&!clearShown\)/,
   'board paint must guard against duplicate clear transitions');
 assert.match(board, /bindApplicationTargetTiles\(\);/,

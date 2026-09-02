@@ -13,7 +13,7 @@ function debugClearCurrent(extraMoves=0){
   GameBoard.repaint();
   // デバッグ即クリアでも、通常操作と同じクリア演出・ダイアログ遷移を直ちに予約する。
   // 再描画側の予約と重なっても、同じタイマーキーで冪等に置き換わる。
-  showClearActions();
+  startClearFlow();
   // 即クリアでも、通常操作と同じくメッセージ一覧の開始位置を更新する。
   if(extraMoves===0&&!isMode('satori')&&!isMode('free')&&!isMode('custom')){
     rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);

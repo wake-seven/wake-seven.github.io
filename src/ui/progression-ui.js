@@ -519,64 +519,7 @@ function renderStageNav(){
   renderStageNavGuidance();
 }
 // ===== クリア後表示 =====
-// 全員起きた瞬間の演出(タイルの揺れ+金色のバースト)。本編のクリアと、各所のデモ盤面で共用する。
-function playWakeCelebrationEffect(targetSvg,tilesArr){
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  tilesArr.forEach((el,i)=>{
-    const base=el.style.transform;
-    el.animate([
-      {transform:base},
-      {transform:base+' scale(1.13,.78) skewX(-7deg)',offset:.2},
-      {transform:base+' scale(.86,1.18) skewX(6deg)',offset:.42},
-      {transform:base+' scale(1.08,.91) skewX(-3deg)',offset:.64},
-      {transform:base}
-    ],{duration:820,delay:i*65,easing:'cubic-bezier(.2,.8,.25,1)'});
-  });
-  const NS_='http://www.w3.org/2000/svg';
-  const burst=document.createElementNS(NS_,'g');
-  burst.setAttribute('class','clear-burst');
-  burst.setAttribute('pointer-events','none');
-  const addBurstRing=(radius,stroke,width,opacity)=>{const ring=document.createElementNS(NS_,'circle');ring.setAttribute('cx',CELL[3].x);ring.setAttribute('cy',CELL[3].y);ring.setAttribute('r',radius);ring.setAttribute('fill','none');ring.setAttribute('stroke',stroke);ring.setAttribute('stroke-width',width);if(opacity)ring.setAttribute('opacity',opacity);burst.appendChild(ring);};
-  addBurstRing(47,'#C9A54E',4);
-  addBurstRing(58,'#F3E8D5',1.5,'.7');
-  burst.style.transformOrigin=CELL[3].x+'px '+CELL[3].y+'px';
-  burst.style.transformBox='view-box';
-  targetSvg.appendChild(burst);
-  const a=burst.animate([
-    {transform:'scale(.55)',opacity:0},
-    {transform:'scale(.8)',opacity:1,offset:.2},
-    {transform:'scale(2.45)',opacity:0}
-  ],{duration:820,easing:'cubic-bezier(.15,.7,.2,1)'});
-  a.onfinish=a.oncancel=()=>burst.remove();
-}
-function celebrateClear(){
-  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  // 同じクリア周期でshowClearActionsが再入しても、揺れとバーストを重ねない。
-  // 既存演出を再利用する場合に0を返すと、後続ダイアログだけが前倒しになる。
-  if(svg.classList.contains('celebrating'))return reduced?0:820;
-  svg.classList.add('celebrating');
-  playClearSound(clearSoundKind());
-  if(reduced)return 0;
-  playWakeCelebrationEffect(svg,tileEls);
-  // 円の拡大とだるまの揺れ（820ms）が完了してからダイアログを開く。
-  return 820;
-}
-function showClearActions(){
-  // クリア1回分につき、演出開始とダイアログ予約を1回だけ行う。
-  const clearCycle=beginClearFlow();
-  if(!clearCycle)return;
-  const delay=celebrateClear();
-  scheduleClearFlowDialog(()=>{
-    if(!clearShown||!isSolved()){resetClearFlow();return;}
-    finishClearFlowDialog();
-    showClearDialog();
-    // クリア直後に盤面・メッセージの後処理が同じフレームで走っても、
-    // 現在のクリア結果が有効なら表示状態を確定させる。
-    requestAnimationFrame(()=>{
-      if(clearShown&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
-    });
-  },delay,clearCycle);
-}
+// クリア演出と予約は progression-clear-flow.js が担当する。
 function renderClearStageContext(){
   const context=$('clearStageContext');
   if(isMode('free')||isMode('custom')){
