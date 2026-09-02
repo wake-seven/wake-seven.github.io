@@ -346,7 +346,7 @@ const UI_TEXT={
     basicWelcomeText:'あと○くるりが減ったら、指をはなそう',
     basicWelcomeStart:'はじめる',
     applicationWelcomeTitle:'応用クラスへようこそ！',
-    applicationWelcomeText:'紫の枠の3枚を、同じ向きにそろえよう。',
+    applicationWelcomeText:'紫の枠の3枚を、同じ向きにそろえよう',
     applicationWelcomeStart:'はじめる',
     developmentWelcomeTitle:'発展クラス 開始！',
     developmentWelcomeText:'発展クラスでは「あと3くるり」「あと4くるり」にも挑戦するよ！',
