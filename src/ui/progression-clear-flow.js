@@ -1,18 +1,33 @@
 // ===== クリア後の状態遷移 =====
 // クリア演出の表示と、次の問題/コースへの遷移を進行UI本体から分離する。
-// クリア1回分の「演出中→ダイアログ表示済み」をここで管理する。
 // clearShown は保存・進行用の状態なので、表示予約の重複防止には使わない。
-let clearFlowPhase='idle';
+// 演出とタイマーの段階を名前で持ち、同じクリアに対する再描画が
+// 「演出を再生し直す」「ダイアログを前倒しする」ことを防ぐ。
+const CLEAR_FLOW_PHASE=Object.freeze({idle:'idle',celebrating:'celebrating',dialogPending:'dialog-pending',dialog:'dialog'});
+let clearFlowPhase=CLEAR_FLOW_PHASE.idle;
+// クリア周期を識別する世代番号。表示予約がキャンセルされても、古い
+// callback が後から実行された場合に現在の盤面へ作用しないようにする。
+let clearFlowCycle=1;
 function resetClearFlow(){
-  clearFlowPhase='idle';
+  clearFlowCycle++;
+  clearFlowPhase=CLEAR_FLOW_PHASE.idle;
   clearUiEffectTimers('clear-transition');
 }
 function beginClearFlow(){
-  if(clearFlowPhase!=='idle')return false;
-  clearFlowPhase='celebrating';
+  if(clearFlowPhase!==CLEAR_FLOW_PHASE.idle)return false;
+  clearFlowPhase=CLEAR_FLOW_PHASE.celebrating;
+  return clearFlowCycle;
+}
+function scheduleClearFlowDialog(callback,delay,cycle=clearFlowCycle){
+  if(clearFlowPhase!==CLEAR_FLOW_PHASE.celebrating)return false;
+  clearFlowPhase=CLEAR_FLOW_PHASE.dialogPending;
+  setUiEffectTimer('clear-transition','show-dialog',()=>{
+    if(cycle!==clearFlowCycle||clearFlowPhase!==CLEAR_FLOW_PHASE.dialogPending)return;
+    callback();
+  },delay);
   return true;
 }
-function finishClearFlowDialog(){clearFlowPhase='dialog';}
+function finishClearFlowDialog(){clearFlowPhase=CLEAR_FLOW_PHASE.dialog;}
 function advanceAfterClear(){
   makerButtonBlockedUntil=performance.now()+600;
   clearUiEffectTimers('maker-reveal');
