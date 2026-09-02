@@ -313,10 +313,22 @@ const TRAINING_THREE_MOVE_STATE_IDS=[
 // 中巻で使う後半9問だけを応用編から名人への道へ振り分けるための除外集合。
 const trainingStateSet=new Set(TRAINING_THREE_MOVE_STATE_IDS.slice(9));
 const threeMoveStageByState=new Map(ALL_THREE_MOVE_STAGES.map(stage=>[stage.state,stage]));
-// 応用クラス: 基本編と同じ2くるり素材から選ぶが、出題順は独立させる。
-const APPLICATION_STAGES=TWO_MOVE_STAGES
-  .slice(0,APPLICATION_STAGE_COUNT)
-  .map(stage=>({...stage,application:true}));
+// 応用クラス: 目標にする3枚を問題ごとに明示した2くるり問題。
+// targetCellsは「正しい棒を1回回した後に、同じ向きで寝る3枚」を表す。
+// 表示側でソルバーから推測しないため、画像を見ながら問題単位で調整できる。
+const APPLICATION_STAGE_TARGETS=[
+  {source:1,targetCells:[0,1,6]},
+  {source:0,targetCells:[0,1,5]},
+  {source:2,targetCells:[0,2,3]},
+  {source:3,targetCells:[0,1,6]},
+  {source:4,targetCells:[1,3,5]},
+  {source:5,targetCells:[0,1,4]},
+  {source:6,targetCells:[1,2,3]},
+  {source:7,targetCells:[0,1,3]}
+];
+const APPLICATION_STAGES=APPLICATION_STAGE_TARGETS.map(({source,targetCells})=>({
+  ...TWO_MOVE_STAGES[source],application:true,targetCells:Object.freeze(targetCells)
+}));
 // 中巻で使う後半9だけを名人への道から除外する。前半9は名人・3くるり30問側へ回す
 // (3くるり30問+4くるり15問=45問で名人への道の巻数は変わらない)。
 function threeMoveStage(state){

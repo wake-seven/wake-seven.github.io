@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-16:16';
+const APP_VERSION='2026.09.02-16:26';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -702,6 +702,12 @@ const isSpeedFallingRodStage=()=>currentUiPolicy().speedFalling===true;
 const isFallingRodStage=()=>currentUiPolicy().eliminateWrongRods===true;
 // 応用編は、目標以外を回した場合に盤面を自動で元へ戻す。
 const isWrongMoveRewindStage=()=>currentUiPolicy().rewindWrongMove===true;
+// 応用編の目標3枚は問題データに書かれた配列だけを表示する。
+const isApplicationTargetStage=()=>currentUiPolicy().showTargetCells===true;
+function renderApplicationTargetCells(){
+  const target=new Set(isApplicationTargetStage()?STAGES[stageIndex]?.targetCells||[]:[]);
+  tileEls.forEach((tile,index)=>tile.classList.toggle('application-target',target.has(index)));
+}
 // だるま修行(上巻・中巻・下巻)全体: 「あと2くるり」に到達した瞬間、形の名前を演出する対象区間。
 const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;
 let guidedBasicCandidateTis=null,guidedBasicCandidateSignature=null;

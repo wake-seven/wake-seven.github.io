@@ -899,6 +899,7 @@ function paint(){
   applyBoardTheme();
   showMoves(moves);
   refreshGuidedBasicCandidates();
+  renderApplicationTargetCells();
   if(isMode('tutorial')){
     if(isSolved()&&!clearShown){
       clearShown=true;
