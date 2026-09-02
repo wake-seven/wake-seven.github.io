@@ -5591,10 +5591,16 @@ function createSwipeGroup(items,pivot){
   const group=document.createElementNS('http://www.w3.org/2000/svg','g');
   group.setAttribute('class','auto-swipe-group');
   const clones=[];
-  for(const item of items){
+  // 同じ回転グループ内でも、目標パネルを最後に描画する。
+  // SVGは後から描画した要素が前面になるため、隣接パネルに枠を隠されない。
+  const orderedItems=[...items].sort((a,b)=>
+    Number(a.el.classList.contains('application-target'))-
+    Number(b.el.classList.contains('application-target')));
+  for(const item of orderedItems){
     const clone=item.el.cloneNode(true);
     clone.style.transform=orbitTransform(item,0,pivot);
-    clone.setAttribute('class','tile '+animationTileState(item.turn));
+    const marked=item.el.classList.contains('application-target');
+    clone.setAttribute('class','tile '+animationTileState(item.turn)+(marked?' application-target':''));
     item.el.style.visibility='hidden';
     group.appendChild(clone);
     clones.push({item,clone,hex:clone.querySelector('.hex')});
@@ -7526,6 +7532,9 @@ function handleBoardPointerDown(e){
   // 回す3体は他のパネルより手前に。ただし軸の点・持ち手・スワイプ中の点線より奥に留める。
   const frontMarker=svg.querySelector('.pivot');
   for(const item of items){setBoardTileSelected(item.el,true);svg.insertBefore(item.el,frontMarker);}
+  // 回転対象の並べ替えで、対象外のパネルが目標枠を覆わないようにする。
+  // 目標パネルは全タイルの後ろ、棒・軸の前に置く（枠線だけを前面に出さない）。
+  renderApplicationTargetCells();
   setBoardPivotActive(svg.querySelector('.pivot[data-tri="'+ti+'"]'),true);
   captureBoardPointer(svg,e.pointerId);
   renderBoardInteractionFeedback({classes:{spinning:true}});

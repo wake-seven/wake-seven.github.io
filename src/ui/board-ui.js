@@ -1768,6 +1768,9 @@ function handleBoardPointerDown(e){
   // 回す3体は他のパネルより手前に。ただし軸の点・持ち手・スワイプ中の点線より奥に留める。
   const frontMarker=svg.querySelector('.pivot');
   for(const item of items){setBoardTileSelected(item.el,true);svg.insertBefore(item.el,frontMarker);}
+  // 回転対象の並べ替えで、対象外のパネルが目標枠を覆わないようにする。
+  // 目標パネルは全タイルの後ろ、棒・軸の前に置く（枠線だけを前面に出さない）。
+  renderApplicationTargetCells();
   setBoardPivotActive(svg.querySelector('.pivot[data-tri="'+ti+'"]'),true);
   captureBoardPointer(svg,e.pointerId);
   renderBoardInteractionFeedback({classes:{spinning:true}});
