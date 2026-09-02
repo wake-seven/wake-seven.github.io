@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-00:09';
+const APP_VERSION='2026.09.03-00:16';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -805,70 +805,6 @@ const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;
 let guidedBasicCandidateTis=null,guidedBasicCandidateSignature=null;
 // 基本クラス・発展クラス・速解き九番勝負で、間違えて落ちた棒(消すのではなくグレーアウトして残す)。
 let fallenRodTis=new Set();
-// 学園の補助輪で最初に見せる棒の本数。残り1くるりだけは6本、その他は最大3本にする。
-const ACADEMY_GRIP_DISPLAY_RULE=Object.freeze({oneMove:TRI.length,maxGuided:3});
-function academyGripDisplayCount(configuredCount,fallbackCount=1){
-  if(SOLVER.dist[enc(ori)]===1)return ACADEMY_GRIP_DISPLAY_RULE.oneMove;
-  return Math.min(ACADEMY_GRIP_DISPLAY_RULE.maxGuided,Math.max(1,configuredCount??fallbackCount));
-}
-// 中央の右上に来る軸（右上・中段右のペア）。「定石」として基本6/9で固定表示するのに使う。
-const TOP_RIGHT_TI=TRI.findIndex(t=>t.cells.includes(1)&&t.cells.includes(4));
-function computeGuidedBasicCandidateTis(){
-  const correctTis=[];
-  for(let ti=0;ti<TRI.length;ti++){
-    for(const dir of [1,-1]){
-      if(SOLVER.dist[enc(rollOnce(ori,ti,dir))]===SOLVER.dist[enc(ori)]-1){correctTis.push(ti);break;}
-    }
-  }
-  if(!correctTis.length)return null;
-  // 基本6/9だけは、定石として右上の軸を必ず正解として見せる。
-  const forceTopRight=stageIndex===BASIC_STAGE_START+5&&correctTis.includes(TOP_RIGHT_TI);
-  const primary=forceTopRight?TOP_RIGHT_TI:correctTis[Math.floor(Math.random()*correctTis.length)];
-  // 基本クラスは問題が進むほど1→2→3本と増やす。残り1くるりでは6本に戻す。
-  const count=academyGripDisplayCount(undefined,stageIndex-BASIC_STAGE_START+1);
-  // ダミーは、たまたま正解になってしまう軸を避けて選ぶ（それぞれの候補内だけをシャッフルする）。
-  const shuffle=arr=>{for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;};
-  const safeDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&!correctTis.includes(i)));
-  const fallbackDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&correctTis.includes(i)));
-  const decoyPool=[...safeDecoyPool,...fallbackDecoyPool];
-  return new Set([primary,...decoyPool.slice(0,count-1)]);
-}
-// 発展クラス用: stage.soloRodがあれば必ず候補に含め(3くるり5問の保証された正解棒)、
-// なければ距離を縮められる棒からランダムに1本を軸候補にする(4くるり3問)。
-// ダミーは、たまたま正解になってしまう軸を避けて選ぶ。本数はstage.initialRodCountに従う。
-function computeDevelopmentCandidateTis(){
-  const stage=STAGES[stageIndex];
-  const correctTis=[];
-  for(let ti=0;ti<TRI.length;ti++){
-    for(const dir of [1,-1]){
-      if(SOLVER.dist[enc(rollOnce(ori,ti,dir))]===SOLVER.dist[enc(ori)]-1){correctTis.push(ti);break;}
-    }
-  }
-  if(!correctTis.length)return null;
-  const primary=stage.soloRod!==undefined&&correctTis.includes(stage.soloRod)?stage.soloRod:correctTis[Math.floor(Math.random()*correctTis.length)];
-  const shuffle=arr=>{for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;};
-  const safeDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&!correctTis.includes(i)));
-  const fallbackDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&correctTis.includes(i)));
-  const decoyPool=[...safeDecoyPool,...fallbackDecoyPool];
-  // 最初の盤面は問題ごとの本数で導入し、1回進んだ後は残り2〜3くるりの間を3本にそろえる。
-  // 残り1くるりに入った時だけ、全6本を見せて最後の正解候補を探せるようにする。
-  const count=moves>0?academyGripDisplayCount(3):academyGripDisplayCount(stage.initialRodCount);
-  return new Set([primary,...decoyPool.slice(0,count-1)]);
-}
-// 速解き九番勝負は、毎回3本の中に少なくとも1本の正解候補を含める。
-function computeSpeedTrainingCandidateTis(){
-  const correctTis=[];
-  for(let ti=0;ti<TRI.length;ti++){
-    for(const dir of [1,-1]){
-      if(SOLVER.dist[enc(rollOnce(ori,ti,dir))]===SOLVER.dist[enc(ori)]-1){correctTis.push(ti);break;}
-    }
-  }
-  if(!correctTis.length)return null;
-  const primary=correctTis[Math.floor(Math.random()*correctTis.length)];
-  const pool=Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary);
-  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-  return new Set([primary,...pool.slice(0,2)]);
-}
 function refreshGuidedBasicCandidates(){
   // だるま学園(入門・基本・発展)と速解き九番勝負では、絞り込みが効かない場面でも
   // 「6本全部が候補」として扱う(nullにはしない)。これにより、どの盤面・何くるりでも

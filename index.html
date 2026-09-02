@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-00:09';
+const APP_VERSION='2026.09.03-00:16';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5139,70 +5139,6 @@ const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;
 let guidedBasicCandidateTis=null,guidedBasicCandidateSignature=null;
 // 基本クラス・発展クラス・速解き九番勝負で、間違えて落ちた棒(消すのではなくグレーアウトして残す)。
 let fallenRodTis=new Set();
-// 学園の補助輪で最初に見せる棒の本数。残り1くるりだけは6本、その他は最大3本にする。
-const ACADEMY_GRIP_DISPLAY_RULE=Object.freeze({oneMove:TRI.length,maxGuided:3});
-function academyGripDisplayCount(configuredCount,fallbackCount=1){
-  if(SOLVER.dist[enc(ori)]===1)return ACADEMY_GRIP_DISPLAY_RULE.oneMove;
-  return Math.min(ACADEMY_GRIP_DISPLAY_RULE.maxGuided,Math.max(1,configuredCount??fallbackCount));
-}
-// 中央の右上に来る軸（右上・中段右のペア）。「定石」として基本6/9で固定表示するのに使う。
-const TOP_RIGHT_TI=TRI.findIndex(t=>t.cells.includes(1)&&t.cells.includes(4));
-function computeGuidedBasicCandidateTis(){
-  const correctTis=[];
-  for(let ti=0;ti<TRI.length;ti++){
-    for(const dir of [1,-1]){
-      if(SOLVER.dist[enc(rollOnce(ori,ti,dir))]===SOLVER.dist[enc(ori)]-1){correctTis.push(ti);break;}
-    }
-  }
-  if(!correctTis.length)return null;
-  // 基本6/9だけは、定石として右上の軸を必ず正解として見せる。
-  const forceTopRight=stageIndex===BASIC_STAGE_START+5&&correctTis.includes(TOP_RIGHT_TI);
-  const primary=forceTopRight?TOP_RIGHT_TI:correctTis[Math.floor(Math.random()*correctTis.length)];
-  // 基本クラスは問題が進むほど1→2→3本と増やす。残り1くるりでは6本に戻す。
-  const count=academyGripDisplayCount(undefined,stageIndex-BASIC_STAGE_START+1);
-  // ダミーは、たまたま正解になってしまう軸を避けて選ぶ（それぞれの候補内だけをシャッフルする）。
-  const shuffle=arr=>{for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;};
-  const safeDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&!correctTis.includes(i)));
-  const fallbackDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&correctTis.includes(i)));
-  const decoyPool=[...safeDecoyPool,...fallbackDecoyPool];
-  return new Set([primary,...decoyPool.slice(0,count-1)]);
-}
-// 発展クラス用: stage.soloRodがあれば必ず候補に含め(3くるり5問の保証された正解棒)、
-// なければ距離を縮められる棒からランダムに1本を軸候補にする(4くるり3問)。
-// ダミーは、たまたま正解になってしまう軸を避けて選ぶ。本数はstage.initialRodCountに従う。
-function computeDevelopmentCandidateTis(){
-  const stage=STAGES[stageIndex];
-  const correctTis=[];
-  for(let ti=0;ti<TRI.length;ti++){
-    for(const dir of [1,-1]){
-      if(SOLVER.dist[enc(rollOnce(ori,ti,dir))]===SOLVER.dist[enc(ori)]-1){correctTis.push(ti);break;}
-    }
-  }
-  if(!correctTis.length)return null;
-  const primary=stage.soloRod!==undefined&&correctTis.includes(stage.soloRod)?stage.soloRod:correctTis[Math.floor(Math.random()*correctTis.length)];
-  const shuffle=arr=>{for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;};
-  const safeDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&!correctTis.includes(i)));
-  const fallbackDecoyPool=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&correctTis.includes(i)));
-  const decoyPool=[...safeDecoyPool,...fallbackDecoyPool];
-  // 最初の盤面は問題ごとの本数で導入し、1回進んだ後は残り2〜3くるりの間を3本にそろえる。
-  // 残り1くるりに入った時だけ、全6本を見せて最後の正解候補を探せるようにする。
-  const count=moves>0?academyGripDisplayCount(3):academyGripDisplayCount(stage.initialRodCount);
-  return new Set([primary,...decoyPool.slice(0,count-1)]);
-}
-// 速解き九番勝負は、毎回3本の中に少なくとも1本の正解候補を含める。
-function computeSpeedTrainingCandidateTis(){
-  const correctTis=[];
-  for(let ti=0;ti<TRI.length;ti++){
-    for(const dir of [1,-1]){
-      if(SOLVER.dist[enc(rollOnce(ori,ti,dir))]===SOLVER.dist[enc(ori)]-1){correctTis.push(ti);break;}
-    }
-  }
-  if(!correctTis.length)return null;
-  const primary=correctTis[Math.floor(Math.random()*correctTis.length)];
-  const pool=Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary);
-  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-  return new Set([primary,...pool.slice(0,2)]);
-}
 function refreshGuidedBasicCandidates(){
   // だるま学園(入門・基本・発展)と速解き九番勝負では、絞り込みが効かない場面でも
   // 「6本全部が候補」として扱う(nullにはしない)。これにより、どの盤面・何くるりでも
@@ -8319,6 +8255,54 @@ function setDialogOpenState(id,open){const dialog=$(id);if(dialog)dialog.hidden=
 export {};
 
 // ===== 設定コマンド =====
+// 学園・応用・速解きで使う候補棒の計算。
+// DOMは変更せず、現在の盤面から「候補にする棒」を返す。
+const ACADEMY_GRIP_DISPLAY_RULE=Object.freeze({oneMove:TRI.length,maxGuided:3});
+function academyGripDisplayCount(configuredCount,fallbackCount=1){
+  if(SOLVER.dist[enc(ori)]===1)return ACADEMY_GRIP_DISPLAY_RULE.oneMove;
+  return Math.min(ACADEMY_GRIP_DISPLAY_RULE.maxGuided,Math.max(1,configuredCount??fallbackCount));
+}
+const TOP_RIGHT_TI=TRI.findIndex(t=>t.cells.includes(1)&&t.cells.includes(4));
+function computeGuidedBasicCandidateTis(){
+  const correctTis=[];
+  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){
+    if(SOLVER.dist[enc(rollOnce(ori,ti,dir))]===SOLVER.dist[enc(ori)]-1){correctTis.push(ti);break;}
+  }
+  if(!correctTis.length)return null;
+  const forceTopRight=stageIndex===BASIC_STAGE_START+5&&correctTis.includes(TOP_RIGHT_TI);
+  const primary=forceTopRight?TOP_RIGHT_TI:correctTis[Math.floor(Math.random()*correctTis.length)];
+  const count=academyGripDisplayCount(undefined,stageIndex-BASIC_STAGE_START+1);
+  const shuffle=arr=>{for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;};
+  const safe=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&!correctTis.includes(i)));
+  const fallback=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&correctTis.includes(i)));
+  return new Set([primary,...[...safe,...fallback].slice(0,count-1)]);
+}
+function computeDevelopmentCandidateTis(){
+  const stage=STAGES[stageIndex],correctTis=[];
+  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){
+    if(SOLVER.dist[enc(rollOnce(ori,ti,dir))]===SOLVER.dist[enc(ori)]-1){correctTis.push(ti);break;}
+  }
+  if(!correctTis.length)return null;
+  const primary=stage.soloRod!==undefined&&correctTis.includes(stage.soloRod)?stage.soloRod:correctTis[Math.floor(Math.random()*correctTis.length)];
+  const shuffle=arr=>{for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr;};
+  const safe=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&!correctTis.includes(i)));
+  const fallback=shuffle(Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary&&correctTis.includes(i)));
+  const count=moves>0?academyGripDisplayCount(3):academyGripDisplayCount(stage.initialRodCount);
+  return new Set([primary,...[...safe,...fallback].slice(0,count-1)]);
+}
+function computeSpeedTrainingCandidateTis(){
+  const correctTis=[];
+  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){
+    if(SOLVER.dist[enc(rollOnce(ori,ti,dir))]===SOLVER.dist[enc(ori)]-1){correctTis.push(ti);break;}
+  }
+  if(!correctTis.length)return null;
+  const primary=correctTis[Math.floor(Math.random()*correctTis.length)];
+  const pool=Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary);
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  return new Set([primary,...pool.slice(0,2)]);
+}
+
+// ===== 進行command =====
 // 盤面操作のコマンド入口。実装本体は当面 board-ui.js に残し、入力経路だけを統一する。
 // options をオブジェクト化しておくことで、将来の状態ストア移行時に呼び出し側を変えずに済む。
 const WakeSevenBoardCommands=Object.freeze({
@@ -8382,7 +8366,7 @@ function applyBoardOrientationCommand(permutation,flip=false){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 進行command =====
+// ===== 速解きcommand =====
 // 進行操作の公開コマンド入口。
 // 実装本体は既存ランタイムに残し、イベントや他モジュールからの
 // 呼び出し経路だけをここへ集約する。
@@ -8393,7 +8377,7 @@ const WakeSevenProgressionCommands=Object.freeze({
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 速解きcommand =====
+// ===== 速解き記録command =====
 // 設定変更の書き込み境界。UIイベントはこのcommandを呼び、保存形式を直接扱わない。
 function toggleSoundCommand(){
   soundEnabled=!soundEnabled;
@@ -8437,7 +8421,7 @@ function setLanguageCommand(lang){
 }
 export {};
 
-// ===== 速解き記録command =====
+// ===== チュートリアルcommand =====
 // 進行報酬を書き込む操作命令。節目ダイアログの表示処理から状態更新を分離する。
 function grantMasterDialogRewardsCommand(kind){
   if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
@@ -8464,7 +8448,7 @@ function recordProgressClearCommand(kind,index){
 }
 export {};
 
-// ===== チュートリアルcommand =====
+// ===== クイズUI =====
 // 速解き固有のセッション状態を書き込む操作命令。時計・表示・遷移は実行側に残す。
 function startSpeedSessionCommand(){
   if(!speedSession||speedSession.started)return false;
@@ -8500,7 +8484,7 @@ function completeSpeedSessionCommand(result){
 }
 export {};
 
-// ===== クイズUI =====
+// ===== クリアフロー =====
 // 速解きの記録データを書き込む操作命令。表示用の集計・描画は実行側に残す。
 function updateSpeedOptimalClearsCommand(){
   if(!speedSession)return false;
@@ -8523,7 +8507,7 @@ function recordSpeedCompletionCommand(elapsed,optimalClears){
 }
 export {};
 
-// ===== クリアフロー =====
+// ===== メッセージUI =====
 // チュートリアル状態の書き込みcommand。演出・誤操作判定はUI側に残す。
 function setTutorialStepCommand(index){
   tutorialStep=Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index));
@@ -8550,7 +8534,7 @@ function persistTutorialSessionCommand(step=tutorialStep){
 }
 export {};
 
-// ===== メッセージUI =====
+// ===== 進行表示 =====
 // ===== 共通クイズUI =====
 function shuffledIndices(length){const order=Array.from({length},(_,index)=>index);for(let index=order.length-1;index>0;index--){const swap=Math.floor(Math.random()*(index+1));[order[index],order[swap]]=[order[swap],order[index]];}return order;}
 function quizPresentation(quiz){const order=shuffledIndices(quiz.a.length);return {answers:order.map(index=>quiz.a[index]),correct:order.indexOf(quiz.correct)};}
@@ -8714,7 +8698,7 @@ function bindBoardQuizAnswerEvents(root,{config,correct,states,copy,note,noteKey
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 進行表示 =====
+// ===== 節目ダイアログ =====
 // ===== クリア内容の選択 =====
 // クリア後の文章・挿絵・詳細データを、表示側から切り離して解決する。
 // ここでは既存のグローバル状態と公開関数名を維持し、生成順の依存を増やさない。
@@ -8749,7 +8733,7 @@ function stageClearArt(){const {mode,masteryIndex,stageIndex}=runtimeSnapshot();
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 節目ダイアログ =====
+// ===== 進行UI =====
 // ===== メッセージUIの宣言データ =====
 const MESSAGE_REVIEW_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.messageReview;
 const MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.messageReviewLast;
@@ -8818,7 +8802,7 @@ const MILESTONE_RENDERERS=Object.freeze({primary:(entry,view)=>renderPrimaryMile
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 進行UI =====
+// ===== ロードマップ表示 =====
 // ステージ進行に関する表示補助。状態更新は行わず、現在の状態を画面へ反映する。
 // 描画のたびにID検索を繰り返さないよう、静的な進行UIの参照を一度だけ束ねる。
 let progressionRenderRefs=null;
@@ -8906,7 +8890,7 @@ function renderStageNavAccent(context={}){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== ロードマップ表示 =====
+// ===== ヒント表示 =====
 // ダイアログとクイズが共有する表示文脈を、入口で固定する。
 // 値の決定だけを担当し、状態やDOMは変更しない。
 function createProgressionMessageContext(context={}){
@@ -8958,7 +8942,7 @@ function restoreProgressionDialog(state){
   return !!restoreDialogState(state);
 }
 
-// ===== ヒント表示 =====
+// ===== クリア後遷移 =====
 // 節目ダイアログの表示条件をまとめる。報酬付与や遷移は progression-ui.js 側が担当する。
 function masterDialogTrialState(kind){
   const {lap}=runtimeSnapshot();
@@ -8993,14 +8977,14 @@ function masterDialogVisibility(kind,needsMasteryTrial){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== クリア後遷移 =====
+// ===== 進行ナビゲーション =====
 // ステージ選択ダイアログの公開入口。
 // 実装本体が段階的に移行する間も、呼び出し側はこの関数だけを使う。
 function closeStagePicker(){
   closeStagePickerCore();
 }
 
-// ===== 進行ナビゲーション =====
+// ===== SVG表示境界 =====
 // ===== 進行UI（このファイルの責務） =====
 // ステージ選択、進行表示、クリア後表示をまとめる。前後移動イベントは
 // progression-navigation.js、共通の小さな表示処理は progression-render.js が担当する。
@@ -10260,7 +10244,7 @@ function moveTwoMoveDetail(direction){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== SVG表示境界 =====
+// ===== 画面描画境界 =====
 // ===== 進行モード操作 =====
 // ステージ選択画面の開閉、ページ送り、フリー・自作・速解きへの切り替えを担当する。
 // 表示内容の組み立ては progression-ui.js、問題選択の描画は progression-stage-picker.js に委譲する。
@@ -10313,7 +10297,7 @@ $('pickerSpeedMode').addEventListener('click',()=>{
 
 export {};
 
-// ===== 画面描画境界 =====
+// ===== イベントと起動 =====
 // 進行画面のHUDとステージナビを描画する。状態遷移は行わず、表示更新だけを担当する。
 function createProgressionViewContext({
   mode,
@@ -10542,7 +10526,7 @@ function renderStageNav(){
   renderStageNavGuidance();
 }
 
-// ===== イベントと起動 =====
+// ===== 起動・ライフサイクル =====
 // ===== 進行クイズの公開入口 =====
 // クイズの描画・回答・終了を、クリアフローやメッセージUIから呼ぶための入口。
 // 問題の解決やDOMの細部は既存のクイズUIへ委譲し、ここでは文脈だけを受け取る。
@@ -10600,7 +10584,7 @@ function closeProgressionQuiz(){
   progressionQuizContext=null;
 }
 
-// ===== 起動・ライフサイクル =====
+// ===== 公開API名前空間 =====
 // 進行画面から呼び出す公開コマンドの名前空間。
 // 描画や状態計算とは分離し、イベント配線が参照する入口だけを束ねる。
 const GameNavigation=Object.freeze({
@@ -10622,7 +10606,7 @@ const GameDialogs=Object.freeze({
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 公開API名前空間 =====
+// ===== ui/progression-roadmap.js =====
 // ===== 名人ロードマップ表示 =====
 function renderMasterRoadmap(kind){
   const roadmap=$('masterRoadmap'),roadmapNote=$('masterRoadmapNote');
