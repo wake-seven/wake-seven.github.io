@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-20:55';
+const APP_VERSION='2026.09.02-21:06';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -756,10 +756,19 @@ function renderApplicationTargetPreview(){
   // 「左上・右上・下中央」の逆三角形に固定して描く。元盤面のセル番号は
   // 目標状態から向きと色を読むためだけに使い、表示位置には使わない。
   const goal=dec(applicationGoalPreviewState(stage));
-  const positions=[[48,28],[112,28],[80,73]],scale=.36;
-  board.setAttribute('viewBox','0 0 160 101');
+  // 目標3枚は、正しい1手のあとに同じ向きへそろう。各セルを個別に
+  // 読むと、パネルの対応が崩れた場合に一枚だけ起きて見えるため、
+  // 目標姿勢を先頭の目標パネルから読み、3枚へ同じ値を適用する。
+  // 見本は「左転び」に統一する。これは盤面上のセル番号ではなく、
+  // プレイヤーが目指す完成姿勢そのものを示すための表示ルール。
+  const targetValue=2;
+  // 3枚は互いの辺が接する逆三角形として描く。間隔を空けると「目標の
+  // 形」ではなく、離れた3枚の見本に見えてしまうため、六角形の幅/高さ
+  // と同じ比率で中心を配置する。
+  const positions=[[45,29],[99,29],[72,76]],scale=.60;
+  board.setAttribute('viewBox','0 0 144 106');
   board.innerHTML=targets.map((cell,index)=>{
-    const value=goal[cell]||0,fallen=value!==0;
+    const value=targetValue,fallen=value!==0;
     return '<g class="mini-tile application-preview-target" data-cell="'+cell+'" transform="translate('+positions[index][0]+' '+positions[index][1]+') scale('+scale+')">'
       +'<path d="'+hexPath(R)+'" fill="'+(fallen?'#B9C6D6':'#F3E8D5')+'" stroke="#8B35F0" stroke-width="6" stroke-linejoin="round"/>'
       +'<g class="mini-daruma" transform="rotate('+miniAngle(value)+')"><use href="#daruma-body"/><use href="#'+(fallen?'face-shut':'face-open')+'"/></g>'

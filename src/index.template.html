@@ -616,13 +616,15 @@
   .speed-pause-inline{display:flex;margin-left:auto}
   .speed-pause-inline #speedPause{min-width:7.375rem;padding:0.625rem 0.75rem;font-size:0.8125rem;white-space:nowrap}
   .mode-row.speed-mode .status-metric.remaining{flex-shrink:0;white-space:nowrap}
-  /* 応用編では、目標3枚を盤面の右側に小さく見本表示する。 */
+  /* 応用編では、目標3枚を「あと○くるり」の右側へ同じ行で表示する。 */
+  /* 見本はHUDの右端に固定し、残り手数の文字幅をレイアウトから奪わない。 */
+  .mode-row.application-mode{padding-right:10.25rem}
   .application-target-preview{position:absolute;right:0;top:50%;z-index:2;display:flex;align-items:center;gap:.2rem;transform:translateY(-50%);color:#D8BE78;font-size:.625rem;font-weight:700;line-height:1;white-space:nowrap;pointer-events:none}
   .application-target-preview[hidden]{display:none!important}
   /* 目標見本は「あと1くるり」の到達形を読める大きさで示す。 */
-  .application-target-preview svg{display:block;width:7rem;height:4.25rem;overflow:visible;flex:none}
+  .application-target-preview svg{display:block;width:9rem;height:5.75rem;overflow:visible;flex:none}
   .application-target-preview .mini-tile path:first-child{stroke:#8B35F0;stroke-width:4;stroke-linejoin:round}
-  @media (max-width:560px){.application-target-preview{gap:.1rem;font-size:.5625rem}.application-target-preview svg{width:5.75rem;height:3.5rem}}
+  @media (max-width:560px){.mode-row.application-mode{padding-right:9.25rem}.application-target-preview{gap:.1rem;font-size:.5625rem}.application-target-preview svg{width:8rem;height:5rem}}
   .mode-row.speed-mode:not(.speed-with-remaining) .status-metric.remaining,.mode-row.speed-mode:not(.speed-with-remaining) .status-separator{display:none}
   .status-metric{display:flex;align-items:baseline;gap:0.3125rem;color:#9FB0C4;font-size:0.6875rem;letter-spacing:.06em}
   /* display:flex がブラウザ標準の [hidden] より優先されるため、学習区間では明示的に隠す。 */

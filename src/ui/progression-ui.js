@@ -313,6 +313,7 @@ function renderStageNav(){
     document.querySelector('.status-metric.moves').hidden=assistedLearning;
     document.querySelector('.status-separator').hidden=assistedLearning;
     modeRow.classList.toggle('satori-mode',isMode('satori'));
+    modeRow.classList.toggle('application-mode',isApplicationTargetStage());
     modeRow.classList.toggle('speed-mode',isMode('speed'));
     modeRow.classList.toggle('speed-training',speedShowsRemaining());
     modeRow.classList.toggle('speed-with-remaining',speedShowsRemaining());

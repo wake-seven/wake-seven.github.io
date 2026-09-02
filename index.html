@@ -616,13 +616,15 @@
   .speed-pause-inline{display:flex;margin-left:auto}
   .speed-pause-inline #speedPause{min-width:7.375rem;padding:0.625rem 0.75rem;font-size:0.8125rem;white-space:nowrap}
   .mode-row.speed-mode .status-metric.remaining{flex-shrink:0;white-space:nowrap}
-  /* 応用編では、目標3枚を盤面の右側に小さく見本表示する。 */
+  /* 応用編では、目標3枚を「あと○くるり」の右側へ同じ行で表示する。 */
+  /* 見本はHUDの右端に固定し、残り手数の文字幅をレイアウトから奪わない。 */
+  .mode-row.application-mode{padding-right:10.25rem}
   .application-target-preview{position:absolute;right:0;top:50%;z-index:2;display:flex;align-items:center;gap:.2rem;transform:translateY(-50%);color:#D8BE78;font-size:.625rem;font-weight:700;line-height:1;white-space:nowrap;pointer-events:none}
   .application-target-preview[hidden]{display:none!important}
   /* 目標見本は「あと1くるり」の到達形を読める大きさで示す。 */
-  .application-target-preview svg{display:block;width:7rem;height:4.25rem;overflow:visible;flex:none}
+  .application-target-preview svg{display:block;width:9rem;height:5.75rem;overflow:visible;flex:none}
   .application-target-preview .mini-tile path:first-child{stroke:#8B35F0;stroke-width:4;stroke-linejoin:round}
-  @media (max-width:560px){.application-target-preview{gap:.1rem;font-size:.5625rem}.application-target-preview svg{width:5.75rem;height:3.5rem}}
+  @media (max-width:560px){.mode-row.application-mode{padding-right:9.25rem}.application-target-preview{gap:.1rem;font-size:.5625rem}.application-target-preview svg{width:8rem;height:5rem}}
   .mode-row.speed-mode:not(.speed-with-remaining) .status-metric.remaining,.mode-row.speed-mode:not(.speed-with-remaining) .status-separator{display:none}
   .status-metric{display:flex;align-items:baseline;gap:0.3125rem;color:#9FB0C4;font-size:0.6875rem;letter-spacing:.06em}
   /* display:flex がブラウザ標準の [hidden] より優先されるため、学習区間では明示的に隠す。 */
@@ -4330,7 +4332,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-20:55';
+const APP_VERSION='2026.09.02-21:06';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5085,10 +5087,19 @@ function renderApplicationTargetPreview(){
   // 「左上・右上・下中央」の逆三角形に固定して描く。元盤面のセル番号は
   // 目標状態から向きと色を読むためだけに使い、表示位置には使わない。
   const goal=dec(applicationGoalPreviewState(stage));
-  const positions=[[48,28],[112,28],[80,73]],scale=.36;
-  board.setAttribute('viewBox','0 0 160 101');
+  // 目標3枚は、正しい1手のあとに同じ向きへそろう。各セルを個別に
+  // 読むと、パネルの対応が崩れた場合に一枚だけ起きて見えるため、
+  // 目標姿勢を先頭の目標パネルから読み、3枚へ同じ値を適用する。
+  // 見本は「左転び」に統一する。これは盤面上のセル番号ではなく、
+  // プレイヤーが目指す完成姿勢そのものを示すための表示ルール。
+  const targetValue=2;
+  // 3枚は互いの辺が接する逆三角形として描く。間隔を空けると「目標の
+  // 形」ではなく、離れた3枚の見本に見えてしまうため、六角形の幅/高さ
+  // と同じ比率で中心を配置する。
+  const positions=[[45,29],[99,29],[72,76]],scale=.60;
+  board.setAttribute('viewBox','0 0 144 106');
   board.innerHTML=targets.map((cell,index)=>{
-    const value=goal[cell]||0,fallen=value!==0;
+    const value=targetValue,fallen=value!==0;
     return '<g class="mini-tile application-preview-target" data-cell="'+cell+'" transform="translate('+positions[index][0]+' '+positions[index][1]+') scale('+scale+')">'
       +'<path d="'+hexPath(R)+'" fill="'+(fallen?'#B9C6D6':'#F3E8D5')+'" stroke="#8B35F0" stroke-width="6" stroke-linejoin="round"/>'
       +'<g class="mini-daruma" transform="rotate('+miniAngle(value)+')"><use href="#daruma-body"/><use href="#'+(fallen?'face-shut':'face-open')+'"/></g>'
@@ -9190,6 +9201,7 @@ function renderStageNav(){
     document.querySelector('.status-metric.moves').hidden=assistedLearning;
     document.querySelector('.status-separator').hidden=assistedLearning;
     modeRow.classList.toggle('satori-mode',isMode('satori'));
+    modeRow.classList.toggle('application-mode',isApplicationTargetStage());
     modeRow.classList.toggle('speed-mode',isMode('speed'));
     modeRow.classList.toggle('speed-training',speedShowsRemaining());
     modeRow.classList.toggle('speed-with-remaining',speedShowsRemaining());
