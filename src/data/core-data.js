@@ -317,7 +317,7 @@ const threeMoveStageByState=new Map(ALL_THREE_MOVE_STAGES.map(stage=>[stage.stat
 // targetCellsは「正しい棒を1回回した後に、同じ向きで寝る3枚」を表す。
 // 表示側でソルバーから推測しないため、画像を見ながら問題単位で調整できる。
 const APPLICATION_STAGE_TARGETS=[
-  {source:1,targetCells:[0,1,6]},
+  {source:1,targetCells:[0,1,5]},
   {source:0,targetCells:[0,1,6]},
   {source:2,targetCells:[0,1,5]},
   {source:3,targetCells:[0,1,5]},
