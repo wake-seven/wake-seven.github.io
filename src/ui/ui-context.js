@@ -17,13 +17,18 @@ function setUiContextTimer(key,callback,delay){clearUiContextTimer(key);const id
 function clearUiContextInterval(key){clearUiContextTimer(key);}
 function setUiContextInterval(key,callback,delay){clearUiContextInterval(key);const id=setInterval(callback,delay);uiContextTimers.set(key,id);return id;}
 const uiEffects=new Map();
+// 演出を取り消した直後に、すでにキューへ入ったcallbackが実行されても
+// 現在の画面へ作用しないよう、演出ごとに世代を持たせる。
+const uiEffectGenerations=new Map();
+function uiEffectGeneration(effect){return uiEffectGenerations.get(effect)||0;}
+function advanceUiEffectGeneration(effect){const next=uiEffectGeneration(effect)+1;uiEffectGenerations.set(effect,next);return next;}
 function uiEffectTimerKey(effect,key){return 'effect:'+effect+':'+key;}
 function registerUiEffectTimer(effect,key,id){if(!uiEffects.has(effect))uiEffects.set(effect,new Set());uiEffects.get(effect).add(uiEffectTimerKey(effect,key));return id;}
-function clearUiEffectTimers(effect){const keys=uiEffects.get(effect);if(!keys)return;keys.forEach(clearUiContextTimer);uiEffects.delete(effect);}
-function setUiEffectTimer(effect,key,callback,delay){const timerKey=uiEffectTimerKey(effect,key);clearUiContextTimer(timerKey);return registerUiEffectTimer(effect,key,setUiContextTimer(timerKey,()=>{uiEffects.get(effect)?.delete(timerKey);callback();},delay));}
-function setUiEffectInterval(effect,key,callback,delay){const timerKey=uiEffectTimerKey(effect,key);clearUiContextTimer(timerKey);return registerUiEffectTimer(effect,key,setUiContextInterval(timerKey,callback,delay));}
+function clearUiEffectTimers(effect){advanceUiEffectGeneration(effect);const keys=uiEffects.get(effect);if(!keys)return;keys.forEach(clearUiContextTimer);uiEffects.delete(effect);}
+function setUiEffectTimer(effect,key,callback,delay){const timerKey=uiEffectTimerKey(effect,key);clearUiEffectTimer(effect,key);const generation=uiEffectGeneration(effect);return registerUiEffectTimer(effect,key,setUiContextTimer(timerKey,()=>{if(generation!==uiEffectGeneration(effect))return;uiEffects.get(effect)?.delete(timerKey);callback();},delay));}
+function setUiEffectInterval(effect,key,callback,delay){const timerKey=uiEffectTimerKey(effect,key);clearUiEffectTimer(effect,key);const generation=uiEffectGeneration(effect);return registerUiEffectTimer(effect,key,setUiContextInterval(timerKey,()=>{if(generation===uiEffectGeneration(effect))callback();},delay));}
 // 個別の演出を途中で止める入口。演出側でタイマーIDを保持しない。
-function clearUiEffectTimer(effect,key){const timerKey=uiEffectTimerKey(effect,key);clearUiContextTimer(timerKey);uiEffects.get(effect)?.delete(timerKey);}
+function clearUiEffectTimer(effect,key){advanceUiEffectGeneration(effect);const timerKey=uiEffectTimerKey(effect,key);clearUiContextTimer(timerKey);uiEffects.get(effect)?.delete(timerKey);}
 // タイマーと完了状態をひとまとめにした、短いUIアニメーション用のガード。
 let namedAnimationGuardSerial=0;
 function createNamedAnimationGuard(name='ui-animation'){
