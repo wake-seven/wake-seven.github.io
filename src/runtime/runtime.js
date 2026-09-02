@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-16:08';
+const APP_VERSION='2026.09.02-16:16';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -828,64 +828,6 @@ function refreshGuidedBasicCandidates(){
     // 候補として出た後に間違えて落ちた棒は、消すのではなくグレーアウトして残す。
     marker.classList.toggle('narrow-hidden',isOut&&!isFallen);
     marker.classList.toggle('eliminated',isFallen);
-  });
-}
-// 応用編では、回す棒や方向ではなく「次にそろえる3枚」だけを示す。
-// 目標の指定がない問題は、現在盤面の最短手から対象軸の3枚を求める。
-function renderApplicationTargetCells(){
-  const policy=currentUiPolicy?.();
-  const application=policy?.application===true||policy?.id==='application';
-  const targets=new Set(Array.isArray(policy?.targetCells)?policy.targetCells:[]);
-  if(application&&!isSolved()&&!targets.size){
-    const stage=STAGES[stageIndex],beforeDistance=SOLVER.dist[enc(ori)],groups=[];
-    // 最短になる一手をすべて調べる。同じ問題でも最短経路が複数あるため、
-    // lessonBestMove() の先頭候補だけで目標を決めると、意図した3枚と異なることがある。
-    for(let ti=0;ti<TRI.length;ti++)for(const dir of[-1,1]){
-      const after=rollOnce(ori,ti,dir);
-      if(SOLVER.dist[enc(after)]!==beforeDistance-1)continue;
-      for(const orientation of[1,2]){
-        const cells=after.reduce((result,value,cell)=>{
-          if(value===orientation)result.push(cell);
-          return result;
-        },[]);
-        if(cells.length>=3)groups.push(cells);
-      }
-    }
-    // まず「3枚ちょうど」を優先し、同数なら盤面上の後方セルを含む候補を優先する。
-    // 後者は複数の最短経路がある型でも、目標を毎回同じ規則で選ぶための安定した規則。
-    groups.sort((a,b)=>{
-      const aExact=a.length===3,bExact=b.length===3;
-      // 中央セルは複数の候補グループに入りやすく、そこだけを含む候補を
-      // 先に採ると、外側3枚を示す問題で目標がずれる。中央を避けられる
-      // 候補を優先してから、3枚ちょうど・位置の安定順で比較する。
-      const aCenter=a.includes(3),bCenter=b.includes(3);
-      return Number(bExact)-Number(aExact)||Number(aCenter)-Number(bCenter)||a.length-b.length||
-        b.reduce((sum,cell)=>sum+cell,0)-a.reduce((sum,cell)=>sum+cell,0);
-    });
-    const target=groups[0];
-    target?.slice(0,3).forEach(cell=>targets.add(cell));
-    if(!targets.size&&Array.isArray(stage?.targetCells))stage.targetCells.forEach(cell=>targets.add(cell));
-  }
-  let overlay=svg.querySelector('.application-target-overlay');
-  if(!overlay){
-    overlay=document.createElementNS('http://www.w3.org/2000/svg','g');
-    overlay.setAttribute('class','application-target-overlay');
-    svg.appendChild(overlay);
-  }
-  while(overlay.childElementCount<N){
-    const frame=document.createElementNS('http://www.w3.org/2000/svg','path');
-    frame.setAttribute('class','application-target-frame');
-    frame.setAttribute('d',hexPath(R));
-    frame.dataset.cell=overlay.childElementCount;
-    overlay.appendChild(frame);
-  }
-  svg.querySelectorAll('.tile').forEach(tile=>{
-    tile.classList.toggle('application-target',application&&!isSolved()&&targets.has(Number(tile.dataset.cell)));
-  });
-  overlay.childNodes.forEach(frame=>{
-    const cell=Number(frame.dataset.cell),active=application&&!isSolved()&&targets.has(cell);
-    frame.style.transform=tileEls[cell]?.style.transform||'';
-    frame.style.display=active?'':'none';
   });
 }
 // 補助輪中も盤面全体を見比べられるよう、選択外の4枚は暗転させない。

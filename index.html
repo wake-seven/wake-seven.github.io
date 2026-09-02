@@ -845,12 +845,6 @@
   #board.hinting .tile.selected.fallen{filter:drop-shadow(0 6px 6px rgba(0,0,0,.24)) saturate(.92)}
   .hex{fill:var(--washi);stroke:#C0AC88;stroke-width:1.5}
   .tile.fallen .hex{fill:var(--washi2);stroke:#9EA8AF}
-  /* 応用編は目標の3枚だけを枠で示し、回す棒や方向は示さない。 */
-  /* 応用編の目標3枚は、盤面本来の水色枠と区別できる紫で示す。 */
-  #board .tile.application-target .hex{stroke:#7B1DFF;stroke-width:7;filter:drop-shadow(0 0 4px rgba(123,29,255,.88))}
-  #board .tile.application-target{filter:drop-shadow(0 0 6px rgba(123,29,255,.72))}
-  #board .application-target-overlay{pointer-events:none}
-  #board .application-target-frame{transform-box:view-box;transform-origin:0 0;fill:none;stroke:#A855F7;stroke-width:8;vector-effect:non-scaling-stroke;paint-order:stroke;filter:drop-shadow(0 0 4px rgba(168,85,247,.82))}
   .tile.stand .shut,.tile.fallen .open{display:none}
   .tile .happy{display:none}
   #board.celebrating .tile .open,#board.celebrating .tile .shut{display:none}
@@ -1781,7 +1775,7 @@ export {};
         if(mode !== 'stage') return {id:'standard'};
         if(stageIndex < academyTotal) {
           if(stageIndex >= developmentStart) return {id:'development',assisted:true,development:lap === 1,eliminateWrongRods:lap === 1};
-          if(stageIndex >= applicationStart) return {id:'application',assisted:true,application:lap === 1,showTargetCells:lap === 1,rewindWrongMove:lap === 1};
+          if(stageIndex >= applicationStart) return {id:'application',assisted:true,application:lap === 1,rewindWrongMove:lap === 1};
           if(stageIndex >= basicStart) return {id:'basic',assisted:true,guidedBasic:lap === 1,narrowRods:lap === 1};
           return {id:'intro',assisted:true,guidedBasic:lap === 1};
         }
@@ -2284,8 +2278,7 @@ const TRAINING_THREE_MOVE_STATE_IDS=[
 // 中巻で使う後半9問だけを応用編から名人への道へ振り分けるための除外集合。
 const trainingStateSet=new Set(TRAINING_THREE_MOVE_STATE_IDS.slice(9));
 const threeMoveStageByState=new Map(ALL_THREE_MOVE_STAGES.map(stage=>[stage.state,stage]));
-// 応用クラス: 2くるりの目標となる3枚を示し、回す棒と方向は自分で探す。
-// 基本編と同じ2くるり素材から選ぶが、出題順は独立させる。
+// 応用クラス: 基本編と同じ2くるり素材から選ぶが、出題順は独立させる。
 const APPLICATION_STAGES=TWO_MOVE_STAGES
   .slice(0,APPLICATION_STAGE_COUNT)
   .map(stage=>({...stage,application:true}));
@@ -4283,7 +4276,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-16:08';
+const APP_VERSION='2026.09.02-16:16';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5110,64 +5103,6 @@ function refreshGuidedBasicCandidates(){
     // 候補として出た後に間違えて落ちた棒は、消すのではなくグレーアウトして残す。
     marker.classList.toggle('narrow-hidden',isOut&&!isFallen);
     marker.classList.toggle('eliminated',isFallen);
-  });
-}
-// 応用編では、回す棒や方向ではなく「次にそろえる3枚」だけを示す。
-// 目標の指定がない問題は、現在盤面の最短手から対象軸の3枚を求める。
-function renderApplicationTargetCells(){
-  const policy=currentUiPolicy?.();
-  const application=policy?.application===true||policy?.id==='application';
-  const targets=new Set(Array.isArray(policy?.targetCells)?policy.targetCells:[]);
-  if(application&&!isSolved()&&!targets.size){
-    const stage=STAGES[stageIndex],beforeDistance=SOLVER.dist[enc(ori)],groups=[];
-    // 最短になる一手をすべて調べる。同じ問題でも最短経路が複数あるため、
-    // lessonBestMove() の先頭候補だけで目標を決めると、意図した3枚と異なることがある。
-    for(let ti=0;ti<TRI.length;ti++)for(const dir of[-1,1]){
-      const after=rollOnce(ori,ti,dir);
-      if(SOLVER.dist[enc(after)]!==beforeDistance-1)continue;
-      for(const orientation of[1,2]){
-        const cells=after.reduce((result,value,cell)=>{
-          if(value===orientation)result.push(cell);
-          return result;
-        },[]);
-        if(cells.length>=3)groups.push(cells);
-      }
-    }
-    // まず「3枚ちょうど」を優先し、同数なら盤面上の後方セルを含む候補を優先する。
-    // 後者は複数の最短経路がある型でも、目標を毎回同じ規則で選ぶための安定した規則。
-    groups.sort((a,b)=>{
-      const aExact=a.length===3,bExact=b.length===3;
-      // 中央セルは複数の候補グループに入りやすく、そこだけを含む候補を
-      // 先に採ると、外側3枚を示す問題で目標がずれる。中央を避けられる
-      // 候補を優先してから、3枚ちょうど・位置の安定順で比較する。
-      const aCenter=a.includes(3),bCenter=b.includes(3);
-      return Number(bExact)-Number(aExact)||Number(aCenter)-Number(bCenter)||a.length-b.length||
-        b.reduce((sum,cell)=>sum+cell,0)-a.reduce((sum,cell)=>sum+cell,0);
-    });
-    const target=groups[0];
-    target?.slice(0,3).forEach(cell=>targets.add(cell));
-    if(!targets.size&&Array.isArray(stage?.targetCells))stage.targetCells.forEach(cell=>targets.add(cell));
-  }
-  let overlay=svg.querySelector('.application-target-overlay');
-  if(!overlay){
-    overlay=document.createElementNS('http://www.w3.org/2000/svg','g');
-    overlay.setAttribute('class','application-target-overlay');
-    svg.appendChild(overlay);
-  }
-  while(overlay.childElementCount<N){
-    const frame=document.createElementNS('http://www.w3.org/2000/svg','path');
-    frame.setAttribute('class','application-target-frame');
-    frame.setAttribute('d',hexPath(R));
-    frame.dataset.cell=overlay.childElementCount;
-    overlay.appendChild(frame);
-  }
-  svg.querySelectorAll('.tile').forEach(tile=>{
-    tile.classList.toggle('application-target',application&&!isSolved()&&targets.has(Number(tile.dataset.cell)));
-  });
-  overlay.childNodes.forEach(frame=>{
-    const cell=Number(frame.dataset.cell),active=application&&!isSolved()&&targets.has(cell);
-    frame.style.transform=tileEls[cell]?.style.transform||'';
-    frame.style.display=active?'':'none';
   });
 }
 // 補助輪中も盤面全体を見比べられるよう、選択外の4枚は暗転させない。
@@ -6680,7 +6615,6 @@ function paint(){
   applyBoardTheme();
   showMoves(moves);
   refreshGuidedBasicCandidates();
-  renderApplicationTargetCells();
   if(isMode('tutorial')){
     if(isSolved()&&!clearShown){
       clearShown=true;
