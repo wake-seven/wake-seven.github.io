@@ -1956,8 +1956,22 @@ function finishDrag(e,cancel=false,forcedTurns=null){
   if(!dir&&dg.maxAbsDeg>=120&&(isGuidedBasicStage()||isFallingRodStage()||isWrongMoveRewindStage())&&(guidedBasicCandidateTis||isWrongMoveRewindStage())){
     const before=SOLVER.dist[enc(ori)];
     const correctPlace=[1,-1].some(candidate=>SOLVER.dist[enc(rollOnce(ori,dg.ti,candidate))]===before-1);
-    if(isWrongMoveRewindStage()){
-      $('gripPromptText').textContent=tr(correctPlace?'assistedRightGrip':'assistedWrongPlace');
+      if(isWrongMoveRewindStage()){
+        if(guidedBasicCandidateTis){
+          if(!correctPlace){
+            guidedBasicCandidateTis.delete(dg.ti);
+            fallenRodTis.add(dg.ti);
+          }else{
+            const correctGripTis=new Set([...guidedBasicCandidateTis].filter(ti=>
+              [1,-1].some(candidate=>SOLVER.dist[enc(rollOnce(ori,ti,candidate))]===before-1)));
+            for(const ti of guidedBasicCandidateTis){
+              if(!correctGripTis.has(ti))fallenRodTis.add(ti);
+            }
+            guidedBasicCandidateTis.clear();
+            correctGripTis.forEach(ti=>guidedBasicCandidateTis.add(ti));
+          }
+        }
+        $('gripPromptText').textContent=tr(correctPlace?'assistedRightGrip':'assistedWrongPlace');
       $('gripPrompt').hidden=false;
       animateGuidedBasicRewind(dg);
       return;
@@ -1995,6 +2009,20 @@ function finishDrag(e,cancel=false,forcedTurns=null){
     if(after!==before-1){
       const correctPlace=[1,-1].some(candidate=>SOLVER.dist[enc(rollOnce(ori,dg.ti,candidate))]===before-1);
       if(isWrongMoveRewindStage()){
+        if(guidedBasicCandidateTis){
+          if(!correctPlace){
+            guidedBasicCandidateTis.delete(dg.ti);
+            fallenRodTis.add(dg.ti);
+          }else{
+            const correctGripTis=new Set([...guidedBasicCandidateTis].filter(ti=>
+              [1,-1].some(candidate=>SOLVER.dist[enc(rollOnce(ori,ti,candidate))]===before-1)));
+            for(const ti of guidedBasicCandidateTis){
+              if(!correctGripTis.has(ti))fallenRodTis.add(ti);
+            }
+            guidedBasicCandidateTis.clear();
+            correctGripTis.forEach(ti=>guidedBasicCandidateTis.add(ti));
+          }
+        }
         $('gripPromptText').textContent=tr(correctPlace?'assistedWrongDirection':'assistedWrongPlace');
         $('gripPrompt').hidden=false;
         animateGuidedBasicRewind(dg);

@@ -45,7 +45,7 @@
         if(mode !== 'stage') return {id:'standard'};
         if(stageIndex < academyTotal) {
           if(stageIndex >= developmentStart) return {id:'development',assisted:true,development:lap === 1,eliminateWrongRods:lap === 1};
-          if(stageIndex >= applicationStart) return {id:'application',assisted:true,application:lap === 1,showTargetCells:lap === 1,rewindWrongMove:lap === 1};
+          if(stageIndex >= applicationStart) return {id:'application',assisted:true,application:lap === 1,showTargetCells:lap === 1,rewindWrongMove:lap === 1,eliminateWrongRods:lap === 1};
           if(stageIndex >= basicStart) return {id:'basic',assisted:true,guidedBasic:lap === 1,narrowRods:lap === 1};
           return {id:'intro',assisted:true,guidedBasic:lap === 1};
         }

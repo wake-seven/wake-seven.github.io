@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-22:40';
+const APP_VERSION='2026.09.02-23:05';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -847,6 +847,19 @@ function refreshGuidedBasicCandidates(){
       if(signature!==guidedBasicCandidateSignature){
         fallenRodTis.clear();
         guidedBasicCandidateTis=computeSpeedTrainingCandidateTis()||fullSet();
+        guidedBasicCandidateSignature=signature;
+      }
+    }
+  }
+  else if(isWrongMoveRewindStage()){
+    // 応用編は誤操作を巻き戻すが、候補から外れた棒は学園と同じく灰色で残す。
+    if(isSolved()){
+      guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;
+    }else{
+      const signature='application:'+stageIndex+':'+moves+':'+enc(ori);
+      if(signature!==guidedBasicCandidateSignature){
+        fallenRodTis.clear();
+        guidedBasicCandidateTis=fullSet();
         guidedBasicCandidateSignature=signature;
       }
     }

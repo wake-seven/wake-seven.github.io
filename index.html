@@ -1785,7 +1785,7 @@ export {};
         if(mode !== 'stage') return {id:'standard'};
         if(stageIndex < academyTotal) {
           if(stageIndex >= developmentStart) return {id:'development',assisted:true,development:lap === 1,eliminateWrongRods:lap === 1};
-          if(stageIndex >= applicationStart) return {id:'application',assisted:true,application:lap === 1,showTargetCells:lap === 1,rewindWrongMove:lap === 1};
+          if(stageIndex >= applicationStart) return {id:'application',assisted:true,application:lap === 1,showTargetCells:lap === 1,rewindWrongMove:lap === 1,eliminateWrongRods:lap === 1};
           if(stageIndex >= basicStart) return {id:'basic',assisted:true,guidedBasic:lap === 1,narrowRods:lap === 1};
           return {id:'intro',assisted:true,guidedBasic:lap === 1};
         }
@@ -4298,7 +4298,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-22:40';
+const APP_VERSION='2026.09.02-23:05';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5144,6 +5144,19 @@ function refreshGuidedBasicCandidates(){
       if(signature!==guidedBasicCandidateSignature){
         fallenRodTis.clear();
         guidedBasicCandidateTis=computeSpeedTrainingCandidateTis()||fullSet();
+        guidedBasicCandidateSignature=signature;
+      }
+    }
+  }
+  else if(isWrongMoveRewindStage()){
+    // 応用編は誤操作を巻き戻すが、候補から外れた棒は学園と同じく灰色で残す。
+    if(isSolved()){
+      guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;
+    }else{
+      const signature='application:'+stageIndex+':'+moves+':'+enc(ori);
+      if(signature!==guidedBasicCandidateSignature){
+        fallenRodTis.clear();
+        guidedBasicCandidateTis=fullSet();
         guidedBasicCandidateSignature=signature;
       }
     }
@@ -7771,8 +7784,22 @@ function finishDrag(e,cancel=false,forcedTurns=null){
   if(!dir&&dg.maxAbsDeg>=120&&(isGuidedBasicStage()||isFallingRodStage()||isWrongMoveRewindStage())&&(guidedBasicCandidateTis||isWrongMoveRewindStage())){
     const before=SOLVER.dist[enc(ori)];
     const correctPlace=[1,-1].some(candidate=>SOLVER.dist[enc(rollOnce(ori,dg.ti,candidate))]===before-1);
-    if(isWrongMoveRewindStage()){
-      $('gripPromptText').textContent=tr(correctPlace?'assistedRightGrip':'assistedWrongPlace');
+      if(isWrongMoveRewindStage()){
+        if(guidedBasicCandidateTis){
+          if(!correctPlace){
+            guidedBasicCandidateTis.delete(dg.ti);
+            fallenRodTis.add(dg.ti);
+          }else{
+            const correctGripTis=new Set([...guidedBasicCandidateTis].filter(ti=>
+              [1,-1].some(candidate=>SOLVER.dist[enc(rollOnce(ori,ti,candidate))]===before-1)));
+            for(const ti of guidedBasicCandidateTis){
+              if(!correctGripTis.has(ti))fallenRodTis.add(ti);
+            }
+            guidedBasicCandidateTis.clear();
+            correctGripTis.forEach(ti=>guidedBasicCandidateTis.add(ti));
+          }
+        }
+        $('gripPromptText').textContent=tr(correctPlace?'assistedRightGrip':'assistedWrongPlace');
       $('gripPrompt').hidden=false;
       animateGuidedBasicRewind(dg);
       return;
@@ -7810,6 +7837,20 @@ function finishDrag(e,cancel=false,forcedTurns=null){
     if(after!==before-1){
       const correctPlace=[1,-1].some(candidate=>SOLVER.dist[enc(rollOnce(ori,dg.ti,candidate))]===before-1);
       if(isWrongMoveRewindStage()){
+        if(guidedBasicCandidateTis){
+          if(!correctPlace){
+            guidedBasicCandidateTis.delete(dg.ti);
+            fallenRodTis.add(dg.ti);
+          }else{
+            const correctGripTis=new Set([...guidedBasicCandidateTis].filter(ti=>
+              [1,-1].some(candidate=>SOLVER.dist[enc(rollOnce(ori,ti,candidate))]===before-1)));
+            for(const ti of guidedBasicCandidateTis){
+              if(!correctGripTis.has(ti))fallenRodTis.add(ti);
+            }
+            guidedBasicCandidateTis.clear();
+            correctGripTis.forEach(ti=>guidedBasicCandidateTis.add(ti));
+          }
+        }
         $('gripPromptText').textContent=tr(correctPlace?'assistedWrongDirection':'assistedWrongPlace');
         $('gripPrompt').hidden=false;
         animateGuidedBasicRewind(dg);
