@@ -2043,8 +2043,8 @@ const SOLVER=buildSolver('roll');
 const INTRO_STAGE_COUNT=3;
 const BASIC_STAGE_COUNT=9;
 const BASIC_STAGE_START=INTRO_STAGE_COUNT;
-// 応用クラスは目標の3枚だけを示す9問。基本クラスと同じ2くるりの9型を使い、
-// 発展クラスは目標も示さない8問。
+// 応用クラスは、回したあとにそろう3枚だけを示す、基本クラスと同じ2くるりの9問。
+// 発展クラスは、基本クラスと同じ補助ルールのまま、3くるり・4くるりへ進む8問。
 // いずれも6本の棒から自分で回す場所を考える学習区間。
 const APPLICATION_STAGE_COUNT=9;
 const APPLICATION_STAGE_START=BASIC_STAGE_START+BASIC_STAGE_COUNT;
@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-21:20';
+const APP_VERSION='2026.09.02-22:50';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]

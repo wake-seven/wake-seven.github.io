@@ -55,8 +55,8 @@ const SOLVER=buildSolver('roll');
 const INTRO_STAGE_COUNT=3;
 const BASIC_STAGE_COUNT=9;
 const BASIC_STAGE_START=INTRO_STAGE_COUNT;
-// 応用クラスは目標の3枚だけを示す9問。基本クラスと同じ2くるりの9型を使い、
-// 発展クラスは目標も示さない8問。
+// 応用クラスは、回したあとにそろう3枚だけを示す、基本クラスと同じ2くるりの9問。
+// 発展クラスは、基本クラスと同じ補助ルールのまま、3くるり・4くるりへ進む8問。
 // いずれも6本の棒から自分で回す場所を考える学習区間。
 const APPLICATION_STAGE_COUNT=9;
 const APPLICATION_STAGE_START=BASIC_STAGE_START+BASIC_STAGE_COUNT;
