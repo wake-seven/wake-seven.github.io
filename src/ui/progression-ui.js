@@ -424,7 +424,7 @@ function renderStageNav(){
       showRemaining(remainingForDisplay(SOLVER.dist[enc(ori)]),false);
     }else{
       const {section,position}=primarySectionPosition(stageIndex);
-      const isAcademySection=['intro','basic','development'].includes(section.id);
+      const isAcademySection=['intro','basic','application','development'].includes(section.id);
       if(isAcademySection){
         setText('stageKind',tr('academyPickerRound'));
         $('stageNumber').textContent=tr(section.labelKey)+tr('academyClassSuffix');
@@ -533,7 +533,7 @@ function renderClearStageContext(){
   renderClearStageContextElement(context,{visible:true,text});
 }
 function clearDialogShowsStageCount(){
-  return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','development'].includes(primarySectionPosition(stageIndex).section.id));
+  return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));
 }
 function clearDialogUsesStageProgression(){
   return !isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori');
@@ -571,7 +571,12 @@ function showClearDialog(){
     openChainedDialog('basicWelcome');
     return;
   }
-  // 基本クラス最終問題のクリアも、同じ演出で「発展クラス開始」を毎回そのまま見せる。
+  // 基本クラス最終問題のクリア後は、目標の3枚から回す場所を考える応用クラスへ進む。
+  if(clearDialogUsesStageProgression()&&stageIndex===APPLICATION_STAGE_START-1){
+    openChainedDialog('applicationWelcome');
+    return;
+  }
+  // 応用クラス最終問題のクリア後に、発展クラス開始を案内する。
   if(clearDialogUsesStageProgression()&&stageIndex===DEVELOPMENT_STAGE_START-1){
     openChainedDialog('developmentWelcome');
     return;

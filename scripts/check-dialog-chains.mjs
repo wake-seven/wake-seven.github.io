@@ -20,7 +20,7 @@ const chainBlock = source.match(/const CHAIN_STEPS=\{([\s\S]*?)\n\};\n\/\/ CHAIN
 assert.ok(chainBlock, 'CHAIN_STEPS registry is missing.');
 const chainNames = [...chainBlock[1].matchAll(/^ {2}(?! )([A-Za-z_$][\w$]*):/gm)].map(match => match[1]);
 const expectedNames = [
-  'academyEnroll', 'academyWelcome', 'basicWelcome', 'developmentWelcome',
+  'academyEnroll', 'academyWelcome', 'basicWelcome', 'applicationWelcome', 'developmentWelcome',
   'developmentFourStart', 'trainingWelcome', 'trainingUpperPractice',
   'trainingUpperGoal', 'trainingMiddleSpin', 'trainingMiddleGoal', 'trainingLowerGoal'
 ];
@@ -29,7 +29,7 @@ assert.deepEqual(chainNames, expectedNames, 'CHAIN_STEPS order or membership cha
 for (const name of expectedNames) {
   const step = chainBlock[1].match(new RegExp(`^  (?! )${name}:[\\s\\S]*?(?=^  (?! )[A-Za-z_$][\\w$]*:|(?![\\s\\S]))`, 'm'));
   assert.ok(step, `CHAIN_STEPS entry is missing: ${name}`);
-  if (['academyWelcome', 'basicWelcome'].includes(name)) {
+  if (['academyWelcome', 'basicWelcome', 'applicationWelcome'].includes(name)) {
     assert.match(step[0], /academyBoardStep\(/, 'Basic welcome must use the shared academy board step renderer.');
     continue;
   }
@@ -53,7 +53,7 @@ required(/trainingUpperPractice[\s\S]{0,1800}loadStage\(TRAINING_STAGE_START\)/,
 required(/trainingMiddleSpin[\s\S]{0,1800}loadStage\(TRAINING_STAGE_START\+TRAINING_UPPER_COUNT\)/, 'Middle-volume practice must enter the first stage.');
 
 // 連鎖開始地点が登録表を経由していることを確認する。
-for (const name of ['academyEnroll', 'basicWelcome', 'developmentWelcome']) {
+for (const name of ['academyEnroll', 'basicWelcome', 'applicationWelcome', 'developmentWelcome']) {
   assert.match(events + source + progressionUi, new RegExp(`openChainedDialog\\('${name}'\\)`), `Chain entry is not connected: ${name}`);
 }
 required(/state\.id==='chain'&&CHAIN_STEPS\[state\.name\][\s\S]{0,120}openChainedDialog\(state\.name\)/, 'Saved chain dialog must restore through CHAIN_STEPS.', runtime);
