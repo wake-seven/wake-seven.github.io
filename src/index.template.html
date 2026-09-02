@@ -845,6 +845,10 @@
   #board.hinting .tile.selected.fallen{filter:drop-shadow(0 6px 6px rgba(0,0,0,.24)) saturate(.92)}
   .hex{fill:var(--washi);stroke:#C0AC88;stroke-width:1.5}
   .tile.fallen .hex{fill:var(--washi2);stroke:#9EA8AF}
+  /* 応用編は目標の3枚だけを枠で示し、回す棒や方向は示さない。 */
+  #board .tile.application-target .hex{stroke:#62B8D2;stroke-width:3;filter:drop-shadow(0 0 4px rgba(98,184,210,.9))}
+  #board .tile.application-target{animation:applicationTargetPulse 1.35s ease-in-out infinite}
+  @keyframes applicationTargetPulse{0%,100%{filter:drop-shadow(0 0 0 rgba(98,184,210,0))}50%{filter:drop-shadow(0 0 5px rgba(98,184,210,.45))}}
   .tile.stand .shut,.tile.fallen .open{display:none}
   .tile .happy{display:none}
   #board.celebrating .tile .open,#board.celebrating .tile .shut{display:none}

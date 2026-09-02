@@ -201,6 +201,7 @@ const isCampaignMode=()=>!isSideCourseMode()&&!isMode('speed');
 const PRIMARY_SECTIONS=Object.freeze([
   {id:'intro',labelKey:'intro',start:0,total:INTRO_STAGE_COUNT,analytics:'training_intro'},
   {id:'basic',labelKey:'basic',start:BASIC_STAGE_START,total:BASIC_STAGE_COUNT,analytics:'training_basic'},
+  {id:'application',labelKey:'application',start:APPLICATION_STAGE_START,total:APPLICATION_STAGE_COUNT,analytics:'training_application'},
   {id:'development',labelKey:'development',start:DEVELOPMENT_STAGE_START,total:DEVELOPMENT_STAGE_COUNT,analytics:'training_development'},
   {id:'trainingUpper',labelKey:'trainingUpper',start:TRAINING_STAGE_START,total:TRAINING_UPPER_COUNT,analytics:'daruma_training_upper'},
   {id:'trainingMiddle',labelKey:'trainingMiddle',start:TRAINING_STAGE_START+TRAINING_UPPER_COUNT,total:TRAINING_MIDDLE_COUNT,analytics:'daruma_training_middle'},
@@ -679,6 +680,8 @@ const PROGRESSION=window.WakeSevenProgression.create({
   satoriTotal:SATORI_STAGES.length,
   trainingExamTotal:TRAINING_EXAM_STAGES.length,
   academyTotal:ACADEMY_STAGE_COUNT,
+  applicationStart:APPLICATION_STAGE_START,
+  applicationTotal:APPLICATION_STAGE_COUNT,
   developmentStart:DEVELOPMENT_STAGE_START,
   developmentTotal:DEVELOPMENT_STAGE_COUNT,
   trainingStart:TRAINING_STAGE_START,
@@ -823,6 +826,24 @@ function refreshGuidedBasicCandidates(){
     // 候補として出た後に間違えて落ちた棒は、消すのではなくグレーアウトして残す。
     marker.classList.toggle('narrow-hidden',isOut&&!isFallen);
     marker.classList.toggle('eliminated',isFallen);
+  });
+}
+// 応用編では、回す棒や方向ではなく「次にそろえる3枚」だけを示す。
+// 目標の指定がない問題は、現在盤面の最短手から対象軸の3枚を求める。
+function renderApplicationTargetCells(){
+  const policy=currentUiPolicy?.();
+  const application=policy?.application===true||policy?.id==='application';
+  const targets=new Set(Array.isArray(policy?.targetCells)?policy.targetCells:[]);
+  if(application&&!isSolved()&&!targets.size){
+    const stage=STAGES[stageIndex];
+    if(Array.isArray(stage?.targetCells))stage.targetCells.forEach(cell=>targets.add(cell));
+    if(!targets.size){
+      const move=lessonBestMove(enc(ori));
+      if(move)TRI[move.ti].cells.forEach(cell=>targets.add(cell));
+    }
+  }
+  svg.querySelectorAll('.tile').forEach(tile=>{
+    tile.classList.toggle('application-target',application&&!isSolved()&&targets.has(Number(tile.dataset.cell)));
   });
 }
 // 補助輪中も盤面全体を見比べられるよう、選択外の4枚は暗転させない。
