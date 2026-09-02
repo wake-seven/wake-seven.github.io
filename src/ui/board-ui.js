@@ -302,13 +302,34 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       setTimeout(()=>{
         if(!alive())return;
         unit.querySelectorAll('.application-target-overlay').forEach(frame=>frame.remove());
-        // unitは使い回すので削除しない(中身だけ全部board直下へ戻す)。
-        // 回転後は全7枚を描き直す。中心の1枚を含めて必ず残るよう、移動中のDOM順に依存しない。
-        baseWelcomeTiles.forEach((tile,i)=>{
-          tile.setAttribute('class','tile '+(after[i]?'fallen':'stand')+(targetCells.has(i)?' application-target':''));
-          tile.style.transform=tileTransform(CELL[i].x,CELL[i].y,after[i]);
-          board.appendChild(tile);
+        // 回転後も、目標枠をパネル自身に付けたままにする。
+        // 回転した3枚を元のセル番号へ戻すと、枠だけが元位置へ戻って見えるため、
+        // 物理パネルを回転先のセルへ移し、枠とパネルの対応を保つ。
+        const rodAnchor=board.querySelector('.grip-marker');
+        const placeTile=tile=>rodAnchor?board.insertBefore(tile,rodAnchor):board.appendChild(tile);
+        const rotating=new Set(t.cells);
+        const finalTurn=move.dir>0?1:2;
+        const destinationOf=source=>{
+          const sourceCell=CELL[source],angle=finalTurn*2*Math.PI/3;
+          const dx=sourceCell.x-t.x,dy=sourceCell.y-t.y;
+          const x=t.x+dx*Math.cos(angle)-dy*Math.sin(angle);
+          const y=t.y+dx*Math.sin(angle)+dy*Math.cos(angle);
+          return CELL.reduce((best,c,i)=>Math.hypot(c.x-x,c.y-y)<best.distance?{index:i,distance:Math.hypot(c.x-x,c.y-y)}:best,{index:source,distance:Infinity}).index;
+        };
+        const finalTiles=baseWelcomeTiles.map((tile,source)=>{
+          if(!rotating.has(source)){
+            tile.setAttribute('class','tile '+(after[source]?'fallen':'stand')+(targetCells.has(source)?' application-target':''));
+            tile.style.transform=tileTransform(CELL[source].x,CELL[source].y,after[source]);
+            return {tile,target:targetCells.has(source)};
+          }
+          const destination=destinationOf(source),turn=(start[source]+finalTurn)%3;
+          tile.setAttribute('class','tile '+(turn?'fallen':'stand')+(targetCells.has(source)?' application-target':''));
+          tile.style.transform=tileTransform(CELL[destination].x,CELL[destination].y,turn);
+          return {tile,target:targetCells.has(source)};
         });
+        // パネル同士の塗りで枠が隠れないよう、対象パネルだけタイル層の最後に置く。
+        finalTiles.filter(entry=>!entry.target).forEach(entry=>placeTile(entry.tile));
+        finalTiles.filter(entry=>entry.target).forEach(entry=>placeTile(entry.tile));
         release.textContent='';
         touch.style.display='none';
       },rotateDur);
