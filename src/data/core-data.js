@@ -55,9 +55,10 @@ const SOLVER=buildSolver('roll');
 const INTRO_STAGE_COUNT=3;
 const BASIC_STAGE_COUNT=9;
 const BASIC_STAGE_START=INTRO_STAGE_COUNT;
-// 応用クラスは目標の3枚だけを示す8問。発展クラスは目標も示さない8問。
+// 応用クラスは目標の3枚だけを示す9問。基本クラスと同じ2くるりの9型を使い、
+// 発展クラスは目標も示さない8問。
 // いずれも6本の棒から自分で回す場所を考える学習区間。
-const APPLICATION_STAGE_COUNT=8;
+const APPLICATION_STAGE_COUNT=9;
 const APPLICATION_STAGE_START=BASIC_STAGE_START+BASIC_STAGE_COUNT;
 const DEVELOPMENT_THREE_COUNT=5;
 const DEVELOPMENT_FOUR_COUNT=3;
@@ -324,7 +325,8 @@ const APPLICATION_STAGE_TARGETS=[
   {source:4,targetCells:[0,1,2]},
   {source:5,targetCells:[0,1,4]},
   {source:6,targetCells:[1,2,3]},
-  {source:7,targetCells:[0,1,2]}
+  {source:7,targetCells:[0,1,2]},
+  {source:8,targetCells:[4,5,6]}
 ];
 const APPLICATION_STAGES=APPLICATION_STAGE_TARGETS.map(({source,targetCells})=>({
   ...TWO_MOVE_STAGES[source],application:true,targetCells:Object.freeze(targetCells)
