@@ -18639,17 +18639,7 @@
         },
         {
           "file": "ui/ui-context.js",
-          "line": 23,
-          "caller": "setUiEffectTimer"
-        },
-        {
-          "file": "ui/ui-context.js",
-          "line": 24,
-          "caller": "setUiEffectInterval"
-        },
-        {
-          "file": "ui/ui-context.js",
-          "line": 26,
+          "line": 31,
           "caller": "clearUiEffectTimer"
         }
       ]
@@ -18679,7 +18669,7 @@
         },
         {
           "file": "ui/ui-context.js",
-          "line": 23,
+          "line": 28,
           "caller": "setUiEffectTimer"
         }
       ]
@@ -18715,7 +18705,7 @@
         },
         {
           "file": "ui/ui-context.js",
-          "line": 24,
+          "line": 29,
           "caller": "setUiEffectInterval"
         }
       ]
@@ -18727,35 +18717,93 @@
       "kind": "constant",
       "callers": []
     },
-    "uiEffectTimerKey": {
-      "name": "uiEffectTimerKey",
+    "uiEffectGenerations": {
+      "name": "uiEffectGenerations",
       "file": "ui/ui-context.js",
-      "line": 20,
+      "line": 22,
+      "kind": "constant",
+      "callers": []
+    },
+    "uiEffectGeneration": {
+      "name": "uiEffectGeneration",
+      "file": "ui/ui-context.js",
+      "line": 23,
       "kind": "function",
       "callers": [
         {
           "file": "ui/ui-context.js",
-          "line": 20,
+          "line": 23,
           "caller": "setUiContextInterval"
         },
         {
           "file": "ui/ui-context.js",
-          "line": 21,
-          "caller": "registerUiEffectTimer"
+          "line": 24,
+          "caller": "advanceUiEffectGeneration"
         },
         {
           "file": "ui/ui-context.js",
-          "line": 23,
+          "line": 28,
           "caller": "setUiEffectTimer"
         },
         {
           "file": "ui/ui-context.js",
-          "line": 24,
+          "line": 29,
           "caller": "setUiEffectInterval"
+        }
+      ]
+    },
+    "advanceUiEffectGeneration": {
+      "name": "advanceUiEffectGeneration",
+      "file": "ui/ui-context.js",
+      "line": 24,
+      "kind": "function",
+      "callers": [
+        {
+          "file": "ui/ui-context.js",
+          "line": 24,
+          "caller": "uiEffectGeneration"
+        },
+        {
+          "file": "ui/ui-context.js",
+          "line": 27,
+          "caller": "clearUiEffectTimers"
+        },
+        {
+          "file": "ui/ui-context.js",
+          "line": 31,
+          "caller": "clearUiEffectTimer"
+        }
+      ]
+    },
+    "uiEffectTimerKey": {
+      "name": "uiEffectTimerKey",
+      "file": "ui/ui-context.js",
+      "line": 25,
+      "kind": "function",
+      "callers": [
+        {
+          "file": "ui/ui-context.js",
+          "line": 25,
+          "caller": "advanceUiEffectGeneration"
         },
         {
           "file": "ui/ui-context.js",
           "line": 26,
+          "caller": "registerUiEffectTimer"
+        },
+        {
+          "file": "ui/ui-context.js",
+          "line": 28,
+          "caller": "setUiEffectTimer"
+        },
+        {
+          "file": "ui/ui-context.js",
+          "line": 29,
+          "caller": "setUiEffectInterval"
+        },
+        {
+          "file": "ui/ui-context.js",
+          "line": 31,
           "caller": "clearUiEffectTimer"
         }
       ]
@@ -18763,22 +18811,22 @@
     "registerUiEffectTimer": {
       "name": "registerUiEffectTimer",
       "file": "ui/ui-context.js",
-      "line": 21,
+      "line": 26,
       "kind": "function",
       "callers": [
         {
           "file": "ui/ui-context.js",
-          "line": 21,
+          "line": 26,
           "caller": "uiEffectTimerKey"
         },
         {
           "file": "ui/ui-context.js",
-          "line": 23,
+          "line": 28,
           "caller": "setUiEffectTimer"
         },
         {
           "file": "ui/ui-context.js",
-          "line": 24,
+          "line": 29,
           "caller": "setUiEffectInterval"
         }
       ]
@@ -18786,7 +18834,7 @@
     "clearUiEffectTimers": {
       "name": "clearUiEffectTimers",
       "file": "ui/ui-context.js",
-      "line": 22,
+      "line": 27,
       "kind": "function",
       "callers": [
         {
@@ -18856,7 +18904,7 @@
         },
         {
           "file": "ui/ui-context.js",
-          "line": 22,
+          "line": 27,
           "caller": "registerUiEffectTimer"
         },
         {
@@ -18894,7 +18942,7 @@
     "setUiEffectTimer": {
       "name": "setUiEffectTimer",
       "file": "ui/ui-context.js",
-      "line": 23,
+      "line": 28,
       "kind": "function",
       "callers": [
         {
@@ -18929,12 +18977,12 @@
         },
         {
           "file": "ui/ui-context.js",
-          "line": 23,
+          "line": 28,
           "caller": "clearUiEffectTimers"
         },
         {
           "file": "ui/ui-context.js",
-          "line": 35,
+          "line": 40,
           "caller": "busy"
         },
         {
@@ -19002,14 +19050,21 @@
     "timerKey": {
       "name": "timerKey",
       "file": "ui/ui-context.js",
-      "line": 23,
+      "line": 28,
+      "kind": "constant",
+      "callers": []
+    },
+    "generation": {
+      "name": "generation",
+      "file": "ui/ui-context.js",
+      "line": 28,
       "kind": "constant",
       "callers": []
     },
     "setUiEffectInterval": {
       "name": "setUiEffectInterval",
       "file": "ui/ui-context.js",
-      "line": 24,
+      "line": 29,
       "kind": "function",
       "callers": [
         {
@@ -19039,35 +19094,45 @@
         },
         {
           "file": "ui/ui-context.js",
-          "line": 24,
-          "caller": "timerKey"
+          "line": 29,
+          "caller": "generation"
         }
       ]
     },
     "clearUiEffectTimer": {
       "name": "clearUiEffectTimer",
       "file": "ui/ui-context.js",
-      "line": 26,
+      "line": 31,
       "kind": "function",
       "callers": [
         {
           "file": "ui/ui-context.js",
-          "line": 26,
+          "line": 28,
+          "caller": "setUiEffectTimer"
+        },
+        {
+          "file": "ui/ui-context.js",
+          "line": 29,
           "caller": "setUiEffectInterval"
         },
         {
           "file": "ui/ui-context.js",
-          "line": 34,
+          "line": 31,
+          "caller": "generation"
+        },
+        {
+          "file": "ui/ui-context.js",
+          "line": 39,
           "caller": "busy"
         },
         {
           "file": "ui/ui-context.js",
-          "line": 35,
+          "line": 40,
           "caller": "busy"
         },
         {
           "file": "ui/ui-context.js",
-          "line": 36,
+          "line": 41,
           "caller": "busy"
         },
         {
@@ -19090,19 +19155,19 @@
     "namedAnimationGuardSerial": {
       "name": "namedAnimationGuardSerial",
       "file": "ui/ui-context.js",
-      "line": 28,
+      "line": 33,
       "kind": "constant",
       "callers": []
     },
     "createNamedAnimationGuard": {
       "name": "createNamedAnimationGuard",
       "file": "ui/ui-context.js",
-      "line": 29,
+      "line": 34,
       "kind": "function",
       "callers": [
         {
           "file": "ui/ui-context.js",
-          "line": 29,
+          "line": 34,
           "caller": "clearUiEffectTimer"
         },
         {
@@ -19115,14 +19180,14 @@
     "busy": {
       "name": "busy",
       "file": "ui/ui-context.js",
-      "line": 30,
+      "line": 35,
       "kind": "constant",
       "callers": []
     },
     "setDialogOpenState": {
       "name": "setDialogOpenState",
       "file": "ui/ui-context.js",
-      "line": 39,
+      "line": 44,
       "kind": "function",
       "callers": [
         {
@@ -19137,7 +19202,7 @@
         },
         {
           "file": "ui/ui-context.js",
-          "line": 39,
+          "line": 44,
           "caller": "busy"
         },
         {
@@ -19165,7 +19230,7 @@
     "dialog": {
       "name": "dialog",
       "file": "ui/ui-context.js",
-      "line": 39,
+      "line": 44,
       "kind": "constant",
       "callers": []
     },
