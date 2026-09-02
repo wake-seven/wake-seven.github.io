@@ -4421,7 +4421,9 @@ function syncGameState(){
     speedTrainingTrialCleared,speedIntermediateTrialCleared,speedMasteryTrialCleared
   });
   gameState.speed={activeVariant:speedVariant,sessions:Object.fromEntries(Object.keys(SPEED_MODE_DEFINITIONS).map(variant=>[variant,readSpeedSession(variant)]).filter(([,session])=>session))};
-  gameState.ui={editingBoard,lastStageMode};
+  // activeMode is the canonical current mode. This context is only the
+  // campaign destination to restore after free/custom/speed screens.
+  gameState.ui={editingBoard,returnStageContext};
   if(typeof serializeActiveBoard==='function')WakeSevenState.updateBoard(gameState,serializeActiveBoard());
   return window.WakeSevenState.write(gameState);
 }
@@ -4689,7 +4691,9 @@ let secondLapUnlocked=initialUnlocks.secondLap===true;
 try{secondLapUnlocked=secondLapUnlocked||storage.get(STORAGE_KEY_GROUPS.progression.secondLapUnlocked)==='1'||secondLapActive||awakenedGranted;}catch(_){secondLapUnlocked=secondLapActive||awakenedGranted;}
 const initialNavigationState=WakeSevenState.sectionView(gameState,'navigation');
 let activeLap=initialNavigationState.lap===2?2:1;
-let lastStageMode={extra:false,satori:false,index:0};
+// activeMode owns the current screen. Keep the last campaign location under
+// an explicit name so it cannot be mistaken for a second mode state.
+let returnStageContext={extra:false,satori:false,index:0};
 let editingBoard=false;
 let masterDialogKind='primary';
 let rankDialogReturn=null;
@@ -4817,7 +4821,7 @@ function beginSecondLap(){
     storage.remove(MESSAGE_REVIEW_STORAGE_KEY);
     storage.remove(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY);
   }catch(_){ }
-  lastStageMode={extra:false,satori:false,index:0};
+  returnStageContext={extra:false,satori:false,index:0};
   persistLapProgress();
   updateMasterTheme();
   loadStage(0);
@@ -6894,7 +6898,7 @@ function loadStage(index){
   nextStageAttention=false;
   stageIndex=Math.max(0,Math.min(STAGES.length-1,index));
   WakeSevenState.setNavigationIndex(gameState,'stage',stageIndex);
-  lastStageMode={extra:false,satori:false,index:stageIndex};
+  returnStageContext={extra:false,satori:false,index:stageIndex};
   const stage=STAGES[stageIndex];
   persistCurrentStage(false,stageIndex);
   setPosition(campaignStageState(stage.state),stage.par);
@@ -6913,7 +6917,7 @@ function loadExtraStage(index){
   nextStageAttention=false;
   extraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
   WakeSevenState.setNavigationIndex(gameState,'mastery',extraIndex);
-  lastStageMode={extra:true,satori:false,index:extraIndex};
+  returnStageContext={extra:true,satori:false,index:extraIndex};
   const stage=EXTRA_STAGES[extraIndex];
   persistCurrentStage(true,extraIndex);
   setPosition(campaignStageState(stage.state),stage.par);
@@ -6932,7 +6936,7 @@ function loadSatoriStage(index){
   nextStageAttention=false;
   satoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
   WakeSevenState.setNavigationIndex(gameState,'satori',satoriIndex);
-  lastStageMode={extra:false,satori:true,index:satoriIndex};
+  returnStageContext={extra:false,satori:true,index:satoriIndex};
   const stage=SATORI_STAGES[satoriIndex];
   try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}
   setPosition(campaignStageState(stage.state),stage.par);
@@ -7017,7 +7021,7 @@ function persistActiveSession(){
   const mode=activeMode;
   const payload={
     mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,
-    lastStageMode,board:serializeActiveBoard()
+    returnStageContext,board:serializeActiveBoard()
   };
   syncGameState();
   try{storage.set(STORAGE_KEY_GROUPS.progression.activeSession,JSON.stringify(payload));}catch(_){ }
@@ -7055,8 +7059,9 @@ function restoreActiveSession(){
   }else if(saved.mode==='custom'){
     setActiveMode('custom');editingBoard=!!saved.editingBoard;
   }else{restoreCurrentStage();return;}
-  if(saved.lastStageMode&&typeof saved.lastStageMode.extra==='boolean'&&Number.isInteger(saved.lastStageMode.index)){
-    lastStageMode={extra:saved.lastStageMode.extra,satori:!!saved.lastStageMode.satori,index:saved.lastStageMode.index};
+  const savedReturnStageContext=saved.returnStageContext;
+  if(savedReturnStageContext&&typeof savedReturnStageContext.extra==='boolean'&&Number.isInteger(savedReturnStageContext.index)){
+    returnStageContext={extra:savedReturnStageContext.extra,satori:!!savedReturnStageContext.satori,index:savedReturnStageContext.index};
   }
   restoreSavedBoard(saved.board);
   renderStageNav();
@@ -7114,7 +7119,7 @@ function restoreFreeSession(){
 }
 function leaveFreeMode(){
   persistFreeSession();
-  lastStageMode.satori?loadSatoriStage(lastStageMode.index):lastStageMode.extra?loadExtraStage(lastStageMode.index):loadStage(lastStageMode.index);
+  returnStageContext.satori?loadSatoriStage(returnStageContext.index):returnStageContext.extra?loadExtraStage(returnStageContext.index):loadStage(returnStageContext.index);
 }
 function makerDistance(){
   return SOLVER.dist[enc(ori)];
@@ -8205,7 +8210,7 @@ function boardQuizEnoughMatchingStates(state,match,limit,accept=()=>true){
 function boardQuizSameShapeState(state,shapeState){const shape=dec(shapeState);for(const symmetry of SYMMETRIES){const transformed=transformStateBySymmetry(state,symmetry),board=dec(transformed);if(board.every((value,index)=>(value===0)===(shape[index]===0)))return transformed;}return state;}
 function boardQuizCenterIsNotOdd(board){if(board[3]===0)return true;const count=[0,0,0];board.forEach(value=>{if(value!==0)count[value]++;});return count[board[3]]===Math.max(...count);}
 function boardQuizConfigForCurrent(){
-  const masteryContext=isMode('mastery')||lastStageMode?.extra===true;
+  const masteryContext=isMode('mastery')||returnStageContext?.extra===true;
   if(!masteryContext)return null;
   // クリア後は activeMode が次の導線用に切り替わることがあるため、
   // 名人の盤面を最後に表示した文脈を優先する。extraIndex は常に整数で
@@ -8213,7 +8218,7 @@ function boardQuizConfigForCurrent(){
   // 参照して boardQuiz が消える。
   const index=isMode('mastery')&&Number.isInteger(extraIndex)
     ?extraIndex
-    :(Number.isInteger(lastStageMode?.index)?lastStageMode.index:-1);
+    :(Number.isInteger(returnStageContext?.index)?returnStageContext.index:-1);
   const config=Number.isInteger(index)?clearContentAt(true,index)?.boardQuiz:null;
   if(!config)return null;
   // 問題定義の pattern は表示順の番号。描画時に都度参照せず、
@@ -8738,9 +8743,9 @@ function renderStagePicker(){
 }
 function openStagePicker(){
   pickerLap=activeLap;
-  if(isMode('satori')||(isSideCourseMode()&&lastStageMode.satori)){openSatoriPicker();return;}
-  const showingExtra=isMode('mastery')||(isSideCourseMode()&&lastStageMode.extra);
-  const showingIndex=isMode('mastery')?extraIndex:lastStageMode.index;
+  if(isMode('satori')||(isSideCourseMode()&&returnStageContext.satori)){openSatoriPicker();return;}
+  const showingExtra=isMode('mastery')||(isSideCourseMode()&&returnStageContext.extra);
+  const showingIndex=isMode('mastery')?extraIndex:returnStageContext.index;
   pickerRound=showingExtra?Math.floor(showingIndex/MASTER_VOLUME_SIZE):PRIMARY_SECTIONS.indexOf(primarySection(showingIndex))-PRIMARY_PICKER_SECTION_COUNT;
   renderStagePicker();
   $('stagePicker').hidden=false;
@@ -9025,9 +9030,10 @@ function celebrateClear(){
 }
 function showClearActions(){
   // クリア1回分につき、演出開始とダイアログ予約を1回だけ行う。
-  if(!beginClearFlow())return;
+  const clearCycle=beginClearFlow();
+  if(!clearCycle)return;
   const delay=celebrateClear();
-  setUiEffectTimer('clear-transition','show-dialog',()=>{
+  scheduleClearFlowDialog(()=>{
     if(!clearShown||!isSolved()){resetClearFlow();return;}
     finishClearFlowDialog();
     showClearDialog();
@@ -9036,7 +9042,7 @@ function showClearActions(){
     requestAnimationFrame(()=>{
       if(clearShown&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
     });
-  },delay);
+  },delay,clearCycle);
 }
 function renderClearStageContext(){
   const context=$('clearStageContext');
@@ -9100,10 +9106,10 @@ function showClearDialog(){
     showMasterDialog('intermediate');
     return;
   }
-  const masteryClearContext=isMode('mastery')||lastStageMode?.extra===true;
+  const masteryClearContext=isMode('mastery')||returnStageContext?.extra===true;
   const clearedMasteryIndex=masteryClearContext&&Number.isInteger(extraIndex)
     ?extraIndex
-    :(masteryClearContext&&Number.isInteger(lastStageMode?.index)?lastStageMode.index:-1);
+    :(masteryClearContext&&Number.isInteger(returnStageContext?.index)?returnStageContext.index:-1);
   if(clearedMasteryIndex>=0&&(clearedMasteryIndex+1)%MASTER_VOLUME_SIZE===0){
     showMasterDialog(clearedMasteryIndex===EXTRA_STAGES.length-1?'mastery':'volume');
     return;
@@ -10043,9 +10049,9 @@ function showMasterDialog(kind='primary'){
 function returnToStageMode(){
   if(busy)return;
   if(isMode('free'))leaveFreeMode();
-  else if(lastStageMode.satori)loadSatoriStage(lastStageMode.index);
-  else if(lastStageMode.extra)loadExtraStage(lastStageMode.index);
-  else loadStage(lastStageMode.index);
+  else if(returnStageContext.satori)loadSatoriStage(returnStageContext.index);
+  else if(returnStageContext.extra)loadExtraStage(returnStageContext.index);
+  else loadStage(returnStageContext.index);
 }
 function moveTwoMoveDetail(direction){
   if(twoMoveDetailGuard.isBusy())return;
@@ -10177,19 +10183,34 @@ export {};
 // ===== 画面描画境界 =====
 // ===== クリア後の状態遷移 =====
 // クリア演出の表示と、次の問題/コースへの遷移を進行UI本体から分離する。
-// クリア1回分の「演出中→ダイアログ表示済み」をここで管理する。
 // clearShown は保存・進行用の状態なので、表示予約の重複防止には使わない。
-let clearFlowPhase='idle';
+// 演出とタイマーの段階を名前で持ち、同じクリアに対する再描画が
+// 「演出を再生し直す」「ダイアログを前倒しする」ことを防ぐ。
+const CLEAR_FLOW_PHASE=Object.freeze({idle:'idle',celebrating:'celebrating',dialogPending:'dialog-pending',dialog:'dialog'});
+let clearFlowPhase=CLEAR_FLOW_PHASE.idle;
+// クリア周期を識別する世代番号。表示予約がキャンセルされても、古い
+// callback が後から実行された場合に現在の盤面へ作用しないようにする。
+let clearFlowCycle=1;
 function resetClearFlow(){
-  clearFlowPhase='idle';
+  clearFlowCycle++;
+  clearFlowPhase=CLEAR_FLOW_PHASE.idle;
   clearUiEffectTimers('clear-transition');
 }
 function beginClearFlow(){
-  if(clearFlowPhase!=='idle')return false;
-  clearFlowPhase='celebrating';
+  if(clearFlowPhase!==CLEAR_FLOW_PHASE.idle)return false;
+  clearFlowPhase=CLEAR_FLOW_PHASE.celebrating;
+  return clearFlowCycle;
+}
+function scheduleClearFlowDialog(callback,delay,cycle=clearFlowCycle){
+  if(clearFlowPhase!==CLEAR_FLOW_PHASE.celebrating)return false;
+  clearFlowPhase=CLEAR_FLOW_PHASE.dialogPending;
+  setUiEffectTimer('clear-transition','show-dialog',()=>{
+    if(cycle!==clearFlowCycle||clearFlowPhase!==CLEAR_FLOW_PHASE.dialogPending)return;
+    callback();
+  },delay);
   return true;
 }
-function finishClearFlowDialog(){clearFlowPhase='dialog';}
+function finishClearFlowDialog(){clearFlowPhase=CLEAR_FLOW_PHASE.dialog;}
 function advanceAfterClear(){
   makerButtonBlockedUntil=performance.now()+600;
   clearUiEffectTimers('maker-reveal');
@@ -10264,9 +10285,9 @@ $('stageMode').addEventListener('click',()=>{
   if(busy||(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&!isMode('speed')))return;
   if(isMode('speed')){pauseSpeedRun();returnToStageMode();return;}
   if(isMode('free'))leaveFreeMode();
-  else if(lastStageMode.satori)loadSatoriStage(lastStageMode.index);
-  else if(lastStageMode.extra)loadExtraStage(lastStageMode.index);
-  else loadStage(lastStageMode.index);
+  else if(returnStageContext.satori)loadSatoriStage(returnStageContext.index);
+  else if(returnStageContext.extra)loadExtraStage(returnStageContext.index);
+  else loadStage(returnStageContext.index);
 });
 $('stageModeReturn').addEventListener('click',()=>{
   returnToStageMode();

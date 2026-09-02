@@ -24,6 +24,9 @@ for(const name of ['setUiEffectTimer','setUiEffectInterval','clearUiEffectTimers
 for(const [text,name] of [[board,'academy/intro effect timers'],[hints,'hint effect timers'],[mastery,'mastery effect timers'],[speed,'speed clock effect timer']])assert.match(text,/setUiEffect(?:Timer|Interval)|clearUiEffectTimers/,`${name} are not scoped by effect.`);
 assert.doesNotMatch(speed,/speedClockTimer/,'Speed clock must not retain a direct timer handle.');
 assert.match(clearFlow,/setUiEffectTimer\('maker-reveal'/,'Maker reveal cleanup must use an effect-scoped timer.');
+assert.match(clearFlow,/CLEAR_FLOW_PHASE=Object\.freeze\(\{idle:'idle',celebrating:'celebrating',dialogPending:'dialog-pending',dialog:'dialog'\}\)/,'Clear flow phases must be explicit.');
+assert.match(clearFlow,/function scheduleClearFlowDialog\(callback,delay(?:,cycle=clearFlowCycle)?\)/,'Clear dialog scheduling must use the clear-flow boundary.');
+assert.match(mastery,/scheduleClearFlowDialog\(\(\)=>\{/,'Clear dialog must be scheduled through the clear-flow boundary.');
 assert.match(board,/clearUiEffectTimers\('clear-transition'\)/,'Board transitions must cancel delayed clear effects.');
 assert.match(board,/resetBoardUiContext\(\)/,'Board reset must clear transient animation classes.');
 assert.match(progressionRender,/function renderClearStageContextElement\(/,'Clear context rendering must remain in the renderer boundary.');
