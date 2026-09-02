@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-23:35';
+const APP_VERSION='2026.09.02-23:42';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -8907,21 +8907,38 @@ function renderStageNavAccent(context={}){
 export {};
 
 // ===== ロードマップ表示 =====
+// ダイアログとクイズが共有する表示文脈を、入口で固定する。
+// 値の決定だけを担当し、状態やDOMは変更しない。
+function createProgressionMessageContext(context={}){
+  const source=context||{};
+  return Object.freeze({
+    mode:source.mode??(typeof activeMode==='undefined'?null:activeMode),
+    stageIndex:source.stageIndex??(typeof stageIndex==='undefined'?null:stageIndex),
+    section:source.section??null,
+    lap:source.lap??(typeof activeLap==='undefined'?null:activeLap),
+    clearType:source.clearType??null,
+    dialogId:source.dialogId??null,
+    quizId:source.quizId??null
+  });
+}
+
 // 進行に関わるダイアログの共通入口。
 // 実際の表示内容は既存の各UI実装へ委譲し、呼び出し側が個別関数を
 // 覚えなくて済むようにする。ダイアログの状態形式は runtime 側と共有する。
 function openProgressionDialog(id,context={}){
-  const name=context.name||context.dialogName||id;
+  const messageContext=createProgressionMessageContext({...context,dialogId:context.dialogId??id});
+  const options={...context,...messageContext};
+  const name=options.name||options.dialogName||id;
   if(id==='chain'||CHAIN_STEPS[name])return openChainedDialog(name);
   if(id==='clear')return showClearDialog();
-  if(id==='message')return openMessageReview({resume:!!context.resume,returnTarget:context.returnTarget||null});
-  if(id==='master')return showMasterDialog(context.kind||'primary');
-  if(id==='rank')return openRankDialog(context.returnTarget||null);
+  if(id==='message')return openMessageReview({resume:!!options.resume,returnTarget:options.returnTarget||null});
+  if(id==='master')return showMasterDialog(options.kind||'primary');
+  if(id==='rank')return openRankDialog(options.returnTarget||null);
   if(id==='tipGuide')return openTipGuide();
   if(id==='guideHub')return openGuideHub();
   if(id==='twoMove')return openTwoMovePatterns();
-  if(id==='twoMoveDetail')return openTwoMoveDetail(context.state,context.index);
-  if(id==='twoMoveLesson')return openTwoMoveLessonDialog(!!context.retry);
+  if(id==='twoMoveDetail')return openTwoMoveDetail(options.state,options.index);
+  if(id==='twoMoveLesson')return openTwoMoveLessonDialog(!!options.retry);
   if(id==='speedPause')return openSpeedPauseDialog();
   if(id==='optimalFail')return renderOptimalFail();
   const dialog=$(id);
@@ -10530,7 +10547,10 @@ export {};
 let progressionQuizContext=null;
 
 function showProgressionQuiz(context={}){
-  const options=context||{};
+  const options={...(context||{}),...createProgressionMessageContext({
+    ...(context||{}),
+    quizId:context?.quizId??context?.rootId??'boardQuiz'
+  })};
   const rootId=options.rootId||'boardQuiz';
   progressionQuizContext={...options,rootId};
   if(options.quiz!==undefined){

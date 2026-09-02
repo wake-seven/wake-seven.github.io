@@ -4,7 +4,10 @@
 let progressionQuizContext=null;
 
 function showProgressionQuiz(context={}){
-  const options=context||{};
+  const options={...(context||{}),...createProgressionMessageContext({
+    ...(context||{}),
+    quizId:context?.quizId??context?.rootId??'boardQuiz'
+  })};
   const rootId=options.rootId||'boardQuiz';
   progressionQuizContext={...options,rootId};
   if(options.quiz!==undefined){
