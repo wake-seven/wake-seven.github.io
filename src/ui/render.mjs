@@ -1,7 +1,7 @@
 /**
  * 状態から画面への調整を担う、開発側接続用の境界。
- * Views and renderers are injected so this module remains usable without a
- * DOM and does not depend on the classic application's global state.
+ * Viewとrendererは注入するため、このモジュールはDOMなしでも利用でき、classicアプリケーションの
+ * グローバル状態にも依存しない。
  */
 export function createRenderCoordinator({ store, boardView, messagePresenter, renderers = {} } = {}) {
   const registry=createRendererRegistry(renderers);

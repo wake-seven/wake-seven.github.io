@@ -1,4 +1,4 @@
-/** Message presenter facade. Rendering policy is supplied by the host app. */
+/** メッセージ表示の窓口。描画方針はホストアプリから受け取る。 */
 export function createClearMessageModel({ id, title = '', body = '', tip = null, quiz = null, art = '', nextAction = null, ...metadata } = {}) {
   return Object.freeze({ id, title, body, tip, quiz, art, nextAction, metadata: Object.freeze({ ...metadata }) });
 }

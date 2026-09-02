@@ -19,5 +19,5 @@ function initializeRuntimeSettings(){
   darumaColorChosen=gameState.settings.darumaColorChosen===true;
 }
 
-// 公開バンドルではnative moduleへ連結されることを明示する境界。
+// 公開バンドルではネイティブモジュールへ連結されることを明示する境界。
 export {};

@@ -76,5 +76,5 @@ const CLEAR_CONTENT={
 // 表示種別をデータ上で明示する。通常の問題クリア後メッセージと、
 // 次の節・クラスへ進む節目ダイアログを同じ入口で監査できるようにする。
 Object.values(CLEAR_CONTENT).forEach(entry=>{entry.kind=entry.dialog?'milestone':'clear';});
-// 公開native moduleの構文境界。
+// 公開ネイティブモジュールの構文境界。
 export {};

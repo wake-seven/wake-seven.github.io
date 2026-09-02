@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-10:34';
+const APP_VERSION='2026.09.02-10:37';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -101,8 +101,7 @@ function setUnlock(key,value){
 const STORAGE_KEY_GROUPS=WakeSevenState.STORAGE_KEY_GROUPS;
 const storage=WakeSevenState.storage;
 /*
- * Versioned persistence boundary. New features should add fields here instead
- * of introducing another storage format.
+ * バージョン付き保存境界。新機能のフィールドは別の保存形式を増やさず、ここへ追加する。
  */
 // リロード時に、盤面だけでなくユーザーが見ていたダイアログも復元する。
 // 動的な内容を持つダイアログは識別子だけ保存し、起動後に通常の描画関数で再構築する。
@@ -442,8 +441,8 @@ let secondLapUnlocked=initialUnlocks.secondLap===true;
 try{secondLapUnlocked=secondLapUnlocked||storage.get(STORAGE_KEY_GROUPS.progression.secondLapUnlocked)==='1'||secondLapActive||awakenedGranted;}catch(_){secondLapUnlocked=secondLapActive||awakenedGranted;}
 const initialNavigationState=WakeSevenState.sectionView(gameState,'navigation');
 let activeLap=initialNavigationState.lap===2?2:1;
-// activeMode owns the current screen. Keep the last campaign location under
-// an explicit name so it cannot be mistaken for a second mode state.
+// activeModeが現在画面の正となる。最後にいたキャンペーン位置は明示的な名前で保持し、
+// 2つ目のモード状態と誤認しないようにする。
 let returnStageContext={extra:false,satori:false,index:0};
 let editingBoard=false;
 let masterDialogKind='primary';
@@ -886,5 +885,5 @@ function hexPath(r){
   }
   return p+'Z';
 }
-// 公開native moduleの構文境界。
+// 公開ネイティブモジュールの構文境界。
 export {};

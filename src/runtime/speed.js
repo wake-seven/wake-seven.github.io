@@ -343,5 +343,5 @@ function completeSpeedStage(){
   const delay=celebrateClear();
   setUiEffectTimer('clear-transition','advance-speed',WakeSevenProgressionCommands.advanceSpeedRun,delay+120);
 }
-// 公開native moduleの構文境界。
+// 公開ネイティブモジュールの構文境界。
 export {};

@@ -1,7 +1,7 @@
 /**
- * Declarative event registration for development-side UI integrations.
- * Event targets and handlers are injected; no game globals or DOM selectors
- * are owned by this module.
+ * 開発側UI接続のための宣言的なイベント登録。
+ * イベント対象とハンドラーは注入する。このモジュールはゲームのグローバル変数や
+ * DOMセレクターを所有しない。
  */
 export function createEventBinder({ target, handlers = {} } = {}) {
   const bindings = [];

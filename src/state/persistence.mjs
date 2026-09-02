@@ -1,4 +1,4 @@
-/** Storage adapter independent from browser globals. */
+/** ブラウザのグローバル変数から独立した保存アダプター。 */
 export function createPersistence({ storage, key = 'wake7-state-vnext', version = 1, create = value => value } = {}) {
   const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
   const read = () => {

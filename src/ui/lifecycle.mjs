@@ -1,4 +1,4 @@
-/** Coordinates injected UI event and rendering lifecycles. */
+/** 注入されたUIイベントと描画のライフサイクルを調整する。 */
 export function createUiLifecycle({ events, renderer, onStart, onStop } = {}) {
   let active = false;
   let disconnect = () => {};

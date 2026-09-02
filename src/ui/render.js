@@ -17,5 +17,5 @@ function renderCurrentView(model={},context={}){
 }
 // 動的コンテナ更新の共通境界。既存rendererのmarkup生成は維持する。
 function replaceRenderedContent(root,markup=''){return svgMount(root,markup);}
-// 公開native moduleの構文境界。
+// 公開ネイティブモジュールの構文境界。
 export {};

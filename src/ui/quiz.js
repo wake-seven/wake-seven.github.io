@@ -140,5 +140,5 @@ function bindBoardQuizAnswerEvents(root,{config,correct,states,copy,note,noteKey
     if(requireAnswer)$('clearNext').disabled=false;
   }));
 }
-// 公開native moduleの構文境界。
+// 公開ネイティブモジュールの構文境界。
 export {};

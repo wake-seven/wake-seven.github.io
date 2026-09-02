@@ -25,7 +25,7 @@ function inject(source,startMarker,endMarker,module,name) {
   const startAt = source.indexOf(startMarker);
   const endAt = source.indexOf(endMarker);
   if(startAt < 0 || endAt < 0 || endAt <= startAt) throw new Error(`${name} markers are missing from src/index.template.html.`);
-  // 生成物は単一のnative module script。ソースを直接連結することで、
+  // 生成物は単一のネイティブモジュールスクリプト。ソースを直接連結することで、
   // CSPがeval/Functionを完全に禁止できる構成にする。
   return `${source.slice(0,startAt + startMarker.length)}\n<script type="module">\n${module.trim()}\n</script>\n${source.slice(endAt)}`;
 }
@@ -34,7 +34,7 @@ const applicationModule = appModules
   .map((module,index) => `// ===== ${moduleLabels[index] || applicationModuleFiles[index]} =====\n${module.trim()}`)
   .join('\n\n');
 
-// 公開版は1本のnative module scriptにまとめる。CSP互換性を保つため、
+// 公開版は1本のネイティブモジュールスクリプトにまとめる。CSP互換性を保つため、
 // evalやFunctionによる実行ブリッジは使わず、ソースを直接連結する。
 const combinedPayload = [
   `// ${start}\n${stateModule.trim()}`,

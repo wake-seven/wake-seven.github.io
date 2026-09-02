@@ -12,5 +12,5 @@ function initializeSpeedUnlockState({initialUnlocks={},awakenedGranted=false}={}
     masteryTrial:initialUnlocks.speedMasteryTrialCleared===true
   });
 }
-// 公開native moduleの構文境界。
+// 公開ネイティブモジュールの構文境界。
 export {};

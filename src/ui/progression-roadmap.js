@@ -43,6 +43,5 @@ function masterRoadmapFragment(current){
 }
 function masterCommonRules(){return currentLang==='ja'?'名人への道は最短の手でクリアする必要があります。\nまた、進むほど自力で考える場面が増えていきます。':'Path to Mastery must be cleared in the fewest moves. As you advance, the rules become stricter.';}
 
-// Keep this extracted fragment explicit in the source audit while it remains
-// concatenated into the single published native-module script.
+// この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};

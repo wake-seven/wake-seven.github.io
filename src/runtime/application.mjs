@@ -1,4 +1,4 @@
-/** Application boundary for wiring events, rendering, and state persistence. */
+/** イベント、描画、状態保存を接続するアプリケーション境界。 */
 export function createApplicationController({ store, events, renderer, session, serialize, onStart, onStop } = {}) {
   const sync = () => {
     const state = typeof serialize === 'function' ? serialize(store?.state) : store?.state;

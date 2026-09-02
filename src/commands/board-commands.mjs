@@ -1,7 +1,7 @@
 /**
  * 開発用の盤面操作コマンド境界。
  * classic実装は端で注入でき、このモジュールは
- * neither DOM access nor persistence policy.
+ * DOMアクセスも保存ポリシーも持たない。
  */
 export function createBoardCommands({ getBoard, setBoard, applyMove, undoMove } = {}) {
   const current = () => typeof getBoard === 'function' ? getBoard() : null;

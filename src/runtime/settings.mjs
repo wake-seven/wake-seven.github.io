@@ -1,4 +1,4 @@
-/** Runtime settings service, independent from the classic global runtime. */
+/** classicのグローバルランタイムから独立した実行時設定サービス。 */
 const THEMES = new Set(['default', 'gold', 'satori']);
 const LAYOUTS = new Set(['normal', 'tilted']);
 const COLORS = new Set(['red', 'rainbow']);

@@ -1,4 +1,4 @@
-/** Session lifecycle service, independent from game-specific globals. */
+/** ゲーム固有のグローバルから独立したセッション・ライフサイクルサービス。 */
 export function createSessionService({ persistence, normalize = value => value, onRestore, onSave } = {}) {
   let current = null;
   const load = () => {

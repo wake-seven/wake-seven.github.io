@@ -29,5 +29,5 @@ function stageClearArtAt(mode,index){
   return entry.art||'';
 }
 function stageClearArt(){const {mode,masteryIndex,stageIndex}=runtimeSnapshot();return mode==='satori'?'':stageClearArtAt(mode==='mastery',mode==='mastery'?masteryIndex:stageIndex);}
-// 公開native moduleの構文境界。
+// 公開ネイティブモジュールの構文境界。
 export {};

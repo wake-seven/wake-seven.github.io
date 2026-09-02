@@ -56,5 +56,5 @@
 
   global.WakeSevenProgression = Object.freeze({create});
 })(window);
-// 公開native moduleの構文境界。
+// 公開ネイティブモジュールの構文境界。
 export {};

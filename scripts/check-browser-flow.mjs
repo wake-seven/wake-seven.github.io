@@ -16,7 +16,7 @@ const runtime = await read('src/runtime/runtime.js');
 const message = await read('src/ui/message.js');
 
 // ブラウザ相当の導線契約。起動復元の前に画面の骨格が存在することを確認する。
-// state, and each user-visible transition must have a named integration point.
+// 状態と、ユーザーに見える各遷移に名前付きの統合ポイントがあることを確認する。
 for (const id of ['introDialog', 'introStart', 'tutorialReset', 'board', 'reset', 'undo', 'chainDialog', 'clearDialog']) {
   assert.match(template, new RegExp(`id=["']${id}["']`), `browser flow DOM contract is missing: ${id}`);
 }
@@ -70,9 +70,8 @@ assert.match(template, /body\.app-booting\{visibility:hidden\}/,
   'initial placeholder must remain hidden during reload restoration');
 
 // クリア／メッセージダイアログの導線契約。これは意図的にソース
-// contract rather than a DOM simulator: it ensures every route has an explicit
-// close/advance/review boundary and that a reload can reconstruct the dialog
-// without losing the cleared position.
+// DOMシミュレーターではなく契約を検査する。各経路に閉じる／進む／見直す境界が明示され、
+// リロード後もクリア位置を失わずダイアログを再構築できることを確認する。
 for (const id of ['clearClose', 'clearNext', 'clearTipLink', 'clearMessages',
   'messageDialog', 'messagePrev', 'messageNext', 'closeMessages', 'messageRankLink']) {
   assert.match(template, new RegExp(`id=["']${id}["']`), `dialog navigation DOM contract is missing: ${id}`);
@@ -113,9 +112,8 @@ assert.match(runtime, /state\.id==='message'[\s\S]*openMessageReview\(\{resume:t
   'restoring message review must rebuild it through the normal resume route');
 
 // 純粋なpointer/session境界をVMで実行する。これは意図的に
-// browser-equivalent contract rather than a full DOM simulator: it verifies
-// pointer normalization, unrelated-pointer rejection, and cancellation of the
-// scheduled frame without requiring a graphical browser.
+// 完全なDOMシミュレーターではなくブラウザ相当の契約を検査する。画面ブラウザなしで、
+// pointerの正規化、無関係なpointerの拒否、予約済みフレームの取り消しを確認する。
 const frameCallbacks = new Map();
 let nextFrame = 0;
 const context = {

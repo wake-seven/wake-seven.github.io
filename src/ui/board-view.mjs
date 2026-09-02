@@ -1,4 +1,4 @@
-/** Minimal DOM-independent board view facade for development tooling. */
+/** 開発用ツール向けの、DOMに依存しない最小限の盤面表示窓口。 */
 export function createBoardView({ document, root, cells = [], triangles = [], renderCell, renderTriangle } = {}) {
   const requireDocument = () => document;
   const build = () => {

@@ -1,4 +1,4 @@
-/** Read-only projection of store state for UI consumers. */
+/** UI利用側へ渡す、ストア状態の読み取り専用投影。 */
 export function createUiStateView({ store, select = state => state, onChange } = {}) {
   const snapshot = () => {
     const value = select(store?.state);

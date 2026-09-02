@@ -196,7 +196,7 @@ for (const token of namespaceSourceTokens) {
   if (!namespaceModule.includes(token)) throw new Error(`src/runtime/namespace.js is missing ${token}.`);
 }
 
-// native module scriptはNodeのFunctionコンストラクタでは評価できないため、
+// ネイティブモジュールスクリプトはNodeのFunctionコンストラクタでは評価できないため、
 // classicなインライン補助スクリプトだけを構文検査する。
 const inlineScripts = [...html.matchAll(/<script(?![^>]*\btype=["']module["'])(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(match => match[1]);
 for (const script of inlineScripts) new Function(script);

@@ -16,5 +16,5 @@ const GameDialogs=Object.freeze({
   mastery:kind=>showMasterDialog(kind)
 });
 
-// 公開native moduleの構文境界。
+// 公開ネイティブモジュールの構文境界。
 export {};

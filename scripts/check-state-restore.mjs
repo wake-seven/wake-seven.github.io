@@ -13,7 +13,7 @@ const template = await read('src/index.template.html');
 const published = await read('index.html');
 
 // 2つのVMコンテキストで共有する小さなlocalStorage実装により、
-// browser reload: JavaScript globals disappear, while storage survives.
+// ブラウザをリロードするとJavaScriptのグローバルは消えるが、保存領域は残る。
 function createStorage(entries = {}) {
   const values = new Map(Object.entries(entries));
   return {
@@ -53,7 +53,7 @@ const firstState = firstLoad.api.create({
 assert.equal(firstLoad.api.write(firstState, storage), true, 'initial state must be writable');
 
 // ダイアログ状態は意図的にUIスナップショットとして分離するが、同じ
-// persistent storage boundary and is restored by app-bootstrap on startup.
+// ダイアログ状態は保存境界に含め、起動時にapp-bootstrapが復元する。
 storage.setItem('wake7-dialog-state', JSON.stringify({ id: 'chain', name: 'trainingWelcome', kind: null }));
 
 const secondLoad = loadState(storage);
@@ -69,12 +69,12 @@ assertJsonEqual(restored.speed, firstState.speed, 'speed session must survive re
 assertJsonEqual(restored.ui, firstState.ui, 'UI session context must survive reload');
 assert.deepEqual(JSON.parse(storage.getItem('wake7-dialog-state')), { id: 'chain', name: 'trainingWelcome', kind: null });
 
-// Invalid versions are rejected instead of silently restoring incompatible data.
+// 無効なバージョンは、互換性のないデータを黙って復元せず拒否する。
 storage.setItem('wake7-state-vnext', JSON.stringify({ version: 999, navigation: { mode: 'satori' } }));
 assert.equal(secondLoad.api.read(storage), null, 'unknown state versions must not be restored');
 
-// Static integration checks ensure the browser entry point actually performs
-// the same restore sequence tested above, including dialogs and initial paint.
+// 静的な統合チェックで、ブラウザ入口が上記と同じ復元順序（ダイアログと初回描画を含む）
+// を実際に実行していることを確認する。
 for (const source of [runtimeSource, published]) {
   assert.match(source, /function restoreDialogState\(state\)/, 'dialog restore function must exist');
   assert.match(source, /(?:wake7-dialog-state|STORAGE_KEY_GROUPS\.dialogs\.state)/, 'dialog state key must be present');

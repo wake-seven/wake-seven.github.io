@@ -2121,5 +2121,5 @@ const GameBoard=Object.freeze({
   repaint:()=>paint(),
   reset:(state,par)=>setPosition(state,par)
 });
-// 公開native moduleの構文境界。
+// 公開ネイティブモジュールの構文境界。
 export {};

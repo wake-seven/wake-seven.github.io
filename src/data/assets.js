@@ -83,5 +83,5 @@ const TRAINING_WELCOME_ART_SVG=`<svg id="trainingWelcomeArt" viewBox="0 0 320 22
   </g>
 </svg>`;
 
-// 公開バンドルではnative moduleへ連結されることを明示する境界。
+// 公開バンドルではネイティブモジュールへ連結されることを明示する境界。
 export {};

@@ -50,6 +50,5 @@ function returnToClearDialog(){
   $('clearNext').hidden=false;$('clearDialog').hidden=false;$('clearTipLink').focus();
 }
 
-// Keep this extracted fragment explicit in the source audit while it remains
-// concatenated into the single published native-module script.
+// この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};

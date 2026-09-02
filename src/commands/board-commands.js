@@ -58,5 +58,5 @@ function applyBoardOrientationCommand(permutation,flip=false){
   currentInitialState=transformStateCode(currentInitialState,permutation,flip);
   return transformed;
 }
-// 公開native moduleの構文境界。
+// 公開ネイティブモジュールの構文境界。
 export {};
