@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-19:20';
+const APP_VERSION='2026.09.02-19:42';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -719,6 +719,22 @@ function bindApplicationTargetTiles(){
 function renderApplicationTargetCells(){
   if(!isApplicationTargetStage())applicationTargetTiles.clear();
   tileEls.forEach(tile=>tile.classList.toggle('application-target',applicationTargetTiles.has(tile)));
+  // パネル自身のstrokeだけでは隣接パネルの塗りに一部覆われるため、
+  // 同じ形の枠をタイル層の最前面にも置く。タイルと同じtransformを使うので、
+  // 盤面の並べ替えやスワイプ後も物理パネルに追従する。
+  svg.querySelector('.application-target-overlay-layer')?.remove();
+  const overlayLayer=document.createElementNS('http://www.w3.org/2000/svg','g');
+  overlayLayer.setAttribute('class','application-target-overlay-layer');
+  for(const tile of tileEls){
+    if(!applicationTargetTiles.has(tile))continue;
+    const hex=tile.querySelector('.hex');
+    if(!hex)continue;
+    const frame=document.createElementNS('http://www.w3.org/2000/svg','path');
+    frame.setAttribute('class','application-target-overlay');
+    frame.setAttribute('d',hex.getAttribute('d')||'');
+    frame.style.transform=tile.style.transform;
+    overlayLayer.appendChild(frame);
+  }
   // 目標パネルを他のパネルより先に描画する。水色の棒・軸は後ろに置かず、
   // SVGの後続要素として常に目標パネルの境界線より前に表示する。
   const firstPivot=svg.querySelector('.pivot');
@@ -726,7 +742,8 @@ function renderApplicationTargetCells(){
     for(const tile of tileEls){
       if(applicationTargetTiles.has(tile))svg.insertBefore(tile,firstPivot);
     }
-  }
+    svg.insertBefore(overlayLayer,firstPivot);
+  }else svg.appendChild(overlayLayer);
 }
 // だるま修行(上巻・中巻・下巻)全体: 「あと2くるり」に到達した瞬間、形の名前を演出する対象区間。
 const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;

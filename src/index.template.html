@@ -810,6 +810,8 @@
   /* 応用編の枠はパネル自身と一緒に動き、棒より背面で表示する。 */
   /* 応用編はパネル自身の境界線を強調する。棒と同じSVG階層で、スワイプにも追従する。 */
   #board .tile.application-target .hex{stroke:#8B35F0 !important;stroke-width:5 !important;stroke-linejoin:round}
+  #board .application-target-overlay-layer{pointer-events:none}
+  #board .application-target-overlay{fill:none;stroke:#8B35F0;stroke-width:5;stroke-linejoin:round;pointer-events:none;vector-effect:non-scaling-stroke}
   /* 応用クラス開始案内でも、目標の3枚そのものの境界線を強調する。 */
   #academyWelcomeBoard .tile.application-target .hex{stroke:#8B35F0 !important;stroke-width:5 !important;stroke-linejoin:round}
   /* ミニ盤面(比較カード等)の回転アニメでも、本編の.tileと同じくレイヤーを先に確保しておく。

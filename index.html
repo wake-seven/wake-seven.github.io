@@ -810,6 +810,8 @@
   /* 応用編の枠はパネル自身と一緒に動き、棒より背面で表示する。 */
   /* 応用編はパネル自身の境界線を強調する。棒と同じSVG階層で、スワイプにも追従する。 */
   #board .tile.application-target .hex{stroke:#8B35F0 !important;stroke-width:5 !important;stroke-linejoin:round}
+  #board .application-target-overlay-layer{pointer-events:none}
+  #board .application-target-overlay{fill:none;stroke:#8B35F0;stroke-width:5;stroke-linejoin:round;pointer-events:none;vector-effect:non-scaling-stroke}
   /* 応用クラス開始案内でも、目標の3枚そのものの境界線を強調する。 */
   #academyWelcomeBoard .tile.application-target .hex{stroke:#8B35F0 !important;stroke-width:5 !important;stroke-linejoin:round}
   /* ミニ盤面(比較カード等)の回転アニメでも、本編の.tileと同じくレイヤーを先に確保しておく。
@@ -4293,7 +4295,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-19:20';
+const APP_VERSION='2026.09.02-19:42';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5011,6 +5013,22 @@ function bindApplicationTargetTiles(){
 function renderApplicationTargetCells(){
   if(!isApplicationTargetStage())applicationTargetTiles.clear();
   tileEls.forEach(tile=>tile.classList.toggle('application-target',applicationTargetTiles.has(tile)));
+  // パネル自身のstrokeだけでは隣接パネルの塗りに一部覆われるため、
+  // 同じ形の枠をタイル層の最前面にも置く。タイルと同じtransformを使うので、
+  // 盤面の並べ替えやスワイプ後も物理パネルに追従する。
+  svg.querySelector('.application-target-overlay-layer')?.remove();
+  const overlayLayer=document.createElementNS('http://www.w3.org/2000/svg','g');
+  overlayLayer.setAttribute('class','application-target-overlay-layer');
+  for(const tile of tileEls){
+    if(!applicationTargetTiles.has(tile))continue;
+    const hex=tile.querySelector('.hex');
+    if(!hex)continue;
+    const frame=document.createElementNS('http://www.w3.org/2000/svg','path');
+    frame.setAttribute('class','application-target-overlay');
+    frame.setAttribute('d',hex.getAttribute('d')||'');
+    frame.style.transform=tile.style.transform;
+    overlayLayer.appendChild(frame);
+  }
   // 目標パネルを他のパネルより先に描画する。水色の棒・軸は後ろに置かず、
   // SVGの後続要素として常に目標パネルの境界線より前に表示する。
   const firstPivot=svg.querySelector('.pivot');
@@ -5018,7 +5036,8 @@ function renderApplicationTargetCells(){
     for(const tile of tileEls){
       if(applicationTargetTiles.has(tile))svg.insertBefore(tile,firstPivot);
     }
-  }
+    svg.insertBefore(overlayLayer,firstPivot);
+  }else svg.appendChild(overlayLayer);
 }
 // だるま修行(上巻・中巻・下巻)全体: 「あと2くるり」に到達した瞬間、形の名前を演出する対象区間。
 const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;
@@ -5600,6 +5619,9 @@ function placeSwipeGroupOnTop(group,root=svg){
 function createSwipeGroup(items,pivot){
   const group=document.createElementNS('http://www.w3.org/2000/svg','g');
   group.setAttribute('class','auto-swipe-group');
+  // 静止時の枠は回転中のクローンと二重になり、古い位置に残って見えるため退避する。
+  // アニメーション終了後のpaint()で、現在位置に再生成される。
+  svg?.querySelector('.application-target-overlay-layer')?.remove();
   const clones=[];
   // 同じ回転グループ内でも、目標パネルを最後に描画する。
   // SVGは後から描画した要素が前面になるため、隣接パネルに枠を隠されない。
@@ -5614,6 +5636,17 @@ function createSwipeGroup(items,pivot){
     item.el.style.visibility='hidden';
     group.appendChild(clone);
     clones.push({item,clone,hex:clone.querySelector('.hex')});
+  }
+  // 枠はパネルの中に置くと、隣のパネルの塗りに境界を覆われることがある。
+  // 回転グループ内の最後に枠だけを重ね、パネルと同じ変形を与える。
+  // グループ自体は軸・棒の直前なので、枠が棒を覆うことはない。
+  for(const {clone,hex} of clones){
+    if(!clone.classList.contains('application-target')||!hex)continue;
+    const frame=document.createElementNS('http://www.w3.org/2000/svg','path');
+    frame.setAttribute('class','application-target-overlay');
+    frame.setAttribute('d',hex.getAttribute('d')||'');
+    frame.style.transform=clone.style.transform;
+    group.appendChild(frame);
   }
   placeSwipeGroupOnTop(group);
   return {group,clones};

@@ -15,6 +15,9 @@ function placeSwipeGroupOnTop(group,root=svg){
 function createSwipeGroup(items,pivot){
   const group=document.createElementNS('http://www.w3.org/2000/svg','g');
   group.setAttribute('class','auto-swipe-group');
+  // 静止時の枠は回転中のクローンと二重になり、古い位置に残って見えるため退避する。
+  // アニメーション終了後のpaint()で、現在位置に再生成される。
+  svg?.querySelector('.application-target-overlay-layer')?.remove();
   const clones=[];
   // 同じ回転グループ内でも、目標パネルを最後に描画する。
   // SVGは後から描画した要素が前面になるため、隣接パネルに枠を隠されない。
@@ -29,6 +32,17 @@ function createSwipeGroup(items,pivot){
     item.el.style.visibility='hidden';
     group.appendChild(clone);
     clones.push({item,clone,hex:clone.querySelector('.hex')});
+  }
+  // 枠はパネルの中に置くと、隣のパネルの塗りに境界を覆われることがある。
+  // 回転グループ内の最後に枠だけを重ね、パネルと同じ変形を与える。
+  // グループ自体は軸・棒の直前なので、枠が棒を覆うことはない。
+  for(const {clone,hex} of clones){
+    if(!clone.classList.contains('application-target')||!hex)continue;
+    const frame=document.createElementNS('http://www.w3.org/2000/svg','path');
+    frame.setAttribute('class','application-target-overlay');
+    frame.setAttribute('d',hex.getAttribute('d')||'');
+    frame.style.transform=clone.style.transform;
+    group.appendChild(frame);
   }
   placeSwipeGroupOnTop(group);
   return {group,clones};
