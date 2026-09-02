@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-17:23';
+const APP_VERSION='2026.09.02-17:40';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -719,6 +719,14 @@ function bindApplicationTargetTiles(){
 function renderApplicationTargetCells(){
   if(!isApplicationTargetStage())applicationTargetTiles.clear();
   tileEls.forEach(tile=>tile.classList.toggle('application-target',applicationTargetTiles.has(tile)));
+  // 目標パネルを他のパネルより先に描画する。水色の棒・軸は後ろに置かず、
+  // SVGの後続要素として常に目標パネルの境界線より前に表示する。
+  const firstPivot=svg.querySelector('.pivot');
+  if(firstPivot){
+    for(const tile of tileEls){
+      if(applicationTargetTiles.has(tile))svg.insertBefore(tile,firstPivot);
+    }
+  }
 }
 // だるま修行(上巻・中巻・下巻)全体: 「あと2くるり」に到達した瞬間、形の名前を演出する対象区間。
 const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;
