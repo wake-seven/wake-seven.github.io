@@ -164,6 +164,9 @@ function buildAcademyWelcomeBoard(variant='enroll'){
     g.style.transform=tileTransform(c.x,c.y,start[i]);
     board.appendChild(g);tiles[i]=g;
   });
+  // 目標パネルを通常パネルより後に描画し、隣接パネルの塗りで枠が欠けるのを防ぐ。
+  // 棒・軸はこの後に追加されるため、枠より前面のまま保たれる。
+  if(targetCells.size)tiles.forEach((tile,i)=>{if(targetCells.has(i))board.appendChild(tile);});
   const baseWelcomeTiles=tiles.slice();
   const t=TRI[move.ti],angle=Math.atan2(t.y-CELL[3].y,t.x-CELL[3].x)*180/Math.PI,q=angle*Math.PI/180,r=32;
   const gripX=t.x+r*Math.cos(q),gripY=t.y+r*Math.sin(q);
@@ -217,6 +220,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       tile.style.transform=tileTransform(CELL[i].x,CELL[i].y,start[i]);
       board.appendChild(tile);
     });
+    if(targetCells.size)cycleTiles.forEach((tile,i)=>{if(targetCells.has(i))board.appendChild(tile);});
     grips.forEach(grip=>{grip.style.display='';board.appendChild(grip);});
     board.appendChild(touch);board.appendChild(counterLabel);board.appendChild(counterNumber);board.appendChild(counterUnit);board.appendChild(release);
     setTimeout(()=>{
@@ -247,6 +251,18 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       // 使っている書き方)に統一する。
       for(const index of t.cells)unit.appendChild(cycleTiles[index]);
       unit.appendChild(touch);
+      // 同じ回転グループ内では、対象パネルの枠だけを最後に描画する。
+      // 枠にパネルの塗りが重ならないため、回転中も全周が見える。
+      for(const index of t.cells){
+        if(!targetCells.has(index))continue;
+        const hex=cycleTiles[index].querySelector('.hex');
+        if(!hex)continue;
+        const frame=document.createElementNS(NS_,'path');
+        frame.setAttribute('class','application-target-overlay');
+        frame.setAttribute('d',hex.getAttribute('d')||'');
+        frame.style.transform=cycleTiles[index].style.transform;
+        unit.appendChild(frame);
+      }
       // 使い回すunitは先に挿入済みのため、最前面に出すには回転開始のたびに一度前面へ出し直す。
       board.appendChild(unit);
       // タッチの瞬間だけ枠を見せ、回転が始まったら解除する。
@@ -285,6 +301,7 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       },wakeHappens?wakeDelay:Math.round(overshootDuration*(22/overshootAngle)));
       setTimeout(()=>{
         if(!alive())return;
+        unit.querySelectorAll('.application-target-overlay').forEach(frame=>frame.remove());
         // unitは使い回すので削除しない(中身だけ全部board直下へ戻す)。
         // 回転後は全7枚を描き直す。中心の1枚を含めて必ず残るよう、移動中のDOM順に依存しない。
         baseWelcomeTiles.forEach((tile,i)=>{
