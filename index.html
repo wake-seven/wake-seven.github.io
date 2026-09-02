@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-02:19';
+const APP_VERSION='2026.09.03-02:43';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -11263,7 +11263,7 @@ function debugOpenSpeedExam(variant,index){
   }catch(_){ }
   loadSpeedStage(false);
 }
-$('debugSpeedTraining8').addEventListener('click',()=>debugOpenSpeedExam('training9',8));
+$('debugSpeedTraining8').addEventListener('click',()=>debugOpenSpeedExam('training9',DEBUG_MODE?Number(new URLSearchParams(location.search).get('debugSpeedIndex')||8):8));
 $('debugSpeedIntermediate17').addEventListener('click',()=>debugOpenSpeedExam('training18',17));
 $('debugSpeedMastery26').addEventListener('click',()=>debugOpenSpeedExam('mastery27',26));
 $('debugSecondSatori72').addEventListener('click',()=>debugUnlockSatori(72,true));

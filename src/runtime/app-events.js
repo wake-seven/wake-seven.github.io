@@ -200,7 +200,7 @@ function debugOpenSpeedExam(variant,index){
   }catch(_){ }
   loadSpeedStage(false);
 }
-$('debugSpeedTraining8').addEventListener('click',()=>debugOpenSpeedExam('training9',8));
+$('debugSpeedTraining8').addEventListener('click',()=>debugOpenSpeedExam('training9',DEBUG_MODE?Number(new URLSearchParams(location.search).get('debugSpeedIndex')||8):8));
 $('debugSpeedIntermediate17').addEventListener('click',()=>debugOpenSpeedExam('training18',17));
 $('debugSpeedMastery26').addEventListener('click',()=>debugOpenSpeedExam('mastery27',26));
 $('debugSecondSatori72').addEventListener('click',()=>debugUnlockSatori(72,true));
