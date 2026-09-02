@@ -328,6 +328,28 @@ const APPLICATION_STAGE_TARGETS=[
   {source:7,targetCells:[0,1,2]},
   {source:8,targetCells:[0,3,4]}
 ];
+// 応用編の目標は問題の物理パネル番号で管理する。ここで壊れた定義を即座に検出し、
+// 表示側が不完全な目標を黙って描画することを防ぐ。
+function validateApplicationStageTargets(){
+  if(APPLICATION_STAGE_TARGETS.length!==APPLICATION_STAGE_COUNT)
+    throw new Error('Application target count does not match APPLICATION_STAGE_COUNT.');
+  const sources=new Set();
+  for(const [index,definition] of APPLICATION_STAGE_TARGETS.entries()){
+    const {source,targetCells}=definition;
+    if(!Number.isInteger(source)||source<0||source>=TWO_MOVE_STAGES.length)
+      throw new Error('Invalid application source at stage '+(index+1)+'.');
+    if(sources.has(source))throw new Error('Duplicate application source: '+source+'.');
+    sources.add(source);
+    if(TWO_MOVE_STAGES[source].par!==2)
+      throw new Error('Application source is not a two-move stage: '+source+'.');
+    if(!Array.isArray(targetCells)||targetCells.length!==3)
+      throw new Error('Application target must contain exactly three cells at stage '+(index+1)+'.');
+    const cells=new Set(targetCells);
+    if(cells.size!==targetCells.length||targetCells.some(cell=>!Number.isInteger(cell)||cell<0||cell>=N))
+      throw new Error('Invalid or duplicate application target cell at stage '+(index+1)+'.');
+  }
+}
+validateApplicationStageTargets();
 const APPLICATION_STAGES=APPLICATION_STAGE_TARGETS.map(({source,targetCells})=>({
   ...TWO_MOVE_STAGES[source],application:true,targetCells:Object.freeze(targetCells)
 }));
