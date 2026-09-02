@@ -256,7 +256,7 @@ function handleClearTipLink(){
 }
 function bindClearDialogEvents(){
   WakeSevenEventBindings.click('clearNext',()=>{
-    advanceAfterClear();
+    WakeSevenProgressionCommands.advanceAfterClear();
   });
   WakeSevenEventBindings.click('clearClose',()=>{
     hideGameDialogs();
@@ -531,7 +531,7 @@ $('twoMoveLessonNext').addEventListener('click',()=>navigateTwoMoveLesson(1));
 $('closeTwoMoveLesson').addEventListener('click',closeTwoMoveLessonDialog);
 $('retryTwoMoveLesson').addEventListener('click',()=>{
   closeTwoMoveLessonDialog();
-  restartWithAnimation();
+  WakeSevenBoardCommands.reset();
 });
 $('twoMoveLessonDialog').addEventListener('click',event=>{
   if(event.target===$('twoMoveLessonDialog'))closeTwoMoveLessonDialog();

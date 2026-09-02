@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-01:47';
+const APP_VERSION='2026.09.03-01:51';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -8268,7 +8268,9 @@ function refreshGuidedBasicCandidates(){
 // options をオブジェクト化しておくことで、将来の状態ストア移行時に呼び出し側を変えずに済む。
 const WakeSevenBoardCommands=Object.freeze({
   applySwipe:(ti,dir,options={})=>applySwipe(ti,dir,options.save??true,options.playEffects??true),
-  undo:()=>undoLastMove()
+  undo:()=>undoLastMove(),
+  // リセットも盤面操作の入口に揃え、イベント側で盤面状態を直接変更しない。
+  reset:()=>restartWithAnimation()
 });
 // 1回分の確定状態を書き込むcommand。アニメーションや正解判定は呼び出し側に残し、
 // ori/spin/tiles/moves/history の更新順だけをここで保証する。
@@ -8333,7 +8335,13 @@ export {};
 // 呼び出し経路だけをここへ集約する。
 const WakeSevenProgressionCommands=Object.freeze({
   startSpeedRun:()=>beginSpeedRun(),
-  advanceSpeedRun:()=>advanceSpeedRun()
+  advanceSpeedRun:()=>advanceSpeedRun(),
+  // 画面イベントから進行状態へ入る唯一の入口。実装本体は既存関数を利用する。
+  loadStage:index=>loadStage(index),
+  loadMasteryStage:index=>loadExtraStage(index),
+  loadSatoriStage:index=>loadSatoriStage(index),
+  startFree:()=>startFree(),
+  advanceAfterClear:()=>advanceAfterClear()
 });
 // 公開ネイティブモジュールの構文境界。
 export {};
@@ -11298,7 +11306,7 @@ function handleClearTipLink(){
 }
 function bindClearDialogEvents(){
   WakeSevenEventBindings.click('clearNext',()=>{
-    advanceAfterClear();
+    WakeSevenProgressionCommands.advanceAfterClear();
   });
   WakeSevenEventBindings.click('clearClose',()=>{
     hideGameDialogs();
@@ -11573,7 +11581,7 @@ $('twoMoveLessonNext').addEventListener('click',()=>navigateTwoMoveLesson(1));
 $('closeTwoMoveLesson').addEventListener('click',closeTwoMoveLessonDialog);
 $('retryTwoMoveLesson').addEventListener('click',()=>{
   closeTwoMoveLessonDialog();
-  restartWithAnimation();
+  WakeSevenBoardCommands.reset();
 });
 $('twoMoveLessonDialog').addEventListener('click',event=>{
   if(event.target===$('twoMoveLessonDialog'))closeTwoMoveLessonDialog();

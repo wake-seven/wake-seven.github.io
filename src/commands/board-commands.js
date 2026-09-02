@@ -2,7 +2,9 @@
 // options をオブジェクト化しておくことで、将来の状態ストア移行時に呼び出し側を変えずに済む。
 const WakeSevenBoardCommands=Object.freeze({
   applySwipe:(ti,dir,options={})=>applySwipe(ti,dir,options.save??true,options.playEffects??true),
-  undo:()=>undoLastMove()
+  undo:()=>undoLastMove(),
+  // リセットも盤面操作の入口に揃え、イベント側で盤面状態を直接変更しない。
+  reset:()=>restartWithAnimation()
 });
 // 1回分の確定状態を書き込むcommand。アニメーションや正解判定は呼び出し側に残し、
 // ori/spin/tiles/moves/history の更新順だけをここで保証する。
