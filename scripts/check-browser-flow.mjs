@@ -82,6 +82,8 @@ assert.match(speed, /isMode\('speed'\)\&\&\(speedSession\?\.started\|\|Number\(s
   'speed picker must not reopen once an active run has advanced');
 assert.match(progression, /kind==='speedIntro'\&\&isMode\('speed'\)\&\&\(speedSession\?\.started\|\|Number\(speedSession\?\.index\)>0\)/,
   'speed intro dialog must be rejected while an active run is in progress');
+assert.match(progression, /isMode\('speed'\)\&\&\['primary','intermediate','mastery'\]\.includes\(kind\)/,
+  'campaign trial dialogs must be rejected during speed question transitions');
 assert.match(board, /syncGameState\(\);[\s\S]{0,240}STORAGE_KEY_GROUPS\.progression\.activeSession/,
   'active session must be persisted after the state snapshot');
 assert.match(template, /body\.app-booting\{visibility:hidden\}/,

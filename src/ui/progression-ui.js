@@ -752,6 +752,12 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
 // クリア後の形レッスン、最短2手ギャラリー、名人ダイアログを扱う。
 function showMasterDialog(kind='primary'){
   const masterDialog=$('masterDialog');
+  // 速解きの問題切替中に、通常コースの節目ダイアログを再表示しない。
+  // 遅延した loadStage / 復元処理が残っていても、速解きの実行状態を優先する。
+  if(isMode('speed')&&['primary','intermediate','mastery'].includes(kind)){
+    masterDialog.hidden=true;
+    return false;
+  }
   // 速解き開始後は、古いメニュー操作や遅延した復元処理から
   // 「速解き開始」ダイアログを再表示させない。問題切替中も同じ実行を継続する。
   if(kind==='speedIntro'&&isMode('speed')&&(speedSession?.started||Number(speedSession?.index)>0)){
