@@ -16,5 +16,17 @@ const GameDialogs=Object.freeze({
   mastery:kind=>showMasterDialog(kind)
 });
 
+// 進行状態を変更する公開コマンドも、進行画面の入口としてここにまとめる。
+// 実装本体は runtime.js / speed.js に残し、イベント配線からの入口だけを束ねる。
+const WakeSevenProgressionCommands=Object.freeze({
+  startSpeedRun:()=>beginSpeedRun(),
+  advanceSpeedRun:()=>advanceSpeedRun(),
+  loadStage:index=>loadStage(index),
+  loadMasteryStage:index=>loadExtraStage(index),
+  loadSatoriStage:index=>loadSatoriStage(index),
+  startFree:()=>startFree(),
+  advanceAfterClear:()=>advanceAfterClear()
+});
+
 // 公開ネイティブモジュールの構文境界。
 export {};

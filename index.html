@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-03:17';
+const APP_VERSION='2026.09.03-03:28';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -8349,23 +8349,6 @@ function applyBoardOrientationCommand(permutation,flip=false){
 export {};
 
 // ===== 速解きcommand =====
-// 進行操作の公開コマンド入口。
-// 実装本体は既存ランタイムに残し、イベントや他モジュールからの
-// 呼び出し経路だけをここへ集約する。
-const WakeSevenProgressionCommands=Object.freeze({
-  startSpeedRun:()=>beginSpeedRun(),
-  advanceSpeedRun:()=>advanceSpeedRun(),
-  // 画面イベントから進行状態へ入る唯一の入口。実装本体は既存関数を利用する。
-  loadStage:index=>loadStage(index),
-  loadMasteryStage:index=>loadExtraStage(index),
-  loadSatoriStage:index=>loadSatoriStage(index),
-  startFree:()=>startFree(),
-  advanceAfterClear:()=>advanceAfterClear()
-});
-// 公開ネイティブモジュールの構文境界。
-export {};
-
-// ===== 速解き記録command =====
 // 設定変更の書き込み境界。UIイベントはこのcommandを呼び、保存形式を直接扱わない。
 function toggleSoundCommand(){
   soundEnabled=!soundEnabled;
@@ -8409,7 +8392,7 @@ function setLanguageCommand(lang){
 }
 export {};
 
-// ===== チュートリアルcommand =====
+// ===== 速解き記録command =====
 // 進行報酬を書き込む操作命令。節目ダイアログの表示処理から状態更新を分離する。
 function grantMasterDialogRewardsCommand(kind){
   if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
@@ -8436,7 +8419,7 @@ function recordProgressClearCommand(kind,index){
 }
 export {};
 
-// ===== クイズUI =====
+// ===== チュートリアルcommand =====
 // 速解き固有のセッション状態を書き込む操作命令。時計・表示・遷移は実行側に残す。
 function startSpeedSessionCommand(){
   if(!speedSession||speedSession.started)return false;
@@ -8475,7 +8458,7 @@ function completeSpeedSessionCommand(result){
 }
 export {};
 
-// ===== クリアフロー =====
+// ===== クイズUI =====
 // 速解きの記録データを書き込む操作命令。表示用の集計・描画は実行側に残す。
 function updateSpeedOptimalClearsCommand(){
   if(!speedSession)return false;
@@ -8498,7 +8481,7 @@ function recordSpeedCompletionCommand(elapsed,optimalClears){
 }
 export {};
 
-// ===== メッセージUI =====
+// ===== クリアフロー =====
 // チュートリアル状態の書き込みcommand。演出・誤操作判定はUI側に残す。
 function setTutorialStepCommand(index){
   tutorialStep=Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index));
@@ -8525,7 +8508,7 @@ function persistTutorialSessionCommand(step=tutorialStep){
 }
 export {};
 
-// ===== 進行表示 =====
+// ===== メッセージUI =====
 // ===== 共通クイズUI =====
 function shuffledIndices(length){const order=Array.from({length},(_,index)=>index);for(let index=order.length-1;index>0;index--){const swap=Math.floor(Math.random()*(index+1));[order[index],order[swap]]=[order[swap],order[index]];}return order;}
 function quizPresentation(quiz){const order=shuffledIndices(quiz.a.length);return {answers:order.map(index=>quiz.a[index]),correct:order.indexOf(quiz.correct)};}
@@ -8689,7 +8672,7 @@ function bindBoardQuizAnswerEvents(root,{config,correct,states,copy,note,noteKey
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 節目ダイアログ =====
+// ===== 進行表示 =====
 // ===== クリア内容の選択 =====
 // クリア後の文章・挿絵・詳細データを、表示側から切り離して解決する。
 // ここでは既存のグローバル状態と公開関数名を維持し、生成順の依存を増やさない。
@@ -8724,7 +8707,7 @@ function stageClearArt(){const {mode,masteryIndex,stageIndex}=runtimeSnapshot();
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 進行UI =====
+// ===== 節目ダイアログ =====
 // ===== メッセージUIの宣言データ =====
 const MESSAGE_REVIEW_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.messageReview;
 const MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.messageReviewLast;
@@ -8793,7 +8776,7 @@ const MILESTONE_RENDERERS=Object.freeze({primary:(entry,view)=>renderPrimaryMile
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== ロードマップ表示 =====
+// ===== 進行UI =====
 // ステージ進行に関する表示補助。状態更新は行わず、現在の状態を画面へ反映する。
 // 描画のたびにID検索を繰り返さないよう、静的な進行UIの参照を一度だけ束ねる。
 let progressionRenderRefs=null;
@@ -8881,7 +8864,7 @@ function renderStageNavAccent(context={}){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== ヒント表示 =====
+// ===== ロードマップ表示 =====
 // ダイアログとクイズが共有する表示文脈を、入口で固定する。
 // 値の決定だけを担当し、状態やDOMは変更しない。
 function createProgressionMessageContext(context={}){
@@ -8933,7 +8916,7 @@ function restoreProgressionDialog(state){
   return !!restoreDialogState(state);
 }
 
-// ===== クリア後遷移 =====
+// ===== ヒント表示 =====
 // 節目ダイアログの表示条件をまとめる。報酬付与や遷移は progression-ui.js 側が担当する。
 function masterDialogTrialState(kind){
   const {lap}=runtimeSnapshot();
@@ -8968,7 +8951,7 @@ function masterDialogVisibility(kind,needsMasteryTrial){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 進行ナビゲーション =====
+// ===== クリア後遷移 =====
 // 進行画面の補助的な鑑賞・解説UI。盤面本体の進行状態は変更しない。
 // 名人の盤面、最短2手の見本、クリア後の形ルールをここで描画する。
 function masteryBoardSvg(tilted=false,forceStandardColor=false){
@@ -9220,7 +9203,7 @@ function tipDaruma(x,y,scale=.55){
   return '<g transform="translate('+x+' '+y+') scale('+scale+')"><use href="#daruma-body"/><use href="#face-open"/></g>';
 }
 
-// ===== SVG表示境界 =====
+// ===== 進行ナビゲーション =====
 // ===== 進行UI（このファイルの責務） =====
 // ステージ選択、進行表示、クリア後表示をまとめる。前後移動イベントは
 // progression-navigation.js、共通の小さな表示処理は progression-render.js が担当する。
@@ -10246,7 +10229,7 @@ function moveTwoMoveDetail(direction){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 画面描画境界 =====
+// ===== SVG表示境界 =====
 // ===== 進行モード操作 =====
 
 // ステージ選択ダイアログを閉じる共通入口。
@@ -10305,7 +10288,7 @@ $('pickerSpeedMode').addEventListener('click',()=>{
 
 export {};
 
-// ===== イベントと起動 =====
+// ===== 画面描画境界 =====
 // 進行画面のHUDとステージナビを描画する。状態遷移は行わず、表示更新だけを担当する。
 function createProgressionViewContext({
   mode,
@@ -10534,7 +10517,7 @@ function renderStageNav(){
   renderStageNavGuidance();
 }
 
-// ===== 起動・ライフサイクル =====
+// ===== イベントと起動 =====
 // ===== 進行クイズの公開入口 =====
 // クイズの描画・回答・終了を、クリアフローやメッセージUIから呼ぶための入口。
 // 問題の解決やDOMの細部は既存のクイズUIへ委譲し、ここでは文脈だけを受け取る。
@@ -10592,7 +10575,7 @@ function closeProgressionQuiz(){
   progressionQuizContext=null;
 }
 
-// ===== 公開API名前空間 =====
+// ===== 起動・ライフサイクル =====
 // 進行画面から呼び出す公開コマンドの名前空間。
 // 描画や状態計算とは分離し、イベント配線が参照する入口だけを束ねる。
 const GameNavigation=Object.freeze({
@@ -10611,10 +10594,22 @@ const GameDialogs=Object.freeze({
   mastery:kind=>showMasterDialog(kind)
 });
 
+// 進行状態を変更する公開コマンドも、進行画面の入口としてここにまとめる。
+// 実装本体は runtime.js / speed.js に残し、イベント配線からの入口だけを束ねる。
+const WakeSevenProgressionCommands=Object.freeze({
+  startSpeedRun:()=>beginSpeedRun(),
+  advanceSpeedRun:()=>advanceSpeedRun(),
+  loadStage:index=>loadStage(index),
+  loadMasteryStage:index=>loadExtraStage(index),
+  loadSatoriStage:index=>loadSatoriStage(index),
+  startFree:()=>startFree(),
+  advanceAfterClear:()=>advanceAfterClear()
+});
+
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== ui/progression-roadmap.js =====
+// ===== 公開API名前空間 =====
 // ===== 名人ロードマップ表示 =====
 function renderMasterRoadmap(kind){
   const roadmap=$('masterRoadmap'),roadmapNote=$('masterRoadmapNote');
