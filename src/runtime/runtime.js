@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-20:35';
+const APP_VERSION='2026.09.02-20:45';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -722,6 +722,24 @@ function renderApplicationTargetCells(){
   // 静止表示も開始アニメ・スワイプと同じ共有レイヤーAPIを使う。
   placeApplicationTargetTiles(svg,tileEls,applicationTargetTiles,{anchorSelector:'.pivot'});
   renderApplicationTargetLayer(svg,tileEls,applicationTargetTiles,{anchorSelector:'.pivot'});
+  renderApplicationTargetPreview();
+}
+// 応用編の目標3枚を、問題ごとの初期盤面から小型見本として表示する。
+// 見本は操作盤面とは別の読み取り専用表示で、残り1手になったら隠す。
+function renderApplicationTargetPreview(){
+  const preview=$('applicationTargetPreview'),board=$('applicationTargetPreviewBoard');
+  if(!preview||!board)return;
+  const remaining=SOLVER.dist[enc(ori)];
+  const stage=isApplicationTargetStage()?STAGES[stageIndex]:null;
+  const targets=stage?.targetCells||[];
+  const visible=!!stage&&remaining>1&&targets.length===3;
+  preview.hidden=!visible;
+  if(!visible){board.replaceChildren();return;}
+  board.innerHTML=miniBoardSvg(stage.state);
+  const targetSet=new Set(targets);
+  board.querySelectorAll('.mini-tile').forEach(tile=>{
+    tile.classList.toggle('application-preview-target',targetSet.has(Number(tile.dataset.cell)));
+  });
 }
 // 直接スワイプ中はタイル自身が動くため、静止用の重ね枠を一時的に外す。
 // スワイプ完了後は paint() から renderApplicationTargetCells() が再生成する。

@@ -616,6 +616,15 @@
   .speed-pause-inline{display:flex;margin-left:auto}
   .speed-pause-inline #speedPause{min-width:7.375rem;padding:0.625rem 0.75rem;font-size:0.8125rem;white-space:nowrap}
   .mode-row.speed-mode .status-metric.remaining{flex-shrink:0;white-space:nowrap}
+  /* 応用編では、目標3枚を盤面の右側に小さく見本表示する。 */
+  .application-target-preview{display:flex;align-items:center;gap:.2rem;margin-left:auto;min-width:0;color:#D8BE78;font-size:.625rem;font-weight:700;line-height:1;white-space:nowrap}
+  .application-target-preview[hidden]{display:none!important}
+  .application-target-preview svg{display:block;width:4.2rem;height:3.35rem;overflow:visible;flex:none}
+  .application-target-preview .mini-tile{display:none}
+  .application-target-preview .mini-tile.application-preview-target{display:block}
+  .application-target-preview .mini-tile.application-preview-target path:first-child{stroke:#8B35F0;stroke-width:5;stroke-linejoin:round}
+  .application-target-preview .mini-daruma{transform-box:view-box;transform-origin:0 0}
+  @media (max-width:420px){.application-target-preview{gap:.1rem;font-size:.5625rem}.application-target-preview svg{width:3.7rem;height:3rem}}
   .mode-row.speed-mode:not(.speed-with-remaining) .status-metric.remaining,.mode-row.speed-mode:not(.speed-with-remaining) .status-separator{display:none}
   .status-metric{display:flex;align-items:baseline;gap:0.3125rem;color:#9FB0C4;font-size:0.6875rem;letter-spacing:.06em}
   /* display:flex がブラウザ標準の [hidden] より優先されるため、学習区間では明示的に隠す。 */
@@ -1035,6 +1044,7 @@
 <div class="stage-accent" id="stageAccent" aria-hidden="true"><div class="stage-accent-fill" id="stageAccentFill"></div></div>
 <div class="mode-row">
   <div class="status-metric remaining"><span id="shortestLabel">あと</span><b id="stagePar">1</b><span id="moveUnit">くるり</span><span class="academy-clear-suffix" id="academyClearSuffix"></span></div>
+  <div class="application-target-preview" id="applicationTargetPreview" hidden aria-label="応用クラスの目標"><svg id="applicationTargetPreviewBoard" viewBox="14 0 293 310" aria-hidden="true"></svg><span id="applicationTargetPreviewLabel">を作る</span></div>
   <span class="status-separator">/</span>
   <div class="status-metric moves"><span id="movesLabel">いま</span><b id="moves">0</b><span id="movesUnit">くるり</span></div>
   <div class="speed-clock-inline" id="speedClockInline" hidden><span id="speedClockLabel">タイム</span><b id="speedClockValue">00:00</b></div>
