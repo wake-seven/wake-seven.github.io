@@ -53,7 +53,8 @@ function renderSwipeFrame({group,pivot,deg,progress,preview}){
     if(angle>180)angle-=360;
     if(angle<-180)angle+=360;
     const state=Math.abs(angle)<=22?'stand':'fallen';
-    clone.setAttribute('class','tile '+state);
+    const marked=clone.classList.contains('application-target');
+    clone.setAttribute('class','tile '+state+(marked?' application-target':''));
     if(hex){const tone=BOARD_THEME_TONES[boardTheme]?.[state];hex.style.fill=tone?.fill||'';hex.style.stroke=tone?.stroke||'';}
   }
 }
@@ -66,7 +67,8 @@ function renderBoardInteractionFeedback({classes={},promptText,promptVisible}={}
 // タイル1枚の表示状態だけを反映する。状態判定やpointer座標計算は呼び出し側に残す。
 function renderBoardTileState(tile,{state='stand',visibility,transform}={}){
   if(!tile)return;
-  tile.setAttribute('class','tile '+state);
+  const marked=tile.classList.contains('application-target');
+  tile.setAttribute('class','tile '+state+(marked?' application-target':''));
   if(visibility!==undefined)tile.style.visibility=visibility;
   if(transform!==undefined)tile.style.transform=transform;
 }

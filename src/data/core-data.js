@@ -324,7 +324,7 @@ const APPLICATION_STAGE_TARGETS=[
   {source:4,targetCells:[0,1,2]},
   {source:5,targetCells:[0,1,4]},
   {source:6,targetCells:[1,2,3]},
-  {source:7,targetCells:[1,2,3]}
+  {source:7,targetCells:[0,1,2]}
 ];
 const APPLICATION_STAGES=APPLICATION_STAGE_TARGETS.map(({source,targetCells})=>({
   ...TWO_MOVE_STAGES[source],application:true,targetCells:Object.freeze(targetCells)

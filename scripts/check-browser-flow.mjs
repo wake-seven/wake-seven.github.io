@@ -55,6 +55,14 @@ assert.match(progression, /if\(svg\.classList\.contains\('celebrating'\)\)return
   'clear celebration must be idempotent');
 assert.match(board, /if\(isSolved\(\)&&!clearShown\)/,
   'board paint must guard against duplicate clear transitions');
+assert.match(board, /bindApplicationTargetTiles\(\);/,
+  'application target panels must be bound when a new position is loaded');
+assert.match(runtime, /applicationTargetTiles=new Set\(\);[\s\S]*tileEls\[index\][\s\S]*applicationTargetTiles\.add\(tileEls\[index\]\)/,
+  'application targets must bind to physical tile elements rather than board indexes');
+assert.match(runtime, /tileEls\.forEach\(tile=>tile\.classList\.toggle\('application-target',applicationTargetTiles\.has\(tile\)\)\)/,
+  'application target rendering must preserve the physical tile binding');
+assert.doesNotMatch(board, /application-target-frame/,
+  'application targets must use the panel border, not a detached frame');
 for (const kind of ['primary', 'mastery', 'satori']) {
   assert.match(board, new RegExp(`recordProgressClearCommand\\('${kind}'`), `clear progress command is missing: ${kind}`);
 }

@@ -808,8 +808,8 @@
   .tile.stand{filter:brightness(1.04)}
   .tile.fallen{filter:none}
   /* 応用編の枠はパネル自身と一緒に動き、棒より背面で表示する。 */
-  #board .tile .application-target-frame{display:none;fill:none;stroke:#8B35F0;stroke-width:7.5;stroke-linejoin:round;pointer-events:none;vector-effect:non-scaling-stroke}
-  #board .tile.application-target .application-target-frame{display:inline}
+  /* 応用編はパネル自身の境界線を強調する。棒と同じSVG階層で、スワイプにも追従する。 */
+  #board .tile.application-target .hex{stroke:#8B35F0 !important;stroke-width:7.5 !important;stroke-linejoin:round}
   /* ミニ盤面(比較カード等)の回転アニメでも、本編の.tileと同じくレイヤーを先に確保しておく。
      iOSで、新しい要素をtransformすると初回フレームだけ描画がずれることがある対策。 */
   .mini-tile,.mini-daruma,.tip-guide-tile,.tip-guide-daruma{transform-box:view-box;transform-origin:0 0;will-change:transform}
@@ -2292,7 +2292,7 @@ const APPLICATION_STAGE_TARGETS=[
   {source:4,targetCells:[0,1,2]},
   {source:5,targetCells:[0,1,4]},
   {source:6,targetCells:[1,2,3]},
-  {source:7,targetCells:[1,2,3]}
+  {source:7,targetCells:[0,1,2]}
 ];
 const APPLICATION_STAGES=APPLICATION_STAGE_TARGETS.map(({source,targetCells})=>({
   ...TWO_MOVE_STAGES[source],application:true,targetCells:Object.freeze(targetCells)
@@ -4291,7 +4291,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-17:22';
+const APP_VERSION='2026.09.02-17:23';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -4994,18 +4994,21 @@ const isFallingRodStage=()=>currentUiPolicy().eliminateWrongRods===true;
 const isWrongMoveRewindStage=()=>currentUiPolicy().rewindWrongMove===true;
 // 応用編の目標3枚は問題データに書かれた配列だけを表示する。
 const isApplicationTargetStage=()=>currentUiPolicy().showTargetCells===true;
-function renderApplicationTargetCells(){
-  const target=new Set(isApplicationTargetStage()?STAGES[stageIndex]?.targetCells||[]:[]);
-  tileEls.forEach((tile,index)=>{
-    tile.classList.toggle('application-target',target.has(index));
-    const frame=tile.querySelector('.application-target-frame');
-    if(frame)frame.setAttribute('display',target.has(index)?'inline':'none');
-  });
-  // 目標枠を他のパネルより前へ出す。ただし棒よりは前に出さないため、pivotの直前へ戻す。
-  if(target.size){
-    const firstPivot=svg.querySelector('.pivot');
-    if(firstPivot)tileEls.filter(tile=>tile.classList.contains('application-target')).forEach(tile=>svg.insertBefore(tile,firstPivot));
+// 応用編の強調は「盤面上の位置」ではなく、開始時に選んだ物理パネルへ保持する。
+// これによりスワイプでパネルが移動しても、強調が開始位置へ取り残されない。
+let applicationTargetTiles=new Set();
+function bindApplicationTargetTiles(){
+  applicationTargetTiles=new Set();
+  if(isApplicationTargetStage()){
+    for(const index of STAGES[stageIndex]?.targetCells||[]){
+      if(tileEls[index])applicationTargetTiles.add(tileEls[index]);
+    }
   }
+  renderApplicationTargetCells();
+}
+function renderApplicationTargetCells(){
+  if(!isApplicationTargetStage())applicationTargetTiles.clear();
+  tileEls.forEach(tile=>tile.classList.toggle('application-target',applicationTargetTiles.has(tile)));
 }
 // だるま修行(上巻・中巻・下巻)全体: 「あと2くるり」に到達した瞬間、形の名前を演出する対象区間。
 const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;
@@ -5595,7 +5598,8 @@ function updateAutoSwipePreview(clones,progress,turnDelta){
   for(const {item,clone,hex} of clones){
     const turn=progress>=.5?item.turn+turnDelta:item.turn;
     const state=animationTileState(turn);
-    clone.setAttribute('class','tile '+state);
+    const marked=clone.classList.contains('application-target');
+    clone.setAttribute('class','tile '+state+(marked?' application-target':''));
     if(hex){
       const tone=BOARD_THEME_TONES[boardTheme]?.[state];
       hex.style.fill=tone?.fill||'';
@@ -5755,8 +5759,7 @@ function buildBoard(){
     g.dataset.cell=i;
     g.innerHTML='<path class="hex" d="'+hexPath(R)+'"/>'
       +'<g class="daruma-shell"><use href="#daruma-body"/><g class="open"><use href="#face-open"/></g><g class="shut"><use href="#face-shut"/></g>'
-      +'<g class="happy"><use href="#face-happy"/></g></g>'
-      +'<path class="application-target-frame" d="'+hexPath(R)+'"/>';
+      +'<g class="happy"><use href="#face-happy"/></g></g>';
     svg.appendChild(g); tileEls.push(g);
   });
   TRI.forEach((t,ti)=>{
@@ -6640,7 +6643,8 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
 function paint(){
   for(let i=0;i<N;i++){
     const up=mod3(spin[i])===0;
-    tileEls[i].setAttribute('class','tile '+(up?'stand':'fallen'));
+    tileEls[i].classList.remove('stand','fallen');
+    tileEls[i].classList.add(up?'stand':'fallen');
     tileEls[i].style.transform='translate('+CELL[i].x.toFixed(2)+'px,'+CELL[i].y.toFixed(2)+'px) rotate('+(spin[i]*120)+'deg)';
   }
   applyBoardTheme();
@@ -6861,6 +6865,7 @@ function setPosition(state,par){
   svg.querySelectorAll('.training-shape-callout').forEach(el=>el.remove());
   clearUiContextTimer('training-shape-callout');
   initializeBoardPositionCommand(state,par);
+  bindApplicationTargetTiles();
   clearUiEffectTimers('board-arrival');
   resetBoardUiContext();
   svg.classList.remove('tutorial-grab-step','tutorial-clear-step','invalid-grab');
@@ -7401,7 +7406,7 @@ function restartWithAnimation(){
   let finished=false;
   for(let cell=0;cell<N;cell++){
     const el=tileEls[cell];
-    el.setAttribute('class','tile '+(beforeOri[cell]===0?'stand':'fallen'));
+    renderBoardTileState(el,{state:beforeOri[cell]===0?'stand':'fallen'});
     const targetDeg=nearestRotationDeg(beforeSpin[cell]*120,targetSpin[cell]*120);
     const animation=el.animate([
       {transform:tileTransform(CELL[cell].x,CELL[cell].y,beforeSpin[cell])},
@@ -7415,7 +7420,7 @@ function restartWithAnimation(){
   }
   setUiEffectTimer('board-restart','settle',()=>{
     if(!isBoardAnimationSessionActive(session))return;
-    for(let cell=0;cell<N;cell++)tileEls[cell].setAttribute('class','tile '+(targetOri[cell]===0?'stand':'fallen'));
+    for(let cell=0;cell<N;cell++)renderBoardTileState(tileEls[cell],{state:targetOri[cell]===0?'stand':'fallen'});
   },145);
 }
 function previewWake(item,deg){
@@ -7941,7 +7946,8 @@ function renderSwipeFrame({group,pivot,deg,progress,preview}){
     if(angle>180)angle-=360;
     if(angle<-180)angle+=360;
     const state=Math.abs(angle)<=22?'stand':'fallen';
-    clone.setAttribute('class','tile '+state);
+    const marked=clone.classList.contains('application-target');
+    clone.setAttribute('class','tile '+state+(marked?' application-target':''));
     if(hex){const tone=BOARD_THEME_TONES[boardTheme]?.[state];hex.style.fill=tone?.fill||'';hex.style.stroke=tone?.stroke||'';}
   }
 }
@@ -7954,7 +7960,8 @@ function renderBoardInteractionFeedback({classes={},promptText,promptVisible}={}
 // タイル1枚の表示状態だけを反映する。状態判定やpointer座標計算は呼び出し側に残す。
 function renderBoardTileState(tile,{state='stand',visibility,transform}={}){
   if(!tile)return;
-  tile.setAttribute('class','tile '+state);
+  const marked=tile.classList.contains('application-target');
+  tile.setAttribute('class','tile '+state+(marked?' application-target':''));
   if(visibility!==undefined)tile.style.visibility=visibility;
   if(transform!==undefined)tile.style.transform=transform;
 }

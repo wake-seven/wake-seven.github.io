@@ -9,8 +9,7 @@ function buildBoard(){
     g.dataset.cell=i;
     g.innerHTML='<path class="hex" d="'+hexPath(R)+'"/>'
       +'<g class="daruma-shell"><use href="#daruma-body"/><g class="open"><use href="#face-open"/></g><g class="shut"><use href="#face-shut"/></g>'
-      +'<g class="happy"><use href="#face-happy"/></g></g>'
-      +'<path class="application-target-frame" d="'+hexPath(R)+'"/>';
+      +'<g class="happy"><use href="#face-happy"/></g></g>';
     svg.appendChild(g); tileEls.push(g);
   });
   TRI.forEach((t,ti)=>{
@@ -894,7 +893,8 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
 function paint(){
   for(let i=0;i<N;i++){
     const up=mod3(spin[i])===0;
-    tileEls[i].setAttribute('class','tile '+(up?'stand':'fallen'));
+    tileEls[i].classList.remove('stand','fallen');
+    tileEls[i].classList.add(up?'stand':'fallen');
     tileEls[i].style.transform='translate('+CELL[i].x.toFixed(2)+'px,'+CELL[i].y.toFixed(2)+'px) rotate('+(spin[i]*120)+'deg)';
   }
   applyBoardTheme();
@@ -1115,6 +1115,7 @@ function setPosition(state,par){
   svg.querySelectorAll('.training-shape-callout').forEach(el=>el.remove());
   clearUiContextTimer('training-shape-callout');
   initializeBoardPositionCommand(state,par);
+  bindApplicationTargetTiles();
   clearUiEffectTimers('board-arrival');
   resetBoardUiContext();
   svg.classList.remove('tutorial-grab-step','tutorial-clear-step','invalid-grab');
@@ -1655,7 +1656,7 @@ function restartWithAnimation(){
   let finished=false;
   for(let cell=0;cell<N;cell++){
     const el=tileEls[cell];
-    el.setAttribute('class','tile '+(beforeOri[cell]===0?'stand':'fallen'));
+    renderBoardTileState(el,{state:beforeOri[cell]===0?'stand':'fallen'});
     const targetDeg=nearestRotationDeg(beforeSpin[cell]*120,targetSpin[cell]*120);
     const animation=el.animate([
       {transform:tileTransform(CELL[cell].x,CELL[cell].y,beforeSpin[cell])},
@@ -1669,7 +1670,7 @@ function restartWithAnimation(){
   }
   setUiEffectTimer('board-restart','settle',()=>{
     if(!isBoardAnimationSessionActive(session))return;
-    for(let cell=0;cell<N;cell++)tileEls[cell].setAttribute('class','tile '+(targetOri[cell]===0?'stand':'fallen'));
+    for(let cell=0;cell<N;cell++)renderBoardTileState(tileEls[cell],{state:targetOri[cell]===0?'stand':'fallen'});
   },145);
 }
 function previewWake(item,deg){

@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-17:22';
+const APP_VERSION='2026.09.02-17:23';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -704,18 +704,21 @@ const isFallingRodStage=()=>currentUiPolicy().eliminateWrongRods===true;
 const isWrongMoveRewindStage=()=>currentUiPolicy().rewindWrongMove===true;
 // 応用編の目標3枚は問題データに書かれた配列だけを表示する。
 const isApplicationTargetStage=()=>currentUiPolicy().showTargetCells===true;
-function renderApplicationTargetCells(){
-  const target=new Set(isApplicationTargetStage()?STAGES[stageIndex]?.targetCells||[]:[]);
-  tileEls.forEach((tile,index)=>{
-    tile.classList.toggle('application-target',target.has(index));
-    const frame=tile.querySelector('.application-target-frame');
-    if(frame)frame.setAttribute('display',target.has(index)?'inline':'none');
-  });
-  // 目標枠を他のパネルより前へ出す。ただし棒よりは前に出さないため、pivotの直前へ戻す。
-  if(target.size){
-    const firstPivot=svg.querySelector('.pivot');
-    if(firstPivot)tileEls.filter(tile=>tile.classList.contains('application-target')).forEach(tile=>svg.insertBefore(tile,firstPivot));
+// 応用編の強調は「盤面上の位置」ではなく、開始時に選んだ物理パネルへ保持する。
+// これによりスワイプでパネルが移動しても、強調が開始位置へ取り残されない。
+let applicationTargetTiles=new Set();
+function bindApplicationTargetTiles(){
+  applicationTargetTiles=new Set();
+  if(isApplicationTargetStage()){
+    for(const index of STAGES[stageIndex]?.targetCells||[]){
+      if(tileEls[index])applicationTargetTiles.add(tileEls[index]);
+    }
   }
+  renderApplicationTargetCells();
+}
+function renderApplicationTargetCells(){
+  if(!isApplicationTargetStage())applicationTargetTiles.clear();
+  tileEls.forEach(tile=>tile.classList.toggle('application-target',applicationTargetTiles.has(tile)));
 }
 // だるま修行(上巻・中巻・下巻)全体: 「あと2くるり」に到達した瞬間、形の名前を演出する対象区間。
 const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;

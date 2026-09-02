@@ -23,7 +23,8 @@ function updateAutoSwipePreview(clones,progress,turnDelta){
   for(const {item,clone,hex} of clones){
     const turn=progress>=.5?item.turn+turnDelta:item.turn;
     const state=animationTileState(turn);
-    clone.setAttribute('class','tile '+state);
+    const marked=clone.classList.contains('application-target');
+    clone.setAttribute('class','tile '+state+(marked?' application-target':''));
     if(hex){
       const tone=BOARD_THEME_TONES[boardTheme]?.[state];
       hex.style.fill=tone?.fill||'';
