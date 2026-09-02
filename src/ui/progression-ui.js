@@ -260,7 +260,7 @@ function clearDialogShowsStageCount(){
   return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));
 }
 function clearDialogUsesStageProgression(){
-  return !isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori');
+  return !isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&!isMode('speed');
 }
 function clearDialogHeading(){
   return tr(isMode('mastery')||isMode('satori')?'optimalClear':'clear');

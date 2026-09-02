@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-02:46';
+const APP_VERSION='2026.09.03-02:49';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -9468,7 +9468,7 @@ function clearDialogShowsStageCount(){
   return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));
 }
 function clearDialogUsesStageProgression(){
-  return !isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori');
+  return !isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&!isMode('speed');
 }
 function clearDialogHeading(){
   return tr(isMode('mastery')||isMode('satori')?'optimalClear':'clear');

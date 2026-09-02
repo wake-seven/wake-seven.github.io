@@ -76,6 +76,8 @@ assert.match(board, /clearShown=true;[\s\S]*recordProgressClearCommand\('primary
   'normal clear must mark the transition before recording progress');
 assert.match(progression, /clearDialogUsesStageProgression\(\)/,
   'clear dialog must distinguish free/custom completion from campaign progression');
+assert.match(progression, /!isMode\('speed'\)/,
+  'speed clear flow must not use campaign graduation dialogs');
 assert.match(speed, /pauseSpeedClock\(\);persistSpeedSession\(\);[\s\S]*advanceSpeedRun/,
   'speed clear must persist before advancing to the next problem');
 assert.match(speed, /isMode\('speed'\)\&\&\(speedSession\?\.started\|\|Number\(speedSession\?\.index\)>0\)/,
