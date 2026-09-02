@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-23:32';
+const APP_VERSION='2026.09.02-23:34';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -10657,19 +10657,45 @@ function finishClearFlow(){
   });
   return true;
 }
-// クリア後の次の進行先を決める入口。表示処理は各画面へ委譲する。
+// クリア後の次の進行先を副作用なしで決める。
+// 判定と実行を分けておくことで、進行先の調査・契約テストがしやすくなる。
+function resolveAfterClearRoute(context){
+  const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;
+  if(mode==='free')return {kind:'free'};
+  if(mode==='custom')return {kind:'custom'};
+  if(mode==='satori')return satoriIndex<SATORI_STAGES.length-1
+    ? {kind:'satori-stage',index:satoriIndex+1}
+    : {kind:'satori-picker'};
+  if(mode==='mastery')return extraIndex===EXTRA_STAGES.length-1
+    ? {kind:'restore-free'}
+    : {kind:'mastery-stage',index:extraIndex+1};
+  if(stageIndex===ACADEMY_STAGE_COUNT-1&&academyIsCleared)return {kind:'master-dialog',section:'primary'};
+  if(stageIndex===STAGES.length-1&&allPrimaryIsCleared)return {kind:'master-dialog',section:'intermediate'};
+  if(stageIndex===STAGES.length-1)return {kind:'restore-free'};
+  if(hasBeforeDialog)return {kind:'before-dialog'};
+  return {kind:'stage',index:stageIndex+1};
+}
+
+// クリア後の次の進行先を実行する入口。判定は resolveAfterClearRoute に委譲する。
 function advanceAfterClear(){
   makerButtonBlockedUntil=performance.now()+600;
   clearUiEffectTimers('maker-reveal');
   setUiEffectTimer('maker-reveal','unlock',()=>{makerButtonBlockedUntil=0;renderStageNav();},600);
-  if(isMode('free')) startFree();
-  else if(isMode('custom')){setPosition(currentInitialState,currentInitialPar);renderStageNav();}
-  else if(isMode('satori')){if(satoriIndex<SATORI_STAGES.length-1)loadSatoriStage(satoriIndex+1);else openSatoriPicker();}
-  else if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1)restoreFreeSession();else loadExtraStage(extraIndex+1);}
-  else if(stageIndex===ACADEMY_STAGE_COUNT-1&&academyCleared()) showMasterDialog('primary');
-  else if(stageIndex===STAGES.length-1&&allPrimaryCleared()) showMasterDialog('intermediate');
-  else if(stageIndex===STAGES.length-1) restoreFreeSession();
-  else{const before=clearContentBefore(false,stageIndex+1);if(before?.dialog){openChainedDialog(before.dialog);return;}loadStage(stageIndex+1);}
+  const nextStageIndex=stageIndex+1;
+  const route=resolveAfterClearRoute({
+    mode:activeMode,stageIndex,extraIndex,satoriIndex,
+    academyIsCleared:academyCleared(),allPrimaryIsCleared:allPrimaryCleared(),
+    hasBeforeDialog:Boolean(clearContentBefore(false,nextStageIndex)?.dialog)
+  });
+  if(route.kind==='free')return startFree();
+  if(route.kind==='custom'){setPosition(currentInitialState,currentInitialPar);return renderStageNav();}
+  if(route.kind==='satori-stage')return loadSatoriStage(route.index);
+  if(route.kind==='satori-picker')return openSatoriPicker();
+  if(route.kind==='mastery-stage')return loadExtraStage(route.index);
+  if(route.kind==='master-dialog')return showMasterDialog(route.section);
+  if(route.kind==='restore-free')return restoreFreeSession();
+  if(route.kind==='before-dialog')return openChainedDialog(clearContentBefore(false,nextStageIndex).dialog);
+  return loadStage(route.index);
 }
 let returnToClearCard=false,twoMovePatternsReturnTarget=null,twoMoveDetailReturnTarget=null,guideHubReturn=false;
 function returnToClearDialog(){
