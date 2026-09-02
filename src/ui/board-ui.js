@@ -365,7 +365,18 @@ function academyBoardStep(variant,titleKey,textKey,actionKey,onAction){
     render(body){
       cloneDialogTemplate(body,'chain-template-academy-board','<p class="chain-text-highlight" id="chainDialogText"></p><div class="academy-welcome-board-wrap"><svg id="academyWelcomeBoard" viewBox="0 -60 320 370" aria-hidden="true"></svg></div>');
       body.querySelector('[data-chain-dialog-text]')?.setAttribute('id','chainDialogText');
-      $('chainDialogText').textContent=tr(textKey);
+      const copy=tr(textKey);
+      if(variant==='application'&&currentLang==='ja'){
+        const marker='紫の枠';
+        const at=copy.indexOf(marker);
+        if(at>=0){
+          const textNode=document.createTextNode(copy.slice(0,at));
+          const color=document.createElement('span');
+          color.className='application-target-text';
+          color.textContent=marker;
+          $('chainDialogText').replaceChildren(textNode,color,document.createTextNode(copy.slice(at+marker.length)));
+        }else $('chainDialogText').textContent=copy;
+      }else $('chainDialogText').textContent=copy;
       buildAcademyWelcomeBoard(variant);
       return stopAcademyWelcomeBoard;
     },
