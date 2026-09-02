@@ -3,12 +3,12 @@ function grantMasterDialogRewardsCommand(kind){
   if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
   if(kind==='mastery'&&secondLapActive&&!rainbowDarumaGranted){
     rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);darumaColor='rainbow';darumaColorChosen=false;
-    try{storage.set(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');storage.remove(STORAGE_KEY_GROUPS.settings.darumaColorChosen);}catch(_){ }
+    try{commandStorageSet(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');commandStorageRemove(STORAGE_KEY_GROUPS.settings.darumaColorChosen);}catch(_){ }
     updateMasterTheme();renderStageNav();
   }
   if(kind==='awakening'&&!awakenedGranted){
     awakenedGranted=setUnlock('awakened',true);threeDUnlocked=setUnlock('threeD',true);
-    try{storage.set(STORAGE_KEY_GROUPS.rewards.awakenedGranted,'1');storage.set(STORAGE_KEY_GROUPS.rewards.threeDUnlocked,'1');}catch(_){ }
+    try{commandStorageSet(STORAGE_KEY_GROUPS.rewards.awakenedGranted,'1');commandStorageSet(STORAGE_KEY_GROUPS.rewards.threeDUnlocked,'1');}catch(_){ }
     persistLapProgress();updateMasterTheme();renderStageNav();rememberSpecialMessage('awakening');
   }
 }

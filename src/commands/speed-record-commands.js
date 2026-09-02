@@ -7,14 +7,14 @@ function updateSpeedOptimalClearsCommand(){
 function recordSpeedCompletionCommand(elapsed,optimalClears){
   if(!speedSession)return null;
   const time=Math.max(0,Math.round(elapsed));
-  let bestTime=Number(storage.get(speedBestStorageKey(),'0'))||0;
-  if(!bestTime||time<bestTime){bestTime=time;storage.set(speedBestStorageKey(),String(bestTime));}
-  const entries=storage.json(speedHistoryStorageKey(),[]);
+  let bestTime=Number(commandStorageGet(speedBestStorageKey(),'0'))||0;
+  if(!bestTime||time<bestTime){bestTime=time;commandStorageSet(speedBestStorageKey(),String(bestTime));}
+  const entries=commandStorageJson(speedHistoryStorageKey(),[]);
   const history=Array.isArray(entries)?entries.filter(entry=>Number.isFinite(entry?.elapsedMs)&&entry.elapsedMs>=0):[];
-  history.unshift({elapsedMs:time,optimalClears,total:speedSession.total||activeSpeedDefinition().total,completedAt:Date.now()});
-  storage.setJson(speedHistoryStorageKey(),history.slice(0,20));
+  history.unshift({elapsedMs:time,optimalClears,total:speedSession.total||activeSpeedDefinition().total,completedAt:commandTimestamp()});
+  commandStorageSetJson(speedHistoryStorageKey(),history.slice(0,20));
   clearSpeedSessionCommand();
-  storage.remove(STORAGE_KEY_GROUPS.speed.activeVariant);
+  commandStorageRemove(STORAGE_KEY_GROUPS.speed.activeVariant);
   completeSpeedSessionCommand({elapsedMs:time,bestMs:bestTime,optimalClears,runNumber:history.length});
   return {bestTime,history,runNumber:history.length};
 }

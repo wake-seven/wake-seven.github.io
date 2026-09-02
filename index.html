@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-03:41';
+const APP_VERSION='2026.09.03-03:48';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5124,6 +5124,17 @@ function hexPath(r){
 }
 // 公開ネイティブモジュールの構文境界。
 export {};
+
+// ===== コマンド実行境界 =====
+// commandからブラウザAPIと保存形式を隔離する実行境界。
+// command側は状態変更の意図だけを記述し、時計・保存APIへ直接依存しない。
+function commandStorageGet(key,fallback=''){return storage.get(key,fallback);}
+function commandStorageSet(key,value){storage.set(key,value);return value;}
+function commandStorageRemove(key){storage.remove(key);return true;}
+function commandStorageJson(key,fallback=null){return storage.json(key,fallback);}
+function commandStorageSetJson(key,value){storage.setJson(key,value);return value;}
+function commandNow(){return performance.now();}
+function commandTimestamp(){return Date.now();}
 
 // ===== アプリケーション共有状態 =====
 // ===== アプリケーション共有状態の入口 =====
@@ -8352,7 +8363,7 @@ export {};
 // 設定変更の書き込み境界。UIイベントはこのcommandを呼び、保存形式を直接扱わない。
 function toggleSoundCommand(){
   soundEnabled=!soundEnabled;
-  try{storage.set(STORAGE_KEY_GROUPS.settings.sound,soundEnabled?'on':'off');}catch(_){ }
+  try{commandStorageSet(STORAGE_KEY_GROUPS.settings.sound,soundEnabled?'on':'off');}catch(_){ }
   updateSoundToggle();
   if(soundEnabled)playTone(523,.07,.025);
 }
@@ -8361,15 +8372,15 @@ function selectBoardThemeCommand(button){
   if(button.dataset.boardColor){
     boardTheme=button.dataset.boardColor;
     boardThemeChosen=true;
-    try{storage.set(STORAGE_KEY_GROUPS.settings.boardThemeChosen,'1');}catch(_){ }
+    try{commandStorageSet(STORAGE_KEY_GROUPS.settings.boardThemeChosen,'1');}catch(_){ }
   }else if(button.dataset.boardLayout){
     boardLayout=button.dataset.boardLayout;
     boardLayoutChosen=true;
-    try{storage.set(STORAGE_KEY_GROUPS.settings.boardLayoutChosen,'1');}catch(_){ }
+    try{commandStorageSet(STORAGE_KEY_GROUPS.settings.boardLayoutChosen,'1');}catch(_){ }
   }else if(button.dataset.darumaColor){
     darumaColor=button.dataset.darumaColor;
     darumaColorChosen=true;
-    try{storage.set(STORAGE_KEY_GROUPS.settings.darumaColor,darumaColor);storage.set(STORAGE_KEY_GROUPS.settings.darumaColorChosen,'1');}catch(_){ }
+    try{commandStorageSet(STORAGE_KEY_GROUPS.settings.darumaColor,darumaColor);commandStorageSet(STORAGE_KEY_GROUPS.settings.darumaColorChosen,'1');}catch(_){ }
   }else return;
   updateMasterTheme();
   renderBoardThemeOptions();
@@ -8377,7 +8388,7 @@ function selectBoardThemeCommand(button){
 function grantMasterRewardSettingsCommand(){
   boardTheme='gold';
   boardThemeChosen=false;
-  try{storage.remove(STORAGE_KEY_GROUPS.settings.boardThemeChosen);}catch(_){ }
+  try{commandStorageRemove(STORAGE_KEY_GROUPS.settings.boardThemeChosen);}catch(_){ }
 }
 function resetSettingsCommand(){
   soundEnabled=true;boardTheme='default';boardLayout='normal';
@@ -8387,7 +8398,7 @@ function resetSettingsCommand(){
 function setLanguageCommand(lang){
   if(!UI_TEXT[lang])return false;
   currentLang=lang;
-  try{storage.set(STORAGE_KEY_GROUPS.settings.language,lang);}catch(_){ }
+  try{commandStorageSet(STORAGE_KEY_GROUPS.settings.language,lang);}catch(_){ }
   return true;
 }
 export {};
@@ -8398,12 +8409,12 @@ function grantMasterDialogRewardsCommand(kind){
   if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
   if(kind==='mastery'&&secondLapActive&&!rainbowDarumaGranted){
     rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);darumaColor='rainbow';darumaColorChosen=false;
-    try{storage.set(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');storage.remove(STORAGE_KEY_GROUPS.settings.darumaColorChosen);}catch(_){ }
+    try{commandStorageSet(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');commandStorageRemove(STORAGE_KEY_GROUPS.settings.darumaColorChosen);}catch(_){ }
     updateMasterTheme();renderStageNav();
   }
   if(kind==='awakening'&&!awakenedGranted){
     awakenedGranted=setUnlock('awakened',true);threeDUnlocked=setUnlock('threeD',true);
-    try{storage.set(STORAGE_KEY_GROUPS.rewards.awakenedGranted,'1');storage.set(STORAGE_KEY_GROUPS.rewards.threeDUnlocked,'1');}catch(_){ }
+    try{commandStorageSet(STORAGE_KEY_GROUPS.rewards.awakenedGranted,'1');commandStorageSet(STORAGE_KEY_GROUPS.rewards.threeDUnlocked,'1');}catch(_){ }
     persistLapProgress();updateMasterTheme();renderStageNav();rememberSpecialMessage('awakening');
   }
 }
@@ -8465,7 +8476,7 @@ function advanceSpeedSessionCommand(){
 }
 function setSpeedManualPauseCommand(value){speedManuallyPaused=value===true;return speedManuallyPaused;}
 function startSpeedClockStateCommand(startedAt){speedClockStarted=startedAt;return speedClockStarted;}
-function pauseSpeedClockStateCommand(now=performance.now()){
+function pauseSpeedClockStateCommand(now=commandNow()){
   if(speedClockStarted){if(speedSession)speedSession.elapsedMs+=now-speedClockStarted;speedClockStarted=0;}
   return speedSession?.elapsedMs||0;
 }
@@ -8473,10 +8484,10 @@ function persistSpeedSessionCommand(){
   if(!speedSession)return false;
   const elapsed=speedElapsedMs();
   const payload={...speedSession,variant:activeSpeedDefinition().id,elapsedMs:elapsed,board:isMode('speed')?serializeActiveBoard():speedSession.board};
-  storage.setJson(speedSessionStorageKey(),payload);storage.set(STORAGE_KEY_GROUPS.speed.activeVariant,payload.variant);
+  commandStorageSetJson(speedSessionStorageKey(),payload);commandStorageSet(STORAGE_KEY_GROUPS.speed.activeVariant,payload.variant);
   return true;
 }
-function clearSpeedSessionCommand(variant=speedVariant){storage.remove(speedSessionStorageKey(variant));return true;}
+function clearSpeedSessionCommand(variant=speedVariant){commandStorageRemove(speedSessionStorageKey(variant));return true;}
 function completeSpeedSessionCommand(result){
   if(!speedSession)return false;
   speedSession={...speedSession,...result,completed:true};
@@ -8494,14 +8505,14 @@ function updateSpeedOptimalClearsCommand(){
 function recordSpeedCompletionCommand(elapsed,optimalClears){
   if(!speedSession)return null;
   const time=Math.max(0,Math.round(elapsed));
-  let bestTime=Number(storage.get(speedBestStorageKey(),'0'))||0;
-  if(!bestTime||time<bestTime){bestTime=time;storage.set(speedBestStorageKey(),String(bestTime));}
-  const entries=storage.json(speedHistoryStorageKey(),[]);
+  let bestTime=Number(commandStorageGet(speedBestStorageKey(),'0'))||0;
+  if(!bestTime||time<bestTime){bestTime=time;commandStorageSet(speedBestStorageKey(),String(bestTime));}
+  const entries=commandStorageJson(speedHistoryStorageKey(),[]);
   const history=Array.isArray(entries)?entries.filter(entry=>Number.isFinite(entry?.elapsedMs)&&entry.elapsedMs>=0):[];
-  history.unshift({elapsedMs:time,optimalClears,total:speedSession.total||activeSpeedDefinition().total,completedAt:Date.now()});
-  storage.setJson(speedHistoryStorageKey(),history.slice(0,20));
+  history.unshift({elapsedMs:time,optimalClears,total:speedSession.total||activeSpeedDefinition().total,completedAt:commandTimestamp()});
+  commandStorageSetJson(speedHistoryStorageKey(),history.slice(0,20));
   clearSpeedSessionCommand();
-  storage.remove(STORAGE_KEY_GROUPS.speed.activeVariant);
+  commandStorageRemove(STORAGE_KEY_GROUPS.speed.activeVariant);
   completeSpeedSessionCommand({elapsedMs:time,bestMs:bestTime,optimalClears,runNumber:history.length});
   return {bestTime,history,runNumber:history.length};
 }
@@ -8512,24 +8523,24 @@ export {};
 function setTutorialStepCommand(index){
   tutorialStep=Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index));
   WakeSevenState.setNavigationIndex(gameState,'tutorial',tutorialStep);
-  storage.set(STORAGE_KEY_GROUPS.progression.tutorialStep,String(tutorialStep));
+  commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialStep,String(tutorialStep));
   return tutorialStep;
 }
 function completeTutorialCommand(){
-  storage.set(STORAGE_KEY_GROUPS.progression.tutorialComplete,'1');
-  storage.remove(STORAGE_KEY_GROUPS.progression.tutorialStep);
+  commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialComplete,'1');
+  commandStorageRemove(STORAGE_KEY_GROUPS.progression.tutorialStep);
   return true;
 }
 function resetTutorialCommand(){
   tutorialStep=0;
-  storage.remove(STORAGE_KEY_GROUPS.progression.tutorialStep);
-  storage.remove(STORAGE_KEY_GROUPS.progression.introSeen);
+  commandStorageRemove(STORAGE_KEY_GROUPS.progression.tutorialStep);
+  commandStorageRemove(STORAGE_KEY_GROUPS.progression.introSeen);
   return true;
 }
 function persistTutorialSessionCommand(step=tutorialStep){
   syncGameState();
-  storage.setJson(STORAGE_KEY_GROUPS.progression.activeSession,{mode:'tutorial',step});
-  storage.set(STORAGE_KEY_GROUPS.progression.tutorialStep,String(step));
+  commandStorageSetJson(STORAGE_KEY_GROUPS.progression.activeSession,{mode:'tutorial',step});
+  commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialStep,String(step));
   return true;
 }
 export {};
@@ -8890,6 +8901,37 @@ function renderStageNavAccent(context={}){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
+// 名人ロードマップの描画。進行表示の責務に隣接するためここへ統合する。
+function renderMasterRoadmap(kind){
+  const roadmap=$('masterRoadmap'),roadmapNote=$('masterRoadmapNote');
+  const primaryNeedsTrial=kind==='primary'&&!secondLapActive&&!speedTrainingTrialCleared;
+  const intermediateNeedsTrial=kind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared;
+  roadmap.hidden=primaryNeedsTrial||intermediateNeedsTrial||['primary','mastery','satori','satoriIntro','secondLapIntro','awakening','speedIntro','speedComplete','speedTrialFailed'].includes(kind);
+  roadmapNote.hidden=true;
+  const rules=$('masterRules');rules.hidden=kind!=='intermediate'||intermediateNeedsTrial;
+  if(roadmap.hidden)return;
+  const milestones=[speedTrainingTrialCleared,speedIntermediateTrialCleared,clearedExtraStages.has(14),clearedExtraStages.has(29),clearedExtraStages.has(44)];
+  const current=Math.min(5,milestones.findIndex(done=>!done)+1||5);
+  roadmap.replaceChildren(masterRoadmapFragment(current));
+  if(kind==='intermediate')rules.textContent=masterCommonRules();
+}
+function masterRoadmapFragment(current){
+  const template=document.getElementById('master-road-step-template');
+  const fragment=document.createDocumentFragment();if(!template)return fragment;
+  Array.from({length:5},(_,i)=>{
+    const volume=i-1;
+    const label=i===0?tr('academyPickerRound'):i===1?tr('darumaTraining'):(currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' · '+volumeLabel(volume));
+    const detail=i===0?tr('roadmapCount',{n:ACADEMY_STAGE_COUNT}):i===1?tr('roadmapCount',{n:TRAINING_STAGE_COUNT}):masterSubtitle(volume)+'　'+tr('roadmapCount',{n:MASTER_VOLUME_SIZE});
+    const earned=i<current-1,rank=earned?masterPath().ranks[i]:'？';
+    const step=template.content.cloneNode(true).firstElementChild;const stateClass=i+1<current?'done':i+1===current?'current':'';
+    if(stateClass)step.classList.add(stateClass);setText(step.querySelector('[data-road-name]'),label);setText(step.querySelector('[data-road-detail]'),detail);
+    const rankElement=step.querySelector('[data-road-rank]');rankElement.innerHTML=rankFrameSvg(rank,!earned,i,secondLapActive,secondLapActive);
+    if(earned&&speedExamClearedForRank(i)){const badgeTemplate=document.getElementById('speed-exam-badge-template');const badge=badgeTemplate?.content?.firstElementChild?.cloneNode(true)||document.createElement('button');badge.dataset.examIndex=String(i);badge.querySelector('[data-exam-badge-art]')?.insertAdjacentHTML('afterbegin',speedExamBadgeSvg());rankElement.append(badge);}
+    fragment.append(step);
+  });return fragment;
+}
+function masterCommonRules(){return currentLang==='ja'?'名人への道は最短の手でクリアする必要があります。\nまた、進むほど自力で考える場面が増えていきます。':'Path to Mastery must be cleared in the fewest moves. As you advance, the rules become stricter.';}
+
 // ===== ロードマップ表示 =====
 // ダイアログとクイズが共有する表示文脈を、入口で固定する。
 // 値の決定だけを担当し、状態やDOMは変更しない。
@@ -8941,6 +8983,20 @@ function restoreProgressionDialog(state){
   if(typeof restoreDialogState!=='function')return false;
   return !!restoreDialogState(state);
 }
+
+// 進行クイズの公開入口も、進行ダイアログと同じ文脈で管理する。
+let progressionQuizContext=null;
+function showProgressionQuiz(context={}){
+  const options={...(context||{}),...createProgressionMessageContext({...context,quizId:context?.quizId??context?.rootId??'boardQuiz'})};
+  const rootId=options.rootId||'boardQuiz';progressionQuizContext={...options,rootId};
+  if(options.quiz!==undefined){renderQuizInto(options.ids||{root:rootId,options:rootId==='messageQuiz'?'messageQuizOptions':'quizOptions',note:rootId==='messageQuiz'?'messageQuizNote':'quizNote',title:rootId==='messageQuiz'?'messageQuizTitle':'quizTitle',question:rootId==='messageQuiz'?'messageQuizQuestion':'quizQuestion'},options.quiz);return true;}
+  const entry=options.clearEntry??clearEntryForCurrent();if(rootId==='clearQuiz')renderClearQuizForEntry(entry);
+  const config=options.boardQuizConfig??boardQuizConfigForCurrent?.();
+  if(rootId==='boardQuiz'||rootId==='messageBoardQuiz')try{renderBoardQuiz(rootId,config,{requireAnswer:options.requireAnswer??rootId==='boardQuiz'});}catch(error){console.error('progression quiz render failed',error);resetBoardQuiz(rootId,{requireAnswer:options.requireAnswer??rootId==='boardQuiz'});}
+  return !!(options.quiz!==undefined||config);
+}
+function resolveProgressionQuiz(answer){const value=answer&&typeof answer==='object'?answer:{};const rootId=value.rootId||progressionQuizContext?.rootId||'boardQuiz';const index=Number(value.index??answer);if(!Number.isInteger(index)||index<0)return false;const root=$(rootId);const button=root.querySelector('[data-board-answer="'+index+'"]')||root.querySelector('.quiz-option:nth-child('+(index+1)+')');if(!button||button.disabled)return false;button.click();return true;}
+function closeProgressionQuiz(){const rootIds=new Set([progressionQuizContext?.rootId,'clearQuiz','boardQuiz','messageQuiz','messageBoardQuiz'].filter(Boolean));rootIds.forEach(rootId=>{const root=$(rootId);if(!root)return;root.hidden=true;root.classList.remove('quiz-success');if(rootId==='boardQuiz'||rootId==='messageBoardQuiz')resetBoardQuiz(rootId);});progressionQuizContext=null;}
 
 // ===== ヒント表示 =====
 // 節目ダイアログの表示条件をまとめる。報酬付与や遷移は progression-ui.js 側が担当する。
@@ -10252,6 +10308,43 @@ function moveTwoMoveDetail(direction){
   renderTwoMoveDetail();
 }
 
+// 進行ナビゲーションのイベント。表示処理と同じ入口で追跡できるよう、
+// 旧独立ファイルから進行UIへ統合する。
+$('prevStage').addEventListener('click',()=>{
+  if(isMode('free')||isMode('custom')){returnToStageMode();return;}
+  if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){
+    activateCampaignLap(1);loadSatoriStage(SATORI_STAGES.length-1);return;
+  }
+  if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}
+  if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}
+  else loadStage(stageIndex-1);
+});
+$('nextStage').addEventListener('click',()=>{
+  if(isMode('free')){startFree();return;}
+  if(isMode('custom')&&!editingBoard){enterBoardMaker();return;}
+  if(isMode('satori')){
+    if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);
+    else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}
+    return;
+  }
+  if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}
+  else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);
+  else loadStage(stageIndex+1);
+});
+$('mirrorBoard').addEventListener('click',()=>reorientBoard(boardLayout==='tilted'?VIEW_TILTED_MIRROR:VIEW_MIRROR,true));
+$('flipBoardVertical').addEventListener('click',()=>reorientBoard(boardLayout==='tilted'?VIEW_TILTED_FLIP_VERTICAL:VIEW_FLIP_VERTICAL,true));
+$('rotateBoardBack').addEventListener('click',()=>reorientBoard(VIEW_ROTATE_MINUS60,false,-60));
+$('rotateBoard').addEventListener('click',()=>reorientBoard(VIEW_ROTATE_60,false,60));
+$('customMode').addEventListener('click',()=>{if(performance.now()<makerButtonBlockedUntil||editingBoard)return;enterBoardMaker();});
+$('playCustomBoard').addEventListener('click',playCustomBoard);
+$('stageMode').addEventListener('click',()=>{
+  if(busy||(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&!isMode('speed')))return;
+  if(isMode('speed')){pauseSpeedRun();returnToStageMode();return;}
+  if(isMode('free'))leaveFreeMode();else if(returnStageContext.satori)loadSatoriStage(returnStageContext.index);else if(returnStageContext.extra)loadExtraStage(returnStageContext.index);else loadStage(returnStageContext.index);
+});
+$('stageModeReturn').addEventListener('click',()=>{returnToStageMode();});
+$('freeMode').addEventListener('click',()=>{if(busy||isMode('free'))return;restoreFreeSession();});
+
 // 公開ネイティブモジュールの構文境界。
 export {};
 
@@ -10485,113 +10578,6 @@ function renderStageNav(){
 }
 
 // ===== 画面描画境界 =====
-// ===== 進行クイズの公開入口 =====
-// クイズの描画・回答・終了を、クリアフローやメッセージUIから呼ぶための入口。
-// 問題の解決やDOMの細部は既存のクイズUIへ委譲し、ここでは文脈だけを受け取る。
-let progressionQuizContext=null;
-
-function showProgressionQuiz(context={}){
-  const options={...(context||{}),...createProgressionMessageContext({
-    ...(context||{}),
-    quizId:context?.quizId??context?.rootId??'boardQuiz'
-  })};
-  const rootId=options.rootId||'boardQuiz';
-  progressionQuizContext={...options,rootId};
-  if(options.quiz!==undefined){
-    renderQuizInto(options.ids||{
-      root:rootId,
-      options:rootId==='messageQuiz'?'messageQuizOptions':'quizOptions',
-      note:rootId==='messageQuiz'?'messageQuizNote':'quizNote',
-      title:rootId==='messageQuiz'?'messageQuizTitle':'quizTitle',
-      question:rootId==='messageQuiz'?'messageQuizQuestion':'quizQuestion'
-    },options.quiz);
-    return true;
-  }
-  const entry=options.clearEntry??clearEntryForCurrent();
-  if(rootId==='clearQuiz')renderClearQuizForEntry(entry);
-  const config=options.boardQuizConfig??boardQuizConfigForCurrent?.();
-  if(rootId==='boardQuiz'||rootId==='messageBoardQuiz'){
-    try{renderBoardQuiz(rootId,config,{requireAnswer:options.requireAnswer??rootId==='boardQuiz'});}
-    catch(error){console.error('progression quiz render failed',error);resetBoardQuiz(rootId,{requireAnswer:options.requireAnswer??rootId==='boardQuiz'});}
-  }
-  return !!(options.quiz!==undefined||config);
-}
-
-// 回答処理は既存ボタンのイベントへ委譲する。answer は選択肢番号、または
-// { index, rootId } 形式を受け取るため、通常クイズと盤面クイズを同じ入口で扱える。
-function resolveProgressionQuiz(answer){
-  const value=answer&&typeof answer==='object'?answer:{};
-  const rootId=value.rootId||progressionQuizContext?.rootId||'boardQuiz';
-  const index=Number(value.index??answer);
-  if(!Number.isInteger(index)||index<0)return false;
-  const root=$(rootId);
-  const button=root.querySelector('[data-board-answer="'+index+'"]')||root.querySelector('.quiz-option:nth-child('+(index+1)+')');
-  if(!button||button.disabled)return false;
-  button.click();
-  return true;
-}
-
-function closeProgressionQuiz(){
-  const rootIds=new Set([progressionQuizContext?.rootId,'clearQuiz','boardQuiz','messageQuiz','messageBoardQuiz'].filter(Boolean));
-  rootIds.forEach(rootId=>{
-    const root=$(rootId);if(!root)return;
-    root.hidden=true;
-    root.classList.remove('quiz-success');
-    if(rootId==='boardQuiz'||rootId==='messageBoardQuiz')resetBoardQuiz(rootId);
-  });
-  progressionQuizContext=null;
-}
-
-// ===== イベントと起動 =====
-// ===== 名人ロードマップ表示 =====
-function renderMasterRoadmap(kind){
-  const roadmap=$('masterRoadmap'),roadmapNote=$('masterRoadmapNote');
-  const primaryNeedsTrial=kind==='primary'&&!secondLapActive&&!speedTrainingTrialCleared;
-  const intermediateNeedsTrial=kind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared;
-  roadmap.hidden=primaryNeedsTrial||intermediateNeedsTrial||['primary','mastery','satori','satoriIntro','secondLapIntro','awakening','speedIntro','speedComplete','speedTrialFailed'].includes(kind);
-  roadmapNote.hidden=true;
-  const rules=$('masterRules');rules.hidden=kind!=='intermediate'||intermediateNeedsTrial;
-  if(roadmap.hidden)return;
-  const milestones=[speedTrainingTrialCleared,speedIntermediateTrialCleared,clearedExtraStages.has(14),clearedExtraStages.has(29),clearedExtraStages.has(44)];
-  const current=Math.min(5,milestones.findIndex(done=>!done)+1||5);
-  roadmap.replaceChildren(masterRoadmapFragment(current));
-  if(kind==='intermediate')rules.textContent=masterCommonRules();
-}
-function masterRoadmapFragment(current){
-  const template=document.getElementById('master-road-step-template');
-  const fragment=document.createDocumentFragment();
-  if(!template)return fragment;
-  Array.from({length:5},(_,i)=>{
-    const volume=i-1;
-    const label=i===0?tr('academyPickerRound'):i===1?tr('darumaTraining'):(currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' · '+volumeLabel(volume));
-    const detail=i===0?tr('roadmapCount',{n:ACADEMY_STAGE_COUNT}):i===1?tr('roadmapCount',{n:TRAINING_STAGE_COUNT}):masterSubtitle(volume)+'　'+tr('roadmapCount',{n:MASTER_VOLUME_SIZE});
-    const earned=i<current-1;
-    const rank=earned?masterPath().ranks[i]:'？';
-    const examBadge=earned&&speedExamClearedForRank(i);
-    const step=template.content.cloneNode(true).firstElementChild;
-    const stateClass=i+1<current?'done':i+1===current?'current':'';
-    if(stateClass)step.classList.add(stateClass);
-    setText(step.querySelector('[data-road-name]'),label);
-    setText(step.querySelector('[data-road-detail]'),detail);
-    const rankElement=step.querySelector('[data-road-rank]');
-    rankElement.innerHTML=rankFrameSvg(rank,!earned,i,secondLapActive,secondLapActive);
-    if(examBadge){
-      const badgeTemplate=document.getElementById('speed-exam-badge-template');
-      const badge=badgeTemplate?.content?.firstElementChild?.cloneNode(true)||document.createElement('button');
-      badge.dataset.examIndex=String(i);
-      badge.querySelector('[data-exam-badge-art]')?.insertAdjacentHTML('afterbegin',speedExamBadgeSvg());
-      rankElement.append(badge);
-    }
-    fragment.append(step);
-  });
-  return fragment;
-}
-function masterCommonRules(){return currentLang==='ja'?'名人への道は最短の手でクリアする必要があります。\nまた、進むほど自力で考える場面が増えていきます。':'Path to Mastery must be cleared in the fewest moves. As you advance, the rules become stricter.';}
-
-// この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
-export {};
-
-// ===== 起動・ライフサイクル =====
 // ===== ヒント表示・チュートリアル補助 =====
 function clearHintVisuals(preserveSelection=false){
   clearAxisGuide();
@@ -10633,7 +10619,7 @@ $('hint').addEventListener('click',()=>{cancelTutorialHint();if(isFourthVolume()
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};
 
-// ===== 公開API名前空間 =====
+// ===== イベントと起動 =====
 // ===== クリア後の状態遷移 =====
 // クリア演出の表示と、次の問題/コースへの遷移を進行UI本体から分離する。
 // clearShown は保存・進行用の状態なので、表示予約の重複防止には使わない。
@@ -10798,107 +10784,7 @@ function returnToClearDialog(){
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};
 
-// ===== ui/progression-navigation.js =====
-// ===== 進行ナビゲーションのイベント =====
-// 画面遷移のイベント登録を、ロードマップ/ダイアログ描画から分離する。
-$('prevStage').addEventListener('click',()=>{
-  if(isMode('free')||isMode('custom')){returnToStageMode();return;}
-  if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){
-    activateCampaignLap(1);
-    loadSatoriStage(SATORI_STAGES.length-1);
-    return;
-  }
-  if(isMode('satori')){
-    if(satoriIndex>0)loadSatoriStage(satoriIndex-1);
-    else loadExtraStage(EXTRA_STAGES.length-1);
-    return;
-  }
-  if(isMode('mastery')){
-    if(extraIndex===0)loadStage(STAGES.length-1);
-    else loadExtraStage(extraIndex-1);
-  }else loadStage(stageIndex-1);
- });
-$('nextStage').addEventListener('click',()=>{
-  if(isMode('free')){startFree();return;}
-  if(isMode('custom')&&!editingBoard){enterBoardMaker();return;}
-  if(isMode('satori')){
-    if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);
-    else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}
-    return;
-  }
-  if(isMode('mastery')){
-    if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);
-    else loadExtraStage(extraIndex+1);
-  }
-  else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);
-  else loadStage(stageIndex+1);
- });
-$('mirrorBoard').addEventListener('click',()=>reorientBoard(boardLayout==='tilted'?VIEW_TILTED_MIRROR:VIEW_MIRROR,true));
-$('flipBoardVertical').addEventListener('click',()=>reorientBoard(boardLayout==='tilted'?VIEW_TILTED_FLIP_VERTICAL:VIEW_FLIP_VERTICAL,true));
-$('rotateBoardBack').addEventListener('click',()=>reorientBoard(VIEW_ROTATE_MINUS60,false,-60));
-$('rotateBoard').addEventListener('click',()=>reorientBoard(VIEW_ROTATE_60,false,60));
-$('customMode').addEventListener('click',()=>{
-  if(performance.now()<makerButtonBlockedUntil||editingBoard)return;
-  enterBoardMaker();
-});
-$('playCustomBoard').addEventListener('click',playCustomBoard);
-$('stageMode').addEventListener('click',()=>{
-  if(busy||(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&!isMode('speed')))return;
-  if(isMode('speed')){pauseSpeedRun();returnToStageMode();return;}
-  if(isMode('free'))leaveFreeMode();
-  else if(returnStageContext.satori)loadSatoriStage(returnStageContext.index);
-  else if(returnStageContext.extra)loadExtraStage(returnStageContext.index);
-  else loadStage(returnStageContext.index);
-});
-$('stageModeReturn').addEventListener('click',()=>{
-  returnToStageMode();
-});
-$('freeMode').addEventListener('click',()=>{
-  if(busy||isMode('free'))return;
-  restoreFreeSession();
-});
-
-// この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
-export {};
-
-// ステージ選択画面の開閉と、選択画面から各モードへ移るイベント。
-// 旧 progression-mode-controls.js の薄い入口をここへ統合し、
-// 進行ナビゲーションのイベントを一つのファイルから追跡できるようにする。
-function closeStagePicker(){closeStagePickerCore();}
-$('stagePickerTrigger').addEventListener('click',openStagePicker);
-$('closeStagePicker').addEventListener('click',closeStagePicker);
-$('stagePickerRankBadge').addEventListener('click',()=>{
-  if($('stagePickerRankBadge').hidden)return;
-  $('stagePicker').hidden=true;
-  openRankDialog({dialogId:'stagePicker',focusId:'stagePickerRankBadge'});
-});
-$('stagePicker').addEventListener('click',e=>{if(e.target===$('stagePicker'))closeStagePicker();});
-$('pickerPrevRound').addEventListener('click',()=>{
-  if(pickerRound==='satori'&&satoriPickerPage>0)satoriPickerPage--;
-  else if(pickerRound==='satori')pickerRound=EXTRA_ROUNDS-1;
-  else if(pickerRound===-PRIMARY_PICKER_SECTION_COUNT&&pickerLap===2){pickerLap=1;pickerRound='satori';satoriPickerPage=SATORI_PICKER_PAGES-1;}
-  else pickerRound--;
-  renderStagePicker();
-});
-$('pickerNextRound').addEventListener('click',()=>{
-  const pickerPrimary=pickerLap===2?lap2ClearedStages:lap1ClearedStages;
-  const pickerExtra=pickerLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
-  const pickerAcademyDone=Array.from({length:ACADEMY_STAGE_COUNT},(_,i)=>pickerPrimary.has(i)).every(Boolean);
-  const pickerPrimaryDone=STAGES.every((_,i)=>pickerPrimary.has(i));
-  const pickerMastered=EXTRA_STAGES.every((_,i)=>pickerExtra.has(i));
-  if(pickerRound==='satori'&&satoriPickerPage<SATORI_PICKER_PAGES-1)satoriPickerPage++;
-  else if(pickerRound==='satori'&&pickerLap===1&&secondLapUnlocked){pickerLap=2;pickerRound=-PRIMARY_PICKER_SECTION_COUNT;satoriPickerPage=0;}
-  else if(pickerRound===EXTRA_ROUNDS-1&&pickerMastered){pickerRound='satori';satoriPickerPage=0;}
-  else if(pickerRound===PICKER_ACADEMY_LAST_ROUND&&pickerAcademyDone&&(pickerLap===2||speedTrainingTrialCleared))pickerRound=PICKER_TRAINING_FIRST_ROUND;
-  else if(pickerRound===PICKER_TRAINING_LAST_ROUND&&pickerPrimaryDone&&(pickerLap===2||speedIntermediateTrialCleared))pickerRound=0;
-  else if(typeof pickerRound==='number')pickerRound++;
-  renderStagePicker();
-});
-$('pickerFreeMode').addEventListener('click',()=>{if(busy)return;closeStagePicker();if(!isMode('free'))restoreFreeSession();});
-$('pickerCustomMode').addEventListener('click',()=>{if(busy)return;closeStagePicker();if(!isMode('custom'))enterBoardMaker();});
-$('pickerSpeedMode').addEventListener('click',()=>{if(!featureUnlocked('speedRun'))return;closeStagePicker();if(isMode('speed'))return;openSpeedPicker();});
-
-// ===== ui/rank.js =====
+// ===== 起動・ライフサイクル =====
 // 称号表示と称号一覧ダイアログ。
 // 盤面選択画面やクリア後演出からも利用するため、描画の共通部をここに集約する。
 function rankFrameSvg(text,locked=false,index=0,doubleFrame=false,dimmed=false){
@@ -11010,7 +10896,7 @@ function openRankDialogFrom(dialogId,sealId){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== ui/svg.js =====
+// ===== 公開API名前空間 =====
 // ===== SVG表示境界 =====
 // SVGを生成するrendererと、DOMコンテナへの取り付けを分離する。
 function svgMount(root,markup=''){
