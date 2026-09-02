@@ -4283,7 +4283,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-15:51';
+const APP_VERSION='2026.09.02-16:04';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5119,20 +5119,29 @@ function renderApplicationTargetCells(){
   const application=policy?.application===true||policy?.id==='application';
   const targets=new Set(Array.isArray(policy?.targetCells)?policy.targetCells:[]);
   if(application&&!isSolved()&&!targets.size){
-    const stage=STAGES[stageIndex];
-    const move=lessonBestMove(enc(ori));
-    if(move){
-      // 一手目の後の盤面から、同じ向きで寝ている三枚を全セル対象で探す。
-      // 最終操作の三角形ではなく、問題中に見せたい目標グループそのものを示す。
-      const after=rollOnce(ori,move.ti,move.dir);
-      const groups=[1,2].map(orientation=>after.reduce((cells,value,cell)=>{
-        if(value===orientation)cells.push(cell);
-        return cells;
-      },[]));
-      const exact=groups.find(cells=>cells.length===3);
-      const target=exact||groups.filter(cells=>cells.length>3).sort((a,b)=>b.length-a.length)[0];
-      target?.slice(0,3).forEach(cell=>targets.add(cell));
+    const stage=STAGES[stageIndex],beforeDistance=SOLVER.dist[enc(ori)],groups=[];
+    // 最短になる一手をすべて調べる。同じ問題でも最短経路が複数あるため、
+    // lessonBestMove() の先頭候補だけで目標を決めると、意図した3枚と異なることがある。
+    for(let ti=0;ti<TRI.length;ti++)for(const dir of[-1,1]){
+      const after=rollOnce(ori,ti,dir);
+      if(SOLVER.dist[enc(after)]!==beforeDistance-1)continue;
+      for(const orientation of[1,2]){
+        const cells=after.reduce((result,value,cell)=>{
+          if(value===orientation)result.push(cell);
+          return result;
+        },[]);
+        if(cells.length>=3)groups.push(cells);
+      }
     }
+    // まず「3枚ちょうど」を優先し、同数なら盤面上の後方セルを含む候補を優先する。
+    // 後者は複数の最短経路がある型でも、目標を毎回同じ規則で選ぶための安定した規則。
+    groups.sort((a,b)=>{
+      const aExact=a.length===3,bExact=b.length===3;
+      return Number(bExact)-Number(aExact)||a.length-b.length||
+        b.reduce((sum,cell)=>sum+cell,0)-a.reduce((sum,cell)=>sum+cell,0);
+    });
+    const target=groups[0];
+    target?.slice(0,3).forEach(cell=>targets.add(cell));
     if(!targets.size&&Array.isArray(stage?.targetCells))stage.targetCells.forEach(cell=>targets.add(cell));
   }
   let overlay=svg.querySelector('.application-target-overlay');
