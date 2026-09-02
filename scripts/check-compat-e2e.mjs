@@ -94,8 +94,8 @@ for (const id of ['chain-template-academy-board', 'chain-template-training-welco
   assert.match(template, new RegExp(`<template[^>]+id=["']${id}["']`, 'i'), `Start dialog template is missing: ${id}`);
 }
 assert.match(template, /<template[^>]+id=["']master-road-step-template["']/i, 'Master roadmap template is missing.');
-assert.match(sources.get('src/ui/progression-roadmap.js'), /master-road-step-template/);
-assert.match(sources.get('src/ui/progression-roadmap.js'), /content\.cloneNode\(true\)/);
+assert.match(sources.get('src/ui/progression-render.js'), /master-road-step-template/);
+assert.match(sources.get('src/ui/progression-render.js'), /content\.cloneNode\(true\)/);
 assert.match(template, /<template[^>]+id=["']rank-list-row-template["']/i, 'Rank list template is missing.');
 assert.match(sources.get('src/ui/rank.js'), /rank-list-row-template/);
 assert.match(sources.get('src/ui/rank.js'), /content\.cloneNode\(true\)/);
@@ -122,7 +122,7 @@ assert.match(progressionUiSources, /two-move-card-template/);
 assert.match(progressionUiSources, /clearedMasteryIndex/);
 assert.match(progressionUiSources, /currentLapPrimaryComplete/);
 assert.match(sources.get('src/runtime/speed.js'), /const trialVariant=\(speedSession\?\.requiredTrial/);
-assert.match(sources.get('src/ui/progression-roadmap.js'), /if\(stateClass\)step\.classList\.add\(stateClass\)/);
+assert.match(sources.get('src/ui/progression-render.js'), /if\(stateClass\)step\.classList\.add\(stateClass\)/);
 for (const id of ['chain-template-training-middle-spin', 'chain-template-development-welcome-spin']) {
   assert.match(template, new RegExp(`<template[^>]+id=["']${id}["']`, 'i'), `Spin dialog template is missing: ${id}`);
 }

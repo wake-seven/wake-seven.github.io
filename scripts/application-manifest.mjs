@@ -8,7 +8,7 @@ export const applicationModuleFiles = [
   'runtime/audio.js', 'runtime/progression-runtime.js', 'runtime/runtime.js', 'app/app-context.js', 'runtime/speed.js',
   'ui/board-animation.js', 'ui/board-geometry.js', 'ui/board-interaction.js', 'ui/tutorial-animation.js', 'ui/board-ui.js', 'ui/board-render.js', 'ui/ui-context.js', 'ui/progression-academy-support.js', 'commands/board-commands.js', 'commands/settings-commands.js', 'commands/progression-commands.js', 'commands/speed-commands.js', 'commands/speed-record-commands.js', 'commands/tutorial-commands.js',
   'ui/quiz.js', 'ui/clear-flow.js', 'ui/message.js', 'ui/progression-render.js', 'ui/progression-dialogs.js',
-  'ui/master-dialog.js', 'ui/progression-insights.js', 'ui/progression-ui.js', 'ui/progression-hud.js', 'ui/progression-quiz.js', 'ui/progression-roadmap.js', 'ui/progression-hints.js', 'ui/progression-clear-flow.js', 'ui/progression-navigation.js', 'ui/rank.js', 'ui/svg.js', 'ui/render.js',
+  'ui/master-dialog.js', 'ui/progression-insights.js', 'ui/progression-ui.js', 'ui/progression-hud.js', 'ui/progression-hints.js', 'ui/progression-clear-flow.js', 'ui/rank.js', 'ui/svg.js', 'ui/render.js',
   'runtime/event-bindings.js', 'runtime/app-events.js', 'runtime/app-bootstrap.js', 'runtime/namespace.js', 'ui/dom.js', 'ui/template.js'
 ];
 
