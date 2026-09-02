@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-01:51';
+const APP_VERSION='2026.09.03-02:14';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5389,6 +5389,7 @@ function animateBoardArrival(){
 }
 function loadSpeedStage(restoreBoard=false,arriving=false){
   if(!speedSession)return;
+  if(speedSession.index>0)speedSession.started=true;
   setSpeedManualPauseCommand(false);
   setActiveMode('speed');editingBoard=false;
   const pool=speedStagePool(activeSpeedDefinition());
@@ -8426,6 +8427,9 @@ function startSpeedSessionCommand(){
 }
 function advanceSpeedSessionCommand(){
   if(!speedSession||speedSession.index>=speedSession.total-1)return false;
+  // 2問目以降へ進む時点で開始待ちは終了している。開始フラグを
+  // 明示的に維持し、次問題の描画で開始オーバーレイが一瞬戻らないようにする。
+  speedSession.started=true;
   speedSession.index++;
   speedSession.board=null;
   speedSession.movedCurrent=false;

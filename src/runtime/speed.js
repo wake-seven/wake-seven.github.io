@@ -237,6 +237,7 @@ function animateBoardArrival(){
 }
 function loadSpeedStage(restoreBoard=false,arriving=false){
   if(!speedSession)return;
+  if(speedSession.index>0)speedSession.started=true;
   setSpeedManualPauseCommand(false);
   setActiveMode('speed');editingBoard=false;
   const pool=speedStagePool(activeSpeedDefinition());

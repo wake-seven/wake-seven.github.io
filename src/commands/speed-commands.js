@@ -6,6 +6,9 @@ function startSpeedSessionCommand(){
 }
 function advanceSpeedSessionCommand(){
   if(!speedSession||speedSession.index>=speedSession.total-1)return false;
+  // 2問目以降へ進む時点で開始待ちは終了している。開始フラグを
+  // 明示的に維持し、次問題の描画で開始オーバーレイが一瞬戻らないようにする。
+  speedSession.started=true;
   speedSession.index++;
   speedSession.board=null;
   speedSession.movedCurrent=false;
