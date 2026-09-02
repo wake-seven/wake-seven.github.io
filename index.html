@@ -4282,7 +4282,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-15:38';
+const APP_VERSION='2026.09.02-15:44';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5121,19 +5121,10 @@ function renderApplicationTargetCells(){
     const stage=STAGES[stageIndex];
     const move=lessonBestMove(enc(ori));
     if(move){
-      // 回す棒ではなく、回した後に同じ向きで寝る三角形を目標として示す。
-      const after=rollOnce(ori,move.ti,move.dir),operation=new Set(TRI[move.ti].cells);
-      const aligned=TRI.filter(triangle=>{
-        const [first,...rest]=triangle.cells;
-        return after[first]!==0&&rest.every(cell=>after[cell]===after[first]);
-      });
-      // 複数候補があるときは、回転操作そのものではない整列グループを優先する。
-      const target=aligned.find(triangle=>triangle.cells.some(cell=>!operation.has(cell)))||aligned[0]
-        ||TRI.find(triangle=>{
-          const [first,...rest]=triangle.cells;
-          return rest.every(cell=>after[cell]===after[first]);
-        });
-      target?.cells.forEach(cell=>targets.add(cell));
+      // 一手目の後に残る最短一手を調べ、その操作対象を最終目標として示す。
+      // これにより、現在つかむ三枚ではなく、次に同じ向きで寝る三枚を強調できる。
+      const after=rollOnce(ori,move.ti,move.dir),nextMove=lessonBestMove(enc(after));
+      (nextMove?TRI[nextMove.ti]:null)?.cells.forEach(cell=>targets.add(cell));
     }
     if(!targets.size&&Array.isArray(stage?.targetCells))stage.targetCells.forEach(cell=>targets.add(cell));
   }
