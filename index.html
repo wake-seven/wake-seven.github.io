@@ -8417,6 +8417,21 @@ function recordProgressClearCommand(kind,index){
   persistLapProgress();
   return true;
 }
+// 進行画面・速解きから呼ぶ状態変更の入口。UIはこのAPIだけを参照する。
+const GameNavigation=Object.freeze({
+  tutorial:()=>startTutorial(), stage:index=>loadStage(index), mastery:index=>loadExtraStage(index),
+  satori:index=>loadSatoriStage(index), free:()=>startFree(), maker:()=>enterBoardMaker(),
+  stageMenu:()=>returnToStageMode(), speedPicker:()=>openSpeedPicker()
+});
+const GameDialogs=Object.freeze({
+  messages:options=>openMessageReview(options), ranks:options=>openRankDialog(options), mastery:kind=>showMasterDialog(kind)
+});
+const WakeSevenProgressionCommands=Object.freeze({
+  startSpeedRun:()=>beginSpeedRun(), advanceSpeedRun:()=>advanceSpeedRun(),
+  loadStage:index=>loadStage(index), loadMasteryStage:index=>loadExtraStage(index),
+  loadSatoriStage:index=>loadSatoriStage(index), startFree:()=>startFree(),
+  advanceAfterClear:()=>advanceAfterClear()
+});
 export {};
 
 // ===== チュートリアルcommand =====
@@ -10517,40 +10532,6 @@ function closeProgressionQuiz(){
 }
 
 // ===== イベントと起動 =====
-// 進行画面から呼び出す公開コマンドの名前空間。
-// 描画や状態計算とは分離し、イベント配線が参照する入口だけを束ねる。
-const GameNavigation=Object.freeze({
-  tutorial:()=>startTutorial(),
-  stage:index=>loadStage(index),
-  mastery:index=>loadExtraStage(index),
-  satori:index=>loadSatoriStage(index),
-  free:()=>startFree(),
-  maker:()=>enterBoardMaker(),
-  stageMenu:()=>returnToStageMode(),
-  speedPicker:()=>openSpeedPicker()
-});
-const GameDialogs=Object.freeze({
-  messages:options=>openMessageReview(options),
-  ranks:options=>openRankDialog(options),
-  mastery:kind=>showMasterDialog(kind)
-});
-
-// 進行状態を変更する公開コマンドも、進行画面の入口としてここにまとめる。
-// 実装本体は runtime.js / speed.js に残し、イベント配線からの入口だけを束ねる。
-const WakeSevenProgressionCommands=Object.freeze({
-  startSpeedRun:()=>beginSpeedRun(),
-  advanceSpeedRun:()=>advanceSpeedRun(),
-  loadStage:index=>loadStage(index),
-  loadMasteryStage:index=>loadExtraStage(index),
-  loadSatoriStage:index=>loadSatoriStage(index),
-  startFree:()=>startFree(),
-  advanceAfterClear:()=>advanceAfterClear()
-});
-
-// 公開ネイティブモジュールの構文境界。
-export {};
-
-// ===== 起動・ライフサイクル =====
 // ===== 名人ロードマップ表示 =====
 function renderMasterRoadmap(kind){
   const roadmap=$('masterRoadmap'),roadmapNote=$('masterRoadmapNote');
@@ -10599,7 +10580,7 @@ function masterCommonRules(){return currentLang==='ja'?'名人への道は最短
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};
 
-// ===== 公開API名前空間 =====
+// ===== 起動・ライフサイクル =====
 // ===== ヒント表示・チュートリアル補助 =====
 function clearHintVisuals(preserveSelection=false){
   clearAxisGuide();
@@ -10641,7 +10622,7 @@ $('hint').addEventListener('click',()=>{cancelTutorialHint();if(isFourthVolume()
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};
 
-// ===== ui/progression-clear-flow.js =====
+// ===== 公開API名前空間 =====
 // ===== クリア後の状態遷移 =====
 // クリア演出の表示と、次の問題/コースへの遷移を進行UI本体から分離する。
 // clearShown は保存・進行用の状態なので、表示予約の重複防止には使わない。

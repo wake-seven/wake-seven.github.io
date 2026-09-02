@@ -22,4 +22,19 @@ function recordProgressClearCommand(kind,index){
   persistLapProgress();
   return true;
 }
+// 進行画面・速解きから呼ぶ状態変更の入口。UIはこのAPIだけを参照する。
+const GameNavigation=Object.freeze({
+  tutorial:()=>startTutorial(), stage:index=>loadStage(index), mastery:index=>loadExtraStage(index),
+  satori:index=>loadSatoriStage(index), free:()=>startFree(), maker:()=>enterBoardMaker(),
+  stageMenu:()=>returnToStageMode(), speedPicker:()=>openSpeedPicker()
+});
+const GameDialogs=Object.freeze({
+  messages:options=>openMessageReview(options), ranks:options=>openRankDialog(options), mastery:kind=>showMasterDialog(kind)
+});
+const WakeSevenProgressionCommands=Object.freeze({
+  startSpeedRun:()=>beginSpeedRun(), advanceSpeedRun:()=>advanceSpeedRun(),
+  loadStage:index=>loadStage(index), loadMasteryStage:index=>loadExtraStage(index),
+  loadSatoriStage:index=>loadSatoriStage(index), startFree:()=>startFree(),
+  advanceAfterClear:()=>advanceAfterClear()
+});
 export {};
