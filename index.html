@@ -10230,65 +10230,6 @@ function moveTwoMoveDetail(direction){
 export {};
 
 // ===== SVG表示境界 =====
-// ===== 進行モード操作 =====
-
-// ステージ選択ダイアログを閉じる共通入口。
-// 選択画面のDOM処理本体は progression-ui.js に残し、イベント側はこの名前だけを使う。
-function closeStagePicker(){
-  closeStagePickerCore();
-}
-// ステージ選択画面の開閉、ページ送り、フリー・自作・速解きへの切り替えを担当する。
-// 表示内容の組み立ては progression-ui.js、問題選択の描画は progression-stage-picker.js に委譲する。
-
-$('stagePickerTrigger').addEventListener('click',openStagePicker);
-$('closeStagePicker').addEventListener('click',closeStagePicker);
-$('stagePickerRankBadge').addEventListener('click',()=>{
-  if($('stagePickerRankBadge').hidden)return;
-  $('stagePicker').hidden=true;
-  openRankDialog({dialogId:'stagePicker',focusId:'stagePickerRankBadge'});
-});
-$('stagePicker').addEventListener('click',e=>{if(e.target===$('stagePicker'))closeStagePicker();});
-$('pickerPrevRound').addEventListener('click',()=>{
-  if(pickerRound==='satori'&&satoriPickerPage>0)satoriPickerPage--;
-  else if(pickerRound==='satori')pickerRound=EXTRA_ROUNDS-1;
-  else if(pickerRound===-PRIMARY_PICKER_SECTION_COUNT&&pickerLap===2){pickerLap=1;pickerRound='satori';satoriPickerPage=SATORI_PICKER_PAGES-1;}
-  else pickerRound--;
-  renderStagePicker();
-});
-$('pickerNextRound').addEventListener('click',()=>{
-  const pickerPrimary=pickerLap===2?lap2ClearedStages:lap1ClearedStages;
-  const pickerExtra=pickerLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
-  const pickerAcademyDone=Array.from({length:ACADEMY_STAGE_COUNT},(_,i)=>pickerPrimary.has(i)).every(Boolean);
-  const pickerPrimaryDone=STAGES.every((_,i)=>pickerPrimary.has(i));
-  const pickerMastered=EXTRA_STAGES.every((_,i)=>pickerExtra.has(i));
-  if(pickerRound==='satori'&&satoriPickerPage<SATORI_PICKER_PAGES-1)satoriPickerPage++;
-  else if(pickerRound==='satori'&&pickerLap===1&&secondLapUnlocked){pickerLap=2;pickerRound=-PRIMARY_PICKER_SECTION_COUNT;satoriPickerPage=0;}
-  else if(pickerRound===EXTRA_ROUNDS-1&&pickerMastered){pickerRound='satori';satoriPickerPage=0;}
-  else if(pickerRound===PICKER_ACADEMY_LAST_ROUND&&pickerAcademyDone&&(pickerLap===2||speedTrainingTrialCleared))pickerRound=PICKER_TRAINING_FIRST_ROUND;
-  else if(pickerRound===PICKER_TRAINING_LAST_ROUND&&pickerPrimaryDone&&(pickerLap===2||speedIntermediateTrialCleared))pickerRound=0;
-  else if(typeof pickerRound==='number')pickerRound++;
-  renderStagePicker();
-});
-$('pickerFreeMode').addEventListener('click',()=>{
-  if(busy)return;
-  closeStagePicker();
-  if(!isMode('free'))restoreFreeSession();
-});
-$('pickerCustomMode').addEventListener('click',()=>{
-  if(busy)return;
-  closeStagePicker();
-  if(!isMode('custom'))enterBoardMaker();
-});
-$('pickerSpeedMode').addEventListener('click',()=>{
-  if(!featureUnlocked('speedRun'))return;
-  closeStagePicker();
-  if(isMode('speed'))return;
-  openSpeedPicker();
-});
-
-export {};
-
-// ===== 画面描画境界 =====
 // 進行画面のHUDとステージナビを描画する。状態遷移は行わず、表示更新だけを担当する。
 function createProgressionViewContext({
   mode,
@@ -10517,7 +10458,7 @@ function renderStageNav(){
   renderStageNavGuidance();
 }
 
-// ===== イベントと起動 =====
+// ===== 画面描画境界 =====
 // ===== 進行クイズの公開入口 =====
 // クイズの描画・回答・終了を、クリアフローやメッセージUIから呼ぶための入口。
 // 問題の解決やDOMの細部は既存のクイズUIへ委譲し、ここでは文脈だけを受け取る。
@@ -10575,7 +10516,7 @@ function closeProgressionQuiz(){
   progressionQuizContext=null;
 }
 
-// ===== 起動・ライフサイクル =====
+// ===== イベントと起動 =====
 // 進行画面から呼び出す公開コマンドの名前空間。
 // 描画や状態計算とは分離し、イベント配線が参照する入口だけを束ねる。
 const GameNavigation=Object.freeze({
@@ -10609,7 +10550,7 @@ const WakeSevenProgressionCommands=Object.freeze({
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 公開API名前空間 =====
+// ===== 起動・ライフサイクル =====
 // ===== 名人ロードマップ表示 =====
 function renderMasterRoadmap(kind){
   const roadmap=$('masterRoadmap'),roadmapNote=$('masterRoadmapNote');
@@ -10658,7 +10599,7 @@ function masterCommonRules(){return currentLang==='ja'?'名人への道は最短
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};
 
-// ===== ui/progression-hints.js =====
+// ===== 公開API名前空間 =====
 // ===== ヒント表示・チュートリアル補助 =====
 function clearHintVisuals(preserveSelection=false){
   clearAxisGuide();
@@ -10927,6 +10868,43 @@ $('freeMode').addEventListener('click',()=>{
 
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};
+
+// ステージ選択画面の開閉と、選択画面から各モードへ移るイベント。
+// 旧 progression-mode-controls.js の薄い入口をここへ統合し、
+// 進行ナビゲーションのイベントを一つのファイルから追跡できるようにする。
+function closeStagePicker(){closeStagePickerCore();}
+$('stagePickerTrigger').addEventListener('click',openStagePicker);
+$('closeStagePicker').addEventListener('click',closeStagePicker);
+$('stagePickerRankBadge').addEventListener('click',()=>{
+  if($('stagePickerRankBadge').hidden)return;
+  $('stagePicker').hidden=true;
+  openRankDialog({dialogId:'stagePicker',focusId:'stagePickerRankBadge'});
+});
+$('stagePicker').addEventListener('click',e=>{if(e.target===$('stagePicker'))closeStagePicker();});
+$('pickerPrevRound').addEventListener('click',()=>{
+  if(pickerRound==='satori'&&satoriPickerPage>0)satoriPickerPage--;
+  else if(pickerRound==='satori')pickerRound=EXTRA_ROUNDS-1;
+  else if(pickerRound===-PRIMARY_PICKER_SECTION_COUNT&&pickerLap===2){pickerLap=1;pickerRound='satori';satoriPickerPage=SATORI_PICKER_PAGES-1;}
+  else pickerRound--;
+  renderStagePicker();
+});
+$('pickerNextRound').addEventListener('click',()=>{
+  const pickerPrimary=pickerLap===2?lap2ClearedStages:lap1ClearedStages;
+  const pickerExtra=pickerLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
+  const pickerAcademyDone=Array.from({length:ACADEMY_STAGE_COUNT},(_,i)=>pickerPrimary.has(i)).every(Boolean);
+  const pickerPrimaryDone=STAGES.every((_,i)=>pickerPrimary.has(i));
+  const pickerMastered=EXTRA_STAGES.every((_,i)=>pickerExtra.has(i));
+  if(pickerRound==='satori'&&satoriPickerPage<SATORI_PICKER_PAGES-1)satoriPickerPage++;
+  else if(pickerRound==='satori'&&pickerLap===1&&secondLapUnlocked){pickerLap=2;pickerRound=-PRIMARY_PICKER_SECTION_COUNT;satoriPickerPage=0;}
+  else if(pickerRound===EXTRA_ROUNDS-1&&pickerMastered){pickerRound='satori';satoriPickerPage=0;}
+  else if(pickerRound===PICKER_ACADEMY_LAST_ROUND&&pickerAcademyDone&&(pickerLap===2||speedTrainingTrialCleared))pickerRound=PICKER_TRAINING_FIRST_ROUND;
+  else if(pickerRound===PICKER_TRAINING_LAST_ROUND&&pickerPrimaryDone&&(pickerLap===2||speedIntermediateTrialCleared))pickerRound=0;
+  else if(typeof pickerRound==='number')pickerRound++;
+  renderStagePicker();
+});
+$('pickerFreeMode').addEventListener('click',()=>{if(busy)return;closeStagePicker();if(!isMode('free'))restoreFreeSession();});
+$('pickerCustomMode').addEventListener('click',()=>{if(busy)return;closeStagePicker();if(!isMode('custom'))enterBoardMaker();});
+$('pickerSpeedMode').addEventListener('click',()=>{if(!featureUnlocked('speedRun'))return;closeStagePicker();if(isMode('speed'))return;openSpeedPicker();});
 
 // ===== ui/rank.js =====
 // 称号表示と称号一覧ダイアログ。
