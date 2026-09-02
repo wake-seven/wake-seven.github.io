@@ -108,13 +108,13 @@ assert.match(message, /openMessageReview\(\{resume=false,returnTarget=null\}=\{\
   'message review must accept an explicit return target');
 assert.match(message, /updateMessageReviewNavigation\(entry\)/,
   'message review must persist the current entry while navigating');
-assert.match(progression, /if\(isMode\('free'\)\)[\s\S]*tr\('another'\)/,
+assert.match(progression, /if\((?:isMode\('free'\)|clearContext\.mode==='free')\)[\s\S]*tr\('another'\)/,
   'free clear must use its own next-action route');
-assert.match(progression, /else if\(isMode\('custom'\)\)[\s\S]*tr\('again'\)/,
+assert.match(progression, /else if\((?:isMode\('custom'\)|clearContext\.mode==='custom')\)[\s\S]*tr\('again'\)/,
   'custom clear must use its own next-action route');
-assert.match(progression, /else if\(isMode\('satori'\)[\s\S]*satoriIndex===SATORI_STAGES\.length-1\?[\s\S]*tr\('satoriChoose'\)/,
+assert.match(progression, /else if\((?:isMode\('satori'\)|clearContext\.mode==='satori')\)[\s\S]*(?:satoriIndex|clearContext\.satoriIndex)===SATORI_STAGES\.length-1\?[\s\S]*tr\('satoriChoose'\)/,
   'satori clear must choose between the next puzzle and completion route');
-assert.match(progression, /else if\(isMode\('mastery'\)[\s\S]*extraIndex===EXTRA_STAGES\.length-1\?[\s\S]*tr\('toFree'\)/,
+assert.match(progression, /else if\((?:isMode\('mastery'\)|clearContext\.mode==='mastery')\)[\s\S]*(?:extraIndex|clearContext\.extraIndex)===EXTRA_STAGES\.length-1\?[\s\S]*tr\('toFree'\)/,
   'mastery clear must choose between the next pattern and free route');
 assert.match(runtime, /if\(visible\('clearDialog'\)\)return \{type:'clear'\}/,
   'clear dialog visibility must be captured for reload restoration');

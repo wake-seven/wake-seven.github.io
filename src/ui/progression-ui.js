@@ -271,12 +271,13 @@ function hasCompetingDialogForClear(){
 }
 function showClearDialog(){
   finishClearFlowDialog();
+  const clearContext=createClearTransitionContext(stageIndex+1);
   // クリア演出の遅延中に別ダイアログが残っていても、現在のクリア結果を
   // 表示できずに終わらせない。先に古いダイアログを閉じてから描画する。
   if(hasCompetingDialogForClear())closeProgressionDialog();
   // 悟りの最終問題は、再挑戦で解いた場合も制覇ダイアログを見せる。
   // それ以外の悟り問題は、制覇後も通常のクリアダイアログにする。
-  const showSatoriMastery=isMode('satori')&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered();
+  const showSatoriMastery=clearContext.mode==='satori'&&clearContext.satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered();
   if(pendingMasterThemeRefresh){
     pendingMasterThemeRefresh=false;
     updateMasterTheme();
@@ -285,47 +286,45 @@ function showClearDialog(){
     showMasterDialog(secondLapActive?'awakening':'satori');
     return;
   }
-  if(clearDialogUsesStageProgression()&&stageIndex===ACADEMY_STAGE_COUNT-1&&academyCleared()){
+  if(clearDialogUsesStageProgression()&&clearContext.stageIndex===ACADEMY_STAGE_COUNT-1&&clearContext.academyIsCleared){
     showMasterDialog('primary');
     return;
   }
   // 入門クラス最終問題のクリアは、通常のクリアダイアログの代わりに
   // だるま学園入学と同じ演出の「基本クラスへようこそ」を毎回そのまま見せる。
-  if(clearDialogUsesStageProgression()&&stageIndex===INTRO_STAGE_COUNT-1){
+  if(clearDialogUsesStageProgression()&&clearContext.stageIndex===INTRO_STAGE_COUNT-1){
     openProgressionDialog('chain',{name:'basicWelcome'});
     return;
   }
   // 基本クラス最終問題のクリア後は、目標の3枚から回す場所を考える応用クラスへ進む。
-  if(clearDialogUsesStageProgression()&&stageIndex===APPLICATION_STAGE_START-1){
+  if(clearDialogUsesStageProgression()&&clearContext.stageIndex===APPLICATION_STAGE_START-1){
     openProgressionDialog('chain',{name:'applicationWelcome'});
     return;
   }
   // 応用クラス最終問題のクリア後に、発展クラス開始を案内する。
-  if(clearDialogUsesStageProgression()&&stageIndex===DEVELOPMENT_STAGE_START-1){
+  if(clearDialogUsesStageProgression()&&clearContext.stageIndex===DEVELOPMENT_STAGE_START-1){
     openProgressionDialog('chain',{name:'developmentWelcome'});
     return;
   }
-  const currentLapPrimaryCleared=(activeLap===2?lap2ClearedStages:lap1ClearedStages);
-  const currentLapPrimaryComplete=STAGES.every((_,i)=>currentLapPrimaryCleared.has(i));
-  if(clearDialogUsesStageProgression()&&stageIndex===STAGES.length-1&&currentLapPrimaryComplete){
+  if(clearDialogUsesStageProgression()&&clearContext.stageIndex===STAGES.length-1&&clearContext.currentLapPrimaryComplete){
     showMasterDialog('intermediate');
     return;
   }
-  const masteryClearContext=isMode('mastery')||returnStageContext?.extra===true;
-  const clearedMasteryIndex=masteryClearContext&&Number.isInteger(extraIndex)
-    ?extraIndex
-    :(masteryClearContext&&Number.isInteger(returnStageContext?.index)?returnStageContext.index:-1);
+  const masteryClearContext=clearContext.masteryClearContext;
+  const clearedMasteryIndex=masteryClearContext&&Number.isInteger(clearContext.extraIndex)
+    ?clearContext.extraIndex
+    :(masteryClearContext&&Number.isInteger(clearContext.returnStageContext?.index)?clearContext.returnStageContext.index:-1);
   if(clearedMasteryIndex>=0&&(clearedMasteryIndex+1)%MASTER_VOLUME_SIZE===0){
     showMasterDialog(clearedMasteryIndex===EXTRA_STAGES.length-1?'mastery':'volume');
     return;
   }
   const action=$('clearNext');
-  if(isMode('free'))action.textContent=tr('another');
-  else if(isMode('custom'))action.textContent=tr('again');
-  else if(isMode('satori'))action.textContent=satoriIndex===SATORI_STAGES.length-1?tr('satoriChoose'):tr('nextPuzzle');
-  else if(isMode('mastery'))action.textContent=extraIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');
-  else if(stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');
-  else if(stageIndex===STAGES.length-1)action.textContent=tr('toFree');
+  if(clearContext.mode==='free')action.textContent=tr('another');
+  else if(clearContext.mode==='custom')action.textContent=tr('again');
+  else if(clearContext.mode==='satori')action.textContent=clearContext.satoriIndex===SATORI_STAGES.length-1?tr('satoriChoose'):tr('nextPuzzle');
+  else if(clearContext.mode==='mastery')action.textContent=clearContext.extraIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');
+  else if(clearContext.stageIndex===STAGES.length-1&&clearContext.allPrimaryIsCleared)action.textContent=tr('allPatternsNext');
+  else if(clearContext.stageIndex===STAGES.length-1)action.textContent=tr('toFree');
   else action.textContent=tr('nextPuzzle');
   $('clearDialogMessage').textContent=clearDialogHeading();
   renderClearStageContext();

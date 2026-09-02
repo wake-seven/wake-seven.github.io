@@ -54,6 +54,27 @@ function scheduleClearFlowDialog(callback,delay,cycle=clearFlowCycle){
   return true;
 }
 function finishClearFlowDialog(){clearFlowPhase=CLEAR_FLOW_PHASE.dialog;}
+
+// クリア後の画面が参照する進行状態を、ひとつの読み取り専用文脈に固定する。
+// 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを
+// 閉じる副作用や連続表示の切り替えで判定がずれるため、同じクリア周期の
+// ルート判定と表示判定にはこの入口を使う。
+function createClearTransitionContext(nextStageIndex=stageIndex){
+  const mode=activeMode;
+  const masteryIndex=extraIndex;
+  const currentLapPrimaryCleared=activeLap===2?lap2ClearedStages:lap1ClearedStages;
+  return Object.freeze({
+    mode,stageIndex,extraIndex:masteryIndex,satoriIndex,activeLap,
+    nextStageIndex,
+    solved:isSolved(),clearShown,
+    academyIsCleared:academyCleared(),
+    allPrimaryIsCleared:allPrimaryCleared(),
+    currentLapPrimaryComplete:STAGES.every((_,i)=>currentLapPrimaryCleared.has(i)),
+    hasBeforeDialog:Boolean(clearContentBefore(false,nextStageIndex)?.dialog),
+    masteryClearContext:mode==='mastery'||returnStageContext?.extra===true,
+    returnStageContext
+  });
+}
 // クリア演出完了後の表示入口。予約済みの周期だけを完了させる。
 function finishClearFlow(){
   if(clearFlowPhase!==CLEAR_FLOW_PHASE.dialogPending)return false;
@@ -90,12 +111,9 @@ function advanceAfterClear(){
   makerButtonBlockedUntil=performance.now()+600;
   clearUiEffectTimers('maker-reveal');
   setUiEffectTimer('maker-reveal','unlock',()=>{makerButtonBlockedUntil=0;renderStageNav();},600);
-  const nextStageIndex=stageIndex+1;
-  const route=resolveAfterClearRoute({
-    mode:activeMode,stageIndex,extraIndex,satoriIndex,
-    academyIsCleared:academyCleared(),allPrimaryIsCleared:allPrimaryCleared(),
-    hasBeforeDialog:Boolean(clearContentBefore(false,nextStageIndex)?.dialog)
-  });
+  const context=createClearTransitionContext(stageIndex+1);
+  const nextStageIndex=context.nextStageIndex;
+  const route=resolveAfterClearRoute(context);
   // 現在のダイアログだけを閉じてから、確定済みの遷移先を開く。
   // ボタン側では閉じる処理を行わず、クリア後遷移をこの入口に一本化する。
   hideGameDialogs();
