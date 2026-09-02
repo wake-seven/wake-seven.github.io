@@ -808,7 +808,7 @@
   .tile.stand{filter:brightness(1.04)}
   .tile.fallen{filter:none}
   /* 応用編の枠はパネル自身と一緒に動き、棒より背面で表示する。 */
-  #board .tile .application-target-frame{display:none;fill:none;stroke:#8B35F0;stroke-width:4.5;stroke-linejoin:round;pointer-events:none;vector-effect:non-scaling-stroke}
+  #board .tile .application-target-frame{display:none;fill:none;stroke:#8B35F0;stroke-width:6;stroke-linejoin:round;pointer-events:none;vector-effect:non-scaling-stroke}
   #board .tile.application-target .application-target-frame{display:inline}
   /* ミニ盤面(比較カード等)の回転アニメでも、本編の.tileと同じくレイヤーを先に確保しておく。
      iOSで、新しい要素をtransformすると初回フレームだけ描画がずれることがある対策。 */
@@ -4291,7 +4291,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-17:02';
+const APP_VERSION='2026.09.02-17:16';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
