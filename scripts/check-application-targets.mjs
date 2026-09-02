@@ -6,6 +6,7 @@ import { dirname, join } from 'node:path';
 const root=dirname(dirname(fileURLToPath(import.meta.url)));
 const source=await readFile(join(root,'src','data','core-data.js'),'utf8');
 const runtime=await readFile(join(root,'src','runtime','runtime.js'),'utf8');
+const academySupport=await readFile(join(root,'src','ui','progression-academy-support.js'),'utf8');
 const board=await readFile(join(root,'src','ui','board-ui.js'),'utf8');
 const animation=await readFile(join(root,'src','ui','board-animation.js'),'utf8');
 const template=await readFile(join(root,'src','index.template.html'),'utf8');
@@ -46,9 +47,9 @@ assert.match(board,/applicationWelcome:academyBoardStep\('application'/,
   'Application welcome must use the shared academy board renderer.');
 assert.match(board,/variant==='application'[\s\S]{0,260}initialStage\.targetCells/,
   'Application welcome animation must render its target cells from stage data.');
-assert.match(runtime,/function bindApplicationTargetTiles\(\)[\s\S]{0,260}targetCells\|\|\[\]/,
+assert.match(academySupport,/function bindApplicationTargetTiles\(\)[\s\S]{0,260}targetCells\|\|\[\]/,
   'Application target panels must be bound from the active stage data.');
-assert.match(runtime,/function renderApplicationTargetCells\(\)[\s\S]{0,360}applicationTargetTiles\.has\(tile\)/,
+assert.match(academySupport,/function renderApplicationTargetCells\(\)[\s\S]{0,360}applicationTargetTiles\.has\(tile\)/,
   'Application target rendering must preserve physical panel identity.');
 assert.equal((animation.match(/function renderApplicationTargetLayer\(/g)||[]).length,1,
   'Application target overlay renderer must have one definition.');

@@ -6,10 +6,10 @@ import vm from 'node:vm';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const read = name => readFile(join(root, name), 'utf8');
-const [template, bootstrap, events, board, interaction, tutorial, published, clearFlow] = await Promise.all([
+const [template, bootstrap, events, board, interaction, tutorial, published, clearFlow, academySupport] = await Promise.all([
   read('src/index.template.html'), read('src/runtime/app-bootstrap.js'), read('src/runtime/app-events.js'),
   read('src/ui/board-ui.js'), read('src/ui/board-interaction.js'), read('src/ui/tutorial-animation.js'), read('index.html'),
-  read('src/ui/progression-clear-flow.js')
+  read('src/ui/progression-clear-flow.js'), read('src/ui/progression-academy-support.js')
 ]);
 const progression = await read('src/ui/progression-ui.js');
 const speed = await read('src/runtime/speed.js');
@@ -61,9 +61,9 @@ assert.match(board, /if\(isSolved\(\)&&!clearShown\)/,
   'board paint must guard against duplicate clear transitions');
 assert.match(board, /bindApplicationTargetTiles\(\);/,
   'application target panels must be bound when a new position is loaded');
-assert.match(runtime, /applicationTargetTiles=new Set\(\);[\s\S]*tileEls\[index\][\s\S]*applicationTargetTiles\.add\(tileEls\[index\]\)/,
+assert.match(academySupport, /applicationTargetTiles=new Set\(\);[\s\S]*tileEls\[index\][\s\S]*applicationTargetTiles\.add\(tileEls\[index\]\)/,
   'application targets must bind to physical tile elements rather than board indexes');
-assert.match(runtime, /tileEls\.forEach\(tile=>tile\.classList\.toggle\('application-target',applicationTargetTiles\.has\(tile\)\)\)/,
+assert.match(academySupport, /tileEls\.forEach\(tile=>tile\.classList\.toggle\('application-target',applicationTargetTiles\.has\(tile\)\)\)/,
   'application target rendering must preserve the physical tile binding');
 assert.doesNotMatch(board, /application-target-frame/,
   'application targets must use the panel border, not a detached frame');

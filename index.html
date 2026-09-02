@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-00:16';
+const APP_VERSION='2026.09.03-00:20';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5038,179 +5038,8 @@ const isFallingRodStage=()=>currentUiPolicy().eliminateWrongRods===true;
 const isWrongMoveRewindStage=()=>currentUiPolicy().rewindWrongMove===true;
 // 応用編の目標3枚は問題データに書かれた配列だけを表示する。
 const isApplicationTargetStage=()=>currentUiPolicy().showTargetCells===true;
-// 応用編の強調は「盤面上の位置」ではなく、開始時に選んだ物理パネルへ保持する。
-// これによりスワイプでパネルが移動しても、強調が開始位置へ取り残されない。
-let applicationTargetTiles=new Set();
-function bindApplicationTargetTiles(){
-  applicationTargetTiles=new Set();
-  if(isApplicationTargetStage()){
-    for(const index of STAGES[stageIndex]?.targetCells||[]){
-      if(tileEls[index])applicationTargetTiles.add(tileEls[index]);
-    }
-  }
-  renderApplicationTargetCells();
-}
-function renderApplicationTargetCells(){
-  if(!isApplicationTargetStage())applicationTargetTiles.clear();
-  tileEls.forEach(tile=>tile.classList.toggle('application-target',applicationTargetTiles.has(tile)));
-  // 静止表示も開始アニメ・スワイプと同じ共有レイヤーAPIを使う。
-  placeApplicationTargetTiles(svg,tileEls,applicationTargetTiles,{anchorSelector:'.pivot'});
-  renderApplicationTargetLayer(svg,tileEls,applicationTargetTiles,{anchorSelector:'.pivot'});
-  renderApplicationTargetPreview();
-}
-// 応用編の目標3枚を、1回正しく回した直後の小型見本として表示する。
-// 見本は操作盤面とは別の読み取り専用表示で、残り1手になったら隠す。
-// targetCellsは「1手後に同じ向きで寝る3枚」なので、初期盤面そのものではなく
-// ソルバーで距離を1つ縮めた状態を描く。これが応用編で目指す逆三角の形になる。
-function applicationGoalPreviewState(stage){
-  if(!stage)return null;
-  const start=dec(stage.state),distance=SOLVER.dist[enc(start)],targets=stage.targetCells||[];
-  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){
-    const next=rollOnce(start,ti,dir);
-    if(SOLVER.dist[enc(next)]!==distance-1)continue;
-    if(targets.length===3&&targets.every(cell=>next[cell]===next[targets[0]]))return enc(next);
-  }
-  // データが一時的に不完全でも、正解方向の見本を表示して空欄にはしない。
-  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){
-    const next=rollOnce(start,ti,dir);
-    if(SOLVER.dist[enc(next)]===distance-1)return enc(next);
-  }
-  return stage.state;
-}
-let applicationPreviewHideTimer=0;
-function renderApplicationTargetPreview(){
-  const preview=$('applicationTargetPreview'),board=$('applicationTargetPreviewBoard');
-  if(!preview||!board)return;
-  const remaining=SOLVER.dist[enc(ori)];
-  const stage=isApplicationTargetStage()?STAGES[stageIndex]:null;
-  const targets=stage?.targetCells||[];
-  if(!stage||targets.length!==3){
-    clearTimeout(applicationPreviewHideTimer);
-    preview.classList.remove('is-fading');
-    preview.hidden=true;
-    board.replaceChildren();
-    return;
-  }
-  if(remaining<=1){
-    if(!preview.hidden&&!preview.classList.contains('is-fading')){
-      preview.classList.add('is-fading');
-      clearTimeout(applicationPreviewHideTimer);
-      applicationPreviewHideTimer=setTimeout(()=>{
-        preview.hidden=true;
-        preview.classList.remove('is-fading');
-        board.replaceChildren();
-      },300);
-    }
-    return;
-  }
-  clearTimeout(applicationPreviewHideTimer);
-  preview.classList.remove('is-fading');
-  preview.hidden=false;
-  // 見本は元盤面の座標を縮小するのではなく、目標の3枚だけを
-  // 「左上・右上・下中央」の逆三角形に固定して描く。元盤面のセル番号は
-  // 目標状態から向きと色を読むためだけに使い、表示位置には使わない。
-  const goal=dec(applicationGoalPreviewState(stage));
-  // 目標3枚は、正しい1手のあとに同じ向きへそろう。各セルを個別に
-  // 読むと、パネルの対応が崩れた場合に一枚だけ起きて見えるため、
-  // 目標姿勢を先頭の目標パネルから読み、3枚へ同じ値を適用する。
-  // 見本は「右転び」に統一する。これは盤面上のセル番号ではなく、
-  // プレイヤーが目指す完成姿勢そのものを示すための表示ルール。
-  const targetValue=1;
-  // 3枚は互いの辺が接する逆三角形として描く。間隔を空けると「目標の
-  // 形」ではなく、離れた3枚の見本に見えてしまうため、六角形の幅/高さ
-  // と同じ比率で中心を配置する。
-  const positions=[[45,29],[99,29],[72,76]],scale=.60;
-  board.setAttribute('viewBox','0 0 144 106');
-  board.innerHTML=targets.map((cell,index)=>{
-    const value=targetValue,fallen=value!==0;
-    return '<g class="mini-tile application-preview-target" data-cell="'+cell+'" transform="translate('+positions[index][0]+' '+positions[index][1]+') scale('+scale+')">'
-      +'<path d="'+hexPath(R)+'" fill="'+(fallen?'#B9C6D6':'#F3E8D5')+'" stroke="#8B35F0" stroke-width="6" stroke-linejoin="round"/>'
-      +'<g class="mini-daruma" transform="rotate('+miniAngle(value)+')"><use href="#daruma-body"/><use href="#'+(fallen?'face-shut':'face-open')+'"/></g>'
-      +'</g>';
-  }).join('');
-}
-// 直接スワイプ中はタイル自身が動くため、静止用の重ね枠を一時的に外す。
-// スワイプ完了後は paint() から renderApplicationTargetCells() が再生成する。
-function removeApplicationTargetOverlay(){
-  clearApplicationTargetLayer(svg);
-}
 // だるま修行(上巻・中巻・下巻)全体: 「あと2くるり」に到達した瞬間、形の名前を演出する対象区間。
 const isTrainingRangeStage=()=>currentUiPolicy().trainingShapes===true;
-let guidedBasicCandidateTis=null,guidedBasicCandidateSignature=null;
-// 基本クラス・発展クラス・速解き九番勝負で、間違えて落ちた棒(消すのではなくグレーアウトして残す)。
-let fallenRodTis=new Set();
-function refreshGuidedBasicCandidates(){
-  // だるま学園(入門・基本・発展)と速解き九番勝負では、絞り込みが効かない場面でも
-  // 「6本全部が候補」として扱う(nullにはしない)。これにより、どの盤面・何くるりでも
-  // 間違えた棒を選んだ場合はその場でグレーアウトする挙動を、学園全体で統一できる。
-  const fullSet=()=>new Set(Array.from({length:TRI.length},(_,i)=>i));
-  if(isDevelopmentStage()){
-    const stage=STAGES[stageIndex];
-    if(isSolved()){
-      guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;
-    }else{
-      const signature=stageIndex+':'+moves+':'+enc(ori);
-      if(signature!==guidedBasicCandidateSignature){
-        fallenRodTis.clear();
-        // 初回は問題ごとの候補数で始め、進んだ後も残り2〜3くるりは3本に絞る。
-        // 残り1くるりに入った時だけ6本すべてを候補にする。
-        guidedBasicCandidateTis=computeDevelopmentCandidateTis()||fullSet();
-        guidedBasicCandidateSignature=signature;
-      }
-    }
-  }
-  else if(isSpeedFallingRodStage()){
-    if(isSolved()){
-      guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;
-    }else{
-      const signature='speedFalling:'+moves+':'+enc(ori);
-      if(signature!==guidedBasicCandidateSignature){
-        fallenRodTis.clear();
-        guidedBasicCandidateTis=computeSpeedTrainingCandidateTis()||fullSet();
-        guidedBasicCandidateSignature=signature;
-      }
-    }
-  }
-  else if(isWrongMoveRewindStage()){
-    // 応用編は誤操作を巻き戻すが、候補から外れた棒は学園と同じく灰色で残す。
-    if(isSolved()){
-      guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;
-    }else{
-      const signature='application:'+stageIndex+':'+moves+':'+enc(ori);
-      if(signature!==guidedBasicCandidateSignature){
-        fallenRodTis.clear();
-        guidedBasicCandidateTis=fullSet();
-        guidedBasicCandidateSignature=signature;
-      }
-    }
-  }
-  else if(isGuidedBasicStage()){
-    if(isSolved()){
-      guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;
-    }else{
-      const signature=stageIndex+':'+moves+':'+enc(ori);
-      if(signature!==guidedBasicCandidateSignature){
-        fallenRodTis.clear();
-        // 基本クラスは1〜9本まで段階的に絞り込む。残り1手や入門はまだ絞り込みが無いので6本全部。
-        guidedBasicCandidateTis=(isNarrowedBasicStage()&&SOLVER.dist[enc(ori)]>1)?computeGuidedBasicCandidateTis():fullSet();
-        guidedBasicCandidateSignature=signature;
-      }
-    }
-  }
-  else{
-    guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;
-  }
-  svg.querySelectorAll('.grip-marker').forEach(marker=>{
-    const ti=Number(marker.dataset.tri);
-    const restrict=guidedBasicCandidateTis!==null;
-    const isOut=restrict&&!guidedBasicCandidateTis.has(ti);
-    const isFallen=isOut&&fallenRodTis.has(ti);
-    // 一度も候補に出てこなかった棒は本編の基本クラスと同じく完全に隠す。
-    // 候補として出た後に間違えて落ちた棒は、消すのではなくグレーアウトして残す。
-    marker.classList.toggle('narrow-hidden',isOut&&!isFallen);
-    marker.classList.toggle('eliminated',isFallen);
-  });
-}
 // 補助輪中も盤面全体を見比べられるよう、選択外の4枚は暗転させない。
 const usesSwipeDimming=()=>false;
 const usesSecondLapSwipe=()=>secondLapActive&&!isSideCourseMode()&&!isMode('speed');
@@ -8300,6 +8129,101 @@ function computeSpeedTrainingCandidateTis(){
   const pool=Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary);
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
   return new Set([primary,...pool.slice(0,2)]);
+}
+
+// 学園補助UIの表示を担当する。候補計算とは分離し、盤面DOMへの反映だけを行う。
+let applicationTargetTiles=new Set();
+function bindApplicationTargetTiles(){
+  applicationTargetTiles=new Set();
+  if(isApplicationTargetStage()){
+    for(const index of STAGES[stageIndex]?.targetCells||[]){
+      if(tileEls[index])applicationTargetTiles.add(tileEls[index]);
+    }
+  }
+  renderApplicationTargetCells();
+}
+function renderApplicationTargetCells(){
+  if(!isApplicationTargetStage())applicationTargetTiles.clear();
+  tileEls.forEach(tile=>tile.classList.toggle('application-target',applicationTargetTiles.has(tile)));
+  // 静止表示も開始アニメ・スワイプと同じ共有レイヤーAPIを使う。
+  placeApplicationTargetTiles(svg,tileEls,applicationTargetTiles,{anchorSelector:'.pivot'});
+  renderApplicationTargetLayer(svg,tileEls,applicationTargetTiles,{anchorSelector:'.pivot'});
+  renderApplicationTargetPreview();
+}
+
+// 応用編の目標3枚を、1回正しく回した直後の小型見本として表示する。
+// targetCellsは「1手後に同じ向きで寝る3枚」なので、ソルバーで距離を1つ縮めた状態を描く。
+function applicationGoalPreviewState(stage){
+  if(!stage)return null;
+  const start=dec(stage.state),distance=SOLVER.dist[enc(start)],targets=stage.targetCells||[];
+  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){
+    const next=rollOnce(start,ti,dir);
+    if(SOLVER.dist[enc(next)]!==distance-1)continue;
+    if(targets.length===3&&targets.every(cell=>next[cell]===next[targets[0]]))return enc(next);
+  }
+  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){
+    const next=rollOnce(start,ti,dir);
+    if(SOLVER.dist[enc(next)]===distance-1)return enc(next);
+  }
+  return stage.state;
+}
+let applicationPreviewHideTimer=0;
+function renderApplicationTargetPreview(){
+  const preview=$('applicationTargetPreview'),board=$('applicationTargetPreviewBoard');
+  if(!preview||!board)return;
+  const remaining=SOLVER.dist[enc(ori)];
+  const stage=isApplicationTargetStage()?STAGES[stageIndex]:null;
+  const targets=stage?.targetCells||[];
+  if(!stage||targets.length!==3){
+    clearTimeout(applicationPreviewHideTimer);preview.classList.remove('is-fading');preview.hidden=true;board.replaceChildren();return;
+  }
+  if(remaining<=1){
+    if(!preview.hidden&&!preview.classList.contains('is-fading')){
+      preview.classList.add('is-fading');clearTimeout(applicationPreviewHideTimer);
+      applicationPreviewHideTimer=setTimeout(()=>{preview.hidden=true;preview.classList.remove('is-fading');board.replaceChildren();},300);
+    }
+    return;
+  }
+  clearTimeout(applicationPreviewHideTimer);preview.classList.remove('is-fading');preview.hidden=false;
+  // 目標3枚は「左上・右上・下中央」の逆三角形に固定して描く。
+  const targetValue=1;
+  const positions=[[45,29],[99,29],[72,76]],scale=.60;
+  board.setAttribute('viewBox','0 0 144 106');
+  board.innerHTML=targets.map((cell,index)=>{
+    const value=targetValue,fallen=value!==0;
+    return '<g class="mini-tile application-preview-target" data-cell="'+cell+'" transform="translate('+positions[index][0]+' '+positions[index][1]+') scale('+scale+')">'
+      +'<path d="'+hexPath(R)+'" fill="'+(fallen?'#B9C6D6':'#F3E8D5')+'" stroke="#8B35F0" stroke-width="6" stroke-linejoin="round"/>'
+      +'<g class="mini-daruma" transform="rotate('+miniAngle(value)+')"><use href="#daruma-body"/><use href="#'+(fallen?'face-shut':'face-open')+'"/></g>'
+      +'</g>';
+  }).join('');
+}
+
+// スワイプ中はタイル自身が動くため、静止用の重ね枠を一時的に外す。
+function removeApplicationTargetOverlay(){ clearApplicationTargetLayer(svg); }
+
+// 候補棒とグレーアウト状態を盤面へ反映する。
+let guidedBasicCandidateTis=null,guidedBasicCandidateSignature=null;
+let fallenRodTis=new Set();
+function refreshGuidedBasicCandidates(){
+  const fullSet=()=>new Set(Array.from({length:TRI.length},(_,i)=>i));
+  if(isDevelopmentStage()){
+    const stage=STAGES[stageIndex];
+    if(isSolved()){guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;}
+    else {const signature=stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=computeDevelopmentCandidateTis()||fullSet();guidedBasicCandidateSignature=signature;}}
+  }else if(isSpeedFallingRodStage()){
+    if(isSolved()){guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;}
+    else {const signature='speedFalling:'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=computeSpeedTrainingCandidateTis()||fullSet();guidedBasicCandidateSignature=signature;}}
+  }else if(isWrongMoveRewindStage()){
+    if(isSolved()){guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;}
+    else {const signature='application:'+stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=fullSet();guidedBasicCandidateSignature=signature;}}
+  }else if(isGuidedBasicStage()){
+    if(isSolved()){guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;}
+    else {const signature=stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=(isNarrowedBasicStage()&&SOLVER.dist[enc(ori)]>1)?computeGuidedBasicCandidateTis():fullSet();guidedBasicCandidateSignature=signature;}}
+  }else {guidedBasicCandidateTis=null;guidedBasicCandidateSignature=null;}
+  svg.querySelectorAll('.grip-marker').forEach(marker=>{
+    const ti=Number(marker.dataset.tri),restrict=guidedBasicCandidateTis!==null,isOut=restrict&&!guidedBasicCandidateTis.has(ti),isFallen=isOut&&fallenRodTis.has(ti);
+    marker.classList.toggle('narrow-hidden',isOut&&!isFallen);marker.classList.toggle('eliminated',isFallen);
+  });
 }
 
 // ===== 進行command =====
