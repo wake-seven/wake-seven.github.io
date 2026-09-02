@@ -21,7 +21,7 @@ function openProgressionDialog(id,context={}){
   const options={...context,...messageContext};
   const name=options.name||options.dialogName||id;
   if(id==='chain'||CHAIN_STEPS[name])return openChainedDialog(name);
-  if(id==='clear')return showClearDialog();
+  if(id==='clear')return showClearDialog(messageContext);
   if(id==='message')return openMessageReview({resume:!!options.resume,returnTarget:options.returnTarget||null});
   if(id==='master')return showMasterDialog(options.kind||'primary');
   if(id==='rank')return openRankDialog(options.returnTarget||null);

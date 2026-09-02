@@ -269,9 +269,9 @@ function hasCompetingDialogForClear(){
   return ['chainDialog','messageDialog','masterDialog','speedPauseDialog','speedRestartDialog','rankDialog','tipGuideDialog','guideHubDialog','twoMoveDialog','twoMoveDetailDialog','optimalFailDialog','resetDialog','aboutDialog','settingsDialog','boardThemeDialog']
     .some(id=>$(id)&&!$(id).hidden);
 }
-function showClearDialog(){
+function showClearDialog(contextOverride=null){
   finishClearFlowDialog();
-  const clearContext=createClearTransitionContext(stageIndex+1);
+  const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);
   // 速解きのクリアは専用のタイマー・次問遷移で処理する。
   // 通常ステージの古い stageIndex / masteryClearContext を使って
   // 卒業試験や名人ダイアログを表示してはいけない。

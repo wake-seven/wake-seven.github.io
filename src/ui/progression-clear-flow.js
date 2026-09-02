@@ -30,6 +30,15 @@ function celebrateClear(){
 // クリア処理の開始入口。演出とダイアログ表示を一度だけ予約する。
 function startClearFlow(){
   const clearCycle=beginClearFlow();if(!clearCycle)return;
+  // クリア開始時点のモード・問題番号・周回を固定する。演出中に別の
+  // 復元や再描画が走っても、後続の表示が古いグローバル状態を拾わない。
+  const context=createClearTransitionContext(stageIndex+1);
+  clearFlowState=Object.freeze({...clearFlowState,context,cycle:clearCycle});
+  if(context.mode==='speed'){
+    // 速解きは専用の完了処理が次問を進める。通常クリア予約を作らない。
+    resetClearFlow();
+    return;
+  }
   const delay=celebrateClear();
   scheduleClearFlowDialog(()=>{if(!WakeSevenAppContext.isClearShown()||!isSolved()){resetClearFlow();return;}finishClearFlow();},delay,clearCycle);
 }
@@ -89,7 +98,7 @@ function createClearTransitionContext(nextStageIndex=stageIndex){
 function finishClearFlow(){
   if(clearFlowPhase!==CLEAR_FLOW_PHASE.dialogPending)return false;
   finishClearFlowDialog();
-  openProgressionDialog('clear');
+  openProgressionDialog('clear',clearFlowState.context||{});
   requestAnimationFrame(()=>{
     if(WakeSevenAppContext.isClearShown()&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
   });
@@ -123,7 +132,7 @@ function dispatchClearFlowAction(action){
   makerButtonBlockedUntil=performance.now()+600;
   clearUiEffectTimers('maker-reveal');
   setUiEffectTimer('maker-reveal','unlock',()=>{makerButtonBlockedUntil=0;renderStageNav();},600);
-  const context=createClearTransitionContext(WakeSevenAppContext.snapshot().stageIndex+1);
+  const context=clearFlowState.context||createClearTransitionContext(WakeSevenAppContext.snapshot().stageIndex+1);
   const nextStageIndex=context.nextStageIndex;
   const route=resolveAfterClearRoute(context);
   clearFlowState=Object.freeze({...clearFlowState,action,context,route});
