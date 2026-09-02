@@ -250,6 +250,9 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       // SMILのanimateTransform+beginElement()は、iOS Safariで挿入直後に最終フレームが
       // 一瞬先に描かれてから巻き戻る不具合が出たため、Web Animations API(他の演出でも
       // 使っている書き方)に統一する。
+      // 静止時の枠を先に消す。回転追従する枠はunit内で描くため、
+      // 盤面側に残った固定枠と二重表示にならないようにする。
+      clearApplicationTargetLayer(board);
       for(const index of t.cells)unit.appendChild(cycleTiles[index]);
       unit.appendChild(touch);
       // 回転中も共有レイヤーAPIで対象パネルの枠を生成する。

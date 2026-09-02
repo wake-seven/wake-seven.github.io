@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-21:18';
+const APP_VERSION='2026.09.02-21:20';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -6201,6 +6201,9 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       // SMILのanimateTransform+beginElement()は、iOS Safariで挿入直後に最終フレームが
       // 一瞬先に描かれてから巻き戻る不具合が出たため、Web Animations API(他の演出でも
       // 使っている書き方)に統一する。
+      // 静止時の枠を先に消す。回転追従する枠はunit内で描くため、
+      // 盤面側に残った固定枠と二重表示にならないようにする。
+      clearApplicationTargetLayer(board);
       for(const index of t.cells)unit.appendChild(cycleTiles[index]);
       unit.appendChild(touch);
       // 回転中も共有レイヤーAPIで対象パネルの枠を生成する。
