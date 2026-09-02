@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-01:21';
+const APP_VERSION='2026.09.03-01:38';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5124,6 +5124,30 @@ function hexPath(r){
 }
 // 公開ネイティブモジュールの構文境界。
 export {};
+
+// ===== アプリケーション共有状態 =====
+// ===== アプリケーション共有状態の入口 =====
+// 画面やコマンドから runtime.js の変数を直接読み書きする箇所を
+// 少しずつ減らすための、小さな共有状態ゲートウェイ。
+// ここでは状態の所有権を奪わず、既存ランタイムの値へ安全に委譲する。
+const WakeSevenAppContext=Object.freeze({
+  // 現在の画面状態を、表示処理が使える読み取り専用スナップショットで返す。
+  snapshot(){
+    return Object.freeze({
+      mode:activeMode,
+      clearShown,
+      lap:activeLap,
+      stageIndex,
+      masteryIndex:extraIndex,
+      satoriIndex,
+      tutorialStep
+    });
+  },
+  isClearShown(){return clearShown===true;},
+  // clearShown の変更はここを通す。保存は既存の syncGameState の責務とする。
+  setClearShown(value){clearShown=value===true;return clearShown;},
+  setMode(mode){setActiveMode(mode);return activeMode;}
+});
 
 // ===== スピードランランタイム =====
 // ===== スピードラン(速解き)ランタイム =====
@@ -8255,7 +8279,7 @@ function initializeBoardPositionCommand(state,par){
   currentInitialState=state;currentInitialPar=par;
   const nextOri=dec(state);
   replaceBoardState({ori:nextOri,spin:Int16Array.from(nextOri),tiles:baseTiles.slice(),best:par,moves:0,history:[]});
-  clearShown=false;
+  WakeSevenAppContext.setClearShown(false);
   return nextOri;
 }
 function replaceBoardStateCommand(next,{paintNow=false}={}){
@@ -8274,7 +8298,7 @@ function captureFreeSessionCommand(){
 function restoreFreeSessionBoardCommand(session){
   if(!session)return false;
   replaceBoardStateCommand({ori:Uint8Array.from(session.ori),spin:Int16Array.from(session.spin),tiles:session.tileEls.slice(),moves:session.moves,best:session.best,history:session.history.map(cloneHistoryEntry)});
-  currentInitialState=session.initialState;currentInitialPar=session.initialPar;clearShown=session.clearShown;
+  currentInitialState=session.initialState;currentInitialPar=session.initialPar;WakeSevenAppContext.setClearShown(session.clearShown);
   return true;
 }
 function applyBoardOrientationCommand(permutation,flip=false){
@@ -10658,7 +10682,7 @@ function celebrateClear(){
 function startClearFlow(){
   const clearCycle=beginClearFlow();if(!clearCycle)return;
   const delay=celebrateClear();
-  scheduleClearFlowDialog(()=>{if(!clearShown||!isSolved()){resetClearFlow();return;}finishClearFlow();},delay,clearCycle);
+  scheduleClearFlowDialog(()=>{if(!WakeSevenAppContext.isClearShown()||!isSolved()){resetClearFlow();return;}finishClearFlow();},delay,clearCycle);
 }
 // クリア周期を識別する世代番号。表示予約がキャンセルされても、古い
 // 完了処理が後から実行された場合に現在の盤面へ作用しないようにする。
@@ -10689,13 +10713,13 @@ function finishClearFlowDialog(){clearFlowPhase=CLEAR_FLOW_PHASE.dialog;}
 // 閉じる副作用や連続表示の切り替えで判定がずれるため、同じクリア周期の
 // ルート判定と表示判定にはこの入口を使う。
 function createClearTransitionContext(nextStageIndex=stageIndex){
-  const mode=activeMode;
-  const masteryIndex=extraIndex;
-  const currentLapPrimaryCleared=activeLap===2?lap2ClearedStages:lap1ClearedStages;
+  const appState=WakeSevenAppContext.snapshot();
+  const {mode,lap,masteryIndex}=appState;
+  const currentLapPrimaryCleared=lap===2?lap2ClearedStages:lap1ClearedStages;
   return Object.freeze({
-    mode,stageIndex,extraIndex:masteryIndex,satoriIndex,activeLap,
+    mode,stageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,
     nextStageIndex,
-    solved:isSolved(),clearShown,
+    solved:isSolved(),clearShown:appState.clearShown,
     academyIsCleared:academyCleared(),
     allPrimaryIsCleared:allPrimaryCleared(),
     currentLapPrimaryComplete:STAGES.every((_,i)=>currentLapPrimaryCleared.has(i)),
@@ -10710,7 +10734,7 @@ function finishClearFlow(){
   finishClearFlowDialog();
   openProgressionDialog('clear');
   requestAnimationFrame(()=>{
-    if(clearShown&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
+    if(WakeSevenAppContext.isClearShown()&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
   });
   return true;
 }

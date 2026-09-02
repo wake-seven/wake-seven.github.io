@@ -29,7 +29,7 @@ function celebrateClear(){
 function startClearFlow(){
   const clearCycle=beginClearFlow();if(!clearCycle)return;
   const delay=celebrateClear();
-  scheduleClearFlowDialog(()=>{if(!clearShown||!isSolved()){resetClearFlow();return;}finishClearFlow();},delay,clearCycle);
+  scheduleClearFlowDialog(()=>{if(!WakeSevenAppContext.isClearShown()||!isSolved()){resetClearFlow();return;}finishClearFlow();},delay,clearCycle);
 }
 // クリア周期を識別する世代番号。表示予約がキャンセルされても、古い
 // 完了処理が後から実行された場合に現在の盤面へ作用しないようにする。
@@ -60,13 +60,13 @@ function finishClearFlowDialog(){clearFlowPhase=CLEAR_FLOW_PHASE.dialog;}
 // 閉じる副作用や連続表示の切り替えで判定がずれるため、同じクリア周期の
 // ルート判定と表示判定にはこの入口を使う。
 function createClearTransitionContext(nextStageIndex=stageIndex){
-  const mode=activeMode;
-  const masteryIndex=extraIndex;
-  const currentLapPrimaryCleared=activeLap===2?lap2ClearedStages:lap1ClearedStages;
+  const appState=WakeSevenAppContext.snapshot();
+  const {mode,lap,masteryIndex}=appState;
+  const currentLapPrimaryCleared=lap===2?lap2ClearedStages:lap1ClearedStages;
   return Object.freeze({
-    mode,stageIndex,extraIndex:masteryIndex,satoriIndex,activeLap,
+    mode,stageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,
     nextStageIndex,
-    solved:isSolved(),clearShown,
+    solved:isSolved(),clearShown:appState.clearShown,
     academyIsCleared:academyCleared(),
     allPrimaryIsCleared:allPrimaryCleared(),
     currentLapPrimaryComplete:STAGES.every((_,i)=>currentLapPrimaryCleared.has(i)),
@@ -81,7 +81,7 @@ function finishClearFlow(){
   finishClearFlowDialog();
   openProgressionDialog('clear');
   requestAnimationFrame(()=>{
-    if(clearShown&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
+    if(WakeSevenAppContext.isClearShown()&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
   });
   return true;
 }

@@ -26,7 +26,7 @@ function initializeBoardPositionCommand(state,par){
   currentInitialState=state;currentInitialPar=par;
   const nextOri=dec(state);
   replaceBoardState({ori:nextOri,spin:Int16Array.from(nextOri),tiles:baseTiles.slice(),best:par,moves:0,history:[]});
-  clearShown=false;
+  WakeSevenAppContext.setClearShown(false);
   return nextOri;
 }
 function replaceBoardStateCommand(next,{paintNow=false}={}){
@@ -45,7 +45,7 @@ function captureFreeSessionCommand(){
 function restoreFreeSessionBoardCommand(session){
   if(!session)return false;
   replaceBoardStateCommand({ori:Uint8Array.from(session.ori),spin:Int16Array.from(session.spin),tiles:session.tileEls.slice(),moves:session.moves,best:session.best,history:session.history.map(cloneHistoryEntry)});
-  currentInitialState=session.initialState;currentInitialPar=session.initialPar;clearShown=session.clearShown;
+  currentInitialState=session.initialState;currentInitialPar=session.initialPar;WakeSevenAppContext.setClearShown(session.clearShown);
   return true;
 }
 function applyBoardOrientationCommand(permutation,flip=false){
