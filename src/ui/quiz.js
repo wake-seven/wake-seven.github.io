@@ -29,6 +29,24 @@ function renderQuizInto(ids,quiz){
   options.replaceChildren(fragment);
   root.hidden=wasHidden;
 }
+// クイズ領域を安全に空に戻す。クリア後フロー側で個別にDOMを触らないための入口。
+function resetBoardQuiz(rootId,{requireAnswer=false}={}){
+  const root=$(rootId);
+  root.hidden=true;
+  root.replaceChildren();
+  root.dataset.boardQuizKey='';
+  root.classList.remove('quiz-success');
+  if(requireAnswer)$('clearNext').disabled=false;
+}
+// クリア後の通常4択は、出題データの解決を呼び出し側に任せてここで描画する。
+function renderClearQuizForEntry(clearEntry){
+  const quiz=clearEntry&&clearEntry.quiz?resolveLocaleText(clearEntry.quiz):undefined;
+  const root=$('clearQuiz');
+  root.classList.remove('quiz-success');
+  root.hidden=quiz===undefined;
+  if(quiz===undefined){root.dataset.quizKey='';return;}
+  renderQuizInto({root:'clearQuiz',options:'quizOptions',note:'quizNote',title:'quizTitle',question:'quizQuestion'},quiz);
+}
 function boardQuizPatternState(position){return TWO_MOVE_STAGES[TWO_MOVE_PATTERN_ORDER[position-1]].state;}
 // 問題データの state は、公開カタログでは整数エンコード、古い定義では
 // 7枚の配列の場合がある。両方を同じ整数状態へ正規化する。

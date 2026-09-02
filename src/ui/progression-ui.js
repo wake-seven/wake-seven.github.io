@@ -847,13 +847,7 @@ function hideGameDialogs(){
 // ===== クリア後クイズ =====
 // クイズの出題と回答表示を担当する。問題データは data/board-quiz.js を正とする。
 function renderClearQuiz(){
-  const clearEntry=clearEntryForCurrent();
-  const quiz=clearEntry&&clearEntry.quiz?resolveLocaleText(clearEntry.quiz):undefined;
-  const root=$('clearQuiz');
-  root.classList.remove('quiz-success');
-  root.hidden=quiz===undefined;
-  if(quiz===undefined){root.dataset.quizKey='';return;}
-  renderQuizInto({root:'clearQuiz',options:'quizOptions',note:'quizNote',title:'quizTitle',question:'quizQuestion'},quiz);
+  renderClearQuizForEntry(clearEntryForCurrent());
 }
 let twoMoveDisplayStates=[],twoMoveDisplayPatterns=[];
 const twoMoveGuard=createAnimGuard();
@@ -934,7 +928,7 @@ function transformIcon(kind){
 function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
   root.classList.remove('quiz-success');
-  if(!config){root.hidden=true;root.replaceChildren();root.dataset.boardQuizKey='';if(requireAnswer)$('clearNext').disabled=false;return;}
+  if(!config){resetBoardQuiz(rootId,{requireAnswer});return;}
   // 状態更新や再表示で同じ問題を再描画しても、4つの手数選択肢を再シャッフルしない。
   // 表示中に別順へ入れ替わると、初期順が見えてから動いたように感じられるため。
   const stateKey=config.state!==undefined?boardQuizStateValue(config.state):config.pattern||config.patterns?.join(',')||'';
@@ -952,8 +946,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
       ?config.state
       :boardQuizPatternState(config.pattern||config.patterns?.[0]));
   if(state===null){
-    root.hidden=true;root.replaceChildren();root.dataset.boardQuizKey='';
-    if(requireAnswer)$('clearNext').disabled=false;
+    resetBoardQuiz(rootId,{requireAnswer});
     return;
   }
   let {states,correct,question,moveChoiceOrder}=boardQuizPresentation(config,state,copy);

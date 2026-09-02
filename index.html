@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.02-23:34';
+const APP_VERSION='2026.09.02-23:35';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -8582,6 +8582,24 @@ function renderQuizInto(ids,quiz){
   options.replaceChildren(fragment);
   root.hidden=wasHidden;
 }
+// クイズ領域を安全に空に戻す。クリア後フロー側で個別にDOMを触らないための入口。
+function resetBoardQuiz(rootId,{requireAnswer=false}={}){
+  const root=$(rootId);
+  root.hidden=true;
+  root.replaceChildren();
+  root.dataset.boardQuizKey='';
+  root.classList.remove('quiz-success');
+  if(requireAnswer)$('clearNext').disabled=false;
+}
+// クリア後の通常4択は、出題データの解決を呼び出し側に任せてここで描画する。
+function renderClearQuizForEntry(clearEntry){
+  const quiz=clearEntry&&clearEntry.quiz?resolveLocaleText(clearEntry.quiz):undefined;
+  const root=$('clearQuiz');
+  root.classList.remove('quiz-success');
+  root.hidden=quiz===undefined;
+  if(quiz===undefined){root.dataset.quizKey='';return;}
+  renderQuizInto({root:'clearQuiz',options:'quizOptions',note:'quizNote',title:'quizTitle',question:'quizQuestion'},quiz);
+}
 function boardQuizPatternState(position){return TWO_MOVE_STAGES[TWO_MOVE_PATTERN_ORDER[position-1]].state;}
 // 問題データの state は、公開カタログでは整数エンコード、古い定義では
 // 7枚の配列の場合がある。両方を同じ整数状態へ正規化する。
@@ -8889,6 +8907,41 @@ function renderStageNavAccent(context={}){
 export {};
 
 // ===== ロードマップ表示 =====
+// 進行に関わるダイアログの共通入口。
+// 実際の表示内容は既存の各UI実装へ委譲し、呼び出し側が個別関数を
+// 覚えなくて済むようにする。ダイアログの状態形式は runtime 側と共有する。
+function openProgressionDialog(id,context={}){
+  const name=context.name||context.dialogName||id;
+  if(id==='chain'||CHAIN_STEPS[name])return openChainedDialog(name);
+  if(id==='clear')return showClearDialog();
+  if(id==='message')return openMessageReview({resume:!!context.resume,returnTarget:context.returnTarget||null});
+  if(id==='master')return showMasterDialog(context.kind||'primary');
+  if(id==='rank')return openRankDialog(context.returnTarget||null);
+  if(id==='tipGuide')return openTipGuide();
+  if(id==='guideHub')return openGuideHub();
+  if(id==='twoMove')return openTwoMovePatterns();
+  if(id==='twoMoveDetail')return openTwoMoveDetail(context.state,context.index);
+  if(id==='twoMoveLesson')return openTwoMoveLessonDialog(!!context.retry);
+  if(id==='speedPause')return openSpeedPauseDialog();
+  if(id==='optimalFail')return renderOptimalFail();
+  const dialog=$(id);
+  if(dialog){dialog.hidden=false;return true;}
+  return false;
+}
+
+// 進行中のダイアログと、その付随する案内演出をまとめて閉じる。
+function closeProgressionDialog(){
+  if(typeof hideGameDialogs==='function'){hideGameDialogs();return true;}
+  return false;
+}
+
+// 保存済みのダイアログ状態を既存の復元処理へ渡す共通入口。
+function restoreProgressionDialog(state){
+  if(typeof restoreDialogState!=='function')return false;
+  return !!restoreDialogState(state);
+}
+
+// ===== ヒント表示 =====
 // 節目ダイアログの表示条件をまとめる。報酬付与や遷移は progression-ui.js 側が担当する。
 function masterDialogTrialState(kind){
   const {lap}=runtimeSnapshot();
@@ -8923,7 +8976,7 @@ function masterDialogVisibility(kind,needsMasteryTrial){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== ヒント表示 =====
+// ===== クリア後遷移 =====
 // ===== 進行UI（このファイルの責務） =====
 // ステージ選択、進行表示、クリア後表示をまとめる。前後移動イベントは
 // progression-navigation.js、共通の小さな表示処理は progression-render.js が担当する。
@@ -9773,13 +9826,7 @@ function hideGameDialogs(){
 // ===== クリア後クイズ =====
 // クイズの出題と回答表示を担当する。問題データは data/board-quiz.js を正とする。
 function renderClearQuiz(){
-  const clearEntry=clearEntryForCurrent();
-  const quiz=clearEntry&&clearEntry.quiz?resolveLocaleText(clearEntry.quiz):undefined;
-  const root=$('clearQuiz');
-  root.classList.remove('quiz-success');
-  root.hidden=quiz===undefined;
-  if(quiz===undefined){root.dataset.quizKey='';return;}
-  renderQuizInto({root:'clearQuiz',options:'quizOptions',note:'quizNote',title:'quizTitle',question:'quizQuestion'},quiz);
+  renderClearQuizForEntry(clearEntryForCurrent());
 }
 let twoMoveDisplayStates=[],twoMoveDisplayPatterns=[];
 const twoMoveGuard=createAnimGuard();
@@ -9860,7 +9907,7 @@ function transformIcon(kind){
 function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
   const root=$(rootId);
   root.classList.remove('quiz-success');
-  if(!config){root.hidden=true;root.replaceChildren();root.dataset.boardQuizKey='';if(requireAnswer)$('clearNext').disabled=false;return;}
+  if(!config){resetBoardQuiz(rootId,{requireAnswer});return;}
   // 状態更新や再表示で同じ問題を再描画しても、4つの手数選択肢を再シャッフルしない。
   // 表示中に別順へ入れ替わると、初期順が見えてから動いたように感じられるため。
   const stateKey=config.state!==undefined?boardQuizStateValue(config.state):config.pattern||config.patterns?.join(',')||'';
@@ -9878,8 +9925,7 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
       ?config.state
       :boardQuizPatternState(config.pattern||config.patterns?.[0]));
   if(state===null){
-    root.hidden=true;root.replaceChildren();root.dataset.boardQuizKey='';
-    if(requireAnswer)$('clearNext').disabled=false;
+    resetBoardQuiz(rootId,{requireAnswer});
     return;
   }
   let {states,correct,question,moveChoiceOrder}=boardQuizPresentation(config,state,copy);
@@ -10477,7 +10523,7 @@ function moveTwoMoveDetail(direction){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== クリア後遷移 =====
+// ===== 進行ナビゲーション =====
 // 進行画面から呼び出す公開コマンドの名前空間。
 // 描画や状態計算とは分離し、イベント配線が参照する入口だけを束ねる。
 const GameNavigation=Object.freeze({
@@ -10499,7 +10545,7 @@ const GameDialogs=Object.freeze({
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 進行ナビゲーション =====
+// ===== SVG表示境界 =====
 // ===== 名人ロードマップ表示 =====
 function renderMasterRoadmap(kind){
   const roadmap=$('masterRoadmap'),roadmapNote=$('masterRoadmapNote');
@@ -10548,7 +10594,7 @@ function masterCommonRules(){return currentLang==='ja'?'名人への道は最短
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};
 
-// ===== SVG表示境界 =====
+// ===== 画面描画境界 =====
 // ===== ヒント表示・チュートリアル補助 =====
 function clearHintVisuals(preserveSelection=false){
   clearAxisGuide();
@@ -10590,7 +10636,7 @@ $('hint').addEventListener('click',()=>{cancelTutorialHint();if(isFourthVolume()
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};
 
-// ===== 画面描画境界 =====
+// ===== イベントと起動 =====
 // ===== クリア後の状態遷移 =====
 // クリア演出の表示と、次の問題/コースへの遷移を進行UI本体から分離する。
 // clearShown は保存・進行用の状態なので、表示予約の重複防止には使わない。
@@ -10709,7 +10755,7 @@ function returnToClearDialog(){
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};
 
-// ===== イベントと起動 =====
+// ===== 起動・ライフサイクル =====
 // ===== 進行ナビゲーションのイベント =====
 // 画面遷移のイベント登録を、ロードマップ/ダイアログ描画から分離する。
 $('prevStage').addEventListener('click',()=>{
@@ -10772,7 +10818,7 @@ $('freeMode').addEventListener('click',()=>{
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};
 
-// ===== 起動・ライフサイクル =====
+// ===== 公開API名前空間 =====
 // 称号表示と称号一覧ダイアログ。
 // 盤面選択画面やクリア後演出からも利用するため、描画の共通部をここに集約する。
 function rankFrameSvg(text,locked=false,index=0,doubleFrame=false,dimmed=false){
@@ -10884,7 +10930,7 @@ function openRankDialogFrom(dialogId,sealId){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 公開API名前空間 =====
+// ===== ui/svg.js =====
 // ===== SVG表示境界 =====
 // SVGを生成するrendererと、DOMコンテナへの取り付けを分離する。
 function svgMount(root,markup=''){
