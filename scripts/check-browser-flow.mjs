@@ -15,7 +15,7 @@ const speed = await read('src/runtime/speed.js');
 const runtime = await read('src/runtime/runtime.js');
 const message = await read('src/ui/message.js');
 
-// Browser-like flow contracts: the shell must exist before bootstrap restores
+// ブラウザ相当の導線契約。起動復元の前に画面の骨格が存在することを確認する。
 // state, and each user-visible transition must have a named integration point.
 for (const id of ['introDialog', 'introStart', 'tutorialReset', 'board', 'reset', 'undo', 'chainDialog', 'clearDialog']) {
   assert.match(template, new RegExp(`id=["']${id}["']`), `browser flow DOM contract is missing: ${id}`);
@@ -69,7 +69,7 @@ assert.match(board, /syncGameState\(\);[\s\S]{0,240}STORAGE_KEY_GROUPS\.progress
 assert.match(template, /body\.app-booting\{visibility:hidden\}/,
   'initial placeholder must remain hidden during reload restoration');
 
-// Clear/message dialog navigation contract.  This is deliberately a source
+// クリア／メッセージダイアログの導線契約。これは意図的にソース
 // contract rather than a DOM simulator: it ensures every route has an explicit
 // close/advance/review boundary and that a reload can reconstruct the dialog
 // without losing the cleared position.
@@ -112,7 +112,7 @@ assert.match(runtime, /state\.id==='clear'[\s\S]*clearShown&&isSolved\(\)[\s\S]*
 assert.match(runtime, /state\.id==='message'[\s\S]*openMessageReview\(\{resume:true\}\)/,
   'restoring message review must rebuild it through the normal resume route');
 
-// Execute the pure pointer/session boundary in a VM. This is intentionally a
+// 純粋なpointer/session境界をVMで実行する。これは意図的に
 // browser-equivalent contract rather than a full DOM simulator: it verifies
 // pointer normalization, unrelated-pointer rejection, and cancellation of the
 // scheduled frame without requiring a graphical browser.

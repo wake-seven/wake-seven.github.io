@@ -1,7 +1,7 @@
 /*
  * WAKE SEVEN 統合状態の基盤。
  *
- * The public build in index.html is intentionally self-contained.  This file
+ * index.htmlの公開版は意図的に自己完結させている。このファイルは
  * is injected as an inline script by scripts/build-index.mjs so it remains
  * ビルドなしでGitHub Pagesから利用できるよう、公開版へインライン埋め込みする。
  */

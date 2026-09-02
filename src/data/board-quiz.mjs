@@ -1,4 +1,4 @@
-/** Development-side facade for multilingual BOARD_QUIZ_COPY. */
+/** 多言語BOARD_QUIZ_COPYの開発側窓口。 */
 const clone = value => value == null ? value : structuredClone(value);
 export function createBoardQuizCatalog(copy = {}) {
   const records = clone(copy) || {};

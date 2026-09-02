@@ -172,7 +172,7 @@ function syncGameState(){
     speedTrainingTrialCleared,speedIntermediateTrialCleared,speedMasteryTrialCleared
   });
   gameState.speed={activeVariant:speedVariant,sessions:Object.fromEntries(Object.keys(SPEED_MODE_DEFINITIONS).map(variant=>[variant,readSpeedSession(variant)]).filter(([,session])=>session))};
-  // activeMode is the canonical current mode. This context is only the
+  // activeModeが現在モードの正。ここは
   // campaign destination to restore after free/custom/speed screens.
   gameState.ui={editingBoard,returnStageContext};
   if(typeof serializeActiveBoard==='function')WakeSevenState.updateBoard(gameState,serializeActiveBoard());

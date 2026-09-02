@@ -1,4 +1,4 @@
-/** Speed-trial unlock state service for the ESM runtime. */
+/** ESMランタイム向け速解き解放状態サービス。 */
 export function createSpeedUnlockService({ initialUnlocks = {}, awakenedGranted = false } = {}) {
   const initialize = () => Object.freeze({
     modeUnlocked: initialUnlocks.speedTraining === true || initialUnlocks.speedIntermediate === true

@@ -25,8 +25,8 @@ function inject(source,startMarker,endMarker,module,name) {
   const startAt = source.indexOf(startMarker);
   const endAt = source.indexOf(endMarker);
   if(startAt < 0 || endAt < 0 || endAt <= startAt) throw new Error(`${name} markers are missing from src/index.template.html.`);
-  // The generated artifact is a single native module script.  Source files
-  // are concatenated directly so CSP can forbid eval/Function entirely.
+  // 生成物は単一のnative module script。ソースを直接連結することで、
+  // CSPがeval/Functionを完全に禁止できる構成にする。
   return `${source.slice(0,startAt + startMarker.length)}\n<script type="module">\n${module.trim()}\n</script>\n${source.slice(endAt)}`;
 }
 const moduleLabels = ['盤面ドメイン', 'クリア後メッセージデータ', '基礎データ', '悟り出題データ', '多言語UIテキスト', '盤面クイズデータ', '固定挿絵・SVGデータ', '実行設定', 'サウンド', '速解き解放状態', '実行状態', 'スピードランランタイム', '盤面アニメーション補助', '盤面座標変換', '盤面UI', '盤面renderer', 'UIコンテキスト', '盤面コマンド', '進行コマンド', '設定コマンド', '進行command', '速解きcommand', '速解き記録command', 'チュートリアルcommand', 'クイズUI', 'クリアフロー', 'メッセージUI', '進行表示', '節目ダイアログ', '進行UI', 'ロードマップ表示', 'ヒント表示', 'クリア後遷移', '進行ナビゲーション', 'SVG表示境界', '画面描画境界', 'イベントと起動', '起動・ライフサイクル', '公開API名前空間'];

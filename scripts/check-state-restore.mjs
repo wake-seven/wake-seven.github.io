@@ -12,7 +12,7 @@ const bootstrapSource = await read('src/runtime/app-bootstrap.js');
 const template = await read('src/index.template.html');
 const published = await read('index.html');
 
-// A small localStorage implementation shared by two VM contexts represents a
+// 2つのVMコンテキストで共有する小さなlocalStorage実装により、
 // browser reload: JavaScript globals disappear, while storage survives.
 function createStorage(entries = {}) {
   const values = new Map(Object.entries(entries));

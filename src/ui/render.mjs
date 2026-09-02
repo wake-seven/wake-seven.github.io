@@ -1,5 +1,5 @@
 /**
- * State-to-view coordination for development-side integrations.
+ * 状態から画面への調整を担う、開発側接続用の境界。
  * Views and renderers are injected so this module remains usable without a
  * DOM and does not depend on the classic application's global state.
  */

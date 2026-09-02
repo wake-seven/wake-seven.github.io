@@ -1,7 +1,7 @@
 /**
- * State-driven navigation facade for development-side integrations.
+ * 状態駆動のナビゲーション窓口。開発側の接続に使用する。
  *
- * The host supplies the store and navigation normalizer, so this module does
+ * ホストからストアとナビゲーション正規化関数を受け取るため、このモジュールは
  * not know about DOM elements, routes, or the classic application's globals.
  */
 export function createNavigationController({ store, normalize = value => value, onNavigate } = {}) {

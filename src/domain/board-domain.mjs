@@ -1,4 +1,4 @@
-/** Pure ES module version of the board domain used by development tooling. */
+/** 開発用ツールが利用する、純粋なESモジュール版の盤面ドメイン。 */
 export function createBoardDomain({ cellCount, triangles }) {
   const N = cellCount;
   const powers = Array.from({ length: N }, (_, i) => 3 ** i);

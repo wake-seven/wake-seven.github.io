@@ -1,4 +1,4 @@
-/** Development command boundary for navigation and speed-run actions. */
+/** 開発用のナビゲーション・速解き操作コマンド境界。 */
 export function createProgressionCommands({ startSpeedRun, advanceSpeedRun, navigate, setState } = {}) {
   const call = (handler, ...args) => typeof handler === 'function'
     ? handler(...args)

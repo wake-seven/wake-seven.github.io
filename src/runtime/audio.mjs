@@ -1,4 +1,4 @@
-/** Browser audio service. No game globals are required. */
+/** ブラウザ音声サービス。ゲームのグローバル変数を必要としない。 */
 export function createAudioService({ enabled = true, documentRef, windowRef } = {}) {
   let soundEnabled = enabled !== false;
   let audioContext = null;
@@ -23,7 +23,6 @@ export function createAudioService({ enabled = true, documentRef, windowRef } = 
   };
   const playRotateSound = direction => playTone(direction > 0 ? 392 : 349, 0.055, 0.022);
   const playClearSound = (kind = 'normal') => {
-    const tunes = { normal: [[523, 0], [659, 0.075], [784, 0.15]], volume: [[440, 0], [554, 0.08], [659, 0.16], [880, 0.26]], training: [[440, 0], [554, 0.07], [659, 0.14], [880, 0.23], [1109, 0.33]], mastery: [[392, 0], [523, 0.08], [659, 0.16], [784, 0.24], [1047, 0.34], [1319, 0.47]], satori: [[392, 0], [523, 0.075], [659, 0.15], [784, 0.225], [1047, 0.31], [1319, 0.405], [1568, 0.51], [2093, 0.64]] };
     (tunes[kind] || tunes.normal).forEach(([tone, offset]) => playTone(tone, 0.18, 0.032, offset));
   };
   return Object.freeze({ get enabled() { return soundEnabled; }, setEnabled: value => (soundEnabled = value !== false), playTone, playRotateSound, playClearSound });

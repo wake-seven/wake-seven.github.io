@@ -1,4 +1,4 @@
-/** Pure progression policy facade for development-side consumers. */
+/** 開発側から利用する、純粋な進行ポリシーの窓口。 */
 export function createProgressionDomain({ academyTotal = 20, trainingStart = 20, trainingTotal = 27 } = {}) {
   const modes = Object.freeze(['tutorial', 'stage', 'mastery', 'satori', 'speed', 'free', 'custom']);
   const normalizeNavigation = (value = {}) => Object.freeze({

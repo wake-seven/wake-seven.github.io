@@ -1,6 +1,6 @@
 /**
- * Development command boundary for board actions.
- * The classic implementation can be injected at the edge; this module owns
+ * 開発用の盤面操作コマンド境界。
+ * classic実装は端で注入でき、このモジュールは
  * neither DOM access nor persistence policy.
  */
 export function createBoardCommands({ getBoard, setBoard, applyMove, undoMove } = {}) {

@@ -22,7 +22,7 @@ import { createSpeedUnlockService } from './runtime/progression-runtime.mjs';
 import { createRuntimeEnvironment } from './runtime/environment.mjs';
 import { createApplicationController } from './runtime/application.mjs';
 
-/** Development ESM entry point. The published build still uses index.html. */
+/** 開発用ESMの入口。公開版は引き続きindex.htmlを使用する。 */
 export function createDevelopmentRuntime({ cellCount = 7, triangles = [], data = {}, commands = {}, ui = {}, environment = {} } = {}) {
   const store = createGameStore({ navigation: { mode: 'stage', lap: 1 } });
   const board = createBoardDomain({ cellCount, triangles });

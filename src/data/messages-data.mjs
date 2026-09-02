@@ -1,4 +1,4 @@
-/** Development-side facade for the classic CLEAR_CONTENT catalog. */
+/** classic CLEAR_CONTENTカタログの開発側窓口。 */
 export const MESSAGE_TIMINGS = Object.freeze({ beforeStart: 'beforeStart', afterClear: 'afterClear' });
 export const MESSAGE_TYPES = Object.freeze({ dialog: 'dialog', clear: 'clear', quiz: 'quiz', guidance: 'guidance', milestone: 'milestone' });
 const clone = value => value == null ? value : structuredClone(value);

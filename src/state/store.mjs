@@ -1,4 +1,4 @@
-/** Small ESM store contract for development-side integrations. */
+/** 開発側の接続に使う小さなESM状態ストア契約。 */
 export function createGameStore(initial = {}) {
   const clone = value => typeof structuredClone === 'function' ? structuredClone(value) : JSON.parse(JSON.stringify(value));
   let state = clone(initial);

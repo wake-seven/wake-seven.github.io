@@ -24,7 +24,7 @@ for (const file of modules) {
     const dependency = resolve(dirname(file), specifier);
     assert.ok(known.has(dependency), `Missing ESM dependency: ${relative(root, file)} -> ${specifier}`);
   }
-  // ESM services receive browser capabilities by injection; direct globals hide dependencies.
+  // ESMサービスはブラウザ機能を注入で受け取り、直接参照で依存関係を隠さない。
   assert.doesNotMatch(source, /\bwindow\s*\./, `Direct window reference remains in ${relative(root, file)}.`);
   assert.doesNotMatch(source, /\bdocument\s*\./, `Direct document reference remains in ${relative(root, file)}.`);
 }

@@ -1,4 +1,4 @@
-/** Development-side facade for generated SATORI_STAGES records. */
+/** 生成済みSATORI_STAGESレコードの開発側窓口。 */
 const clone = value => value == null ? value : structuredClone(value);
 export function createSatoriCatalog(stages = []) {
   const records = clone(stages) || [];
