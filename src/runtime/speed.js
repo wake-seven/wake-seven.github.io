@@ -83,7 +83,7 @@ function openSpeedPicker(){
   if(!DEBUG_MODE&&!featureUnlocked('speedRun'))return;
   // 実行中の速解きから開始選択へ戻さない。問題切替や再描画で
   // 同じ入口が再度呼ばれても、開始ダイアログを一瞬表示しない。
-  if(isMode('speed')&&speedSession?.started)return;
+  if(isMode('speed')&&(speedSession?.started||Number(speedSession?.index)>0))return;
   speedVariant=preferredSpeedVariant();
   storage.set(SPEED_LAST_TAB_STORAGE_KEY,speedVariant);
   showMasterDialog('speedIntro');

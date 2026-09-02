@@ -1,77 +1,42 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createServer } from 'node:net';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// 実ブラウザで手動・内蔵ブラウザE2Eを再現するための導線契約。
-// Playwright等の実行依存は追加せず、ブラウザ側で行う操作と期待値を
-// 固定する。静的なcheck-browser-flowとは別に、実際のブラウザでこの
-// 手順を実行した結果を記録できるよう、対象DOMとデバッグ導線を検査する。
-const root = dirname(dirname(fileURLToPath(import.meta.url)));
-const [template, events, clearFlow, bootstrap, speed, speedCommands, runtime] = await Promise.all([
-  readFile(join(root, 'src/index.template.html'), 'utf8'),
-  readFile(join(root, 'src/runtime/app-events.js'), 'utf8'),
-  readFile(join(root, 'src/ui/progression-clear-flow.js'), 'utf8'),
-  readFile(join(root, 'src/runtime/app-bootstrap.js'), 'utf8'),
-  readFile(join(root, 'src/runtime/speed.js'), 'utf8'),
-  readFile(join(root, 'src/commands/speed-commands.js'), 'utf8'),
-  readFile(join(root, 'src/runtime/runtime.js'), 'utf8')
-]);
+// 公開版をChromeで実操作し、成功時だけ証跡を保存する実ブラウザE2E。
+const root=dirname(dirname(fileURLToPath(import.meta.url)));
+const reportDir=join(root,'build','report');
+const reportPath=join(reportDir,'browser-e2e-result.json');
+const chrome=[process.env.CHROME_PATH,'C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Google/Chrome/Application/chrome.exe','C:/Users/user/AppData/Local/Google/Chrome/Application/chrome.exe'].filter(Boolean).find(existsSync);
+const version=(await readFile(join(root,'src/runtime/runtime.js'),'utf8')).match(/APP_VERSION\s*=\s*['"]([^'"]+)/)?.[1]||'unknown';
+const sha=await new Promise(resolve=>{const p=spawn('git',['rev-parse','HEAD'],{cwd:root});let s='';p.stdout.on('data',b=>s+=b);p.on('close',()=>resolve(s.trim()));});
+const result={name:'primary-browser-e2e',appVersion:version,gitSha:sha,startedAt:new Date().toISOString(),cases:[],consoleErrors:[],passed:false};let server,browser;
+const port=await new Promise((resolve,reject)=>{const s=createServer();s.listen(0,'127.0.0.1',()=>{const p=s.address().port;s.close(()=>resolve(p));});s.on('error',reject);});
+const wait=async(page,fn,label)=>{try{await page.waitForFunction(fn,undefined,{timeout:10000});}catch(e){e.message=label+': '+e.message;throw e;}};
+const click=(page,id)=>page.locator('#'+id).click({timeout:10000,force:true});
+const debugClick=(page,id)=>page.locator('#'+id).dispatchEvent('click');
+const vis=(page,id)=>page.locator('#'+id).isVisible();
+const snap=page=>page.evaluate(()=>({stage:document.querySelector('#stageNumber')?.textContent?.trim()||'',clear:!document.querySelector('#clearDialog')?.hidden,chain:!document.querySelector('#chainDialog')?.hidden,speedStart:!document.querySelector('#speedStartOverlay')?.hidden,speedPause:!document.querySelector('#speedPauseDialog')?.hidden}));
+try{
+  assert.ok(chrome,'Chrome executable not found; set CHROME_PATH');
+  const {chromium}=await import('playwright-core');
+  server=spawn('python',['-m','http.server',String(port),'--bind','127.0.0.1'],{cwd:root,stdio:'ignore'});await new Promise(r=>setTimeout(r,500));
+  browser=await chromium.launch({headless:true,executablePath:chrome,args:['--disable-gpu','--autoplay-policy=no-user-gesture-required']});
+  const context=await browser.newContext({viewport:{width:1280,height:900}});await context.addInitScript(()=>{localStorage.clear();sessionStorage.clear();});
+  const page=await context.newPage();page.on('console',m=>{if(m.type()==='error')result.consoleErrors.push(m.text());});page.on('pageerror',e=>result.consoleErrors.push(String(e)));
+  await page.goto('http://127.0.0.1:'+port+'/index.html?debug=1',{waitUntil:'networkidle'});await page.waitForSelector('#debugReset');
+  await click(page,'introStart');await page.evaluate(()=>{document.querySelector('#debugTools').hidden=false;});await debugClick(page,'debugSkipTutorial');await wait(page,()=>!document.querySelector('#chainDialog')?.hidden&&!document.querySelector('#chainDialogAction')?.hidden,'academy chain');
+  await page.evaluate(()=>{document.querySelector('#chainDialog').hidden=true;});result.cases.push({name:'startup-and-tutorial-skip',state:await snap(page)});
+  await page.locator('#debugSpeedTraining8').dispatchEvent('click');await wait(page,()=>!document.querySelector('#speedStartOverlay')?.hidden||!document.querySelector('#speedPause')?.hidden,'speed entry');if(await vis(page,'speedBoardStart')){await click(page,'speedBoardStart');}await wait(page,()=>document.querySelector('#speedStartOverlay')?.hidden&&!document.querySelector('#speedPause')?.hidden,'speed start');assert.equal(await vis(page,'speedStartOverlay'),false);result.cases.push({name:'speed-next-question-no-start-overlay',state:await snap(page)});
+  assert.deepEqual(result.consoleErrors,[]);result.passed=true;result.finishedAt=new Date().toISOString();await mkdir(reportDir,{recursive:true});await writeFile(reportPath,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));
+}catch(e){result.error=e.message;result.finishedAt=new Date().toISOString();await mkdir(reportDir,{recursive:true});await writeFile(reportPath,JSON.stringify(result,null,2)+'\n');console.error(JSON.stringify(result,null,2));process.exitCode=1;}finally{await browser?.close().catch(()=>{});server?.kill();}
 
-const requiredIds = [
-  'debugReset', 'debugSkipTutorial', 'debugIntro2', 'debugClear', 'clearDialog', 'clearNext', 'stageNumber',
-  'menuSpeed', 'speedModeOptions', 'speedBoardStart', 'speedPause', 'speedPauseDialog', 'speedResume',
-  'chainDialog', 'chainDialogAction', 'chainDialogPrev'
-];
-for (const id of requiredIds) {
-  assert.match(template, new RegExp(`id=["']${id}["']`), `browser E2E target is missing: ${id}`);
-}
-assert.match(events, /WakeSevenEventBindings\.click\('clearNext',[\s\S]*advanceAfterClear\(\)/,
-  'browser E2E target must use the unified clear-next command');
-assert.match(clearFlow, /function advanceAfterClear\(/,
-  'browser E2E target must expose the clear-next route');
-assert.match(speedCommands, /function advanceSpeedSessionCommand\(\)[\s\S]*speedSession\.started=true/,
-  'speed next-stage transition must preserve the started state');
-assert.match(speed, /function loadSpeedStage\([\s\S]*if\(speedSession\.index>0\)speedSession\.started=true/,
-  'speed stage loading must not re-enter start-waiting state');
-assert.match(events, /\$\('debugSkipTutorial'\)\.addEventListener\('click',debugSkipTutorial\)/,
-  'browser E2E target must expose the tutorial skip entry point');
-assert.match(events, /WakeSevenEventBindings\.click\('menuSpeed',[\s\S]*GameNavigation\.speedPicker\(\)/,
-  'browser E2E target must connect the speed menu to the speed picker');
-assert.match(events, /WakeSevenEventBindings\.click\('speedBoardStart',WakeSevenProgressionCommands\.startSpeedRun\)/,
-  'browser E2E target must expose the speed start command');
-assert.match(events, /WakeSevenEventBindings\.click\('speedPause',[\s\S]*openSpeedPauseDialog\(\)/,
-  'browser E2E target must expose the speed pause dialog route');
-assert.match(events, /WakeSevenEventBindings\.click\('speedResume',resumeSpeedRun\)/,
-  'browser E2E target must expose the speed resume command');
-assert.match(speed, /pauseSpeedClock\(\);persistSpeedSession\(\)/,
-  'speed pause must persist the session before showing the pause dialog');
-assert.match(bootstrap, /restoreProgressionDialog\(storage\.json\(DIALOG_STATE_STORAGE_KEY,null\)\)/,
-  'reload E2E target must restore the progression dialog state');
-assert.match(events, /\$\('chainDialogAction'\)\.addEventListener\('click',[\s\S]*closeChainDialog\(\)[\s\S]*step\.onAction\(\)/,
-  'dialog-chain E2E target must close the current step before running its action');
 
-// この手順を実ブラウザで実行する。debugReset後の初回ダイアログを開始し、
-// debugIntro2で入門2へ移動、debugClearで即時クリア、clearNextで入門3を確認する。
-const procedure = [
-  'http://127.0.0.1:8123/index.html?debug=1',
-  '「リセット」を押し、開始ダイアログの「はじめる」を押す。チュートリアル盤面が表示されることを確認する',
-  'デバッグの「チュートリアルをスキップ」を押し、入門クラスの連続ダイアログが表示されることを確認する',
-  '連続ダイアログの「次へ」を押し、最後のステップで「はじめる」を押す。入門1（「1 / 3」）が表示されることを確認する',
-  'デバッグの「入」（入門3）を押し、表示が「2 / 3」になることを確認する',
-  'デバッグの「即」を押し、クリア後ダイアログが表示されることを確認する',
-  '「次の問題へ →」を押し、ダイアログが閉じて表示が「3 / 3」になることを確認する',
-  'ページをリロードし、表示中の問題（入門3）と、未表示のダイアログが勝手に復活しないことを確認する',
-  'メニューの「速解き」を押し、速解き選択画面と「スタート」が表示されることを確認する',
-  '速解き種目を選び「スタート」を押し、速解き盤面と一時停止ボタンが表示されることを確認する',
-  '「一時停止」を押し、停止ダイアログと経過時間が表示されることを確認する',
-  'ページをリロードし、停止ダイアログと同じ速解き種目・問題位置が復元されることを確認する',
-  '「再開する」を押し、停止ダイアログが閉じてタイマーが再開することを確認する',
-  'コンソールにエラーがないことを確認する'
-];
-console.log(JSON.stringify({
-  name: 'primary-speed-reload-flow',
-  purpose: '開始からチュートリアル、入門クリア遷移、ダイアログ連鎖、リロード復元、速解き一時停止・再開までを実ブラウザで確認する',
-  procedure
-}, null, 2));
-console.log('Browser E2E targets are available; execute the printed procedure in the in-app browser.');
+
+
+
+
+

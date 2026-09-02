@@ -5235,7 +5235,7 @@ function openSpeedPicker(){
   if(!DEBUG_MODE&&!featureUnlocked('speedRun'))return;
   // 実行中の速解きから開始選択へ戻さない。問題切替や再描画で
   // 同じ入口が再度呼ばれても、開始ダイアログを一瞬表示しない。
-  if(isMode('speed')&&speedSession?.started)return;
+  if(isMode('speed')&&(speedSession?.started||Number(speedSession?.index)>0))return;
   speedVariant=preferredSpeedVariant();
   storage.set(SPEED_LAST_TAB_STORAGE_KEY,speedVariant);
   showMasterDialog('speedIntro');
@@ -9960,6 +9960,12 @@ function renderBoardQuiz(rootId,config,{requireAnswer=false}={}){
 // クリア後の形レッスン、最短2手ギャラリー、名人ダイアログを扱う。
 function showMasterDialog(kind='primary'){
   const masterDialog=$('masterDialog');
+  // 速解き開始後は、古いメニュー操作や遅延した復元処理から
+  // 「速解き開始」ダイアログを再表示させない。問題切替中も同じ実行を継続する。
+  if(kind==='speedIntro'&&isMode('speed')&&(speedSession?.started||Number(speedSession?.index)>0)){
+    masterDialog.hidden=true;
+    return false;
+  }
   // 同じ節目ダイアログを状態更新のために再描画することがあるが、
   // そのたびに称号アニメーションを再開すると「称号が二度出る」ように見える。
   const shouldAnimate=masterDialog.hidden||masterDialogKind!==kind;
