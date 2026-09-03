@@ -130,6 +130,22 @@ await mkdir(dirname(contextPath), { recursive: true });
 await writeReport(contextPath, context);
 const report = { schemaVersion: 1, name: 'wake7-check-gate', startedAt: new Date().toISOString(), contextPath: 'build/report/check-context.json', steps: [], passed: false,
   status: 'failed', summary: {}, warnings: [], errors: [], sourceRevision: await sourceRevision(root) };
+// 部分プロファイルの選択・未完了状態も、最終ゲートの証跡から追跡できるようにする。
+const readOptionalJson = async path => {
+  try { return JSON.parse(await readFile(path, 'utf8')); } catch { return null; }
+};
+const attachExecutionEvidence = async () => {
+  const contract = await readOptionalJson(join(root, 'scripts', 'check-execution-contract.json'));
+  const selection = await readOptionalJson(join(root, 'build', 'report', 'check-profile-selection.json'));
+  const profileResult = await readOptionalJson(join(root, 'build', 'report', 'check-profile-result.json'));
+  report.executionEvidence = {
+    contract: contract ? { schemaVersion: contract.schemaVersion, scopes: contract.scopes, policy: contract.policy } : null,
+    profileSelection: selection ? { status: selection.status, summary: selection.summary, changedFiles: selection.changedFiles } : null,
+    lastProfileResult: profileResult ? { status: profileResult.status, profile: profileResult.profile, fullGateRequired: profileResult.fullGateRequired, changedFiles: profileResult.changedFiles } : null,
+    fullGate: { required: true, status: report.status === 'passed' ? 'passed' : 'failed', source: 'check:gate' },
+    timingByGroup: report.summary?.byGroup || {}
+  };
+};
 await mkdir(dirname(reportPath), { recursive: true });
 for (const step of steps) {
   const result = await run(step);
@@ -141,6 +157,7 @@ for (const step of steps) {
     report.failedGroup = { name: result.group, label: result.groupLabel };
     report.summary = summarize(report.steps);
     report.finishedAt = new Date().toISOString();
+    await attachExecutionEvidence();
     await writeReport(reportPath, { ...report, generatedAt: report.finishedAt });
     console.error(`Check gate failed in ${result.groupLabel} (${result.group}): ${result.name}. Report: ${reportPath}`);
     if (result.reportLinks.length) console.error(`詳細レポート: ${result.reportLinks.join(', ')}`);
@@ -168,6 +185,7 @@ if (!report.failedStep) {
     .map(step => ({ name: step.name, profile: step.profile, durationMs: step.durationMs }));
   report.summary = { steps: report.steps.length, failedStep: null, byProfile, byGroup, slowest };
   report.runtime = { schemaVersion: 1, generatedAt: report.finishedAt, contextPath: 'build/report/check-context.json', profiles: byProfile, groups: byGroup, slowest };
+  await attachExecutionEvidence();
   await writeReport(runtimeReportPath, { schemaVersion: 1, name: 'wake7-check-runtime', generatedAt: report.finishedAt, sourceRevision: report.sourceRevision, profiles: byProfile, groups: byGroup, slowest });
   await writeReport(reportPath, { ...report, generatedAt: report.finishedAt });
   console.log('Check gate summary:');
