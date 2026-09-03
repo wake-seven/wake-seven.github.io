@@ -43,3 +43,9 @@ export function classifyStateException(ref) {
       : `既存の${purpose}処理。対応する入口とE2Eを確認してから移行する`
   });
 }
+export function relatedTestsForStateException(meta) {
+  if (meta?.purpose === 'dialog') return ['browser-e2e', 'browser-flow', 'state-restore'];
+  if (meta?.purpose === 'navigation' || meta?.purpose === 'progress') return ['browser-e2e', 'progression-flows', 'clear-flow-order'];
+  if (meta?.purpose === 'animation') return ['browser-e2e', 'ui-effects'];
+  return ['state-restore', 'browser-e2e'];
+}
