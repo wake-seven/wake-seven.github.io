@@ -45,6 +45,19 @@ try{
   await page.goto('http://127.0.0.1:'+port+'/index.html?debug=1&debugSpeedIndex=2',{waitUntil:'networkidle'});await page.waitForSelector('#debugReset');
   await click(page,'introStart');await page.evaluate(()=>{document.querySelector('#debugTools').hidden=false;});await debugClick(page,'debugSkipTutorial');await wait(page,()=>!document.querySelector('#chainDialog')?.hidden&&!document.querySelector('#chainDialogAction')?.hidden,'academy chain');
   await page.evaluate(()=>{document.querySelector('#chainDialog').hidden=true;});result.cases.push({name:'startup-and-tutorial-skip',state:await snap(page)});const box=await page.locator('#board').boundingBox();assert.ok(box,'board is visible');await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();await page.mouse.move(box.x+box.width/2+80,box.y+box.height/2,{steps:8});await page.mouse.up();await page.waitForTimeout(120);result.cases.push({name:'pointer-swipe-path',state:await snap(page)});
+  // ステージ選択はヘッダー・メニュー・称号一覧の3経路が同じダイアログを開くことを確認する。
+  await page.evaluate(()=>localStorage.clear());await page.reload({waitUntil:'networkidle'});await page.waitForSelector('#debugReset');
+  if(await vis(page,'introDialog')){await click(page,'introStart');await wait(page,()=>document.querySelector('#introDialog')?.hidden,'stage picker startup');}
+  await page.evaluate(()=>{document.querySelector('#debugTools').hidden=false;});await debugClick(page,'debugSkipTutorial');await page.waitForTimeout(80);await page.evaluate(()=>{document.querySelector('#chainDialog').hidden=true;document.querySelector('#menuToggle').style.setProperty('display','block');});
+  await click(page,'menuToggle');await click(page,'menuStagePicker');await wait(page,()=>!document.querySelector('#stagePicker')?.hidden,'stage picker menu entry');
+  result.cases.push({name:'stage-picker-menu-entry',state:await snap(page)});await click(page,'closeStagePicker');
+  await click(page,'stagePickerTrigger');await wait(page,()=>!document.querySelector('#stagePicker')?.hidden,'stage picker header entry');
+  result.cases.push({name:'stage-picker-header-entry',state:await snap(page)});await click(page,'closeStagePicker');await page.evaluate(()=>document.querySelector('#chainDialog').hidden=true);
+  await page.evaluate(()=>document.querySelector('#stagePickerRankBadge').removeAttribute('hidden'));await click(page,'stagePickerTrigger');await wait(page,()=>!document.querySelector('#stagePicker')?.hidden,'stage picker rank badge setup');await page.evaluate(()=>document.querySelector('#chainDialog').hidden=true);await page.locator('#stagePickerRankBadge').dispatchEvent('click');await wait(page,()=>!document.querySelector('#rankDialog')?.hidden,'stage picker rank badge entry');
+  result.cases.push({name:'stage-picker-rank-badge-entry',state:await snap(page)});await click(page,'closeRankDialog');
+  await page.evaluate(()=>{document.querySelector('#debugTools').hidden=false;});await debugClick(page,'debugAcademy20');await page.waitForTimeout(120);await page.evaluate(()=>{document.querySelector('#chainDialog').hidden=true;document.querySelector('#menuRankList').removeAttribute('hidden');});await debugClick(page,'menuToggle');await debugClick(page,'menuRankList');await wait(page,()=>!document.querySelector('#rankDialog')?.hidden,'rank list entry');
+  await page.locator('#rankList .rank-stage-link').first().dispatchEvent('click');await wait(page,()=>!document.querySelector('#stagePicker')?.hidden,'stage picker rank entry');
+  result.cases.push({name:'stage-picker-rank-entry',state:await snap(page)});
   // 各コースの入口を実ブラウザで開き、盤面と表示中の状態を確認する。
   // デバッグボタンは内部状態を直結するが、画面遷移・描画・ダイアログは実DOMを通る。
   for(const checkpoint of stageCheckpoints){

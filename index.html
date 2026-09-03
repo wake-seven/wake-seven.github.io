@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-10:23';
+const APP_VERSION='2026.09.03-10:43';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -4551,6 +4551,10 @@ function primarySectionPosition(index=stageIndex){
 // ステージ選択ダイアログでは、だるま学園・だるま修行もPRIMARY_SECTIONSの6区分をそれぞれ1ページとして見せる。
 // pickerRoundは負の数(-6〜-1)でこの6区分を表し、0以上は名人への道の巻、'satori'は悟りへの道のページ。
 const PRIMARY_PICKER_SECTION_COUNT=PRIMARY_SECTIONS.length;
+// 名人への道は15問単位、悟りへの道は複数ページで選択する。
+// 選択画面だけが使う表示上の定数をここで宣言し、未定義参照による画面停止を防ぐ。
+const EXTRA_ROUNDS=Math.ceil(EXTRA_STAGES.length/MASTER_VOLUME_SIZE);
+const SATORI_PICKER_PAGES=5;
 const pickerRoundToSection=round=>PRIMARY_SECTIONS[round+PRIMARY_PICKER_SECTION_COUNT];
 const PICKER_ACADEMY_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='development')-PRIMARY_PICKER_SECTION_COUNT;
 const PICKER_TRAINING_FIRST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingUpper')-PRIMARY_PICKER_SECTION_COUNT;
@@ -4783,6 +4787,10 @@ let editingBoard=false;
 let masterDialogKind='primary';
 let rankDialogReturn=null;
 let rankListLap=activeLap;
+// ステージ選択画面の一時的な表示位置。現在のゲーム位置とは分離して保持する。
+let pickerLap=activeLap;
+let pickerRound=-PRIMARY_PICKER_SECTION_COUNT;
+let satoriPickerPage=0;
 let messageDialogReturn=null;
 // ダイアログを閉じたときに元の場所へ戻る「戻り先」の共通形: {dialogId,focusId}を
 // unhide+focusする。rankDialogReturn/messageDialogReturn/tipGuideReturnTarget/
@@ -9388,6 +9396,23 @@ function extraRoundLabel(round){
 function closeStagePickerCore(){
   $('stagePicker').hidden=true;
 }
+// ステージ選択を閉じる公開入口。動的に生成した問題ボタンと共通イベントから
+// 同じ関数を呼び、閉じる処理の名前解決を一箇所にそろえる。
+function closeStagePicker(){
+  closeStagePickerCore();
+}
+function moveStagePickerRound(direction){
+  if(pickerRound==='satori'){
+    const nextPage=satoriPickerPage+direction;
+    if(nextPage>=0&&nextPage<SATORI_PICKER_PAGES){satoriPickerPage=nextPage;renderSatoriStagePicker();return;}
+    if(direction>0&&nextPage>=SATORI_PICKER_PAGES&&pickerLap===1&&secondLapUnlocked){pickerLap=2;satoriPickerPage=0;renderSatoriStagePicker();}
+    return;
+  }
+  const next=pickerRound+direction;
+  if(next< -PRIMARY_PICKER_SECTION_COUNT||next>=EXTRA_ROUNDS)return;
+  pickerRound=next;
+  renderStagePicker();
+}
 function renderSatoriStagePicker(){
   const picker=$('stagePicker'),grid=$('stagePickerGrid');
   const pickerSatori=pickerLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;
@@ -11352,6 +11377,18 @@ function bindMessageReviewEvents(){
   });
 }
 bindMenuEvents();
+// ステージ選択はヘッダー、メニュー、称号一覧の3経路から同じ描画入口を使う。
+WakeSevenEventBindings.click('stagePickerTrigger',openStagePicker);
+WakeSevenEventBindings.click('closeStagePicker',()=>{
+  closeStagePicker();
+  $('stagePickerTrigger').focus();
+});
+WakeSevenEventBindings.click('pickerPrevRound',()=>moveStagePickerRound(-1));
+WakeSevenEventBindings.click('pickerNextRound',()=>moveStagePickerRound(1));
+WakeSevenEventBindings.click('stagePickerRankBadge',()=>{
+  $('stagePicker').hidden=true;
+  GameDialogs.ranks({returnTarget:{dialogId:'stagePicker',focusId:'stagePickerRankBadge'}});
+});
 bindSpeedEvents();
 bindMessageReviewEvents();
 // マスターダイアログを閉じた/開始した直後に、続けて開く特別ダイアログをまとめて管理する。

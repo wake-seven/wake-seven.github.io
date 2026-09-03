@@ -403,6 +403,18 @@ function bindMessageReviewEvents(){
   });
 }
 bindMenuEvents();
+// ステージ選択はヘッダー、メニュー、称号一覧の3経路から同じ描画入口を使う。
+WakeSevenEventBindings.click('stagePickerTrigger',openStagePicker);
+WakeSevenEventBindings.click('closeStagePicker',()=>{
+  closeStagePicker();
+  $('stagePickerTrigger').focus();
+});
+WakeSevenEventBindings.click('pickerPrevRound',()=>moveStagePickerRound(-1));
+WakeSevenEventBindings.click('pickerNextRound',()=>moveStagePickerRound(1));
+WakeSevenEventBindings.click('stagePickerRankBadge',()=>{
+  $('stagePicker').hidden=true;
+  GameDialogs.ranks({returnTarget:{dialogId:'stagePicker',focusId:'stagePickerRankBadge'}});
+});
 bindSpeedEvents();
 bindMessageReviewEvents();
 // マスターダイアログを閉じた/開始した直後に、続けて開く特別ダイアログをまとめて管理する。

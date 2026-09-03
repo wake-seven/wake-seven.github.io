@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-10:23';
+const APP_VERSION='2026.09.03-10:43';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -217,6 +217,10 @@ function primarySectionPosition(index=stageIndex){
 // ステージ選択ダイアログでは、だるま学園・だるま修行もPRIMARY_SECTIONSの6区分をそれぞれ1ページとして見せる。
 // pickerRoundは負の数(-6〜-1)でこの6区分を表し、0以上は名人への道の巻、'satori'は悟りへの道のページ。
 const PRIMARY_PICKER_SECTION_COUNT=PRIMARY_SECTIONS.length;
+// 名人への道は15問単位、悟りへの道は複数ページで選択する。
+// 選択画面だけが使う表示上の定数をここで宣言し、未定義参照による画面停止を防ぐ。
+const EXTRA_ROUNDS=Math.ceil(EXTRA_STAGES.length/MASTER_VOLUME_SIZE);
+const SATORI_PICKER_PAGES=5;
 const pickerRoundToSection=round=>PRIMARY_SECTIONS[round+PRIMARY_PICKER_SECTION_COUNT];
 const PICKER_ACADEMY_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='development')-PRIMARY_PICKER_SECTION_COUNT;
 const PICKER_TRAINING_FIRST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingUpper')-PRIMARY_PICKER_SECTION_COUNT;
@@ -449,6 +453,10 @@ let editingBoard=false;
 let masterDialogKind='primary';
 let rankDialogReturn=null;
 let rankListLap=activeLap;
+// ステージ選択画面の一時的な表示位置。現在のゲーム位置とは分離して保持する。
+let pickerLap=activeLap;
+let pickerRound=-PRIMARY_PICKER_SECTION_COUNT;
+let satoriPickerPage=0;
 let messageDialogReturn=null;
 // ダイアログを閉じたときに元の場所へ戻る「戻り先」の共通形: {dialogId,focusId}を
 // unhide+focusする。rankDialogReturn/messageDialogReturn/tipGuideReturnTarget/

@@ -108,6 +108,23 @@ function extraRoundLabel(round){
 function closeStagePickerCore(){
   $('stagePicker').hidden=true;
 }
+// ステージ選択を閉じる公開入口。動的に生成した問題ボタンと共通イベントから
+// 同じ関数を呼び、閉じる処理の名前解決を一箇所にそろえる。
+function closeStagePicker(){
+  closeStagePickerCore();
+}
+function moveStagePickerRound(direction){
+  if(pickerRound==='satori'){
+    const nextPage=satoriPickerPage+direction;
+    if(nextPage>=0&&nextPage<SATORI_PICKER_PAGES){satoriPickerPage=nextPage;renderSatoriStagePicker();return;}
+    if(direction>0&&nextPage>=SATORI_PICKER_PAGES&&pickerLap===1&&secondLapUnlocked){pickerLap=2;satoriPickerPage=0;renderSatoriStagePicker();}
+    return;
+  }
+  const next=pickerRound+direction;
+  if(next< -PRIMARY_PICKER_SECTION_COUNT||next>=EXTRA_ROUNDS)return;
+  pickerRound=next;
+  renderStagePicker();
+}
 function renderSatoriStagePicker(){
   const picker=$('stagePicker'),grid=$('stagePickerGrid');
   const pickerSatori=pickerLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;
