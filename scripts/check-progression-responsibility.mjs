@@ -18,6 +18,9 @@ assert.equal(report.entries.length, expected.length, 'progression責務レポー
 assert.deepEqual(report.pipeline, ['entry', 'state-decision', 'transition', 'render'], '進行処理の追跡順が不正です');
 assert.ok(report.summary.flowRoles && Number.isInteger(report.summary.mixedSymbols), '進行処理の流れ分類がありません');
 assert.ok(Array.isArray(report.fileSummary) && report.fileSummary.length > 0, 'ファイル責務サマリーがありません');
+assert.ok(Array.isArray(report.mixedResponsibilitySymbols) && Array.isArray(report.unclassifiedSymbols), '複数責務・未分類一覧がありません');
+assert.equal(report.mixedResponsibilitySymbols.length, report.summary.mixedSymbols, '複数責務一覧と集計が一致しません');
+assert.equal(report.unclassifiedSymbols.length, report.summary.unclassifiedSymbols, '未分類一覧と集計が一致しません');
 const roles = new Set(['state', 'navigation', 'dialog', 'clear-flow', 'stage-picker', 'rank', 'render', 'unclassified']);
 const flowRoles = new Set([...report.pipeline, 'unclassified']);
 for (const entry of report.entries) {

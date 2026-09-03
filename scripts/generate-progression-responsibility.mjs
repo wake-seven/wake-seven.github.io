@@ -79,6 +79,8 @@ const report = {
   summary: { symbols: entries.length, files: new Set(entries.map(entry => entry.file)).size, responsibilities: counts, flowRoles: flowCounts, mixedSymbols: entries.filter(entry => entry.mixedResponsibility).length, unclassifiedSymbols: entries.filter(entry => entry.responsibility === 'unclassified').length },
   pipeline: ['entry', 'state-decision', 'transition', 'render'],
   fileSummary,
+  mixedResponsibilitySymbols: entries.filter(entry => entry.mixedResponsibility).map(entry => ({ name: entry.name, file: entry.file, line: entry.line, flowRoles: entry.flowRoles })),
+  unclassifiedSymbols: entries.filter(entry => entry.responsibility === 'unclassified').map(entry => ({ name: entry.name, file: entry.file, line: entry.line })),
   entries,
   note: '責務は関数名・ファイル名からの監査用分類。移動・削除・統合を自動実行しない。'
 };
