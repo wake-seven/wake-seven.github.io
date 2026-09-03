@@ -13,7 +13,7 @@ const MASTER_PATH={
 // 公開進行で使う「本編をすべてクリア済みか」の判定は、各UIから同じ入口を参照する。
 // 分割時にこの小さな共有判定を失うと、クリア後の「次の問題へ」が
 // ダイアログを閉じるだけになるため、ここで明示的に保持する。
-const allPrimaryCleared=()=>STAGES.every((_,i)=>clearedStages.has(i));
+const allPrimaryCleared=()=>{const progress=WakeSevenAppContext.state.progress.read();return STAGES.every((_,i)=>progress.clearedStages.has(i));};
 const masterPath=()=>MASTER_PATH[currentLang]||MASTER_PATH.ja;
 const masterSubtitle=volume=>masterPath().subtitles[volume-1]||'';
 const rankForVolume=volume=>masterPath().ranks[volume+1]||'';
@@ -194,8 +194,9 @@ function renderStagePicker(){
   if(pickerRound==='satori'){renderSatoriStagePicker();return;}
   const navigation=readNavigationContext();
   const pickerRefs=createRefs(['stagePickerTitle','closeStagePicker','stagePickerRound','pickerRoundLabel','pickerPrevRound','pickerNextRound','stagePickerGrid']);
-  const pickerPrimary=pickerLap===2?lap2ClearedStages:lap1ClearedStages;
-  const pickerExtra=pickerLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
+  const progress=WakeSevenAppContext.state.progress.read();
+  const pickerPrimary=pickerLap===2?progress.lap2ClearedStages:progress.lap1ClearedStages;
+  const pickerExtra=pickerLap===2?progress.lap2ClearedExtraStages:progress.lap1ClearedExtraStages;
   const pickerAcademyDone=Array.from({length:ACADEMY_STAGE_COUNT},(_,i)=>pickerPrimary.has(i)).every(Boolean);
   const pickerPrimaryDone=STAGES.every((_,i)=>pickerPrimary.has(i));
   const pickerMastered=EXTRA_STAGES.every((_,i)=>pickerExtra.has(i));

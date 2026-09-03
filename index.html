@@ -4415,7 +4415,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-18:14';
+const APP_VERSION='2026.09.03-18:22';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -9448,7 +9448,7 @@ const MASTER_PATH={
 // 公開進行で使う「本編をすべてクリア済みか」の判定は、各UIから同じ入口を参照する。
 // 分割時にこの小さな共有判定を失うと、クリア後の「次の問題へ」が
 // ダイアログを閉じるだけになるため、ここで明示的に保持する。
-const allPrimaryCleared=()=>STAGES.every((_,i)=>clearedStages.has(i));
+const allPrimaryCleared=()=>{const progress=WakeSevenAppContext.state.progress.read();return STAGES.every((_,i)=>progress.clearedStages.has(i));};
 const masterPath=()=>MASTER_PATH[currentLang]||MASTER_PATH.ja;
 const masterSubtitle=volume=>masterPath().subtitles[volume-1]||'';
 const rankForVolume=volume=>masterPath().ranks[volume+1]||'';
@@ -9629,8 +9629,9 @@ function renderStagePicker(){
   if(pickerRound==='satori'){renderSatoriStagePicker();return;}
   const navigation=readNavigationContext();
   const pickerRefs=createRefs(['stagePickerTitle','closeStagePicker','stagePickerRound','pickerRoundLabel','pickerPrevRound','pickerNextRound','stagePickerGrid']);
-  const pickerPrimary=pickerLap===2?lap2ClearedStages:lap1ClearedStages;
-  const pickerExtra=pickerLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
+  const progress=WakeSevenAppContext.state.progress.read();
+  const pickerPrimary=pickerLap===2?progress.lap2ClearedStages:progress.lap1ClearedStages;
+  const pickerExtra=pickerLap===2?progress.lap2ClearedExtraStages:progress.lap1ClearedExtraStages;
   const pickerAcademyDone=Array.from({length:ACADEMY_STAGE_COUNT},(_,i)=>pickerPrimary.has(i)).every(Boolean);
   const pickerPrimaryDone=STAGES.every((_,i)=>pickerPrimary.has(i));
   const pickerMastered=EXTRA_STAGES.every((_,i)=>pickerExtra.has(i));
@@ -11133,7 +11134,7 @@ function renderRankList(){
     count.textContent=rankProblemCount(index);
     if(linkable)path.addEventListener('click',()=>{
       activateCampaignLap(second?2:1);
-      rankDialogReturn=null;$('rankDialog').hidden=true;
+      updateDialogStateOwner({rankDialogReturn:null});$('rankDialog').hidden=true;
       if(index===6||index===5)openDialog('stagePicker',{lap:second?2:1,round:'satori'});
       else openDialog('stagePicker',{lap:second?2:1,round:index===0?-PRIMARY_PICKER_SECTION_COUNT:index===1?PICKER_TRAINING_FIRST_ROUND:index-2});
     });
@@ -11141,7 +11142,7 @@ function renderRankList(){
   });
 }
 function openRankDialog(returnTarget=null){
-  rankDialogReturn=returnTarget;
+  updateDialogStateOwner({rankDialogReturn:returnTarget});
   rankListLap=activeLap;
   renderRankList();
   $('rankDialog').hidden=false;
@@ -11611,11 +11612,13 @@ const MASTER_DIALOG_CHAIN={
   mastery:{via:'close',when:()=>secondLapActive||speedMasteryTrialCleared,open:'satoriIntro'}
 };
 $('masterClose').addEventListener('click',()=>{
-  const chain=MASTER_DIALOG_CHAIN[masterDialogKind];
+  const dialogContext=readDialogContext();
+  const dialogKind=dialogContext.masterDialogKind;
+  const chain=MASTER_DIALOG_CHAIN[dialogKind];
   const chainActive=chain?.via==='close'&&chain.when();
-  const restartTraining=masterDialogKind==='awakening';
-  const leaveSpeed=['speedComplete','speedTrialFailed'].includes(masterDialogKind);
-  const resumeSpeed=masterDialogKind==='speedIntro'&&isMode('speed');
+  const restartTraining=dialogKind==='awakening';
+  const leaveSpeed=['speedComplete','speedTrialFailed'].includes(dialogKind);
+  const resumeSpeed=dialogKind==='speedIntro'&&isMode('speed');
   hideGameDialogs();
   if(resumeSpeed){startSpeedClock();return;}
   if(chainActive){
@@ -11678,34 +11681,35 @@ $('closeRankDialog').addEventListener('click',()=>{
   if(!focusReturnTarget(returnTarget))$('rankBadge').focus();
 });
 $('masterStart').addEventListener('click',()=>{
+  const dialogKind=readDialogContext().masterDialogKind;
   const speedTarget=$('masterStart').dataset.speedVariant;
   hideGameDialogs();
   if(speedTarget){setSpeedVariantCommand(speedTarget);setSpeedSessionCommand(null);enterSpeedMode(true);return;}
-  if(masterDialogKind==='awakening'){enterSpeedMode(true);return;}
-  if(masterDialogKind==='speedIntro'){enterSpeedMode(!readSpeedSession());return;}
-  if(masterDialogKind==='speedTrialFailed'){
+  if(dialogKind==='awakening'){enterSpeedMode(true);return;}
+  if(dialogKind==='speedIntro'){enterSpeedMode(!readSpeedSession());return;}
+  if(dialogKind==='speedTrialFailed'){
     setSpeedVariantCommand(['training9','training18','mastery27'].includes(speedSession?.requiredTrial)?speedSession.requiredTrial:'training9');
     setSpeedSessionCommand(null);enterSpeedMode(true);return;
   }
-  if(masterDialogKind==='speedComplete'){enterSpeedMode(true);return;}
-  if(masterDialogKind==='primary'){
+  if(dialogKind==='speedComplete'){enterSpeedMode(true);return;}
+  if(dialogKind==='primary'){
     if(!secondLapActive&&!speedTrainingTrialCleared){setSpeedVariantCommand('training9');setSpeedSessionCommand(null);enterSpeedMode(true);return;}
     const before=clearContentBefore(false,TRAINING_STAGE_START);
     if(before?.dialog){rememberSpecialMessage(before.dialog);openChainedDialog(before.dialog);return;}
     GameNavigation.stage(TRAINING_STAGE_START);return;
   }
-  if(masterDialogKind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared){
+  if(dialogKind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared){
     setSpeedVariantCommand('training18');setSpeedSessionCommand(null);enterSpeedMode(true);return;
   }
-  if(masterDialogKind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared){
+  if(dialogKind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared){
     setSpeedVariantCommand('mastery27');setSpeedSessionCommand(null);enterSpeedMode(true);return;
   }
-  if(masterDialogKind==='intermediate'){GameNavigation.mastery(0);return;}
-  if(masterDialogKind==='pathInfo')GameNavigation.mastery(0);
-  else if(masterDialogKind==='secondLapIntro')GameNavigation.stage(0);
-  else if(masterDialogKind==='satoriIntro')GameNavigation.satori(0);
-  else if(masterDialogKind==='satori')openSatoriPicker();
-  else if(masterDialogKind==='mastery')openSatoriPicker();
+  if(dialogKind==='intermediate'){GameNavigation.mastery(0);return;}
+  if(dialogKind==='pathInfo')GameNavigation.mastery(0);
+  else if(dialogKind==='secondLapIntro')GameNavigation.stage(0);
+  else if(dialogKind==='satoriIntro')GameNavigation.satori(0);
+  else if(dialogKind==='satori')openSatoriPicker();
+  else if(dialogKind==='mastery')openSatoriPicker();
   else GameNavigation.mastery(extraIndex+1);
 });
 $('masterSpeedUnlockStart').addEventListener('click',()=>{
