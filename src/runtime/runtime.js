@@ -266,6 +266,9 @@ function runtimeContext(){return getGameContext();}
 // UI/補助モジュールから実行状態を読むための薄い境界。
 // 個別のランタイム変数を直接参照する箇所を増やさず、読み取り専用のスナップショットを渡す。
 function runtimeSnapshot(){const navigation=WakeSevenAppContext.state.navigation.read(),settings=WakeSevenAppContext.state.settings.read(),session=WakeSevenAppContext.state.session.read();return Object.freeze({...navigation,language:settings.currentLang,speedVariant:session.speedVariant});}
+// navigation/dialogの読み取りは、呼び出し側が個別の可変変数へ依存しないよう用途別入口を使う。
+function readNavigationContext(){return WakeSevenAppContext.state.navigation.read();}
+function readDialogContext(){return WakeSevenAppContext.state.dialog.read();}
 function runtimeStageKey(){
   const ctx=getGameContext();
   return ctx.position===null?ctx.mode:ctx.mode+':'+ctx.index;

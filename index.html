@@ -4369,11 +4369,11 @@ function playClearSound(kind='normal'){
   (tunes[kind]||tunes.normal).forEach(([tone,delay])=>playTone(tone,.18,.032,delay));
 }
 function clearSoundKind(){
-  const {mode,satoriIndex,stageIndex,masteryIndex}=runtimeSnapshot();
-  if(mode==='free'||mode==='custom'||mode==='speed')return 'normal';
-  if(mode==='satori'&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';
-  if(mode!=='mastery'&&stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
-  if(mode==='mastery'&&(masteryIndex+1)%MASTER_VOLUME_SIZE===0)return masteryIndex===EXTRA_STAGES.length-1?'mastery':'volume';
+  const navigation=readNavigationContext();
+  if(navigation.mode==='free'||navigation.mode==='custom'||navigation.mode==='speed')return 'normal';
+  if(navigation.mode==='satori'&&navigation.satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';
+  if(navigation.mode!=='mastery'&&navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
+  if(navigation.mode==='mastery'&&(navigation.masteryIndex+1)%MASTER_VOLUME_SIZE===0)return navigation.masteryIndex===EXTRA_STAGES.length-1?'mastery':'volume';
   return 'normal';
 }
 function updateSoundToggle(){
@@ -4680,6 +4680,9 @@ function runtimeContext(){return getGameContext();}
 // UI/補助モジュールから実行状態を読むための薄い境界。
 // 個別のランタイム変数を直接参照する箇所を増やさず、読み取り専用のスナップショットを渡す。
 function runtimeSnapshot(){const navigation=WakeSevenAppContext.state.navigation.read(),settings=WakeSevenAppContext.state.settings.read(),session=WakeSevenAppContext.state.session.read();return Object.freeze({...navigation,language:settings.currentLang,speedVariant:session.speedVariant});}
+// navigation/dialogの読み取りは、呼び出し側が個別の可変変数へ依存しないよう用途別入口を使う。
+function readNavigationContext(){return WakeSevenAppContext.state.navigation.read();}
+function readDialogContext(){return WakeSevenAppContext.state.dialog.read();}
 function runtimeStageKey(){
   const ctx=getGameContext();
   return ctx.position===null?ctx.mode:ctx.mode+':'+ctx.index;
@@ -8847,12 +8850,12 @@ function stageClearTextAt(mode,index){
   if(entry.guideCard)return resolveLocaleText(entry.guideCard.text);
   return entry.tip?resolveLocaleText(entry.tip):'';
 }
-function stageClearText(){const {mode,masteryIndex,stageIndex}=runtimeSnapshot();return mode==='free'||mode==='custom'||mode==='satori'?'':stageClearTextAt(mode==='mastery',mode==='mastery'?masteryIndex:stageIndex);}
+function stageClearText(){const navigation=readNavigationContext(),{mode}=navigation;return mode==='free'||mode==='custom'||mode==='satori'?'':stageClearTextAt(mode==='mastery',mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);}
 function clearEntryForCurrent(){
-  const {mode,masteryIndex,stageIndex}=runtimeSnapshot();
-  if(mode==='mastery')return clearContentAt(true,masteryIndex);
+  const navigation=readNavigationContext(),{mode}=navigation;
+  if(mode==='mastery')return clearContentAt(true,navigation.masteryIndex);
   if(mode==='free'||mode==='custom'||mode==='satori')return undefined;
-  return clearContentAt(false,stageIndex);
+  return clearContentAt(false,navigation.stageIndex);
 }
 function stageClearArtAt(mode,index){
   const entry=clearContentAt(mode,index);
@@ -8861,7 +8864,7 @@ function stageClearArtAt(mode,index){
   if(entry.guideCard)return 'guideCard:'+entry.guideCard.state.join('');
   return entry.art||'';
 }
-function stageClearArt(){const {mode,masteryIndex,stageIndex}=runtimeSnapshot();return mode==='satori'?'':stageClearArtAt(mode==='mastery',mode==='mastery'?masteryIndex:stageIndex);}
+function stageClearArt(){const navigation=readNavigationContext(),{mode}=navigation;return mode==='satori'?'':stageClearArtAt(mode==='mastery',mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);}
 // 公開ネイティブモジュールの構文境界。
 export {};
 
@@ -11512,7 +11515,7 @@ function bindSpeedEvents(){
 }
 function bindMessageReviewEvents(){
   $('closeMessages').addEventListener('click',()=>{
-    const returnTarget=messageDialogReturn;
+    const returnTarget=readDialogContext().messageDialogReturn;
     updateDialogStateOwner({messageDialogReturn:null});
     $('messageDialog').hidden=true;
     focusReturnTarget(returnTarget);
@@ -11636,7 +11639,7 @@ for(const [sealId,dialogId] of [['masterSeal','masterDialog'],['messageMasterSea
   });
 }
 $('closeRankDialog').addEventListener('click',()=>{
-  const returnTarget=rankDialogReturn;updateDialogStateOwner({rankDialogReturn:null});
+  const returnTarget=readDialogContext().rankDialogReturn;updateDialogStateOwner({rankDialogReturn:null});
   $('rankDialog').hidden=true;
   if(!focusReturnTarget(returnTarget))$('rankBadge').focus();
 });
@@ -12089,12 +12092,12 @@ function applyLanguage(lang){
     renderClearQuiz();
     showProgressionQuiz({rootId:'boardQuiz',boardQuizConfig:boardQuizConfigForCurrent(),requireAnswer:true});
     const action=$('clearNext');
-    const {mode,masteryIndex,stageIndex}=runtimeSnapshot();
-    if(mode==='free')action.textContent=tr('another');
-    else if(mode==='custom')action.textContent=tr('again');
-    else if(mode==='mastery')action.textContent=masteryIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');
-    else if(stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');
-    else if(stageIndex===STAGES.length-1)action.textContent=tr('toFree');
+    const navigation=readNavigationContext();
+    if(navigation.mode==='free')action.textContent=tr('another');
+    else if(navigation.mode==='custom')action.textContent=tr('again');
+    else if(navigation.mode==='mastery')action.textContent=navigation.masteryIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');
+    else if(navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');
+    else if(navigation.stageIndex===STAGES.length-1)action.textContent=tr('toFree');
     else action.textContent=tr('nextPuzzle');
   }else if(!$('tipGuideDialog').hidden){
     renderTipGuide();

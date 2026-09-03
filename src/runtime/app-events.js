@@ -355,7 +355,7 @@ function bindSpeedEvents(){
 }
 function bindMessageReviewEvents(){
   $('closeMessages').addEventListener('click',()=>{
-    const returnTarget=messageDialogReturn;
+    const returnTarget=readDialogContext().messageDialogReturn;
     updateDialogStateOwner({messageDialogReturn:null});
     $('messageDialog').hidden=true;
     focusReturnTarget(returnTarget);
@@ -479,7 +479,7 @@ for(const [sealId,dialogId] of [['masterSeal','masterDialog'],['messageMasterSea
   });
 }
 $('closeRankDialog').addEventListener('click',()=>{
-  const returnTarget=rankDialogReturn;updateDialogStateOwner({rankDialogReturn:null});
+  const returnTarget=readDialogContext().rankDialogReturn;updateDialogStateOwner({rankDialogReturn:null});
   $('rankDialog').hidden=true;
   if(!focusReturnTarget(returnTarget))$('rankBadge').focus();
 });
@@ -932,12 +932,12 @@ function applyLanguage(lang){
     renderClearQuiz();
     showProgressionQuiz({rootId:'boardQuiz',boardQuizConfig:boardQuizConfigForCurrent(),requireAnswer:true});
     const action=$('clearNext');
-    const {mode,masteryIndex,stageIndex}=runtimeSnapshot();
-    if(mode==='free')action.textContent=tr('another');
-    else if(mode==='custom')action.textContent=tr('again');
-    else if(mode==='mastery')action.textContent=masteryIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');
-    else if(stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');
-    else if(stageIndex===STAGES.length-1)action.textContent=tr('toFree');
+    const navigation=readNavigationContext();
+    if(navigation.mode==='free')action.textContent=tr('another');
+    else if(navigation.mode==='custom')action.textContent=tr('again');
+    else if(navigation.mode==='mastery')action.textContent=navigation.masteryIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');
+    else if(navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');
+    else if(navigation.stageIndex===STAGES.length-1)action.textContent=tr('toFree');
     else action.textContent=tr('nextPuzzle');
   }else if(!$('tipGuideDialog').hidden){
     renderTipGuide();

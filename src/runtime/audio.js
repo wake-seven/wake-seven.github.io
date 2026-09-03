@@ -33,11 +33,11 @@ function playClearSound(kind='normal'){
   (tunes[kind]||tunes.normal).forEach(([tone,delay])=>playTone(tone,.18,.032,delay));
 }
 function clearSoundKind(){
-  const {mode,satoriIndex,stageIndex,masteryIndex}=runtimeSnapshot();
-  if(mode==='free'||mode==='custom'||mode==='speed')return 'normal';
-  if(mode==='satori'&&satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';
-  if(mode!=='mastery'&&stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
-  if(mode==='mastery'&&(masteryIndex+1)%MASTER_VOLUME_SIZE===0)return masteryIndex===EXTRA_STAGES.length-1?'mastery':'volume';
+  const navigation=readNavigationContext();
+  if(navigation.mode==='free'||navigation.mode==='custom'||navigation.mode==='speed')return 'normal';
+  if(navigation.mode==='satori'&&navigation.satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';
+  if(navigation.mode!=='mastery'&&navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
+  if(navigation.mode==='mastery'&&(navigation.masteryIndex+1)%MASTER_VOLUME_SIZE===0)return navigation.masteryIndex===EXTRA_STAGES.length-1?'mastery':'volume';
   return 'normal';
 }
 function updateSoundToggle(){

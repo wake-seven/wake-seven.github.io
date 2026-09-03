@@ -14,12 +14,12 @@ function stageClearTextAt(mode,index){
   if(entry.guideCard)return resolveLocaleText(entry.guideCard.text);
   return entry.tip?resolveLocaleText(entry.tip):'';
 }
-function stageClearText(){const {mode,masteryIndex,stageIndex}=runtimeSnapshot();return mode==='free'||mode==='custom'||mode==='satori'?'':stageClearTextAt(mode==='mastery',mode==='mastery'?masteryIndex:stageIndex);}
+function stageClearText(){const navigation=readNavigationContext(),{mode}=navigation;return mode==='free'||mode==='custom'||mode==='satori'?'':stageClearTextAt(mode==='mastery',mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);}
 function clearEntryForCurrent(){
-  const {mode,masteryIndex,stageIndex}=runtimeSnapshot();
-  if(mode==='mastery')return clearContentAt(true,masteryIndex);
+  const navigation=readNavigationContext(),{mode}=navigation;
+  if(mode==='mastery')return clearContentAt(true,navigation.masteryIndex);
   if(mode==='free'||mode==='custom'||mode==='satori')return undefined;
-  return clearContentAt(false,stageIndex);
+  return clearContentAt(false,navigation.stageIndex);
 }
 function stageClearArtAt(mode,index){
   const entry=clearContentAt(mode,index);
@@ -28,6 +28,6 @@ function stageClearArtAt(mode,index){
   if(entry.guideCard)return 'guideCard:'+entry.guideCard.state.join('');
   return entry.art||'';
 }
-function stageClearArt(){const {mode,masteryIndex,stageIndex}=runtimeSnapshot();return mode==='satori'?'':stageClearArtAt(mode==='mastery',mode==='mastery'?masteryIndex:stageIndex);}
+function stageClearArt(){const navigation=readNavigationContext(),{mode}=navigation;return mode==='satori'?'':stageClearArtAt(mode==='mastery',mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);}
 // 公開ネイティブモジュールの構文境界。
 export {};
