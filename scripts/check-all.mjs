@@ -27,6 +27,7 @@ const steps = [
   { name: 'source-boundaries', command: process.execPath, args: ['scripts/check-source-boundaries.mjs'] },
   { name: 'compat-e2e', command: process.execPath, args: ['scripts/check-compat-e2e.mjs'] },
   { name: 'browser-e2e', command: process.execPath, args: ['scripts/check-browser-e2e.mjs'] },
+  { name: 'device-e2e', command: process.execPath, args: ['scripts/check-device-e2e.mjs'] },
   // 構造予算より先に、最新の状態参照レポートを生成する。
   { name: 'global-access', command: process.execPath, args: ['scripts/check-global-access-contract.mjs'] },
   { name: 'state-access-policy', command: process.execPath, args: ['scripts/check-state-access-policy.mjs'] },
