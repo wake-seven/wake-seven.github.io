@@ -49,6 +49,8 @@ npm run check
 
 薄いモジュールや一度しか呼ばれない入口は、参照回数だけで削除しません。`npm run check:compat-boundaries` が公開マニフェスト、開発用ESM入口、ソース・検査からの参照を確認し、保持理由または削除候補を `build/report/compat-boundary-audit.json` に生成します。削除候補が出た場合も、公開版をビルドしてE2Eを通す変更として個別に判断します。
 
+監査レポートの各候補には、目的（`purpose`）、参照元（`referenceSources`）、削除条件（`removalCondition`）、次回再評価日（`reassessOn`）を自動記録します。再評価日は監査実行日から90日後です。`npm run check:unused-files` のレビュー一覧にも同じ情報を複製し、候補の判断を別の手書き台帳に分散させません。安全な削除候補がない場合も `safeToDelete: 0` として明示します。
+
 ## 大規模な構造変更の停止基準
 
 今後は機能改修を優先し、`progression` を含む大規模な分割・再設計は通常の作業として続けません。構造変更を行うのは、次の両方を先に用意できる場合だけです。

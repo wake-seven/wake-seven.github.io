@@ -12,6 +12,20 @@ const reportDir = join(root, 'build', 'report');
 const candidateReport = JSON.parse(await readFile(join(reportDir, 'refactor-candidates.json'), 'utf8'));
 const published = new Set(publishedSourceFiles);
 const development = new Set(developmentSourceFiles);
+const reassessOn = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+const purposeFor = file => {
+  const [area] = file.split('/');
+  return {
+    app: '起動と共有コンテキスト',
+    commands: '状態変更と操作の入口',
+    data: '問題・文言・素材データ',
+    domain: '盤面と進行ルール',
+    runtime: 'ブラウザ環境・保存・音・時間の接続',
+    state: '状態と永続化',
+    ui: 'DOM描画・入力・ダイアログ'
+  }[area] || '現行ソースの補助モジュール';
+};
 
 const files = [];
 async function collect(directory) {
@@ -29,13 +43,24 @@ for (const path of files) contents.set(relative(root, path).replaceAll('\\', '/'
 
 const classify = candidate => {
   const file = candidate.file;
-  if (published.has(file)) return { disposition: '保持', reason: '公開マニフェストに含まれる単体index.htmlの構成要素' };
-  if (development.has(file)) return { disposition: '保持', reason: '開発用ESM入口から利用されるモジュール' };
+  const referenceSources = [];
+  if (published.has(file)) referenceSources.push('scripts/application-manifest.mjs:publishedSourceFiles');
+  if (development.has(file)) referenceSources.push('scripts/application-manifest.mjs:developmentSourceFiles');
   const references = [...contents.entries()]
     .filter(([path, source]) => path !== `src/${file}` && source.includes(file))
     .map(([path]) => path);
-  if (references.length) return { disposition: '保持', reason: 'ソースまたは検査から参照されている', references };
-  return { disposition: '削除候補', reason: 'マニフェスト・開発入口・検査から参照されていない' };
+  referenceSources.push(...references);
+  const retained = published.has(file) || development.has(file) || references.length > 0;
+  return {
+    disposition: retained ? '保持' : '削除候補',
+    reason: retained
+      ? (published.has(file) ? '公開マニフェストに含まれる単体index.htmlの構成要素' : 'ソースまたは検査から参照されている')
+      : 'マニフェスト・開発入口・検査から参照されていない',
+    purpose: purposeFor(file),
+    referenceSources: [...new Set(referenceSources)].sort(),
+    removalCondition: '公開マニフェスト・開発入口・公開API・検査・E2Eの参照がすべて0であることを確認し、npm run check:gate を通過すること',
+    reassessOn
+  };
 };
 
 const entries = candidateReport.candidates.map(candidate => ({
@@ -44,13 +69,19 @@ const entries = candidateReport.candidates.map(candidate => ({
   ...classify(candidate)
 }));
 const safeToDelete = entries.filter(entry => entry.disposition === '削除候補');
+for (const entry of entries) {
+  assert.ok(entry.purpose, `互換候補の目的がありません: ${entry.file}`);
+  assert.ok(Array.isArray(entry.referenceSources), `互換候補の参照元がありません: ${entry.file}`);
+  assert.ok(entry.removalCondition, `互換候補の削除条件がありません: ${entry.file}`);
+  assert.match(entry.reassessOn, /^\d{4}-\d{2}-\d{2}$/, `互換候補の再評価日が不正です: ${entry.file}`);
+}
 const result = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   generatedAt: new Date().toISOString(),
   source: 'build/report/refactor-candidates.json',
   summary: { candidates: entries.length, retained: entries.length - safeToDelete.length, safeToDelete: safeToDelete.length },
   entries,
-  policy: '参照されない候補だけを削除候補として記録し、公開境界・開発入口・検査入口は理由付きで保持する。'
+  policy: '参照されない候補だけを削除候補として記録し、公開境界・開発入口・検査入口は目的・参照元・削除条件・再評価日付きで保持する。'
 };
 await mkdir(reportDir, { recursive: true });
 await writeFile(join(reportDir, 'compat-boundary-audit.json'), JSON.stringify(result, null, 2) + '\n');

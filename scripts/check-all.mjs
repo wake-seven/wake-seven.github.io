@@ -43,8 +43,9 @@ const steps = [
   { name: 'ui-data-map', command: process.execPath, args: ['scripts/check-ui-data-map.mjs'] },
   { name: 'event-wiring', command: process.execPath, args: ['scripts/check-event-wiring.mjs'] },
   { name: 'refactor-report', command: process.execPath, args: ['scripts/check-refactor-report.mjs'] },
-  { name: 'unused-files', command: process.execPath, args: ['scripts/check-unused-files.mjs'] },
+  // 互換監査を先に生成し、unused-filesのレビュー一覧へ同じ判断情報を渡す。
   { name: 'compat-boundaries', command: process.execPath, args: ['scripts/check-compat-boundaries.mjs'] },
+  { name: 'unused-files', command: process.execPath, args: ['scripts/check-unused-files.mjs'] },
   { name: 'manifest-dependencies', command: process.execPath, args: ['scripts/check-manifest-dependencies.mjs'] },
   { name: 'public-symbols', command: process.execPath, args: ['scripts/check-public-symbols.mjs'] }
 ];
