@@ -16,6 +16,12 @@ const refs=access.references.filter(ref=>NAVIGATION_NAMES.includes(ref.name));
 const classify=({file,access,source})=>{
   if(STATE_OWNER_FILES.includes(file))return ['owner-only','状態所有者の内部処理。公開gatewayへ移す対象ではない'];
   if(/pointer|drag|swipe|animate|animation|spin|tile/i.test(file+' '+source))return ['event-local','pointer座標・スワイプ・逐次アニメーションに密接なイベント局所値'];
+  // クリア後遷移は createClearTransitionContext が入口で固定し、以降は
+  // 引数contextだけを使う。ファイル内の同名ローカル値をglobal候補に戻さない。
+  if(file==='ui/progression-clear-flow.js')return ['derived-value','createClearTransitionContextで固定したクリア後navigation contextのローカル値'];
+  // contextのプロパティ名・コメント・保存キーは、共有グローバルの直接参照ではない。
+  // ここをgateway候補に数えると、すでに入口を通ったクリア後処理を二重移行対象にしてしまう。
+  if(/readNavigationContext\(|\bnavigation\.|\bcontext\.|STORAGE_KEY_GROUPS\.progression\./.test(source))return ['derived-value','navigation contextから取得済みの値、または保存キーのプロパティ名'];
   if(/primarySectionPosition|courseDefinition|runtimeNavigation|isMode\(|rememberClearedMessage|TUTORIAL_STEPS|tutorialPrompt|gripPrompt/.test(source))return ['derived-value','navigationから計算した表示・判定値で、直接参照を機械置換しない'];
   if(access==='read')return ['gateway-candidate','読み取り専用のため用途別navigation gatewayへ移行可能'];
   return ['intentional-exception','書き込みを伴うため所有者・command入口との整合確認が必要'];

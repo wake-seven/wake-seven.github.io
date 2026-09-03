@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "name": "state-access-baseline",
-  "generatedAt": "2026-09-03T11:47:12.345Z",
+  "generatedAt": "2026-09-03T12:00:13.648Z",
   "source": "scripts/state-access-exceptions.json",
   "counts": {
-    "temporary": 142,
+    "temporary": 141,
     "byPurpose": {
-      "navigation": 130,
+      "navigation": 129,
       "dialog": 18,
       "progress": 0,
       "session": 0,
@@ -18,11 +18,11 @@
       "commands": 7,
       "data": 1,
       "other": 7,
-      "runtime": 4,
+      "runtime": 3,
       "ui": 129
     },
     "byAccess": {
-      "read": 130,
+      "read": 129,
       "write": 18
     }
   },
@@ -4041,34 +4041,6 @@
       },
       "symbol": "stageIndex",
       "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
-      "classification": "executable",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 416,
-        "excerpt": "satori:{via:'close',when:()=>activeLap===1,"
-      },
-      "symbol": "activeLap",
-      "entrypoint": "runtime",
       "access": "read",
       "purpose": "navigation",
       "dialogRole": null,

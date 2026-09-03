@@ -152,7 +152,6 @@
     "ui/progression-clear-flow.js:stageIndex:if(stageIndex===STAGES.length-1&&allPrimaryIsCleared)return {kind:'master-dialog',section:'intermediate'};",
     "ui/progression-clear-flow.js:stageIndex:if(stageIndex===STAGES.length-1)return {kind:'restore-free'};",
     "ui/progression-clear-flow.js:stageIndex:return {kind:'stage',index:stageIndex+1};",
-    "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
     "runtime/app-events.js:masterDialogKind:if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);",
     "runtime/app-events.js:clearShown:else if(clearShown){",
     "runtime/app-bootstrap.js:clearShown:if(!clearShown)ProgressionEntryPoints.finishStage({mode:'speed'});else WakeSevenProgressionCommands.advanceSpeedRun();"
@@ -1943,19 +1942,6 @@
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:return {kind:'stage',index:stageIndex+1};",
       "expiresOn": "2026-12-02",
       "owner": "ui/progression-clear-flow.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
-      "expiresOn": "2026-12-02",
-      "owner": "runtime/app-events.js",
       "migrationTarget": "gateway:navigation",
       "priority": 1,
       "relatedTests": [

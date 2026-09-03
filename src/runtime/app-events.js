@@ -413,7 +413,7 @@ bindMessageReviewEvents();
 // ステージ単位の節目(だるま学園卒業→だるま修行など)はCLEAR_CONTENTの`○○before`/`○○after`キー側で管理する。
 const MASTER_DIALOG_CHAIN={
   // 二周目を既に制覇していても、一周目をもう一度完走したら新しい二周目を始められるようにする。
-  satori:{via:'close',when:()=>activeLap===1,
+  satori:{via:'close',
     setup:()=>{if(!secondLapUnlocked)beginSecondLap();else{activateCampaignLap(2);GameNavigation.stage(0);}},
     open:'secondLapIntro'},
   mastery:{via:'close',when:()=>secondLapActive||speedMasteryTrialCleared,open:'satoriIntro'}

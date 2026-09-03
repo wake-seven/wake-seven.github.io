@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-03T11:47:12.345Z",
+  "generatedAt": "2026-09-03T12:00:13.648Z",
   "names": [
     "activeMode",
     "activeLap",
@@ -33,13 +33,13 @@
   },
   "baselineTracked": 148,
   "counts": {
-    "detected": 354,
-    "tracked": 148,
+    "detected": 353,
+    "tracked": 147,
     "excluded": 206,
-    "allowed": 148,
+    "allowed": 147,
     "newReferences": 0,
     "retiredExceptions": 0,
-    "temporary": 142,
+    "temporary": 141,
     "expiredTemporary": 0
   },
   "excludedCounts": {
@@ -1699,7 +1699,7 @@
     }
   ],
   "countsByPurpose": {
-    "navigation": 130,
+    "navigation": 129,
     "dialog": 18,
     "progress": 0,
     "session": 0,
@@ -1709,7 +1709,7 @@
   },
   "countsByExceptionClass": {
     "intentional-exception": 6,
-    "temporary": 142
+    "temporary": 141
   },
   "countsByDialogRole": {
     "chain": 16,
@@ -1719,11 +1719,11 @@
     "commands": 7,
     "data": 1,
     "other": 7,
-    "runtime": 4,
+    "runtime": 3,
     "ui": 129
   },
   "countsByAccess": {
-    "read": 130,
+    "read": 129,
     "write": 18
   },
   "exceptionMetadata": [
@@ -3159,16 +3159,6 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:return {kind:'stage',index:stageIndex+1};",
-      "purpose": "navigation",
-      "ownerOnly": false,
-      "exceptionClass": "temporary",
-      "temporary": true,
-      "priority": 1,
-      "migrationTarget": "gateway:navigation",
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
       "purpose": "navigation",
       "ownerOnly": false,
       "exceptionClass": "temporary",
@@ -4721,19 +4711,6 @@
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:return {kind:'stage',index:stageIndex+1};",
       "expiresOn": "2026-12-02",
       "owner": "ui/progression-clear-flow.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
-      "expiresOn": "2026-12-02",
-      "owner": "runtime/app-events.js",
       "migrationTarget": "gateway:navigation",
       "priority": 1,
       "relatedTests": [
@@ -8798,34 +8775,6 @@
       },
       "symbol": "stageIndex",
       "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
-      "classification": "executable",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 416,
-        "excerpt": "satori:{via:'close',when:()=>activeLap===1,"
-      },
-      "symbol": "activeLap",
-      "entrypoint": "runtime",
       "access": "read",
       "purpose": "navigation",
       "dialogRole": null,
