@@ -8,6 +8,7 @@ import { spawn } from 'node:child_process';
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const reportPath = join(root, 'build', 'report', 'check-gate.json');
 const steps = [
+  { name: 'domain-classification', command: process.execPath, args: ['scripts/check-domain-classification.mjs'] },
   { name: 'build', command: process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : 'npm',
     args: process.platform === 'win32' ? ['/d', '/s', '/c', 'npm run build'] : ['run', 'build'] },
   { name: 'version', command: process.execPath, args: ['scripts/check-version.mjs'] },
