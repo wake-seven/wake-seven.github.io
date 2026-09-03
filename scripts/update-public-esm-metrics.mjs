@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { extractBundleMetrics } from './public-bundle-metrics.mjs';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const baselinePath = join(root, 'scripts', 'public-esm-metrics.json');
@@ -29,21 +30,8 @@ const application = html.slice(start + startMarker.length, end);
 const scripts = [...application.matchAll(/<script(?:\s[^>]*)?>[\s\S]*?<\/script>/gi)];
 if (scripts.length !== 1) throw new Error(`Expected one bundled application script, found ${scripts.length}.`);
 const script = scripts[0][0];
-const comments = script.match(/\/\/[^\r\n]*|\/\*[\s\S]*?\*\//g) || [];
-const headings = [...script.matchAll(/^\/\/ ===== (.+) =====$/gm)];
-const sectionBytes = Object.fromEntries(headings.map((match, index) => [
-  match[1], Buffer.byteLength(script.slice(match.index, headings[index + 1]?.index ?? script.length), 'utf8')
-]));
-const nextMetrics = {
-  schemaVersion: 1,
-  bytes: Buffer.byteLength(script, 'utf8'),
-  lines: script.split(/\r?\n/).length,
-  commentBytes: Buffer.byteLength(comments.join('\n'), 'utf8'),
-  japaneseComments: comments.filter(comment => /[ぁ-んァ-ン一-龯]/.test(comment)).length,
-  sections: headings.length,
-  blankLines: (script.match(/\n\s*\n/g) || []).length,
-  sectionBytes
-};
+const globalNames = [...new Set([...script.matchAll(/\b(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)/g)].map(([, name]) => name))];
+const nextMetrics = extractBundleMetrics({ script, template: await readFile(join(root, 'src', 'index.template.html'), 'utf8'), globalNames });
 const previous = await readFile(baselinePath, 'utf8');
 await writeFile(baselinePath, `${JSON.stringify(nextMetrics, null, 2)}\n`);
 try {
