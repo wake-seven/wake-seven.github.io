@@ -14,6 +14,26 @@ function createProgressionMessageContext(context={}){
   });
 }
 
+// 進行に関わる画面の公開ダイアログ入口。呼び出し側は画面IDと復帰先だけを渡し、
+// どの描画関数を使うか、既存画面をいつ閉じるかはここで統一する。
+function openDialog(dialogId, options={}){
+  const context=options||{};
+  if(dialogId==='stagePicker'){
+    if(typeof openStagePickerAt==='function'&&(context.round!==undefined||context.satoriPage!==undefined||context.lap!==undefined)){
+      return openStagePickerAt({lap:context.lap,round:context.round,satoriPage:context.satoriPage});
+    }
+    return typeof openStagePicker==='function'&&openStagePicker();
+  }
+  if(dialogId==='rankDialog')return typeof openRankDialog==='function'&&openRankDialog(context.returnTarget||null);
+  if(dialogId==='messageDialog')return typeof openMessageReview==='function'&&openMessageReview(context);
+  if(dialogId==='chainDialog')return typeof openChainedDialog==='function'&&openChainedDialog(context.name);
+  const dialog=$(dialogId);
+  if(!dialog)return false;
+  dialog.hidden=false;
+  if(context.focusId)$(context.focusId)?.focus();
+  return true;
+}
+
 // 進行に関わるダイアログの唯一の要求入口。
 // kind/context/sourceを固定し、既存の描画関数へ委譲する。
 function requestProgressionDialog(kind,context={},source='unknown'){

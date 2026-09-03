@@ -85,8 +85,8 @@ function renderRankList(){
     if(linkable)path.addEventListener('click',()=>{
       activateCampaignLap(second?2:1);
       rankDialogReturn=null;$('rankDialog').hidden=true;
-      if(index===6||index===5)openSatoriPicker();
-      else openStagePickerForRank(index);
+      if(index===6||index===5)openDialog('stagePicker',{lap:second?2:1,round:'satori'});
+      else openDialog('stagePicker',{lap:second?2:1,round:index===0?-PRIMARY_PICKER_SECTION_COUNT:index===1?PICKER_TRAINING_FIRST_ROUND:index-2});
     });
     condition.append(path,count);list.appendChild(row);
   });
@@ -104,7 +104,7 @@ function openRankDialogFrom(dialogId,sealId){
   const seal=$(sealId);
   if(!seal.classList.contains('rank-seal'))return;
   $(dialogId).hidden=true;
-  openRankDialog({dialogId,focusId:sealId});
+  openDialog('rankDialog',{returnTarget:{dialogId,focusId:sealId}});
 }
 // 公開ネイティブモジュールの構文境界。
 export {};

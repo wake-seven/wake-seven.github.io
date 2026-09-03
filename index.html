@@ -9072,6 +9072,26 @@ function createProgressionMessageContext(context={}){
   });
 }
 
+// 進行に関わる画面の公開ダイアログ入口。呼び出し側は画面IDと復帰先だけを渡し、
+// どの描画関数を使うか、既存画面をいつ閉じるかはここで統一する。
+function openDialog(dialogId, options={}){
+  const context=options||{};
+  if(dialogId==='stagePicker'){
+    if(typeof openStagePickerAt==='function'&&(context.round!==undefined||context.satoriPage!==undefined||context.lap!==undefined)){
+      return openStagePickerAt({lap:context.lap,round:context.round,satoriPage:context.satoriPage});
+    }
+    return typeof openStagePicker==='function'&&openStagePicker();
+  }
+  if(dialogId==='rankDialog')return typeof openRankDialog==='function'&&openRankDialog(context.returnTarget||null);
+  if(dialogId==='messageDialog')return typeof openMessageReview==='function'&&openMessageReview(context);
+  if(dialogId==='chainDialog')return typeof openChainedDialog==='function'&&openChainedDialog(context.name);
+  const dialog=$(dialogId);
+  if(!dialog)return false;
+  dialog.hidden=false;
+  if(context.focusId)$(context.focusId)?.focus();
+  return true;
+}
+
 // 進行に関わるダイアログの唯一の要求入口。
 // kind/context/sourceを固定し、既存の描画関数へ委譲する。
 function requestProgressionDialog(kind,context={},source='unknown'){
@@ -9586,7 +9606,7 @@ function openSatoriPicker(){
     if(WakeSevenAppContext.snapshot().lap===1&&isMastered())showMasterDialog('mastery');
     return;
   }
-  openStagePickerAt({lap:WakeSevenAppContext.snapshot().lap,round:'satori',satoriPage:isMode('satori')?Math.floor(WakeSevenAppContext.snapshot().satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0});
+  openDialog('stagePicker',{lap:WakeSevenAppContext.snapshot().lap,round:'satori',satoriPage:isMode('satori')?Math.floor(WakeSevenAppContext.snapshot().satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0});
 }
 // ステージ選択を開く共通入口。呼び出し側は「どの周・巻を選ぶか」だけを渡し、
 // 状態の反映・表示更新・ダイアログ公開の順序はここで固定する。
@@ -9673,7 +9693,7 @@ function openStagePicker(){
   const showingExtra=isMode('mastery')||(isSideCourseMode()&&returnStageContext.extra);
   const showingIndex=isMode('mastery')?extraIndex:returnStageContext.index;
   const round=showingExtra?Math.floor(showingIndex/MASTER_VOLUME_SIZE):PRIMARY_SECTIONS.indexOf(primarySection(showingIndex))-PRIMARY_PICKER_SECTION_COUNT;
-  openStagePickerAt({lap:WakeSevenAppContext.snapshot().lap,round});
+  openDialog('stagePicker',{lap:WakeSevenAppContext.snapshot().lap,round});
 }
 function openStagePickerForRank(rankIndex){
   updateDialogStateOwner({rankDialogReturn:null});
@@ -11104,8 +11124,8 @@ function renderRankList(){
     if(linkable)path.addEventListener('click',()=>{
       activateCampaignLap(second?2:1);
       rankDialogReturn=null;$('rankDialog').hidden=true;
-      if(index===6||index===5)openSatoriPicker();
-      else openStagePickerForRank(index);
+      if(index===6||index===5)openDialog('stagePicker',{lap:second?2:1,round:'satori'});
+      else openDialog('stagePicker',{lap:second?2:1,round:index===0?-PRIMARY_PICKER_SECTION_COUNT:index===1?PICKER_TRAINING_FIRST_ROUND:index-2});
     });
     condition.append(path,count);list.appendChild(row);
   });
@@ -11123,7 +11143,7 @@ function openRankDialogFrom(dialogId,sealId){
   const seal=$(sealId);
   if(!seal.classList.contains('rank-seal'))return;
   $(dialogId).hidden=true;
-  openRankDialog({dialogId,focusId:sealId});
+  openDialog('rankDialog',{returnTarget:{dialogId,focusId:sealId}});
 }
 // 公開ネイティブモジュールの構文境界。
 export {};
@@ -11447,8 +11467,8 @@ function bindClearDialogEvents(){
 bindClearDialogEvents();
 function bindMenuEvents(){
   WakeSevenEventBindings.click('guideHub',()=>{closeAppMenu();openGuideHub();});
-  WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();openStagePicker();});
-  WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();GameDialogs.ranks();});
+  WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();openDialog('stagePicker');});
+  WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();openDialog('rankDialog');});
   WakeSevenEventBindings.click('menuAbout',()=>{
     closeAppMenu();
     $('settingsDialog').hidden=true;
@@ -11556,7 +11576,7 @@ function bindMessageReviewEvents(){
 }
 bindMenuEvents();
 // ステージ選択はヘッダー、メニュー、称号一覧の3経路から同じ描画入口を使う。
-WakeSevenEventBindings.click('stagePickerTrigger',openStagePicker);
+WakeSevenEventBindings.click('stagePickerTrigger',()=>openDialog('stagePicker'));
 WakeSevenEventBindings.click('closeStagePicker',()=>{
   closeStagePicker();
   $('stagePickerTrigger').focus();
@@ -11565,7 +11585,7 @@ WakeSevenEventBindings.click('pickerPrevRound',()=>moveStagePickerRound(-1));
 WakeSevenEventBindings.click('pickerNextRound',()=>moveStagePickerRound(1));
 WakeSevenEventBindings.click('stagePickerRankBadge',()=>{
   $('stagePicker').hidden=true;
-  GameDialogs.ranks({returnTarget:{dialogId:'stagePicker',focusId:'stagePickerRankBadge'}});
+  openDialog('rankDialog',{returnTarget:{dialogId:'stagePicker',focusId:'stagePickerRankBadge'}});
 });
 bindSpeedEvents();
 bindMessageReviewEvents();
@@ -11634,7 +11654,7 @@ $('messageRankLink').addEventListener('click',()=>{
   $('messageDialog').hidden=true;
   GameDialogs.ranks({dialogId:'messageDialog',focusId:'messageRankLink'});
 });
-$('rankBadge').addEventListener('click',openRankDialog);
+$('rankBadge').addEventListener('click',()=>openDialog('rankDialog'));
 $('masterSeal').addEventListener('click',()=>openRankDialogFrom('masterDialog','masterSeal'));
 $('messageMasterSeal').addEventListener('click',()=>openRankDialogFrom('messageDialog','messageMasterSeal'));
 for(const [sealId,dialogId] of [['masterSeal','masterDialog'],['messageMasterSeal','messageDialog']]){

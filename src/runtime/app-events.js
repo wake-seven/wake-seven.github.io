@@ -283,8 +283,8 @@ function bindClearDialogEvents(){
 bindClearDialogEvents();
 function bindMenuEvents(){
   WakeSevenEventBindings.click('guideHub',()=>{closeAppMenu();openGuideHub();});
-  WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();openStagePicker();});
-  WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();GameDialogs.ranks();});
+  WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();openDialog('stagePicker');});
+  WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();openDialog('rankDialog');});
   WakeSevenEventBindings.click('menuAbout',()=>{
     closeAppMenu();
     $('settingsDialog').hidden=true;
@@ -392,7 +392,7 @@ function bindMessageReviewEvents(){
 }
 bindMenuEvents();
 // ステージ選択はヘッダー、メニュー、称号一覧の3経路から同じ描画入口を使う。
-WakeSevenEventBindings.click('stagePickerTrigger',openStagePicker);
+WakeSevenEventBindings.click('stagePickerTrigger',()=>openDialog('stagePicker'));
 WakeSevenEventBindings.click('closeStagePicker',()=>{
   closeStagePicker();
   $('stagePickerTrigger').focus();
@@ -401,7 +401,7 @@ WakeSevenEventBindings.click('pickerPrevRound',()=>moveStagePickerRound(-1));
 WakeSevenEventBindings.click('pickerNextRound',()=>moveStagePickerRound(1));
 WakeSevenEventBindings.click('stagePickerRankBadge',()=>{
   $('stagePicker').hidden=true;
-  GameDialogs.ranks({returnTarget:{dialogId:'stagePicker',focusId:'stagePickerRankBadge'}});
+  openDialog('rankDialog',{returnTarget:{dialogId:'stagePicker',focusId:'stagePickerRankBadge'}});
 });
 bindSpeedEvents();
 bindMessageReviewEvents();
@@ -470,7 +470,7 @@ $('messageRankLink').addEventListener('click',()=>{
   $('messageDialog').hidden=true;
   GameDialogs.ranks({dialogId:'messageDialog',focusId:'messageRankLink'});
 });
-$('rankBadge').addEventListener('click',openRankDialog);
+$('rankBadge').addEventListener('click',()=>openDialog('rankDialog'));
 $('masterSeal').addEventListener('click',()=>openRankDialogFrom('masterDialog','masterSeal'));
 $('messageMasterSeal').addEventListener('click',()=>openRankDialogFrom('messageDialog','messageMasterSeal'));
 for(const [sealId,dialogId] of [['masterSeal','masterDialog'],['messageMasterSeal','messageDialog']]){

@@ -171,7 +171,7 @@ function openSatoriPicker(){
     if(WakeSevenAppContext.snapshot().lap===1&&isMastered())showMasterDialog('mastery');
     return;
   }
-  openStagePickerAt({lap:WakeSevenAppContext.snapshot().lap,round:'satori',satoriPage:isMode('satori')?Math.floor(WakeSevenAppContext.snapshot().satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0});
+  openDialog('stagePicker',{lap:WakeSevenAppContext.snapshot().lap,round:'satori',satoriPage:isMode('satori')?Math.floor(WakeSevenAppContext.snapshot().satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0});
 }
 // ステージ選択を開く共通入口。呼び出し側は「どの周・巻を選ぶか」だけを渡し、
 // 状態の反映・表示更新・ダイアログ公開の順序はここで固定する。
@@ -258,7 +258,7 @@ function openStagePicker(){
   const showingExtra=isMode('mastery')||(isSideCourseMode()&&returnStageContext.extra);
   const showingIndex=isMode('mastery')?extraIndex:returnStageContext.index;
   const round=showingExtra?Math.floor(showingIndex/MASTER_VOLUME_SIZE):PRIMARY_SECTIONS.indexOf(primarySection(showingIndex))-PRIMARY_PICKER_SECTION_COUNT;
-  openStagePickerAt({lap:WakeSevenAppContext.snapshot().lap,round});
+  openDialog('stagePicker',{lap:WakeSevenAppContext.snapshot().lap,round});
 }
 function openStagePickerForRank(rankIndex){
   updateDialogStateOwner({rankDialogReturn:null});

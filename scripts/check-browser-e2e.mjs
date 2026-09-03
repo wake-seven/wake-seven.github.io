@@ -170,10 +170,10 @@ try{
   result.cases.push({name:'stage-picker-header-entry',state:await snap(page)});await click(page,'closeStagePicker');await page.evaluate(()=>document.querySelector('#chainDialog').hidden=true);
   await page.waitForTimeout(400);await page.evaluate(()=>document.querySelector('#chainDialog').hidden=true);
   await page.evaluate(()=>document.querySelector('#stagePickerRankBadge').removeAttribute('hidden'));await click(page,'stagePickerTrigger');await wait(page,()=>!document.querySelector('#stagePicker')?.hidden,'stage picker rank badge setup');await page.evaluate(()=>document.querySelector('#chainDialog').hidden=true);await page.locator('#stagePickerRankBadge').dispatchEvent('click');await wait(page,()=>!document.querySelector('#rankDialog')?.hidden,'stage picker rank badge entry');
-  result.cases.push({name:'stage-picker-rank-badge-entry',state:await snap(page)});await click(page,'closeRankDialog');
+  result.cases.push({name:'stage-picker-rank-badge-entry',state:await snap(page)});await click(page,'closeRankDialog');await wait(page,()=>document.querySelector('#rankDialog')?.hidden,'rank dialog close returns');
   await page.evaluate(()=>{document.querySelector('#debugTools').hidden=false;});await debugClick(page,'debugAcademy20');await page.waitForTimeout(120);await page.evaluate(()=>{document.querySelector('#chainDialog').hidden=true;document.querySelector('#menuRankList').removeAttribute('hidden');});await debugClick(page,'menuToggle');await debugClick(page,'menuRankList');await wait(page,()=>!document.querySelector('#rankDialog')?.hidden,'rank list entry');
   await page.locator('#rankList .rank-stage-link').first().dispatchEvent('click');await wait(page,()=>!document.querySelector('#stagePicker')?.hidden,'stage picker rank entry');
-  result.cases.push({name:'stage-picker-rank-entry',state:await snap(page)});
+  result.cases.push({name:'stage-picker-rank-entry',state:await snap(page)});await click(page,'closeStagePicker');await wait(page,()=>document.querySelector('#stagePicker')?.hidden,'rank stage picker close returns');
   // 各コースの入口を実ブラウザで開き、盤面と表示中の状態を確認する。
   // デバッグボタンは内部状態を直結するが、画面遷移・描画・ダイアログは実DOMを通る。
   for(const checkpoint of stageCheckpoints){

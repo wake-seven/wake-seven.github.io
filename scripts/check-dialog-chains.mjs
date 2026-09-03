@@ -8,7 +8,20 @@ const source = await readFile(join(root, 'src', 'ui', 'board-ui.js'), 'utf8');
 const events = await readFile(join(root, 'src', 'runtime', 'app-events.js'), 'utf8');
 const runtime = await readFile(join(root, 'src', 'runtime', 'runtime.js'), 'utf8');
 const progressionUi = await readFile(join(root, 'src', 'ui', 'progression-ui.js'), 'utf8');
+const progressionDialogs = await readFile(join(root, 'src', 'ui', 'progression-dialogs.js'), 'utf8');
+const rank = await readFile(join(root, 'src', 'ui', 'rank.js'), 'utf8');
 const template = await readFile(join(root, 'src', 'index.template.html'), 'utf8');
+
+// ステージ選択・称号一覧・ヘッダーの入口は、個別描画関数を直接呼ばず
+// 共通の openDialog に集約する。ここで経路の接続を静的に固定する。
+required(/function openDialog\(dialogId, options=\{\}\)/, '共通 openDialog 入口がありません。', progressionDialogs);
+required(/dialogId==='stagePicker'[\s\S]{0,500}openStagePickerAt[\s\S]{0,300}openStagePicker/, 'openDialog のステージ選択経路が不正です。', progressionDialogs);
+required(/dialogId==='rankDialog'[\s\S]{0,180}openRankDialog/, 'openDialog の称号一覧経路が不正です。', progressionDialogs);
+required(/menuStagePicker[\s\S]{0,120}openDialog\('stagePicker'\)/, 'メニューのステージ選択が共通入口を使っていません。', events);
+required(/stagePickerTrigger[\s\S]{0,100}openDialog\('stagePicker'\)/, 'ヘッダーのステージ選択が共通入口を使っていません。', events);
+required(/stagePickerRankBadge[\s\S]{0,220}openDialog\('rankDialog'/, 'ステージ選択内の称号一覧が共通入口を使っていません。', events);
+required(/rankBadge[\s\S]{0,100}openDialog\('rankDialog'\)/, 'ヘッダーの称号一覧が共通入口を使っていません。', events);
+required(/openDialog\('stagePicker',\{lap:/, '称号一覧からステージ選択への経路が共通入口を使っていません。', rank);
 
 function required(pattern, message, text = source) {
   assert.match(text, pattern, message);
