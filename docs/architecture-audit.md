@@ -33,7 +33,7 @@
 npm run check
 ```
 
-`npm run check` は `check:gate` の別名です。`scripts/check-all.mjs` が最初に公開版をビルドし、その後に定義順で検査を一度ずつ実行します。利用者向けの表示とレポートは、手順を「構造」「状態」「進行」「ブラウザ」の4領域に集約します。途中で失敗した場合は後続を実行せず、`build/report/check-gate.json` に失敗した領域・検査、終了コード、標準出力・標準エラー、所要時間、詳細レポートへのリンクを保存します。個別の検査が必要な場合だけ `package.json` と `scripts/check-*.mjs` を確認してください。
+`npm run check` は `check:gate` の別名です。普段の変更確認は `npm run check:auto` を使い、変更ファイルから fast / affected / full を自動選択します。`scripts/check-all.mjs` が最初に公開版をビルドし、その後に定義順で検査を一度ずつ実行します。利用者向けの表示とレポートは、手順を「構造」「状態」「進行」「ブラウザ」の4領域に集約します。途中で失敗した場合は後続を実行せず、`build/report/check-gate.json` に失敗した領域・検査、終了コード、標準出力・標準エラー、所要時間、詳細レポートへのリンクを保存します。個別の検査が必要な場合だけ `package.json` と `scripts/check-*.mjs` を確認してください。
 
 開発時の固定入口は `scripts/development-entrypoints.json` にまとめています。`npm run trace:entry -- progression`（または `state` / `clear-flow`）で、主要ソース・入口シンボル・関連する状態/DOM/E2E/フローレポートを一覧できます。変更対象を確認するときは `npm run trace:impact -- <変更ファイル>` を使い、生成された `build/report/change-impact.json` から影響範囲を確認してから `npm run check:gate` を実行します。入口の定義自体は `npm run check:development-entrypoints` で検査され、詳細な関数一覧は生成済みtraceレポートを正とします。
 
