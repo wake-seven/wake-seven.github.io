@@ -23,6 +23,7 @@ assert.deepEqual(Object.keys(report.summary.flowClassifications).sort(), ['orche
 assert.ok(Array.isArray(report.fileSummary) && report.fileSummary.length > 0, 'ファイル責務サマリーがありません');
 assert.ok(Array.isArray(report.mixedResponsibilitySymbols) && Array.isArray(report.unclassifiedSymbols), '複数責務・未分類一覧がありません');
 assert.ok(Array.isArray(report.candidateClassifications) && report.summary.candidates, '責務候補の分類一覧がありません');
+assert.ok(Array.isArray(report.structuralFindings) && report.summary.structuralFindings, '責務境界の構造検査結果がありません');
 assert.equal(report.mixedResponsibilitySymbols.length, report.summary.mixedSymbols, '複数責務一覧と集計が一致しません');
 assert.equal(report.unclassifiedSymbols.length, report.summary.unclassifiedSymbols, '未分類一覧と集計が一致しません');
 const roles = new Set(['state', 'navigation', 'dialog', 'clear-flow', 'stage-picker', 'rank', 'render', 'unclassified']);
@@ -47,6 +48,17 @@ for (const candidate of report.candidateClassifications) {
 }
 for (const [category, count] of Object.entries(report.summary.candidates)) {
   assert.equal(report.candidateClassifications.filter(candidate => candidate.category === category).length, count, `責務候補集計が不一致です: ${category}`);
+}
+const findingKinds = new Set(['major-transition-outside-entry', 'decision-dom-mutation', 'render-state-mutation', 'clear-flow-direct-skip']);
+for (const finding of report.structuralFindings) {
+  assert.ok(findingKinds.has(finding.kind), `未知の構造検査分類です: ${finding.kind}`);
+  assert.ok(finding.name && finding.file && Number.isInteger(finding.line), `構造検査対象が不正です: ${finding.name}`);
+  assert.ok(Number.isInteger(finding.priority) && finding.priority >= 1 && finding.priority <= 3, `構造検査の優先度が不正です: ${finding.name}`);
+  assert.equal(typeof finding.allowed, 'boolean', `構造検査の許可状態がありません: ${finding.name}`);
+  assert.ok(finding.reason && finding.evidence, `構造検査の理由・証拠がありません: ${finding.name}`);
+}
+for (const [kind, count] of Object.entries(report.summary.structuralFindings)) {
+  assert.equal(report.structuralFindings.filter(finding => finding.kind === kind).length, count, `構造検査集計が不一致です: ${kind}`);
 }
 const entryCount = report.entries.filter(entry => entry.flowRoles.includes('entry')).length;
 assert.ok(entryCount > 0, '進行処理の入口が分類されていません');

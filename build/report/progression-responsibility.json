@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T08:48:37.347Z",
+  "generatedAt": "2026-09-03T08:56:25.869Z",
   "source": "build/report/symbol-index.json",
   "target": "progression-related symbols",
   "summary": {
@@ -31,6 +31,11 @@
     "candidates": {
       "display-transition-mixed": 7,
       "orchestrator": 7
+    },
+    "structuralFindings": {
+      "clear-flow-direct-skip": 1,
+      "decision-dom-mutation": 4,
+      "major-transition-outside-entry": 19
     }
   },
   "pipeline": [
@@ -1879,6 +1884,423 @@
       "reason": "表示更新と遷移処理の両方を含むため、変更時に影響範囲を確認する候補です。",
       "evidence": {
         "callCount": 1
+      }
+    }
+  ],
+  "structuralFindings": [
+    {
+      "kind": "decision-dom-mutation",
+      "name": "refreshGuidedBasicCandidates",
+      "file": "ui/progression-academy-support.js",
+      "line": 120,
+      "priority": 2,
+      "allowed": true,
+      "reason": "既存のUI補助関数として表示更新を担当するため許可。",
+      "evidence": {
+        "domWrite": true
+      }
+    },
+    {
+      "kind": "decision-dom-mutation",
+      "name": "celebrateClear",
+      "file": "ui/progression-clear-flow.js",
+      "line": 64,
+      "priority": 2,
+      "allowed": true,
+      "reason": "既存のUI補助関数として表示更新を担当するため許可。",
+      "evidence": {
+        "domWrite": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "startClearFlow",
+      "file": "ui/progression-clear-flow.js",
+      "line": 70,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "ui/board-ui.js:972:completeBoard",
+          "ui/progression-clear-flow.js:70:celebrateClear",
+          "runtime/app-events.js:25:WakeSevenEventBindings"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "resetClearFlow",
+      "file": "ui/progression-clear-flow.js",
+      "line": 88,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "ui/board-ui.js:949:completeBoard",
+          "ui/board-ui.js:1153:setPosition",
+          "ui/board-ui.js:2181:undoLastMove",
+          "ui/progression-ui.js:311:showClearDialog",
+          "ui/progression-clear-flow.js:79:startClearFlow",
+          "ui/progression-clear-flow.js:83:reduced",
+          "ui/progression-clear-flow.js:88:reduced"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "finishClearFlowDialog",
+      "file": "ui/progression-clear-flow.js",
+      "line": 106,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "ui/progression-ui.js:304:showClearDialog",
+          "ui/progression-clear-flow.js:106:clearFlowCycle",
+          "ui/progression-clear-flow.js:139:finishClearFlow"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "clear-flow-direct-skip",
+      "name": "dispatchClearFlowAction",
+      "file": "ui/progression-clear-flow.js",
+      "line": 168,
+      "priority": 1,
+      "allowed": true,
+      "reason": "ルート決定済みのクリアフローから、次の問題・連鎖へ進める唯一の実行箇所のため許可.",
+      "evidence": {
+        "directCalls": [
+          "loadSatoriStage(",
+          "loadExtraStage(",
+          "loadStage("
+        ]
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "advanceAfterClear",
+      "file": "ui/progression-clear-flow.js",
+      "line": 200,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "commands/progression-commands.js:29:advanceAfterClear",
+          "commands/progression-commands.js:49:advanceAfterClear",
+          "ui/progression-clear-flow.js:200:kind",
+          "runtime/app-events.js:268:resetIntro"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "returnToClearDialog",
+      "file": "ui/progression-clear-flow.js",
+      "line": 202,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "ui/progression-clear-flow.js:202:advanceAfterClear",
+          "runtime/app-events.js:766:closeTipGuide",
+          "runtime/app-events.js:997:closeTwoMovePatterns",
+          "runtime/app-events.js:1031:card"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "openDialog",
+      "file": "ui/progression-dialogs.js",
+      "line": 19,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "ui/progression-dialogs.js:19:createProgressionMessageContext",
+          "ui/progression-ui.js:174:openSatoriPicker",
+          "ui/progression-ui.js:261:openStagePicker",
+          "ui/rank.js:88:volume",
+          "ui/rank.js:89:volume",
+          "ui/rank.js:107:openRankDialogFrom",
+          "runtime/app-events.js:286:resume",
+          "runtime/app-events.js:287:resume",
+          "runtime/app-events.js:395:resume",
+          "runtime/app-events.js:404:resume",
+          "runtime/app-events.js:473:dialogId"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "closeProgressionDialog",
+      "file": "ui/progression-dialogs.js",
+      "line": 62,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "ui/progression-dialogs.js:62:requestProgressionDialog",
+          "ui/progression-ui.js:316:showClearDialog"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "closeProgressionQuiz",
+      "file": "ui/progression-dialogs.js",
+      "line": 88,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "ui/progression-dialogs.js:88:resolveProgressionQuiz",
+          "ui/progression-ui.js:554:hideGameDialogs"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "openTwoMovePatterns",
+      "file": "ui/progression-insights.js",
+      "line": 86,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "runtime/runtime.js:169:el",
+          "ui/progression-dialogs.js:51:requestProgressionDialog",
+          "ui/progression-insights.js:86:buttonTemplate",
+          "ui/progression-insights.js:126:closeTwoMoveDetail",
+          "ui/progression-ui.js:772:from",
+          "ui/progression-ui.js:778:from",
+          "runtime/app-events.js:247:handleClearTipLink",
+          "runtime/app-events.js:372:target",
+          "runtime/app-events.js:449:chain",
+          "runtime/app-events.js:465:chain",
+          "runtime/app-events.js:777:target",
+          "runtime/app-events.js:979:menu"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "openTwoMoveDetail",
+      "file": "ui/progression-insights.js",
+      "line": 112,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "runtime/runtime.js:172:el",
+          "ui/progression-dialogs.js:52:requestProgressionDialog",
+          "ui/progression-insights.js:112:renderTwoMoveDetail",
+          "ui/progression-ui.js:775:from",
+          "ui/progression-ui.js:781:from",
+          "runtime/app-events.js:256:handleClearTipLink",
+          "runtime/app-events.js:467:chain",
+          "runtime/app-events.js:1024:button"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "closeTwoMoveDetail",
+      "file": "ui/progression-insights.js",
+      "line": 122,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "ui/progression-insights.js:122:openTwoMoveDetail",
+          "runtime/app-events.js:1052:target"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "finishDetailDrag",
+      "file": "ui/progression-insights.js",
+      "line": 202,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "ui/progression-insights.js:202:moveDetailDrag",
+          "runtime/app-events.js:1050:target"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "closeStagePicker",
+      "file": "ui/progression-ui.js",
+      "line": 110,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "ui/progression-ui.js:110:extraRoundLabel",
+          "ui/progression-ui.js:166:index",
+          "ui/progression-ui.js:245:canSeeTraining",
+          "runtime/app-events.js:397:resume"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "decision-dom-mutation",
+      "name": "prepareStagePicker",
+      "file": "ui/progression-ui.js",
+      "line": 128,
+      "priority": 2,
+      "allowed": true,
+      "reason": "既存のUI補助関数として表示更新を担当するため許可。",
+      "evidence": {
+        "domWrite": true
+      }
+    },
+    {
+      "kind": "decision-dom-mutation",
+      "name": "appendStagePickerButton",
+      "file": "ui/progression-ui.js",
+      "line": 144,
+      "priority": 2,
+      "allowed": true,
+      "reason": "既存のUI補助関数として表示更新を担当するため許可。",
+      "evidence": {
+        "domWrite": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "openSatoriPicker",
+      "file": "ui/progression-ui.js",
+      "line": 169,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "ui/progression-ui.js:169:index",
+          "ui/progression-ui.js:255:openStagePicker",
+          "ui/progression-clear-flow.js:194:kind",
+          "runtime/app-events.js:305:resume",
+          "runtime/app-events.js:513:returnTarget",
+          "runtime/app-events.js:514:returnTarget"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "openStagePickerAt",
+      "file": "ui/progression-ui.js",
+      "line": 180,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "ui/progression-dialogs.js:23:openDialog",
+          "ui/progression-ui.js:180:openSatoriPicker",
+          "ui/progression-ui.js:269:openStagePickerForRank"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "openStagePicker",
+      "file": "ui/progression-ui.js",
+      "line": 253,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "ui/progression-dialogs.js:25:openDialog",
+          "ui/progression-ui.js:253:canSeeTraining"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "openStagePickerForRank",
+      "file": "ui/progression-ui.js",
+      "line": 263,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "ui/progression-ui.js:263:openStagePicker"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "returnToStageMode",
+      "file": "ui/progression-ui.js",
+      "line": 1041,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "commands/progression-commands.js:32:returnToMenu",
+          "ui/progression-ui.js:1041:shouldAnimate",
+          "ui/progression-ui.js:1060:failedVariant",
+          "ui/progression-ui.js:1088:VIEW_TILTED_FLIP_VERTICAL",
+          "ui/progression-ui.js:1091:VIEW_TILTED_FLIP_VERTICAL"
+        ],
+        "externallyCalled": true
+      }
+    },
+    {
+      "kind": "major-transition-outside-entry",
+      "name": "openRankDialogFrom",
+      "file": "ui/rank.js",
+      "line": 103,
+      "priority": 2,
+      "allowed": true,
+      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
+      "evidence": {
+        "callers": [
+          "ui/rank.js:103:lap",
+          "runtime/app-events.js:474:dialogId",
+          "runtime/app-events.js:475:dialogId",
+          "runtime/app-events.js:478:dialogId"
+        ],
+        "externallyCalled": true
       }
     }
   ],

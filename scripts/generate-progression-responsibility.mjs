@@ -130,6 +130,46 @@ const classifyCandidate = entry => {
 };
 const candidateEntries = entries.map(entry => ({ ...entry, candidate: classifyCandidate(entry) })).filter(entry => entry.candidate);
 const candidateCounts = Object.fromEntries([...new Set(candidateEntries.map(entry => entry.candidate.category))].sort().map(category => [category, candidateEntries.filter(entry => entry.candidate.category === category).length]));
+const structuralExceptions = {
+  // 既存の公開入口・UI復帰・演出制御は、責務境界をまたぐことが仕様上必要なため許可する。
+  // 新しい関数はここへ自動追加せず、理由を確認した変更でのみ追加する。
+  majorTransition: new Set(['startClearFlow', 'resetClearFlow', 'finishClearFlowDialog', 'finishClearFlow', 'advanceAfterClear', 'dispatchClearFlowAction', 'returnToClearDialog', 'openDialog', 'closeProgressionDialog', 'closeProgressionQuiz', 'openTwoMovePatterns', 'openTwoMoveDetail', 'closeTwoMoveDetail', 'finishDetailDrag', 'closeStagePicker', 'openSatoriPicker', 'openStagePickerAt', 'openStagePicker', 'openStagePickerForRank', 'returnToStageMode', 'openRankDialog', 'openRankDialogFrom']),
+  decisionDom: new Set(['refreshGuidedBasicCandidates', 'celebrateClear', 'prepareStagePicker', 'appendStagePickerButton']),
+  renderState: new Set(['renderStageNav', 'renderStagePicker']),
+  clearSkip: new Set(['resolveAfterClearRoute', 'dispatchClearFlowAction', 'advanceAfterClear'])
+};
+const structuralExceptionReasons = {
+  majorTransition: '公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。',
+  decisionDom: '既存のUI補助関数として表示更新を担当するため許可。',
+  renderState: '描画と同時に表示用の派生状態を更新する既存経路のため許可。',
+  clearSkip: 'ルート決定済みのクリアフローから、次の問題・連鎖へ進める唯一の実行箇所のため許可.'
+};
+const structuralFindings = [];
+for (const entry of entries) {
+  if (entry.kind !== 'function') continue;
+  const body = functionBodies.get(`${entry.file}:${entry.name}`) || '';
+  const transition = entry.flowRoles.includes('transition');
+  const hasDomWrite = /(?:textContent|innerHTML|outerHTML|\.hidden\s*=|classList\.(?:add|remove|toggle)|insertAdjacentHTML)\s*[=(]/.test(body);
+  const hasStateWrite = /(?:activeMode|lastStageMode|stageIndex|extraIndex|satoriIndex|clearShown|pickerLap|pickerRound)\s*(?:=|\+\+|--)|WakeSevenAppContext\.state\.[A-Za-z]+\.(?:update|set)\s*\(/.test(body);
+  const externallyCalled = entry.callers.some(caller => /runtime\/app-events\.js|commands\/|ui\/progression-ui\.js/.test(caller));
+  if (transition && !entry.flowRoles.includes('entry') && (!entry.callers.length || externallyCalled)) {
+    const allowed = structuralExceptions.majorTransition.has(entry.name);
+    structuralFindings.push({kind:'major-transition-outside-entry', name:entry.name, file:entry.file, line:entry.line, priority:2, allowed, reason:allowed?structuralExceptionReasons.majorTransition:'主要遷移名を持つが、4入口または既知の遷移入口以外から直接呼ばれるか、呼び出し元を確認できません。', evidence:{callers:entry.callers, externallyCalled}});
+  }
+  if (entry.flowClassification==='state-decision' && !entry.flowRoles.includes('render') && hasDomWrite) {
+    const allowed = structuralExceptions.decisionDom.has(entry.name);
+    structuralFindings.push({kind:'decision-dom-mutation', name:entry.name, file:entry.file, line:entry.line, priority:2, allowed, reason:allowed?structuralExceptionReasons.decisionDom:'状態判定分類の関数内にDOM書き換えがあります。判定と表示を分離できるか確認します。', evidence:{domWrite:true}});
+  }
+  if (entry.flowClassification==='render' && hasStateWrite) {
+    const allowed = structuralExceptions.renderState.has(entry.name);
+    structuralFindings.push({kind:'render-state-mutation', name:entry.name, file:entry.file, line:entry.line, priority:2, allowed, reason:allowed?structuralExceptionReasons.renderState:'表示分類の関数内に進行状態の書き換えがあります。描画と状態変更を分離できるか確認します。', evidence:{stateWrite:true}});
+  }
+  if (/ui\/progression-clear-flow\.js$/i.test(entry.file) && /(?:loadStage|loadExtraStage|loadSatoriStage|openChainedDialog|openStagePicker)\s*\(/.test(body)) {
+    const allowed = structuralExceptions.clearSkip.has(entry.name);
+    structuralFindings.push({kind:'clear-flow-direct-skip', name:entry.name, file:entry.file, line:entry.line, priority:1, allowed, reason:allowed?structuralExceptionReasons.clearSkip:'クリアフローから次の画面・問題へ直接遷移しています。ルート決定入口を経由するか確認します。', evidence:{directCalls:[...body.matchAll(/(?:loadStage|loadExtraStage|loadSatoriStage|openChainedDialog|openStagePicker)\s*\(/g)].map(match => match[0])}});
+  }
+}
+const structuralFindingCounts = Object.fromEntries([...new Set(structuralFindings.map(finding => finding.kind))].sort().map(kind => [kind, structuralFindings.filter(finding => finding.kind===kind).length]));
 const counts = Object.fromEntries([...new Set(entries.map(entry => entry.responsibility))].sort().map(role => [role, entries.filter(entry => entry.responsibility === role).length]));
 const flowCounts = Object.fromEntries([...new Set(entries.flatMap(entry => entry.flowRoles))].sort().map(role => [role, entries.filter(entry => entry.flowRoles.includes(role)).length]));
 const flowClassifications = Object.fromEntries(['state-decision', 'transition', 'render', 'orchestration'].map(role => [role, entries.filter(entry => entry.flowClassification === role).length]));
@@ -145,11 +185,12 @@ const report = {
   generatedAt: new Date().toISOString(),
   source: 'build/report/symbol-index.json',
   target: 'progression-related symbols',
-  summary: { symbols: entries.length, files: new Set(entries.map(entry => entry.file)).size, responsibilities: counts, flowRoles: flowCounts, flowClassifications, mixedSymbols: entries.filter(entry => entry.mixedResponsibility).length, unclassifiedSymbols: entries.filter(entry => entry.responsibility === 'unclassified').length, candidates: candidateCounts },
+  summary: { symbols: entries.length, files: new Set(entries.map(entry => entry.file)).size, responsibilities: counts, flowRoles: flowCounts, flowClassifications, mixedSymbols: entries.filter(entry => entry.mixedResponsibility).length, unclassifiedSymbols: entries.filter(entry => entry.responsibility === 'unclassified').length, candidates: candidateCounts, structuralFindings: structuralFindingCounts },
   pipeline: ['entry', 'state-decision', 'transition', 'render'],
   fileSummary,
   mixedResponsibilitySymbols: entries.filter(entry => entry.mixedResponsibility).map(entry => ({ name: entry.name, file: entry.file, line: entry.line, flowRoles: entry.flowRoles })),
   candidateClassifications: candidateEntries.map(entry => ({ name: entry.name, file: entry.file, line: entry.line, flowRoles: entry.flowRoles, category: entry.candidate.category, priority: entry.candidate.priority, reason: entry.candidate.reason, evidence: entry.candidate.evidence })),
+  structuralFindings,
   unclassifiedSymbols: entries.filter(entry => entry.responsibility === 'unclassified').map(entry => ({ name: entry.name, file: entry.file, line: entry.line })),
   entries,
   note: '責務は関数名・ファイル名からの監査用分類。移動・削除・統合を自動実行しない。'
