@@ -36,6 +36,9 @@ const steps = [
   { name: 'compat-e2e', command: process.execPath, args: ['scripts/check-compat-e2e.mjs'] },
   { name: 'browser-e2e', command: process.execPath, args: ['scripts/check-browser-e2e.mjs'] },
   { name: 'device-e2e', command: process.execPath, args: ['scripts/check-device-e2e.mjs'] },
+  { name: 'translations', command: process.execPath, args: ['scripts/check-translations.mjs'] },
+  { name: 'dialog-state-map', command: process.execPath, args: ['scripts/check-dialog-state-map.mjs'] },
+  { name: 'global-state', command: process.execPath, args: ['scripts/check-global-state-classification.mjs'] },
   { name: 'gate-evidence', command: process.execPath, args: ['scripts/check-gate-evidence.mjs'] },
   // 構造予算より先に、最新の状態参照レポートを生成する。
   { name: 'global-access', command: process.execPath, args: ['scripts/check-global-access-contract.mjs'] },
