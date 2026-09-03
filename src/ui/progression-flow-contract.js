@@ -21,7 +21,7 @@ function getProgressionFlowContract(){return PROGRESSION_FLOW_CONTRACT;}
 const PROGRESSION_ORCHESTRATORS=Object.freeze([
   {id:'clear-start',name:'クリア開始オーケストレーター',entry:'startClearFlow',source:'src/ui/progression-clear-flow.js',order:{decision:['beginClearFlow','createClearTransitionContext'],transition:['persistClearFlowCheckpoint'],render:['scheduleClearFlowDialog']}},
   {id:'clear-advance',name:'クリア後進行オーケストレーター',entry:'dispatchClearFlowAction',source:'src/ui/progression-clear-flow.js',order:{decision:['resolveAfterClearRoute'],transition:['persistClearFlowCheckpoint','setClearFlowPhase'],render:['showMasterDialog']}},
-  {id:'dialog-restore',name:'ダイアログ復元オーケストレーター',entry:'restoreDialogState',source:'src/runtime/runtime.js',order:{decision:["state.id==='clear'"],transition:['createClearTransitionContext'],render:['showClearDialog']}},
+  {id:'dialog-restore',name:'ダイアログ復元オーケストレーター',entry:'restoreDialogState',source:'src/runtime/runtime.js',order:{decision:['clear:()=>'],transition:['createClearTransitionContext'],render:['showClearDialog']}},
   {id:'stage-advance',name:'ステージ進行オーケストレーター',entry:'dispatchClearFlowAction',source:'src/ui/progression-clear-flow.js',order:{decision:['resolveAfterClearRoute'],transition:['setClearFlowPhase'],render:['loadStage']}}
 ]);
 export {};

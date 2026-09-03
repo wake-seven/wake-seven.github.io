@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-23:48';
+const APP_VERSION='2026.09.03-23:54';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -157,6 +157,8 @@ function persistDialogState(){
 // dialog-state-map の rank/message/tip 系を、復元処理の対応表としてまとめる。
 // 各ハンドラは従来の呼び出し順と戻り先を維持し、保存状態の判定だけを担当する。
 const DIALOG_RESTORE_HANDLERS=Object.freeze({
+  chain:state=>{if(!CHAIN_STEPS[state.name])return false;openChainedDialog(state.name);return true;},
+  clear:()=>{if(!(clearShown&&isSolved()))return false;const clearContext=createClearTransitionContext();showClearDialog(clearContext);return true;},
   message:state=>{openMessageReview({resume:true});if(state.key){const index=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===state.key);if(index>=0){messageReviewIndex=index;renderMessageReview();}}return true;},
   rank:()=>{openRankDialog();return true;},
   tipGuide:()=>{openTipGuide();return true;},
@@ -165,9 +167,7 @@ const DIALOG_RESTORE_HANDLERS=Object.freeze({
 function restoreDialogState(state){
   if(!state||typeof state.id!=='string')return false;
   try{
-    if(state.id==='chain'&&CHAIN_STEPS[state.name]){openChainedDialog(state.name);return true;}
-    if(state.id==='clear'&&clearShown&&isSolved()){const clearContext=createClearTransitionContext();showClearDialog(clearContext);return true;}
-    const mappedRestore=DIALOG_RESTORE_HANDLERS[state.id];if(mappedRestore)return mappedRestore(state);
+    const mappedRestore=DIALOG_RESTORE_HANDLERS[state.id];if(mappedRestore&&mappedRestore(state))return true;
     if(state.id==='master'){showMasterDialog(state.kind||'primary');return true;}
     if(state.id==='speedPause'&&isMode('speed')){openSpeedPauseDialog();return true;}
     if(state.id==='twoMove'){

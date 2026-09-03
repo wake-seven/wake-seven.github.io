@@ -69,7 +69,7 @@ required(/trainingMiddleSpin[\s\S]{0,1800}loadStage\(TRAINING_STAGE_START\+TRAIN
 for (const name of ['academyEnroll', 'basicWelcome', 'applicationWelcome', 'developmentWelcome']) {
   assert.match(events + source + progressionUi, new RegExp(`(?:openChainedDialog\\('${name}'\\)|requestProgressionDialog\\('chain',\\{name:'${name}'\\})`), `Chain entry is not connected: ${name}`);
 }
-required(/state\.id==='chain'&&CHAIN_STEPS\[state\.name\][\s\S]{0,120}openChainedDialog\(state\.name\)/, 'Saved chain dialog must restore through CHAIN_STEPS.', runtime);
+required(/(?:state\.id==='chain'&&CHAIN_STEPS\[state\.name\][\s\S]{0,120}openChainedDialog\(state\.name\)|chain:state=>\{if\(!CHAIN_STEPS\[state\.name\]\)return false;openChainedDialog\(state\.name\);return true;\})/, 'Saved chain dialog must restore through CHAIN_STEPS.', runtime);
 
 // 前へは履歴がある時だけ表示し、次へで履歴を積む。cleanup は次の描画・閉じるの
 // どちらでも呼ばれるため、アニメーションが次のステップへ漏れないことを監査する。

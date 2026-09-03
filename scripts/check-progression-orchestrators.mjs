@@ -27,7 +27,7 @@ for(const entry of entries){
     const tokens=entry.order?.[phase]||[];
     if(!tokens.length)throw new Error(`${entry.id}: ${phase} の契約が空です`);
     phases[phase]=tokens.map(token=>{
-      const index=body.indexOf(token);
+      const index=(entry.id==='dialog-restore'?source:body).indexOf(token);
       if(index<0)throw new Error(`${entry.id}: ${phase} の入口 ${token} が ${entry.entry} にありません`);
       if(index<previous)throw new Error(`${entry.id}: state decision→transition→render の順序が壊れています (${token})`);
       previous=index;return {token,index};
