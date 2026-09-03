@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-23:40';
+const APP_VERSION='2026.09.03-23:48';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -154,17 +154,22 @@ const DIALOG_STATE_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.state;
 function persistDialogState(){
   try{const state=captureDialogState();if(state)storage.setJson(DIALOG_STATE_STORAGE_KEY,{id:state.type,name:state.name,kind:state.kind,key:state.key});else storage.remove(DIALOG_STATE_STORAGE_KEY);}catch(_){ }
 }
+// dialog-state-map の rank/message/tip 系を、復元処理の対応表としてまとめる。
+// 各ハンドラは従来の呼び出し順と戻り先を維持し、保存状態の判定だけを担当する。
+const DIALOG_RESTORE_HANDLERS=Object.freeze({
+  message:state=>{openMessageReview({resume:true});if(state.key){const index=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===state.key);if(index>=0){messageReviewIndex=index;renderMessageReview();}}return true;},
+  rank:()=>{openRankDialog();return true;},
+  tipGuide:()=>{openTipGuide();return true;},
+  guideHub:()=>{openGuideHub();return true;}
+});
 function restoreDialogState(state){
   if(!state||typeof state.id!=='string')return false;
   try{
     if(state.id==='chain'&&CHAIN_STEPS[state.name]){openChainedDialog(state.name);return true;}
     if(state.id==='clear'&&clearShown&&isSolved()){const clearContext=createClearTransitionContext();showClearDialog(clearContext);return true;}
-    if(state.id==='message'){openMessageReview({resume:true});if(state.key){const index=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===state.key);if(index>=0){messageReviewIndex=index;renderMessageReview();}}return true;}
+    const mappedRestore=DIALOG_RESTORE_HANDLERS[state.id];if(mappedRestore)return mappedRestore(state);
     if(state.id==='master'){showMasterDialog(state.kind||'primary');return true;}
     if(state.id==='speedPause'&&isMode('speed')){openSpeedPauseDialog();return true;}
-    if(state.id==='rank'){openRankDialog();return true;}
-    if(state.id==='tipGuide'){openTipGuide();return true;}
-    if(state.id==='guideHub'){openGuideHub();return true;}
     if(state.id==='twoMove'){
       openTwoMovePatterns();return true;
     }

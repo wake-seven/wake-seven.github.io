@@ -1964,7 +1964,7 @@ const CLEAR_CONTENT={
   mastery2_13:{twoMoveCard:0},
   mastery2_14:{quiz:{ja:{q:'だるまの原型になったとされる郷土玩具は？',a:['こけし','起き上がり小法師','張り子の虎','土鈴'],correct:1,note:'底を重くして必ず起き上がる玩具。これに達磨大師の姿を重ねたのがだるまです。'},en:{q:'Which folk toy is said to have inspired the daruma?',a:['Kokeshi','Okiagari-kobōshi','Papier-mâché tiger','Clay bell'],correct:1,note:'It is a toy weighted at the bottom so it always rises again. Daruma were created by combining this form with Bodhidharma.'},zh:{q:'被认为是不倒翁原型的乡土玩具是？',a:['木芥子','起身小法师','纸糊老虎','土铃'],correct:1,note:'它的底部较重，一定会重新立起。不倒翁就是把达摩大师的形象和这种玩具结合而成的。'},ko:{q:'다루마의 원형이 되었다고 전해지는 향토 장난감은?',a:['고케시','오키아가리코보시','종이호랑이','흙방울'],correct:1,note:'밑을 무겁게 만들어 반드시 다시 일어나는 장난감입니다. 여기에 달마대사의 모습을 겹친 것이 다루마예요.'}}},
   // 名人への道・急
-  mastery3_1:{tip:{ja:'不立文字（ふりゅうもんじ）は、悟りは文字や言葉だけでは伝えられず、心から心へ伝わるものだ、という禅の考え方です。達磨大師を始祖とする禅宗で大切にされてきました。',en:'不立文字（ふりゅうもんじ）は、悟りは文字や言葉だけでは伝えられず、心から心へ伝わるものだ、という禅の考え方です。達磨大師を始祖とする禅宗で大切にされてきました。',zh:'不立文字（ふりゅうもんじ）は、悟りは文字や言葉だけでは伝えられず、心から心へ伝わるものだ、という禅の考え方です。達磨大師を始祖とする禅宗で大切にされてきました。',ko:'不立文字（ふりゅうもんじ）は、悟りは文字や言葉だけでは伝えられず、心から心へ伝わるものだ、という禅の考え方です。達磨大師を始祖とする禅宗で大切にされてきました。'},art:'unwritten'},
+  mastery3_1:{tip:{ja:'不立文字（ふりゅうもんじ）は、悟りは文字や言葉だけでは伝えられず、心から心へ伝わるものだ、という禅の考え方です。達磨大師を始祖とする禅宗で大切にされてきました。',en:'Furyū monji means that enlightenment cannot be conveyed by words alone, but from heart to heart. It is an important Zen idea associated with Bodhidharma.',zh:'“不立文字”意为悟道不能只靠文字和语言传达，而是要心心相传。这是与达摩大师有关的重要禅宗思想。',ko:'“불립문자”는 깨달음이 글이나 말만으로 전해지는 것이 아니라 마음에서 마음으로 전해진다는 뜻입니다. 달마대사와 관련된 중요한 선종의 가르침이에요.'},art:'unwritten'},
   mastery3_2:{twoMoveCard:2},
   mastery3_3:{tip:{ja:'最短3手の盤面での次の一手の確率です。\n・最短2手になるのは約17% (9パターン)\n・最短3手にとどまるのは約56% (39パターン)\n・最短4手になるのは約27% (24パターン)',en:'From a three-move board, a random choice among 12 turns reaches a two-move board about 17% of the time, stays at three moves about 56%, and goes to four moves about 27%.',zh:'在最少3步的棋盘中，随机选择12种转法之一，约17％会变为最少2步，约56％仍为最少3步，约27％会变为最少4步。',ko:'최단 3수 보드에서 12가지 회전 중 하나를 무작위로 고르면 약 17％는 최단 2수, 약 56％는 그대로 최단 3수, 약 27％는 최단 4수가 됩니다.'},art:'moveGraph'},
   mastery3_4:{twoMoveCard:1},
@@ -4415,7 +4415,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-21:05';
+const APP_VERSION='2026.09.03-23:48';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -4568,17 +4568,22 @@ const DIALOG_STATE_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.state;
 function persistDialogState(){
   try{const state=captureDialogState();if(state)storage.setJson(DIALOG_STATE_STORAGE_KEY,{id:state.type,name:state.name,kind:state.kind,key:state.key});else storage.remove(DIALOG_STATE_STORAGE_KEY);}catch(_){ }
 }
+// dialog-state-map の rank/message/tip 系を、復元処理の対応表としてまとめる。
+// 各ハンドラは従来の呼び出し順と戻り先を維持し、保存状態の判定だけを担当する。
+const DIALOG_RESTORE_HANDLERS=Object.freeze({
+  message:state=>{openMessageReview({resume:true});if(state.key){const index=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===state.key);if(index>=0){messageReviewIndex=index;renderMessageReview();}}return true;},
+  rank:()=>{openRankDialog();return true;},
+  tipGuide:()=>{openTipGuide();return true;},
+  guideHub:()=>{openGuideHub();return true;}
+});
 function restoreDialogState(state){
   if(!state||typeof state.id!=='string')return false;
   try{
     if(state.id==='chain'&&CHAIN_STEPS[state.name]){openChainedDialog(state.name);return true;}
     if(state.id==='clear'&&clearShown&&isSolved()){const clearContext=createClearTransitionContext();showClearDialog(clearContext);return true;}
-    if(state.id==='message'){openMessageReview({resume:true});if(state.key){const index=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===state.key);if(index>=0){messageReviewIndex=index;renderMessageReview();}}return true;}
+    const mappedRestore=DIALOG_RESTORE_HANDLERS[state.id];if(mappedRestore)return mappedRestore(state);
     if(state.id==='master'){showMasterDialog(state.kind||'primary');return true;}
     if(state.id==='speedPause'&&isMode('speed')){openSpeedPauseDialog();return true;}
-    if(state.id==='rank'){openRankDialog();return true;}
-    if(state.id==='tipGuide'){openTipGuide();return true;}
-    if(state.id==='guideHub'){openGuideHub();return true;}
     if(state.id==='twoMove'){
       openTwoMovePatterns();return true;
     }

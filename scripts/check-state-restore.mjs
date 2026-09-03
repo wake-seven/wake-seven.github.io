@@ -4,6 +4,9 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import vm from 'node:vm';
 
+// 復元契約の識別子対応表も、状態復元検査と同じ入口で固定する。
+await import('./check-dialog-state-map.mjs');
+
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const read = name => readFile(join(root, name), 'utf8');
 const stateSource = (await read('src/state/game-state.js')).replace(/^\s*export\s*\{\s*\};?\s*$/gm, '');
@@ -79,8 +82,8 @@ for (const source of [runtimeSource, published]) {
   assert.match(source, /function restoreDialogState\(state\)/, 'dialog restore function must exist');
   assert.match(source, /(?:wake7-dialog-state|STORAGE_KEY_GROUPS\.dialogs\.state)/, 'dialog state key must be present');
   assert.match(source, /if\(state\.id==='chain'/, 'chain dialog state must be restorable');
-  assert.match(source, /if\(state\.id==='message'/, 'message dialog state must be restorable');
-  assert.match(source, /if\(state\.id==='guideHub'/, 'guide hub state must be restorable');
+  assert.match(source, /(?:if\(state\.id==='message'|message:state=>)/, 'message dialog state must be restorable');
+  assert.match(source, /(?:if\(state\.id==='guideHub'|guideHub:\(\)=>)/, 'guide hub state must be restorable');
   assert.match(source, /if\(state\.id==='twoMove'/, 'pattern guide state must be restorable');
 }
 assert.match(bootstrapSource, /restoreActiveSession\(\);[\s\S]*(?:restoreDialogState|restoreProgressionDialog)\(storage\.json\(DIALOG_STATE_STORAGE_KEY,null\)\);/,
