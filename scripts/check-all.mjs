@@ -13,6 +13,7 @@ const steps = [
   { name: 'version', command: process.execPath, args: ['scripts/check-version.mjs'] },
   { name: 'application-targets', command: process.execPath, args: ['scripts/check-application-targets.mjs'] },
   { name: 'state', command: process.execPath, args: ['scripts/check-state.mjs'] },
+  { name: 'state-classification', command: process.execPath, args: ['scripts/check-state-classification.mjs'] },
   { name: 'state-restore', command: process.execPath, args: ['scripts/check-state-restore.mjs'] },
   { name: 'browser-flow', command: process.execPath, args: ['scripts/check-browser-flow.mjs'] },
   { name: 'dialog-chains', command: process.execPath, args: ['scripts/check-dialog-chains.mjs'] },
