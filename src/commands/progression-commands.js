@@ -22,22 +22,30 @@ function recordProgressClearCommand(kind,index){
   persistLapProgress();
   return true;
 }
-// 進行画面・速解きから呼ぶ状態変更の入口。UIはこのAPIだけを参照する。
+// 進行処理の公開入口。UIやイベントは実装関数を直接呼ばず、ここを経由する。
+// 入口名と実装名の対応は scripts/progression-entry-points.mjs の追跡レポートにも出力する。
+const ProgressionEntryPoints=Object.freeze({
+  showProgressionDialog:(kind,context={},source='unknown')=>requestProgressionDialog(kind,context,source),
+  advanceAfterClear:()=>advanceAfterClear(),
+  startStage:index=>loadStage(index),
+  finishStage:options=>completeBoard(options),
+  returnToMenu:()=>returnToStageMode()
+});
 const GameNavigation=Object.freeze({
-  tutorial:()=>startTutorial(), stage:index=>loadStage(index), mastery:index=>loadExtraStage(index),
+  tutorial:()=>startTutorial(), stage:index=>ProgressionEntryPoints.startStage(index), mastery:index=>loadExtraStage(index),
   satori:index=>loadSatoriStage(index), free:()=>startFree(), maker:()=>enterBoardMaker(),
-  stageMenu:()=>returnToStageMode(), speedPicker:()=>openSpeedPicker()
+  stageMenu:()=>ProgressionEntryPoints.returnToMenu(), speedPicker:()=>openSpeedPicker()
 });
 // ダイアログ要求の実装はui/progression-dialogs.jsの単一入口へ集約する。
 const GameDialogs=Object.freeze({
-  messages:options=>requestProgressionDialog('messages',options,options?.source||'menu'),
-  ranks:options=>requestProgressionDialog('ranks',options,options?.source||'menu'),
-  mastery:kind=>requestProgressionDialog('mastery',{kind},'progression')
+  messages:options=>ProgressionEntryPoints.showProgressionDialog('messages',options,options?.source||'menu'),
+  ranks:options=>ProgressionEntryPoints.showProgressionDialog('ranks',options,options?.source||'menu'),
+  mastery:kind=>ProgressionEntryPoints.showProgressionDialog('mastery',{kind},'progression')
 });
 const WakeSevenProgressionCommands=Object.freeze({
   startSpeedRun:()=>beginSpeedRun(), advanceSpeedRun:()=>advanceSpeedRun(),
-  loadStage:index=>loadStage(index), loadMasteryStage:index=>loadExtraStage(index),
+  loadStage:index=>ProgressionEntryPoints.startStage(index), loadMasteryStage:index=>loadExtraStage(index),
   loadSatoriStage:index=>loadSatoriStage(index), startFree:()=>startFree(),
-  advanceAfterClear:()=>advanceAfterClear()
+  advanceAfterClear:()=>ProgressionEntryPoints.advanceAfterClear()
 });
 export {};

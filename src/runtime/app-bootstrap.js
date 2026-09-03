@@ -25,7 +25,7 @@ document.addEventListener('visibilitychange',()=>{
       // (裏に回った端末がタイマーの発火を止める・遅らせる等)。
       // 復帰時にクリア済みの盤面が残っていたら、保留中のタイマーは捨てて即座に確定させる。
       clearUiEffectTimers('clear-transition');
-      if(!clearShown)completeBoard({mode:'speed'});else WakeSevenProgressionCommands.advanceSpeedRun();
+      if(!clearShown)ProgressionEntryPoints.finishStage({mode:'speed'});else WakeSevenProgressionCommands.advanceSpeedRun();
     }
     // 非表示から戻った時はタイマーを黙って再開せず、一時停止ダイアログを出して本人の操作で再開させる。
     else if($('speedPauseDialog').hidden)openSpeedPauseDialog();

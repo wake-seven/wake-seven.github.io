@@ -1004,7 +1004,7 @@ function paint(){
     renderSpeedClock();
   }
   if(isMode('speed')&&isSolved()&&!clearShown&&speedSession&&!speedAwaitingStart()){
-    completeBoard({mode:'speed'});return;
+    ProgressionEntryPoints.finishStage({mode:'speed'});return;
   }
   // 二周目の悟りは、最短手数を手がかりにさせない。成功しない限り4手目まで続けられる。
   const satoriFailureLimit=secondLapActive?4:best;
@@ -1015,7 +1015,7 @@ function paint(){
     $('optimalFailDialog').hidden=false;
     return;
   }
-  if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){completeBoard({mode:activeMode});}
+  if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){ProgressionEntryPoints.finishStage({mode:activeMode});}
 }
 function tileTransform(x,y,turn){
   return WakeSevenBoardGeometry.tileTransform(x,y,turn);

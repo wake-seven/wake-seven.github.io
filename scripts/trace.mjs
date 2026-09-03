@@ -38,6 +38,13 @@ for (const item of flow.dialogTransitions || []) {
   const text = `${item.from} ${item.action} ${item.to}`.toLowerCase();
   if (text.includes(needle)) add('ダイアログ遷移', `${item.action} → ${item.to}`, item);
 }
+for (const item of flow.progressionEntries || []) {
+  const text = `${item.name} ${item.implementation} ${item.role}`.toLowerCase();
+  if (text.includes(needle)) {
+    add('進行入口', `${item.name} → ${item.implementation}`, { role: item.role, ...item.definition });
+    for (const caller of item.callers || []) add('入口の呼び出し元', item.name, caller);
+  }
+}
 for (const item of flow.entryPoints || []) {
   if (item.type.toLowerCase().includes(needle)) add('入口', item.type, { files: item.files });
 }

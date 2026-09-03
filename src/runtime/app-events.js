@@ -13,7 +13,7 @@ function debugClearCurrent(extraMoves=0){
   GameBoard.repaint();
   // 速解きのデバッグ即クリアは、通常クリアダイアログではなく
   // 実プレイと同じ専用の完了処理（保存→次問）へ接続する。
-  if(isMode('speed')){completeBoard({mode:'speed'});return;}
+  if(isMode('speed')){ProgressionEntryPoints.finishStage({mode:'speed'});return;}
   // デバッグ即クリアでも、通常操作と同じクリア演出・ダイアログ遷移を直ちに予約する。
   // 再描画側の予約と重なっても、同じタイマーキーで冪等に置き換わる。
   startClearFlow();

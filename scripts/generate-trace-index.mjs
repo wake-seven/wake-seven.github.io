@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, relative } from 'node:path';
 import { publishedSourceFiles } from './application-manifest.mjs';
+import { progressionEntryPoints } from './progression-entry-points.mjs';
 
 // 公開版のソースを機械的に検索し、処理の入口を辿るための索引を生成する。
 // 完全なJavaScript AST解析ではなく、依存を増やさないための保守用インデックス。
@@ -25,8 +26,8 @@ const addOccurrence = (name, item) => {
 
 function enclosingFunction(text, offset) {
   const before = text.slice(0, offset);
-  const matches = [...before.matchAll(/(?:function\s+([A-Za-z_$][\w$]*)|(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?\(?[^=]*\)?\s*=>)/g)];
-  return matches.length ? (matches.at(-1)[1] || matches.at(-1)[2]) : null;
+  const matches = [...before.matchAll(/(?:function\s+([A-Za-z_$][\w$]*)|(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?\(?[^>]*?\)?\s*=>|([A-Za-z_$][\w$]*)\s*:\s*(?:async\s*)?\(?[^>]*?\)?\s*=>)/g)];
+  return matches.length ? (matches.at(-1)[1] || matches.at(-1)[2] || matches.at(-1)[3]) : null;
 }
 function record(file, text, name, offset, kind) {
   definitionOffsets.add(`${file}:${offset}`);
@@ -90,6 +91,27 @@ const flowMap = {
   source: symbolIndex.source,
   eventToCommand: events.map(event => ({ ...event, command: event.handler || 'inline-handler' })),
   dialogTransitions: dialogEdges,
+  // 進行入口は、実装関数の定義・呼び出し元をまとめて出す。
+  // 入口名（調査時に使う名前）と実装名（ソース上の名前）を分けることで、
+  // 内部関数の整理後も「どこから追うか」が変わらないようにする。
+  progressionEntries: progressionEntryPoints.map(entry => {
+    const implementation = definitions.get(entry.implementation);
+    const callers = callSites.get(entry.implementation) || [];
+    const wrapperCalls = [];
+    for (const { file, text } of sources) {
+      const re = new RegExp(`ProgressionEntryPoints\\.${entry.name}\\s*\\(`, 'g');
+      let match;
+      while ((match = re.exec(text))) wrapperCalls.push({ file, line: lineOf(text, match.index), caller: 'ProgressionEntryPoints' });
+    }
+    return {
+      name: entry.name,
+      implementation: entry.implementation,
+      role: entry.role,
+      definition: implementation ? { file: implementation.file, line: implementation.line } : null,
+      callers,
+      entryWrapper: wrapperCalls
+    };
+  }),
   entryPoints: ['DOMContentLoaded', 'pointerdown', 'click', 'touchstart'].map(type => ({ type, files: sources.filter(({ text }) => text.includes(type)).map(({ file }) => file) }))
 };
 await mkdir(reportDir, { recursive: true });

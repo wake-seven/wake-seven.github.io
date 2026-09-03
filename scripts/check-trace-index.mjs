@@ -13,6 +13,12 @@ const flow = JSON.parse(await readFile(join(root, 'build', 'report', 'flow-map.j
 if (!symbol.definitions || !Object.keys(symbol.definitions).length) throw new Error('symbol-index.json has no definitions.');
 if (!symbol.dom || !Object.keys(symbol.dom).length) throw new Error('symbol-index.json has no DOM references.');
 if (!Array.isArray(flow.eventToCommand) || !Array.isArray(flow.dialogTransitions)) throw new Error('flow-map.json is missing flow sections.');
+if (!Array.isArray(flow.progressionEntries) || flow.progressionEntries.length !== 5) throw new Error('flow-map.json is missing progression entry points.');
+for (const entry of flow.progressionEntries) {
+  if (!entry.name || !entry.implementation || !entry.definition?.file || !Number.isInteger(entry.definition.line) || !entry.entryWrapper?.length) {
+    throw new Error(`Invalid progression entry: ${entry.name || '(unnamed)'}`);
+  }
+}
 const references = [
   ...Object.values(symbol.definitions).map(item => item),
   ...Object.values(symbol.dom).flat(),
