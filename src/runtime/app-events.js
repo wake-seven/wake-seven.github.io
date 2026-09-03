@@ -12,7 +12,7 @@ function debugClearCurrent(extraMoves=0){
   cancelTileAnimations();
   clearHintVisuals();
   ori=new Uint8Array(N);spin=new Int16Array(N);tileEls=baseTiles.slice();
-  history=[];moves=best+extraMoves;clearShown=false;
+  history=[];moves=best+extraMoves;setClearShownCommand(false);
   svg.classList.remove('clear-pending','celebrating');
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   $('clearNext').hidden=true;
@@ -184,7 +184,7 @@ function debugOpenSpeedExam(variant,index){
     storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,JSON.stringify([...clearedExtraStages]));
   }catch(_){ }
   persistLapProgress();updateMasterTheme();
-  speedVariant=variant;
+  setSpeedVariantCommand(variant);
   if(variant==='training9'){
     speedTrainingTrialCleared=false;
     storage.remove(STORAGE_KEY_GROUPS.speed.trainingTrialCleared);
@@ -197,7 +197,7 @@ function debugOpenSpeedExam(variant,index){
     speedMasteryTrialCleared=false;
     storage.remove(STORAGE_KEY_GROUPS.speed.masteryTrialCleared);
   }
-  speedSession=newSpeedSession();
+  setSpeedSessionCommand(newSpeedSession());
   speedSession.index=Math.max(0,Math.min(speedSession.total-1,index));
   speedSession.optimalClears=speedSession.index;
   speedSession.requiredTrial=variant;
@@ -486,25 +486,25 @@ $('closeRankDialog').addEventListener('click',()=>{
 $('masterStart').addEventListener('click',()=>{
   const speedTarget=$('masterStart').dataset.speedVariant;
   hideGameDialogs();
-  if(speedTarget){speedVariant=speedTarget;speedSession=null;enterSpeedMode(true);return;}
+  if(speedTarget){setSpeedVariantCommand(speedTarget);setSpeedSessionCommand(null);enterSpeedMode(true);return;}
   if(masterDialogKind==='awakening'){enterSpeedMode(true);return;}
   if(masterDialogKind==='speedIntro'){enterSpeedMode(!readSpeedSession());return;}
   if(masterDialogKind==='speedTrialFailed'){
-    speedVariant=['training9','training18','mastery27'].includes(speedSession?.requiredTrial)?speedSession.requiredTrial:'training9';
-    speedSession=null;enterSpeedMode(true);return;
+    setSpeedVariantCommand(['training9','training18','mastery27'].includes(speedSession?.requiredTrial)?speedSession.requiredTrial:'training9');
+    setSpeedSessionCommand(null);enterSpeedMode(true);return;
   }
   if(masterDialogKind==='speedComplete'){enterSpeedMode(true);return;}
   if(masterDialogKind==='primary'){
-    if(!secondLapActive&&!speedTrainingTrialCleared){speedVariant='training9';speedSession=null;enterSpeedMode(true);return;}
+    if(!secondLapActive&&!speedTrainingTrialCleared){setSpeedVariantCommand('training9');setSpeedSessionCommand(null);enterSpeedMode(true);return;}
     const before=clearContentBefore(false,TRAINING_STAGE_START);
     if(before?.dialog){rememberSpecialMessage(before.dialog);openChainedDialog(before.dialog);return;}
     GameNavigation.stage(TRAINING_STAGE_START);return;
   }
   if(masterDialogKind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared){
-    speedVariant='training18';speedSession=null;enterSpeedMode(true);return;
+    setSpeedVariantCommand('training18');setSpeedSessionCommand(null);enterSpeedMode(true);return;
   }
   if(masterDialogKind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared){
-    speedVariant='mastery27';speedSession=null;enterSpeedMode(true);return;
+    setSpeedVariantCommand('mastery27');setSpeedSessionCommand(null);enterSpeedMode(true);return;
   }
   if(masterDialogKind==='intermediate'){GameNavigation.mastery(0);return;}
   if(masterDialogKind==='pathInfo')GameNavigation.mastery(0);
@@ -516,8 +516,8 @@ $('masterStart').addEventListener('click',()=>{
 });
 $('masterSpeedUnlockStart').addEventListener('click',()=>{
   hideGameDialogs();
-  speedVariant='satori73';
-  speedSession=null;
+  setSpeedVariantCommand('satori73');
+  setSpeedSessionCommand(null);
   enterSpeedMode(true);
 });
 $('introStart').addEventListener('click',()=>{
@@ -1185,7 +1185,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   }
   secondLapActive=false;
   awakenedGranted=false;
-  setActiveMode('stage');speedSession=null;pauseSpeedClock();
+  setActiveMode('stage');setSpeedSessionCommand(null);pauseSpeedClock();
   updateMasterTheme();
   GameNavigation.stage(0);
   if(showIntro)setUiEffectTimer('dialog-transition','deferred-intro',()=>{if(typeof canShowDeferredBootDialog==='function'&&canShowDeferredBootDialog())openIntroGuide();},80);

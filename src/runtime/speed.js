@@ -64,7 +64,7 @@ function renderSpeedModeOptions(){
     button.setAttribute('aria-selected',String(id===speedVariant));
     button.textContent=speedTabLabel(id);
     button.addEventListener('click',()=>{
-      speedVariant=id;
+       setSpeedVariantCommand(id);
       storage.set(SPEED_LAST_TAB_STORAGE_KEY,id);
       renderSpeedModeOptions();
       renderMasterSpeedStats();
@@ -84,7 +84,7 @@ function openSpeedPicker(){
   // 実行中の速解きから開始選択へ戻さない。問題切替や再描画で
   // 同じ入口が再度呼ばれても、開始ダイアログを一瞬表示しない。
   if(isMode('speed')&&(speedSession?.started||Number(speedSession?.index)>0))return;
-  speedVariant=preferredSpeedVariant();
+  setSpeedVariantCommand(preferredSpeedVariant());
   storage.set(SPEED_LAST_TAB_STORAGE_KEY,speedVariant);
   showMasterDialog('speedIntro');
 }
@@ -257,7 +257,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
   if(restoreBoard&&validSavedBoard(speedSession.board)){
     restoreSavedBoard(speedSession.board);
     // クリア演出中に閉じた場合は、同じ問題を重ねて出さず次へ進める。
-    if(isSolved()){clearShown=false;WakeSevenProgressionCommands.advanceSpeedRun();return;}
+    if(isSolved()){setClearShownCommand(false);WakeSevenProgressionCommands.advanceSpeedRun();return;}
   }
   renderStageNav();
   if(arriving)animateBoardArrival();
@@ -268,8 +268,8 @@ function enterSpeedMode(forceNew=false){
   const requestedVariant=speedVariant;
   const saved=forceNew?null:readSpeedSession();
   const isNew=forceNew||!saved;
-  speedVariant=saved?.variant&&SPEED_MODE_DEFINITIONS[saved.variant]?saved.variant:requestedVariant;
-  speedSession=saved||newSpeedSession();
+  setSpeedVariantCommand(saved?.variant&&SPEED_MODE_DEFINITIONS[saved.variant]?saved.variant:requestedVariant);
+  setSpeedSessionCommand(saved||newSpeedSession());
   ensureSpeedBoardView(speedSession);
   loadSpeedStage(!isNew,isNew);
 }
@@ -341,7 +341,7 @@ function advanceSpeedRun(){
   advanceSpeedSessionCommand();loadSpeedStage(false,true);
 }
 function completeSpeedStage(){
-  clearShown=true;
+  setClearShownCommand(true);
   if(speedSession&&moves===best&&!speedSession.restartedCurrent) updateSpeedOptimalClearsCommand();
   pauseSpeedClock();persistSpeedSession();
   const delay=celebrateClear();

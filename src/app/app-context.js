@@ -68,3 +68,11 @@ const WakeSevenAppContext=Object.freeze({
   setClearShown(value){return WakeSevenAppContext.state.dialog.update({clearShown:value}).clearShown;},
   setMode(mode){return WakeSevenAppContext.state.navigation.update({mode}).mode;}
 });
+// 個別の共有状態を書き換える場合も、呼び出し側が所有変数へ直接代入しないようにする。
+function setNavigationIndexCommand(kind,value){
+  const patch=kind==='stageIndex'?{stageIndex:value}:kind==='masteryIndex'?{masteryIndex:value}:kind==='satoriIndex'?{satoriIndex:value}:kind==='tutorialStep'?{tutorialStep:value}:{};
+  return updateNavigationStateCommand(patch);
+}
+function setClearShownCommand(value){return updateDialogStateCommand({clearShown:value}).clearShown;}
+function setSpeedSessionCommand(value){return updateSessionStateCommand({speedSession:value}).speedSession;}
+function setSpeedVariantCommand(value){return updateSessionStateCommand({speedVariant:value}).speedVariant;}

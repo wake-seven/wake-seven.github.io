@@ -949,7 +949,7 @@ function showMasterDialog(kind='primary'){
       seal.hidden=true;
       $('masterDialogTitle').textContent=tr('speedTitle');
       speedIntroArt.hidden=false;
-      if(!speedVariantUnlocked(speedVariant))speedVariant=preferredSpeedVariant();
+       if(!speedVariantUnlocked(speedVariant))setSpeedVariantCommand(preferredSpeedVariant());
       const showSpeedTabs=unlockedSpeedVariants().length>1;
       $('masterDialogText').textContent=speedVariantCopy(speedVariant).intro;
       $('masterDialogText').hidden=showSpeedTabs;

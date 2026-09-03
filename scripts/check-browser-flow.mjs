@@ -79,7 +79,7 @@ assert.doesNotMatch(board, /application-target-frame/,
 for (const kind of ['primary', 'mastery', 'satori']) {
   assert.match(board, new RegExp(`recordProgressClearCommand\\('${kind}'`), `clear progress command is missing: ${kind}`);
 }
-assert.match(board, /clearShown=true;[\s\S]*recordProgressClearCommand\('primary'/,
+assert.match(board, /(?:clearShown=true;|setClearShownCommand\(true\);)[\s\S]*recordProgressClearCommand\('primary'/,
   'normal clear must mark the transition before recording progress');
 assert.match(progression, /clearDialogUsesStageProgression\(\)/,
   'clear dialog must distinguish free/custom completion from campaign progression');

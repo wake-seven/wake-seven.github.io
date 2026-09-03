@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-03T04:01:02.412Z",
+  "generatedAt": "2026-09-03T04:06:59.638Z",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles + index.html",
   "entries": [
     {
@@ -138,8 +138,7 @@
               "type": "click",
               "handlers": [
                 "openRankDialogFrom",
-                "enterSpeedMode",
-                "openChainedDialog"
+                "enterSpeedMode"
               ],
               "displayTargets": [
                 "rankBadge",
@@ -560,13 +559,12 @@
               "type": "click",
               "handlers": [
                 "enterSpeedMode",
-                "openChainedDialog",
-                "openSatoriPicker"
+                "openChainedDialog"
               ],
               "displayTargets": [
                 "masterStart"
               ],
-              "sourceSnippet": "$('masterStart').addEventListener('click',()=>{ const speedTarget=$('masterStart').dataset.speedVariant; hideGameDialogs(); if(speedTarget){speedVariant=speedTarget;speedSession=null;enterSpeedMode(true);return;} if(masterDialog"
+              "sourceSnippet": "$('masterStart').addEventListener('click',()=>{ const speedTarget=$('masterStart').dataset.speedVariant; hideGameDialogs(); if(speedTarget){setSpeedVariantCommand(speedTarget);setSpeedSessionCommand(null);enterSpeedMode(true);retur"
             }
           ]
         }

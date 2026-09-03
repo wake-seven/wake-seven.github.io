@@ -947,7 +947,7 @@ function completeBoard({mode=activeMode,context={},animation=true,nextAction=nul
   if(mode==='speed'){completeSpeedStage();return true;}
   const target=mode||activeMode;
   resetClearFlow();
-  clearShown=true;
+  setClearShownCommand(true);
   svg.classList.add('clear-pending');
   if(requiresOptimalClear()&&moves!==best){
     renewFourthChecks();hideGameDialogs();renderOptimalFail();$('optimalFailDialog').hidden=false;return false;
@@ -985,7 +985,7 @@ function paint(){
   renderApplicationTargetCells();
   if(isMode('tutorial')){
     if(isSolved()&&!clearShown){
-      clearShown=true;
+      setClearShownCommand(true);
       cancelTutorialHint(true);
       svg.classList.add('tutorial-clear-step');
       // 本編の全員起きた瞬間と同じく、笑顔にして揺れ+バーストの演出を見せる。
@@ -1009,7 +1009,7 @@ function paint(){
   // 二周目の悟りは、最短手数を手がかりにさせない。成功しない限り4手目まで続けられる。
   const satoriFailureLimit=secondLapActive?4:best;
   if(isMode('satori')&&!isSolved()&&moves>=satoriFailureLimit&&!clearShown){
-    clearShown=true;
+    setClearShownCommand(true);
     hideGameDialogs();
     renderOptimalFail();
     $('optimalFailDialog').hidden=false;
@@ -1275,8 +1275,8 @@ function loadStage(index){
   if(isMode('speed'))pauseSpeedRun();
   setCampaignModeCommand('stage');editingBoard=false;
   nextStageAttention=false;
-  stageIndex=Math.max(0,Math.min(STAGES.length-1,index));
-  updateNavigationStateCommand({stageIndex});
+  const nextStageIndex=Math.max(0,Math.min(STAGES.length-1,index));
+  setNavigationIndexCommand('stageIndex',nextStageIndex);
   returnStageContext={extra:false,satori:false,index:stageIndex};
   const stage=STAGES[stageIndex];
   persistCurrentStage(false,stageIndex);
@@ -1294,8 +1294,8 @@ function loadExtraStage(index){
   if(isMode('speed'))pauseSpeedRun();
   setCampaignModeCommand('mastery');editingBoard=false;
   nextStageAttention=false;
-  extraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
-  updateNavigationStateCommand({masteryIndex:extraIndex});
+  const nextExtraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
+  setNavigationIndexCommand('masteryIndex',nextExtraIndex);
   returnStageContext={extra:true,satori:false,index:extraIndex};
   const stage=EXTRA_STAGES[extraIndex];
   persistCurrentStage(true,extraIndex);
@@ -1313,8 +1313,8 @@ function loadSatoriStage(index){
   if(isMode('speed'))pauseSpeedRun();
   setCampaignModeCommand('satori');editingBoard=false;
   nextStageAttention=false;
-  satoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
-  updateNavigationStateCommand({satoriIndex});
+  const nextSatoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
+  setNavigationIndexCommand('satoriIndex',nextSatoriIndex);
   returnStageContext={extra:false,satori:true,index:satoriIndex};
   const stage=SATORI_STAGES[satoriIndex];
   try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}
@@ -1368,7 +1368,7 @@ function restoreSavedBoard(data){
   currentInitialState=Number.isInteger(data.initialState)?data.initialState:enc(ori);
   currentInitialPar=Number.isInteger(data.initialPar)?data.initialPar:best;
   history=(Array.isArray(data.history)?data.history:[]).filter(validSavedBoard).map(h=>({o:Uint8Array.from(h.o),s:Int16Array.from(h.s),t:h.t.map(i=>baseTiles[i]),m:h.m}));
-  clearShown=!!data.clearShown||isSolved();
+  setClearShownCommand(!!data.clearShown||isSolved());
   loadFourthChecks();
   fourthDistanceRevealed=!!data.fourthDistanceRevealed;
   fourthHintPreview=false;fourthHintDistance=null;setBoardBusy(false);setBoardDrag(null);setBoardTouchActive(false);
@@ -1418,7 +1418,7 @@ function restoreActiveSession(){
   if(saved?.mode==='speed'){
     const savedSpeed=readActiveSpeedSession();
     if(savedSpeed&&speedVariantUnlocked(savedSpeed.variant)){
-      speedVariant=savedSpeed.variant;speedSession=ensureSpeedBoardView(savedSpeed);loadSpeedStage(true);return;
+      setSpeedVariantCommand(savedSpeed.variant);setSpeedSessionCommand(ensureSpeedBoardView(savedSpeed));loadSpeedStage(true);return;
     }
     try{storage.remove(STORAGE_KEY_GROUPS.progression.activeSession);}catch(_){ }
     restoreCurrentStage();return;
@@ -1520,7 +1520,7 @@ function enterBoardMaker(){
   const state=0;
   setActiveMode('custom');editingBoard=true;
   setPosition(state,0);
-  clearShown=true;
+  setClearShownCommand(true);
   renderStageNav();
   showMakerMessage();
 }
@@ -1533,7 +1533,7 @@ function playCustomBoard(){
   animateBoardArrival();
 }
 function resetMakerBoard(){
-  replaceBoardState({ori:new Uint8Array(N),spin:new Int16Array(N),tiles:baseTiles.slice(),moves:0,history:[]}); clearShown=true;
+  replaceBoardState({ori:new Uint8Array(N),spin:new Int16Array(N),tiles:baseTiles.slice(),moves:0,history:[]}); setClearShownCommand(true);
   paint();renderStageNav();showMakerMessage();
 }
 
@@ -1753,7 +1753,7 @@ function handleBoardPointerDown(e){
     if(distance>R*.92)return;
     ori[cell]=mod3(ori[cell]+1);
     spin[cell]=ori[cell];
-    moves=0;history=[];clearShown=true;
+    moves=0;history=[];setClearShownCommand(true);
     paint();
     showMakerMessage();
     return;
@@ -2179,7 +2179,7 @@ svg.addEventListener('touchmove',handleBoardTouchMove,{passive:false});
 function undoLastMove(){
   if(busy||isFinalMasterPuzzle()||!history.length) return;
   cancelTileAnimations();
-  resetClearFlow(); clearShown=false;
+  resetClearFlow(); setClearShownCommand(false);
   $('clearNext').hidden=true;
   svg.classList.remove('clear-pending','celebrating');
   const h=history.pop();

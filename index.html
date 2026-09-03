@@ -4299,6 +4299,14 @@ const WakeSevenAppContext=Object.freeze({
   setClearShown(value){return WakeSevenAppContext.state.dialog.update({clearShown:value}).clearShown;},
   setMode(mode){return WakeSevenAppContext.state.navigation.update({mode}).mode;}
 });
+// 個別の共有状態を書き換える場合も、呼び出し側が所有変数へ直接代入しないようにする。
+function setNavigationIndexCommand(kind,value){
+  const patch=kind==='stageIndex'?{stageIndex:value}:kind==='masteryIndex'?{masteryIndex:value}:kind==='satoriIndex'?{satoriIndex:value}:kind==='tutorialStep'?{tutorialStep:value}:{};
+  return updateNavigationStateCommand(patch);
+}
+function setClearShownCommand(value){return updateDialogStateCommand({clearShown:value}).clearShown;}
+function setSpeedSessionCommand(value){return updateSessionStateCommand({speedSession:value}).speedSession;}
+function setSpeedVariantCommand(value){return updateSessionStateCommand({speedVariant:value}).speedVariant;}
 
 // ===== サウンド =====
 // ===== 実行設定 =====
@@ -5285,7 +5293,7 @@ function renderSpeedModeOptions(){
     button.setAttribute('aria-selected',String(id===speedVariant));
     button.textContent=speedTabLabel(id);
     button.addEventListener('click',()=>{
-      speedVariant=id;
+       setSpeedVariantCommand(id);
       storage.set(SPEED_LAST_TAB_STORAGE_KEY,id);
       renderSpeedModeOptions();
       renderMasterSpeedStats();
@@ -5305,7 +5313,7 @@ function openSpeedPicker(){
   // 実行中の速解きから開始選択へ戻さない。問題切替や再描画で
   // 同じ入口が再度呼ばれても、開始ダイアログを一瞬表示しない。
   if(isMode('speed')&&(speedSession?.started||Number(speedSession?.index)>0))return;
-  speedVariant=preferredSpeedVariant();
+  setSpeedVariantCommand(preferredSpeedVariant());
   storage.set(SPEED_LAST_TAB_STORAGE_KEY,speedVariant);
   showMasterDialog('speedIntro');
 }
@@ -5478,7 +5486,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
   if(restoreBoard&&validSavedBoard(speedSession.board)){
     restoreSavedBoard(speedSession.board);
     // クリア演出中に閉じた場合は、同じ問題を重ねて出さず次へ進める。
-    if(isSolved()){clearShown=false;WakeSevenProgressionCommands.advanceSpeedRun();return;}
+    if(isSolved()){setClearShownCommand(false);WakeSevenProgressionCommands.advanceSpeedRun();return;}
   }
   renderStageNav();
   if(arriving)animateBoardArrival();
@@ -5489,8 +5497,8 @@ function enterSpeedMode(forceNew=false){
   const requestedVariant=speedVariant;
   const saved=forceNew?null:readSpeedSession();
   const isNew=forceNew||!saved;
-  speedVariant=saved?.variant&&SPEED_MODE_DEFINITIONS[saved.variant]?saved.variant:requestedVariant;
-  speedSession=saved||newSpeedSession();
+  setSpeedVariantCommand(saved?.variant&&SPEED_MODE_DEFINITIONS[saved.variant]?saved.variant:requestedVariant);
+  setSpeedSessionCommand(saved||newSpeedSession());
   ensureSpeedBoardView(speedSession);
   loadSpeedStage(!isNew,isNew);
 }
@@ -5562,7 +5570,7 @@ function advanceSpeedRun(){
   advanceSpeedSessionCommand();loadSpeedStage(false,true);
 }
 function completeSpeedStage(){
-  clearShown=true;
+  setClearShownCommand(true);
   if(speedSession&&moves===best&&!speedSession.restartedCurrent) updateSpeedOptimalClearsCommand();
   pauseSpeedClock();persistSpeedSession();
   const delay=celebrateClear();
@@ -6760,7 +6768,7 @@ function completeBoard({mode=activeMode,context={},animation=true,nextAction=nul
   if(mode==='speed'){completeSpeedStage();return true;}
   const target=mode||activeMode;
   resetClearFlow();
-  clearShown=true;
+  setClearShownCommand(true);
   svg.classList.add('clear-pending');
   if(requiresOptimalClear()&&moves!==best){
     renewFourthChecks();hideGameDialogs();renderOptimalFail();$('optimalFailDialog').hidden=false;return false;
@@ -6798,7 +6806,7 @@ function paint(){
   renderApplicationTargetCells();
   if(isMode('tutorial')){
     if(isSolved()&&!clearShown){
-      clearShown=true;
+      setClearShownCommand(true);
       cancelTutorialHint(true);
       svg.classList.add('tutorial-clear-step');
       // 本編の全員起きた瞬間と同じく、笑顔にして揺れ+バーストの演出を見せる。
@@ -6822,7 +6830,7 @@ function paint(){
   // 二周目の悟りは、最短手数を手がかりにさせない。成功しない限り4手目まで続けられる。
   const satoriFailureLimit=secondLapActive?4:best;
   if(isMode('satori')&&!isSolved()&&moves>=satoriFailureLimit&&!clearShown){
-    clearShown=true;
+    setClearShownCommand(true);
     hideGameDialogs();
     renderOptimalFail();
     $('optimalFailDialog').hidden=false;
@@ -7088,8 +7096,8 @@ function loadStage(index){
   if(isMode('speed'))pauseSpeedRun();
   setCampaignModeCommand('stage');editingBoard=false;
   nextStageAttention=false;
-  stageIndex=Math.max(0,Math.min(STAGES.length-1,index));
-  updateNavigationStateCommand({stageIndex});
+  const nextStageIndex=Math.max(0,Math.min(STAGES.length-1,index));
+  setNavigationIndexCommand('stageIndex',nextStageIndex);
   returnStageContext={extra:false,satori:false,index:stageIndex};
   const stage=STAGES[stageIndex];
   persistCurrentStage(false,stageIndex);
@@ -7107,8 +7115,8 @@ function loadExtraStage(index){
   if(isMode('speed'))pauseSpeedRun();
   setCampaignModeCommand('mastery');editingBoard=false;
   nextStageAttention=false;
-  extraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
-  updateNavigationStateCommand({masteryIndex:extraIndex});
+  const nextExtraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
+  setNavigationIndexCommand('masteryIndex',nextExtraIndex);
   returnStageContext={extra:true,satori:false,index:extraIndex};
   const stage=EXTRA_STAGES[extraIndex];
   persistCurrentStage(true,extraIndex);
@@ -7126,8 +7134,8 @@ function loadSatoriStage(index){
   if(isMode('speed'))pauseSpeedRun();
   setCampaignModeCommand('satori');editingBoard=false;
   nextStageAttention=false;
-  satoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
-  updateNavigationStateCommand({satoriIndex});
+  const nextSatoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
+  setNavigationIndexCommand('satoriIndex',nextSatoriIndex);
   returnStageContext={extra:false,satori:true,index:satoriIndex};
   const stage=SATORI_STAGES[satoriIndex];
   try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}
@@ -7181,7 +7189,7 @@ function restoreSavedBoard(data){
   currentInitialState=Number.isInteger(data.initialState)?data.initialState:enc(ori);
   currentInitialPar=Number.isInteger(data.initialPar)?data.initialPar:best;
   history=(Array.isArray(data.history)?data.history:[]).filter(validSavedBoard).map(h=>({o:Uint8Array.from(h.o),s:Int16Array.from(h.s),t:h.t.map(i=>baseTiles[i]),m:h.m}));
-  clearShown=!!data.clearShown||isSolved();
+  setClearShownCommand(!!data.clearShown||isSolved());
   loadFourthChecks();
   fourthDistanceRevealed=!!data.fourthDistanceRevealed;
   fourthHintPreview=false;fourthHintDistance=null;setBoardBusy(false);setBoardDrag(null);setBoardTouchActive(false);
@@ -7231,7 +7239,7 @@ function restoreActiveSession(){
   if(saved?.mode==='speed'){
     const savedSpeed=readActiveSpeedSession();
     if(savedSpeed&&speedVariantUnlocked(savedSpeed.variant)){
-      speedVariant=savedSpeed.variant;speedSession=ensureSpeedBoardView(savedSpeed);loadSpeedStage(true);return;
+      setSpeedVariantCommand(savedSpeed.variant);setSpeedSessionCommand(ensureSpeedBoardView(savedSpeed));loadSpeedStage(true);return;
     }
     try{storage.remove(STORAGE_KEY_GROUPS.progression.activeSession);}catch(_){ }
     restoreCurrentStage();return;
@@ -7333,7 +7341,7 @@ function enterBoardMaker(){
   const state=0;
   setActiveMode('custom');editingBoard=true;
   setPosition(state,0);
-  clearShown=true;
+  setClearShownCommand(true);
   renderStageNav();
   showMakerMessage();
 }
@@ -7346,7 +7354,7 @@ function playCustomBoard(){
   animateBoardArrival();
 }
 function resetMakerBoard(){
-  replaceBoardState({ori:new Uint8Array(N),spin:new Int16Array(N),tiles:baseTiles.slice(),moves:0,history:[]}); clearShown=true;
+  replaceBoardState({ori:new Uint8Array(N),spin:new Int16Array(N),tiles:baseTiles.slice(),moves:0,history:[]}); setClearShownCommand(true);
   paint();renderStageNav();showMakerMessage();
 }
 
@@ -7566,7 +7574,7 @@ function handleBoardPointerDown(e){
     if(distance>R*.92)return;
     ori[cell]=mod3(ori[cell]+1);
     spin[cell]=ori[cell];
-    moves=0;history=[];clearShown=true;
+    moves=0;history=[];setClearShownCommand(true);
     paint();
     showMakerMessage();
     return;
@@ -7992,7 +8000,7 @@ svg.addEventListener('touchmove',handleBoardTouchMove,{passive:false});
 function undoLastMove(){
   if(busy||isFinalMasterPuzzle()||!history.length) return;
   cancelTileAnimations();
-  resetClearFlow(); clearShown=false;
+  resetClearFlow(); setClearShownCommand(false);
   $('clearNext').hidden=true;
   svg.classList.remove('clear-pending','celebrating');
   const h=history.pop();
@@ -8560,7 +8568,7 @@ function persistSpeedSessionCommand(){
 function clearSpeedSessionCommand(variant=speedVariant){commandStorageRemove(speedSessionStorageKey(variant));return true;}
 function completeSpeedSessionCommand(result){
   if(!speedSession)return false;
-  speedSession={...speedSession,...result,completed:true};
+  setSpeedSessionCommand({...speedSession,...result,completed:true});
   return true;
 }
 export {};
@@ -10312,7 +10320,7 @@ function showMasterDialog(kind='primary'){
       seal.hidden=true;
       $('masterDialogTitle').textContent=tr('speedTitle');
       speedIntroArt.hidden=false;
-      if(!speedVariantUnlocked(speedVariant))speedVariant=preferredSpeedVariant();
+       if(!speedVariantUnlocked(speedVariant))setSpeedVariantCommand(preferredSpeedVariant());
       const showSpeedTabs=unlockedSpeedVariants().length>1;
       $('masterDialogText').textContent=speedVariantCopy(speedVariant).intro;
       $('masterDialogText').hidden=showSpeedTabs;
@@ -11083,7 +11091,7 @@ function debugClearCurrent(extraMoves=0){
   cancelTileAnimations();
   clearHintVisuals();
   ori=new Uint8Array(N);spin=new Int16Array(N);tileEls=baseTiles.slice();
-  history=[];moves=best+extraMoves;clearShown=false;
+  history=[];moves=best+extraMoves;setClearShownCommand(false);
   svg.classList.remove('clear-pending','celebrating');
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   $('clearNext').hidden=true;
@@ -11255,7 +11263,7 @@ function debugOpenSpeedExam(variant,index){
     storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,JSON.stringify([...clearedExtraStages]));
   }catch(_){ }
   persistLapProgress();updateMasterTheme();
-  speedVariant=variant;
+  setSpeedVariantCommand(variant);
   if(variant==='training9'){
     speedTrainingTrialCleared=false;
     storage.remove(STORAGE_KEY_GROUPS.speed.trainingTrialCleared);
@@ -11268,7 +11276,7 @@ function debugOpenSpeedExam(variant,index){
     speedMasteryTrialCleared=false;
     storage.remove(STORAGE_KEY_GROUPS.speed.masteryTrialCleared);
   }
-  speedSession=newSpeedSession();
+  setSpeedSessionCommand(newSpeedSession());
   speedSession.index=Math.max(0,Math.min(speedSession.total-1,index));
   speedSession.optimalClears=speedSession.index;
   speedSession.requiredTrial=variant;
@@ -11557,25 +11565,25 @@ $('closeRankDialog').addEventListener('click',()=>{
 $('masterStart').addEventListener('click',()=>{
   const speedTarget=$('masterStart').dataset.speedVariant;
   hideGameDialogs();
-  if(speedTarget){speedVariant=speedTarget;speedSession=null;enterSpeedMode(true);return;}
+  if(speedTarget){setSpeedVariantCommand(speedTarget);setSpeedSessionCommand(null);enterSpeedMode(true);return;}
   if(masterDialogKind==='awakening'){enterSpeedMode(true);return;}
   if(masterDialogKind==='speedIntro'){enterSpeedMode(!readSpeedSession());return;}
   if(masterDialogKind==='speedTrialFailed'){
-    speedVariant=['training9','training18','mastery27'].includes(speedSession?.requiredTrial)?speedSession.requiredTrial:'training9';
-    speedSession=null;enterSpeedMode(true);return;
+    setSpeedVariantCommand(['training9','training18','mastery27'].includes(speedSession?.requiredTrial)?speedSession.requiredTrial:'training9');
+    setSpeedSessionCommand(null);enterSpeedMode(true);return;
   }
   if(masterDialogKind==='speedComplete'){enterSpeedMode(true);return;}
   if(masterDialogKind==='primary'){
-    if(!secondLapActive&&!speedTrainingTrialCleared){speedVariant='training9';speedSession=null;enterSpeedMode(true);return;}
+    if(!secondLapActive&&!speedTrainingTrialCleared){setSpeedVariantCommand('training9');setSpeedSessionCommand(null);enterSpeedMode(true);return;}
     const before=clearContentBefore(false,TRAINING_STAGE_START);
     if(before?.dialog){rememberSpecialMessage(before.dialog);openChainedDialog(before.dialog);return;}
     GameNavigation.stage(TRAINING_STAGE_START);return;
   }
   if(masterDialogKind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared){
-    speedVariant='training18';speedSession=null;enterSpeedMode(true);return;
+    setSpeedVariantCommand('training18');setSpeedSessionCommand(null);enterSpeedMode(true);return;
   }
   if(masterDialogKind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared){
-    speedVariant='mastery27';speedSession=null;enterSpeedMode(true);return;
+    setSpeedVariantCommand('mastery27');setSpeedSessionCommand(null);enterSpeedMode(true);return;
   }
   if(masterDialogKind==='intermediate'){GameNavigation.mastery(0);return;}
   if(masterDialogKind==='pathInfo')GameNavigation.mastery(0);
@@ -11587,8 +11595,8 @@ $('masterStart').addEventListener('click',()=>{
 });
 $('masterSpeedUnlockStart').addEventListener('click',()=>{
   hideGameDialogs();
-  speedVariant='satori73';
-  speedSession=null;
+  setSpeedVariantCommand('satori73');
+  setSpeedSessionCommand(null);
   enterSpeedMode(true);
 });
 $('introStart').addEventListener('click',()=>{
@@ -12256,7 +12264,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   }
   secondLapActive=false;
   awakenedGranted=false;
-  setActiveMode('stage');speedSession=null;pauseSpeedClock();
+  setActiveMode('stage');setSpeedSessionCommand(null);pauseSpeedClock();
   updateMasterTheme();
   GameNavigation.stage(0);
   if(showIntro)setUiEffectTimer('dialog-transition','deferred-intro',()=>{if(typeof canShowDeferredBootDialog==='function'&&canShowDeferredBootDialog())openIntroGuide();},80);

@@ -31,7 +31,7 @@ function persistSpeedSessionCommand(){
 function clearSpeedSessionCommand(variant=speedVariant){commandStorageRemove(speedSessionStorageKey(variant));return true;}
 function completeSpeedSessionCommand(result){
   if(!speedSession)return false;
-  speedSession={...speedSession,...result,completed:true};
+  setSpeedSessionCommand({...speedSession,...result,completed:true});
   return true;
 }
 export {};

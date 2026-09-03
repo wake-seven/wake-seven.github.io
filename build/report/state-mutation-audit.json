@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 1,
-  "generatedAt": "2026-09-03T04:00:16.192Z",
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-03T04:06:11.269Z",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles",
   "trackedNames": [
     "activeMode",
@@ -13,9 +13,17 @@
     "speedVariant"
   ],
   "commandFile": "commands/state-commands.js",
+  "ownerFiles": [
+    "app/app-context.js",
+    "runtime/runtime.js",
+    "runtime/speed.js",
+    "commands/speed-commands.js",
+    "commands/tutorial-commands.js"
+  ],
   "counts": {
-    "directAssignments": 64,
-    "commandAssignments": 0
+    "directAssignments": 18,
+    "commandAssignments": 0,
+    "violations": 0
   },
   "remaining": [
     {
@@ -110,135 +118,9 @@
     },
     {
       "file": "runtime/speed.js",
-      "line": 62,
-      "name": "speedVariant",
-      "snippet": "button.dataset.speedVariant=id;"
-    },
-    {
-      "file": "runtime/speed.js",
-      "line": 67,
-      "name": "speedVariant",
-      "snippet": "speedVariant=id;"
-    },
-    {
-      "file": "runtime/speed.js",
-      "line": 87,
-      "name": "speedVariant",
-      "snippet": "speedVariant=preferredSpeedVariant();"
-    },
-    {
-      "file": "runtime/speed.js",
       "line": 98,
       "name": "speedSession",
       "snippet": "let speedSession=null,speedClockStarted=0,speedManuallyPaused=false;"
-    },
-    {
-      "file": "runtime/speed.js",
-      "line": 260,
-      "name": "clearShown",
-      "snippet": "if(isSolved()){clearShown=false;WakeSevenProgressionCommands.advanceSpeedRun();return;}"
-    },
-    {
-      "file": "runtime/speed.js",
-      "line": 271,
-      "name": "speedVariant",
-      "snippet": "speedVariant=saved?.variant&&SPEED_MODE_DEFINITIONS[saved.variant]?saved.variant:requestedVariant;"
-    },
-    {
-      "file": "runtime/speed.js",
-      "line": 272,
-      "name": "speedSession",
-      "snippet": "speedSession=saved||newSpeedSession();"
-    },
-    {
-      "file": "runtime/speed.js",
-      "line": 344,
-      "name": "clearShown",
-      "snippet": "clearShown=true;"
-    },
-    {
-      "file": "ui/board-ui.js",
-      "line": 950,
-      "name": "clearShown",
-      "snippet": "clearShown=true;"
-    },
-    {
-      "file": "ui/board-ui.js",
-      "line": 988,
-      "name": "clearShown",
-      "snippet": "clearShown=true;"
-    },
-    {
-      "file": "ui/board-ui.js",
-      "line": 1012,
-      "name": "clearShown",
-      "snippet": "clearShown=true;"
-    },
-    {
-      "file": "ui/board-ui.js",
-      "line": 1278,
-      "name": "stageIndex",
-      "snippet": "stageIndex=Math.max(0,Math.min(STAGES.length-1,index));"
-    },
-    {
-      "file": "ui/board-ui.js",
-      "line": 1297,
-      "name": "extraIndex",
-      "snippet": "extraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));"
-    },
-    {
-      "file": "ui/board-ui.js",
-      "line": 1316,
-      "name": "satoriIndex",
-      "snippet": "satoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));"
-    },
-    {
-      "file": "ui/board-ui.js",
-      "line": 1371,
-      "name": "clearShown",
-      "snippet": "clearShown=!!data.clearShown||isSolved();"
-    },
-    {
-      "file": "ui/board-ui.js",
-      "line": 1421,
-      "name": "speedVariant",
-      "snippet": "speedVariant=savedSpeed.variant;speedSession=ensureSpeedBoardView(savedSpeed);loadSpeedStage(true);return;"
-    },
-    {
-      "file": "ui/board-ui.js",
-      "line": 1421,
-      "name": "speedSession",
-      "snippet": "speedVariant=savedSpeed.variant;speedSession=ensureSpeedBoardView(savedSpeed);loadSpeedStage(true);return;"
-    },
-    {
-      "file": "ui/board-ui.js",
-      "line": 1523,
-      "name": "clearShown",
-      "snippet": "clearShown=true;"
-    },
-    {
-      "file": "ui/board-ui.js",
-      "line": 1536,
-      "name": "clearShown",
-      "snippet": "replaceBoardState({ori:new Uint8Array(N),spin:new Int16Array(N),tiles:baseTiles.slice(),moves:0,history:[]}); clearShown=true;"
-    },
-    {
-      "file": "ui/board-ui.js",
-      "line": 1756,
-      "name": "clearShown",
-      "snippet": "moves=0;history=[];clearShown=true;"
-    },
-    {
-      "file": "ui/board-ui.js",
-      "line": 2182,
-      "name": "clearShown",
-      "snippet": "resetClearFlow(); clearShown=false;"
-    },
-    {
-      "file": "commands/speed-commands.js",
-      "line": 34,
-      "name": "speedSession",
-      "snippet": "speedSession={...speedSession,...result,completed:true};"
     },
     {
       "file": "commands/tutorial-commands.js",
@@ -251,156 +133,6 @@
       "line": 14,
       "name": "tutorialStep",
       "snippet": "tutorialStep=0;"
-    },
-    {
-      "file": "ui/progression-render.js",
-      "line": 11,
-      "name": "stageIndex",
-      "snippet": "function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){"
-    },
-    {
-      "file": "ui/progression-render.js",
-      "line": 11,
-      "name": "extraIndex",
-      "snippet": "function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){"
-    },
-    {
-      "file": "ui/progression-render.js",
-      "line": 11,
-      "name": "satoriIndex",
-      "snippet": "function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){"
-    },
-    {
-      "file": "ui/progression-ui.js",
-      "line": 796,
-      "name": "speedVariant",
-      "snippet": "$('masterStart').dataset.speedVariant='';"
-    },
-    {
-      "file": "ui/progression-ui.js",
-      "line": 858,
-      "name": "speedVariant",
-      "snippet": "$('masterStart').dataset.speedVariant='training9';"
-    },
-    {
-      "file": "ui/progression-ui.js",
-      "line": 891,
-      "name": "speedVariant",
-      "snippet": "$('masterStart').dataset.speedVariant='training18';"
-    },
-    {
-      "file": "ui/progression-ui.js",
-      "line": 907,
-      "name": "speedVariant",
-      "snippet": "$('masterStart').dataset.speedVariant='training18';"
-    },
-    {
-      "file": "ui/progression-ui.js",
-      "line": 952,
-      "name": "speedVariant",
-      "snippet": "if(!speedVariantUnlocked(speedVariant))speedVariant=preferredSpeedVariant();"
-    },
-    {
-      "file": "ui/progression-ui.js",
-      "line": 999,
-      "name": "speedVariant",
-      "snippet": "$('masterStart').dataset.speedVariant='mastery27';"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 15,
-      "name": "clearShown",
-      "snippet": "history=[];moves=best+extraMoves;clearShown=false;"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 187,
-      "name": "speedVariant",
-      "snippet": "speedVariant=variant;"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 200,
-      "name": "speedSession",
-      "snippet": "speedSession=newSpeedSession();"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 489,
-      "name": "speedVariant",
-      "snippet": "if(speedTarget){speedVariant=speedTarget;speedSession=null;enterSpeedMode(true);return;}"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 489,
-      "name": "speedSession",
-      "snippet": "if(speedTarget){speedVariant=speedTarget;speedSession=null;enterSpeedMode(true);return;}"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 493,
-      "name": "speedVariant",
-      "snippet": "speedVariant=['training9','training18','mastery27'].includes(speedSession?.requiredTrial)?speedSession.requiredTrial:'training9';"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 494,
-      "name": "speedSession",
-      "snippet": "speedSession=null;enterSpeedMode(true);return;"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 498,
-      "name": "speedVariant",
-      "snippet": "if(!secondLapActive&&!speedTrainingTrialCleared){speedVariant='training9';speedSession=null;enterSpeedMode(true);return;}"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 498,
-      "name": "speedSession",
-      "snippet": "if(!secondLapActive&&!speedTrainingTrialCleared){speedVariant='training9';speedSession=null;enterSpeedMode(true);return;}"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 504,
-      "name": "speedVariant",
-      "snippet": "speedVariant='training18';speedSession=null;enterSpeedMode(true);return;"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 504,
-      "name": "speedSession",
-      "snippet": "speedVariant='training18';speedSession=null;enterSpeedMode(true);return;"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 507,
-      "name": "speedVariant",
-      "snippet": "speedVariant='mastery27';speedSession=null;enterSpeedMode(true);return;"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 507,
-      "name": "speedSession",
-      "snippet": "speedVariant='mastery27';speedSession=null;enterSpeedMode(true);return;"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 519,
-      "name": "speedVariant",
-      "snippet": "speedVariant='satori73';"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 520,
-      "name": "speedSession",
-      "snippet": "speedSession=null;"
-    },
-    {
-      "file": "runtime/app-events.js",
-      "line": 1188,
-      "name": "speedSession",
-      "snippet": "setActiveMode('stage');speedSession=null;pauseSpeedClock();"
     }
   ]
 }
