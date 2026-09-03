@@ -122,33 +122,48 @@ function moveStagePickerRound(direction){
   pickerRound=next;
   renderStagePicker();
 }
-function renderSatoriStagePicker(){
-  const picker=$('stagePicker'),grid=$('stagePickerGrid');
-  const pickerSatori=pickerLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;
+// ステージ選択の共通表示。通常の巻選択と悟りのページ選択で別々に
+// DOMを書き換えると、片方だけ設定を更新し忘れやすいので、共通部分を
+// ここへ集約する。コース固有のラベルとボタン状態だけを呼び出し側で渡す。
+function prepareStagePicker({satori=false,roundLabel='',canNavigate=true,canGoPrev=canNavigate,canGoNext=true}){
+  const picker=$('stagePicker');
   renderStagePickerRankBadge();
   $('pickerSpeedMode').hidden=!featureUnlocked('speedRun');
   $('stagePickerActions').classList.toggle('two-actions',!featureUnlocked('speedRun'));
-  const pageSize=Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES);
-  const start=satoriPickerPage*pageSize,end=Math.min(SATORI_STAGES.length,start+pageSize);
-  picker.classList.add('satori-picker');
+  picker.classList.toggle('satori-picker',satori);
   $('stagePickerTitle').textContent=tr('stagePicker');
   $('closeStagePicker').setAttribute('aria-label',tr('close'));
-  $('stagePickerRound').hidden=false;
-  $('pickerRoundLabel').textContent=(pickerLap===2?tr('secondLapBadge')+'　':'')+tr('satoriPicker')+'　'+(satoriPickerPage+1)+' / '+SATORI_PICKER_PAGES;
-  $('pickerPrevRound').hidden=false;$('pickerNextRound').hidden=false;
-  $('pickerPrevRound').disabled=false;
-  $('pickerNextRound').disabled=satoriPickerPage===SATORI_PICKER_PAGES-1&&!(pickerLap===1&&secondLapUnlocked);
+  $('stagePickerRound').hidden=!canNavigate;
+  $('pickerRoundLabel').textContent=roundLabel;
+  $('pickerPrevRound').hidden=!canNavigate;
+  $('pickerNextRound').hidden=!canNavigate;
+  $('pickerPrevRound').disabled=!canGoPrev;
+  $('pickerNextRound').disabled=!canGoNext;
+  return $('stagePickerGrid');
+}
+function appendStagePickerButton(grid,{label,ariaLabel,cleared=false,current=false,disabled=false,onClick}){
+  const button=document.createElement('button');
+  button.textContent=label;
+  button.classList.toggle('cleared',cleared);
+  button.classList.toggle('current',current);
+  button.disabled=disabled;
+  button.setAttribute('aria-label',ariaLabel);
+  button.addEventListener('click',onClick);
+  grid.appendChild(button);
+  return button;
+}
+function renderSatoriStagePicker(){
+  const pickerSatori=pickerLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;
+  const currentContext=WakeSevenAppContext.snapshot();
+  const pageSize=Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES);
+  const start=satoriPickerPage*pageSize,end=Math.min(SATORI_STAGES.length,start+pageSize);
+  const grid=prepareStagePicker({satori:true,
+    roundLabel:(pickerLap===2?tr('secondLapBadge')+'　':'')+tr('satoriPicker')+'　'+(satoriPickerPage+1)+' / '+SATORI_PICKER_PAGES,
+    canGoNext:!(satoriPickerPage===SATORI_PICKER_PAGES-1&&!(pickerLap===1&&secondLapUnlocked))});
   grid.replaceChildren();
   SATORI_STAGES.slice(start,end).forEach((stage,offset)=>{
     const index=start+offset;
-    const button=document.createElement('button');
-    button.textContent=index+1;
-    button.classList.toggle('cleared',pickerSatori.has(index));
-    button.classList.toggle('current',pickerLap===activeLap&&isMode('satori')&&satoriIndex===index);
-    button.disabled=!(index===0||pickerSatori.has(index)||pickerSatori.has(index-1));
-    button.setAttribute('aria-label',tr('satori')+' '+(index+1));
-    button.addEventListener('click',()=>{closeStagePicker();activateCampaignLap(pickerLap);loadSatoriStage(index);});
-    grid.appendChild(button);
+    appendStagePickerButton(grid,{label:index+1,ariaLabel:tr('satori')+' '+(index+1),cleared:pickerSatori.has(index),current:pickerLap===currentContext.lap&&isMode('satori')&&currentContext.satoriIndex===index,disabled:!(index===0||pickerSatori.has(index)||pickerSatori.has(index-1)),onClick:()=>{closeStagePicker();activateCampaignLap(pickerLap);loadSatoriStage(index);}});
   });
 }
 function openSatoriPicker(){
@@ -178,10 +193,6 @@ function openStagePickerAt({lap,round,satoriPage=null}={}){
 function renderStagePicker(){
   if(pickerRound==='satori'){renderSatoriStagePicker();return;}
   const pickerRefs=createRefs(['stagePickerTitle','closeStagePicker','stagePickerRound','pickerRoundLabel','pickerPrevRound','pickerNextRound','stagePickerGrid']);
-  renderStagePickerRankBadge();
-  $('pickerSpeedMode').hidden=!featureUnlocked('speedRun');
-  $('stagePickerActions').classList.toggle('two-actions',!featureUnlocked('speedRun'));
-  $('stagePicker').classList.remove('satori-picker');
   const pickerPrimary=pickerLap===2?lap2ClearedStages:lap1ClearedStages;
   const pickerExtra=pickerLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
   const pickerAcademyDone=Array.from({length:ACADEMY_STAGE_COUNT},(_,i)=>pickerPrimary.has(i)).every(Boolean);
@@ -204,17 +215,11 @@ function renderStagePicker(){
     :isTraining?(pickerRound===PICKER_TRAINING_LAST_ROUND?canSeeMaster:true)
     :pickerRound<EXTRA_ROUNDS-1||canSeeSatori;
   const canNavigateRounds=canGoPrev||canGoNext;
-  setText(pickerRefs.stagePickerTitle,tr('stagePicker'));
-  setAttribute(pickerRefs.closeStagePicker,'aria-label',tr('close'));
-  setVisible(pickerRefs.stagePickerRound,canNavigateRounds);
   const roundName=isAcademy?tr(section.labelKey)+tr('academyClassSuffix')
     :isTraining?tr(section.labelKey)
     :tr('patternRound',{n:extraRoundLabel(pickerRound)});
-  setText(pickerRefs.pickerRoundLabel,(pickerLap===2?tr('secondLapBadge')+'　':'')+roundName);
-  setVisible(pickerRefs.pickerPrevRound,canNavigateRounds);
-  setVisible(pickerRefs.pickerNextRound,canGoNext);
-  setDisabled(pickerRefs.pickerPrevRound,!canGoPrev);
-  setDisabled(pickerRefs.pickerNextRound,!canGoNext);
+  prepareStagePicker({roundLabel:(pickerLap===2?tr('secondLapBadge')+'　':'')+roundName,canNavigate:canNavigateRounds,canGoPrev,canGoNext});
+  // prepareStagePickerは共通のDOM更新を担当し、ここではテンプレート行だけを描画する。
   const grid=pickerRefs.stagePickerGrid;
   grid.replaceChildren();
   const primaryStart=isPrimary?section.start:0;
