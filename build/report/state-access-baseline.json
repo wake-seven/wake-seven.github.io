@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "name": "state-access-baseline",
-  "generatedAt": "2026-09-03T11:24:12.348Z",
+  "generatedAt": "2026-09-03T11:30:04.479Z",
   "source": "scripts/state-access-exceptions.json",
   "counts": {
-    "temporary": 147,
+    "temporary": 142,
     "byPurpose": {
-      "navigation": 135,
+      "navigation": 130,
       "dialog": 18,
       "progress": 0,
       "session": 0,
@@ -18,11 +18,11 @@
       "commands": 7,
       "data": 1,
       "other": 7,
-      "runtime": 5,
-      "ui": 133
+      "runtime": 4,
+      "ui": 129
     },
     "byAccess": {
-      "read": 135,
+      "read": 130,
       "write": 18
     }
   },
@@ -1344,123 +1344,11 @@
       ]
     },
     {
-      "fingerprint": "ui/board-ui.js:tutorialStep:const step=TUTORIAL_STEPS[tutorialStep],move=tutorialSolvingMoves()[0];",
-      "classification": "executable",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1205,
-        "excerpt": "const step=TUTORIAL_STEPS[tutorialStep],move=tutorialSolvingMoves()[0];"
-      },
-      "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
-      "fingerprint": "ui/board-ui.js:tutorialStep:const step=TUTORIAL_STEPS[tutorialStep];",
-      "classification": "executable",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1249,
-        "excerpt": "const step=TUTORIAL_STEPS[tutorialStep];"
-      },
-      "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
-      "fingerprint": "ui/board-ui.js:tutorialStep:if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}",
-      "classification": "executable",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1264,
-        "excerpt": "if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}"
-      },
-      "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
-      "fingerprint": "ui/board-ui.js:tutorialStep:if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}",
-      "classification": "executable",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1264,
-        "excerpt": "if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}"
-      },
-      "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
       "fingerprint": "ui/board-ui.js:stageIndex:returnStageContext={extra:false,satori:false,index:stageIndex};",
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1280,
+        "line": 1283,
         "excerpt": "returnStageContext={extra:false,satori:false,index:stageIndex};"
       },
       "symbol": "stageIndex",
@@ -1488,7 +1376,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1281,
+        "line": 1284,
         "excerpt": "const stage=STAGES[stageIndex];"
       },
       "symbol": "stageIndex",
@@ -1516,7 +1404,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1282,
+        "line": 1285,
         "excerpt": "persistCurrentStage(false,stageIndex);"
       },
       "symbol": "stageIndex",
@@ -1544,7 +1432,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1298,
+        "line": 1301,
         "excerpt": "returnStageContext={extra:true,satori:false,index:extraIndex};"
       },
       "symbol": "extraIndex",
@@ -1572,7 +1460,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1299,
+        "line": 1302,
         "excerpt": "const stage=EXTRA_STAGES[extraIndex];"
       },
       "symbol": "extraIndex",
@@ -1600,7 +1488,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1300,
+        "line": 1303,
         "excerpt": "persistCurrentStage(true,extraIndex);"
       },
       "symbol": "extraIndex",
@@ -1628,7 +1516,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1309,
+        "line": 1312,
         "excerpt": "if(activeLap===1&&isMastered())showMasterDialog('mastery');"
       },
       "symbol": "activeLap",
@@ -1656,7 +1544,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1317,
+        "line": 1320,
         "excerpt": "returnStageContext={extra:false,satori:true,index:satoriIndex};"
       },
       "symbol": "satoriIndex",
@@ -1684,7 +1572,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1318,
+        "line": 1321,
         "excerpt": "const stage=SATORI_STAGES[satoriIndex];"
       },
       "symbol": "satoriIndex",
@@ -1712,7 +1600,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1319,
+        "line": 1322,
         "excerpt": "try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}"
       },
       "symbol": "activeLap",
@@ -1740,7 +1628,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1319,
+        "line": 1322,
         "excerpt": "try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}"
       },
       "symbol": "satoriIndex",
@@ -1768,7 +1656,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1327,
+        "line": 1330,
         "excerpt": "try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({extra,index,lap:activeLap}));}catch(_){}"
       },
       "symbol": "activeLap",
@@ -1796,7 +1684,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1351,
+        "line": 1354,
         "excerpt": "clearShown,fourthChecksUsed,fourthDistanceRevealed"
       },
       "symbol": "clearShown",
@@ -1824,7 +1712,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1376,
+        "line": 1379,
         "excerpt": "svg.classList.toggle('clear-pending',clearShown&&isSolved());"
       },
       "symbol": "clearShown",
@@ -1852,7 +1740,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1378,
+        "line": 1381,
         "excerpt": "$('clearNext').hidden=!clearShown;"
       },
       "symbol": "clearShown",
@@ -1880,7 +1768,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1392,
+        "line": 1395,
         "excerpt": "const payload={mode:'speed',variant:speedVariant,lap:activeLap};"
       },
       "symbol": "activeLap",
@@ -1908,7 +1796,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1399,
+        "line": 1402,
         "excerpt": "const mode=activeMode;"
       },
       "symbol": "activeMode",
@@ -1936,7 +1824,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1401,
+        "line": 1404,
         "excerpt": "mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,"
       },
       "symbol": "activeLap",
@@ -1964,7 +1852,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1401,
+        "line": 1404,
         "excerpt": "mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,"
       },
       "symbol": "stageIndex",
@@ -1992,7 +1880,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1493,
+        "line": 1496,
         "excerpt": "$('clearNext').hidden=!clearShown;"
       },
       "symbol": "clearShown",
@@ -2020,7 +1908,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1494,
+        "line": 1497,
         "excerpt": "if(clearShown)$('clearNext').textContent=tr('another');"
       },
       "symbol": "clearShown",
@@ -2048,7 +1936,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1568,
+        "line": 1571,
         "excerpt": "const tutorialCue=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]?.cue:'';"
       },
       "symbol": "tutorialStep",
@@ -2076,7 +1964,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1742,
+        "line": 1745,
         "excerpt": "if(isMode('tutorial')&&clearShown)return;"
       },
       "symbol": "clearShown",
@@ -2104,7 +1992,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1760,
+        "line": 1763,
         "excerpt": "if(isSolved()&&clearShown){"
       },
       "symbol": "clearShown",
@@ -2132,7 +2020,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1770,
+        "line": 1773,
         "excerpt": "const tutorialStepData=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]:null;"
       },
       "symbol": "tutorialStep",
@@ -2160,7 +2048,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1843,
+        "line": 1846,
         "excerpt": "const tutorialCue=TUTORIAL_STEPS[tutorialStep]?.cue;"
       },
       "symbol": "tutorialStep",
@@ -2188,7 +2076,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1866,
+        "line": 1869,
         "excerpt": "const turnPrompt=tutorialStep===1?tr('tutorialSecondArrowPrompt')"
       },
       "symbol": "tutorialStep",
@@ -2216,7 +2104,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1867,
+        "line": 1870,
         "excerpt": ":tutorialStep===3?tr('tutorialChainTurnPrompt'):tutorialPrompt('turn');"
       },
       "symbol": "tutorialStep",
@@ -2244,7 +2132,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1919,
+        "line": 1922,
         "excerpt": "renderTutorialFeedback({text:tr(TUTORIAL_STEPS[tutorialStep]?.cue==='chain-direction'?'tutorialWrongPlacePrompt':'tutorialWrongPrompt')});"
       },
       "symbol": "tutorialStep",
@@ -2272,7 +2160,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1920,
+        "line": 1923,
         "excerpt": "animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:target,direction:dir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue"
       },
       "symbol": "tutorialStep",
@@ -2300,7 +2188,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 1933,
+        "line": 1936,
         "excerpt": "animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:rewindDir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cu"
       },
       "symbol": "tutorialStep",
@@ -2328,7 +2216,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 2202,
+        "line": 2205,
         "excerpt": "if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&stageIndex===0&&!hasMasterReward())"
       },
       "symbol": "stageIndex",
@@ -4200,39 +4088,11 @@
       ]
     },
     {
-      "fingerprint": "runtime/app-events.js:tutorialStep:$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');",
-      "classification": "executable",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 924,
-        "excerpt": "$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');"
-      },
-      "symbol": "tutorialStep",
-      "entrypoint": "runtime",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
       "fingerprint": "runtime/app-events.js:masterDialogKind:if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);",
       "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 926,
+        "line": 927,
         "excerpt": "if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);"
       },
       "symbol": "masterDialogKind",
@@ -4260,7 +4120,7 @@
       "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 935,
+        "line": 936,
         "excerpt": "else if(clearShown){"
       },
       "symbol": "clearShown",

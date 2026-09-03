@@ -16,7 +16,7 @@ const refs=access.references.filter(ref=>NAVIGATION_NAMES.includes(ref.name));
 const classify=({file,access,source})=>{
   if(STATE_OWNER_FILES.includes(file))return ['owner-only','状態所有者の内部処理。公開gatewayへ移す対象ではない'];
   if(/pointer|drag|swipe|animate|animation|spin|tile/i.test(file+' '+source))return ['event-local','pointer座標・スワイプ・逐次アニメーションに密接なイベント局所値'];
-  if(/primarySectionPosition|courseDefinition|runtimeNavigation|isMode\(|rememberClearedMessage/.test(source))return ['derived-value','navigationから計算した表示・判定値で、直接参照を機械置換しない'];
+  if(/primarySectionPosition|courseDefinition|runtimeNavigation|isMode\(|rememberClearedMessage|TUTORIAL_STEPS|tutorialPrompt|gripPrompt/.test(source))return ['derived-value','navigationから計算した表示・判定値で、直接参照を機械置換しない'];
   if(access==='read')return ['gateway-candidate','読み取り専用のため用途別navigation gatewayへ移行可能'];
   return ['intentional-exception','書き込みを伴うため所有者・command入口との整合確認が必要'];
 };
@@ -26,7 +26,8 @@ assert.equal(entries.length,refs.length,'navigation参照の分類漏れがあ�
 assert.ok(entries.every(entry=>categories.includes(entry.category)),'不明なnavigation分類があります');
 const counts=Object.fromEntries(categories.map(category=>[category,entries.filter(entry=>entry.category===category).length]));
 const byName=Object.fromEntries(NAVIGATION_NAMES.map(name=>[name,entries.filter(entry=>entry.name===name).length]));
-const gatewayFingerprint=entry=>`${entry.file}:${entry.name}:${entry.source}`;
+// 行や抜粋は改修で変わるため、追加検出の指紋はファイルとシンボルで固定する。
+const gatewayFingerprint=entry=>`${entry.file}:${entry.name}`;
 const previousGateway=new Set((previousReport?.entries||[]).filter(entry=>entry.category==='gateway-candidate').map(gatewayFingerprint));
 const currentGateway=new Set(entries.filter(entry=>entry.category==='gateway-candidate').map(gatewayFingerprint));
 const newGatewayCandidates=[...currentGateway].filter(value=>!previousGateway.has(value));

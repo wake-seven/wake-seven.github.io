@@ -6,7 +6,7 @@
     "state/game-state.js",
     "app/app-context.js"
   ],
-  "baselineTracked": 153,
+  "baselineTracked": 148,
   "allowedReferences": [
     "state/progression-policy.js:stageIndex:uiPolicy({mode,lap,stageIndex,speedVariant}) {",
     "state/progression-policy.js:stageIndex:if(stageIndex < academyTotal) {",
@@ -55,10 +55,6 @@
     "ui/board-ui.js:tutorialStep:const second=tutorialStep===1;",
     "ui/board-ui.js:tutorialStep:const cue=TUTORIAL_STEPS[tutorialStep]?.cue;",
     "ui/board-ui.js:tutorialStep:clear:second?'tutorialSecondClearPrompt':tutorialStep===0?'tutorialFirstClearPrompt':'tutorialClearPrompt'",
-    "ui/board-ui.js:tutorialStep:const step=TUTORIAL_STEPS[tutorialStep],move=tutorialSolvingMoves()[0];",
-    "ui/board-ui.js:tutorialStep:const step=TUTORIAL_STEPS[tutorialStep];",
-    "ui/board-ui.js:tutorialStep:if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}",
-    "ui/board-ui.js:tutorialStep:if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}",
     "ui/board-ui.js:stageIndex:returnStageContext={extra:false,satori:false,index:stageIndex};",
     "ui/board-ui.js:stageIndex:const stage=STAGES[stageIndex];",
     "ui/board-ui.js:stageIndex:persistCurrentStage(false,stageIndex);",
@@ -157,7 +153,6 @@
     "ui/progression-clear-flow.js:stageIndex:if(stageIndex===STAGES.length-1)return {kind:'restore-free'};",
     "ui/progression-clear-flow.js:stageIndex:return {kind:'stage',index:stageIndex+1};",
     "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
-    "runtime/app-events.js:tutorialStep:$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');",
     "runtime/app-events.js:masterDialogKind:if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);",
     "runtime/app-events.js:clearShown:else if(clearShown){",
     "runtime/app-bootstrap.js:clearShown:if(!clearShown)ProgressionEntryPoints.finishStage({mode:'speed'});else WakeSevenProgressionCommands.advanceSpeedRun();"
@@ -763,58 +758,6 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:clear:second?'tutorialSecondClearPrompt':tutorialStep===0?'tutorialFirstClearPrompt':'tutorialClearPrompt'",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:tutorialStep:const step=TUTORIAL_STEPS[tutorialStep],move=tutorialSolvingMoves()[0];",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:tutorialStep:const step=TUTORIAL_STEPS[tutorialStep];",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:tutorialStep:if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:tutorialStep:if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}",
       "expiresOn": "2026-12-02",
       "owner": "ui/board-ui.js",
       "migrationTarget": "gateway:navigation",
@@ -2011,19 +1954,6 @@
     },
     {
       "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
-      "expiresOn": "2026-12-02",
-      "owner": "runtime/app-events.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:tutorialStep:$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');",
       "expiresOn": "2026-12-02",
       "owner": "runtime/app-events.js",
       "migrationTarget": "gateway:navigation",

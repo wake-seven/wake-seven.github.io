@@ -1202,7 +1202,8 @@ function tutorialPrompt(phase){
 }
 function showTutorialCue(){
   if(!isMode('tutorial')||busy||isSolved())return;
-  const step=TUTORIAL_STEPS[tutorialStep],move=tutorialSolvingMoves()[0];
+  const {navigation}=readProgressionContext();
+  const step=TUTORIAL_STEPS[navigation.tutorialStep],move=tutorialSolvingMoves()[0];
   if(!step||!move)return;
   cancelTutorialHint();
   svg.classList.remove('tutorial-grab-step');
@@ -1246,7 +1247,8 @@ function loadTutorialStep(index=0){
   setTutorialStepCommand(index);
   // 前の段階で消した誤操作棒は、次の段階では再表示する。
   svg.querySelectorAll('.grip-marker.narrow-hidden').forEach(marker=>marker.classList.remove('narrow-hidden'));
-  const step=TUTORIAL_STEPS[tutorialStep];
+  const {navigation}=readProgressionContext();
+  const step=TUTORIAL_STEPS[navigation.tutorialStep];
   setPosition(step.state,step.par);
   $('gripPrompt').classList.add('tutorial-prompt-top');
   renderCurrentView();
@@ -1260,8 +1262,9 @@ function startTutorial(){
   loadTutorialStep(Number.isInteger(savedStep)?savedStep:0);
 }
 function advanceTutorial(){
-  if(!isMode('tutorial'))return;
-  if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}
+  const {navigation}=readProgressionContext();
+  if(navigation.mode!=='tutorial')return;
+  if(navigation.tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(navigation.tutorialStep+1);return;}
   completeTutorialCommand();
   loadStage(0);
   setTimeout(()=>openChainedDialog('academyEnroll'),260);

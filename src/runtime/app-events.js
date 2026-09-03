@@ -894,6 +894,7 @@ const LANGUAGE_TEXT_TARGETS=[
 ];
 function applyLanguage(lang){
   if(!setLanguageCommand(lang))return;
+  const {navigation}=readProgressionContext();
   document.documentElement.lang=lang==='zh'?'zh-CN':lang;
   document.title=tr('pageTitle');
   document.querySelector('h1').textContent=tr('title');
@@ -921,7 +922,7 @@ function applyLanguage(lang){
   ].forEach(([id,icon,label])=>{svgSetIcon($(id),transformIcon(icon));$(id).setAttribute('aria-label',tr(label));});
   if(!$('chainDialog').hidden&&chainActiveName)openChainedDialog(chainActiveName);
   $('tutorialReset').textContent='↻ '+tr('tutorialReset');
-  $('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');
+  $('gripPromptText').textContent=navigation.mode==='tutorial'&&TUTORIAL_STEPS[navigation.tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');
   if(!$('rankDialog').hidden)renderRankList();
   if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);
   renderCurrentView();

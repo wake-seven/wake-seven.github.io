@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
   "name": "wake7-navigation-classification",
-  "generatedAt": "2026-09-03T11:24:12.577Z",
+  "generatedAt": "2026-09-03T11:30:04.704Z",
   "status": "passed",
   "summary": {
     "references": 381,
     "byCategory": {
-      "gateway-candidate": 124,
+      "gateway-candidate": 116,
       "owner-only": 167,
-      "derived-value": 51,
+      "derived-value": 61,
       "event-local": 3,
-      "intentional-exception": 36
+      "intentional-exception": 34
     },
     "byName": {
       "activeMode": 19,
@@ -21,7 +21,7 @@
       "tutorialStep": 60,
       "lastStageMode": 12
     },
-    "stateAccessNavigationReferences": 135,
+    "stateAccessNavigationReferences": 130,
     "priorityOrder": [
       "gateway-candidate",
       "derived-value",
@@ -3004,8 +3004,8 @@
       "line": 1179,
       "access": "read",
       "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
         "line": 1179,
@@ -3032,8 +3032,8 @@
       "line": 1185,
       "access": "read",
       "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
         "line": 1185,
@@ -3057,113 +3057,71 @@
     {
       "name": "tutorialStep",
       "file": "ui/board-ui.js",
-      "line": 1205,
+      "line": 1206,
       "access": "read",
       "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1205,
-        "source": "const step=TUTORIAL_STEPS[tutorialStep],move=tutorialSolvingMoves()[0];"
+        "line": 1206,
+        "source": "const step=TUTORIAL_STEPS[navigation.tutorialStep],move=tutorialSolvingMoves()[0];"
       }
     },
     {
       "name": "tutorialStep",
       "file": "ui/board-ui.js",
-      "line": 1249,
+      "line": 1251,
       "access": "read",
       "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1249,
-        "source": "const step=TUTORIAL_STEPS[tutorialStep];"
+        "line": 1251,
+        "source": "const step=TUTORIAL_STEPS[navigation.tutorialStep];"
       }
     },
     {
       "name": "tutorialStep",
       "file": "ui/board-ui.js",
-      "line": 1259,
+      "line": 1261,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1259,
+        "line": 1261,
         "source": "const savedStep=Number(storage.get(STORAGE_KEY_GROUPS.progression.tutorialStep,'0'));"
       }
     },
     {
       "name": "tutorialStep",
       "file": "ui/board-ui.js",
-      "line": 1264,
+      "line": 1267,
       "access": "read",
       "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1264,
-        "source": "if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}"
+        "line": 1267,
+        "source": "if(navigation.tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(navigation.tutorialStep+1);return;}"
       }
     },
     {
       "name": "tutorialStep",
       "file": "ui/board-ui.js",
-      "line": 1264,
+      "line": 1267,
       "access": "read",
       "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1264,
-        "source": "if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "ui/board-ui.js",
-      "line": 1279,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
-      "codeEvidence": {
-        "file": "ui/board-ui.js",
-        "line": 1279,
-        "source": "setNavigationIndexCommand('stageIndex',nextStageIndex);"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "ui/board-ui.js",
-      "line": 1280,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
-      "codeEvidence": {
-        "file": "ui/board-ui.js",
-        "line": 1280,
-        "source": "returnStageContext={extra:false,satori:false,index:stageIndex};"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "ui/board-ui.js",
-      "line": 1281,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
-      "codeEvidence": {
-        "file": "ui/board-ui.js",
-        "line": 1281,
-        "source": "const stage=STAGES[stageIndex];"
+        "line": 1267,
+        "source": "if(navigation.tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(navigation.tutorialStep+1);return;}"
       }
     },
     {
@@ -3177,370 +3135,412 @@
       "codeEvidence": {
         "file": "ui/board-ui.js",
         "line": 1282,
+        "source": "setNavigationIndexCommand('stageIndex',nextStageIndex);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 1283,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1283,
+        "source": "returnStageContext={extra:false,satori:false,index:stageIndex};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 1284,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1284,
+        "source": "const stage=STAGES[stageIndex];"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 1285,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1285,
         "source": "persistCurrentStage(false,stageIndex);"
       }
     },
     {
       "name": "extraIndex",
       "file": "ui/board-ui.js",
-      "line": 1298,
+      "line": 1301,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1298,
+        "line": 1301,
         "source": "returnStageContext={extra:true,satori:false,index:extraIndex};"
       }
     },
     {
       "name": "extraIndex",
       "file": "ui/board-ui.js",
-      "line": 1299,
+      "line": 1302,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1299,
+        "line": 1302,
         "source": "const stage=EXTRA_STAGES[extraIndex];"
       }
     },
     {
       "name": "extraIndex",
       "file": "ui/board-ui.js",
-      "line": 1300,
+      "line": 1303,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1300,
+        "line": 1303,
         "source": "persistCurrentStage(true,extraIndex);"
       }
     },
     {
       "name": "activeLap",
       "file": "ui/board-ui.js",
-      "line": 1309,
+      "line": 1312,
       "access": "write",
       "classification": "needs-migration",
       "category": "intentional-exception",
       "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1309,
+        "line": 1312,
         "source": "if(activeLap===1&&isMastered())showMasterDialog('mastery');"
       }
     },
     {
       "name": "satoriIndex",
       "file": "ui/board-ui.js",
-      "line": 1316,
+      "line": 1319,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1316,
+        "line": 1319,
         "source": "setNavigationIndexCommand('satoriIndex',nextSatoriIndex);"
       }
     },
     {
       "name": "satoriIndex",
       "file": "ui/board-ui.js",
-      "line": 1317,
+      "line": 1320,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1317,
+        "line": 1320,
         "source": "returnStageContext={extra:false,satori:true,index:satoriIndex};"
       }
     },
     {
       "name": "satoriIndex",
       "file": "ui/board-ui.js",
-      "line": 1318,
+      "line": 1321,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1318,
+        "line": 1321,
         "source": "const stage=SATORI_STAGES[satoriIndex];"
       }
     },
     {
       "name": "activeLap",
       "file": "ui/board-ui.js",
-      "line": 1319,
+      "line": 1322,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1319,
+        "line": 1322,
         "source": "try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}"
       }
     },
     {
       "name": "satoriIndex",
       "file": "ui/board-ui.js",
-      "line": 1319,
+      "line": 1322,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1319,
+        "line": 1322,
         "source": "try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}"
       }
     },
     {
       "name": "activeLap",
       "file": "ui/board-ui.js",
-      "line": 1327,
+      "line": 1330,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1327,
+        "line": 1330,
         "source": "try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({extra,index,lap:activeLap}));}catch(_){}"
       }
     },
     {
       "name": "activeLap",
       "file": "ui/board-ui.js",
-      "line": 1392,
+      "line": 1395,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1392,
+        "line": 1395,
         "source": "const payload={mode:'speed',variant:speedVariant,lap:activeLap};"
       }
     },
     {
       "name": "activeMode",
       "file": "ui/board-ui.js",
-      "line": 1399,
+      "line": 1402,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1399,
+        "line": 1402,
         "source": "const mode=activeMode;"
       }
     },
     {
       "name": "activeLap",
       "file": "ui/board-ui.js",
-      "line": 1401,
+      "line": 1404,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
       "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1401,
+        "line": 1404,
         "source": "mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/board-ui.js",
-      "line": 1401,
+      "line": 1404,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
       "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1401,
+        "line": 1404,
         "source": "mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,"
       }
     },
     {
       "name": "extraIndex",
       "file": "ui/board-ui.js",
-      "line": 1401,
+      "line": 1404,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
       "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1401,
+        "line": 1404,
         "source": "mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,"
       }
     },
     {
       "name": "satoriIndex",
       "file": "ui/board-ui.js",
-      "line": 1401,
+      "line": 1404,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
       "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1401,
+        "line": 1404,
         "source": "mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,"
       }
     },
     {
       "name": "tutorialStep",
       "file": "ui/board-ui.js",
-      "line": 1412,
+      "line": 1415,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1412,
+        "line": 1415,
         "source": "loadTutorialStep(Number.isInteger(saved.step)?saved.step:Number(storage.get(STORAGE_KEY_GROUPS.progression.tutorialStep,'0'))||0);"
       }
     },
     {
       "name": "tutorialStep",
       "file": "ui/board-ui.js",
-      "line": 1568,
+      "line": 1571,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
       "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1568,
+        "line": 1571,
         "source": "const tutorialCue=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]?.cue:'';"
       }
     },
     {
       "name": "tutorialStep",
       "file": "ui/board-ui.js",
-      "line": 1770,
+      "line": 1773,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
       "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1770,
+        "line": 1773,
         "source": "const tutorialStepData=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]:null;"
       }
     },
     {
       "name": "tutorialStep",
       "file": "ui/board-ui.js",
-      "line": 1843,
+      "line": 1846,
       "access": "read",
       "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1843,
+        "line": 1846,
         "source": "const tutorialCue=TUTORIAL_STEPS[tutorialStep]?.cue;"
       }
     },
     {
       "name": "tutorialStep",
       "file": "ui/board-ui.js",
-      "line": 1866,
+      "line": 1869,
       "access": "write",
       "classification": "needs-migration",
       "category": "intentional-exception",
       "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 1866,
+        "line": 1869,
         "source": "const turnPrompt=tutorialStep===1?tr('tutorialSecondArrowPrompt')"
       }
     },
     {
       "name": "tutorialStep",
       "file": "ui/board-ui.js",
-      "line": 1867,
-      "access": "write",
-      "classification": "needs-migration",
-      "category": "intentional-exception",
-      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
-      "codeEvidence": {
-        "file": "ui/board-ui.js",
-        "line": 1867,
-        "source": ":tutorialStep===3?tr('tutorialChainTurnPrompt'):tutorialPrompt('turn');"
-      }
-    },
-    {
-      "name": "tutorialStep",
-      "file": "ui/board-ui.js",
-      "line": 1919,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
-      "codeEvidence": {
-        "file": "ui/board-ui.js",
-        "line": 1919,
-        "source": "renderTutorialFeedback({text:tr(TUTORIAL_STEPS[tutorialStep]?.cue==='chain-direction'?'tutorialWrongPlacePrompt':'tutorialWrongPrompt')});"
-      }
-    },
-    {
-      "name": "tutorialStep",
-      "file": "ui/board-ui.js",
-      "line": 1920,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "event-local",
-      "reason": "pointer座標・スワイプ・逐次アニメーションに密接なイベント局所値",
-      "codeEvidence": {
-        "file": "ui/board-ui.js",
-        "line": 1920,
-        "source": "animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:target,direction:dir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue||''}),dg.items);"
-      }
-    },
-    {
-      "name": "tutorialStep",
-      "file": "ui/board-ui.js",
-      "line": 1933,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "event-local",
-      "reason": "pointer座標・スワイプ・逐次アニメーションに密接なイベント局所値",
-      "codeEvidence": {
-        "file": "ui/board-ui.js",
-        "line": 1933,
-        "source": "animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:rewindDir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue||''}),dg.items);"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "ui/board-ui.js",
-      "line": 2202,
+      "line": 1870,
       "access": "write",
       "classification": "needs-migration",
       "category": "derived-value",
       "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
-        "line": 2202,
+        "line": 1870,
+        "source": ":tutorialStep===3?tr('tutorialChainTurnPrompt'):tutorialPrompt('turn');"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1922,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1922,
+        "source": "renderTutorialFeedback({text:tr(TUTORIAL_STEPS[tutorialStep]?.cue==='chain-direction'?'tutorialWrongPlacePrompt':'tutorialWrongPrompt')});"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1923,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "event-local",
+      "reason": "pointer座標・スワイプ・逐次アニメーションに密接なイベント局所値",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1923,
+        "source": "animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:target,direction:dir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue||''}),dg.items);"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1936,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "event-local",
+      "reason": "pointer座標・スワイプ・逐次アニメーションに密接なイベント局所値",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1936,
+        "source": "animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:rewindDir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue||''}),dg.items);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 2205,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 2205,
         "source": "if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&stageIndex===0&&!hasMasterReward())"
       }
     },
@@ -3788,8 +3788,8 @@
       "line": 3,
       "access": "write",
       "classification": "needs-migration",
-      "category": "intentional-exception",
-      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "commands/tutorial-commands.js",
         "line": 3,
@@ -5325,29 +5325,15 @@
     {
       "name": "tutorialStep",
       "file": "runtime/app-events.js",
-      "line": 924,
+      "line": 925,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
       "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "runtime/app-events.js",
-        "line": 924,
-        "source": "$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "runtime/app-events.js",
-      "line": 946,
-      "access": "write",
-      "classification": "needs-migration",
-      "category": "intentional-exception",
-      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
-      "codeEvidence": {
-        "file": "runtime/app-events.js",
-        "line": 946,
-        "source": "else if(navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');"
+        "line": 925,
+        "source": "$('gripPromptText').textContent=navigation.mode==='tutorial'&&TUTORIAL_STEPS[navigation.tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');"
       }
     },
     {
@@ -5361,20 +5347,34 @@
       "codeEvidence": {
         "file": "runtime/app-events.js",
         "line": 947,
+        "source": "else if(navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/app-events.js",
+      "line": 948,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "runtime/app-events.js",
+        "line": 948,
         "source": "else if(navigation.stageIndex===STAGES.length-1)action.textContent=tr('toFree');"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/app-events.js",
-      "line": 1132,
+      "line": 1133,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "runtime/app-events.js",
-        "line": 1132,
+        "line": 1133,
         "source": "storage.remove(STORAGE_KEY_GROUPS.progression.activeLap);"
       }
     }
