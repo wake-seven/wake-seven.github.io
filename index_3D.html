@@ -7,7 +7,9 @@
 <title>WAKE SEVEN — PHYSICAL CONCEPT</title>
 <script>
   try{
-    const unlocked=localStorage.getItem('wake7-3d-unlocked')==='1';
+    // 本編と同じ vnext 状態ストアだけを権限の正とする。
+    const state=JSON.parse(localStorage.getItem('wake7-state-vnext')||'null');
+    const unlocked=state?.version===1&&state?.unlocks?.threeD===true;
     const shared=new URLSearchParams(location.search).get('friend')==='1';
     document.documentElement.dataset.pageAccess=(unlocked||shared)?'granted':'locked';
   }catch(_){document.documentElement.dataset.pageAccess='locked';}

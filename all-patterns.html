@@ -7,7 +7,10 @@
 <title>WAKE SEVEN</title>
 <script>
   try{
-    document.documentElement.dataset.genomeAccess=localStorage.getItem('wake7-master-gold-granted')==='1'?'granted':'locked';
+    // 本編と同じ vnext 状態ストアだけを権限の正とする。
+    const state=JSON.parse(localStorage.getItem('wake7-state-vnext')||'null');
+    const unlocked=state?.version===1&&state?.unlocks?.masterGoldGranted===true;
+    document.documentElement.dataset.genomeAccess=unlocked?'granted':'locked';
   }catch(_){document.documentElement.dataset.genomeAccess='locked';}
 </script>
 <section id="genomeAccessDenied" aria-live="polite"><h1>WAKE SEVEN</h1><p>このページを開く権限がありません。</p></section>

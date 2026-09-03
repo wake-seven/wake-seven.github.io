@@ -213,6 +213,16 @@ try{
   await debugClick(page,'menuToggle');await wait(page,()=>document.querySelector('#appMenu')?.hidden===false,'menu open for free mode');
   await debugClick(page,'freeMode');await wait(page,()=>document.querySelector('#board')?.getClientRects().length>0,'free mode board');result.cases.push({name:'free-mode-entry',state:await snap(page)});
   await debugClick(page,'menuToggle');await debugClick(page,'customMode');await wait(page,()=>document.querySelector('#playCustomBoard')?.hidden===false,'custom maker entry');result.cases.push({name:'custom-mode-entry',state:await snap(page)});
+  // 報酬ページは本編と同じ vnext 状態ストアの unlocks を権限判定に使う。
+  const rewardPage=await browser.newPage();
+  await rewardPage.addInitScript(()=>localStorage.setItem('wake7-state-vnext',JSON.stringify({version:1,unlocks:{threeD:true,masterGoldGranted:true}})));
+  await rewardPage.goto('http://127.0.0.1:'+port+'/index_3D.html',{waitUntil:'domcontentloaded'});
+  assert.equal(await rewardPage.evaluate(()=>document.documentElement.dataset.pageAccess),'granted','3D reward access');
+  result.cases.push({name:'three-d-reward-access-from-vnext-state'});
+  await rewardPage.goto('http://127.0.0.1:'+port+'/all-patterns.html',{waitUntil:'domcontentloaded'});
+  assert.equal(await rewardPage.evaluate(()=>document.documentElement.dataset.genomeAccess),'granted','all-patterns reward access');
+  result.cases.push({name:'all-patterns-reward-access-from-vnext-state'});
+  await rewardPage.close();
   assert.deepEqual(result.consoleErrors,[]);result.passed=true;result.finishedAt=new Date().toISOString();await mkdir(reportDir,{recursive:true});await writeFile(reportPath,JSON.stringify(result,null,2)+'\n');console.log(`browser E2E passed: ${result.cases.length} cases, console errors 0 (details: ${reportPath})`);
 }catch(e){result.error=e.message;result.finishedAt=new Date().toISOString();if(page){result.failure={url:page.url(),diagnostics:await snap(page).catch(error=>({error:error.message})),lastCommand:result.commands.at(-1)||null};try{const stamp=new Date().toISOString().replaceAll(':','-');const screenshotPath=join(reportDir,'browser-e2e-failure-'+stamp+'.png');await mkdir(reportDir,{recursive:true});await page.screenshot({path:screenshotPath,fullPage:true});result.failure.screenshot=screenshotPath;}catch(error){result.failure.screenshotError=error.message;}}await mkdir(reportDir,{recursive:true});await writeFile(reportPath,JSON.stringify(result,null,2)+'\n');console.error(JSON.stringify(result,null,2));process.exitCode=1;}finally{await browser?.close().catch(()=>{});server?.kill();}
 

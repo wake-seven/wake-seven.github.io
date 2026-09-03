@@ -657,6 +657,8 @@ function grantMasterReward(){
   masterGoldGranted=setUnlock('masterGoldGranted',true);
   grantMasterRewardSettingsCommand();
   try{storage.set(STORAGE_KEY_GROUPS.rewards.masterGoldGranted,'1');}catch(_){ }
+  // 全パターン一覧が参照する vnext 状態ストアにも即時反映する。
+  syncGameState();
 }
 function updateMasterTheme(){
   document.body.classList.toggle('mastered',hasMasterReward());
