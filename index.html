@@ -4415,7 +4415,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-17:23';
+const APP_VERSION='2026.09.03-17:36';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -4572,7 +4572,7 @@ function restoreDialogState(state){
   if(!state||typeof state.id!=='string')return false;
   try{
     if(state.id==='chain'&&CHAIN_STEPS[state.name]){openChainedDialog(state.name);return true;}
-    if(state.id==='clear'&&clearShown&&isSolved()){showClearDialog(createClearTransitionContext());return true;}
+    if(state.id==='clear'&&clearShown&&isSolved()){const clearContext=createClearTransitionContext();showClearDialog(clearContext);return true;}
     if(state.id==='message'){openMessageReview({resume:true});if(state.key){const index=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===state.key);if(index>=0){messageReviewIndex=index;renderMessageReview();}}return true;}
     if(state.id==='master'){showMasterDialog(state.kind||'primary');return true;}
     if(state.id==='speedPause'&&isMode('speed')){openSpeedPauseDialog();return true;}
@@ -10822,6 +10822,15 @@ const PROGRESSION_FLOW_CONTRACT=Object.freeze([
 ]);
 function getProgressionFlowContract(){return PROGRESSION_FLOW_CONTRACT;}
 
+// 進行の主要オーケストレーターを、状態判断→遷移→描画の順で追跡するための監査メタデータ。
+// ここは実装を呼び出す層ではなく、各入口の責務と読み進める順番を明示する地図である。
+// 新しい抽象化を増やさず、実装側の関数名を参照して契約検査に利用する。
+const PROGRESSION_ORCHESTRATORS=Object.freeze([
+  {id:'clear-start',name:'クリア開始オーケストレーター',entry:'startClearFlow',source:'src/ui/progression-clear-flow.js',order:{decision:['beginClearFlow','createClearTransitionContext'],transition:['persistClearFlowCheckpoint'],render:['scheduleClearFlowDialog']}},
+  {id:'clear-advance',name:'クリア後進行オーケストレーター',entry:'dispatchClearFlowAction',source:'src/ui/progression-clear-flow.js',order:{decision:['resolveAfterClearRoute'],transition:['persistClearFlowCheckpoint','setClearFlowPhase'],render:['showMasterDialog']}},
+  {id:'dialog-restore',name:'ダイアログ復元オーケストレーター',entry:'restoreDialogState',source:'src/runtime/runtime.js',order:{decision:["state.id==='clear'"],transition:['createClearTransitionContext'],render:['showClearDialog']}},
+  {id:'stage-advance',name:'ステージ進行オーケストレーター',entry:'dispatchClearFlowAction',source:'src/ui/progression-clear-flow.js',order:{decision:['resolveAfterClearRoute'],transition:['setClearFlowPhase'],render:['loadStage']}}
+]);
 export {};
 
 // ===== 公開API名前空間 =====

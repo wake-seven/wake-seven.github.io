@@ -1,5 +1,5 @@
 {
-  "generatedForVersion": "2026.09.03-17:23",
+  "generatedForVersion": "2026.09.03-17:36",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles",
   "definitions": {
     "attachWakeSevenState": {
@@ -1478,7 +1478,7 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 67,
+          "line": 87,
           "caller": "resolveProgressionQuiz"
         },
         {
@@ -1614,7 +1614,7 @@
         {
           "file": "runtime/app-events.js",
           "line": 396,
-          "caller": "target"
+          "caller": "resume"
         },
         {
           "file": "runtime/app-events.js",
@@ -7728,10 +7728,17 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 50,
+          "line": 70,
           "caller": "restoreProgressionDialog"
         }
       ]
+    },
+    "clearContext": {
+      "name": "clearContext",
+      "file": "runtime/runtime.js",
+      "line": 161,
+      "kind": "constant",
+      "callers": []
     },
     "index": {
       "name": "index",
@@ -12558,7 +12565,7 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 34,
+          "line": 54,
           "caller": "requestProgressionDialog"
         },
         {
@@ -14928,7 +14935,12 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 24,
+          "line": 29,
+          "caller": "openDialog"
+        },
+        {
+          "file": "ui/progression-dialogs.js",
+          "line": 44,
           "caller": "requestProgressionDialog"
         },
         {
@@ -15698,7 +15710,7 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 33,
+          "line": 53,
           "caller": "requestProgressionDialog"
         },
         {
@@ -21309,7 +21321,7 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 61,
+          "line": 81,
           "caller": "showProgressionQuiz"
         }
       ]
@@ -21341,12 +21353,12 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 64,
+          "line": 84,
           "caller": "showProgressionQuiz"
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 68,
+          "line": 88,
           "caller": "source"
         },
         {
@@ -21374,7 +21386,7 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 62,
+          "line": 82,
           "caller": "showProgressionQuiz"
         },
         {
@@ -21841,7 +21853,7 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 62,
+          "line": 82,
           "caller": "showProgressionQuiz"
         },
         {
@@ -22737,7 +22749,12 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 26,
+          "line": 28,
+          "caller": "openDialog"
+        },
+        {
+          "file": "ui/progression-dialogs.js",
+          "line": 46,
           "caller": "requestProgressionDialog"
         },
         {
@@ -23358,12 +23375,12 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 22,
+          "line": 42,
           "caller": "requestProgressionDialog"
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 56,
+          "line": 76,
           "caller": "showProgressionQuiz"
         }
       ]
@@ -23375,10 +23392,73 @@
       "kind": "constant",
       "callers": []
     },
+    "openDialog": {
+      "name": "openDialog",
+      "file": "ui/progression-dialogs.js",
+      "line": 19,
+      "kind": "function",
+      "callers": [
+        {
+          "file": "ui/progression-dialogs.js",
+          "line": 19,
+          "caller": "createProgressionMessageContext"
+        },
+        {
+          "file": "ui/progression-ui.js",
+          "line": 174,
+          "caller": "openSatoriPicker"
+        },
+        {
+          "file": "ui/progression-ui.js",
+          "line": 261,
+          "caller": "openStagePicker"
+        },
+        {
+          "file": "ui/rank.js",
+          "line": 88,
+          "caller": "volume"
+        },
+        {
+          "file": "ui/rank.js",
+          "line": 89,
+          "caller": "volume"
+        },
+        {
+          "file": "ui/rank.js",
+          "line": 107,
+          "caller": "openRankDialogFrom"
+        },
+        {
+          "file": "runtime/app-events.js",
+          "line": 286,
+          "caller": "resume"
+        },
+        {
+          "file": "runtime/app-events.js",
+          "line": 287,
+          "caller": "resume"
+        },
+        {
+          "file": "runtime/app-events.js",
+          "line": 395,
+          "caller": "resume"
+        },
+        {
+          "file": "runtime/app-events.js",
+          "line": 404,
+          "caller": "resume"
+        },
+        {
+          "file": "runtime/app-events.js",
+          "line": 473,
+          "caller": "dialogId"
+        }
+      ]
+    },
     "requestProgressionDialog": {
       "name": "requestProgressionDialog",
       "file": "ui/progression-dialogs.js",
-      "line": 19,
+      "line": 39,
       "kind": "function",
       "callers": [
         {
@@ -23388,8 +23468,8 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 19,
-          "caller": "createProgressionMessageContext"
+          "line": 39,
+          "caller": "openDialog"
         },
         {
           "file": "ui/progression-ui.js",
@@ -23421,26 +23501,26 @@
     "request": {
       "name": "request",
       "file": "ui/progression-dialogs.js",
-      "line": 21,
+      "line": 41,
       "kind": "constant",
       "callers": []
     },
     "options": {
       "name": "options",
       "file": "ui/progression-dialogs.js",
-      "line": 22,
+      "line": 42,
       "kind": "constant",
       "callers": []
     },
     "closeProgressionDialog": {
       "name": "closeProgressionDialog",
       "file": "ui/progression-dialogs.js",
-      "line": 42,
+      "line": 62,
       "kind": "function",
       "callers": [
         {
           "file": "ui/progression-dialogs.js",
-          "line": 42,
+          "line": 62,
           "caller": "requestProgressionDialog"
         },
         {
@@ -23453,12 +23533,12 @@
     "restoreProgressionDialog": {
       "name": "restoreProgressionDialog",
       "file": "ui/progression-dialogs.js",
-      "line": 48,
+      "line": 68,
       "kind": "function",
       "callers": [
         {
           "file": "ui/progression-dialogs.js",
-          "line": 48,
+          "line": 68,
           "caller": "closeProgressionDialog"
         },
         {
@@ -23471,19 +23551,19 @@
     "progressionQuizContext": {
       "name": "progressionQuizContext",
       "file": "ui/progression-dialogs.js",
-      "line": 54,
+      "line": 74,
       "kind": "constant",
       "callers": []
     },
     "showProgressionQuiz": {
       "name": "showProgressionQuiz",
       "file": "ui/progression-dialogs.js",
-      "line": 55,
+      "line": 75,
       "kind": "function",
       "callers": [
         {
           "file": "ui/progression-dialogs.js",
-          "line": 55,
+          "line": 75,
           "caller": "restoreProgressionDialog"
         },
         {
@@ -23516,19 +23596,19 @@
     "rootId": {
       "name": "rootId",
       "file": "ui/progression-dialogs.js",
-      "line": 57,
+      "line": 77,
       "kind": "constant",
       "callers": []
     },
     "resolveProgressionQuiz": {
       "name": "resolveProgressionQuiz",
       "file": "ui/progression-dialogs.js",
-      "line": 67,
+      "line": 87,
       "kind": "function",
       "callers": [
         {
           "file": "ui/progression-dialogs.js",
-          "line": 67,
+          "line": 87,
           "caller": "showProgressionQuiz"
         }
       ]
@@ -23536,12 +23616,12 @@
     "closeProgressionQuiz": {
       "name": "closeProgressionQuiz",
       "file": "ui/progression-dialogs.js",
-      "line": 68,
+      "line": 88,
       "kind": "function",
       "callers": [
         {
           "file": "ui/progression-dialogs.js",
-          "line": 68,
+          "line": 88,
           "caller": "resolveProgressionQuiz"
         },
         {
@@ -23554,7 +23634,7 @@
     "rootIds": {
       "name": "rootIds",
       "file": "ui/progression-dialogs.js",
-      "line": 68,
+      "line": 88,
       "kind": "constant",
       "callers": []
     },
@@ -23809,7 +23889,7 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 31,
+          "line": 51,
           "caller": "requestProgressionDialog"
         },
         {
@@ -23922,7 +24002,7 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 32,
+          "line": 52,
           "caller": "requestProgressionDialog"
         },
         {
@@ -24287,7 +24367,7 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 35,
+          "line": 55,
           "caller": "requestProgressionDialog"
         },
         {
@@ -25165,11 +25245,6 @@
           "caller": "kind"
         },
         {
-          "file": "ui/rank.js",
-          "line": 88,
-          "caller": "volume"
-        },
-        {
           "file": "runtime/app-events.js",
           "line": 305,
           "caller": "resume"
@@ -25193,19 +25268,14 @@
       "kind": "function",
       "callers": [
         {
-          "file": "ui/progression-ui.js",
-          "line": 174,
-          "caller": "openSatoriPicker"
+          "file": "ui/progression-dialogs.js",
+          "line": 23,
+          "caller": "openDialog"
         },
         {
           "file": "ui/progression-ui.js",
           "line": 180,
           "caller": "openSatoriPicker"
-        },
-        {
-          "file": "ui/progression-ui.js",
-          "line": 261,
-          "caller": "openStagePicker"
         },
         {
           "file": "ui/progression-ui.js",
@@ -25414,14 +25484,14 @@
       "kind": "function",
       "callers": [
         {
+          "file": "ui/progression-dialogs.js",
+          "line": 25,
+          "caller": "openDialog"
+        },
+        {
           "file": "ui/progression-ui.js",
           "line": 253,
           "caller": "canSeeTraining"
-        },
-        {
-          "file": "runtime/app-events.js",
-          "line": 286,
-          "caller": "resume"
         }
       ]
     },
@@ -25497,11 +25567,6 @@
           "file": "ui/progression-ui.js",
           "line": 263,
           "caller": "openStagePicker"
-        },
-        {
-          "file": "ui/rank.js",
-          "line": 89,
-          "caller": "volume"
         }
       ]
     },
@@ -25660,7 +25725,7 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 25,
+          "line": 45,
           "caller": "requestProgressionDialog"
         },
         {
@@ -25669,13 +25734,6 @@
           "caller": "showingExtra"
         }
       ]
-    },
-    "clearContext": {
-      "name": "clearContext",
-      "file": "ui/progression-ui.js",
-      "line": 305,
-      "kind": "constant",
-      "callers": []
     },
     "showSatoriMastery": {
       "name": "showSatoriMastery",
@@ -26283,7 +26341,7 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 43,
+          "line": 63,
           "caller": "closeProgressionDialog"
         },
         {
@@ -26680,7 +26738,7 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 64,
+          "line": 84,
           "caller": "showProgressionQuiz"
         },
         {
@@ -26886,7 +26944,7 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 27,
+          "line": 47,
           "caller": "requestProgressionDialog"
         },
         {
@@ -27863,6 +27921,13 @@
         }
       ]
     },
+    "PROGRESSION_ORCHESTRATORS": {
+      "name": "PROGRESSION_ORCHESTRATORS",
+      "file": "ui/progression-flow-contract.js",
+      "line": 21,
+      "kind": "constant",
+      "callers": []
+    },
     "CLEAR_FLOW_PHASE": {
       "name": "CLEAR_FLOW_PHASE",
       "file": "ui/progression-clear-flow.js",
@@ -28006,7 +28071,7 @@
       "callers": [
         {
           "file": "ui/progression-dialogs.js",
-          "line": 60,
+          "line": 80,
           "caller": "showProgressionQuiz"
         },
         {
@@ -28627,12 +28692,12 @@
         {
           "file": "ui/rank.js",
           "line": 101,
-          "caller": "openRankDialog"
+          "caller": "lap"
         },
         {
           "file": "ui/rank.js",
           "line": 102,
-          "caller": "openRankDialog"
+          "caller": "lap"
         },
         {
           "file": "runtime/app-events.js",
@@ -28703,18 +28768,18 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 28,
+          "line": 27,
+          "caller": "openDialog"
+        },
+        {
+          "file": "ui/progression-dialogs.js",
+          "line": 48,
           "caller": "requestProgressionDialog"
         },
         {
           "file": "ui/rank.js",
           "line": 94,
           "caller": "volume"
-        },
-        {
-          "file": "ui/rank.js",
-          "line": 107,
-          "caller": "openRankDialogFrom"
         }
       ]
     },
@@ -28727,7 +28792,7 @@
         {
           "file": "ui/rank.js",
           "line": 103,
-          "caller": "openRankDialog"
+          "caller": "lap"
         },
         {
           "file": "runtime/app-events.js",
@@ -29783,7 +29848,7 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 29,
+          "line": 49,
           "caller": "requestProgressionDialog"
         },
         {
@@ -29907,7 +29972,7 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 30,
+          "line": 50,
           "caller": "requestProgressionDialog"
         },
         {
@@ -33473,7 +33538,7 @@
         "id": "masterSeal",
         "file": "runtime/app-events.js",
         "line": 474,
-        "updater": "chain"
+        "updater": "dialogId"
       }
     ],
     "masterSealLabel": [
@@ -34631,7 +34696,7 @@
         "id": "rankLap2",
         "file": "ui/rank.js",
         "line": 102,
-        "updater": "openRankDialog"
+        "updater": "lap"
       }
     ],
     "rankList": [
@@ -36312,7 +36377,7 @@
       "type": "click",
       "file": "ui/rank.js",
       "line": 102,
-      "handler": "openRankDialog"
+      "handler": "lap"
     },
     {
       "id": "debugClear",
@@ -36606,7 +36671,7 @@
       "type": "click",
       "file": "runtime/app-events.js",
       "line": 474,
-      "handler": "chain"
+      "handler": "dialogId"
     },
     {
       "id": "messageMasterSeal",
@@ -37020,6 +37085,6 @@
   "summary": {},
   "warnings": [],
   "errors": [],
-  "generatedAt": "2026-09-03T08:29:45.294Z",
+  "generatedAt": "2026-09-03T08:50:01.261Z",
   "sourceRevision": "working-tree"
 }

@@ -1,36 +1,36 @@
 {
-  "generatedAt": "2026-09-03T08:28:10.134Z",
+  "generatedAt": "2026-09-03T08:48:37.347Z",
   "source": "build/report/symbol-index.json",
   "target": "progression-related symbols",
   "summary": {
-    "symbols": 412,
+    "symbols": 413,
     "files": 15,
     "responsibilities": {
-      "clear-flow": 62,
-      "dialog": 41,
+      "clear-flow": 61,
+      "dialog": 42,
       "navigation": 10,
       "rank": 44,
       "render": 89,
       "stage-picker": 28,
-      "state": 138
+      "state": 139
     },
     "flowRoles": {
       "entry": 4,
-      "render": 158,
-      "state-decision": 381,
-      "transition": 32
+      "render": 159,
+      "state-decision": 382,
+      "transition": 33
     },
     "flowClassifications": {
       "state-decision": 351,
       "transition": 0,
       "render": 29,
-      "orchestration": 32
+      "orchestration": 33
     },
-    "mixedSymbols": 156,
+    "mixedSymbols": 157,
     "unclassifiedSymbols": 0,
     "candidates": {
       "display-transition-mixed": 7,
-      "orchestrator": 6
+      "orchestrator": 7
     }
   },
   "pipeline": [
@@ -128,7 +128,7 @@
     },
     {
       "file": "ui/progression-dialogs.js",
-      "symbols": 13,
+      "symbols": 14,
       "responsibilities": [
         "dialog"
       ],
@@ -137,11 +137,11 @@
         "state-decision",
         "transition"
       ],
-      "mixedSymbols": 13
+      "mixedSymbols": 14
     },
     {
       "file": "ui/progression-flow-contract.js",
-      "symbols": 2,
+      "symbols": 3,
       "responsibilities": [
         "state"
       ],
@@ -208,7 +208,7 @@
     },
     {
       "file": "ui/progression-ui.js",
-      "symbols": 182,
+      "symbols": 181,
       "responsibilities": [
         "clear-flow",
         "dialog",
@@ -414,9 +414,19 @@
       ]
     },
     {
-      "name": "requestProgressionDialog",
+      "name": "openDialog",
       "file": "ui/progression-dialogs.js",
       "line": 19,
+      "flowRoles": [
+        "state-decision",
+        "transition",
+        "render"
+      ]
+    },
+    {
+      "name": "requestProgressionDialog",
+      "file": "ui/progression-dialogs.js",
+      "line": 39,
       "flowRoles": [
         "state-decision",
         "render"
@@ -425,7 +435,7 @@
     {
       "name": "request",
       "file": "ui/progression-dialogs.js",
-      "line": 21,
+      "line": 41,
       "flowRoles": [
         "state-decision",
         "render"
@@ -434,7 +444,7 @@
     {
       "name": "options",
       "file": "ui/progression-dialogs.js",
-      "line": 22,
+      "line": 42,
       "flowRoles": [
         "state-decision",
         "render"
@@ -443,7 +453,7 @@
     {
       "name": "closeProgressionDialog",
       "file": "ui/progression-dialogs.js",
-      "line": 42,
+      "line": 62,
       "flowRoles": [
         "state-decision",
         "transition",
@@ -453,7 +463,7 @@
     {
       "name": "restoreProgressionDialog",
       "file": "ui/progression-dialogs.js",
-      "line": 48,
+      "line": 68,
       "flowRoles": [
         "state-decision",
         "transition",
@@ -463,7 +473,7 @@
     {
       "name": "progressionQuizContext",
       "file": "ui/progression-dialogs.js",
-      "line": 54,
+      "line": 74,
       "flowRoles": [
         "state-decision",
         "render"
@@ -472,7 +482,7 @@
     {
       "name": "showProgressionQuiz",
       "file": "ui/progression-dialogs.js",
-      "line": 55,
+      "line": 75,
       "flowRoles": [
         "state-decision",
         "render"
@@ -481,7 +491,7 @@
     {
       "name": "rootId",
       "file": "ui/progression-dialogs.js",
-      "line": 57,
+      "line": 77,
       "flowRoles": [
         "state-decision",
         "render"
@@ -490,7 +500,7 @@
     {
       "name": "resolveProgressionQuiz",
       "file": "ui/progression-dialogs.js",
-      "line": 67,
+      "line": 87,
       "flowRoles": [
         "state-decision",
         "render"
@@ -499,7 +509,7 @@
     {
       "name": "closeProgressionQuiz",
       "file": "ui/progression-dialogs.js",
-      "line": 68,
+      "line": 88,
       "flowRoles": [
         "state-decision",
         "transition",
@@ -509,7 +519,7 @@
     {
       "name": "rootIds",
       "file": "ui/progression-dialogs.js",
-      "line": 68,
+      "line": 88,
       "flowRoles": [
         "state-decision",
         "render"
@@ -1701,9 +1711,25 @@
       }
     },
     {
+      "name": "openDialog",
+      "file": "ui/progression-dialogs.js",
+      "line": 19,
+      "flowRoles": [
+        "state-decision",
+        "transition",
+        "render"
+      ],
+      "category": "orchestrator",
+      "priority": 3,
+      "reason": "状態判定・遷移・表示の複数処理を順序づける呼び出しがあり、正当なオーケストレーター候補です。",
+      "evidence": {
+        "callCount": 5
+      }
+    },
+    {
       "name": "closeProgressionDialog",
       "file": "ui/progression-dialogs.js",
-      "line": 42,
+      "line": 62,
       "flowRoles": [
         "state-decision",
         "transition",
@@ -1719,7 +1745,7 @@
     {
       "name": "restoreProgressionDialog",
       "file": "ui/progression-dialogs.js",
-      "line": 48,
+      "line": 68,
       "flowRoles": [
         "state-decision",
         "transition",
@@ -1735,7 +1761,7 @@
     {
       "name": "closeProgressionQuiz",
       "file": "ui/progression-dialogs.js",
-      "line": 68,
+      "line": 88,
       "flowRoles": [
         "state-decision",
         "transition",
@@ -2129,7 +2155,7 @@
       "mixedResponsibility": false,
       "callers": [
         "ui/clear-flow.js:18:stageClearText",
-        "ui/progression-dialogs.js:62:showProgressionQuiz",
+        "ui/progression-dialogs.js:82:showProgressionQuiz",
         "ui/progression-ui.js:371:showClearDialog",
         "ui/progression-ui.js:481:renderClearTip",
         "ui/progression-ui.js:583:renderClearQuiz",
@@ -2783,7 +2809,7 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": false,
       "callers": [
-        "ui/progression-dialogs.js:60:showProgressionQuiz",
+        "ui/progression-dialogs.js:80:showProgressionQuiz",
         "ui/progression-clear-flow.js:42:getClearFlowState"
       ]
     },
@@ -3157,8 +3183,8 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": true,
       "callers": [
-        "ui/progression-dialogs.js:22:requestProgressionDialog",
-        "ui/progression-dialogs.js:56:showProgressionQuiz"
+        "ui/progression-dialogs.js:42:requestProgressionDialog",
+        "ui/progression-dialogs.js:76:showProgressionQuiz"
       ]
     },
     {
@@ -3176,9 +3202,36 @@
       "callers": []
     },
     {
-      "name": "requestProgressionDialog",
+      "name": "openDialog",
       "file": "ui/progression-dialogs.js",
       "line": 19,
+      "kind": "function",
+      "responsibility": "dialog",
+      "flowRoles": [
+        "state-decision",
+        "transition",
+        "render"
+      ],
+      "flowClassification": "orchestration",
+      "mixedResponsibility": true,
+      "callers": [
+        "ui/progression-dialogs.js:19:createProgressionMessageContext",
+        "ui/progression-ui.js:174:openSatoriPicker",
+        "ui/progression-ui.js:261:openStagePicker",
+        "ui/rank.js:88:volume",
+        "ui/rank.js:89:volume",
+        "ui/rank.js:107:openRankDialogFrom",
+        "runtime/app-events.js:286:resume",
+        "runtime/app-events.js:287:resume",
+        "runtime/app-events.js:395:resume",
+        "runtime/app-events.js:404:resume",
+        "runtime/app-events.js:473:dialogId"
+      ]
+    },
+    {
+      "name": "requestProgressionDialog",
+      "file": "ui/progression-dialogs.js",
+      "line": 39,
       "kind": "function",
       "responsibility": "dialog",
       "flowRoles": [
@@ -3189,7 +3242,7 @@
       "mixedResponsibility": true,
       "callers": [
         "commands/progression-commands.js:28:ProgressionEntryPoints",
-        "ui/progression-dialogs.js:19:createProgressionMessageContext",
+        "ui/progression-dialogs.js:39:openDialog",
         "ui/progression-ui.js:335:showClearDialog",
         "ui/progression-ui.js:340:showClearDialog",
         "ui/progression-ui.js:345:showClearDialog",
@@ -3200,7 +3253,7 @@
     {
       "name": "request",
       "file": "ui/progression-dialogs.js",
-      "line": 21,
+      "line": 41,
       "kind": "constant",
       "responsibility": "dialog",
       "flowRoles": [
@@ -3214,7 +3267,7 @@
     {
       "name": "options",
       "file": "ui/progression-dialogs.js",
-      "line": 22,
+      "line": 42,
       "kind": "constant",
       "responsibility": "dialog",
       "flowRoles": [
@@ -3228,7 +3281,7 @@
     {
       "name": "closeProgressionDialog",
       "file": "ui/progression-dialogs.js",
-      "line": 42,
+      "line": 62,
       "kind": "function",
       "responsibility": "dialog",
       "flowRoles": [
@@ -3239,14 +3292,14 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "ui/progression-dialogs.js:42:requestProgressionDialog",
+        "ui/progression-dialogs.js:62:requestProgressionDialog",
         "ui/progression-ui.js:316:showClearDialog"
       ]
     },
     {
       "name": "restoreProgressionDialog",
       "file": "ui/progression-dialogs.js",
-      "line": 48,
+      "line": 68,
       "kind": "function",
       "responsibility": "dialog",
       "flowRoles": [
@@ -3257,14 +3310,14 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "ui/progression-dialogs.js:48:closeProgressionDialog",
+        "ui/progression-dialogs.js:68:closeProgressionDialog",
         "runtime/app-bootstrap.js:14:canShowDeferredBootDialog"
       ]
     },
     {
       "name": "progressionQuizContext",
       "file": "ui/progression-dialogs.js",
-      "line": 54,
+      "line": 74,
       "kind": "constant",
       "responsibility": "dialog",
       "flowRoles": [
@@ -3278,7 +3331,7 @@
     {
       "name": "showProgressionQuiz",
       "file": "ui/progression-dialogs.js",
-      "line": 55,
+      "line": 75,
       "kind": "function",
       "responsibility": "dialog",
       "flowRoles": [
@@ -3288,7 +3341,7 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": true,
       "callers": [
-        "ui/progression-dialogs.js:55:restoreProgressionDialog",
+        "ui/progression-dialogs.js:75:restoreProgressionDialog",
         "ui/progression-ui.js:371:showClearDialog",
         "ui/progression-ui.js:376:showClearDialog",
         "ui/progression-clear-flow.js:203:returnToClearDialog",
@@ -3299,7 +3352,7 @@
     {
       "name": "rootId",
       "file": "ui/progression-dialogs.js",
-      "line": 57,
+      "line": 77,
       "kind": "constant",
       "responsibility": "dialog",
       "flowRoles": [
@@ -3313,7 +3366,7 @@
     {
       "name": "resolveProgressionQuiz",
       "file": "ui/progression-dialogs.js",
-      "line": 67,
+      "line": 87,
       "kind": "function",
       "responsibility": "dialog",
       "flowRoles": [
@@ -3323,13 +3376,13 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": true,
       "callers": [
-        "ui/progression-dialogs.js:67:showProgressionQuiz"
+        "ui/progression-dialogs.js:87:showProgressionQuiz"
       ]
     },
     {
       "name": "closeProgressionQuiz",
       "file": "ui/progression-dialogs.js",
-      "line": 68,
+      "line": 88,
       "kind": "function",
       "responsibility": "dialog",
       "flowRoles": [
@@ -3340,14 +3393,14 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "ui/progression-dialogs.js:68:resolveProgressionQuiz",
+        "ui/progression-dialogs.js:88:resolveProgressionQuiz",
         "ui/progression-ui.js:554:hideGameDialogs"
       ]
     },
     {
       "name": "rootIds",
       "file": "ui/progression-dialogs.js",
-      "line": 68,
+      "line": 88,
       "kind": "constant",
       "responsibility": "dialog",
       "flowRoles": [
@@ -3376,6 +3429,19 @@
       "file": "ui/progression-flow-contract.js",
       "line": 16,
       "kind": "function",
+      "responsibility": "state",
+      "flowRoles": [
+        "state-decision"
+      ],
+      "flowClassification": "state-decision",
+      "mixedResponsibility": false,
+      "callers": []
+    },
+    {
+      "name": "PROGRESSION_ORCHESTRATORS",
+      "file": "ui/progression-flow-contract.js",
+      "line": 21,
+      "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
         "state-decision"
@@ -4162,7 +4228,7 @@
       "mixedResponsibility": true,
       "callers": [
         "runtime/runtime.js:169:el",
-        "ui/progression-dialogs.js:31:requestProgressionDialog",
+        "ui/progression-dialogs.js:51:requestProgressionDialog",
         "ui/progression-insights.js:86:buttonTemplate",
         "ui/progression-insights.js:126:closeTwoMoveDetail",
         "ui/progression-ui.js:772:from",
@@ -4223,7 +4289,7 @@
       "mixedResponsibility": true,
       "callers": [
         "runtime/runtime.js:172:el",
-        "ui/progression-dialogs.js:32:requestProgressionDialog",
+        "ui/progression-dialogs.js:52:requestProgressionDialog",
         "ui/progression-insights.js:112:renderTwoMoveDetail",
         "ui/progression-ui.js:775:from",
         "ui/progression-ui.js:781:from",
@@ -4532,7 +4598,7 @@
         "runtime/runtime.js:175:el",
         "ui/board-ui.js:953:completeBoard",
         "ui/board-ui.js:1014:paint",
-        "ui/progression-dialogs.js:35:requestProgressionDialog",
+        "ui/progression-dialogs.js:55:requestProgressionDialog",
         "ui/progression-insights.js:227:board",
         "runtime/app-events.js:925:button"
       ]
@@ -5658,7 +5724,6 @@
         "ui/progression-ui.js:169:index",
         "ui/progression-ui.js:255:openStagePicker",
         "ui/progression-clear-flow.js:194:kind",
-        "ui/rank.js:88:volume",
         "runtime/app-events.js:305:resume",
         "runtime/app-events.js:513:returnTarget",
         "runtime/app-events.js:514:returnTarget"
@@ -5677,9 +5742,8 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "ui/progression-ui.js:174:openSatoriPicker",
+        "ui/progression-dialogs.js:23:openDialog",
         "ui/progression-ui.js:180:openSatoriPicker",
-        "ui/progression-ui.js:261:openStagePicker",
         "ui/progression-ui.js:269:openStagePickerForRank"
       ]
     },
@@ -6007,8 +6071,8 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "ui/progression-ui.js:253:canSeeTraining",
-        "runtime/app-events.js:286:resume"
+        "ui/progression-dialogs.js:25:openDialog",
+        "ui/progression-ui.js:253:canSeeTraining"
       ]
     },
     {
@@ -6075,8 +6139,7 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "ui/progression-ui.js:263:openStagePicker",
-        "ui/rank.js:89:volume"
+        "ui/progression-ui.js:263:openStagePicker"
       ]
     },
     {
@@ -6201,22 +6264,9 @@
       "mixedResponsibility": true,
       "callers": [
         "runtime/runtime.js:161:restoreDialogState",
-        "ui/progression-dialogs.js:25:requestProgressionDialog",
+        "ui/progression-dialogs.js:45:requestProgressionDialog",
         "ui/progression-ui.js:303:showingExtra"
       ]
-    },
-    {
-      "name": "clearContext",
-      "file": "ui/progression-ui.js",
-      "line": 305,
-      "kind": "constant",
-      "responsibility": "clear-flow",
-      "flowRoles": [
-        "state-decision"
-      ],
-      "flowClassification": "state-decision",
-      "mixedResponsibility": false,
-      "callers": []
     },
     {
       "name": "showSatoriMastery",
@@ -6820,7 +6870,7 @@
         "ui/board-ui.js:953:completeBoard",
         "ui/board-ui.js:1013:paint",
         "ui/board-ui.js:1166:setPosition",
-        "ui/progression-dialogs.js:43:closeProgressionDialog",
+        "ui/progression-dialogs.js:63:closeProgressionDialog",
         "ui/progression-ui.js:552:volumeLabel",
         "ui/progression-clear-flow.js:184:kind",
         "runtime/app-events.js:240:handleClearTipLink",
@@ -7164,7 +7214,7 @@
       "mixedResponsibility": true,
       "callers": [
         "ui/message.js:54:boardQuiz",
-        "ui/progression-dialogs.js:64:showProgressionQuiz",
+        "ui/progression-dialogs.js:84:showProgressionQuiz",
         "ui/progression-ui.js:661:transformIcon"
       ]
     },
@@ -7432,7 +7482,7 @@
         "ui/board-ui.js:1272:loadStage",
         "ui/board-ui.js:1292:loadExtraStage",
         "ui/board-ui.js:1309:loadSatoriStage",
-        "ui/progression-dialogs.js:27:requestProgressionDialog",
+        "ui/progression-dialogs.js:47:requestProgressionDialog",
         "ui/progression-ui.js:171:openSatoriPicker",
         "ui/progression-ui.js:325:showClearDialog",
         "ui/progression-ui.js:329:showClearDialog",
@@ -8076,8 +8126,8 @@
       "callers": [
         "ui/rank.js:53:rankProblemCount",
         "ui/rank.js:97:openRankDialog",
-        "ui/rank.js:101:openRankDialog",
-        "ui/rank.js:102:openRankDialog",
+        "ui/rank.js:101:lap",
+        "ui/rank.js:102:lap",
         "runtime/app-events.js:918:button"
       ]
     },
@@ -8187,9 +8237,9 @@
       "mixedResponsibility": true,
       "callers": [
         "runtime/runtime.js:165:el",
-        "ui/progression-dialogs.js:28:requestProgressionDialog",
-        "ui/rank.js:94:volume",
-        "ui/rank.js:107:openRankDialogFrom"
+        "ui/progression-dialogs.js:27:openDialog",
+        "ui/progression-dialogs.js:48:requestProgressionDialog",
+        "ui/rank.js:94:volume"
       ]
     },
     {
@@ -8205,7 +8255,7 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "ui/rank.js:103:openRankDialog",
+        "ui/rank.js:103:lap",
         "runtime/app-events.js:474:dialogId",
         "runtime/app-events.js:475:dialogId",
         "runtime/app-events.js:478:dialogId"

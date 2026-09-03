@@ -1,5 +1,5 @@
 {
-  "generatedForVersion": "2026.09.03-17:23",
+  "generatedForVersion": "2026.09.03-17:36",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles",
   "eventToCommand": [
     {
@@ -143,8 +143,8 @@
       "type": "click",
       "file": "ui/rank.js",
       "line": 102,
-      "handler": "openRankDialog",
-      "command": "openRankDialog"
+      "handler": "lap",
+      "command": "lap"
     },
     {
       "id": "debugClear",
@@ -479,8 +479,8 @@
       "type": "click",
       "file": "runtime/app-events.js",
       "line": 474,
-      "handler": "chain",
-      "command": "chain"
+      "handler": "dialogId",
+      "command": "dialogId"
     },
     {
       "id": "messageMasterSeal",
@@ -1026,6 +1026,20 @@
       "line": 171
     },
     {
+      "from": "openSatoriPicker",
+      "action": "openDialog",
+      "to": "stagePicker",
+      "file": "ui/progression-ui.js",
+      "line": 174
+    },
+    {
+      "from": "openStagePicker",
+      "action": "openDialog",
+      "to": "stagePicker",
+      "file": "ui/progression-ui.js",
+      "line": 261
+    },
+    {
       "from": "showClearDialog",
       "action": "showMasterDialog",
       "to": "primary",
@@ -1040,11 +1054,67 @@
       "line": 349
     },
     {
+      "from": "volume",
+      "action": "openDialog",
+      "to": "stagePicker",
+      "file": "ui/rank.js",
+      "line": 88
+    },
+    {
+      "from": "volume",
+      "action": "openDialog",
+      "to": "stagePicker",
+      "file": "ui/rank.js",
+      "line": 89
+    },
+    {
+      "from": "openRankDialogFrom",
+      "action": "openDialog",
+      "to": "rankDialog",
+      "file": "ui/rank.js",
+      "line": 107
+    },
+    {
       "from": "debugSkipTutorial",
       "action": "openChainedDialog",
       "to": "academyEnroll",
       "file": "runtime/app-events.js",
       "line": 221
+    },
+    {
+      "from": "resume",
+      "action": "openDialog",
+      "to": "stagePicker",
+      "file": "runtime/app-events.js",
+      "line": 286
+    },
+    {
+      "from": "resume",
+      "action": "openDialog",
+      "to": "rankDialog",
+      "file": "runtime/app-events.js",
+      "line": 287
+    },
+    {
+      "from": "resume",
+      "action": "openDialog",
+      "to": "stagePicker",
+      "file": "runtime/app-events.js",
+      "line": 395
+    },
+    {
+      "from": "resume",
+      "action": "openDialog",
+      "to": "rankDialog",
+      "file": "runtime/app-events.js",
+      "line": 404
+    },
+    {
+      "from": "dialogId",
+      "action": "openDialog",
+      "to": "rankDialog",
+      "file": "runtime/app-events.js",
+      "line": 473
     }
   ],
   "progressionEntries": [
@@ -1054,7 +1124,7 @@
       "role": "進行ダイアログを表示する",
       "definition": {
         "file": "ui/progression-dialogs.js",
-        "line": 19
+        "line": 39
       },
       "callers": [
         {
@@ -1064,8 +1134,8 @@
         },
         {
           "file": "ui/progression-dialogs.js",
-          "line": 19,
-          "caller": "createProgressionMessageContext"
+          "line": 39,
+          "caller": "openDialog"
         },
         {
           "file": "ui/progression-ui.js",
@@ -1423,6 +1493,6 @@
   "summary": {},
   "warnings": [],
   "errors": [],
-  "generatedAt": "2026-09-03T08:29:45.246Z",
+  "generatedAt": "2026-09-03T08:50:01.206Z",
   "sourceRevision": "working-tree"
 }

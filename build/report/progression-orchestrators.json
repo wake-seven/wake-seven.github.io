@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "name": "wake7-progression-orchestrators",
+  "generatedAt": "2026-09-03T08:48:38.667Z",
+  "sourceRevision": "81fb3a9",
+  "status": "passed",
+  "summary": {
+    "orchestrators": 4,
+    "order": "decision→transition→render"
+  },
+  "checks": [
+    {
+      "id": "clear-start",
+      "name": "クリア開始オーケストレーター",
+      "entry": "startClearFlow",
+      "source": "src/ui/progression-clear-flow.js",
+      "phases": {
+        "decision": [
+          {
+            "token": "beginClearFlow",
+            "index": 92
+          },
+          {
+            "token": "createClearTransitionContext",
+            "index": 176
+          }
+        ],
+        "transition": [
+          {
+            "token": "persistClearFlowCheckpoint",
+            "index": 364
+          }
+        ],
+        "render": [
+          {
+            "token": "scheduleClearFlowDialog",
+            "index": 525
+          }
+        ]
+      }
+    },
+    {
+      "id": "clear-advance",
+      "name": "クリア後進行オーケストレーター",
+      "entry": "dispatchClearFlowAction",
+      "source": "src/ui/progression-clear-flow.js",
+      "phases": {
+        "decision": [
+          {
+            "token": "resolveAfterClearRoute",
+            "index": 546
+          }
+        ],
+        "transition": [
+          {
+            "token": "persistClearFlowCheckpoint",
+            "index": 661
+          },
+          {
+            "token": "setClearFlowPhase",
+            "index": 784
+          }
+        ],
+        "render": [
+          {
+            "token": "showMasterDialog",
+            "index": 902
+          }
+        ]
+      }
+    },
+    {
+      "id": "dialog-restore",
+      "name": "ダイアログ復元オーケストレーター",
+      "entry": "restoreDialogState",
+      "source": "src/runtime/runtime.js",
+      "phases": {
+        "decision": [
+          {
+            "token": "state.id==='clear'",
+            "index": 204
+          }
+        ],
+        "transition": [
+          {
+            "token": "createClearTransitionContext",
+            "index": 267
+          }
+        ],
+        "render": [
+          {
+            "token": "showClearDialog",
+            "index": 298
+          }
+        ]
+      }
+    },
+    {
+      "id": "stage-advance",
+      "name": "ステージ進行オーケストレーター",
+      "entry": "dispatchClearFlowAction",
+      "source": "src/ui/progression-clear-flow.js",
+      "phases": {
+        "decision": [
+          {
+            "token": "resolveAfterClearRoute",
+            "index": 546
+          }
+        ],
+        "transition": [
+          {
+            "token": "setClearFlowPhase",
+            "index": 784
+          }
+        ],
+        "render": [
+          {
+            "token": "loadStage",
+            "index": 1545
+          }
+        ]
+      }
+    }
+  ],
+  "warnings": [],
+  "errors": []
+}

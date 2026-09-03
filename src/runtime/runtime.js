@@ -158,7 +158,7 @@ function restoreDialogState(state){
   if(!state||typeof state.id!=='string')return false;
   try{
     if(state.id==='chain'&&CHAIN_STEPS[state.name]){openChainedDialog(state.name);return true;}
-    if(state.id==='clear'&&clearShown&&isSolved()){showClearDialog(createClearTransitionContext());return true;}
+    if(state.id==='clear'&&clearShown&&isSolved()){const clearContext=createClearTransitionContext();showClearDialog(clearContext);return true;}
     if(state.id==='message'){openMessageReview({resume:true});if(state.key){const index=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===state.key);if(index>=0){messageReviewIndex=index;renderMessageReview();}}return true;}
     if(state.id==='master'){showMasterDialog(state.kind||'primary');return true;}
     if(state.id==='speedPause'&&isMode('speed')){openSpeedPauseDialog();return true;}

@@ -15,4 +15,13 @@ const PROGRESSION_FLOW_CONTRACT=Object.freeze([
 ]);
 function getProgressionFlowContract(){return PROGRESSION_FLOW_CONTRACT;}
 
+// 進行の主要オーケストレーターを、状態判断→遷移→描画の順で追跡するための監査メタデータ。
+// ここは実装を呼び出す層ではなく、各入口の責務と読み進める順番を明示する地図である。
+// 新しい抽象化を増やさず、実装側の関数名を参照して契約検査に利用する。
+const PROGRESSION_ORCHESTRATORS=Object.freeze([
+  {id:'clear-start',name:'クリア開始オーケストレーター',entry:'startClearFlow',source:'src/ui/progression-clear-flow.js',order:{decision:['beginClearFlow','createClearTransitionContext'],transition:['persistClearFlowCheckpoint'],render:['scheduleClearFlowDialog']}},
+  {id:'clear-advance',name:'クリア後進行オーケストレーター',entry:'dispatchClearFlowAction',source:'src/ui/progression-clear-flow.js',order:{decision:['resolveAfterClearRoute'],transition:['persistClearFlowCheckpoint','setClearFlowPhase'],render:['showMasterDialog']}},
+  {id:'dialog-restore',name:'ダイアログ復元オーケストレーター',entry:'restoreDialogState',source:'src/runtime/runtime.js',order:{decision:["state.id==='clear'"],transition:['createClearTransitionContext'],render:['showClearDialog']}},
+  {id:'stage-advance',name:'ステージ進行オーケストレーター',entry:'dispatchClearFlowAction',source:'src/ui/progression-clear-flow.js',order:{decision:['resolveAfterClearRoute'],transition:['setClearFlowPhase'],render:['loadStage']}}
+]);
 export {};

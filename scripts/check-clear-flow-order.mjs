@@ -53,7 +53,7 @@ assert.match(progression, /function clearDialogUsesStageProgression\(\)/,
 checks.push({ id: 'clear-route-predicate', passed: true });
 assert.match(clearFlow, /function finishClearFlowDialog\(\)\{[\s\S]*animationPending[\s\S]*return true[\s\S]*return clearFlowPhase===CLEAR_FLOW_PHASE\.dialog/,
   'clear dialog phase must not be entered from an unrelated flow phase');
-assert.match(runtime, /state\.id==='clear'[\s\S]*showClearDialog\(createClearTransitionContext\(\)\)/,
+assert.match(runtime, /state\.id==='clear'[\s\S]*createClearTransitionContext\(\)[\s\S]*showClearDialog\(/,
   'reload clear dialog must restore through an explicit clear context');
 checks.push({ id: 'clear-phase-guard', passed: true });
 assert.match(runtime, /state\.id==='clear'[\s\S]*clearShown&&isSolved\(\)[\s\S]*showClearDialog\([^)]*\)/,
