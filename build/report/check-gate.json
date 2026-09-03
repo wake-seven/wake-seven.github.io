@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "name": "wake7-check-gate",
-  "startedAt": "2026-09-03T06:21:57.423Z",
+  "startedAt": "2026-09-03T06:24:21.957Z",
   "steps": [
     {
       "name": "build",
       "command": "C:\\WINDOWS\\system32\\cmd.exe /d /s /c npm run build",
-      "startedAt": "2026-09-03T06:21:57.425Z",
-      "finishedAt": "2026-09-03T06:22:07.964Z",
-      "durationMs": 10539,
+      "startedAt": "2026-09-03T06:24:21.959Z",
+      "finishedAt": "2026-09-03T06:24:32.490Z",
+      "durationMs": 10531,
       "exitCode": 0,
       "stdout": "> build\n> node scripts/build-index.mjs && npm run build:esm && npm run trace:generate\n\nBuilt index.html from src/index.template.html\n\n> build:esm\n> node scripts/build-esm.mjs\n\nValidated development ESM graph (24 modules).\n\n> trace:generate\n> node scripts/generate-trace-index.mjs && node scripts/generate-refactor-report.mjs && node scripts/generate-ui-data-map.mjs && node scripts/generate-event-wiring-map.mjs && node scripts/generate-progression-responsibility.mjs && node scripts/generate-progression-flow-report.mjs\n\nGenerated trace reports: build\\report\\symbol-index.json, build\\report\\flow-map.json\nGenerated refactor candidate report: 16 candidates.\nGenerated UI/data map: build\\report\\ui-data-map.json\nGenerated event wiring map: build\\report\\event-wiring-map.json\nGenerated progression responsibility report: 413 symbols.\nGenerated progression flow report: 9 transitions",
       "stderr": ""
@@ -16,19 +16,19 @@
     {
       "name": "version",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-version.mjs",
-      "startedAt": "2026-09-03T06:22:07.964Z",
-      "finishedAt": "2026-09-03T06:22:08.154Z",
-      "durationMs": 190,
+      "startedAt": "2026-09-03T06:24:32.491Z",
+      "finishedAt": "2026-09-03T06:24:32.682Z",
+      "durationMs": 191,
       "exitCode": 0,
       "stdout": "Validated public version 2026.09.03-15:01.",
-      "stderr": "warning: in the working copy of 'build/report/compat-boundary-audit.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'build/report/event-wiring-map.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'build/report/flow-map.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'build/report/progression-flow-map.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'build/report/progression-responsibility.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'build/report/refactor-candidates.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'build/report/symbol-index.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'build/report/ui-data-map.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'build/report/unused-file-audit.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'docs/architecture-audit.md', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'index.html', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'scripts/check-all.mjs', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'scripts/check-compat-boundaries.mjs', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'scripts/check-unused-files.mjs', LF will be replaced by CRLF the next time Git touches it"
+      "stderr": "warning: in the working copy of 'build/report/event-wiring-map.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'build/report/flow-map.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'build/report/progression-flow-map.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'build/report/progression-responsibility.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'build/report/refactor-candidates.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'build/report/symbol-index.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'build/report/ui-data-map.json', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'index.html', LF will be replaced by CRLF the next time Git touches it"
     },
     {
       "name": "board-domain",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/test-board-domain.mjs",
-      "startedAt": "2026-09-03T06:22:08.154Z",
-      "finishedAt": "2026-09-03T06:22:08.239Z",
-      "durationMs": 85,
+      "startedAt": "2026-09-03T06:24:32.683Z",
+      "finishedAt": "2026-09-03T06:24:32.767Z",
+      "durationMs": 84,
       "exitCode": 0,
       "stdout": "board-domain tests passed: 2187 round-trips, roll/click invariants, solver distances, 73 canonical patterns",
       "stderr": ""
@@ -36,9 +36,9 @@
     {
       "name": "application-services",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/test-application-services.mjs",
-      "startedAt": "2026-09-03T06:22:08.239Z",
-      "finishedAt": "2026-09-03T06:22:08.354Z",
-      "durationMs": 115,
+      "startedAt": "2026-09-03T06:24:32.767Z",
+      "finishedAt": "2026-09-03T06:24:32.830Z",
+      "durationMs": 63,
       "exitCode": 0,
       "stdout": "application services tests passed: progression policy, store, persistence, catalogs, and speed unlocks",
       "stderr": ""
@@ -46,8 +46,8 @@
     {
       "name": "application-targets",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-application-targets.mjs",
-      "startedAt": "2026-09-03T06:22:08.355Z",
-      "finishedAt": "2026-09-03T06:22:08.420Z",
+      "startedAt": "2026-09-03T06:24:32.830Z",
+      "finishedAt": "2026-09-03T06:24:32.895Z",
       "durationMs": 65,
       "exitCode": 0,
       "stdout": "Validated application targets: nine basic-class puzzles, reviewed first/last targets, derived progression, welcome animation, and swipe overlay lifecycle.",
@@ -56,9 +56,9 @@
     {
       "name": "state",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-state.mjs",
-      "startedAt": "2026-09-03T06:22:08.420Z",
-      "finishedAt": "2026-09-03T06:22:08.514Z",
-      "durationMs": 94,
+      "startedAt": "2026-09-03T06:24:32.895Z",
+      "finishedAt": "2026-09-03T06:24:32.992Z",
+      "durationMs": 97,
       "exitCode": 0,
       "stdout": "Validated 2 inline scripts and the vNext state store.",
       "stderr": ""
@@ -66,9 +66,9 @@
     {
       "name": "state-classification",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-state-classification.mjs",
-      "startedAt": "2026-09-03T06:22:08.514Z",
-      "finishedAt": "2026-09-03T06:22:08.653Z",
-      "durationMs": 139,
+      "startedAt": "2026-09-03T06:24:32.992Z",
+      "finishedAt": "2026-09-03T06:24:33.134Z",
+      "durationMs": 142,
       "exitCode": 0,
       "stdout": "State classification: 125 top-level mutable declarations; missing 0, overlaps 0, duplicate names 0.\nReport: build\\report\\state-classification.json\nState classification OK: 125 declarations across 7 categories.",
       "stderr": ""
@@ -76,9 +76,9 @@
     {
       "name": "state-mutations",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-state-mutations.mjs",
-      "startedAt": "2026-09-03T06:22:08.654Z",
-      "finishedAt": "2026-09-03T06:22:08.741Z",
-      "durationMs": 87,
+      "startedAt": "2026-09-03T06:24:33.134Z",
+      "finishedAt": "2026-09-03T06:24:33.227Z",
+      "durationMs": 93,
       "exitCode": 0,
       "stdout": "State mutation audit OK: 18 direct assignments tracked; state command entry present.",
       "stderr": ""
@@ -86,9 +86,9 @@
     {
       "name": "state-restore",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-state-restore.mjs",
-      "startedAt": "2026-09-03T06:22:08.741Z",
-      "finishedAt": "2026-09-03T06:22:08.816Z",
-      "durationMs": 75,
+      "startedAt": "2026-09-03T06:24:33.227Z",
+      "finishedAt": "2026-09-03T06:24:33.305Z",
+      "durationMs": 78,
       "exitCode": 0,
       "stdout": "Validated reload-equivalent restoration for navigation, board, progress, settings, speed session, UI context, and dialogs.",
       "stderr": ""
@@ -96,9 +96,9 @@
     {
       "name": "browser-flow",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-browser-flow.mjs",
-      "startedAt": "2026-09-03T06:22:08.817Z",
-      "finishedAt": "2026-09-03T06:22:08.895Z",
-      "durationMs": 78,
+      "startedAt": "2026-09-03T06:24:33.305Z",
+      "finishedAt": "2026-09-03T06:24:33.390Z",
+      "durationMs": 85,
       "exitCode": 0,
       "stdout": "Validated browser-equivalent startup, tutorial, pointer, rewind, reset, and reload flow contracts.",
       "stderr": ""
@@ -106,9 +106,9 @@
     {
       "name": "dialog-chains",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-dialog-chains.mjs",
-      "startedAt": "2026-09-03T06:22:08.895Z",
-      "finishedAt": "2026-09-03T06:22:08.967Z",
-      "durationMs": 72,
+      "startedAt": "2026-09-03T06:24:33.390Z",
+      "finishedAt": "2026-09-03T06:24:33.465Z",
+      "durationMs": 75,
       "exitCode": 0,
       "stdout": "Dialog chain audit passed: 12 CHAIN_STEPS, upper/middle start chains, navigation, cleanup, and restore contracts.",
       "stderr": ""
@@ -116,9 +116,9 @@
     {
       "name": "ui-effects",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-ui-effects.mjs",
-      "startedAt": "2026-09-03T06:22:08.967Z",
-      "finishedAt": "2026-09-03T06:22:09.043Z",
-      "durationMs": 76,
+      "startedAt": "2026-09-03T06:24:33.465Z",
+      "finishedAt": "2026-09-03T06:24:33.547Z",
+      "durationMs": 82,
       "exitCode": 0,
       "stdout": "Validated UI effect timer cancellation boundaries.",
       "stderr": ""
@@ -126,9 +126,9 @@
     {
       "name": "progression-flows",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-progression-flows.mjs",
-      "startedAt": "2026-09-03T06:22:09.043Z",
-      "finishedAt": "2026-09-03T06:22:09.116Z",
-      "durationMs": 73,
+      "startedAt": "2026-09-03T06:24:33.547Z",
+      "finishedAt": "2026-09-03T06:24:33.615Z",
+      "durationMs": 68,
       "exitCode": 0,
       "stdout": "Validated progression, speed-run, and settings flow contracts.",
       "stderr": ""
@@ -136,9 +136,9 @@
     {
       "name": "progression-flow-contract",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-progression-flow-contract.mjs",
-      "startedAt": "2026-09-03T06:22:09.117Z",
-      "finishedAt": "2026-09-03T06:22:09.186Z",
-      "durationMs": 69,
+      "startedAt": "2026-09-03T06:24:33.616Z",
+      "finishedAt": "2026-09-03T06:24:33.684Z",
+      "durationMs": 68,
       "exitCode": 0,
       "stdout": "Progression flow contract OK: 9 transitions",
       "stderr": ""
@@ -146,9 +146,9 @@
     {
       "name": "esm",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-esm.mjs",
-      "startedAt": "2026-09-03T06:22:09.186Z",
-      "finishedAt": "2026-09-03T06:22:09.271Z",
-      "durationMs": 85,
+      "startedAt": "2026-09-03T06:24:33.684Z",
+      "finishedAt": "2026-09-03T06:24:33.774Z",
+      "durationMs": 90,
       "exitCode": 0,
       "stdout": "Validated development ES module entry point.",
       "stderr": ""
@@ -156,9 +156,9 @@
     {
       "name": "source-boundaries",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-source-boundaries.mjs",
-      "startedAt": "2026-09-03T06:22:09.272Z",
-      "finishedAt": "2026-09-03T06:22:09.355Z",
-      "durationMs": 83,
+      "startedAt": "2026-09-03T06:24:33.774Z",
+      "finishedAt": "2026-09-03T06:24:33.862Z",
+      "durationMs": 88,
       "exitCode": 0,
       "stdout": "Audited 74 source modules; syntax-only classic compatibility files: 6.\nClassic files: app/app-context.js, runtime/command-runtime.js, ui/progression-academy-support.js, ui/progression-dialogs.js, ui/progression-hud.js, ui/progression-insights.js",
       "stderr": ""
@@ -166,9 +166,9 @@
     {
       "name": "compat-e2e",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-compat-e2e.mjs",
-      "startedAt": "2026-09-03T06:22:09.355Z",
-      "finishedAt": "2026-09-03T06:22:09.733Z",
-      "durationMs": 378,
+      "startedAt": "2026-09-03T06:24:33.862Z",
+      "finishedAt": "2026-09-03T06:24:34.226Z",
+      "durationMs": 364,
       "exitCode": 0,
       "stdout": "Audited canonical speed ids (training18, mastery27, satori73) and 75 source files.\nStorage boundary calls: localStorage=0, sessionStorage=2.\nOrdinary-HTML compatibility fallbacks: none.\nPublic boundary candidates (classified, not unused): 4.\nsrc/main.mjs:createDevelopmentRuntime [development-entrypoint], src/runtime/namespace.js:attachWakeSevenNamespace [public-namespace-initializer], src/state/game-state.js:attachWakeSevenState [public-state-initializer], src/state/progression-policy.js:attachWakeSevenProgression [public-progression-initializer]\nPotential ordinary unused function candidates (review only): 6.\nsrc/commands/state-commands.js:restoreNavigationStateCommand, src/ui/dom.js:setDisabled, src/ui/progression-academy-support.js:applicationGoalPreviewState, src/ui/progression-clear-flow.js:getClearFlowState, src/ui/progression-dialogs.js:resolveProgressionQuiz, src/ui/progression-flow-contract.js:getProgressionFlowContract",
       "stderr": ""
@@ -176,9 +176,9 @@
     {
       "name": "browser-e2e",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-browser-e2e.mjs",
-      "startedAt": "2026-09-03T06:22:09.733Z",
-      "finishedAt": "2026-09-03T06:22:44.335Z",
-      "durationMs": 34602,
+      "startedAt": "2026-09-03T06:24:34.226Z",
+      "finishedAt": "2026-09-03T06:25:08.782Z",
+      "durationMs": 34556,
       "exitCode": 0,
       "stdout": "browser E2E passed: 35 cases, console errors 0 (details: C:\\git_work\\wake-seven\\build\\report\\browser-e2e-result.json)",
       "stderr": ""
@@ -186,9 +186,9 @@
     {
       "name": "device-e2e",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-device-e2e.mjs",
-      "startedAt": "2026-09-03T06:22:44.335Z",
-      "finishedAt": "2026-09-03T06:23:10.890Z",
-      "durationMs": 26555,
+      "startedAt": "2026-09-03T06:25:08.782Z",
+      "finishedAt": "2026-09-03T06:25:35.583Z",
+      "durationMs": 26801,
       "exitCode": 0,
       "stdout": "device E2E passed: 18 cases across 3 touch contexts (details: C:\\git_work\\wake-seven\\build\\report\\device-e2e-result.json)",
       "stderr": ""
@@ -196,9 +196,9 @@
     {
       "name": "global-access",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-global-access-contract.mjs",
-      "startedAt": "2026-09-03T06:23:10.890Z",
-      "finishedAt": "2026-09-03T06:23:11.101Z",
-      "durationMs": 211,
+      "startedAt": "2026-09-03T06:25:35.584Z",
+      "finishedAt": "2026-09-03T06:25:35.796Z",
+      "durationMs": 212,
       "exitCode": 0,
       "stdout": "Global access contract OK: 455 references; gateway 16, owner 170, needs-migration 269.",
       "stderr": ""
@@ -206,9 +206,9 @@
     {
       "name": "state-access-policy",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-state-access-policy.mjs",
-      "startedAt": "2026-09-03T06:23:11.101Z",
-      "finishedAt": "2026-09-03T06:23:11.290Z",
-      "durationMs": 189,
+      "startedAt": "2026-09-03T06:25:35.796Z",
+      "finishedAt": "2026-09-03T06:25:35.975Z",
+      "durationMs": 179,
       "exitCode": 0,
       "stdout": "State access policy OK: 216 tracked references; 8 retired exceptions.\nReport: build\\report\\state-access-policy.json",
       "stderr": ""
@@ -216,9 +216,9 @@
     {
       "name": "refactor-baseline-generate",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/generate-refactor-baseline.mjs",
-      "startedAt": "2026-09-03T06:23:11.290Z",
-      "finishedAt": "2026-09-03T06:23:11.829Z",
-      "durationMs": 539,
+      "startedAt": "2026-09-03T06:25:35.975Z",
+      "finishedAt": "2026-09-03T06:25:36.509Z",
+      "durationMs": 534,
       "exitCode": 0,
       "stdout": "Refactor baseline: 202 mutable variables, 476 progression functions, 35 E2E cases.\nReport: build\\report\\current-refactor-baseline.json",
       "stderr": ""
@@ -226,8 +226,8 @@
     {
       "name": "refactor-baseline",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-refactor-baseline.mjs",
-      "startedAt": "2026-09-03T06:23:11.829Z",
-      "finishedAt": "2026-09-03T06:23:11.894Z",
+      "startedAt": "2026-09-03T06:25:36.509Z",
+      "finishedAt": "2026-09-03T06:25:36.574Z",
       "durationMs": 65,
       "exitCode": 0,
       "stdout": "Refactor baseline OK: 202 mutable variables, 476 progression functions, 35 E2E cases.",
@@ -236,9 +236,9 @@
     {
       "name": "refactor-budgets",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-refactor-budgets.mjs",
-      "startedAt": "2026-09-03T06:23:11.894Z",
-      "finishedAt": "2026-09-03T06:23:11.969Z",
-      "durationMs": 75,
+      "startedAt": "2026-09-03T06:25:36.574Z",
+      "finishedAt": "2026-09-03T06:25:36.644Z",
+      "durationMs": 70,
       "exitCode": 0,
       "stdout": "Refactor budgets OK: 35 E2E cases; no tracked structural increase.",
       "stderr": ""
@@ -246,9 +246,9 @@
     {
       "name": "esm-dependencies",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-esm-dependencies.mjs",
-      "startedAt": "2026-09-03T06:23:11.969Z",
-      "finishedAt": "2026-09-03T06:23:12.044Z",
-      "durationMs": 75,
+      "startedAt": "2026-09-03T06:25:36.644Z",
+      "finishedAt": "2026-09-03T06:25:36.717Z",
+      "durationMs": 73,
       "exitCode": 0,
       "stdout": "Validated 24 ESM modules and 23 relative dependencies.",
       "stderr": ""
@@ -256,9 +256,9 @@
     {
       "name": "public-esm",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-public-esm.mjs",
-      "startedAt": "2026-09-03T06:23:12.044Z",
-      "finishedAt": "2026-09-03T06:23:13.289Z",
-      "durationMs": 1245,
+      "startedAt": "2026-09-03T06:25:36.717Z",
+      "finishedAt": "2026-09-03T06:25:37.933Z",
+      "durationMs": 1216,
       "exitCode": 0,
       "stdout": "Generated application payload: 684.7 KiB; duplicate function declarations: 0.\nFormatting measurement: 11017 lines, comments 76.7 KiB, Japanese comments 799, section headings 89, blank-line boundaries 119.\nLargest concatenated sections: UI_TEXT(多言語辞書) 85.5 KiB, コア状態・モードシステム・進行状態管理 45.1 KiB, 案内ダイアログ連鎖(だるま学園/だるま修行の節目) 34.7 KiB, クリア後・開始前メッセージデータ 26.9 KiB, クリア後メッセージと雑学 26.8 KiB.\nPrevious snapshot: bytes +5549 (0.8%), lines +74 (0.7%), comments +1792 (2.3%), Japanese comments +18 (2.3%), sections +0 (0.0%), blank boundaries +0 (0.0%).\nSection deltas: 盤面ドメイン bytes +0 (0.0%), lines +0 (0.0%), functions +0 (0.0%), globals +0 (0.0%), ids n/a, クリア後メッセージデータ bytes +0 (0.0%), lines +0 (0.0%), functions n/a, globals n/a, ids n/a, クリア後・開始前メッセージデータ bytes +0 (0.0%), lines +0 (0.0%), functions +0 (0.0%), globals +0 (0.0%), ids n/a, 基礎データ bytes +0 (0.0%), lines +0 (0.0%), functions n/a, globals n/a, ids n/a, 盤面ジオメトリ定数 bytes +0 (0.0%), lines +0 (0.0%), functions +0 (0.0%), globals +0 (0.0%), ids n/a, ステージデータ構築パイプライン bytes +0 (0.0%), lines +0 (0.0%), functions +0 (0.0%), globals +0 (0.0%), ids n/a, 未使用の下書き置き場 bytes +0 (0.0%), lines +0 (0.0%), functions +0 (0.0%), globals +0 (0.0%), ids n/a, 悟り出題データ bytes +0 (0.0%), lines +0 (0.0%), functions +0 (0.0%), globals +0 (0.0%), ids n/a, 多言語UIテキスト bytes +0 (0.0%), lines +0 (0.0%), functions n/a, globals n/a, ids n/a, UI_TEXT(多言語辞書) bytes +0 (0.0%), lines +0 (0.0%), functions n/a, globals +0 (0.0%), ids n/a.\nValidated generated index.html as an ESM-only application bundle.",
       "stderr": "Bundle growth warnings: section 進行UI（このファイルの責務） commentBytes grew 42.5% from snapshot"
@@ -266,9 +266,9 @@
     {
       "name": "metrics-update-policy",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-metrics-update.mjs",
-      "startedAt": "2026-09-03T06:23:13.289Z",
-      "finishedAt": "2026-09-03T06:23:13.514Z",
-      "durationMs": 225,
+      "startedAt": "2026-09-03T06:25:37.933Z",
+      "finishedAt": "2026-09-03T06:25:38.135Z",
+      "durationMs": 202,
       "exitCode": 0,
       "stdout": "Validated metrics update help, reason validation, and baseline immutability.",
       "stderr": ""
@@ -276,9 +276,9 @@
     {
       "name": "refactor-policy",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-refactor-policy.mjs",
-      "startedAt": "2026-09-03T06:23:13.515Z",
-      "finishedAt": "2026-09-03T06:23:13.593Z",
-      "durationMs": 78,
+      "startedAt": "2026-09-03T06:25:38.135Z",
+      "finishedAt": "2026-09-03T06:25:38.205Z",
+      "durationMs": 70,
       "exitCode": 0,
       "stdout": "Refactor policy audited: browser E2E present; progression-ui.js=1096 lines.",
       "stderr": "progression-ui.js は 1096 行です。新しい責務を追加せず、既存入口への統合を優先してください。"
@@ -286,9 +286,9 @@
     {
       "name": "trace",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-trace-index.mjs",
-      "startedAt": "2026-09-03T06:23:13.593Z",
-      "finishedAt": "2026-09-03T06:23:22.831Z",
-      "durationMs": 9238,
+      "startedAt": "2026-09-03T06:25:38.205Z",
+      "finishedAt": "2026-09-03T06:25:47.533Z",
+      "durationMs": 9328,
       "exitCode": 0,
       "stdout": "Trace index OK: 1616 symbols, 272 DOM IDs, 14 dialog transitions. Example: advanceAfterClear → ui/progression-clear-flow.js:196.",
       "stderr": ""
@@ -296,9 +296,9 @@
     {
       "name": "progression-responsibility",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-progression-responsibility.mjs",
-      "startedAt": "2026-09-03T06:23:22.831Z",
-      "finishedAt": "2026-09-03T06:23:22.912Z",
-      "durationMs": 81,
+      "startedAt": "2026-09-03T06:25:47.533Z",
+      "finishedAt": "2026-09-03T06:25:47.613Z",
+      "durationMs": 80,
       "exitCode": 0,
       "stdout": "Progression responsibility report OK: 413 symbols across 15 files; pipeline entries=4, mixed=157.",
       "stderr": ""
@@ -306,9 +306,9 @@
     {
       "name": "ui-data-map",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-ui-data-map.mjs",
-      "startedAt": "2026-09-03T06:23:22.912Z",
-      "finishedAt": "2026-09-03T06:23:32.351Z",
-      "durationMs": 9439,
+      "startedAt": "2026-09-03T06:25:47.613Z",
+      "finishedAt": "2026-09-03T06:25:56.772Z",
+      "durationMs": 9159,
       "exitCode": 0,
       "stdout": "UI/data map OK: 5 areas, generated for 2026.09.03-15:01.",
       "stderr": ""
@@ -316,9 +316,9 @@
     {
       "name": "event-wiring",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-event-wiring.mjs",
-      "startedAt": "2026-09-03T06:23:32.351Z",
-      "finishedAt": "2026-09-03T06:23:32.591Z",
-      "durationMs": 240,
+      "startedAt": "2026-09-03T06:25:56.772Z",
+      "finishedAt": "2026-09-03T06:25:57.015Z",
+      "durationMs": 243,
       "exitCode": 0,
       "stdout": "Event wiring OK: 5 areas, 18 elements.",
       "stderr": ""
@@ -326,9 +326,9 @@
     {
       "name": "refactor-report",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-refactor-report.mjs",
-      "startedAt": "2026-09-03T06:23:32.591Z",
-      "finishedAt": "2026-09-03T06:23:32.663Z",
-      "durationMs": 72,
+      "startedAt": "2026-09-03T06:25:57.016Z",
+      "finishedAt": "2026-09-03T06:25:57.082Z",
+      "durationMs": 66,
       "exitCode": 0,
       "stdout": "Refactor candidate report OK: 16 candidates from 49 files.",
       "stderr": ""
@@ -336,9 +336,9 @@
     {
       "name": "compat-boundaries",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-compat-boundaries.mjs",
-      "startedAt": "2026-09-03T06:23:32.663Z",
-      "finishedAt": "2026-09-03T06:23:32.772Z",
-      "durationMs": 109,
+      "startedAt": "2026-09-03T06:25:57.082Z",
+      "finishedAt": "2026-09-03T06:25:57.194Z",
+      "durationMs": 112,
       "exitCode": 0,
       "stdout": "Compatibility boundary audit OK: candidates=16, retained=16, safeToDelete=0.",
       "stderr": ""
@@ -346,9 +346,9 @@
     {
       "name": "unused-files",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-unused-files.mjs",
-      "startedAt": "2026-09-03T06:23:32.772Z",
-      "finishedAt": "2026-09-03T06:23:32.843Z",
-      "durationMs": 71,
+      "startedAt": "2026-09-03T06:25:57.194Z",
+      "finishedAt": "2026-09-03T06:25:57.263Z",
+      "durationMs": 69,
       "exitCode": 0,
       "stdout": "Unused-file audit passed: safeToDelete=0, reviewOnly=16.",
       "stderr": ""
@@ -356,9 +356,9 @@
     {
       "name": "manifest-dependencies",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-manifest-dependencies.mjs",
-      "startedAt": "2026-09-03T06:23:32.843Z",
-      "finishedAt": "2026-09-03T06:23:33.795Z",
-      "durationMs": 952,
+      "startedAt": "2026-09-03T06:25:57.263Z",
+      "finishedAt": "2026-09-03T06:25:58.230Z",
+      "durationMs": 967,
       "exitCode": 0,
       "stdout": "Manifest dependencies OK: 50 files, 1233 top-level declarations; unresolved candidates 221.",
       "stderr": ""
@@ -366,14 +366,14 @@
     {
       "name": "public-symbols",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-public-symbols.mjs",
-      "startedAt": "2026-09-03T06:23:33.795Z",
-      "finishedAt": "2026-09-03T06:23:34.242Z",
-      "durationMs": 447,
+      "startedAt": "2026-09-03T06:25:58.230Z",
+      "finishedAt": "2026-09-03T06:25:58.666Z",
+      "durationMs": 436,
       "exitCode": 0,
       "stdout": "Public symbols audit OK: 1887 declarations, 2 scripts; candidates 135, classified 135.",
       "stderr": ""
     }
   ],
   "passed": true,
-  "finishedAt": "2026-09-03T06:23:34.242Z"
+  "finishedAt": "2026-09-03T06:25:58.666Z"
 }
