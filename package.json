@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "node scripts/build-index.mjs && npm run build:esm && npm run trace:generate",
+    "build": "node scripts/build-index.mjs && node scripts/check-version.mjs && npm run build:esm && npm run trace:generate",
     "trace:generate": "node scripts/generate-reports.mjs",
     "trace": "node scripts/trace.mjs",
     "trace:entry": "node scripts/trace-entrypoint.mjs",
