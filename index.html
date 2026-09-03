@@ -4253,26 +4253,51 @@ const WakeSevenAppContext=Object.freeze({
     satori:()=>SATORI_STAGES,
     tutorial:()=>TUTORIAL_STEPS
   }),
+  // 共有状態は用途ごとの小さな入口から読む。各入口は現在のランタイム
+  // 変数へ遅延して委譲するため、初期化順を変えずに段階移行できる。
   state:Object.freeze({
     read(){return gameState;},
-    snapshot(){return WakeSevenAppContext.snapshot();}
+    snapshot(){return WakeSevenAppContext.snapshot();},
+    navigation:Object.freeze({
+      read(){return Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});},
+      update(patch={}){if(patch.mode!==undefined)setActiveMode(patch.mode);if(patch.lap!==undefined)activeLap=patch.lap===2?2:1;if(patch.stageIndex!==undefined)stageIndex=patch.stageIndex;if(patch.masteryIndex!==undefined)extraIndex=patch.masteryIndex;if(patch.satoriIndex!==undefined)satoriIndex=patch.satoriIndex;if(patch.tutorialStep!==undefined)tutorialStep=patch.tutorialStep;if(patch.lastStageMode!==undefined&&typeof lastStageMode!=='undefined')lastStageMode=patch.lastStageMode;return this.read();}
+    }),
+    board:Object.freeze({
+      read(){return Object.freeze({ori,spin,history,moves,best,drag,busy,boardTouchActive});},
+      update(patch={}){if(patch.ori!==undefined)ori=patch.ori;if(patch.spin!==undefined)spin=patch.spin;if(patch.history!==undefined)history=patch.history;if(patch.moves!==undefined)moves=patch.moves;if(patch.best!==undefined)best=patch.best;if(patch.drag!==undefined)drag=patch.drag;if(patch.busy!==undefined)busy=patch.busy;if(patch.boardTouchActive!==undefined)boardTouchActive=patch.boardTouchActive;return this.read();}
+    }),
+    progress:Object.freeze({
+      read(){return Object.freeze({clearedStages,clearedExtraStages,clearedSatoriStages,lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages,lap2ClearedStages,lap2ClearedExtraStages,lap2ClearedSatoriStages});},
+      update(patch={}){if(patch.clearedStages!==undefined)clearedStages=patch.clearedStages;if(patch.clearedExtraStages!==undefined)clearedExtraStages=patch.clearedExtraStages;if(patch.clearedSatoriStages!==undefined)clearedSatoriStages=patch.clearedSatoriStages;if(patch.lap1ClearedStages!==undefined)lap1ClearedStages=patch.lap1ClearedStages;if(patch.lap1ClearedExtraStages!==undefined)lap1ClearedExtraStages=patch.lap1ClearedExtraStages;if(patch.lap1ClearedSatoriStages!==undefined)lap1ClearedSatoriStages=patch.lap1ClearedSatoriStages;if(patch.lap2ClearedStages!==undefined)lap2ClearedStages=patch.lap2ClearedStages;if(patch.lap2ClearedExtraStages!==undefined)lap2ClearedExtraStages=patch.lap2ClearedExtraStages;if(patch.lap2ClearedSatoriStages!==undefined)lap2ClearedSatoriStages=patch.lap2ClearedSatoriStages;return this.read();}
+    }),
+    dialog:Object.freeze({
+      read(){return Object.freeze({clearShown,nextStageAttention,masterDialogKind,rankDialogReturn,messageDialogReturn});},
+      update(patch={}){if(patch.clearShown!==undefined)clearShown=patch.clearShown===true;if(patch.nextStageAttention!==undefined)nextStageAttention=patch.nextStageAttention===true;if(patch.masterDialogKind!==undefined)masterDialogKind=patch.masterDialogKind;if(patch.rankDialogReturn!==undefined)rankDialogReturn=patch.rankDialogReturn;if(patch.messageDialogReturn!==undefined)messageDialogReturn=patch.messageDialogReturn;return this.read();}
+    }),
+    animation:Object.freeze({
+      read(){return Object.freeze({busy,drag,clearFlowState:typeof clearFlowState!=='undefined'?clearFlowState:null});},
+      update(patch={}){if(patch.busy!==undefined)busy=patch.busy;if(patch.drag!==undefined)drag=patch.drag;return this.read();}
+    }),
+    session:Object.freeze({
+      read(){return Object.freeze({savedFreeSession,speedSession:typeof speedSession!=='undefined'?speedSession:null,speedVariant});},
+      update(patch={}){if(patch.savedFreeSession!==undefined)savedFreeSession=patch.savedFreeSession;if(patch.speedSession!==undefined&&typeof speedSession!=='undefined')speedSession=patch.speedSession;if(patch.speedVariant!==undefined)speedVariant=patch.speedVariant;return this.read();}
+    }),
+    settings:Object.freeze({
+      read(){return Object.freeze({soundEnabled,boardTheme,boardLayout,boardThemeChosen,boardLayoutChosen,darumaColor,darumaColorChosen,currentLang});},
+      update(patch={}){if(patch.soundEnabled!==undefined)soundEnabled=patch.soundEnabled===true;if(patch.boardTheme!==undefined)boardTheme=patch.boardTheme;if(patch.boardLayout!==undefined)boardLayout=patch.boardLayout;if(patch.boardThemeChosen!==undefined)boardThemeChosen=patch.boardThemeChosen===true;if(patch.boardLayoutChosen!==undefined)boardLayoutChosen=patch.boardLayoutChosen===true;if(patch.darumaColor!==undefined)darumaColor=patch.darumaColor;if(patch.darumaColorChosen!==undefined)darumaColorChosen=patch.darumaColorChosen===true;if(patch.currentLang!==undefined)currentLang=patch.currentLang;return this.read();}
+    })
   }),
   // 現在の画面状態を、表示処理が使える読み取り専用スナップショットで返す。
   snapshot(){
     return Object.freeze({
-      mode:activeMode,
-      clearShown,
-      lap:activeLap,
-      stageIndex,
-      masteryIndex:extraIndex,
-      satoriIndex,
-      tutorialStep
+      ...WakeSevenAppContext.state.navigation.read(),
+      clearShown:WakeSevenAppContext.state.dialog.read().clearShown
     });
   },
-  isClearShown(){return clearShown===true;},
+  isClearShown(){return WakeSevenAppContext.state.dialog.read().clearShown===true;},
   // clearShown の変更はここを通す。保存は既存の syncGameState の責務とする。
-  setClearShown(value){clearShown=value===true;return clearShown;},
-  setMode(mode){setActiveMode(mode);return activeMode;}
+  setClearShown(value){return WakeSevenAppContext.state.dialog.update({clearShown:value}).clearShown;},
+  setMode(mode){return WakeSevenAppContext.state.navigation.update({mode}).mode;}
 });
 
 // ===== サウンド =====
@@ -4625,7 +4650,7 @@ function getGameContext(){
 function runtimeContext(){return getGameContext();}
 // UI/補助モジュールから実行状態を読むための薄い境界。
 // 個別のランタイム変数を直接参照する箇所を増やさず、読み取り専用のスナップショットを渡す。
-function runtimeSnapshot(){return Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,language:currentLang,speedVariant});}
+function runtimeSnapshot(){const navigation=WakeSevenAppContext.state.navigation.read(),settings=WakeSevenAppContext.state.settings.read(),session=WakeSevenAppContext.state.session.read();return Object.freeze({...navigation,language:settings.currentLang,speedVariant:session.speedVariant});}
 function runtimeStageKey(){
   const ctx=getGameContext();
   return ctx.position===null?ctx.mode:ctx.mode+':'+ctx.index;
@@ -8383,42 +8408,38 @@ export {};
 // ===== 速解きcommand =====
 // 設定変更の書き込み境界。UIイベントはこのcommandを呼び、保存形式を直接扱わない。
 function toggleSoundCommand(){
-  soundEnabled=!soundEnabled;
-  try{commandStorageSet(STORAGE_KEY_GROUPS.settings.sound,soundEnabled?'on':'off');}catch(_){ }
+  const settings=WakeSevenAppContext.state.settings.read();
+  const soundEnabledNext=!settings.soundEnabled;
+  WakeSevenAppContext.state.settings.update({soundEnabled:soundEnabledNext});
+  try{commandStorageSet(STORAGE_KEY_GROUPS.settings.sound,soundEnabledNext?'on':'off');}catch(_){ }
   updateSoundToggle();
-  if(soundEnabled)playTone(523,.07,.025);
+  if(soundEnabledNext)playTone(523,.07,.025);
 }
 function selectBoardThemeCommand(button){
   if(!button||button.disabled)return;
   if(button.dataset.boardColor){
-    boardTheme=button.dataset.boardColor;
-    boardThemeChosen=true;
+    WakeSevenAppContext.state.settings.update({boardTheme:button.dataset.boardColor,boardThemeChosen:true});
     try{commandStorageSet(STORAGE_KEY_GROUPS.settings.boardThemeChosen,'1');}catch(_){ }
   }else if(button.dataset.boardLayout){
-    boardLayout=button.dataset.boardLayout;
-    boardLayoutChosen=true;
+    WakeSevenAppContext.state.settings.update({boardLayout:button.dataset.boardLayout,boardLayoutChosen:true});
     try{commandStorageSet(STORAGE_KEY_GROUPS.settings.boardLayoutChosen,'1');}catch(_){ }
   }else if(button.dataset.darumaColor){
-    darumaColor=button.dataset.darumaColor;
-    darumaColorChosen=true;
+    WakeSevenAppContext.state.settings.update({darumaColor:button.dataset.darumaColor,darumaColorChosen:true});
     try{commandStorageSet(STORAGE_KEY_GROUPS.settings.darumaColor,darumaColor);commandStorageSet(STORAGE_KEY_GROUPS.settings.darumaColorChosen,'1');}catch(_){ }
   }else return;
   updateMasterTheme();
   renderBoardThemeOptions();
 }
 function grantMasterRewardSettingsCommand(){
-  boardTheme='gold';
-  boardThemeChosen=false;
+  WakeSevenAppContext.state.settings.update({boardTheme:'gold',boardThemeChosen:false});
   try{commandStorageRemove(STORAGE_KEY_GROUPS.settings.boardThemeChosen);}catch(_){ }
 }
 function resetSettingsCommand(){
-  soundEnabled=true;boardTheme='default';boardLayout='normal';
-  boardThemeChosen=false;boardLayoutChosen=false;
-  darumaColor='red';darumaColorChosen=false;
+  WakeSevenAppContext.state.settings.update({soundEnabled:true,boardTheme:'default',boardLayout:'normal',boardThemeChosen:false,boardLayoutChosen:false,darumaColor:'red',darumaColorChosen:false});
 }
 function setLanguageCommand(lang){
   if(!UI_TEXT[lang])return false;
-  currentLang=lang;
+  WakeSevenAppContext.state.settings.update({currentLang:lang});
   try{commandStorageSet(STORAGE_KEY_GROUPS.settings.language,lang);}catch(_){ }
   return true;
 }
