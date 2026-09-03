@@ -1,26 +1,26 @@
 {
   "schemaVersion": 1,
   "name": "wake7-temporary-exception-audit",
-  "generatedAt": "2026-09-03T09:58:49.301Z",
+  "generatedAt": "2026-09-03T10:13:40.226Z",
   "status": "warning",
   "completion": "in-progress",
   "summary": {
-    "temporaryCount": 168,
+    "temporaryCount": 164,
     "temporaryZero": false,
-    "progress": "0/168",
+    "progress": "0/164",
     "byPurpose": {
-      "dialog": 24,
-      "navigation": 144
+      "dialog": 22,
+      "navigation": 142
     },
     "byEntrypoint": {
       "commands": 7,
       "data": 1,
       "other": 7,
       "runtime": 10,
-      "ui": 143
+      "ui": 139
     },
     "byPriority": {
-      "1": 168,
+      "1": 164,
       "2": 0,
       "3": 0
     }
@@ -875,22 +875,6 @@
       "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
-      "fingerprint": "ui/board-ui.js:stageIndex:setNavigationIndexCommand('stageIndex',nextStageIndex);",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1279,
-        "excerpt": "setNavigationIndexCommand('stageIndex',nextStageIndex);"
-      },
-      "symbol": "stageIndex",
-      "purpose": "navigation",
-      "entrypoint": "ui",
-      "priority": 1,
-      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
-      "expiresOn": "2026-12-02",
-      "nextMigrationUnit": "gateway:navigation",
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
       "fingerprint": "ui/board-ui.js:stageIndex:returnStageContext={extra:false,satori:false,index:stageIndex};",
       "source": {
         "file": "ui/board-ui.js",
@@ -1033,22 +1017,6 @@
       "expiresOn": "2026-12-02",
       "nextMigrationUnit": "gateway:dialog",
       "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:satoriIndex:setNavigationIndexCommand('satoriIndex',nextSatoriIndex);",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1316,
-        "excerpt": "setNavigationIndexCommand('satoriIndex',nextSatoriIndex);"
-      },
-      "symbol": "satoriIndex",
-      "purpose": "navigation",
-      "entrypoint": "ui",
-      "priority": 1,
-      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
-      "expiresOn": "2026-12-02",
-      "nextMigrationUnit": "gateway:navigation",
-      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:returnStageContext={extra:false,satori:true,index:satoriIndex};",
@@ -2322,38 +2290,6 @@
         "excerpt": "highlightNext:nextStageAttention&&isCampaignMode()&&!$('nextStage').hidden&&!$('nextStage').disabled"
       },
       "symbol": "nextStageAttention",
-      "purpose": "dialog",
-      "entrypoint": "ui",
-      "priority": 1,
-      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
-      "expiresOn": "2026-12-02",
-      "nextMigrationUnit": "gateway:dialog",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/progression-flow-contract.js:clearShown:{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation'},",
-      "source": {
-        "file": "ui/progression-flow-contract.js",
-        "line": 6,
-        "excerpt": "{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation'},"
-      },
-      "symbol": "clearShown",
-      "purpose": "dialog",
-      "entrypoint": "ui",
-      "priority": 1,
-      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
-      "expiresOn": "2026-12-02",
-      "nextMigrationUnit": "gateway:dialog",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/progression-flow-contract.js:clearShown:{id:'reload-clear',mode:'campaign',from:'page-load',event:'clearShownかつ解決済み',entry:'restoreDialogState→showClearDialog',persist:'clear状態を維持',cancel:'clear状態不整合時は通常盤面',to:'clear-dialog'},",
-      "source": {
-        "file": "ui/progression-flow-contract.js",
-        "line": 13,
-        "excerpt": "{id:'reload-clear',mode:'campaign',from:'page-load',event:'clearShownかつ解決済み',entry:'restoreDialogState→showClearDialog',persist:'clear状態を維持',cancel:'clear状態不整合時は通常盤面',to:'clear-dialog'},"
-      },
-      "symbol": "clearShown",
       "purpose": "dialog",
       "entrypoint": "ui",
       "priority": 1,

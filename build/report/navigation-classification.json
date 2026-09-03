@@ -1,0 +1,5462 @@
+{
+  "schemaVersion": 1,
+  "name": "wake7-navigation-classification",
+  "generatedAt": "2026-09-03T10:13:40.297Z",
+  "status": "passed",
+  "summary": {
+    "references": 387,
+    "byCategory": {
+      "gateway-candidate": 132,
+      "owner-only": 167,
+      "derived-value": 47,
+      "event-local": 3,
+      "intentional-exception": 38
+    },
+    "byName": {
+      "activeMode": 19,
+      "activeLap": 50,
+      "stageIndex": 135,
+      "extraIndex": 51,
+      "satoriIndex": 60,
+      "tutorialStep": 60,
+      "lastStageMode": 12
+    },
+    "priorityOrder": [
+      "gateway-candidate",
+      "derived-value",
+      "event-local",
+      "intentional-exception",
+      "owner-only"
+    ]
+  },
+  "policy": {
+    "gatewayCandidate": "次の1バッチでE2E付き移行を検討",
+    "ownerOnly": "状態所有者に保持",
+    "derivedValue": "計算元と表示境界を確認",
+    "eventLocal": "イベント側に保持",
+    "intentionalException": "理由と関連E2Eを維持"
+  },
+  "entries": [
+    {
+      "name": "activeLap",
+      "file": "state/game-state.js",
+      "line": 22,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 22,
+        "source": "currentStage: 'wake7-current-stage', activeSession: 'wake7-active-session', activeLap: 'wake7-active-lap',"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "state/game-state.js",
+      "line": 23,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 23,
+        "source": "introSeen: 'wake7-intro-seen', tutorialComplete: 'wake7-tutorial-complete', tutorialStep: 'wake7-tutorial-step',"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "state/game-state.js",
+      "line": 40,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 40,
+        "source": "progression: Object.freeze({ cleared: STORAGE_KEYS.cleared, extraCleared: STORAGE_KEYS.extraCleared, satoriCleared: STORAGE_KEYS.satoriCleared, currentStage: STORAGE_KEYS.currentStage, activeSession: STORAGE_KEYS.activeSession, activeLap: STORAGE_KEYS.activeLap, secondLapActive: STORAGE_KEYS.secondLapActive, secondLapUnlocked: STORAGE_KEYS.secondLapUnlocked, stagesLayoutVersion: STORAGE_KEYS.stagesLayoutVersion, satoriOrderVersion: STORAGE_KEYS.satoriOrderVersion, introSeen: STORAGE_KEYS.introSeen, tutorialComplete: STORAGE_KEYS.tutorialComplete, tutorialStep: STORAGE_KEYS.tutorialStep, lapCleared: (lap, part) => 'wake7-lap' + lap + '-' + part + '-cleared' }),"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "state/game-state.js",
+      "line": 40,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 40,
+        "source": "progression: Object.freeze({ cleared: STORAGE_KEYS.cleared, extraCleared: STORAGE_KEYS.extraCleared, satoriCleared: STORAGE_KEYS.satoriCleared, currentStage: STORAGE_KEYS.currentStage, activeSession: STORAGE_KEYS.activeSession, activeLap: STORAGE_KEYS.activeLap, secondLapActive: STORAGE_KEYS.secondLapActive, secondLapUnlocked: STORAGE_KEYS.secondLapUnlocked, stagesLayoutVersion: STORAGE_KEYS.stagesLayoutVersion, satoriOrderVersion: STORAGE_KEYS.satoriOrderVersion, introSeen: STORAGE_KEYS.introSeen, tutorialComplete: STORAGE_KEYS.tutorialComplete, tutorialStep: STORAGE_KEYS.tutorialStep, lapCleared: (lap, part) => 'wake7-lap' + lap + '-' + part + '-cleared' }),"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "state/game-state.js",
+      "line": 40,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 40,
+        "source": "progression: Object.freeze({ cleared: STORAGE_KEYS.cleared, extraCleared: STORAGE_KEYS.extraCleared, satoriCleared: STORAGE_KEYS.satoriCleared, currentStage: STORAGE_KEYS.currentStage, activeSession: STORAGE_KEYS.activeSession, activeLap: STORAGE_KEYS.activeLap, secondLapActive: STORAGE_KEYS.secondLapActive, secondLapUnlocked: STORAGE_KEYS.secondLapUnlocked, stagesLayoutVersion: STORAGE_KEYS.stagesLayoutVersion, satoriOrderVersion: STORAGE_KEYS.satoriOrderVersion, introSeen: STORAGE_KEYS.introSeen, tutorialComplete: STORAGE_KEYS.tutorialComplete, tutorialStep: STORAGE_KEYS.tutorialStep, lapCleared: (lap, part) => 'wake7-lap' + lap + '-' + part + '-cleared' }),"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "state/game-state.js",
+      "line": 40,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 40,
+        "source": "progression: Object.freeze({ cleared: STORAGE_KEYS.cleared, extraCleared: STORAGE_KEYS.extraCleared, satoriCleared: STORAGE_KEYS.satoriCleared, currentStage: STORAGE_KEYS.currentStage, activeSession: STORAGE_KEYS.activeSession, activeLap: STORAGE_KEYS.activeLap, secondLapActive: STORAGE_KEYS.secondLapActive, secondLapUnlocked: STORAGE_KEYS.secondLapUnlocked, stagesLayoutVersion: STORAGE_KEYS.stagesLayoutVersion, satoriOrderVersion: STORAGE_KEYS.satoriOrderVersion, introSeen: STORAGE_KEYS.introSeen, tutorialComplete: STORAGE_KEYS.tutorialComplete, tutorialStep: STORAGE_KEYS.tutorialStep, lapCleared: (lap, part) => 'wake7-lap' + lap + '-' + part + '-cleared' }),"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/game-state.js",
+      "line": 89,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 89,
+        "source": "stageIndex: asIndex(seed.navigation?.stageIndex),"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/game-state.js",
+      "line": 89,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 89,
+        "source": "stageIndex: asIndex(seed.navigation?.stageIndex),"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "state/game-state.js",
+      "line": 91,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 91,
+        "source": "satoriIndex: asIndex(seed.navigation?.satoriIndex),"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "state/game-state.js",
+      "line": 91,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 91,
+        "source": "satoriIndex: asIndex(seed.navigation?.satoriIndex),"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "state/game-state.js",
+      "line": 92,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 92,
+        "source": "tutorialStep: asIndex(seed.navigation?.tutorialStep)"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "state/game-state.js",
+      "line": 92,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 92,
+        "source": "tutorialStep: asIndex(seed.navigation?.tutorialStep)"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/game-state.js",
+      "line": 154,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 154,
+        "source": "stageIndex: asIndex(navigation.stageIndex),"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/game-state.js",
+      "line": 154,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 154,
+        "source": "stageIndex: asIndex(navigation.stageIndex),"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "state/game-state.js",
+      "line": 156,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 156,
+        "source": "satoriIndex: asIndex(navigation.satoriIndex),"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "state/game-state.js",
+      "line": 156,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 156,
+        "source": "satoriIndex: asIndex(navigation.satoriIndex),"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "state/game-state.js",
+      "line": 157,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 157,
+        "source": "tutorialStep: asIndex(navigation.tutorialStep)"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "state/game-state.js",
+      "line": 157,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 157,
+        "source": "tutorialStep: asIndex(navigation.tutorialStep)"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "state/game-state.js",
+      "line": 164,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 164,
+        "source": "case 'tutorial': return view.tutorialStep;"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "state/game-state.js",
+      "line": 166,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 166,
+        "source": "case 'satori': return view.satoriIndex;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/game-state.js",
+      "line": 167,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 167,
+        "source": "case 'stage': return view.stageIndex;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/game-state.js",
+      "line": 181,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 181,
+        "source": "stageIndex: asIndex(next.stageIndex),"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/game-state.js",
+      "line": 181,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 181,
+        "source": "stageIndex: asIndex(next.stageIndex),"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "state/game-state.js",
+      "line": 183,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 183,
+        "source": "satoriIndex: asIndex(next.satoriIndex),"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "state/game-state.js",
+      "line": 183,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 183,
+        "source": "satoriIndex: asIndex(next.satoriIndex),"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "state/game-state.js",
+      "line": 184,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 184,
+        "source": "tutorialStep: asIndex(next.tutorialStep)"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "state/game-state.js",
+      "line": 184,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 184,
+        "source": "tutorialStep: asIndex(next.tutorialStep)"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/game-state.js",
+      "line": 201,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 201,
+        "source": "// stageIndex/masteryIndex/satoriIndex の扱いを一箇所に保てる。"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "state/game-state.js",
+      "line": 201,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 201,
+        "source": "// stageIndex/masteryIndex/satoriIndex の扱いを一箇所に保てる。"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "state/game-state.js",
+      "line": 204,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 204,
+        "source": ": mode === 'satori' ? 'satoriIndex'"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/game-state.js",
+      "line": 205,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 205,
+        "source": ": mode === 'tutorial' ? 'tutorialStep' : 'stageIndex';"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "state/game-state.js",
+      "line": 205,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 205,
+        "source": ": mode === 'tutorial' ? 'tutorialStep' : 'stageIndex';"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/progression-policy.js",
+      "line": 42,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "state/progression-policy.js",
+        "line": 42,
+        "source": "uiPolicy({mode,lap,stageIndex,speedVariant}) {"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/progression-policy.js",
+      "line": 46,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "state/progression-policy.js",
+        "line": 46,
+        "source": "if(stageIndex < academyTotal) {"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/progression-policy.js",
+      "line": 47,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "state/progression-policy.js",
+        "line": 47,
+        "source": "if(stageIndex >= developmentStart) return {id:'development',assisted:true,development:lap === 1,eliminateWrongRods:lap === 1};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/progression-policy.js",
+      "line": 48,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "state/progression-policy.js",
+        "line": 48,
+        "source": "if(stageIndex >= applicationStart) return {id:'application',assisted:true,application:lap === 1,showTargetCells:lap === 1,rewindWrongMove:lap === 1,eliminateWrongRods:lap === 1};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/progression-policy.js",
+      "line": 49,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "state/progression-policy.js",
+        "line": 49,
+        "source": "if(stageIndex >= basicStart) return {id:'basic',assisted:true,guidedBasic:lap === 1,narrowRods:lap === 1};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/progression-policy.js",
+      "line": 52,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "state/progression-policy.js",
+        "line": 52,
+        "source": "if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/progression-policy.js",
+      "line": 52,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "state/progression-policy.js",
+        "line": 52,
+        "source": "if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "data/clear-content.js",
+      "line": 20,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "data/clear-content.js",
+        "line": 20,
+        "source": "// だるま学園卒業→だるま修行の間に挟む案内ダイアログ。stageIndexで言えばacademy4_8とtraining1_1の境目。"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "data/core-data.js",
+      "line": 168,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "data/core-data.js",
+        "line": 168,
+        "source": "// stageIndex/extraIndex から CLEAR_CONTENT のキーへ変換する。"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "data/core-data.js",
+      "line": 168,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "data/core-data.js",
+        "line": 168,
+        "source": "// stageIndex/extraIndex から CLEAR_CONTENT のキーへ変換する。"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "data/core-data.js",
+      "line": 264,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "data/core-data.js",
+        "line": 264,
+        "source": "return activeLap===2?transformStateBySymmetry(state,SECOND_LAP_BOARD_VIEW):state;"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "app/app-context.js",
+      "line": 31,
+      "access": "read",
+      "classification": "gateway",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "app/app-context.js",
+        "line": 31,
+        "source": "read(){return typeof readNavigationStateOwner==='function'?readNavigationStateOwner():Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});},"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "app/app-context.js",
+      "line": 31,
+      "access": "read",
+      "classification": "gateway",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "app/app-context.js",
+        "line": 31,
+        "source": "read(){return typeof readNavigationStateOwner==='function'?readNavigationStateOwner():Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});},"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "app/app-context.js",
+      "line": 31,
+      "access": "read",
+      "classification": "gateway",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "app/app-context.js",
+        "line": 31,
+        "source": "read(){return typeof readNavigationStateOwner==='function'?readNavigationStateOwner():Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});},"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "app/app-context.js",
+      "line": 31,
+      "access": "read",
+      "classification": "gateway",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "app/app-context.js",
+        "line": 31,
+        "source": "read(){return typeof readNavigationStateOwner==='function'?readNavigationStateOwner():Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});},"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "app/app-context.js",
+      "line": 31,
+      "access": "read",
+      "classification": "gateway",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "app/app-context.js",
+        "line": 31,
+        "source": "read(){return typeof readNavigationStateOwner==='function'?readNavigationStateOwner():Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});},"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "app/app-context.js",
+      "line": 31,
+      "access": "read",
+      "classification": "gateway",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "app/app-context.js",
+        "line": 31,
+        "source": "read(){return typeof readNavigationStateOwner==='function'?readNavigationStateOwner():Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});},"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "app/app-context.js",
+      "line": 31,
+      "access": "write",
+      "classification": "gateway",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "app/app-context.js",
+        "line": 31,
+        "source": "read(){return typeof readNavigationStateOwner==='function'?readNavigationStateOwner():Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});},"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "app/app-context.js",
+      "line": 31,
+      "access": "write",
+      "classification": "gateway",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "app/app-context.js",
+        "line": 31,
+        "source": "read(){return typeof readNavigationStateOwner==='function'?readNavigationStateOwner():Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});},"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "app/app-context.js",
+      "line": 31,
+      "access": "write",
+      "classification": "gateway",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "app/app-context.js",
+        "line": 31,
+        "source": "read(){return typeof readNavigationStateOwner==='function'?readNavigationStateOwner():Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});},"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "app/app-context.js",
+      "line": 73,
+      "access": "read",
+      "classification": "gateway",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "app/app-context.js",
+        "line": 73,
+        "source": "const patch=kind==='stageIndex'?{stageIndex:value}:kind==='masteryIndex'?{masteryIndex:value}:kind==='satoriIndex'?{satoriIndex:value}:kind==='tutorialStep'?{tutorialStep:value}:{};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "app/app-context.js",
+      "line": 73,
+      "access": "read",
+      "classification": "gateway",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "app/app-context.js",
+        "line": 73,
+        "source": "const patch=kind==='stageIndex'?{stageIndex:value}:kind==='masteryIndex'?{masteryIndex:value}:kind==='satoriIndex'?{satoriIndex:value}:kind==='tutorialStep'?{tutorialStep:value}:{};"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "app/app-context.js",
+      "line": 73,
+      "access": "read",
+      "classification": "gateway",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "app/app-context.js",
+        "line": 73,
+        "source": "const patch=kind==='stageIndex'?{stageIndex:value}:kind==='masteryIndex'?{masteryIndex:value}:kind==='satoriIndex'?{satoriIndex:value}:kind==='tutorialStep'?{tutorialStep:value}:{};"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "app/app-context.js",
+      "line": 73,
+      "access": "read",
+      "classification": "gateway",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "app/app-context.js",
+        "line": 73,
+        "source": "const patch=kind==='stageIndex'?{stageIndex:value}:kind==='masteryIndex'?{masteryIndex:value}:kind==='satoriIndex'?{satoriIndex:value}:kind==='tutorialStep'?{tutorialStep:value}:{};"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "app/app-context.js",
+      "line": 73,
+      "access": "read",
+      "classification": "gateway",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "app/app-context.js",
+        "line": 73,
+        "source": "const patch=kind==='stageIndex'?{stageIndex:value}:kind==='masteryIndex'?{masteryIndex:value}:kind==='satoriIndex'?{satoriIndex:value}:kind==='tutorialStep'?{tutorialStep:value}:{};"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "app/app-context.js",
+      "line": 73,
+      "access": "read",
+      "classification": "gateway",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "app/app-context.js",
+        "line": 73,
+        "source": "const patch=kind==='stageIndex'?{stageIndex:value}:kind==='masteryIndex'?{masteryIndex:value}:kind==='satoriIndex'?{satoriIndex:value}:kind==='tutorialStep'?{tutorialStep:value}:{};"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/audio.js",
+      "line": 38,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "runtime/audio.js",
+        "line": 38,
+        "source": "if(navigation.mode==='satori'&&navigation.satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/audio.js",
+      "line": 39,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "runtime/audio.js",
+        "line": 39,
+        "source": "if(navigation.mode!=='mastery'&&navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 84,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 84,
+        "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 84,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 84,
+        "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 84,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 84,
+        "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 84,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 84,
+        "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 84,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 84,
+        "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 84,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 84,
+        "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "runtime/runtime.js",
+      "line": 85,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 85,
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 85,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 85,
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 85,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 85,
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 85,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 85,
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 85,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 85,
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 85,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 85,
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 85,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 85,
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "runtime/runtime.js",
+      "line": 89,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 89,
+        "source": "/* モードの実体は activeMode のみ。 */"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "runtime/runtime.js",
+      "line": 97,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 97,
+        "source": "navigationState.mode=activeMode;navigationState.lap=activeLap;navigationState.stageIndex=stageIndex;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 97,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 97,
+        "source": "navigationState.mode=activeMode;navigationState.lap=activeLap;navigationState.stageIndex=stageIndex;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 97,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 97,
+        "source": "navigationState.mode=activeMode;navigationState.lap=activeLap;navigationState.stageIndex=stageIndex;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 97,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 97,
+        "source": "navigationState.mode=activeMode;navigationState.lap=activeLap;navigationState.stageIndex=stageIndex;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 98,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 98,
+        "source": "navigationState.masteryIndex=extraIndex;navigationState.satoriIndex=satoriIndex;navigationState.tutorialStep=tutorialStep;"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 98,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 98,
+        "source": "navigationState.masteryIndex=extraIndex;navigationState.satoriIndex=satoriIndex;navigationState.tutorialStep=tutorialStep;"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 98,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 98,
+        "source": "navigationState.masteryIndex=extraIndex;navigationState.satoriIndex=satoriIndex;navigationState.tutorialStep=tutorialStep;"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 98,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 98,
+        "source": "navigationState.masteryIndex=extraIndex;navigationState.satoriIndex=satoriIndex;navigationState.tutorialStep=tutorialStep;"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 98,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 98,
+        "source": "navigationState.masteryIndex=extraIndex;navigationState.satoriIndex=satoriIndex;navigationState.tutorialStep=tutorialStep;"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "runtime/runtime.js",
+      "line": 99,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 99,
+        "source": "return Object.freeze({...navigationState,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "runtime/runtime.js",
+      "line": 99,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 99,
+        "source": "return Object.freeze({...navigationState,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "runtime/runtime.js",
+      "line": 99,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 99,
+        "source": "return Object.freeze({...navigationState,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 104,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 104,
+        "source": "if(patch.stageIndex!==undefined)navigationState.stageIndex=Math.max(0,Number(patch.stageIndex)||0);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 104,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 104,
+        "source": "if(patch.stageIndex!==undefined)navigationState.stageIndex=Math.max(0,Number(patch.stageIndex)||0);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 104,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 104,
+        "source": "if(patch.stageIndex!==undefined)navigationState.stageIndex=Math.max(0,Number(patch.stageIndex)||0);"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 106,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 106,
+        "source": "if(patch.satoriIndex!==undefined)navigationState.satoriIndex=Math.max(0,Number(patch.satoriIndex)||0);"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 106,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 106,
+        "source": "if(patch.satoriIndex!==undefined)navigationState.satoriIndex=Math.max(0,Number(patch.satoriIndex)||0);"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 106,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 106,
+        "source": "if(patch.satoriIndex!==undefined)navigationState.satoriIndex=Math.max(0,Number(patch.satoriIndex)||0);"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 107,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 107,
+        "source": "if(patch.tutorialStep!==undefined)navigationState.tutorialStep=Math.max(0,Number(patch.tutorialStep)||0);"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 107,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 107,
+        "source": "if(patch.tutorialStep!==undefined)navigationState.tutorialStep=Math.max(0,Number(patch.tutorialStep)||0);"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 107,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 107,
+        "source": "if(patch.tutorialStep!==undefined)navigationState.tutorialStep=Math.max(0,Number(patch.tutorialStep)||0);"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "runtime/runtime.js",
+      "line": 108,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 108,
+        "source": "activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 108,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 108,
+        "source": "activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 108,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 108,
+        "source": "activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 108,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 108,
+        "source": "activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 109,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 109,
+        "source": "satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 109,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 109,
+        "source": "satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 109,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 109,
+        "source": "satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 109,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 109,
+        "source": "satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 109,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 109,
+        "source": "satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "runtime/runtime.js",
+      "line": 110,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 110,
+        "source": "if(patch.lastStageMode!==undefined&&typeof lastStageMode!=='undefined')lastStageMode=patch.lastStageMode;"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "runtime/runtime.js",
+      "line": 110,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 110,
+        "source": "if(patch.lastStageMode!==undefined&&typeof lastStageMode!=='undefined')lastStageMode=patch.lastStageMode;"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "runtime/runtime.js",
+      "line": 110,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 110,
+        "source": "if(patch.lastStageMode!==undefined&&typeof lastStageMode!=='undefined')lastStageMode=patch.lastStageMode;"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "runtime/runtime.js",
+      "line": 110,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 110,
+        "source": "if(patch.lastStageMode!==undefined&&typeof lastStageMode!=='undefined')lastStageMode=patch.lastStageMode;"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "runtime/runtime.js",
+      "line": 113,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 113,
+        "source": "const isMode=mode=>activeMode===mode;"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "runtime/runtime.js",
+      "line": 183,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 183,
+        "source": "WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 183,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 183,
+        "source": "WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 183,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 183,
+        "source": "WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 183,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 183,
+        "source": "WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 183,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 183,
+        "source": "WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 183,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 183,
+        "source": "WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "runtime/runtime.js",
+      "line": 197,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 197,
+        "source": "// activeModeが現在モードの正。ここはfree/custom/speed画面から"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 206,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 206,
+        "source": "tutorial:{id:'tutorial',total:WakeSevenAppContext.courses.tutorial().length,label:'tutorial',indexKey:'tutorialStep'},"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 207,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 207,
+        "source": "primary:{id:'primary',total:WakeSevenAppContext.courses.primary().length,label:'training',indexKey:'stageIndex'},"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 209,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 209,
+        "source": "satori:{id:'satori',total:WakeSevenAppContext.courses.satori().length,label:'satori',indexKey:'satoriIndex'},"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "runtime/runtime.js",
+      "line": 215,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 215,
+        "source": "function courseDefinitionForMode(mode=activeMode){"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "runtime/runtime.js",
+      "line": 219,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 219,
+        "source": "return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 219,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 219,
+        "source": "return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 219,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 219,
+        "source": "return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 219,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 219,
+        "source": "return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 219,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 219,
+        "source": "return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 219,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 219,
+        "source": "return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 233,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 233,
+        "source": "function primarySection(index=stageIndex){"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 236,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 236,
+        "source": "function primarySectionPosition(index=stageIndex){"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 255,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 255,
+        "source": "if(isMode('tutorial'))return {mode:'tutorial',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'tutorial'),position:tutorialStep+1,total:TUTORIAL_STEPS.length,lap:1};"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "runtime/runtime.js",
+      "line": 256,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 256,
+        "source": "if(isSideCourseMode())return {mode:activeMode,course:courseDefinitionForMode(),index:null,position:null,total:null,lap:activeLap};"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 256,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 256,
+        "source": "if(isSideCourseMode())return {mode:activeMode,course:courseDefinitionForMode(),index:null,position:null,total:null,lap:activeLap};"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 259,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 259,
+        "source": "return {mode:'speed',course:courseDefinitionForMode(),index,position:index+1,total:SATORI_STAGES.length,lap:activeLap};"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 261,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 261,
+        "source": "if(isMode('satori'))return {mode:'satori',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'satori'),position:satoriIndex+1,total:SATORI_STAGES.length,lap:activeLap};"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 261,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 261,
+        "source": "if(isMode('satori'))return {mode:'satori',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'satori'),position:satoriIndex+1,total:SATORI_STAGES.length,lap:activeLap};"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 262,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 262,
+        "source": "if(isMode('mastery'))return {mode:'mastery',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'mastery'),position:extraIndex+1,total:EXTRA_STAGES.length,lap:activeLap};"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 262,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 262,
+        "source": "if(isMode('mastery'))return {mode:'mastery',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'mastery'),position:extraIndex+1,total:EXTRA_STAGES.length,lap:activeLap};"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 263,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 263,
+        "source": "return {mode:'primary',course:courseDefinitionForMode('stage'),index:WakeSevenState.navigationIndex(navigation,'stage'),position:stageIndex+1,total:STAGES.length,lap:activeLap};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 263,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 263,
+        "source": "return {mode:'primary',course:courseDefinitionForMode('stage'),index:WakeSevenState.navigationIndex(navigation,'stage'),position:stageIndex+1,total:STAGES.length,lap:activeLap};"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 337,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 337,
+        "source": "const position=satoriIndex+1;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 345,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 345,
+        "source": "const volume=Math.floor(extraIndex/MASTER_VOLUME_SIZE)+1;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 346,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 346,
+        "source": "const position=extraIndex%MASTER_VOLUME_SIZE+1;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 350,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 350,
+        "source": "stage_number:position,stage_order:STAGES.length+extraIndex+1,stage_total:MASTER_VOLUME_SIZE,"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 354,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 354,
+        "source": "const {section,position}=primarySectionPosition(stageIndex);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 359,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 359,
+        "source": "stage_number:position,stage_order:stageIndex+1,stage_total:total,"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 474,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 474,
+        "source": "let activeLap=initialNavigationState.lap===2?2:1;"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "runtime/runtime.js",
+      "line": 475,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 475,
+        "source": "// activeModeが現在画面の正となる。最後にいたキャンペーン位置は明示的な名前で保持し、"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 483,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 483,
+        "source": "let rankListLap=activeLap;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 485,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 485,
+        "source": "let pickerLap=activeLap;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 557,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 557,
+        "source": "if(activeLap===2&&!secondLapUnlocked)activeLap=1;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 557,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 557,
+        "source": "if(activeLap===2&&!secondLapUnlocked)activeLap=1;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 558,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 558,
+        "source": "clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 559,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 559,
+        "source": "clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 560,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 560,
+        "source": "clearedSatoriStages=activeLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 561,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 561,
+        "source": "secondLapActive=activeLap===2;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 570,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 570,
+        "source": "clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 572,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 572,
+        "source": "clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 596,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 596,
+        "source": "storage.set(STORAGE_KEY_GROUPS.progression.activeLap,String(activeLap));"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 596,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 596,
+        "source": "storage.set(STORAGE_KEY_GROUPS.progression.activeLap,String(activeLap));"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 599,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 599,
+        "source": "if(activeLap===2)storage.set(STORAGE_KEY_GROUPS.progression.secondLapActive,'1');"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 604,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 604,
+        "source": "activeLap=lap;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 634,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 634,
+        "source": "if(activeLap===2)lap2ClearedSatoriStages=clearedSatoriStages;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 640,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 640,
+        "source": "const canEnterTraining=()=>PROGRESSION.canEnter('training',{lap:activeLap,trials:progressionTrials()});"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 641,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 641,
+        "source": "const canEnterMastery=()=>PROGRESSION.canEnter('mastery',{lap:activeLap,trials:progressionTrials()});"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 642,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 642,
+        "source": "const canEnterSatori=()=>PROGRESSION.canEnter('satori',{lap:activeLap,mastered:isMastered(),trials:progressionTrials()});"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 733,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 733,
+        "source": "const masterVolume=()=>isMode('mastery')?Math.floor(extraIndex/MASTER_VOLUME_SIZE)+1:0;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 734,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 734,
+        "source": "const isFinalMasterPuzzle=()=>isMode('mastery')&&extraIndex===EXTRA_STAGES.length-1;"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "runtime/runtime.js",
+      "line": 747,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 747,
+        "source": "const currentUiPolicy=()=>PROGRESSION.uiPolicy({mode:activeMode,lap:activeLap,stageIndex,speedVariant:isMode('speed')?speedVariant:null});"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 747,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 747,
+        "source": "const currentUiPolicy=()=>PROGRESSION.uiPolicy({mode:activeMode,lap:activeLap,stageIndex,speedVariant:isMode('speed')?speedVariant:null});"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 747,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 747,
+        "source": "const currentUiPolicy=()=>PROGRESSION.uiPolicy({mode:activeMode,lap:activeLap,stageIndex,speedVariant:isMode('speed')?speedVariant:null});"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 770,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 770,
+        "source": "const isThirdVolume=()=>isMode('mastery')&&extraIndex>=30&&extraIndex<45;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 770,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 770,
+        "source": "const isThirdVolume=()=>isMode('mastery')&&extraIndex>=30&&extraIndex<45;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 781,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 781,
+        "source": "const fourthCheckLimit=()=>!isFourthVolume()?0:(extraIndex%MASTER_VOLUME_SIZE<6?2:extraIndex%MASTER_VOLUME_SIZE<12?1:0);"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 781,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 781,
+        "source": "const fourthCheckLimit=()=>!isFourthVolume()?0:(extraIndex%MASTER_VOLUME_SIZE<6?2:extraIndex%MASTER_VOLUME_SIZE<12?1:0);"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 784,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 784,
+        "source": "const fourthChecksPersist=()=>isFourthVolume()&&extraIndex%MASTER_VOLUME_SIZE<12;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 786,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 786,
+        "source": "const fourthChecksSurviveRestart=()=>isFourthVolume()&&extraIndex%MASTER_VOLUME_SIZE>=9&&extraIndex%MASTER_VOLUME_SIZE<12;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 786,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 786,
+        "source": "const fourthChecksSurviveRestart=()=>isFourthVolume()&&extraIndex%MASTER_VOLUME_SIZE>=9&&extraIndex%MASTER_VOLUME_SIZE<12;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 791,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 791,
+        "source": "fourthCheckUsage[extraIndex]=fourthChecksUsed;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 795,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 795,
+        "source": "fourthChecksUsed=fourthChecksPersist()&&Number.isInteger(fourthCheckUsage[extraIndex])?fourthCheckUsage[extraIndex]:0;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 795,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 795,
+        "source": "fourthChecksUsed=fourthChecksPersist()&&Number.isInteger(fourthCheckUsage[extraIndex])?fourthCheckUsage[extraIndex]:0;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 800,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 800,
+        "source": "delete fourthCheckUsage[extraIndex];"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/speed.js",
+      "line": 210,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "runtime/speed.js",
+        "line": 210,
+        "source": "if(activeLap===2)return null;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 394,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 394,
+        "source": "basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 395,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 395,
+        "source": "applicationWelcome:academyBoardStep('application','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(stageIndex+1)),"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 421,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 421,
+        "source": "onAction(){loadStage(stageIndex+1);}"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 430,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 430,
+        "source": "onAction(){loadStage(stageIndex+1);}"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 660,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 660,
+        "source": "if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 660,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 660,
+        "source": "if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 661,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 661,
+        "source": "return stageIndex-TRAINING_STAGE_START<5?'joinOne':'joinTwo';"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 691,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 691,
+        "source": "const isTwoMoveLessonStage=()=>isMode('stage')&&((stageIndex>=BASIC_STAGE_START&&stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT)"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 691,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 691,
+        "source": "const isTwoMoveLessonStage=()=>isMode('stage')&&((stageIndex>=BASIC_STAGE_START&&stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT)"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 692,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 692,
+        "source": "||(stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT));"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 692,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 692,
+        "source": "||(stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT));"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 698,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 698,
+        "source": "const base=stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT?BASIC_STAGE_START:TRAINING_STAGE_START;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 700,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 700,
+        "source": "const position=stageIndex-base+1;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 702,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 702,
+        "source": "return {state:transformStateBySymmetry(campaignStageState(STAGES[stageIndex].state),SECOND_LAP_BOARD_VIEW),position,group:position<=5?'joinOne':'joinTwo'};"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "ui/board-ui.js",
+      "line": 946,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "event-local",
+      "reason": "pointer座標・スワイプ・逐次アニメーションに密接なイベント局所値",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 946,
+        "source": "function completeBoard({mode=activeMode,context={},animation=true,nextAction=null}={}){"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "ui/board-ui.js",
+      "line": 948,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 948,
+        "source": "const target=mode||activeMode;"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/board-ui.js",
+      "line": 957,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 957,
+        "source": "const firstClear=target==='satori'?!clearedSatoriStages.has(satoriIndex)"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/board-ui.js",
+      "line": 958,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 958,
+        "source": ":target==='mastery'?!clearedExtraStages.has(extraIndex)"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 959,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 959,
+        "source": ":!clearedStages.has(stageIndex);"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/board-ui.js",
+      "line": 963,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 963,
+        "source": "const wasSatoriMastered=isSatoriMastered();recordProgressClearCommand('satori',satoriIndex);"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/board-ui.js",
+      "line": 964,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 964,
+        "source": "if(isSatoriMastered())rememberClearedMessage(false,satoriIndex,true);"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/board-ui.js",
+      "line": 967,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 967,
+        "source": "recordProgressClearCommand('mastery',extraIndex);rememberClearedMessage(true,extraIndex);updateMasterTheme();"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/board-ui.js",
+      "line": 967,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 967,
+        "source": "recordProgressClearCommand('mastery',extraIndex);rememberClearedMessage(true,extraIndex);updateMasterTheme();"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 969,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 969,
+        "source": "recordProgressClearCommand('primary',stageIndex);rememberClearedMessage(false,stageIndex);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 969,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 969,
+        "source": "recordProgressClearCommand('primary',stageIndex);rememberClearedMessage(false,stageIndex);"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "ui/board-ui.js",
+      "line": 1018,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1018,
+        "source": "if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){ProgressionEntryPoints.finishStage({mode:activeMode});}"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "ui/board-ui.js",
+      "line": 1114,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1114,
+        "source": "if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 1114,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1114,
+        "source": "if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 1114,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1114,
+        "source": "if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 1116,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1116,
+        "source": "if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves>=5&&!isSolved())"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 1116,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1116,
+        "source": "if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves>=5&&!isSolved())"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1179,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1179,
+        "source": "if(TUTORIAL_STEPS[tutorialStep]?.cue==='none')return solutions.some(move=>move.ti===ti&&move.dir===dir);"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1184,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1184,
+        "source": "const second=tutorialStep===1;"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1185,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1185,
+        "source": "const cue=TUTORIAL_STEPS[tutorialStep]?.cue;"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1199,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1199,
+        "source": "clear:second?'tutorialSecondClearPrompt':tutorialStep===0?'tutorialFirstClearPrompt':'tutorialClearPrompt'"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1205,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1205,
+        "source": "const step=TUTORIAL_STEPS[tutorialStep],move=tutorialSolvingMoves()[0];"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1249,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1249,
+        "source": "const step=TUTORIAL_STEPS[tutorialStep];"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1259,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1259,
+        "source": "const savedStep=Number(storage.get(STORAGE_KEY_GROUPS.progression.tutorialStep,'0'));"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1264,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1264,
+        "source": "if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1264,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1264,
+        "source": "if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 1279,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1279,
+        "source": "setNavigationIndexCommand('stageIndex',nextStageIndex);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 1280,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1280,
+        "source": "returnStageContext={extra:false,satori:false,index:stageIndex};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 1281,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1281,
+        "source": "const stage=STAGES[stageIndex];"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 1282,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1282,
+        "source": "persistCurrentStage(false,stageIndex);"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/board-ui.js",
+      "line": 1298,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1298,
+        "source": "returnStageContext={extra:true,satori:false,index:extraIndex};"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/board-ui.js",
+      "line": 1299,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1299,
+        "source": "const stage=EXTRA_STAGES[extraIndex];"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/board-ui.js",
+      "line": 1300,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1300,
+        "source": "persistCurrentStage(true,extraIndex);"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "ui/board-ui.js",
+      "line": 1309,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1309,
+        "source": "if(activeLap===1&&isMastered())showMasterDialog('mastery');"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/board-ui.js",
+      "line": 1316,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1316,
+        "source": "setNavigationIndexCommand('satoriIndex',nextSatoriIndex);"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/board-ui.js",
+      "line": 1317,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1317,
+        "source": "returnStageContext={extra:false,satori:true,index:satoriIndex};"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/board-ui.js",
+      "line": 1318,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1318,
+        "source": "const stage=SATORI_STAGES[satoriIndex];"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "ui/board-ui.js",
+      "line": 1319,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1319,
+        "source": "try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/board-ui.js",
+      "line": 1319,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1319,
+        "source": "try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "ui/board-ui.js",
+      "line": 1327,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1327,
+        "source": "try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({extra,index,lap:activeLap}));}catch(_){}"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "ui/board-ui.js",
+      "line": 1392,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1392,
+        "source": "const payload={mode:'speed',variant:speedVariant,lap:activeLap};"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "ui/board-ui.js",
+      "line": 1399,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1399,
+        "source": "const mode=activeMode;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "ui/board-ui.js",
+      "line": 1401,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1401,
+        "source": "mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 1401,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1401,
+        "source": "mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/board-ui.js",
+      "line": 1401,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1401,
+        "source": "mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/board-ui.js",
+      "line": 1401,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1401,
+        "source": "mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1412,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1412,
+        "source": "loadTutorialStep(Number.isInteger(saved.step)?saved.step:Number(storage.get(STORAGE_KEY_GROUPS.progression.tutorialStep,'0'))||0);"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1568,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1568,
+        "source": "const tutorialCue=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]?.cue:'';"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1770,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1770,
+        "source": "const tutorialStepData=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]:null;"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1843,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1843,
+        "source": "const tutorialCue=TUTORIAL_STEPS[tutorialStep]?.cue;"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1866,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1866,
+        "source": "const turnPrompt=tutorialStep===1?tr('tutorialSecondArrowPrompt')"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1867,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1867,
+        "source": ":tutorialStep===3?tr('tutorialChainTurnPrompt'):tutorialPrompt('turn');"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1919,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1919,
+        "source": "renderTutorialFeedback({text:tr(TUTORIAL_STEPS[tutorialStep]?.cue==='chain-direction'?'tutorialWrongPlacePrompt':'tutorialWrongPrompt')});"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1920,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "event-local",
+      "reason": "pointer座標・スワイプ・逐次アニメーションに密接なイベント局所値",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1920,
+        "source": "animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:target,direction:dir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue||''}),dg.items);"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "ui/board-ui.js",
+      "line": 1933,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "event-local",
+      "reason": "pointer座標・スワイプ・逐次アニメーションに密接なイベント局所値",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 1933,
+        "source": "animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:rewindDir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue||''}),dg.items);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/board-ui.js",
+      "line": 2202,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/board-ui.js",
+        "line": 2202,
+        "source": "if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&stageIndex===0&&!hasMasterReward())"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-academy-support.js",
+      "line": 15,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-academy-support.js",
+        "line": 15,
+        "source": "const forceTopRight=stageIndex===BASIC_STAGE_START+5&&correctTis.includes(TOP_RIGHT_TI);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-academy-support.js",
+      "line": 17,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-academy-support.js",
+        "line": 17,
+        "source": "const count=academyGripDisplayCount(undefined,stageIndex-BASIC_STAGE_START+1);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-academy-support.js",
+      "line": 24,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-academy-support.js",
+        "line": 24,
+        "source": "const stage=STAGES[stageIndex],correctTis=[];"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-academy-support.js",
+      "line": 53,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-academy-support.js",
+        "line": 53,
+        "source": "for(const index of STAGES[stageIndex]?.targetCells||[]){"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-academy-support.js",
+      "line": 88,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-academy-support.js",
+        "line": 88,
+        "source": "const stage=isApplicationTargetStage()?STAGES[stageIndex]:null;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-academy-support.js",
+      "line": 123,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-academy-support.js",
+        "line": 123,
+        "source": "const stage=STAGES[stageIndex];"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-academy-support.js",
+      "line": 125,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-academy-support.js",
+        "line": 125,
+        "source": "else {const signature=stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=computeDevelopmentCandidateTis()||fullSet();guidedBasicCandidateSignature=signature;}}"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-academy-support.js",
+      "line": 131,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-academy-support.js",
+        "line": 131,
+        "source": "else {const signature='application:'+stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=fullSet();guidedBasicCandidateSignature=signature;}}"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-academy-support.js",
+      "line": 134,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-academy-support.js",
+        "line": 134,
+        "source": "else {const signature=stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=(isNarrowedBasicStage()&&SOLVER.dist[enc(ori)]>1)?computeGuidedBasicCandidateTis():fullSet();guidedBasicCandidateSignature=signature;}}"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "commands/state-commands.js",
+      "line": 19,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/state-commands.js",
+        "line": 19,
+        "source": "stageIndex:navigation.stageIndex,"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "commands/state-commands.js",
+      "line": 19,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/state-commands.js",
+        "line": 19,
+        "source": "stageIndex:navigation.stageIndex,"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "commands/state-commands.js",
+      "line": 21,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/state-commands.js",
+        "line": 21,
+        "source": "satoriIndex:navigation.satoriIndex,"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "commands/state-commands.js",
+      "line": 21,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/state-commands.js",
+        "line": 21,
+        "source": "satoriIndex:navigation.satoriIndex,"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "commands/state-commands.js",
+      "line": 22,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/state-commands.js",
+        "line": 22,
+        "source": "tutorialStep:navigation.tutorialStep,"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "commands/state-commands.js",
+      "line": 22,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/state-commands.js",
+        "line": 22,
+        "source": "tutorialStep:navigation.tutorialStep,"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "commands/state-commands.js",
+      "line": 23,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/state-commands.js",
+        "line": 23,
+        "source": "lastStageMode:navigation.lastStageMode"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "commands/state-commands.js",
+      "line": 23,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/state-commands.js",
+        "line": 23,
+        "source": "lastStageMode:navigation.lastStageMode"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "commands/tutorial-commands.js",
+      "line": 3,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "commands/tutorial-commands.js",
+        "line": 3,
+        "source": "tutorialStep=Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index));"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "commands/tutorial-commands.js",
+      "line": 4,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/tutorial-commands.js",
+        "line": 4,
+        "source": "WakeSevenState.setNavigationIndex(gameState,'tutorial',tutorialStep);"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "commands/tutorial-commands.js",
+      "line": 5,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/tutorial-commands.js",
+        "line": 5,
+        "source": "commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialStep,String(tutorialStep));"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "commands/tutorial-commands.js",
+      "line": 5,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/tutorial-commands.js",
+        "line": 5,
+        "source": "commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialStep,String(tutorialStep));"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "commands/tutorial-commands.js",
+      "line": 6,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/tutorial-commands.js",
+        "line": 6,
+        "source": "return tutorialStep;"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "commands/tutorial-commands.js",
+      "line": 10,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/tutorial-commands.js",
+        "line": 10,
+        "source": "commandStorageRemove(STORAGE_KEY_GROUPS.progression.tutorialStep);"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "commands/tutorial-commands.js",
+      "line": 14,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "commands/tutorial-commands.js",
+        "line": 14,
+        "source": "tutorialStep=0;"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "commands/tutorial-commands.js",
+      "line": 15,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/tutorial-commands.js",
+        "line": 15,
+        "source": "commandStorageRemove(STORAGE_KEY_GROUPS.progression.tutorialStep);"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "commands/tutorial-commands.js",
+      "line": 19,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/tutorial-commands.js",
+        "line": 19,
+        "source": "function persistTutorialSessionCommand(step=tutorialStep){"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "commands/tutorial-commands.js",
+      "line": 22,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "commands/tutorial-commands.js",
+        "line": 22,
+        "source": "commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialStep,String(step));"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "ui/quiz.js",
+      "line": 71,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/quiz.js",
+        "line": 71,
+        "source": "// クリア後は activeMode が次の導線用に切り替わることがあるため、"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/quiz.js",
+      "line": 72,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/quiz.js",
+        "line": 72,
+        "source": "// 名人の盤面を最後に表示した文脈を優先する。extraIndex は常に整数で"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/clear-flow.js",
+      "line": 17,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/clear-flow.js",
+        "line": 17,
+        "source": "function stageClearText(){const navigation=readNavigationContext(),{mode}=navigation;return mode==='free'||mode==='custom'||mode==='satori'?'':stageClearTextAt(mode==='mastery',mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);}"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/clear-flow.js",
+      "line": 22,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/clear-flow.js",
+        "line": 22,
+        "source": "return clearContentAt(false,navigation.stageIndex);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/clear-flow.js",
+      "line": 31,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/clear-flow.js",
+        "line": 31,
+        "source": "function stageClearArt(){const navigation=readNavigationContext(),{mode}=navigation;return mode==='satori'?'':stageClearArtAt(mode==='mastery',mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);}"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/message.js",
+      "line": 51,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/message.js",
+        "line": 51,
+        "source": "function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries();if(resume){let lastKey='',lastClearKey='';try{lastKey=storage.get(MESSAGE_REVIEW_STORAGE_KEY)||'';lastClearKey=storage.get(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY)||'';}catch(_){}if(!lastClearKey&&isSatoriMastered()){const satoriEntry=messageReviewEntries.findIndex(entry=>entry.satori);if(satoriEntry>=0){messageReviewIndex=satoriEntry;const key=messageReviewEntryKey(messageReviewEntries[satoriEntry]);try{storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);}catch(_){}}else messageReviewIndex=0;}else{const saved=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===lastKey);messageReviewIndex=saved>=0?saved:0;}}else{const currentExtra=isMode('mastery'),currentIndex=currentExtra?masteryIndex:stageIndex;const exact=messageReviewEntries.findIndex(entry=>entry.extra===currentExtra&&entry.index===currentIndex);messageReviewIndex=exact>=0?exact:0;}renderMessageReview();$('messageDialog').hidden=false;$('closeMessages').focus();}"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/message.js",
+      "line": 51,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/message.js",
+        "line": 51,
+        "source": "function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries();if(resume){let lastKey='',lastClearKey='';try{lastKey=storage.get(MESSAGE_REVIEW_STORAGE_KEY)||'';lastClearKey=storage.get(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY)||'';}catch(_){}if(!lastClearKey&&isSatoriMastered()){const satoriEntry=messageReviewEntries.findIndex(entry=>entry.satori);if(satoriEntry>=0){messageReviewIndex=satoriEntry;const key=messageReviewEntryKey(messageReviewEntries[satoriEntry]);try{storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);}catch(_){}}else messageReviewIndex=0;}else{const saved=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===lastKey);messageReviewIndex=saved>=0?saved:0;}}else{const currentExtra=isMode('mastery'),currentIndex=currentExtra?masteryIndex:stageIndex;const exact=messageReviewEntries.findIndex(entry=>entry.extra===currentExtra&&entry.index===currentIndex);messageReviewIndex=exact>=0?exact:0;}renderMessageReview();$('messageDialog').hidden=false;$('closeMessages').focus();}"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-render.js",
+      "line": 11,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-render.js",
+        "line": 11,
+        "source": "function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-render.js",
+      "line": 11,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-render.js",
+        "line": 11,
+        "source": "function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-render.js",
+      "line": 11,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-render.js",
+        "line": 11,
+        "source": "function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-render.js",
+      "line": 14,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-render.js",
+        "line": 14,
+        "source": "else if(mode==='satori')fraction=(satoriIndex+1)/(satoriTotal||1);"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-render.js",
+      "line": 15,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-render.js",
+        "line": 15,
+        "source": "else if(mode==='mastery')fraction=(extraIndex+1)/(masteryTotal||1);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-render.js",
+      "line": 16,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-render.js",
+        "line": 16,
+        "source": "else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-render.js",
+      "line": 16,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-render.js",
+        "line": 16,
+        "source": "else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-render.js",
+      "line": 16,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-render.js",
+        "line": 16,
+        "source": "else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-dialogs.js",
+      "line": 8,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-dialogs.js",
+        "line": 8,
+        "source": "stageIndex:source.stageIndex??appState.stageIndex??null,"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-dialogs.js",
+      "line": 8,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-dialogs.js",
+        "line": 8,
+        "source": "stageIndex:source.stageIndex??appState.stageIndex??null,"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-dialogs.js",
+      "line": 8,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-dialogs.js",
+        "line": 8,
+        "source": "stageIndex:source.stageIndex??appState.stageIndex??null,"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-ui.js",
+      "line": 166,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 166,
+        "source": "appendStagePickerButton(grid,{label:index+1,ariaLabel:tr('satori')+' '+(index+1),cleared:pickerSatori.has(index),current:pickerLap===currentContext.lap&&isMode('satori')&&currentContext.satoriIndex===index,disabled:!(index===0||pickerSatori.has(index)||pickerSatori.has(index-1)),onClick:()=>{closeStagePicker();activateCampaignLap(pickerLap);loadSatoriStage(index);}});"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-ui.js",
+      "line": 174,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 174,
+        "source": "openDialog('stagePicker',{lap:WakeSevenAppContext.snapshot().lap,round:'satori',satoriPage:isMode('satori')?Math.floor(WakeSevenAppContext.snapshot().satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0});"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 241,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 241,
+        "source": "b.classList.toggle('current',pickerLap===navigation.lap&&!isMode('speed')&&(isPrimary?!isMode('mastery')&&!isMode('satori')&&navigation.stageIndex===index:isMode('mastery')&&navigation.masteryIndex===index));"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-ui.js",
+      "line": 261,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 261,
+        "source": "const showingIndex=isMode('mastery')?extraIndex:returnStageContext.index;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "ui/progression-ui.js",
+      "line": 269,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 269,
+        "source": "// 称号一覧で選択した周（activeLap）を、そのまま問題選択にも引き継ぐ。"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 293,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 293,
+        "source": "return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 307,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 307,
+        "source": "const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 309,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 309,
+        "source": "// 通常ステージの古い stageIndex / masteryClearContext を使って"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-ui.js",
+      "line": 321,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 321,
+        "source": "const showSatoriMastery=clearContext.mode==='satori'&&clearContext.satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered();"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 330,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 330,
+        "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===ACADEMY_STAGE_COUNT-1&&clearContext.academyIsCleared){"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 336,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 336,
+        "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===INTRO_STAGE_COUNT-1){"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 341,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 341,
+        "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===APPLICATION_STAGE_START-1){"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 346,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 346,
+        "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===DEVELOPMENT_STAGE_START-1){"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 350,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 350,
+        "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===STAGES.length-1&&clearContext.currentLapPrimaryComplete){"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-ui.js",
+      "line": 355,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 355,
+        "source": "const clearedMasteryIndex=masteryClearContext&&Number.isInteger(clearContext.extraIndex)"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-ui.js",
+      "line": 356,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 356,
+        "source": "?clearContext.extraIndex"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-ui.js",
+      "line": 365,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 365,
+        "source": "else if(clearContext.mode==='satori')action.textContent=clearContext.satoriIndex===SATORI_STAGES.length-1?tr('satoriChoose'):tr('nextPuzzle');"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-ui.js",
+      "line": 366,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 366,
+        "source": "else if(clearContext.mode==='mastery')action.textContent=clearContext.extraIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 367,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 367,
+        "source": "else if(clearContext.stageIndex===STAGES.length-1&&clearContext.allPrimaryIsCleared)action.textContent=tr('allPatternsNext');"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 368,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 368,
+        "source": "else if(clearContext.stageIndex===STAGES.length-1)action.textContent=tr('toFree');"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 495,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 495,
+        "source": "const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 495,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 495,
+        "source": "const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 495,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 495,
+        "source": "const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 496,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 496,
+        "source": "const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 496,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 496,
+        "source": "const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 496,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 496,
+        "source": "const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-ui.js",
+      "line": 897,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 897,
+        "source": "const volume=Math.ceil((extraIndex+1)/MASTER_VOLUME_SIZE);"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "ui/progression-ui.js",
+      "line": 1063,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1063,
+        "source": "if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 1063,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1063,
+        "source": "if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-ui.js",
+      "line": 1066,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1066,
+        "source": "if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-ui.js",
+      "line": 1066,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1066,
+        "source": "if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-ui.js",
+      "line": 1067,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1067,
+        "source": "if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-ui.js",
+      "line": 1067,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1067,
+        "source": "if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 1068,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1068,
+        "source": "else loadStage(stageIndex-1);"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-ui.js",
+      "line": 1074,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1074,
+        "source": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-ui.js",
+      "line": 1074,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1074,
+        "source": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-ui.js",
+      "line": 1074,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1074,
+        "source": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "ui/progression-ui.js",
+      "line": 1075,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1075,
+        "source": "else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-ui.js",
+      "line": 1075,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1075,
+        "source": "else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-ui.js",
+      "line": 1078,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1078,
+        "source": "if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-ui.js",
+      "line": 1078,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1078,
+        "source": "if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 1079,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1079,
+        "source": "else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 1080,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 1080,
+        "source": "else loadStage(stageIndex+1);"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "ui/progression-hud.js",
+      "line": 17,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 17,
+        "source": "activeLap:lap,"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-hud.js",
+      "line": 18,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 18,
+        "source": "stageIndex:stage,"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-hud.js",
+      "line": 19,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 19,
+        "source": "extraIndex:extra,"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-hud.js",
+      "line": 20,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 20,
+        "source": "satoriIndex:satori,"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-hud.js",
+      "line": 41,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 41,
+        "source": "stage:appState.stageIndex,"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-hud.js",
+      "line": 43,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 43,
+        "source": "satori:appState.satoriIndex,"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-hud.js",
+      "line": 114,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 114,
+        "source": "const hideBoardViewControls=assistedLearning||isMode('speed')||(isMode('stage')&&navigation.stageIndex>=TRAINING_STAGE_START&&navigation.stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-hud.js",
+      "line": 114,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 114,
+        "source": "const hideBoardViewControls=assistedLearning||isMode('speed')||(isMode('stage')&&navigation.stageIndex>=TRAINING_STAGE_START&&navigation.stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-hud.js",
+      "line": 116,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 116,
+        "source": "$('twoMoveLessonOpen').hidden=!((isMode('stage')&&navigation.stageIndex>=TRAINING_STAGE_START&&navigation.stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)||isTwoMoveLessonSpeedStage());"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-hud.js",
+      "line": 116,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 116,
+        "source": "$('twoMoveLessonOpen').hidden=!((isMode('stage')&&navigation.stageIndex>=TRAINING_STAGE_START&&navigation.stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)||isTwoMoveLessonSpeedStage());"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-hud.js",
+      "line": 125,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 125,
+        "source": "$('prevStage').disabled=isMode('speed')||(!inSideMode&&(!isMode('mastery')&&!isMode('satori')&&navigation.stageIndex===0&&navigation.lap===1));"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-hud.js",
+      "line": 133,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 133,
+        "source": ":(navigation.stageIndex===STAGES.length-1?!allPrimaryCleared():!clearedStages.has(navigation.stageIndex));"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-hud.js",
+      "line": 133,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 133,
+        "source": ":(navigation.stageIndex===STAGES.length-1?!allPrimaryCleared():!clearedStages.has(navigation.stageIndex));"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-hud.js",
+      "line": 182,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 182,
+        "source": "$('stageNumber').textContent=(navigation.satoriIndex+1)+' / '+SATORI_STAGES.length;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-hud.js",
+      "line": 193,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 193,
+        "source": "const {section,position}=primarySectionPosition(navigation.stageIndex);"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-hud.js",
+      "line": 212,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 212,
+        "source": "?(navigation.satoriIndex===SATORI_STAGES.length-1?!(navigation.lap===1&&secondLapUnlocked):!clearedSatoriStages.has(navigation.satoriIndex))"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-hud.js",
+      "line": 212,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-hud.js",
+        "line": 212,
+        "source": "?(navigation.satoriIndex===SATORI_STAGES.length-1?!(navigation.lap===1&&secondLapUnlocked):!clearedSatoriStages.has(navigation.satoriIndex))"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "ui/progression-clear-flow.js",
+      "line": 115,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 115,
+        "source": "// 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 115,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 115,
+        "source": "// 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 121,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 121,
+        "source": "const currentStageIndex=Number.isInteger(appState.stageIndex)?appState.stageIndex:0;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 121,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 121,
+        "source": "const currentStageIndex=Number.isInteger(appState.stageIndex)?appState.stageIndex:0;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "ui/progression-clear-flow.js",
+      "line": 125,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 125,
+        "source": "mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 125,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 125,
+        "source": "mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 125,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 125,
+        "source": "mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 125,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 125,
+        "source": "mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 150,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 150,
+        "source": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 150,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 150,
+        "source": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 150,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 150,
+        "source": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 153,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 153,
+        "source": "if(mode==='satori')return satoriIndex<SATORI_STAGES.length-1"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 154,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 154,
+        "source": "? {kind:'satori-stage',index:satoriIndex+1}"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 156,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 156,
+        "source": "if(mode==='mastery')return extraIndex===EXTRA_STAGES.length-1"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 158,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 158,
+        "source": ": {kind:'mastery-stage',index:extraIndex+1};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 159,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 159,
+        "source": "if(stageIndex===ACADEMY_STAGE_COUNT-1&&academyIsCleared)return {kind:'master-dialog',section:'primary'};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 160,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 160,
+        "source": "if(stageIndex===STAGES.length-1&&allPrimaryIsCleared)return {kind:'master-dialog',section:'intermediate'};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 161,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 161,
+        "source": "if(stageIndex===STAGES.length-1)return {kind:'restore-free'};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 163,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 163,
+        "source": "return {kind:'stage',index:stageIndex+1};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 175,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 175,
+        "source": "const context=clearFlowState.context||createClearTransitionContext(WakeSevenAppContext.snapshot().stageIndex+1);"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "ui/rank.js",
+      "line": 96,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "ui/rank.js",
+        "line": 96,
+        "source": "rankListLap=activeLap;"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/app-events.js",
+      "line": 28,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "runtime/app-events.js",
+        "line": 28,
+        "source": "rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/app-events.js",
+      "line": 28,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "runtime/app-events.js",
+        "line": 28,
+        "source": "rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/app-events.js",
+      "line": 251,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "runtime/app-events.js",
+        "line": 251,
+        "source": "const clickClearEntry=clearContentAt(true,extraIndex);"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/app-events.js",
+      "line": 414,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "runtime/app-events.js",
+        "line": 414,
+        "source": "satori:{via:'close',when:()=>activeLap===1,"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/app-events.js",
+      "line": 518,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "runtime/app-events.js",
+        "line": 518,
+        "source": "else GameNavigation.mastery(extraIndex+1);"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/app-events.js",
+      "line": 920,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
+      "codeEvidence": {
+        "file": "runtime/app-events.js",
+        "line": 920,
+        "source": "$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/app-events.js",
+      "line": 942,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "runtime/app-events.js",
+        "line": 942,
+        "source": "else if(navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/app-events.js",
+      "line": 943,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "runtime/app-events.js",
+        "line": 943,
+        "source": "else if(navigation.stageIndex===STAGES.length-1)action.textContent=tr('toFree');"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/app-events.js",
+      "line": 1117,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "runtime/app-events.js",
+        "line": 1117,
+        "source": "activeLap=1;secondLapUnlocked=false;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/app-events.js",
+      "line": 1128,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "gateway-candidate",
+      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "codeEvidence": {
+        "file": "runtime/app-events.js",
+        "line": 1128,
+        "source": "storage.remove(STORAGE_KEY_GROUPS.progression.activeLap);"
+      }
+    }
+  ],
+  "warnings": [],
+  "errors": [],
+  "sourceRevision": "working-tree"
+}
