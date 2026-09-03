@@ -12,6 +12,6 @@ for (const [name, entry] of Object.entries(config.entrypoints || {})) {
     try { await access(join(root, 'build', 'report', report)); } catch { errors.push(`${name}: レポートがありません（npm run build/check後に生成）: ${report}`); }
   }
 }
-if (!config.commands?.trace || !config.commands?.entrypoint || !config.commands?.impact || !config.commands?.gate) errors.push('commandsに固定入口が不足しています');
+if (!config.commands?.trace || !config.commands?.entrypoint || !config.commands?.impact || !config.commands?.progression || !config.commands?.gate) errors.push('commandsに固定入口が不足しています');
 if (errors.length) { console.error(errors.join('\n')); process.exitCode = 1; }
 else console.log(`Development entrypoints OK: ${Object.keys(config.entrypoints).length} entries`);

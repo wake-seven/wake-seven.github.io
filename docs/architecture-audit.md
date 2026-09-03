@@ -37,6 +37,8 @@ npm run check
 
 開発時の固定入口は `scripts/development-entrypoints.json` にまとめています。`npm run trace:entry -- progression`（または `state` / `clear-flow`）で、主要ソース・入口シンボル・関連する状態/DOM/E2E/フローレポートを一覧できます。変更対象を確認するときは `npm run trace:impact -- <変更ファイル>` を使い、生成された `build/report/change-impact.json` から影響範囲を確認してから `npm run check:gate` を実行します。入口の定義自体は `npm run check:development-entrypoints` で検査され、詳細な関数一覧は生成済みtraceレポートを正とします。
 
+progressionの外部入口を調べる場合は `npm run trace:progression` を使います。`start` / `complete` / `openDialog` / `advance` ごとに、定義・呼び出し元・状態読み書き・DOM/イベント・遷移・E2E件数・公開セクションを `build/report/progression-trace.json` にまとめます。
+
 検査を領域単位で実行する公開入口は `check:structure`（構造）、`check:state`（状態）、`check:flows`（進行）、`check:browser`（ブラウザ）です。各入口は `scripts/check-entry-groups.json` で内部検査と対応付けています。個別の `check:*` は内部検査として残し、通常は領域入口または `npm run check` を使用してください。`check:script-audit` は `audit:scripts` への移行前のlegacy aliasで、新規利用は禁止です。削除条件は同JSONに記録します。
 
 公開版の識別子監査は `npm run check:public-symbols` で実行します。候補は実未定義、ローカル/スコープ、オブジェクトキー、ブラウザAPI、公開名前空間、設定/データに分類され、実未定義だけが失敗になります。候補数と分類別上限は `scripts/public-symbols-budget.json` で管理し、分類済み候補の増加も検査で止めます。詳細は `build/report/public-symbols.json` を参照してください。
