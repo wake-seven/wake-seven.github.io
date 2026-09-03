@@ -35,6 +35,8 @@ npm run check
 
 `npm run check` は `check:gate` の別名です。`scripts/check-all.mjs` が最初に公開版をビルドし、その後に各検査を定義順で一度ずつ実行します。途中で失敗した場合は後続を実行せず、`build/report/check-gate.json` に失敗した検査、終了コード、標準出力・標準エラー、所要時間を保存します。個別の検査が必要な場合だけ `package.json` と `scripts/check-*.mjs` を確認してください。
 
+公開版の識別子監査は `npm run check:public-symbols` で実行します。候補は実未定義、ローカル/スコープ、オブジェクトキー、ブラウザAPI、公開名前空間、設定/データに分類され、実未定義だけが失敗になります。候補数と分類別上限は `scripts/public-symbols-budget.json` で管理し、分類済み候補の増加も検査で止めます。詳細は `build/report/public-symbols.json` を参照してください。
+
 最終ゲートには、公開マニフェストの依存順・公開シンボル・イベント配線・導線契約・実Chrome E2Eを含みます。`npm run build` を別に実行する必要はありません。`npm run build` は生成物だけを確認したい場合に使います。
 
 共有状態の直接参照は `npm run check:global-access` で監査します。`build/report/global-access.json` に、参照を `gateway`（入口経由）、`owner`（状態所有者）、`needs-migration`（個別移行候補）へ分類し、読み取り・書き換え別の件数と前回レポートとの差分を出力します。候補は一括置換せず、対応するE2Eを先に確認します。
