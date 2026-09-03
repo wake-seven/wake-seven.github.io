@@ -93,7 +93,10 @@ try{
   const context=await browser.newContext({viewport:{width:1280,height:900}});await context.addInitScript(()=>{localStorage.clear();sessionStorage.clear();document.addEventListener('click',event=>{const target=event.target?.closest?.('[id]');window.__e2eLastCommand={id:target?.id||null,tag:target?.tagName||null,at:new Date().toISOString()};},true);});
   page=await context.newPage();page.on('console',m=>{if(m.type()==='error')result.consoleErrors.push(m.text());});page.on('pageerror',e=>result.consoleErrors.push(String(e)));
   await page.goto('http://127.0.0.1:'+port+'/index.html?debug=1&debugSpeedIndex=2',{waitUntil:'networkidle'});await page.waitForSelector('#debugReset');
-  await click(page,'introStart');await page.evaluate(()=>{document.querySelector('#debugTools').hidden=false;});await debugClick(page,'debugSkipTutorial');await wait(page,()=>!document.querySelector('#chainDialog')?.hidden&&!document.querySelector('#chainDialogAction')?.hidden,'academy chain');
+  // デバッグURLでは保存状態や起動モードによって開始ダイアログが既に閉じている場合がある。
+  // 表示中のときだけ通常の開始操作を通し、隠れたボタンをクリックして誤検出しない。
+  if(await vis(page,'introDialog')){await click(page,'introStart');await wait(page,()=>document.querySelector('#introDialog')?.hidden,'initial startup dialog');}
+  await page.evaluate(()=>{document.querySelector('#debugTools').hidden=false;});await debugClick(page,'debugSkipTutorial');await wait(page,()=>!document.querySelector('#chainDialog')?.hidden&&!document.querySelector('#chainDialogAction')?.hidden,'academy chain');
   await page.evaluate(()=>{document.querySelector('#chainDialog').hidden=true;});result.cases.push({name:'startup-and-tutorial-skip',state:await snap(page)});const box=await page.locator('#board').boundingBox();assert.ok(box,'board is visible');await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();await page.mouse.move(box.x+box.width/2+80,box.y+box.height/2,{steps:8});await page.mouse.up();await page.waitForTimeout(120);result.cases.push({name:'pointer-swipe-path',state:await snap(page)});
   // アニメーション中は対象3枚だけが前面で追従し、ダイアログを先出ししないことを実ブラウザで確認する。
   await prepareTutorialDebugPage();

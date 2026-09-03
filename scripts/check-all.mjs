@@ -41,6 +41,7 @@ const steps = [
   { name: 'refactor-report', command: process.execPath, args: ['scripts/check-refactor-report.mjs'] },
   { name: 'global-access', command: process.execPath, args: ['scripts/check-global-access-contract.mjs'] },
   { name: 'unused-files', command: process.execPath, args: ['scripts/check-unused-files.mjs'] },
+  { name: 'compat-boundaries', command: process.execPath, args: ['scripts/check-compat-boundaries.mjs'] },
   { name: 'manifest-dependencies', command: process.execPath, args: ['scripts/check-manifest-dependencies.mjs'] },
   { name: 'public-symbols', command: process.execPath, args: ['scripts/check-public-symbols.mjs'] }
 ];
