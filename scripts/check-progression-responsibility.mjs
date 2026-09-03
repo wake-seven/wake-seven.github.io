@@ -10,6 +10,7 @@ const [report, index] = await Promise.all([
   readJson('build/report/progression-responsibility.json'),
   readJson('build/report/symbol-index.json')
 ]);
+const rankSource = await readFile(join(root, 'src/ui/rank.js'), 'utf8');
 const definitions = Object.values(index.definitions || {});
 const expected = definitions.filter(symbol => /(?:^|\/)(?:progression[^/]*|clear-flow|master-dialog|rank)\.(?:js|mjs)$/i.test(symbol.file || ''));
 assert.equal(report.source, 'build/report/symbol-index.json');
@@ -17,6 +18,7 @@ assert.ok(report.generatedAt && report.summary && Array.isArray(report.entries),
 assert.equal(report.entries.length, expected.length, 'progression責務レポートが古いです。npm run trace:generate を実行してください');
 assert.deepEqual(report.pipeline, ['entry', 'state-decision', 'transition', 'render'], '進行処理の追跡順が不正です');
 assert.ok(report.summary.flowRoles && Number.isInteger(report.summary.mixedSymbols), '進行処理の流れ分類がありません');
+assert.match(rankSource, /function openRankDialog\([\s\S]*renderRankList\(\)/, '称号ダイアログの入口から既存の描画入口へ接続されていません');
 assert.deepEqual(Object.keys(report.summary.flowClassifications).sort(), ['orchestration', 'render', 'state-decision', 'transition'], '4分類の定義が不正です');
 assert.ok(Array.isArray(report.fileSummary) && report.fileSummary.length > 0, 'ファイル責務サマリーがありません');
 assert.ok(Array.isArray(report.mixedResponsibilitySymbols) && Array.isArray(report.unclassifiedSymbols), '複数責務・未分類一覧がありません');
