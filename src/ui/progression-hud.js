@@ -33,6 +33,7 @@ function createProgressionViewContext({
 function renderStageNav(){
   const appState=WakeSevenAppContext.snapshot();
   const navigation=WakeSevenAppContext.state.navigation.read();
+  const session=WakeSevenAppContext.state.session.read().speedSession;
   const {currentLang:language}=WakeSevenAppContext.state.settings.read();
   const viewContext=createProgressionViewContext({
     mode:appState.mode,
@@ -44,8 +45,8 @@ function renderStageNav(){
     tutorial:isMode('tutorial'),
     assisted:isAssistedLearningStage(),
     speedRemaining:speedShowsRemaining(),
-    speedIndex:speedSession?.index??0,
-    speedTotal:speedSession?.total||activeSpeedDefinition().total
+    speedIndex:session?.index??0,
+    speedTotal:session?.total||activeSpeedDefinition().total
   });
   const navModel=createStageNavDisplayModel(viewContext);
   const tutorialMode=navModel.tutorialMode;

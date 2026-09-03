@@ -20,7 +20,7 @@ window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();per
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'){if(isMode('speed'))pauseSpeedClock();persistActiveSession();}
   else if(isMode('speed')&&!speedAwaitingStart()){
-    if(isSolved()&&speedSession){
+    if(isSolved()&&WakeSevenAppContext.state.session.read().speedSession){
       // 非表示の間にクリア演出や、その後の次の問題へ進む処理が止まってしまうことがある
       // (裏に回った端末がタイマーの発火を止める・遅らせる等)。
       // 復帰時にクリア済みの盤面が残っていたら、保留中のタイマーは捨てて即座に確定させる。
