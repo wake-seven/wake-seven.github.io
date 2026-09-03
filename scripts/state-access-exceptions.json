@@ -6,7 +6,7 @@
     "state/game-state.js",
     "app/app-context.js"
   ],
-  "baselineTracked": 148,
+  "baselineTracked": 145,
   "allowedReferences": [
     "state/progression-policy.js:stageIndex:uiPolicy({mode,lap,stageIndex,speedVariant}) {",
     "state/progression-policy.js:stageIndex:if(stageIndex < academyTotal) {",
@@ -114,8 +114,6 @@
     "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
     "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
     "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
-    "ui/progression-ui.js:stageIndex:return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));",
-    "ui/progression-ui.js:stageIndex:const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);",
     "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
     "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
     "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
@@ -1461,32 +1459,6 @@
       "fingerprint": "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
       "expiresOn": "2026-12-02",
       "owner": "ui/progression-render.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/progression-ui.js:stageIndex:return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/progression-ui.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/progression-ui.js:stageIndex:const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/progression-ui.js",
       "migrationTarget": "gateway:navigation",
       "priority": 1,
       "relatedTests": [

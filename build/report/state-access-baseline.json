@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "name": "state-access-baseline",
-  "generatedAt": "2026-09-03T12:00:13.648Z",
+  "generatedAt": "2026-09-03T12:03:38.455Z",
   "source": "scripts/state-access-exceptions.json",
   "counts": {
-    "temporary": 141,
+    "temporary": 139,
     "byPurpose": {
-      "navigation": 129,
+      "navigation": 127,
       "dialog": 18,
       "progress": 0,
       "session": 0,
@@ -19,10 +19,10 @@
       "data": 1,
       "other": 7,
       "runtime": 3,
-      "ui": 129
+      "ui": 127
     },
     "byAccess": {
-      "read": 129,
+      "read": 127,
       "write": 18
     }
   },
@@ -2996,67 +2996,11 @@
       ]
     },
     {
-      "fingerprint": "ui/progression-ui.js:stageIndex:return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));",
-      "classification": "executable",
-      "source": {
-        "file": "ui/progression-ui.js",
-        "line": 296,
-        "excerpt": "return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));"
-      },
-      "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
-      "fingerprint": "ui/progression-ui.js:stageIndex:const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);",
-      "classification": "executable",
-      "source": {
-        "file": "ui/progression-ui.js",
-        "line": 310,
-        "excerpt": "const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);"
-      },
-      "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
       "fingerprint": "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 498,
+        "line": 501,
         "excerpt": "const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;"
       },
       "symbol": "stageIndex",
@@ -3084,7 +3028,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 498,
+        "line": 501,
         "excerpt": "const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;"
       },
       "symbol": "stageIndex",
@@ -3112,7 +3056,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 498,
+        "line": 501,
         "excerpt": "const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;"
       },
       "symbol": "stageIndex",
@@ -3140,7 +3084,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 499,
+        "line": 502,
         "excerpt": "const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;"
       },
       "symbol": "stageIndex",
@@ -3168,7 +3112,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 499,
+        "line": 502,
         "excerpt": "const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;"
       },
       "symbol": "stageIndex",
@@ -3196,7 +3140,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 499,
+        "line": 502,
         "excerpt": "const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;"
       },
       "symbol": "stageIndex",
@@ -3224,7 +3168,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 816,
+        "line": 819,
         "excerpt": "const shouldAnimate=masterDialog.hidden||masterDialogKind!==kind;"
       },
       "symbol": "masterDialogKind",
@@ -3252,7 +3196,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 900,
+        "line": 903,
         "excerpt": "const volume=Math.ceil((extraIndex+1)/MASTER_VOLUME_SIZE);"
       },
       "symbol": "extraIndex",
@@ -3280,7 +3224,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1066,
+        "line": 1069,
         "excerpt": "if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){"
       },
       "symbol": "activeLap",
@@ -3308,7 +3252,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1066,
+        "line": 1069,
         "excerpt": "if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){"
       },
       "symbol": "stageIndex",
@@ -3336,7 +3280,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1069,
+        "line": 1072,
         "excerpt": "if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}"
       },
       "symbol": "satoriIndex",
@@ -3364,7 +3308,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1069,
+        "line": 1072,
         "excerpt": "if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}"
       },
       "symbol": "satoriIndex",
@@ -3392,7 +3336,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1070,
+        "line": 1073,
         "excerpt": "if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}"
       },
       "symbol": "extraIndex",
@@ -3420,7 +3364,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1070,
+        "line": 1073,
         "excerpt": "if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}"
       },
       "symbol": "extraIndex",
@@ -3448,7 +3392,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1071,
+        "line": 1074,
         "excerpt": "else loadStage(stageIndex-1);"
       },
       "symbol": "stageIndex",
@@ -3476,7 +3420,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1077,
+        "line": 1080,
         "excerpt": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);"
       },
       "symbol": "satoriIndex",
@@ -3504,7 +3448,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1077,
+        "line": 1080,
         "excerpt": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);"
       },
       "symbol": "satoriIndex",
@@ -3532,7 +3476,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1077,
+        "line": 1080,
         "excerpt": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);"
       },
       "symbol": "satoriIndex",
@@ -3560,7 +3504,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1078,
+        "line": 1081,
         "excerpt": "else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}"
       },
       "symbol": "activeLap",
@@ -3588,7 +3532,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1078,
+        "line": 1081,
         "excerpt": "else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}"
       },
       "symbol": "satoriIndex",
@@ -3616,7 +3560,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1081,
+        "line": 1084,
         "excerpt": "if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}"
       },
       "symbol": "extraIndex",
@@ -3644,7 +3588,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1081,
+        "line": 1084,
         "excerpt": "if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}"
       },
       "symbol": "extraIndex",
@@ -3672,7 +3616,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1082,
+        "line": 1085,
         "excerpt": "else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);"
       },
       "symbol": "stageIndex",
@@ -3700,7 +3644,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1083,
+        "line": 1086,
         "excerpt": "else loadStage(stageIndex+1);"
       },
       "symbol": "stageIndex",

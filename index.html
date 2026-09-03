@@ -9742,13 +9742,15 @@ function renderClearStageContext(){
   renderClearStageContextElement(context,{visible:true,text});
 }
 function clearDialogShowsStageCount(){
-  return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));
+  const {navigation}=readProgressionContext();
+  return navigation.mode==='mastery'||(navigation.mode!=='satori'&&navigation.mode!=='speed'&&['intro','basic','application','development'].includes(primarySectionPosition(navigation.stageIndex).section.id));
 }
 function clearDialogUsesStageProgression(){
   return !isMode('free')&&!isMode('custom')&&!isMode('mastery')&&!isMode('satori')&&!isMode('speed');
 }
 function clearDialogHeading(){
-  return tr(isMode('mastery')||isMode('satori')?'optimalClear':'clear');
+  const {navigation}=readProgressionContext();
+  return tr(navigation.mode==='mastery'||navigation.mode==='satori'?'optimalClear':'clear');
 }
 function hasCompetingDialogForClear(){
   return ['chainDialog','messageDialog','masterDialog','speedPauseDialog','speedRestartDialog','rankDialog','tipGuideDialog','guideHubDialog','twoMoveDialog','twoMoveDetailDialog','optimalFailDialog','resetDialog','aboutDialog','settingsDialog','boardThemeDialog']
@@ -9756,7 +9758,8 @@ function hasCompetingDialogForClear(){
 }
 function showClearDialog(contextOverride=null){
   if(!finishClearFlowDialog()&&!contextOverride)return false;
-  const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);
+  const {navigation}=readProgressionContext();
+  const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(navigation.stageIndex+1);
   // 速解きのクリアは専用のタイマー・次問遷移で処理する。
   // 通常ステージの古い stageIndex / masteryClearContext を使って
   // 卒業試験や名人ダイアログを表示してはいけない。
