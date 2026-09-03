@@ -1242,7 +1242,7 @@ function showTutorialCue(){
 }
 function loadTutorialStep(index=0){
   clearUiEffectTimers('tutorial');
-  setActiveMode('tutorial');editingBoard=false;
+  setCampaignModeCommand('tutorial');editingBoard=false;
   setTutorialStepCommand(index);
   // 前の段階で消した誤操作棒は、次の段階では再表示する。
   svg.querySelectorAll('.grip-marker.narrow-hidden').forEach(marker=>marker.classList.remove('narrow-hidden'));
@@ -1273,10 +1273,10 @@ function loadStage(index){
     return;
   }
   if(isMode('speed'))pauseSpeedRun();
-  setActiveMode('stage');editingBoard=false;
+  setCampaignModeCommand('stage');editingBoard=false;
   nextStageAttention=false;
   stageIndex=Math.max(0,Math.min(STAGES.length-1,index));
-  WakeSevenState.setNavigationIndex(gameState,'stage',stageIndex);
+  updateNavigationStateCommand({stageIndex});
   returnStageContext={extra:false,satori:false,index:stageIndex};
   const stage=STAGES[stageIndex];
   persistCurrentStage(false,stageIndex);
@@ -1292,10 +1292,10 @@ function loadExtraStage(index){
   // 一周目は、だるま修行の修了試験を終えるまで名人への道へ進めない。
   if(!canEnterMastery()){showMasterDialog('intermediate');return;}
   if(isMode('speed'))pauseSpeedRun();
-  setActiveMode('mastery');editingBoard=false;
+  setCampaignModeCommand('mastery');editingBoard=false;
   nextStageAttention=false;
   extraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
-  WakeSevenState.setNavigationIndex(gameState,'mastery',extraIndex);
+  updateNavigationStateCommand({masteryIndex:extraIndex});
   returnStageContext={extra:true,satori:false,index:extraIndex};
   const stage=EXTRA_STAGES[extraIndex];
   persistCurrentStage(true,extraIndex);
@@ -1311,10 +1311,10 @@ function loadSatoriStage(index){
     return;
   }
   if(isMode('speed'))pauseSpeedRun();
-  setActiveMode('satori');editingBoard=false;
+  setCampaignModeCommand('satori');editingBoard=false;
   nextStageAttention=false;
   satoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
-  WakeSevenState.setNavigationIndex(gameState,'satori',satoriIndex);
+  updateNavigationStateCommand({satoriIndex});
   returnStageContext={extra:false,satori:true,index:satoriIndex};
   const stage=SATORI_STAGES[satoriIndex];
   try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}

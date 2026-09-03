@@ -5463,7 +5463,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
   if(!speedSession)return;
   if(speedSession.index>0)speedSession.started=true;
   setSpeedManualPauseCommand(false);
-  setActiveMode('speed');editingBoard=false;
+  setCampaignModeCommand('speed');editingBoard=false;
   const pool=speedStagePool(activeSpeedDefinition());
   if(!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent){
     // スタート前は問題を見せず、全員が起きたまっさらな盤面で開始を促す。
@@ -7055,7 +7055,7 @@ function showTutorialCue(){
 }
 function loadTutorialStep(index=0){
   clearUiEffectTimers('tutorial');
-  setActiveMode('tutorial');editingBoard=false;
+  setCampaignModeCommand('tutorial');editingBoard=false;
   setTutorialStepCommand(index);
   // 前の段階で消した誤操作棒は、次の段階では再表示する。
   svg.querySelectorAll('.grip-marker.narrow-hidden').forEach(marker=>marker.classList.remove('narrow-hidden'));
@@ -7086,10 +7086,10 @@ function loadStage(index){
     return;
   }
   if(isMode('speed'))pauseSpeedRun();
-  setActiveMode('stage');editingBoard=false;
+  setCampaignModeCommand('stage');editingBoard=false;
   nextStageAttention=false;
   stageIndex=Math.max(0,Math.min(STAGES.length-1,index));
-  WakeSevenState.setNavigationIndex(gameState,'stage',stageIndex);
+  updateNavigationStateCommand({stageIndex});
   returnStageContext={extra:false,satori:false,index:stageIndex};
   const stage=STAGES[stageIndex];
   persistCurrentStage(false,stageIndex);
@@ -7105,10 +7105,10 @@ function loadExtraStage(index){
   // 一周目は、だるま修行の修了試験を終えるまで名人への道へ進めない。
   if(!canEnterMastery()){showMasterDialog('intermediate');return;}
   if(isMode('speed'))pauseSpeedRun();
-  setActiveMode('mastery');editingBoard=false;
+  setCampaignModeCommand('mastery');editingBoard=false;
   nextStageAttention=false;
   extraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
-  WakeSevenState.setNavigationIndex(gameState,'mastery',extraIndex);
+  updateNavigationStateCommand({masteryIndex:extraIndex});
   returnStageContext={extra:true,satori:false,index:extraIndex};
   const stage=EXTRA_STAGES[extraIndex];
   persistCurrentStage(true,extraIndex);
@@ -7124,10 +7124,10 @@ function loadSatoriStage(index){
     return;
   }
   if(isMode('speed'))pauseSpeedRun();
-  setActiveMode('satori');editingBoard=false;
+  setCampaignModeCommand('satori');editingBoard=false;
   nextStageAttention=false;
   satoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
-  WakeSevenState.setNavigationIndex(gameState,'satori',satoriIndex);
+  updateNavigationStateCommand({satoriIndex});
   returnStageContext={extra:false,satori:true,index:satoriIndex};
   const stage=SATORI_STAGES[satoriIndex];
   try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}
@@ -8340,6 +8340,34 @@ function refreshGuidedBasicCandidates(){
 }
 
 // ===== 進行command =====
+// 共有状態を書き換える操作命令。
+// 画面イベントは個別の let や保存形式を直接変更せず、この入口へ意図を渡す。
+function updateNavigationStateCommand(patch={}){
+  return WakeSevenAppContext.state.navigation.update(patch);
+}
+function updateDialogStateCommand(patch={}){
+  return WakeSevenAppContext.state.dialog.update(patch);
+}
+function updateSessionStateCommand(patch={}){
+  return WakeSevenAppContext.state.session.update(patch);
+}
+function setCampaignModeCommand(mode,patch={}){
+  return updateNavigationStateCommand({ ...patch, mode });
+}
+function restoreNavigationStateCommand(navigation={}){
+  return updateNavigationStateCommand({
+    mode:navigation.mode,
+    lap:navigation.lap,
+    stageIndex:navigation.stageIndex,
+    masteryIndex:navigation.masteryIndex,
+    satoriIndex:navigation.satoriIndex,
+    tutorialStep:navigation.tutorialStep,
+    lastStageMode:navigation.lastStageMode
+  });
+}
+export {};
+
+// ===== 速解きcommand =====
 // 盤面操作のコマンド入口。実装本体は当面 board-ui.js に残し、入力経路だけを統一する。
 // options をオブジェクト化しておくことで、将来の状態ストア移行時に呼び出し側を変えずに済む。
 const WakeSevenBoardCommands=Object.freeze({
@@ -8405,7 +8433,7 @@ function applyBoardOrientationCommand(permutation,flip=false){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 速解きcommand =====
+// ===== 速解き記録command =====
 // 設定変更の書き込み境界。UIイベントはこのcommandを呼び、保存形式を直接扱わない。
 function toggleSoundCommand(){
   const settings=WakeSevenAppContext.state.settings.read();
@@ -8445,7 +8473,7 @@ function setLanguageCommand(lang){
 }
 export {};
 
-// ===== 速解き記録command =====
+// ===== チュートリアルcommand =====
 // 進行報酬を書き込む操作命令。節目ダイアログの表示処理から状態更新を分離する。
 function grantMasterDialogRewardsCommand(kind){
   if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
@@ -8498,7 +8526,7 @@ const WakeSevenProgressionCommands=Object.freeze({
 });
 export {};
 
-// ===== チュートリアルcommand =====
+// ===== クイズUI =====
 // 速解き固有のセッション状態を書き込む操作命令。時計・表示・遷移は実行側に残す。
 function startSpeedSessionCommand(){
   if(!speedSession||speedSession.started)return false;
@@ -8537,7 +8565,7 @@ function completeSpeedSessionCommand(result){
 }
 export {};
 
-// ===== クイズUI =====
+// ===== クリアフロー =====
 // 速解きの記録データを書き込む操作命令。表示用の集計・描画は実行側に残す。
 function updateSpeedOptimalClearsCommand(){
   if(!speedSession)return false;
@@ -8560,7 +8588,7 @@ function recordSpeedCompletionCommand(elapsed,optimalClears){
 }
 export {};
 
-// ===== クリアフロー =====
+// ===== メッセージUI =====
 // チュートリアル状態の書き込みcommand。演出・誤操作判定はUI側に残す。
 function setTutorialStepCommand(index){
   tutorialStep=Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index));
@@ -8587,7 +8615,7 @@ function persistTutorialSessionCommand(step=tutorialStep){
 }
 export {};
 
-// ===== メッセージUI =====
+// ===== 進行表示 =====
 // ===== 共通クイズUI =====
 function shuffledIndices(length){const order=Array.from({length},(_,index)=>index);for(let index=order.length-1;index>0;index--){const swap=Math.floor(Math.random()*(index+1));[order[index],order[swap]]=[order[swap],order[index]];}return order;}
 function quizPresentation(quiz){const order=shuffledIndices(quiz.a.length);return {answers:order.map(index=>quiz.a[index]),correct:order.indexOf(quiz.correct)};}
@@ -8751,7 +8779,7 @@ function bindBoardQuizAnswerEvents(root,{config,correct,states,copy,note,noteKey
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 進行表示 =====
+// ===== 節目ダイアログ =====
 // ===== クリア内容の選択 =====
 // クリア後の文章・挿絵・詳細データを、表示側から切り離して解決する。
 // ここでは既存のグローバル状態と公開関数名を維持し、生成順の依存を増やさない。
@@ -8786,7 +8814,7 @@ function stageClearArt(){const {mode,masteryIndex,stageIndex}=runtimeSnapshot();
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 節目ダイアログ =====
+// ===== 進行UI =====
 // ===== メッセージUIの宣言データ =====
 const MESSAGE_REVIEW_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.messageReview;
 const MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.messageReviewLast;
@@ -8855,7 +8883,7 @@ const MILESTONE_RENDERERS=Object.freeze({primary:(entry,view)=>renderPrimaryMile
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 進行UI =====
+// ===== ロードマップ表示 =====
 // ステージ進行に関する表示補助。状態更新は行わず、現在の状態を画面へ反映する。
 // 描画のたびにID検索を繰り返さないよう、静的な進行UIの参照を一度だけ束ねる。
 let progressionRenderRefs=null;
@@ -8974,7 +9002,7 @@ function masterRoadmapFragment(current){
 }
 function masterCommonRules(){return currentLang==='ja'?'名人への道は最短の手でクリアする必要があります。\nまた、進むほど自力で考える場面が増えていきます。':'Path to Mastery must be cleared in the fewest moves. As you advance, the rules become stricter.';}
 
-// ===== ロードマップ表示 =====
+// ===== ヒント表示 =====
 // ダイアログとクイズが共有する表示文脈を、入口で固定する。
 // 値の決定だけを担当し、状態やDOMは変更しない。
 function createProgressionMessageContext(context={}){
@@ -9044,7 +9072,7 @@ function showProgressionQuiz(context={}){
 function resolveProgressionQuiz(answer){const value=answer&&typeof answer==='object'?answer:{};const rootId=value.rootId||progressionQuizContext?.rootId||'boardQuiz';const index=Number(value.index??answer);if(!Number.isInteger(index)||index<0)return false;const root=$(rootId);const button=root.querySelector('[data-board-answer="'+index+'"]')||root.querySelector('.quiz-option:nth-child('+(index+1)+')');if(!button||button.disabled)return false;button.click();return true;}
 function closeProgressionQuiz(){const rootIds=new Set([progressionQuizContext?.rootId,'clearQuiz','boardQuiz','messageQuiz','messageBoardQuiz'].filter(Boolean));rootIds.forEach(rootId=>{const root=$(rootId);if(!root)return;root.hidden=true;root.classList.remove('quiz-success');if(rootId==='boardQuiz'||rootId==='messageBoardQuiz')resetBoardQuiz(rootId);});progressionQuizContext=null;}
 
-// ===== ヒント表示 =====
+// ===== クリア後遷移 =====
 // 節目ダイアログの表示条件をまとめる。報酬付与や遷移は progression-ui.js 側が担当する。
 function masterDialogTrialState(kind){
   const {lap}=runtimeSnapshot();
@@ -9079,7 +9107,7 @@ function masterDialogVisibility(kind,needsMasteryTrial){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== クリア後遷移 =====
+// ===== 進行ナビゲーション =====
 // 進行画面の補助的な鑑賞・解説UI。盤面本体の進行状態は変更しない。
 // 名人の盤面、最短2手の見本、クリア後の形ルールをここで描画する。
 function masteryBoardSvg(tilted=false,forceStandardColor=false){
@@ -9331,7 +9359,7 @@ function tipDaruma(x,y,scale=.55){
   return '<g transform="translate('+x+' '+y+') scale('+scale+')"><use href="#daruma-body"/><use href="#face-open"/></g>';
 }
 
-// ===== 進行ナビゲーション =====
+// ===== SVG表示境界 =====
 // ===== 進行UI（このファイルの責務） =====
 // ステージ選択、進行表示、クリア後表示をまとめる。前後移動イベントは
 // progression-navigation.js、共通の小さな表示処理は progression-render.js が担当する。
@@ -10411,7 +10439,7 @@ $('freeMode').addEventListener('click',()=>{if(busy||isMode('free'))return;resto
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== SVG表示境界 =====
+// ===== 画面描画境界 =====
 // 進行画面のHUDとステージナビを描画する。状態遷移は行わず、表示更新だけを担当する。
 function createProgressionViewContext({
   mode,
@@ -10641,7 +10669,7 @@ function renderStageNav(){
   renderStageNavGuidance();
 }
 
-// ===== 画面描画境界 =====
+// ===== イベントと起動 =====
 // ===== ヒント表示・チュートリアル補助 =====
 function clearHintVisuals(preserveSelection=false){
   clearAxisGuide();
@@ -10683,7 +10711,7 @@ $('hint').addEventListener('click',()=>{cancelTutorialHint();if(isFourthVolume()
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};
 
-// ===== イベントと起動 =====
+// ===== 起動・ライフサイクル =====
 // ===== クリア後の状態遷移 =====
 // クリア演出の表示と、次の問題/コースへの遷移を進行UI本体から分離する。
 // clearShown は保存・進行用の状態なので、表示予約の重複防止には使わない。
@@ -10872,7 +10900,7 @@ function returnToClearDialog(){
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};
 
-// ===== 起動・ライフサイクル =====
+// ===== 公開API名前空間 =====
 // 称号表示と称号一覧ダイアログ。
 // 盤面選択画面やクリア後演出からも利用するため、描画の共通部をここに集約する。
 function rankFrameSvg(text,locked=false,index=0,doubleFrame=false,dimmed=false){
@@ -10984,7 +11012,7 @@ function openRankDialogFrom(dialogId,sealId){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 公開API名前空間 =====
+// ===== ui/render.js =====
 /* ---- 画面描画の境界 ----
  * 進行状態を変更する処理と、現在の状態を画面へ反映する処理を分ける。
  * 既存の個別レンダラーは互換のため残し、画面全体を更新する入口だけを

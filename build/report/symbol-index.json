@@ -853,21 +853,6 @@
           "caller": "state"
         },
         {
-          "file": "ui/board-ui.js",
-          "line": 1279,
-          "caller": "loadStage"
-        },
-        {
-          "file": "ui/board-ui.js",
-          "line": 1298,
-          "caller": "loadExtraStage"
-        },
-        {
-          "file": "ui/board-ui.js",
-          "line": 1317,
-          "caller": "loadSatoriStage"
-        },
-        {
           "file": "commands/tutorial-commands.js",
           "line": 4,
           "caller": "setTutorialStepCommand"
@@ -6245,33 +6230,8 @@
         },
         {
           "file": "runtime/speed.js",
-          "line": 245,
-          "caller": "loadSpeedStage"
-        },
-        {
-          "file": "runtime/speed.js",
           "line": 298,
           "caller": "finishSpeedRun"
-        },
-        {
-          "file": "ui/board-ui.js",
-          "line": 1245,
-          "caller": "loadTutorialStep"
-        },
-        {
-          "file": "ui/board-ui.js",
-          "line": 1276,
-          "caller": "loadStage"
-        },
-        {
-          "file": "ui/board-ui.js",
-          "line": 1295,
-          "caller": "loadExtraStage"
-        },
-        {
-          "file": "ui/board-ui.js",
-          "line": 1314,
-          "caller": "loadSatoriStage"
         },
         {
           "file": "ui/board-ui.js",
@@ -19975,6 +19935,121 @@
       "line": 125,
       "kind": "constant",
       "callers": []
+    },
+    "updateNavigationStateCommand": {
+      "name": "updateNavigationStateCommand",
+      "file": "commands/state-commands.js",
+      "line": 3,
+      "kind": "function",
+      "callers": [
+        {
+          "file": "ui/board-ui.js",
+          "line": 1279,
+          "caller": "loadStage"
+        },
+        {
+          "file": "ui/board-ui.js",
+          "line": 1298,
+          "caller": "loadExtraStage"
+        },
+        {
+          "file": "ui/board-ui.js",
+          "line": 1317,
+          "caller": "loadSatoriStage"
+        },
+        {
+          "file": "commands/state-commands.js",
+          "line": 3,
+          "caller": null
+        },
+        {
+          "file": "commands/state-commands.js",
+          "line": 13,
+          "caller": "setCampaignModeCommand"
+        },
+        {
+          "file": "commands/state-commands.js",
+          "line": 16,
+          "caller": "restoreNavigationStateCommand"
+        }
+      ]
+    },
+    "updateDialogStateCommand": {
+      "name": "updateDialogStateCommand",
+      "file": "commands/state-commands.js",
+      "line": 6,
+      "kind": "function",
+      "callers": [
+        {
+          "file": "commands/state-commands.js",
+          "line": 6,
+          "caller": "updateNavigationStateCommand"
+        }
+      ]
+    },
+    "updateSessionStateCommand": {
+      "name": "updateSessionStateCommand",
+      "file": "commands/state-commands.js",
+      "line": 9,
+      "kind": "function",
+      "callers": [
+        {
+          "file": "commands/state-commands.js",
+          "line": 9,
+          "caller": "updateDialogStateCommand"
+        }
+      ]
+    },
+    "setCampaignModeCommand": {
+      "name": "setCampaignModeCommand",
+      "file": "commands/state-commands.js",
+      "line": 12,
+      "kind": "function",
+      "callers": [
+        {
+          "file": "runtime/speed.js",
+          "line": 245,
+          "caller": "loadSpeedStage"
+        },
+        {
+          "file": "ui/board-ui.js",
+          "line": 1245,
+          "caller": "loadTutorialStep"
+        },
+        {
+          "file": "ui/board-ui.js",
+          "line": 1276,
+          "caller": "loadStage"
+        },
+        {
+          "file": "ui/board-ui.js",
+          "line": 1295,
+          "caller": "loadExtraStage"
+        },
+        {
+          "file": "ui/board-ui.js",
+          "line": 1314,
+          "caller": "loadSatoriStage"
+        },
+        {
+          "file": "commands/state-commands.js",
+          "line": 12,
+          "caller": "updateSessionStateCommand"
+        }
+      ]
+    },
+    "restoreNavigationStateCommand": {
+      "name": "restoreNavigationStateCommand",
+      "file": "commands/state-commands.js",
+      "line": 15,
+      "kind": "function",
+      "callers": [
+        {
+          "file": "commands/state-commands.js",
+          "line": 15,
+          "caller": "setCampaignModeCommand"
+        }
+      ]
     },
     "WakeSevenBoardCommands": {
       "name": "WakeSevenBoardCommands",

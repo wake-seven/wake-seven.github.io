@@ -242,7 +242,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
   if(!speedSession)return;
   if(speedSession.index>0)speedSession.started=true;
   setSpeedManualPauseCommand(false);
-  setActiveMode('speed');editingBoard=false;
+  setCampaignModeCommand('speed');editingBoard=false;
   const pool=speedStagePool(activeSpeedDefinition());
   if(!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent){
     // スタート前は問題を見せず、全員が起きたまっさらな盤面で開始を促す。
