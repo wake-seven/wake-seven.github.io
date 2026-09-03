@@ -1,18 +1,16 @@
 {
   "schemaVersion": 1,
-  "name": "state-access-baseline",
-  "generatedAt": "2026-09-03T09:50:19.753Z",
-  "source": "scripts/state-access-exceptions.json",
-  "counts": {
-    "temporary": 178,
+  "name": "wake7-temporary-exception-audit",
+  "generatedAt": "2026-09-03T09:50:49.120Z",
+  "status": "warning",
+  "completion": "in-progress",
+  "summary": {
+    "temporaryCount": 178,
+    "temporaryZero": false,
+    "progress": "0/178",
     "byPurpose": {
-      "navigation": 153,
       "dialog": 25,
-      "progress": 0,
-      "session": 0,
-      "board": 0,
-      "settings": 0,
-      "animation": 0
+      "navigation": 153
     },
     "byEntrypoint": {
       "commands": 7,
@@ -21,12 +19,13 @@
       "runtime": 10,
       "ui": 150
     },
-    "byAccess": {
-      "read": 154,
-      "write": 24
+    "byPriority": {
+      "1": 178,
+      "2": 0,
+      "3": 0
     }
   },
-  "entries": [
+  "remaining": [
     {
       "fingerprint": "state/progression-policy.js:stageIndex:uiPolicy({mode,lap,stageIndex,speedVariant}) {",
       "source": {
@@ -35,19 +34,13 @@
         "excerpt": "uiPolicy({mode,lap,stageIndex,speedVariant}) {"
       },
       "symbol": "stageIndex",
-      "entrypoint": "other",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "other",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex < academyTotal) {",
@@ -57,19 +50,13 @@
         "excerpt": "if(stageIndex < academyTotal) {"
       },
       "symbol": "stageIndex",
-      "entrypoint": "other",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "other",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= developmentStart) return {id:'development',assisted:true,development:lap === 1,eliminateWrongRods:lap === 1};",
@@ -79,19 +66,13 @@
         "excerpt": "if(stageIndex >= developmentStart) return {id:'development',assisted:true,development:lap === 1,eliminateWrongRods:lap === 1};"
       },
       "symbol": "stageIndex",
-      "entrypoint": "other",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "other",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= applicationStart) return {id:'application',assisted:true,application:lap === 1,showTargetCells:lap === 1,rewindWrongMove:lap === 1,eliminateWrongRods:lap === 1};",
@@ -101,19 +82,13 @@
         "excerpt": "if(stageIndex >= applicationStart) return {id:'application',assisted:true,application:lap === 1,showTargetCells:lap === 1,rewindWrongMove:lap === 1,eliminateWrongRods:lap === 1};"
       },
       "symbol": "stageIndex",
-      "entrypoint": "other",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "other",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= basicStart) return {id:'basic',assisted:true,guidedBasic:lap === 1,narrowRods:lap === 1};",
@@ -123,19 +98,13 @@
         "excerpt": "if(stageIndex >= basicStart) return {id:'basic',assisted:true,guidedBasic:lap === 1,narrowRods:lap === 1};"
       },
       "symbol": "stageIndex",
-      "entrypoint": "other",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "other",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};",
@@ -145,19 +114,13 @@
         "excerpt": "if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};"
       },
       "symbol": "stageIndex",
-      "entrypoint": "other",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "other",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};",
@@ -167,19 +130,13 @@
         "excerpt": "if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};"
       },
       "symbol": "stageIndex",
-      "entrypoint": "other",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "other",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "data/clear-content.js:stageIndex:// だるま学園卒業→だるま修行の間に挟む案内ダイアログ。stageIndexで言えばacademy4_8とtraining1_1の境目。",
@@ -189,19 +146,13 @@
         "excerpt": "// だるま学園卒業→だるま修行の間に挟む案内ダイアログ。stageIndexで言えばacademy4_8とtraining1_1の境目。"
       },
       "symbol": "stageIndex",
-      "entrypoint": "data",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "data",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "data/core-data.js:stageIndex:// stageIndex/extraIndex から CLEAR_CONTENT のキーへ変換する。",
@@ -211,19 +162,13 @@
         "excerpt": "// stageIndex/extraIndex から CLEAR_CONTENT のキーへ変換する。"
       },
       "symbol": "stageIndex",
-      "entrypoint": "data",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "data",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "data/core-data.js:extraIndex:// stageIndex/extraIndex から CLEAR_CONTENT のキーへ変換する。",
@@ -233,19 +178,13 @@
         "excerpt": "// stageIndex/extraIndex から CLEAR_CONTENT のキーへ変換する。"
       },
       "symbol": "extraIndex",
-      "entrypoint": "data",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "data",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "data/core-data.js:activeLap:return activeLap===2?transformStateBySymmetry(state,SECOND_LAP_BOARD_VIEW):state;",
@@ -255,19 +194,13 @@
         "excerpt": "return activeLap===2?transformStateBySymmetry(state,SECOND_LAP_BOARD_VIEW):state;"
       },
       "symbol": "activeLap",
-      "entrypoint": "data",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "data",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "runtime/speed.js:activeLap:if(activeLap===2)return null;",
@@ -277,19 +210,13 @@
         "excerpt": "if(activeLap===2)return null;"
       },
       "symbol": "activeLap",
-      "entrypoint": "runtime",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "runtime",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),",
@@ -299,19 +226,13 @@
         "excerpt": "basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:applicationWelcome:academyBoardStep('application','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(stageIndex+1)),",
@@ -321,19 +242,13 @@
         "excerpt": "applicationWelcome:academyBoardStep('application','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(stageIndex+1)),"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:onAction(){loadStage(stageIndex+1);}",
@@ -343,19 +258,13 @@
         "excerpt": "onAction(){loadStage(stageIndex+1);}"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:onAction(){loadStage(stageIndex+1);}",
@@ -365,19 +274,13 @@
         "excerpt": "onAction(){loadStage(stageIndex+1);}"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)",
@@ -387,19 +290,13 @@
         "excerpt": "if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)",
@@ -409,19 +306,13 @@
         "excerpt": "if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:return stageIndex-TRAINING_STAGE_START<5?'joinOne':'joinTwo';",
@@ -431,19 +322,13 @@
         "excerpt": "return stageIndex-TRAINING_STAGE_START<5?'joinOne':'joinTwo';"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:const isTwoMoveLessonStage=()=>isMode('stage')&&((stageIndex>=BASIC_STAGE_START&&stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT)",
@@ -453,19 +338,13 @@
         "excerpt": "const isTwoMoveLessonStage=()=>isMode('stage')&&((stageIndex>=BASIC_STAGE_START&&stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT)"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:const isTwoMoveLessonStage=()=>isMode('stage')&&((stageIndex>=BASIC_STAGE_START&&stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT)",
@@ -475,19 +354,13 @@
         "excerpt": "const isTwoMoveLessonStage=()=>isMode('stage')&&((stageIndex>=BASIC_STAGE_START&&stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT)"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:||(stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT));",
@@ -497,19 +370,13 @@
         "excerpt": "||(stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT));"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:||(stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT));",
@@ -519,19 +386,13 @@
         "excerpt": "||(stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT));"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:const base=stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT?BASIC_STAGE_START:TRAINING_STAGE_START;",
@@ -541,19 +402,13 @@
         "excerpt": "const base=stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT?BASIC_STAGE_START:TRAINING_STAGE_START;"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:const position=stageIndex-base+1;",
@@ -563,19 +418,13 @@
         "excerpt": "const position=stageIndex-base+1;"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:return {state:transformStateBySymmetry(campaignStageState(STAGES[stageIndex].state),SECOND_LAP_BOARD_VIEW),position,group:position<=5?'joinOne':'joinTwo'};",
@@ -585,19 +434,13 @@
         "excerpt": "return {state:transformStateBySymmetry(campaignStageState(STAGES[stageIndex].state),SECOND_LAP_BOARD_VIEW),position,group:position<=5?'joinOne':'joinTwo'};"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:activeMode:function completeBoard({mode=activeMode,context={},animation=true,nextAction=null}={}){",
@@ -607,19 +450,13 @@
         "excerpt": "function completeBoard({mode=activeMode,context={},animation=true,nextAction=null}={}){"
       },
       "symbol": "activeMode",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:activeMode:const target=mode||activeMode;",
@@ -629,19 +466,13 @@
         "excerpt": "const target=mode||activeMode;"
       },
       "symbol": "activeMode",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:const firstClear=target==='satori'?!clearedSatoriStages.has(satoriIndex)",
@@ -651,19 +482,13 @@
         "excerpt": "const firstClear=target==='satori'?!clearedSatoriStages.has(satoriIndex)"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex::target==='mastery'?!clearedExtraStages.has(extraIndex)",
@@ -673,19 +498,13 @@
         "excerpt": ":target==='mastery'?!clearedExtraStages.has(extraIndex)"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex::!clearedStages.has(stageIndex);",
@@ -695,19 +514,13 @@
         "excerpt": ":!clearedStages.has(stageIndex);"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:const wasSatoriMastered=isSatoriMastered();recordProgressClearCommand('satori',satoriIndex);",
@@ -717,19 +530,13 @@
         "excerpt": "const wasSatoriMastered=isSatoriMastered();recordProgressClearCommand('satori',satoriIndex);"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:if(isSatoriMastered())rememberClearedMessage(false,satoriIndex,true);",
@@ -739,19 +546,13 @@
         "excerpt": "if(isSatoriMastered())rememberClearedMessage(false,satoriIndex,true);"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:recordProgressClearCommand('mastery',extraIndex);rememberClearedMessage(true,extraIndex);updateMasterTheme();",
@@ -761,19 +562,13 @@
         "excerpt": "recordProgressClearCommand('mastery',extraIndex);rememberClearedMessage(true,extraIndex);updateMasterTheme();"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:recordProgressClearCommand('mastery',extraIndex);rememberClearedMessage(true,extraIndex);updateMasterTheme();",
@@ -783,19 +578,13 @@
         "excerpt": "recordProgressClearCommand('mastery',extraIndex);rememberClearedMessage(true,extraIndex);updateMasterTheme();"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:recordProgressClearCommand('primary',stageIndex);rememberClearedMessage(false,stageIndex);",
@@ -805,19 +594,13 @@
         "excerpt": "recordProgressClearCommand('primary',stageIndex);rememberClearedMessage(false,stageIndex);"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:recordProgressClearCommand('primary',stageIndex);rememberClearedMessage(false,stageIndex);",
@@ -827,19 +610,13 @@
         "excerpt": "recordProgressClearCommand('primary',stageIndex);rememberClearedMessage(false,stageIndex);"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isSolved()&&!clearShown){",
@@ -849,19 +626,13 @@
         "excerpt": "if(isSolved()&&!clearShown){"
       },
       "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isMode('speed')&&isSolved()&&!clearShown&&speedSession&&!speedAwaitingStart()){",
@@ -871,19 +642,13 @@
         "excerpt": "if(isMode('speed')&&isSolved()&&!clearShown&&speedSession&&!speedAwaitingStart()){"
       },
       "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isMode('satori')&&!isSolved()&&moves>=satoriFailureLimit&&!clearShown){",
@@ -893,19 +658,13 @@
         "excerpt": "if(isMode('satori')&&!isSolved()&&moves>=satoriFailureLimit&&!clearShown){"
       },
       "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:activeMode:if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){ProgressionEntryPoints.finishStage({mode:activeMode});}",
@@ -915,19 +674,13 @@
         "excerpt": "if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){ProgressionEntryPoints.finishStage({mode:activeMode});}"
       },
       "symbol": "activeMode",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){ProgressionEntryPoints.finishStage({mode:activeMode});}",
@@ -937,19 +690,13 @@
         "excerpt": "if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){ProgressionEntryPoints.finishStage({mode:activeMode});}"
       },
       "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){",
@@ -959,19 +706,13 @@
         "excerpt": "if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){"
       },
       "symbol": "activeLap",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){",
@@ -981,19 +722,13 @@
         "excerpt": "if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){",
@@ -1003,19 +738,13 @@
         "excerpt": "if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves>=5&&!isSolved())",
@@ -1025,19 +754,13 @@
         "excerpt": "if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves>=5&&!isSolved())"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves>=5&&!isSolved())",
@@ -1047,19 +770,13 @@
         "excerpt": "if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves>=5&&!isSolved())"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:if(TUTORIAL_STEPS[tutorialStep]?.cue==='none')return solutions.some(move=>move.ti===ti&&move.dir===dir);",
@@ -1069,19 +786,13 @@
         "excerpt": "if(TUTORIAL_STEPS[tutorialStep]?.cue==='none')return solutions.some(move=>move.ti===ti&&move.dir===dir);"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const second=tutorialStep===1;",
@@ -1091,19 +802,13 @@
         "excerpt": "const second=tutorialStep===1;"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const cue=TUTORIAL_STEPS[tutorialStep]?.cue;",
@@ -1113,19 +818,13 @@
         "excerpt": "const cue=TUTORIAL_STEPS[tutorialStep]?.cue;"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:clear:second?'tutorialSecondClearPrompt':tutorialStep===0?'tutorialFirstClearPrompt':'tutorialClearPrompt'",
@@ -1135,19 +834,13 @@
         "excerpt": "clear:second?'tutorialSecondClearPrompt':tutorialStep===0?'tutorialFirstClearPrompt':'tutorialClearPrompt'"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const step=TUTORIAL_STEPS[tutorialStep],move=tutorialSolvingMoves()[0];",
@@ -1157,19 +850,13 @@
         "excerpt": "const step=TUTORIAL_STEPS[tutorialStep],move=tutorialSolvingMoves()[0];"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const step=TUTORIAL_STEPS[tutorialStep];",
@@ -1179,19 +866,13 @@
         "excerpt": "const step=TUTORIAL_STEPS[tutorialStep];"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}",
@@ -1201,19 +882,13 @@
         "excerpt": "if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}",
@@ -1223,19 +898,13 @@
         "excerpt": "if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
@@ -1245,19 +914,13 @@
         "excerpt": "nextStageAttention=false;"
       },
       "symbol": "nextStageAttention",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:setNavigationIndexCommand('stageIndex',nextStageIndex);",
@@ -1267,19 +930,13 @@
         "excerpt": "setNavigationIndexCommand('stageIndex',nextStageIndex);"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:returnStageContext={extra:false,satori:false,index:stageIndex};",
@@ -1289,19 +946,13 @@
         "excerpt": "returnStageContext={extra:false,satori:false,index:stageIndex};"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:const stage=STAGES[stageIndex];",
@@ -1311,19 +962,13 @@
         "excerpt": "const stage=STAGES[stageIndex];"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:persistCurrentStage(false,stageIndex);",
@@ -1333,19 +978,13 @@
         "excerpt": "persistCurrentStage(false,stageIndex);"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
@@ -1355,19 +994,13 @@
         "excerpt": "nextStageAttention=false;"
       },
       "symbol": "nextStageAttention",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:returnStageContext={extra:true,satori:false,index:extraIndex};",
@@ -1377,19 +1010,13 @@
         "excerpt": "returnStageContext={extra:true,satori:false,index:extraIndex};"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:const stage=EXTRA_STAGES[extraIndex];",
@@ -1399,19 +1026,13 @@
         "excerpt": "const stage=EXTRA_STAGES[extraIndex];"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:persistCurrentStage(true,extraIndex);",
@@ -1421,19 +1042,13 @@
         "excerpt": "persistCurrentStage(true,extraIndex);"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:if(activeLap===1&&isMastered())showMasterDialog('mastery');",
@@ -1443,19 +1058,13 @@
         "excerpt": "if(activeLap===1&&isMastered())showMasterDialog('mastery');"
       },
       "symbol": "activeLap",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
@@ -1465,19 +1074,13 @@
         "excerpt": "nextStageAttention=false;"
       },
       "symbol": "nextStageAttention",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:setNavigationIndexCommand('satoriIndex',nextSatoriIndex);",
@@ -1487,19 +1090,13 @@
         "excerpt": "setNavigationIndexCommand('satoriIndex',nextSatoriIndex);"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:returnStageContext={extra:false,satori:true,index:satoriIndex};",
@@ -1509,19 +1106,13 @@
         "excerpt": "returnStageContext={extra:false,satori:true,index:satoriIndex};"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:const stage=SATORI_STAGES[satoriIndex];",
@@ -1531,19 +1122,13 @@
         "excerpt": "const stage=SATORI_STAGES[satoriIndex];"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}",
@@ -1553,19 +1138,13 @@
         "excerpt": "try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}"
       },
       "symbol": "activeLap",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}",
@@ -1575,19 +1154,13 @@
         "excerpt": "try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({extra,index,lap:activeLap}));}catch(_){}",
@@ -1597,19 +1170,13 @@
         "excerpt": "try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({extra,index,lap:activeLap}));}catch(_){}"
       },
       "symbol": "activeLap",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:clearShown,fourthChecksUsed,fourthDistanceRevealed",
@@ -1619,19 +1186,13 @@
         "excerpt": "clearShown,fourthChecksUsed,fourthDistanceRevealed"
       },
       "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:svg.classList.toggle('clear-pending',clearShown&&isSolved());",
@@ -1641,19 +1202,13 @@
         "excerpt": "svg.classList.toggle('clear-pending',clearShown&&isSolved());"
       },
       "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:$('clearNext').hidden=!clearShown;",
@@ -1663,19 +1218,13 @@
         "excerpt": "$('clearNext').hidden=!clearShown;"
       },
       "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:const payload={mode:'speed',variant:speedVariant,lap:activeLap};",
@@ -1685,19 +1234,13 @@
         "excerpt": "const payload={mode:'speed',variant:speedVariant,lap:activeLap};"
       },
       "symbol": "activeLap",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:activeMode:const mode=activeMode;",
@@ -1707,19 +1250,13 @@
         "excerpt": "const mode=activeMode;"
       },
       "symbol": "activeMode",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,",
@@ -1729,19 +1266,13 @@
         "excerpt": "mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,"
       },
       "symbol": "activeLap",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,",
@@ -1751,19 +1282,13 @@
         "excerpt": "mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:$('clearNext').hidden=!clearShown;",
@@ -1773,19 +1298,13 @@
         "excerpt": "$('clearNext').hidden=!clearShown;"
       },
       "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(clearShown)$('clearNext').textContent=tr('another');",
@@ -1795,19 +1314,13 @@
         "excerpt": "if(clearShown)$('clearNext').textContent=tr('another');"
       },
       "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const tutorialCue=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]?.cue:'';",
@@ -1817,19 +1330,13 @@
         "excerpt": "const tutorialCue=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]?.cue:'';"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isMode('tutorial')&&clearShown)return;",
@@ -1839,19 +1346,13 @@
         "excerpt": "if(isMode('tutorial')&&clearShown)return;"
       },
       "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isSolved()&&clearShown){",
@@ -1861,19 +1362,13 @@
         "excerpt": "if(isSolved()&&clearShown){"
       },
       "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
@@ -1883,19 +1378,13 @@
         "excerpt": "nextStageAttention=false;"
       },
       "symbol": "nextStageAttention",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const tutorialStepData=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]:null;",
@@ -1905,19 +1394,13 @@
         "excerpt": "const tutorialStepData=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]:null;"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const tutorialCue=TUTORIAL_STEPS[tutorialStep]?.cue;",
@@ -1927,19 +1410,13 @@
         "excerpt": "const tutorialCue=TUTORIAL_STEPS[tutorialStep]?.cue;"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const turnPrompt=tutorialStep===1?tr('tutorialSecondArrowPrompt')",
@@ -1949,19 +1426,13 @@
         "excerpt": "const turnPrompt=tutorialStep===1?tr('tutorialSecondArrowPrompt')"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep::tutorialStep===3?tr('tutorialChainTurnPrompt'):tutorialPrompt('turn');",
@@ -1971,19 +1442,13 @@
         "excerpt": ":tutorialStep===3?tr('tutorialChainTurnPrompt'):tutorialPrompt('turn');"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:renderTutorialFeedback({text:tr(TUTORIAL_STEPS[tutorialStep]?.cue==='chain-direction'?'tutorialWrongPlacePrompt':'tutorialWrongPrompt')});",
@@ -1993,19 +1458,13 @@
         "excerpt": "renderTutorialFeedback({text:tr(TUTORIAL_STEPS[tutorialStep]?.cue==='chain-direction'?'tutorialWrongPlacePrompt':'tutorialWrongPrompt')});"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:target,direction:dir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue",
@@ -2015,19 +1474,13 @@
         "excerpt": "animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:target,direction:dir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:rewindDir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cu",
@@ -2037,19 +1490,13 @@
         "excerpt": "animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:rewindDir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cu"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&stageIndex===0&&!hasMasterReward())",
@@ -2059,19 +1506,13 @@
         "excerpt": "if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&stageIndex===0&&!hasMasterReward())"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:const forceTopRight=stageIndex===BASIC_STAGE_START+5&&correctTis.includes(TOP_RIGHT_TI);",
@@ -2081,19 +1522,13 @@
         "excerpt": "const forceTopRight=stageIndex===BASIC_STAGE_START+5&&correctTis.includes(TOP_RIGHT_TI);"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:const count=academyGripDisplayCount(undefined,stageIndex-BASIC_STAGE_START+1);",
@@ -2103,19 +1538,13 @@
         "excerpt": "const count=academyGripDisplayCount(undefined,stageIndex-BASIC_STAGE_START+1);"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:const stage=STAGES[stageIndex],correctTis=[];",
@@ -2125,19 +1554,13 @@
         "excerpt": "const stage=STAGES[stageIndex],correctTis=[];"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:for(const index of STAGES[stageIndex]?.targetCells||[]){",
@@ -2147,19 +1570,13 @@
         "excerpt": "for(const index of STAGES[stageIndex]?.targetCells||[]){"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:const stage=isApplicationTargetStage()?STAGES[stageIndex]:null;",
@@ -2169,19 +1586,13 @@
         "excerpt": "const stage=isApplicationTargetStage()?STAGES[stageIndex]:null;"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:const stage=STAGES[stageIndex];",
@@ -2191,19 +1602,13 @@
         "excerpt": "const stage=STAGES[stageIndex];"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:else {const signature=stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=computeDevelopmentCandidateTis()||fullSet();guidedBasicCandidateSignature",
@@ -2213,19 +1618,13 @@
         "excerpt": "else {const signature=stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=computeDevelopmentCandidateTis()||fullSet();guidedBasicCandidateSignature"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:else {const signature='application:'+stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=fullSet();guidedBasicCandidateSignature=signature;}}",
@@ -2235,19 +1634,13 @@
         "excerpt": "else {const signature='application:'+stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=fullSet();guidedBasicCandidateSignature=signature;}}"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:else {const signature=stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=(isNarrowedBasicStage()&&SOLVER.dist[enc(ori)]>1)?computeGuidedBasicCandi",
@@ -2257,19 +1650,13 @@
         "excerpt": "else {const signature=stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=(isNarrowedBasicStage()&&SOLVER.dist[enc(ori)]>1)?computeGuidedBasicCandi"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "commands/board-commands.js:clearShown:savedFreeSession={ori:Uint8Array.from(ori),spin:Int16Array.from(spin),tileEls:tileEls.slice(),moves,best,history:history.map(cloneHistoryEntry),initialState:currentInitialState,initialPar:currentInitialPar,clearShown};",
@@ -2279,19 +1666,13 @@
         "excerpt": "savedFreeSession={ori:Uint8Array.from(ori),spin:Int16Array.from(spin),tileEls:tileEls.slice(),moves,best,history:history.map(cloneHistoryEntry),initialState:currentInitialState,initialPar:currentInitialPar,clearShown};"
       },
       "symbol": "clearShown",
-      "entrypoint": "commands",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "commands",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:tutorialStep=Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index));",
@@ -2301,19 +1682,13 @@
         "excerpt": "tutorialStep=Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index));"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "commands",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "commands",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:WakeSevenState.setNavigationIndex(gameState,'tutorial',tutorialStep);",
@@ -2323,19 +1698,13 @@
         "excerpt": "WakeSevenState.setNavigationIndex(gameState,'tutorial',tutorialStep);"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "commands",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "commands",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialStep,String(tutorialStep));",
@@ -2345,19 +1714,13 @@
         "excerpt": "commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialStep,String(tutorialStep));"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "commands",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "commands",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:return tutorialStep;",
@@ -2367,19 +1730,13 @@
         "excerpt": "return tutorialStep;"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "commands",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "commands",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:tutorialStep=0;",
@@ -2389,19 +1746,13 @@
         "excerpt": "tutorialStep=0;"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "commands",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "commands",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:function persistTutorialSessionCommand(step=tutorialStep){",
@@ -2411,19 +1762,13 @@
         "excerpt": "function persistTutorialSessionCommand(step=tutorialStep){"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "commands",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "commands",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/quiz.js:activeMode:// クリア後は activeMode が次の導線用に切り替わることがあるため、",
@@ -2433,19 +1778,13 @@
         "excerpt": "// クリア後は activeMode が次の導線用に切り替わることがあるため、"
       },
       "symbol": "activeMode",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/quiz.js:extraIndex:// 名人の盤面を最後に表示した文脈を優先する。extraIndex は常に整数で",
@@ -2455,19 +1794,13 @@
         "excerpt": "// 名人の盤面を最後に表示した文脈を優先する。extraIndex は常に整数で"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/message.js:stageIndex:function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries(",
@@ -2477,19 +1810,13 @@
         "excerpt": "function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries("
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/message.js:stageIndex:function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries(",
@@ -2499,19 +1826,13 @@
         "excerpt": "function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries("
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/message.js:messageDialogReturn:function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries(",
@@ -2521,19 +1842,13 @@
         "excerpt": "function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries("
       },
       "symbol": "messageDialogReturn",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-render.js:stageIndex:function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){",
@@ -2543,19 +1858,13 @@
         "excerpt": "function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-render.js:extraIndex:function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){",
@@ -2565,19 +1874,13 @@
         "excerpt": "function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-render.js:satoriIndex:function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){",
@@ -2587,19 +1890,13 @@
         "excerpt": "function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-render.js:satoriIndex:else if(mode==='satori')fraction=(satoriIndex+1)/(satoriTotal||1);",
@@ -2609,19 +1906,13 @@
         "excerpt": "else if(mode==='satori')fraction=(satoriIndex+1)/(satoriTotal||1);"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-render.js:extraIndex:else if(mode==='mastery')fraction=(extraIndex+1)/(masteryTotal||1);",
@@ -2631,19 +1922,13 @@
         "excerpt": "else if(mode==='mastery')fraction=(extraIndex+1)/(masteryTotal||1);"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
@@ -2653,19 +1938,13 @@
         "excerpt": "else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
@@ -2675,19 +1954,13 @@
         "excerpt": "else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
@@ -2697,19 +1970,13 @@
         "excerpt": "else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:activeLap:// 称号一覧で選択した周（activeLap）を、そのまま問題選択にも引き継ぐ。",
@@ -2719,19 +1986,13 @@
         "excerpt": "// 称号一覧で選択した周（activeLap）を、そのまま問題選択にも引き継ぐ。"
       },
       "symbol": "activeLap",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));",
@@ -2741,19 +2002,13 @@
         "excerpt": "return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);",
@@ -2763,19 +2018,13 @@
         "excerpt": "const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:// 通常ステージの古い stageIndex / masteryClearContext を使って",
@@ -2785,19 +2034,13 @@
         "excerpt": "// 通常ステージの古い stageIndex / masteryClearContext を使って"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
@@ -2807,19 +2050,13 @@
         "excerpt": "const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
@@ -2829,19 +2066,13 @@
         "excerpt": "const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
@@ -2851,19 +2082,13 @@
         "excerpt": "const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;",
@@ -2873,19 +2098,13 @@
         "excerpt": "const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;",
@@ -2895,19 +2114,13 @@
         "excerpt": "const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;",
@@ -2917,19 +2130,13 @@
         "excerpt": "const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:masterDialogKind:const shouldAnimate=masterDialog.hidden||masterDialogKind!==kind;",
@@ -2939,19 +2146,13 @@
         "excerpt": "const shouldAnimate=masterDialog.hidden||masterDialogKind!==kind;"
       },
       "symbol": "masterDialogKind",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:extraIndex:const volume=Math.ceil((extraIndex+1)/MASTER_VOLUME_SIZE);",
@@ -2961,19 +2162,13 @@
         "excerpt": "const volume=Math.ceil((extraIndex+1)/MASTER_VOLUME_SIZE);"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:activeLap:if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){",
@@ -2983,19 +2178,13 @@
         "excerpt": "if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){"
       },
       "symbol": "activeLap",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){",
@@ -3005,19 +2194,13 @@
         "excerpt": "if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}",
@@ -3027,19 +2210,13 @@
         "excerpt": "if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}",
@@ -3049,19 +2226,13 @@
         "excerpt": "if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}",
@@ -3071,19 +2242,13 @@
         "excerpt": "if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}",
@@ -3093,19 +2258,13 @@
         "excerpt": "if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:else loadStage(stageIndex-1);",
@@ -3115,19 +2274,13 @@
         "excerpt": "else loadStage(stageIndex-1);"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);",
@@ -3137,19 +2290,13 @@
         "excerpt": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);",
@@ -3159,19 +2306,13 @@
         "excerpt": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);",
@@ -3181,19 +2322,13 @@
         "excerpt": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:activeLap:else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}",
@@ -3203,19 +2338,13 @@
         "excerpt": "else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}"
       },
       "symbol": "activeLap",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}",
@@ -3225,19 +2354,13 @@
         "excerpt": "else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}",
@@ -3247,19 +2370,13 @@
         "excerpt": "if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}",
@@ -3269,19 +2386,13 @@
         "excerpt": "if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);",
@@ -3291,19 +2402,13 @@
         "excerpt": "else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:else loadStage(stageIndex+1);",
@@ -3313,19 +2418,13 @@
         "excerpt": "else loadStage(stageIndex+1);"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-hud.js:nextStageAttention:highlightNext:nextStageAttention&&isCampaignMode()&&!$('nextStage').hidden&&!$('nextStage').disabled",
@@ -3335,19 +2434,13 @@
         "excerpt": "highlightNext:nextStageAttention&&isCampaignMode()&&!$('nextStage').hidden&&!$('nextStage').disabled"
       },
       "symbol": "nextStageAttention",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-flow-contract.js:clearShown:{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation'},",
@@ -3357,19 +2450,13 @@
         "excerpt": "{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation'},"
       },
       "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-flow-contract.js:clearShown:{id:'reload-clear',mode:'campaign',from:'page-load',event:'clearShownかつ解決済み',entry:'restoreDialogState→showClearDialog',persist:'clear状態を維持',cancel:'clear状態不整合時は通常盤面',to:'clear-dialog'},",
@@ -3379,19 +2466,13 @@
         "excerpt": "{id:'reload-clear',mode:'campaign',from:'page-load',event:'clearShownかつ解決済み',entry:'restoreDialogState→showClearDialog',persist:'clear状態を維持',cancel:'clear状態不整合時は通常盤面',to:'clear-dialog'},"
       },
       "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:clearShown:// clearShown は保存・進行用の状態なので、表示予約の重複防止には使わない。",
@@ -3401,19 +2482,13 @@
         "excerpt": "// clearShown は保存・進行用の状態なので、表示予約の重複防止には使わない。"
       },
       "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:activeMode:// 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを",
@@ -3423,19 +2498,13 @@
         "excerpt": "// 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを"
       },
       "symbol": "activeMode",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:// 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを",
@@ -3445,19 +2514,13 @@
         "excerpt": "// 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,",
@@ -3467,19 +2530,13 @@
         "excerpt": "mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
@@ -3489,19 +2546,13 @@
         "excerpt": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:extraIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
@@ -3511,19 +2562,13 @@
         "excerpt": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
@@ -3533,19 +2578,13 @@
         "excerpt": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:if(mode==='satori')return satoriIndex<SATORI_STAGES.length-1",
@@ -3555,19 +2594,13 @@
         "excerpt": "if(mode==='satori')return satoriIndex<SATORI_STAGES.length-1"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:? {kind:'satori-stage',index:satoriIndex+1}",
@@ -3577,19 +2610,13 @@
         "excerpt": "? {kind:'satori-stage',index:satoriIndex+1}"
       },
       "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:extraIndex:if(mode==='mastery')return extraIndex===EXTRA_STAGES.length-1",
@@ -3599,19 +2626,13 @@
         "excerpt": "if(mode==='mastery')return extraIndex===EXTRA_STAGES.length-1"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:extraIndex:: {kind:'mastery-stage',index:extraIndex+1};",
@@ -3621,19 +2642,13 @@
         "excerpt": ": {kind:'mastery-stage',index:extraIndex+1};"
       },
       "symbol": "extraIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:if(stageIndex===ACADEMY_STAGE_COUNT-1&&academyIsCleared)return {kind:'master-dialog',section:'primary'};",
@@ -3643,19 +2658,13 @@
         "excerpt": "if(stageIndex===ACADEMY_STAGE_COUNT-1&&academyIsCleared)return {kind:'master-dialog',section:'primary'};"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:if(stageIndex===STAGES.length-1&&allPrimaryIsCleared)return {kind:'master-dialog',section:'intermediate'};",
@@ -3665,19 +2674,13 @@
         "excerpt": "if(stageIndex===STAGES.length-1&&allPrimaryIsCleared)return {kind:'master-dialog',section:'intermediate'};"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:if(stageIndex===STAGES.length-1)return {kind:'restore-free'};",
@@ -3687,19 +2690,13 @@
         "excerpt": "if(stageIndex===STAGES.length-1)return {kind:'restore-free'};"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:return {kind:'stage',index:stageIndex+1};",
@@ -3709,19 +2706,13 @@
         "excerpt": "return {kind:'stage',index:stageIndex+1};"
       },
       "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/rank.js:activeLap:rankListLap=activeLap;",
@@ -3731,19 +2722,13 @@
         "excerpt": "rankListLap=activeLap;"
       },
       "symbol": "activeLap",
-      "entrypoint": "ui",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "ui",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "runtime/app-events.js:stageIndex:rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);",
@@ -3753,19 +2738,13 @@
         "excerpt": "rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);"
       },
       "symbol": "stageIndex",
-      "entrypoint": "runtime",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "runtime",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "runtime/app-events.js:extraIndex:const clickClearEntry=clearContentAt(true,extraIndex);",
@@ -3775,19 +2754,13 @@
         "excerpt": "const clickClearEntry=clearContentAt(true,extraIndex);"
       },
       "symbol": "extraIndex",
-      "entrypoint": "runtime",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "runtime",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
@@ -3797,19 +2770,13 @@
         "excerpt": "satori:{via:'close',when:()=>activeLap===1,"
       },
       "symbol": "activeLap",
-      "entrypoint": "runtime",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "runtime",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "runtime/app-events.js:extraIndex:else GameNavigation.mastery(extraIndex+1);",
@@ -3819,19 +2786,13 @@
         "excerpt": "else GameNavigation.mastery(extraIndex+1);"
       },
       "symbol": "extraIndex",
-      "entrypoint": "runtime",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "runtime",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "runtime/app-events.js:tutorialStep:$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');",
@@ -3841,19 +2802,13 @@
         "excerpt": "$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');"
       },
       "symbol": "tutorialStep",
-      "entrypoint": "runtime",
-      "access": "read",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "runtime",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "runtime/app-events.js:masterDialogKind:if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);",
@@ -3863,19 +2818,13 @@
         "excerpt": "if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);"
       },
       "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "runtime",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "runtime/app-events.js:clearShown:else if(clearShown){",
@@ -3885,19 +2834,13 @@
         "excerpt": "else if(clearShown){"
       },
       "symbol": "clearShown",
-      "entrypoint": "runtime",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "runtime",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "runtime/app-events.js:activeLap:activeLap=1;secondLapUnlocked=false;",
@@ -3907,19 +2850,13 @@
         "excerpt": "activeLap=1;secondLapUnlocked=false;"
       },
       "symbol": "activeLap",
-      "entrypoint": "runtime",
-      "access": "write",
       "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
+      "entrypoint": "runtime",
       "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:navigation",
+      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "runtime/app-bootstrap.js:clearShown:if(!clearShown)ProgressionEntryPoints.finishStage({mode:'speed'});else WakeSevenProgressionCommands.advanceSpeedRun();",
@@ -3929,24 +2866,18 @@
         "excerpt": "if(!clearShown)ProgressionEntryPoints.finishStage({mode:'speed'});else WakeSevenProgressionCommands.advanceSpeedRun();"
       },
       "symbol": "clearShown",
-      "entrypoint": "runtime",
-      "access": "read",
       "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
+      "entrypoint": "runtime",
       "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
+      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
+      "expiresOn": "2026-12-02",
+      "nextMigrationUnit": "gateway:dialog",
+      "reason": "dialog状態の移行完了まで保持する既存参照"
     }
   ],
-  "status": "passed",
-  "summary": {},
-  "warnings": [],
+  "warnings": [
+    "temporary例外が残っているため移行継続中です"
+  ],
   "errors": [],
   "sourceRevision": "working-tree"
 }
