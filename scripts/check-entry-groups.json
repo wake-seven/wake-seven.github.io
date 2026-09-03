@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "description": "検査の公開入口・内部検査・旧別名を一か所で管理する。",
+  "publicEntries": [
+    {
+      "name": "check:structure",
+      "label": "構造",
+      "command": "node scripts/run-check-group.mjs structure",
+      "checks": ["check:entry-groups", "check:trace", "check:manifest-deps", "check:public-symbols", "check:source-boundaries", "check:report-schema"]
+    },
+    {
+      "name": "check:state",
+      "label": "状態",
+      "command": "node scripts/run-check-group.mjs state",
+      "checks": ["check:global-access", "check:state-access-policy", "check:state-classification", "check:state-mutations"]
+    },
+    {
+      "name": "check:flows",
+      "label": "進行",
+      "command": "node scripts/run-check-group.mjs flows",
+      "checks": ["check:progression-flows", "check:progression-flow", "check:event-wiring", "check:ui-data-map"]
+    },
+    {
+      "name": "check:browser",
+      "label": "ブラウザ",
+      "command": "node scripts/run-check-group.mjs browser",
+      "checks": ["check:browser-flow", "check:compat-e2e", "check:browser-e2e", "check:device-e2e"]
+    }
+  ],
+  "internalChecks": [
+    "check:entry-groups", "check:trace", "check:manifest-deps", "check:public-symbols", "check:source-boundaries", "check:report-schema",
+    "check:global-access", "check:state-access-policy", "check:state-classification", "check:state-mutations",
+    "check:progression-flows", "check:progression-flow", "check:event-wiring", "check:ui-data-map",
+    "check:browser-flow", "check:compat-e2e", "check:browser-e2e", "check:device-e2e"
+  ],
+  "legacyAliases": [
+    {
+      "name": "check:script-audit",
+      "replacement": "npm run audit:scripts",
+      "removeWhen": "script inventory is consumed only through check:structure and no external workflow references this alias",
+      "reason": "audit:scripts is the canonical name; the check:* spelling is retained temporarily for old local commands"
+    }
+  ]
+}
