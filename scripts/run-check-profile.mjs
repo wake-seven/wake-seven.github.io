@@ -15,6 +15,11 @@ const packageJson=JSON.parse(await readFile(join(root,'package.json'),'utf8'));
 const pipeline=JSON.parse(await readFile(join(root,'scripts/check-pipeline.json'),'utf8'));
 const profile=profiles.profiles?.[profileName];
 assert.ok(profile,`未知の検査profileです: ${profileName}`);
+const changedFiles=(await execFileAsync('git',['status','--porcelain=v1','-z'],{cwd:root})).stdout
+  .split('\0').filter(Boolean).map(value=>value.slice(3)).filter(Boolean)
+  .map(value=>value.replaceAll('\\','/')).filter(value=>!value.startsWith('build/report/'));
+const fullPolicy=profiles.policy?.fullGateRequired||{};
+const fullGateRequired=profileName!=='full' && changedFiles.some(file=>(fullPolicy.paths||[]).some(path=>file===path||file.startsWith(path)));
 const known=new Set(Object.keys(pipeline.steps||{}));
 const runCommand=command=>new Promise(resolve=>{
   const child=spawn(process.platform==='win32'?(process.env.ComSpec||'cmd.exe'):'sh',process.platform==='win32'?['/d','/s','/c',command]:['-c',command],{cwd:root,stdio:'inherit'});
@@ -86,4 +91,10 @@ if(profileName==='full'){
   const checks=[...new Set(matched.length?areas.flatMap(([,area])=>area.affected||[]):changed.length?profile.steps:profiles.profiles.fast.steps)];
   validateChecks(checks);console.log(`check:affected: ${matched.length?matched.map(([name])=>name).join(', '):changed.length?'未分類の変更あり（affected profileを実行）':'変更なし（fast profileを実行）'}`);
   for(const name of checks){const code=await runCommand(checkCommand(name));if(code!==0){process.exitCode=code;break;}}
+}
+const status=process.exitCode? 'failed':fullGateRequired?'incomplete':'passed';
+await (async()=>{await (await import('node:fs/promises')).writeFile(join(root,'build/report/check-profile-result.json'),JSON.stringify({schemaVersion:1,name:'wake7-check-profile-result',generatedAt:new Date().toISOString(),profile:profileName,status,changedFiles,fullGateRequired,requiredChecks:profile.steps,policy:{fullGateRequired:fullPolicy.reason||null}},null,2)+'\n')})();
+if(fullGateRequired&&status==='incomplete'){
+  console.error(`check:${profileName}: incomplete — ${fullPolicy.reason||'full check:gateが必要です'}`);
+  process.exitCode=1;
 }
