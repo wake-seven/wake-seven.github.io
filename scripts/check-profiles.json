@@ -28,6 +28,10 @@
   "policy": {
     "gateProfile": "full",
     "selection": "fast while editing, affected after a scoped change, full before commit or release",
-    "unknownChangedFiles": "use affected, then full if the impact is unclear"
+    "unknownChangedFiles": "use affected, then full if the impact is unclear",
+    "fullGateRequired": {
+      "paths": ["scripts/", "package.json", "package-lock.json", "src/state/", "src/runtime/", "src/commands/", "src/app/", "src/ui/progression", "src/index.template.html", "index.html"],
+      "reason": "検査基盤・共有状態・主要導線・公開生成物を変更した場合は、3バッチ・公開版・最終報告を含むcheck:gateを完了するまで部分プロファイルを成功扱いにしない。"
+    }
   }
 }

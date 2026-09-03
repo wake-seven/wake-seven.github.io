@@ -13,7 +13,9 @@ const raw = execFileSync('git', ['status', '--porcelain=v1', '-z'], { cwd: root,
 const changedFiles = raw.split('\0').filter(Boolean).map(entry => entry.slice(3)).filter(Boolean);
 const ignoredFiles = changedFiles.filter(file => file.startsWith('build/report/'));
 const files = changedFiles.filter(file => !ignoredFiles.includes(file));
-const fullRules = [/^scripts\//, /^package(?:-lock)?\.json$/, /^src\/(?:state|runtime|commands)\//, /^src\/.*(?:progression|navigation|speed)/i, /^index\.html$/];
+// 検査基盤・共有状態・主要導線・公開生成物の変更は、部分検査を成功扱いにしない。
+const fullRules = (config.policy?.fullGateRequired?.paths || []).map(path =>
+  new RegExp(`^${path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
 const affectedRules = [/^src\//, /^(?:styles?|public)\//, /\.(?:css|html|svg)$/i];
 const reasons = [];
 let selected = requested;
@@ -27,6 +29,7 @@ if (!selected) {
   reasons.push(files.length ? '変更ファイルから自動選択' : '変更ファイルがないためfast');
 } else reasons.push(`指定されたプロファイル: ${selected}`);
 if (!config.profiles[selected]) throw new Error(`不明な検査プロファイルです: ${selected}`);
+const fullGateRequired = selected !== 'full' && files.some(file => fullRules.some(rule => rule.test(file)));
 const requiredChecks = config.profiles[selected].steps;
 const commandFor = name => {
   const direct = {
@@ -57,7 +60,8 @@ if (selected === 'full') {
   for (const name of requiredChecks) executed.push(await run(name, ...commandFor(name)));
 }
 const failed = executed.filter(item => item.exitCode !== 0 && item.passed !== true);
-const result = { schemaVersion: 1, name: 'wake7-check-profile-result', generatedAt: new Date().toISOString(), status: failed.length ? 'failed' : unexecuted.length ? 'incomplete' : 'passed', profile: selected, changedFiles: files, ignoredFiles, selectionReasons: reasons, requiredChecks, executed: executed.map(item => ({ name: item.name, command: item.command || `check:gate → ${item.name}`, startedAt: item.startedAt || null, finishedAt: item.finishedAt || null, durationMs: item.durationMs || 0, exitCode: item.exitCode ?? 1, passed: item.passed ?? item.exitCode === 0 })), unexecuted, summary: { required: requiredChecks.length, executed: executed.length, unexecuted: unexecuted.length, failed: failed.length, durationMs: executed.reduce((total, item) => total + (item.durationMs || 0), 0) }, policy: { passed: '必須検査をすべて実行し、全件成功', incomplete: '未実行があるため成功扱いにしない', failed: '実行済み検査に失敗がある' } };
+const status = failed.length ? 'failed' : unexecuted.length || fullGateRequired ? 'incomplete' : 'passed';
+const result = { schemaVersion: 1, name: 'wake7-check-profile-result', generatedAt: new Date().toISOString(), status, profile: selected, changedFiles: files, ignoredFiles, fullGateRequired, selectionReasons: reasons, requiredChecks, executed: executed.map(item => ({ name: item.name, command: item.command || `check:gate → ${item.name}`, startedAt: item.startedAt || null, finishedAt: item.finishedAt || null, durationMs: item.durationMs || 0, exitCode: item.exitCode ?? 1, passed: item.passed ?? item.exitCode === 0 })), unexecuted, summary: { required: requiredChecks.length, executed: executed.length, unexecuted: unexecuted.length, failed: failed.length, durationMs: executed.reduce((total, item) => total + (item.durationMs || 0), 0) }, policy: { passed: '必須検査をすべて実行し、全件成功', incomplete: '未実行またはfullGateRequiredの変更があるため成功扱いにしない', failed: '実行済み検査に失敗がある', fullGateRequiredReason: config.policy?.fullGateRequired?.reason || null } };
 await mkdir(reportDir, { recursive: true });
 await writeFile(join(reportDir, 'check-profile-result.json'), JSON.stringify(result, null, 2) + '\n');
 console.log(`Check profile ${selected}: ${result.status}. ${result.summary.executed}/${result.summary.required} executed. Report: build/report/check-profile-result.json`);
