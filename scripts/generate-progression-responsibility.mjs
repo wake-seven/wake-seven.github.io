@@ -129,6 +129,7 @@ const classifyCandidate = entry => {
   return null;
 };
 const candidateEntries = entries.map(entry => ({ ...entry, candidate: classifyCandidate(entry) })).filter(entry => entry.candidate);
+const duplicateCandidates = candidateEntries.filter(entry => entry.candidate.category === 'duplicate');
 const candidateCounts = Object.fromEntries([...new Set(candidateEntries.map(entry => entry.candidate.category))].sort().map(category => [category, candidateEntries.filter(entry => entry.candidate.category === category).length]));
 const structuralExceptions = {
   // 既存の公開入口・UI復帰・演出制御は、責務境界をまたぐことが仕様上必要なため許可する。
@@ -190,6 +191,7 @@ const report = {
   fileSummary,
   mixedResponsibilitySymbols: entries.filter(entry => entry.mixedResponsibility).map(entry => ({ name: entry.name, file: entry.file, line: entry.line, flowRoles: entry.flowRoles })),
   candidateClassifications: candidateEntries.map(entry => ({ name: entry.name, file: entry.file, line: entry.line, flowRoles: entry.flowRoles, category: entry.candidate.category, priority: entry.candidate.priority, reason: entry.candidate.reason, evidence: entry.candidate.evidence })),
+  duplicateAudit: { detected: duplicateCandidates.length, remaining: duplicateCandidates.map(entry => ({ name: entry.name, file: entry.file, line: entry.line })), policy: '完全一致かつ副作用同一の実体だけを統合し、正当なオーケストレーター・表示遷移混在・アニメーション依存は残す' },
   structuralFindings,
   unclassifiedSymbols: entries.filter(entry => entry.responsibility === 'unclassified').map(entry => ({ name: entry.name, file: entry.file, line: entry.line })),
   entries,

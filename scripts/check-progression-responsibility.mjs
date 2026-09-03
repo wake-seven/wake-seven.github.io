@@ -23,6 +23,8 @@ assert.deepEqual(Object.keys(report.summary.flowClassifications).sort(), ['orche
 assert.ok(Array.isArray(report.fileSummary) && report.fileSummary.length > 0, 'ファイル責務サマリーがありません');
 assert.ok(Array.isArray(report.mixedResponsibilitySymbols) && Array.isArray(report.unclassifiedSymbols), '複数責務・未分類一覧がありません');
 assert.ok(Array.isArray(report.candidateClassifications) && report.summary.candidates, '責務候補の分類一覧がありません');
+assert.ok(report.duplicateAudit && Array.isArray(report.duplicateAudit.remaining), '重複監査結果がありません');
+assert.equal(report.duplicateAudit.detected, report.duplicateAudit.remaining.length, '重複監査の件数が不一致です');
 assert.ok(Array.isArray(report.structuralFindings) && report.summary.structuralFindings, '責務境界の構造検査結果がありません');
 assert.equal(report.mixedResponsibilitySymbols.length, report.summary.mixedSymbols, '複数責務一覧と集計が一致しません');
 assert.equal(report.unclassifiedSymbols.length, report.summary.unclassifiedSymbols, '未分類一覧と集計が一致しません');
