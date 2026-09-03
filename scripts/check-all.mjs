@@ -39,6 +39,7 @@ const steps = [
   { name: 'global-access', command: process.execPath, args: ['scripts/check-global-access-contract.mjs'] },
   { name: 'state-access-policy', command: process.execPath, args: ['scripts/check-state-access-policy.mjs'] },
   { name: 'refactor-baseline-generate', command: process.execPath, args: ['scripts/generate-refactor-baseline.mjs'] },
+  { name: 'structure-contract-diff', command: process.execPath, args: ['scripts/check-structure-contract-diff.mjs'] },
   { name: 'refactor-baseline', command: process.execPath, args: ['scripts/check-refactor-baseline.mjs'] },
   { name: 'refactor-budgets', command: process.execPath, args: ['scripts/check-refactor-budgets.mjs'] },
   { name: 'esm-dependencies', command: process.execPath, args: ['scripts/check-esm-dependencies.mjs'] },

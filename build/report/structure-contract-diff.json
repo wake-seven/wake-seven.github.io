@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "name": "wake7-structure-contract-diff",
+  "generatedAt": "2026-09-03T08:08:17.788Z",
+  "sourceRevision": "b483a7d",
+  "status": "passed",
+  "summary": {
+    "metrics": [
+      {
+        "key": "stateReferenceCount",
+        "label": "状態参照",
+        "direction": "decrease",
+        "baseline": 1196,
+        "current": 1196,
+        "delta": 0,
+        "available": true
+      },
+      {
+        "key": "stateAssignmentCount",
+        "label": "状態代入",
+        "direction": "decrease",
+        "baseline": 18,
+        "current": 18,
+        "delta": 0,
+        "available": true
+      },
+      {
+        "key": "responsibilityCandidateCount",
+        "label": "責務候補",
+        "direction": "decrease",
+        "baseline": 15,
+        "current": 15,
+        "delta": 0,
+        "available": true
+      },
+      {
+        "key": "e2eCaseCount",
+        "label": "E2E件数",
+        "direction": "increase",
+        "baseline": 35,
+        "current": 35,
+        "delta": 0,
+        "available": true
+      },
+      {
+        "key": "progressionEntryCount",
+        "label": "進行入口数",
+        "direction": "stable",
+        "baseline": 5,
+        "current": 5,
+        "delta": 0,
+        "available": true
+      },
+      {
+        "key": "entryPointCount",
+        "label": "入口数",
+        "direction": "stable",
+        "baseline": 4,
+        "current": 4,
+        "delta": 0,
+        "available": true
+      }
+    ],
+    "reportDiff": {
+      "added": [
+        "structure-contract-diff.json"
+      ],
+      "removed": []
+    },
+    "responsibilityCandidates": {
+      "display-transition-mixed": 7,
+      "duplicate": 2,
+      "orchestrator": 6
+    }
+  },
+  "warnings": [],
+  "errors": [],
+  "policy": {
+    "warning": [
+      "状態参照・責務候補の増加",
+      "入口数の変化",
+      "レポート削除"
+    ],
+    "failure": [
+      "E2E件数の減少"
+    ],
+    "baselineUpdate": "意図した構造変更後のみ npm run baseline:accept でレビュー済み基準へ更新する"
+  },
+  "baseline": "build/report/refactor-baseline.json",
+  "current": "build/report/current-refactor-baseline.json"
+}

@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { publishedSourceFiles } from './application-manifest.mjs';
@@ -57,6 +57,7 @@ const progressionEntries = (flowMap?.progressionEntries || []).map(entry => ({
 const browser = await readReport('browser-e2e-result.json');
 const globalAccess = await readReport('global-access.json');
 const stateMutations = await readReport('state-mutation-audit.json');
+const responsibility = await readReport('progression-responsibility.json');
 const e2e = browser ? {
   name: browser.name,
   appVersion: browser.appVersion,
@@ -66,6 +67,7 @@ const e2e = browser ? {
   consoleErrorCount: Array.isArray(browser.consoleErrors) ? browser.consoleErrors.length : 0,
   cases: (browser.cases || []).map(item => item.name)
 } : { passed: false, caseCount: 0, consoleErrorCount: 0, cases: [], unavailable: true };
+const reportInventory = (await readdir(reportDir)).filter(file => file.endsWith('.json')).sort();
 
 const report = {
   schemaVersion: 1,
@@ -85,12 +87,25 @@ const report = {
     e2ePassed: e2e.passed,
     e2eConsoleErrorCount: e2e.consoleErrorCount,
     needsMigrationGlobalAccessCount: globalAccess?.counts?.['needs-migration'] ?? 0,
-    directStateAssignmentCount: stateMutations?.counts?.directAssignments ?? 0
+    directStateAssignmentCount: stateMutations?.counts?.directAssignments ?? 0,
+    responsibilityCandidateCount: Object.values(responsibility?.summary?.candidates || {}).reduce((total, count) => total + count, 0),
+    responsibilityCandidates: responsibility?.summary?.candidates || {},
+    reportCount: reportInventory.length
   },
   mutableVariables: uniqueMutable,
   mutableReferences: uniqueReferences,
   progression: { definitions: progressionDefinitions, entries: progressionEntries },
-  e2e
+  e2e,
+  contract: {
+    stateReferenceCount: uniqueReferences.length,
+    stateAssignmentCount: stateMutations?.counts?.directAssignments ?? 0,
+    responsibilityCandidateCount: Object.values(responsibility?.summary?.candidates || {}).reduce((total, count) => total + count, 0),
+    responsibilityCandidates: responsibility?.summary?.candidates || {},
+    e2eCaseCount: e2e.caseCount,
+    progressionEntryCount: progressionEntries.length,
+    entryPointCount: Array.isArray(flowMap?.entryPoints) ? flowMap.entryPoints.length : 0,
+    reportInventory
+  }
 };
 await mkdir(reportDir, { recursive: true });
 const reportPath = join(reportDir, 'current-refactor-baseline.json');
