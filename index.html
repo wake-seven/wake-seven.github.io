@@ -4415,7 +4415,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-17:58';
+const APP_VERSION='2026.09.03-18:14';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -9627,6 +9627,7 @@ function openStagePickerAt({lap,round,satoriPage=null}={}){
 }
 function renderStagePicker(){
   if(pickerRound==='satori'){renderSatoriStagePicker();return;}
+  const navigation=readNavigationContext();
   const pickerRefs=createRefs(['stagePickerTitle','closeStagePicker','stagePickerRound','pickerRoundLabel','pickerPrevRound','pickerNextRound','stagePickerGrid']);
   const pickerPrimary=pickerLap===2?lap2ClearedStages:lap1ClearedStages;
   const pickerExtra=pickerLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
@@ -9671,7 +9672,7 @@ function renderStagePicker(){
       :!(index===0||pickerExtra.has(index)||pickerExtra.has(index-1)));
     b.classList.toggle('cleared',cleared);
     if(!isPrimary)b.classList.add('extra-lap-'+pickerRound);
-    b.classList.toggle('current',pickerLap===activeLap&&!isMode('speed')&&(isPrimary?!isMode('mastery')&&!isMode('satori')&&stageIndex===index:isMode('mastery')&&extraIndex===index));
+    b.classList.toggle('current',pickerLap===navigation.lap&&!isMode('speed')&&(isPrimary?!isMode('mastery')&&!isMode('satori')&&navigation.stageIndex===index:isMode('mastery')&&navigation.masteryIndex===index));
     const displayNumber=isPrimary?primarySectionPosition(index).position:i+1;
     const number=b.querySelector('[data-picker-number]'),detail=b.querySelector('[data-picker-detail]');
     if(number){number.textContent=String(displayNumber);detail.textContent=tr('shortest')+' '+stage.par+' '+tr('moveUnit');}

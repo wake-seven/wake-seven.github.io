@@ -6,7 +6,7 @@
     "state/game-state.js",
     "app/app-context.js"
   ],
-  "baselineTracked": 200,
+  "baselineTracked": 197,
   "allowedReferences": [
     "state/progression-policy.js:stageIndex:uiPolicy({mode,lap,stageIndex,speedVariant}) {",
     "state/progression-policy.js:stageIndex:if(stageIndex < academyTotal) {",
@@ -130,9 +130,6 @@
     "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
     "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
     "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
-    "ui/progression-ui.js:activeLap:b.classList.toggle('current',pickerLap===activeLap&&!isMode('speed')&&(isPrimary?!isMode('mastery')&&!isMode('satori')&&stageIndex===index:isMode('mastery')&&extraIndex===index));",
-    "ui/progression-ui.js:stageIndex:b.classList.toggle('current',pickerLap===activeLap&&!isMode('speed')&&(isPrimary?!isMode('mastery')&&!isMode('satori')&&stageIndex===index:isMode('mastery')&&extraIndex===index));",
-    "ui/progression-ui.js:extraIndex:b.classList.toggle('current',pickerLap===activeLap&&!isMode('speed')&&(isPrimary?!isMode('mastery')&&!isMode('satori')&&stageIndex===index:isMode('mastery')&&extraIndex===index));",
     "ui/progression-ui.js:activeLap:// 称号一覧で選択した周（activeLap）を、そのまま問題選択にも引き継ぐ。",
     "ui/progression-ui.js:stageIndex:return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));",
     "ui/progression-ui.js:stageIndex:const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);",
@@ -817,21 +814,6 @@
     },
     {
       "fingerprint": "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
-      "expiresOn": "2026-12-02",
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/progression-ui.js:activeLap:b.classList.toggle('current',pickerLap===activeLap&&!isMode('speed')&&(isPrimary?!isMode('mastery')&&!isMode('satori')&&stageIndex===index:isMode('mastery')&&extraIndex===index));",
-      "expiresOn": "2026-12-02",
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/progression-ui.js:stageIndex:b.classList.toggle('current',pickerLap===activeLap&&!isMode('speed')&&(isPrimary?!isMode('mastery')&&!isMode('satori')&&stageIndex===index:isMode('mastery')&&extraIndex===index));",
-      "expiresOn": "2026-12-02",
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/progression-ui.js:extraIndex:b.classList.toggle('current',pickerLap===activeLap&&!isMode('speed')&&(isPrimary?!isMode('mastery')&&!isMode('satori')&&stageIndex===index:isMode('mastery')&&extraIndex===index));",
       "expiresOn": "2026-12-02",
       "reason": "navigation状態の移行完了まで保持する既存参照"
     },
