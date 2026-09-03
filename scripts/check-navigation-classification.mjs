@@ -30,6 +30,18 @@ const categories=['gateway-candidate','owner-only','derived-value','event-local'
 assert.equal(entries.length,refs.length,'navigation参照の分類漏れがあります');
 assert.ok(entries.every(entry=>categories.includes(entry.category)),'不明なnavigation分類があります');
 const counts=Object.fromEntries(categories.map(category=>[category,entries.filter(entry=>entry.category===category).length]));
+const gatewayEntrypoint=source=>{
+  for(const name of ['start','complete','openDialog','advance','restore'])if(new RegExp(name,'i').test(source))return name;
+  return 'other';
+};
+const gatewayImpact=({file,source})=>file.startsWith('ui/')?'画面表示・入力':file.startsWith('runtime/')?'起動・復元・音声':'進行データ';
+const gatewayPriority=source=>/clear|complete|restore|start/i.test(source)?1:/openDialog|advance|next|route/i.test(source)?2:3;
+const gatewayEntries=entries.filter(entry=>entry.category==='gateway-candidate').map(entry=>{
+  const source=entry.codeEvidence.source||'';
+  return {...entry,entrypoint:gatewayEntrypoint(source),readWrite:entry.access,screenImpact:gatewayImpact(entry),contextReload:/readProgressionContext|readNavigationContext|state\.navigation\.read|snapshot/.test(source),clearFlowImpact:/clear|complete|advance|next|route/i.test(source),migrationPriority:gatewayPriority(source)};
+}).sort((a,b)=>a.migrationPriority-b.migrationPriority||a.file.localeCompare(b.file)||a.line-b.line);
+gatewayEntries.forEach((entry,index)=>{entry.batch=index<20?1:index<40?2:index<60?3:index<80?4:5;});
+const gatewayBatches=Object.fromEntries([...new Set(gatewayEntries.map(entry=>entry.batch))].sort().map(batch=>[String(batch),gatewayEntries.filter(entry=>entry.batch===batch).map(entry=>`${entry.file}:${entry.line}:${entry.name}`)]));
 const directAssignments=[];
 const contextReloads=[];
 const transitionCalls=[];
@@ -59,6 +71,6 @@ const currentGateway=new Set(entries.filter(entry=>entry.category==='gateway-can
 const newGatewayCandidates=[...currentGateway].filter(value=>!previousGateway.has(value));
 assert.equal(newGatewayCandidates.length,0,`新しいnavigation gateway候補を検出しました。移行理由と関連E2Eを確認してください: ${newGatewayCandidates.join(', ')}`);
 const stateNavigationCount=stateAccessReport?.countsByPurpose?.navigation??null;
-const report={schemaVersion:2,name:'wake7-navigation-classification',generatedAt:new Date().toISOString(),status:'passed',summary:{references:entries.length,byCategory:counts,temporaryCount:entries.filter(entry=>entry.temporary).length,temporaryZero:entries.every(entry=>!entry.temporary),byName,stateAccessNavigationReferences:stateNavigationCount,priorityOrder:['gateway-candidate','derived-value','event-local','intentional-exception','owner-only']},migrationGate:{baseline:'既存のgateway候補集合',newGatewayCandidates,addedCount:newGatewayCandidates.length,removedCount:[...previousGateway].filter(value=>!currentGateway.has(value)).length},contracts:{directAssignments,contextReloads,transitionCalls,disallowedTransitions,allowedTransitionEntrances:transitionFiles},policy:{gatewayCandidate:'未移行の間はtemporaryとして期限・所有者・次の移行単位・関連E2Eを維持',ownerOnly:'状態所有者に保持',derivedValue:'計算元と表示境界を確認',eventLocal:'イベント側に保持',intentionalException:'理由と関連E2Eを維持'},entries};
+const report={schemaVersion:2,name:'wake7-navigation-classification',generatedAt:new Date().toISOString(),status:'passed',summary:{references:entries.length,byCategory:counts,temporaryCount:entries.filter(entry=>entry.temporary).length,temporaryZero:entries.every(entry=>!entry.temporary),byName,stateAccessNavigationReferences:stateNavigationCount,priorityOrder:['gateway-candidate','derived-value','event-local','intentional-exception','owner-only']},migrationGate:{baseline:'既存のgateway候補集合',newGatewayCandidates,addedCount:newGatewayCandidates.length,removedCount:[...previousGateway].filter(value=>!currentGateway.has(value)).length},gatewayPlan:{total:gatewayEntries.length,batches:gatewayBatches,batchPolicy:'優先度順に第1〜4バッチは各20件。各項目に入口・read/write・画面影響・関連E2E・context再読込・クリア後影響を記録',entries:gatewayEntries},contracts:{directAssignments,contextReloads,transitionCalls,disallowedTransitions,allowedTransitionEntrances:transitionFiles},policy:{gatewayCandidate:'未移行の間はtemporaryとして期限・所有者・次の移行単位・関連E2Eを維持',ownerOnly:'状態所有者に保持',derivedValue:'計算元と表示境界を確認',eventLocal:'イベント側に保持',intentionalException:'理由と関連E2Eを維持'},entries};
 const path=join(root,'build/report/navigation-classification.json');await mkdir(dirname(path),{recursive:true});await writeFile(path,JSON.stringify(report,null,2)+'\n');
 console.log(`Navigation classification OK: ${entries.length} references (${counts['gateway-candidate']} gateway candidates, ${counts['owner-only']} owner-only). Report: ${path}`);
