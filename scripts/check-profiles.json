@@ -6,12 +6,12 @@
     "fast": {
       "description": "編集中の短い確認。生成物とドメインの基本契約を確認する。",
       "budgetMs": 120000,
-      "steps": ["domain-classification", "build", "version", "board-domain", "application-services", "browser-flow"]
+      "steps": ["domain-classification", "build", "version", "board-domain", "application-services", "animation-contract", "browser-flow"]
     },
     "affected": {
       "description": "変更した領域と、その領域に依存する主要導線を確認する。",
       "budgetMs": 240000,
-      "steps": ["domain-classification", "build", "version", "board-domain", "application-services", "application-targets", "state", "state-restore", "browser-flow", "dialog-chains", "ui-effects", "progression-flows", "progression-flow-contract", "clear-flow-order", "esm", "source-boundaries", "compat-e2e", "browser-e2e", "reward-access"],
+      "steps": ["domain-classification", "build", "version", "board-domain", "application-services", "application-targets", "state", "state-restore", "browser-flow", "dialog-chains", "ui-effects", "animation-contract", "progression-flows", "progression-flow-contract", "clear-flow-order", "esm", "source-boundaries", "compat-e2e", "browser-e2e", "reward-access"],
       "byDomain": {
         "structure": ["domain-classification", "build", "version", "esm", "source-boundaries"],
         "state": ["state", "state-restore"],
@@ -22,7 +22,7 @@
     "full": {
       "description": "リリース前・大規模変更用。check:gate と同じ全検査を実行する。",
       "budgetMs": 360000,
-      "steps": ["domain-classification", "development-entrypoints", "build", "version", "board-domain", "application-services", "application-targets", "state", "state-classification", "state-mutations", "state-restore", "browser-flow", "dialog-chains", "ui-effects", "progression-flows", "progression-flow-contract", "progression-orchestrators", "clear-flow-order", "esm", "source-boundaries", "compat-e2e", "browser-e2e", "reward-access", "device-e2e", "translations", "dialog-state-map", "global-state", "gate-evidence", "global-access", "state-access-policy", "temporary-exceptions", "state-access-final-audit", "navigation-classification", "navigation-final-audit", "change-check-map", "refactor-baseline-generate", "structure-contract-diff", "refactor-baseline", "refactor-budgets", "esm-dependencies", "public-esm", "metrics-update-policy", "refactor-policy", "trace", "progression-responsibility", "ui-data-map", "event-wiring", "refactor-report", "compat-boundaries", "unused-files", "manifest-dependencies", "public-symbols", "report-schema"]
+      "steps": ["domain-classification", "development-entrypoints", "build", "version", "board-domain", "application-services", "application-targets", "state", "state-classification", "state-mutations", "state-restore", "browser-flow", "dialog-chains", "ui-effects", "animation-contract", "progression-flows", "progression-flow-contract", "progression-orchestrators", "clear-flow-order", "esm", "source-boundaries", "compat-e2e", "browser-e2e", "reward-access", "device-e2e", "translations", "dialog-state-map", "global-state", "gate-evidence", "global-access", "state-access-policy", "temporary-exceptions", "state-access-final-audit", "navigation-classification", "navigation-final-audit", "change-check-map", "refactor-baseline-generate", "structure-contract-diff", "refactor-baseline", "refactor-budgets", "esm-dependencies", "public-esm", "metrics-update-policy", "refactor-policy", "trace", "progression-responsibility", "ui-data-map", "event-wiring", "refactor-report", "compat-boundaries", "unused-files", "manifest-dependencies", "public-symbols", "report-schema"]
     }
   },
   "policy": {

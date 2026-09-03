@@ -5709,6 +5709,18 @@ function placeSwipeGroupOnTop(group,root=svg){
   if(marker)root.insertBefore(group,marker);
   else root?.appendChild(group);
 }
+// ポインター操作で実パネルを動かす経路も、クローン経路と同じ描画順にする。
+// 目標枠の再描画などがタイル順を並べ替えても、最後にこの入口を呼べば
+// 回転対象が隣接パネルの背面へ回り込まない。
+function placeSwipeTilesOnTop(root,items,anchorSelector='.pivot'){
+  if(!root)return;
+  const anchor=anchorSelector?root.querySelector(anchorSelector):null;
+  for(const item of items||[]){
+    const tile=item?.el||item;
+    if(!tile)continue;
+    if(anchor)root.insertBefore(tile,anchor);else root.appendChild(tile);
+  }
+}
 function createSwipeGroup(items,pivot){
   const group=document.createElementNS('http://www.w3.org/2000/svg','g');
   group.setAttribute('class','auto-swipe-group');
@@ -5791,17 +5803,44 @@ function finishBoardPointerContext(context,cancelled=false){if(!context)return f
 function captureBoardPointer(element,pointerId){try{element?.setPointerCapture(pointerId);return true;}catch(_){return false;}}
 function releaseBoardPointer(element,pointerId){try{if(element?.hasPointerCapture?.(pointerId))element.releasePointerCapture(pointerId);return true;}catch(_){return false;}}
 function isBoardPointerEventFor(context,event){return !!context&&!!event&&event.pointerId===context.pointerId&&!context.cancelled;}
+// アニメーションのライフサイクルを明示する。演出ごとの細かな実装は残すが、
+// 開始・更新・完了・中止の観測点だけは共通にして、古い演出の混入を追跡しやすくする。
+const BOARD_ANIMATION_PHASE=Object.freeze({idle:'idle',starting:'starting',running:'running',finishing:'finishing',cancelled:'cancelled'});
 let boardAnimationSession=null,boardAnimationSequence=0;
 function startBoardAnimationSession(type,pointerId=null,cleanup=()=>{}){
   cancelBoardAnimationSession();
-  const session={id:++boardAnimationSequence,type,pointerId,startedAt:performance.now(),cancelled:false,frameHandle:0,cleanup,cleaned:false};
+  const session={id:++boardAnimationSequence,type,pointerId,phase:BOARD_ANIMATION_PHASE.starting,startedAt:performance.now(),cancelled:false,frameHandle:0,cleanup,cleaned:false,resources:[],resourceKinds:[]};
   boardAnimationSession=session;
   return session;
 }
 function isBoardAnimationSessionActive(session){return boardAnimationSession===session&&!session.cancelled&&!session.cleaned;}
-function requestBoardAnimationFrame(session,callback){if(!isBoardAnimationSessionActive(session))return 0;session.frameHandle=requestAnimationFrame(now=>{session.frameHandle=0;if(isBoardAnimationSessionActive(session))callback(now);});return session.frameHandle;}
-function finishBoardAnimationSession(session){if(!session||session.cleaned)return false;session.cleaned=true;if(session.frameHandle)cancelAnimationFrame(session.frameHandle);session.frameHandle=0;session.cleanup?.();if(boardAnimationSession===session)boardAnimationSession=null;return true;}
-function cancelBoardAnimationSession(session=boardAnimationSession){if(!session||session.cleaned)return false;session.cancelled=true;return finishBoardAnimationSession(session);}
+function setBoardAnimationPhase(session,phase){if(!session||session.cleaned)return false;if(!Object.values(BOARD_ANIMATION_PHASE).includes(phase))return false;session.phase=phase;return true;}
+function getBoardAnimationSession(){return boardAnimationSession;}
+function requestBoardAnimationFrame(session,callback){if(!isBoardAnimationSessionActive(session))return 0;setBoardAnimationPhase(session,BOARD_ANIMATION_PHASE.running);session.frameHandle=requestAnimationFrame(now=>{session.frameHandle=0;if(isBoardAnimationSessionActive(session))callback(now);});return session.frameHandle;}
+// 回転セッションが所有する一時リソースを登録する。終了・キャンセルの経路が
+// 増えても、rAF/WAAPI/一時DOMの後始末を個別の呼び出し側に複製しない。
+function registerBoardAnimationResource(session,resource,dispose){
+  if(!session||session.cleaned||typeof dispose!=='function')return resource;
+  session.resources.push({resource,dispose,disposed:false});
+  session.resourceKinds.push(resource?.constructor?.name||typeof resource);
+  return resource;
+}
+function finishBoardAnimationSession(session){
+  if(!session||session.cleaned)return false;
+  if(!session.cancelled)setBoardAnimationPhase(session,BOARD_ANIMATION_PHASE.finishing);
+  session.cleaned=true;
+  if(session.frameHandle)cancelAnimationFrame(session.frameHandle);
+  session.frameHandle=0;
+  for(const entry of session.resources.splice(0)){
+    if(entry.disposed)continue;
+    entry.disposed=true;
+    try{entry.dispose(entry.resource);}catch(_){/* 後処理失敗で次の後処理を止めない */}
+  }
+  session.cleanup?.();
+  if(boardAnimationSession===session)boardAnimationSession=null;
+  return true;
+}
+function cancelBoardAnimationSession(session=boardAnimationSession){if(!session||session.cleaned)return false;session.cancelled=true;setBoardAnimationPhase(session,BOARD_ANIMATION_PHASE.cancelled);return finishBoardAnimationSession(session);}
 function cancelBoardAnimation(reason='cancelled'){cancelActiveTutorialRewindSession(reason);return cancelBoardAnimationSession();}
 export {};
 
@@ -7501,7 +7540,8 @@ function completeGroupedSwipeAnimation(session,dg,dir,waking){
 function animateGroupedSwipe(dg,target,dir,waking){
   const {group,clones}=createSwipeGroup(dg.items,dg.kc);
   setBoardBusy(true);
-  const session=startBoardAnimationSession('grouped-swipe',dg.id,()=>{group.remove();for(const item of dg.items)item.el.style.visibility='';setBoardBusy(false);});
+  const session=startBoardAnimationSession('grouped-swipe',dg.id,()=>{for(const item of dg.items)item.el.style.visibility='';setBoardBusy(false);});
+  registerBoardAnimationResource(session,group,element=>element.remove());
   const duration=Math.max(190,Math.min(620,Math.abs(target-dg.deg)*4.65));
   const previewState=rollOnce(ori,dg.ti,dir);
   showMoves(moves+1);
@@ -7551,7 +7591,8 @@ function animateUndoSwipe(target){
   });
   const {group,clones}=createSwipeGroup(items,pivot);
   setBoardBusy(true);
-  const session=startBoardAnimationSession('undo-swipe',null,()=>{group.remove();for(const item of items)item.el.style.visibility='';setBoardBusy(false);});
+  const session=startBoardAnimationSession('undo-swipe',null,()=>{for(const item of items)item.el.style.visibility='';setBoardBusy(false);});
+  registerBoardAnimationResource(session,group,element=>element.remove());
   const duration=420;
   let started=null;
   const ease=t=>1-Math.pow(1-t,3);
@@ -7583,7 +7624,6 @@ function restartWithAnimation(){
   const animations=[];
   const session=startBoardAnimationSession('restart-tiles',null,()=>{
     clearUiEffectTimers('board-restart');
-    for(const animation of animations)animation.cancel();
     setBoardBusy(false);
   });
   let finished=false;
@@ -7596,6 +7636,7 @@ function restartWithAnimation(){
       {transform:tileTransformDeg(CELL[cell].x,CELL[cell].y,targetDeg)}
     ],{duration:300,easing:'cubic-bezier(.18,.78,.22,1)'});
     animations.push(animation);
+    registerBoardAnimationResource(session,animation,animation=>animation.cancel());
     animation.onfinish=animation.oncancel=()=>{
       if(!isBoardAnimationSessionActive(session)||finished)return;
       if(--remaining===0){finished=true;finishBoardAnimationSession(session);paint();}
@@ -7707,6 +7748,9 @@ function handleBoardPointerDown(e){
   // タイルを直接動かすスワイプ中は、静止位置に残る重ね枠を表示しない。
   // 回転追従する枠はタイル内の枠線だけにし、終了時の paint() で再生成する。
   removeApplicationTargetOverlay();
+  // 目標枠の再描画がタイル順を整列し直すため、最後に回転対象を前面へ戻す。
+  // SVGではDOM後方が前面になるので、棒・軸の直前へ挿入する。
+  placeSwipeTilesOnTop(svg,items);
   setBoardPivotActive(svg.querySelector('.pivot[data-tri="'+ti+'"]'),true);
   captureBoardPointer(svg,e.pointerId);
   renderBoardInteractionFeedback({classes:{spinning:true}});
@@ -7941,12 +7985,20 @@ function finishDrag(e,cancel=false,forcedTurns=null){
   const delta=Math.abs(target-dg.deg);
   if(delta<.1){wakeFeedback(waking);resumeTutorialCue();return;}
   setBoardBusy(true); let done=0;
+  const animations=[];
+  // 通常スワイプも、クローン経路・巻き戻し経路と同じセッション境界で管理する。
+  const session=startBoardAnimationSession('direct-swipe',dg.id,()=>{
+    for(const animation of animations)animation.cancel();
+    setBoardBusy(false);
+  });
   for(const item of dg.items){
     const a=item.el.animate([
       {transform:orbitTransform(item,dg.deg,dg.kc)},
       {transform:orbitTransform(item,target,dg.kc)}
     ],{duration:Math.max(190,Math.min(620,delta*4.65)),easing:'cubic-bezier(.2,.75,.25,1)'});
-    a.onfinish=a.oncancel=()=>{ if(++done===3){setBoardBusy(false);paint();wakeFeedback(waking);resumeTutorialCue();} };
+    animations.push(a);
+    registerBoardAnimationResource(session,a,animation=>animation.cancel());
+    a.onfinish=()=>{ if(!isBoardAnimationSessionActive(session))return; if(++done===3){finishBoardAnimationSession(session);paint();wakeFeedback(waking);resumeTutorialCue();} };
   }
 }
 function animateTutorialRewind(model,visualItems){
@@ -8025,11 +8077,11 @@ function animateGuidedBasicRewind(dg){
   // リセット・pointercancel・別アニメーション開始後に古いrAFが盤面へ触れないようにする。
   const session=startBoardAnimationSession('guided-rewind',null,()=>{
     for(const{item}of clones)item.el.style.visibility='';
-    group.remove();
     setBoardBusy(false);
     renderBoardInteractionFeedback({classes:{spinning:false,'rotation-started':false}});
     paint();
   });
+  registerBoardAnimationResource(session,group,element=>element.remove());
   let start=null;
   const ease=t=>1-Math.pow(1-t,3);
   const frame=now=>{
@@ -10889,7 +10941,7 @@ const CLEAR_FLOW_PHASE=Object.freeze({
   playing:'next-playing'
 });
 const CLEAR_FLOW_ACTION=Object.freeze({start:'start',show:'show',next:'next',reset:'reset',cancel:'cancel'});
-let clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.idle,action:null,context:null,route:null,content:null,cycle:1,persisted:false,cancelReason:null});
+let clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.idle,action:null,context:null,route:null,content:null,cycle:1,persisted:false,cancelReason:null,celebration:null});
 let clearFlowPhase=CLEAR_FLOW_PHASE.idle;
 function setClearFlowPhase(phase,action=null,patch={}){
   clearFlowPhase=phase;
@@ -10907,6 +10959,12 @@ function persistClearFlowCheckpoint(){
 function cancelClearFlow(reason='cancelled'){
   clearFlowCycle++;
   clearUiEffectTimers('clear-transition');
+  const celebration=clearFlowState.celebration;
+  clearFlowState=Object.freeze({...clearFlowState,celebration:null});
+  if(celebration){
+    for(const animation of celebration.animations||[])try{animation.cancel();}catch(_){/* 終了済みアニメーションはそのまま続行する */}
+    celebration.burst?.remove();
+  }
   clearFlowState=Object.freeze({...clearFlowState,phase:CLEAR_FLOW_PHASE.idle,action:CLEAR_FLOW_ACTION.cancel,cycle:clearFlowCycle,context:null,route:null,content:null,persisted:false,cancelReason:reason});
   clearFlowPhase=CLEAR_FLOW_PHASE.idle;
   return clearFlowState;
@@ -10923,16 +10981,23 @@ function markClearFlowContent(kind='quiz/message'){
 // クリア時の揺れと円の拡大を担当する。盤面入力や進行状態は変更しない。
 function playWakeCelebrationEffect(targetSvg,tilesArr){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const animations=[];
   tilesArr.forEach((el,i)=>{
     const base=el.style.transform;
-    el.animate([{transform:base},{transform:base+' scale(1.13,.78) skewX(-7deg)',offset:.2},{transform:base+' scale(.86,1.18) skewX(6deg)',offset:.42},{transform:base+' scale(1.08,.91) skewX(-3deg)',offset:.64},{transform:base}],{duration:820,delay:i*65,easing:'cubic-bezier(.2,.8,.25,1)'});
+    animations.push(el.animate([{transform:base},{transform:base+' scale(1.13,.78) skewX(-7deg)',offset:.2},{transform:base+' scale(.86,1.18) skewX(6deg)',offset:.42},{transform:base+' scale(1.08,.91) skewX(-3deg)',offset:.64},{transform:base}],{duration:820,delay:i*65,easing:'cubic-bezier(.2,.8,.25,1)'}));
   });
   const NS_='http://www.w3.org/2000/svg',burst=document.createElementNS(NS_,'g');
   burst.setAttribute('class','clear-burst');burst.setAttribute('pointer-events','none');
   const addBurstRing=(radius,stroke,width,opacity)=>{const ring=document.createElementNS(NS_,'circle');ring.setAttribute('cx',CELL[3].x);ring.setAttribute('cy',CELL[3].y);ring.setAttribute('r',radius);ring.setAttribute('fill','none');ring.setAttribute('stroke',stroke);ring.setAttribute('stroke-width',width);if(opacity)ring.setAttribute('opacity',opacity);burst.appendChild(ring);};
   addBurstRing(47,'#C9A54E',4);addBurstRing(58,'#F3E8D5',1.5,'.7');
   burst.style.transformOrigin=CELL[3].x+'px '+CELL[3].y+'px';burst.style.transformBox='view-box';targetSvg.appendChild(burst);
-  const a=burst.animate([{transform:'scale(.55)',opacity:0},{transform:'scale(.8)',opacity:1,offset:.2},{transform:'scale(2.45)',opacity:0}],{duration:820,easing:'cubic-bezier(.15,.7,.2,1)'});a.onfinish=a.oncancel=()=>burst.remove();
+  const burstAnimation=burst.animate([{transform:'scale(.55)',opacity:0},{transform:'scale(.8)',opacity:1,offset:.2},{transform:'scale(2.45)',opacity:0}],{duration:820,easing:'cubic-bezier(.15,.7,.2,1)'});
+  animations.push(burstAnimation);
+  const effect={animations,burst};
+  const onCelebrationEnd=()=>{burst.remove();if(clearFlowState.celebration===effect)clearFlowState=Object.freeze({...clearFlowState,celebration:null});};
+  burstAnimation.onfinish=onCelebrationEnd;burstAnimation.oncancel=onCelebrationEnd;
+  clearFlowState=Object.freeze({...clearFlowState,celebration:effect});
+  return effect;
 }
 // クリア演出を開始し、ダイアログ表示まで待つ時間を返す。
 function celebrateClear(){

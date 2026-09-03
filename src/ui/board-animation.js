@@ -56,6 +56,18 @@ function placeSwipeGroupOnTop(group,root=svg){
   if(marker)root.insertBefore(group,marker);
   else root?.appendChild(group);
 }
+// ポインター操作で実パネルを動かす経路も、クローン経路と同じ描画順にする。
+// 目標枠の再描画などがタイル順を並べ替えても、最後にこの入口を呼べば
+// 回転対象が隣接パネルの背面へ回り込まない。
+function placeSwipeTilesOnTop(root,items,anchorSelector='.pivot'){
+  if(!root)return;
+  const anchor=anchorSelector?root.querySelector(anchorSelector):null;
+  for(const item of items||[]){
+    const tile=item?.el||item;
+    if(!tile)continue;
+    if(anchor)root.insertBefore(tile,anchor);else root.appendChild(tile);
+  }
+}
 function createSwipeGroup(items,pivot){
   const group=document.createElementNS('http://www.w3.org/2000/svg','g');
   group.setAttribute('class','auto-swipe-group');

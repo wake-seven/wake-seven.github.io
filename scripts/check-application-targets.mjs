@@ -57,6 +57,10 @@ assert.match(animation,/function renderApplicationTargetLayer\([\s\S]{0,600}clea
   'Target overlay rendering must clear the previous layer before creating one.');
 assert.match(animation,/function createSwipeGroup\([\s\S]{0,500}clearApplicationTargetLayer\(svg\)/,
   'Swipe start must remove the static target overlay before cloning panels.');
+assert.match(animation,/function placeSwipeTilesOnTop\([\s\S]{0,420}insertBefore\(tile,anchor\)/,
+  'Direct swipe must have a single renderer-owned tile ordering helper.');
+assert.match(board,/removeApplicationTargetOverlay\(\);[\s\S]{0,260}placeSwipeTilesOnTop\(svg,items\)/,
+  'Direct swipe must restore active tile order after target rendering.');
 assert.match(board,/function paint\(\)[\s\S]{0,800}renderApplicationTargetCells\(\)/,
   'Board paint must regenerate the static target overlay after a swipe.');
 assert.match(board,/function setPosition\([\s\S]{0,1200}bindApplicationTargetTiles\(\);[\s\S]{0,500}paint\(\);/,

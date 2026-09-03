@@ -1609,7 +1609,8 @@ function completeGroupedSwipeAnimation(session,dg,dir,waking){
 function animateGroupedSwipe(dg,target,dir,waking){
   const {group,clones}=createSwipeGroup(dg.items,dg.kc);
   setBoardBusy(true);
-  const session=startBoardAnimationSession('grouped-swipe',dg.id,()=>{group.remove();for(const item of dg.items)item.el.style.visibility='';setBoardBusy(false);});
+  const session=startBoardAnimationSession('grouped-swipe',dg.id,()=>{for(const item of dg.items)item.el.style.visibility='';setBoardBusy(false);});
+  registerBoardAnimationResource(session,group,element=>element.remove());
   const duration=Math.max(190,Math.min(620,Math.abs(target-dg.deg)*4.65));
   const previewState=rollOnce(ori,dg.ti,dir);
   showMoves(moves+1);
@@ -1659,7 +1660,8 @@ function animateUndoSwipe(target){
   });
   const {group,clones}=createSwipeGroup(items,pivot);
   setBoardBusy(true);
-  const session=startBoardAnimationSession('undo-swipe',null,()=>{group.remove();for(const item of items)item.el.style.visibility='';setBoardBusy(false);});
+  const session=startBoardAnimationSession('undo-swipe',null,()=>{for(const item of items)item.el.style.visibility='';setBoardBusy(false);});
+  registerBoardAnimationResource(session,group,element=>element.remove());
   const duration=420;
   let started=null;
   const ease=t=>1-Math.pow(1-t,3);
@@ -1691,7 +1693,6 @@ function restartWithAnimation(){
   const animations=[];
   const session=startBoardAnimationSession('restart-tiles',null,()=>{
     clearUiEffectTimers('board-restart');
-    for(const animation of animations)animation.cancel();
     setBoardBusy(false);
   });
   let finished=false;
@@ -1704,6 +1705,7 @@ function restartWithAnimation(){
       {transform:tileTransformDeg(CELL[cell].x,CELL[cell].y,targetDeg)}
     ],{duration:300,easing:'cubic-bezier(.18,.78,.22,1)'});
     animations.push(animation);
+    registerBoardAnimationResource(session,animation,animation=>animation.cancel());
     animation.onfinish=animation.oncancel=()=>{
       if(!isBoardAnimationSessionActive(session)||finished)return;
       if(--remaining===0){finished=true;finishBoardAnimationSession(session);paint();}
@@ -1815,6 +1817,9 @@ function handleBoardPointerDown(e){
   // タイルを直接動かすスワイプ中は、静止位置に残る重ね枠を表示しない。
   // 回転追従する枠はタイル内の枠線だけにし、終了時の paint() で再生成する。
   removeApplicationTargetOverlay();
+  // 目標枠の再描画がタイル順を整列し直すため、最後に回転対象を前面へ戻す。
+  // SVGではDOM後方が前面になるので、棒・軸の直前へ挿入する。
+  placeSwipeTilesOnTop(svg,items);
   setBoardPivotActive(svg.querySelector('.pivot[data-tri="'+ti+'"]'),true);
   captureBoardPointer(svg,e.pointerId);
   renderBoardInteractionFeedback({classes:{spinning:true}});
@@ -2049,12 +2054,20 @@ function finishDrag(e,cancel=false,forcedTurns=null){
   const delta=Math.abs(target-dg.deg);
   if(delta<.1){wakeFeedback(waking);resumeTutorialCue();return;}
   setBoardBusy(true); let done=0;
+  const animations=[];
+  // 通常スワイプも、クローン経路・巻き戻し経路と同じセッション境界で管理する。
+  const session=startBoardAnimationSession('direct-swipe',dg.id,()=>{
+    for(const animation of animations)animation.cancel();
+    setBoardBusy(false);
+  });
   for(const item of dg.items){
     const a=item.el.animate([
       {transform:orbitTransform(item,dg.deg,dg.kc)},
       {transform:orbitTransform(item,target,dg.kc)}
     ],{duration:Math.max(190,Math.min(620,delta*4.65)),easing:'cubic-bezier(.2,.75,.25,1)'});
-    a.onfinish=a.oncancel=()=>{ if(++done===3){setBoardBusy(false);paint();wakeFeedback(waking);resumeTutorialCue();} };
+    animations.push(a);
+    registerBoardAnimationResource(session,a,animation=>animation.cancel());
+    a.onfinish=()=>{ if(!isBoardAnimationSessionActive(session))return; if(++done===3){finishBoardAnimationSession(session);paint();wakeFeedback(waking);resumeTutorialCue();} };
   }
 }
 function animateTutorialRewind(model,visualItems){
@@ -2133,11 +2146,11 @@ function animateGuidedBasicRewind(dg){
   // リセット・pointercancel・別アニメーション開始後に古いrAFが盤面へ触れないようにする。
   const session=startBoardAnimationSession('guided-rewind',null,()=>{
     for(const{item}of clones)item.el.style.visibility='';
-    group.remove();
     setBoardBusy(false);
     renderBoardInteractionFeedback({classes:{spinning:false,'rotation-started':false}});
     paint();
   });
+  registerBoardAnimationResource(session,group,element=>element.remove());
   let start=null;
   const ease=t=>1-Math.pow(1-t,3);
   const frame=now=>{

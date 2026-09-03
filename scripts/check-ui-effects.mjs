@@ -107,7 +107,7 @@ assert.match(board,/function completeUndoSwipeAnimation\(/,'Undo animation compl
 assert.match(board,/completeGroupedSwipeAnimation\(session,dg,dir,waking\)/,'Grouped animation frame callback must delegate completion.');
 assert.match(board,/completeUndoSwipeAnimation\(session,target,reverseDir\)/,'Undo animation frame callback must delegate completion.');
 assert.match(interaction,/cancelBoardAnimationSession\(\);\s*const session=\{id:/,'Starting an animation must cancel an existing session before creating one.');
-assert.match(interaction,/session\.cleaned=true[\s\S]{0,180}session\.cleanup\?\.\(\)/,'Animation cleanup must be guarded and run once.');
+assert.match(interaction,/session\.cleaned=true[\s\S]{0,520}session\.cleanup\?\.\(\)/,'Animation cleanup must be guarded and run once.');
 assert.match(interaction,/isBoardAnimationSessionActive\(session\)[\s\S]{0,180}callback\(now\)/,'Stale animation frames must be ignored after cancellation.');
 assert.match(board,/handleBoardPointerCancel\(e\)\{cancelBoardAnimation\(/,'Pointer cancel must invalidate an active animation session.');
 assert.match(board,/setPosition\(state,par\)\{\s*cancelBoardAnimation\(/,'Position transitions must invalidate an active animation session.');

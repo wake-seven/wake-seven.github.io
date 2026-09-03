@@ -44,6 +44,11 @@ for (const source of [board, published]) {
   assert.match(source, /renderSwipeFrame\(/, 'swipe animation must update through the frame renderer');
   assert.match(source, /startBoardAnimationSession\(/, 'swipe animation must use an animation session');
 }
+assert.match(interaction, /resources:\[\]/, 'board animation sessions must own temporary resources');
+assert.match(interaction, /function registerBoardAnimationResource\(/, 'animation resources must use one registration entry point');
+assert.match(board, /startBoardAnimationSession\('direct-swipe'/, 'direct swipe must have an animation session boundary');
+assert.match(board, /registerBoardAnimationResource\(session,a,animation=>animation\.cancel\(\)\)/,
+  'direct swipe animations must be cancelled by the session cleanup');
 for (const source of [events, published]) {
   assert.match(source, /resetStoredProgress\(/, 'reset flow must have a single named entry point');
   assert.match(source, /(?:cancelBoardAnimation|cancelTileAnimations)\(/, 'reset/transition flow must cancel board animation');
@@ -52,6 +57,8 @@ assert.match(board, /startTutorialRewindSession\(/, 'tutorial rewind must use it
 assert.match(tutorial, /cancelTutorialRewindSession\(/, 'tutorial rewind must have a cancellation path');
 assert.match(tutorial, /captureTutorialRewindDomSnapshot|restoreTutorialRewindDomSnapshot/,
   'tutorial rewind must snapshot and restore DOM order');
+assert.match(tutorial, /session\.timers\.push\(timer\)/, 'tutorial rewind timers must belong to the rewind session');
+assert.match(tutorial, /session\.animation\?\.cancel\(\)/, 'tutorial rewind cancellation must cancel its animation');
 assert.match(clearFlow, /if\(svg\.classList\.contains\('celebrating'\)\)return (?:0|reduced\?0:820);/,
   'clear celebration must be idempotent');
 assert.match(clearFlow, /function startClearFlow\(/, 'clear transition must have a named start entry point');
@@ -167,9 +174,12 @@ const operation = context.startBoardPointerContext(point, { x: 0, y: 0 });
 assert.equal(context.isBoardPointerEventFor(operation, { pointerId: 4 }), true);
 assert.equal(context.isBoardPointerEventFor(operation, { pointerId: 9 }), false);
 const session = context.startBoardAnimationSession('swipe', 4);
+assert.equal(session.phase, 'starting', 'new animation sessions must start in starting phase');
 let frameRan = false;
 assert.ok(context.requestBoardAnimationFrame(session, () => { frameRan = true; }));
+assert.equal(session.phase, 'running', 'scheduled animation frames must move the session to running phase');
 context.cancelBoardAnimation('pointercancel');
+assert.equal(session.phase, 'cancelled', 'cancelled animations must retain their terminal phase for diagnostics');
 assert.equal(frameCallbacks.size, 0, 'cancel must remove the pending animation frame');
 assert.equal(frameRan, false, 'cancelled animation must not run its callback');
 const secondSession = context.startBoardAnimationSession('second-swipe', 4);

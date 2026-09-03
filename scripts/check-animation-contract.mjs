@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const root=dirname(dirname(fileURLToPath(import.meta.url)));
+const interaction=await readFile(join(root,'src','ui','board-interaction.js'),'utf8');
+const render=await readFile(join(root,'src','ui','board-render.js'),'utf8');
+const animation=await readFile(join(root,'src','ui','board-animation.js'),'utf8');
+assert.match(interaction,/BOARD_ANIMATION_PHASE/,'animation lifecycle phases are missing');
+for(const phase of ['starting','running','finishing','cancelled'])assert.match(interaction,new RegExp(`['"]${phase}['"]`),`animation phase ${phase} is missing`);
+assert.match(interaction,/function setBoardAnimationPhase\(/,'animation phase transition must have one entry point');
+assert.match(interaction,/function getBoardAnimationSession\(/,'animation session inspection entry is missing');
+assert.match(interaction,/resourceKinds/,'animation resources must be observable');
+assert.match(render,/function renderSwipeFrame\(/,'frame rendering must stay in renderer');
+assert.match(animation,/function placeSwipeGroupOnTop\(/,'SVG layer ordering must stay in animation boundary');
+console.log('Animation lifecycle, resource ownership, frame renderer, and layer contracts OK.');

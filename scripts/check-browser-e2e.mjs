@@ -111,6 +111,16 @@ try{
   const grabbed=await snap(page);
   assert.equal(grabbed.clear,false,'clear flow must be idle before swipe');
   const beforeTransform=await page.locator('#board .tile').first().evaluate(el=>el.style.transform);
+  const layering=await page.evaluate(()=>{
+    const board=document.querySelector('#board');
+    const tiles=[...board.querySelectorAll(':scope > .tile')];
+    const active=tiles.filter(tile=>tile.classList.contains('swipe-active'));
+    const inactive=tiles.filter(tile=>!tile.classList.contains('swipe-active'));
+    const order=tile=>tiles.indexOf(tile);
+    return {activeCount:active.length,activeAboveInactive:active.length===3&&active.every(tile=>inactive.every(other=>order(tile)>order(other)))};
+  });
+  assert.equal(layering.activeCount,3,'direct swipe keeps exactly three active panels');
+  assert.equal(layering.activeAboveInactive,true,'direct swipe keeps active panels above adjacent panels in SVG order');
   await page.mouse.move(animationPivot.x+55,animationPivot.y,{steps:5});
   const moving=await snap(page);
   const afterTransform=await page.locator('#board .tile').first().evaluate(el=>el.style.transform);

@@ -15,7 +15,7 @@ const CLEAR_FLOW_PHASE=Object.freeze({
   playing:'next-playing'
 });
 const CLEAR_FLOW_ACTION=Object.freeze({start:'start',show:'show',next:'next',reset:'reset',cancel:'cancel'});
-let clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.idle,action:null,context:null,route:null,content:null,cycle:1,persisted:false,cancelReason:null});
+let clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.idle,action:null,context:null,route:null,content:null,cycle:1,persisted:false,cancelReason:null,celebration:null});
 let clearFlowPhase=CLEAR_FLOW_PHASE.idle;
 function setClearFlowPhase(phase,action=null,patch={}){
   clearFlowPhase=phase;
@@ -33,6 +33,12 @@ function persistClearFlowCheckpoint(){
 function cancelClearFlow(reason='cancelled'){
   clearFlowCycle++;
   clearUiEffectTimers('clear-transition');
+  const celebration=clearFlowState.celebration;
+  clearFlowState=Object.freeze({...clearFlowState,celebration:null});
+  if(celebration){
+    for(const animation of celebration.animations||[])try{animation.cancel();}catch(_){/* 終了済みアニメーションはそのまま続行する */}
+    celebration.burst?.remove();
+  }
   clearFlowState=Object.freeze({...clearFlowState,phase:CLEAR_FLOW_PHASE.idle,action:CLEAR_FLOW_ACTION.cancel,cycle:clearFlowCycle,context:null,route:null,content:null,persisted:false,cancelReason:reason});
   clearFlowPhase=CLEAR_FLOW_PHASE.idle;
   return clearFlowState;
@@ -49,16 +55,23 @@ function markClearFlowContent(kind='quiz/message'){
 // クリア時の揺れと円の拡大を担当する。盤面入力や進行状態は変更しない。
 function playWakeCelebrationEffect(targetSvg,tilesArr){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const animations=[];
   tilesArr.forEach((el,i)=>{
     const base=el.style.transform;
-    el.animate([{transform:base},{transform:base+' scale(1.13,.78) skewX(-7deg)',offset:.2},{transform:base+' scale(.86,1.18) skewX(6deg)',offset:.42},{transform:base+' scale(1.08,.91) skewX(-3deg)',offset:.64},{transform:base}],{duration:820,delay:i*65,easing:'cubic-bezier(.2,.8,.25,1)'});
+    animations.push(el.animate([{transform:base},{transform:base+' scale(1.13,.78) skewX(-7deg)',offset:.2},{transform:base+' scale(.86,1.18) skewX(6deg)',offset:.42},{transform:base+' scale(1.08,.91) skewX(-3deg)',offset:.64},{transform:base}],{duration:820,delay:i*65,easing:'cubic-bezier(.2,.8,.25,1)'}));
   });
   const NS_='http://www.w3.org/2000/svg',burst=document.createElementNS(NS_,'g');
   burst.setAttribute('class','clear-burst');burst.setAttribute('pointer-events','none');
   const addBurstRing=(radius,stroke,width,opacity)=>{const ring=document.createElementNS(NS_,'circle');ring.setAttribute('cx',CELL[3].x);ring.setAttribute('cy',CELL[3].y);ring.setAttribute('r',radius);ring.setAttribute('fill','none');ring.setAttribute('stroke',stroke);ring.setAttribute('stroke-width',width);if(opacity)ring.setAttribute('opacity',opacity);burst.appendChild(ring);};
   addBurstRing(47,'#C9A54E',4);addBurstRing(58,'#F3E8D5',1.5,'.7');
   burst.style.transformOrigin=CELL[3].x+'px '+CELL[3].y+'px';burst.style.transformBox='view-box';targetSvg.appendChild(burst);
-  const a=burst.animate([{transform:'scale(.55)',opacity:0},{transform:'scale(.8)',opacity:1,offset:.2},{transform:'scale(2.45)',opacity:0}],{duration:820,easing:'cubic-bezier(.15,.7,.2,1)'});a.onfinish=a.oncancel=()=>burst.remove();
+  const burstAnimation=burst.animate([{transform:'scale(.55)',opacity:0},{transform:'scale(.8)',opacity:1,offset:.2},{transform:'scale(2.45)',opacity:0}],{duration:820,easing:'cubic-bezier(.15,.7,.2,1)'});
+  animations.push(burstAnimation);
+  const effect={animations,burst};
+  const onCelebrationEnd=()=>{burst.remove();if(clearFlowState.celebration===effect)clearFlowState=Object.freeze({...clearFlowState,celebration:null});};
+  burstAnimation.onfinish=onCelebrationEnd;burstAnimation.oncancel=onCelebrationEnd;
+  clearFlowState=Object.freeze({...clearFlowState,celebration:effect});
+  return effect;
 }
 // クリア演出を開始し、ダイアログ表示まで待つ時間を返す。
 function celebrateClear(){
