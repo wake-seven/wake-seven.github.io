@@ -6,7 +6,7 @@
     "state/game-state.js",
     "app/app-context.js"
   ],
-  "baselineTracked": 164,
+  "baselineTracked": 163,
   "allowedReferences": [
     "state/progression-policy.js:stageIndex:uiPolicy({mode,lap,stageIndex,speedVariant}) {",
     "state/progression-policy.js:stageIndex:if(stageIndex < academyTotal) {",
@@ -150,7 +150,6 @@
     "ui/progression-ui.js:stageIndex:else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);",
     "ui/progression-ui.js:stageIndex:else loadStage(stageIndex+1);",
     "ui/progression-hud.js:nextStageAttention:highlightNext:nextStageAttention&&isCampaignMode()&&!$('nextStage').hidden&&!$('nextStage').disabled",
-    "ui/progression-clear-flow.js:satoriIndex:mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,",
     "ui/progression-clear-flow.js:stageIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
     "ui/progression-clear-flow.js:extraIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
     "ui/progression-clear-flow.js:satoriIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
@@ -2019,19 +2018,6 @@
         "state-restore"
       ],
       "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/progression-clear-flow.js:satoriIndex:mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/progression-clear-flow.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",

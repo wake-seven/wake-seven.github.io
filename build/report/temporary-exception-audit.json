@@ -1,26 +1,26 @@
 {
   "schemaVersion": 1,
   "name": "wake7-temporary-exception-audit",
-  "generatedAt": "2026-09-03T10:13:40.226Z",
+  "generatedAt": "2026-09-03T10:31:24.107Z",
   "status": "warning",
   "completion": "in-progress",
   "summary": {
-    "temporaryCount": 164,
+    "temporaryCount": 163,
     "temporaryZero": false,
-    "progress": "0/164",
+    "progress": "0/163",
     "byPurpose": {
       "dialog": 22,
-      "navigation": 142
+      "navigation": 141
     },
     "byEntrypoint": {
       "commands": 7,
       "data": 1,
       "other": 7,
       "runtime": 10,
-      "ui": 139
+      "ui": 138
     },
     "byPriority": {
-      "1": 164,
+      "1": 163,
       "2": 0,
       "3": 0
     }
@@ -2299,26 +2299,10 @@
       "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
-      "fingerprint": "ui/progression-clear-flow.js:satoriIndex:mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,",
-      "source": {
-        "file": "ui/progression-clear-flow.js",
-        "line": 125,
-        "excerpt": "mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,"
-      },
-      "symbol": "satoriIndex",
-      "purpose": "navigation",
-      "entrypoint": "ui",
-      "priority": 1,
-      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
-      "expiresOn": "2026-12-02",
-      "nextMigrationUnit": "gateway:navigation",
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 150,
+        "line": 151,
         "excerpt": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
       },
       "symbol": "stageIndex",
@@ -2334,7 +2318,7 @@
       "fingerprint": "ui/progression-clear-flow.js:extraIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 150,
+        "line": 151,
         "excerpt": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
       },
       "symbol": "extraIndex",
@@ -2350,7 +2334,7 @@
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 150,
+        "line": 151,
         "excerpt": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
       },
       "symbol": "satoriIndex",
@@ -2366,7 +2350,7 @@
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:if(mode==='satori')return satoriIndex<SATORI_STAGES.length-1",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 153,
+        "line": 154,
         "excerpt": "if(mode==='satori')return satoriIndex<SATORI_STAGES.length-1"
       },
       "symbol": "satoriIndex",
@@ -2382,7 +2366,7 @@
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:? {kind:'satori-stage',index:satoriIndex+1}",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 154,
+        "line": 155,
         "excerpt": "? {kind:'satori-stage',index:satoriIndex+1}"
       },
       "symbol": "satoriIndex",
@@ -2398,7 +2382,7 @@
       "fingerprint": "ui/progression-clear-flow.js:extraIndex:if(mode==='mastery')return extraIndex===EXTRA_STAGES.length-1",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 156,
+        "line": 157,
         "excerpt": "if(mode==='mastery')return extraIndex===EXTRA_STAGES.length-1"
       },
       "symbol": "extraIndex",
@@ -2414,7 +2398,7 @@
       "fingerprint": "ui/progression-clear-flow.js:extraIndex:: {kind:'mastery-stage',index:extraIndex+1};",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 158,
+        "line": 159,
         "excerpt": ": {kind:'mastery-stage',index:extraIndex+1};"
       },
       "symbol": "extraIndex",
@@ -2430,7 +2414,7 @@
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:if(stageIndex===ACADEMY_STAGE_COUNT-1&&academyIsCleared)return {kind:'master-dialog',section:'primary'};",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 159,
+        "line": 160,
         "excerpt": "if(stageIndex===ACADEMY_STAGE_COUNT-1&&academyIsCleared)return {kind:'master-dialog',section:'primary'};"
       },
       "symbol": "stageIndex",
@@ -2446,7 +2430,7 @@
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:if(stageIndex===STAGES.length-1&&allPrimaryIsCleared)return {kind:'master-dialog',section:'intermediate'};",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 160,
+        "line": 161,
         "excerpt": "if(stageIndex===STAGES.length-1&&allPrimaryIsCleared)return {kind:'master-dialog',section:'intermediate'};"
       },
       "symbol": "stageIndex",
@@ -2462,7 +2446,7 @@
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:if(stageIndex===STAGES.length-1)return {kind:'restore-free'};",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 161,
+        "line": 162,
         "excerpt": "if(stageIndex===STAGES.length-1)return {kind:'restore-free'};"
       },
       "symbol": "stageIndex",
@@ -2478,7 +2462,7 @@
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:return {kind:'stage',index:stageIndex+1};",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 163,
+        "line": 164,
         "excerpt": "return {kind:'stage',index:stageIndex+1};"
       },
       "symbol": "stageIndex",

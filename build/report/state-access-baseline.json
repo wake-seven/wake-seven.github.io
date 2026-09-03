@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "name": "state-access-baseline",
-  "generatedAt": "2026-09-03T10:19:17.002Z",
+  "generatedAt": "2026-09-03T10:31:24.035Z",
   "source": "scripts/state-access-exceptions.json",
   "counts": {
-    "temporary": 164,
+    "temporary": 163,
     "byPurpose": {
-      "navigation": 142,
+      "navigation": 141,
       "dialog": 22,
       "progress": 0,
       "session": 0,
@@ -19,10 +19,10 @@
       "data": 1,
       "other": 7,
       "runtime": 10,
-      "ui": 139
+      "ui": 138
     },
     "byAccess": {
-      "read": 140,
+      "read": 139,
       "write": 24
     }
   },
@@ -3578,36 +3578,11 @@
       ]
     },
     {
-      "fingerprint": "ui/progression-clear-flow.js:satoriIndex:mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,",
-      "classification": "executable",
-      "source": {
-        "file": "ui/progression-clear-flow.js",
-        "line": 125,
-        "excerpt": "mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,"
-      },
-      "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 150,
+        "line": 151,
         "excerpt": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
       },
       "symbol": "stageIndex",
@@ -3632,7 +3607,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 150,
+        "line": 151,
         "excerpt": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
       },
       "symbol": "extraIndex",
@@ -3657,7 +3632,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 150,
+        "line": 151,
         "excerpt": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
       },
       "symbol": "satoriIndex",
@@ -3682,7 +3657,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 153,
+        "line": 154,
         "excerpt": "if(mode==='satori')return satoriIndex<SATORI_STAGES.length-1"
       },
       "symbol": "satoriIndex",
@@ -3707,7 +3682,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 154,
+        "line": 155,
         "excerpt": "? {kind:'satori-stage',index:satoriIndex+1}"
       },
       "symbol": "satoriIndex",
@@ -3732,7 +3707,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 156,
+        "line": 157,
         "excerpt": "if(mode==='mastery')return extraIndex===EXTRA_STAGES.length-1"
       },
       "symbol": "extraIndex",
@@ -3757,7 +3732,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 158,
+        "line": 159,
         "excerpt": ": {kind:'mastery-stage',index:extraIndex+1};"
       },
       "symbol": "extraIndex",
@@ -3782,7 +3757,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 159,
+        "line": 160,
         "excerpt": "if(stageIndex===ACADEMY_STAGE_COUNT-1&&academyIsCleared)return {kind:'master-dialog',section:'primary'};"
       },
       "symbol": "stageIndex",
@@ -3807,7 +3782,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 160,
+        "line": 161,
         "excerpt": "if(stageIndex===STAGES.length-1&&allPrimaryIsCleared)return {kind:'master-dialog',section:'intermediate'};"
       },
       "symbol": "stageIndex",
@@ -3832,7 +3807,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 161,
+        "line": 162,
         "excerpt": "if(stageIndex===STAGES.length-1)return {kind:'restore-free'};"
       },
       "symbol": "stageIndex",
@@ -3857,7 +3832,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 163,
+        "line": 164,
         "excerpt": "return {kind:'stage',index:stageIndex+1};"
       },
       "symbol": "stageIndex",

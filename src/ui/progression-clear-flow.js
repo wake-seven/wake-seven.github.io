@@ -116,15 +116,16 @@ function finishClearFlowDialog(){
 // 閉じる副作用や連続表示の切り替えで判定がずれるため、同じクリア周期の
 // ルート判定と表示判定にはこの入口を使う。
 function createClearTransitionContext(nextStageIndex){
-  const appState=WakeSevenAppContext.snapshot();
-  const {mode,lap,masteryIndex}=appState;
-  const currentStageIndex=Number.isInteger(appState.stageIndex)?appState.stageIndex:0;
+  const navigation=readNavigationContext();
+  const mode=navigation.mode;
+  const lap=navigation.lap;
+  const currentStageIndex=navigation.stageIndex;
   const resolvedNextStageIndex=Number.isInteger(nextStageIndex)?nextStageIndex:currentStageIndex+1;
   const currentLapPrimaryCleared=lap===2?lap2ClearedStages:lap1ClearedStages;
   return Object.freeze({
-    mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,
+    mode,stageIndex:currentStageIndex,extraIndex:navigation.masteryIndex,satoriIndex:navigation.satoriIndex,activeLap:lap,
     nextStageIndex:resolvedNextStageIndex,
-    solved:isSolved(),clearShown:appState.clearShown,
+    solved:isSolved(),clearShown:WakeSevenAppContext.isClearShown(),
     academyIsCleared:academyCleared(),
     allPrimaryIsCleared:allPrimaryCleared(),
     currentLapPrimaryComplete:STAGES.every((_,i)=>currentLapPrimaryCleared.has(i)),
@@ -172,7 +173,8 @@ function dispatchClearFlowAction(action){
   makerButtonBlockedUntil=performance.now()+600;
   clearUiEffectTimers('maker-reveal');
   setUiEffectTimer('maker-reveal','unlock',()=>{makerButtonBlockedUntil=0;renderStageNav();},600);
-  const context=clearFlowState.context||createClearTransitionContext(WakeSevenAppContext.snapshot().stageIndex+1);
+  const navigation=readNavigationContext();
+  const context=clearFlowState.context||createClearTransitionContext(navigation.stageIndex+1);
   const nextStageIndex=context.nextStageIndex;
   const route=resolveAfterClearRoute(context);
   clearFlowState=Object.freeze({...clearFlowState,action,context,route});
