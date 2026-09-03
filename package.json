@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "build": "node scripts/build-index.mjs && npm run build:esm && npm run trace:generate",
-    "trace:generate": "node scripts/generate-trace-index.mjs && node scripts/generate-refactor-report.mjs && node scripts/generate-ui-data-map.mjs && node scripts/generate-event-wiring-map.mjs",
+    "trace:generate": "node scripts/generate-trace-index.mjs && node scripts/generate-refactor-report.mjs && node scripts/generate-ui-data-map.mjs && node scripts/generate-event-wiring-map.mjs && node scripts/generate-progression-responsibility.mjs",
     "trace": "node scripts/trace.mjs",
     "check:trace": "node scripts/check-trace-index.mjs",
     "check:ui-data-map": "node scripts/check-ui-data-map.mjs",
@@ -30,6 +30,7 @@
     "check:global-access-report": "node scripts/check-global-access.mjs",
     "check:state-classification": "node scripts/check-state-classification.mjs",
     "check:state-mutations": "node scripts/check-state-mutations.mjs",
+    "check:progression-responsibility": "node scripts/check-progression-responsibility.mjs",
     "baseline:generate": "node scripts/generate-refactor-baseline.mjs",
     "check:baseline": "node scripts/check-refactor-baseline.mjs"
   },

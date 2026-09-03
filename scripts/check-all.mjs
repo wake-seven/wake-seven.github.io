@@ -31,6 +31,7 @@ const steps = [
   { name: 'metrics-update-policy', command: process.execPath, args: ['scripts/check-metrics-update.mjs'] },
   { name: 'refactor-policy', command: process.execPath, args: ['scripts/check-refactor-policy.mjs'] },
   { name: 'trace', command: process.execPath, args: ['scripts/check-trace-index.mjs'] },
+  { name: 'progression-responsibility', command: process.execPath, args: ['scripts/check-progression-responsibility.mjs'] },
   { name: 'ui-data-map', command: process.execPath, args: ['scripts/check-ui-data-map.mjs'] },
   { name: 'event-wiring', command: process.execPath, args: ['scripts/check-event-wiring.mjs'] },
   { name: 'refactor-report', command: process.execPath, args: ['scripts/check-refactor-report.mjs'] },
