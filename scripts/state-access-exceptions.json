@@ -6,7 +6,7 @@
     "state/game-state.js",
     "app/app-context.js"
   ],
-  "baselineTracked": 178,
+  "baselineTracked": 168,
   "allowedReferences": [
     "state/progression-policy.js:stageIndex:uiPolicy({mode,lap,stageIndex,speedVariant}) {",
     "state/progression-policy.js:stageIndex:if(stageIndex < academyTotal) {",
@@ -15,9 +15,6 @@
     "state/progression-policy.js:stageIndex:if(stageIndex >= basicStart) return {id:'basic',assisted:true,guidedBasic:lap === 1,narrowRods:lap === 1};",
     "state/progression-policy.js:stageIndex:if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};",
     "state/progression-policy.js:stageIndex:if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};",
-    "data/clear-content.js:stageIndex:// だるま学園卒業→だるま修行の間に挟む案内ダイアログ。stageIndexで言えばacademy4_8とtraining1_1の境目。",
-    "data/core-data.js:stageIndex:// stageIndex/extraIndex から CLEAR_CONTENT のキーへ変換する。",
-    "data/core-data.js:extraIndex:// stageIndex/extraIndex から CLEAR_CONTENT のキーへ変換する。",
     "data/core-data.js:activeLap:return activeLap===2?transformStateBySymmetry(state,SECOND_LAP_BOARD_VIEW):state;",
     "runtime/speed.js:activeLap:if(activeLap===2)return null;",
     "ui/board-ui.js:stageIndex:basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),",
@@ -117,8 +114,6 @@
     "commands/tutorial-commands.js:tutorialStep:return tutorialStep;",
     "commands/tutorial-commands.js:tutorialStep:tutorialStep=0;",
     "commands/tutorial-commands.js:tutorialStep:function persistTutorialSessionCommand(step=tutorialStep){",
-    "ui/quiz.js:activeMode:// クリア後は activeMode が次の導線用に切り替わることがあるため、",
-    "ui/quiz.js:extraIndex:// 名人の盤面を最後に表示した文脈を優先する。extraIndex は常に整数で",
     "ui/message.js:stageIndex:function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries(",
     "ui/message.js:stageIndex:function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries(",
     "ui/message.js:messageDialogReturn:function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries(",
@@ -130,10 +125,8 @@
     "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
     "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
     "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
-    "ui/progression-ui.js:activeLap:// 称号一覧で選択した周（activeLap）を、そのまま問題選択にも引き継ぐ。",
     "ui/progression-ui.js:stageIndex:return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));",
     "ui/progression-ui.js:stageIndex:const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);",
-    "ui/progression-ui.js:stageIndex:// 通常ステージの古い stageIndex / masteryClearContext を使って",
     "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
     "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
     "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
@@ -161,9 +154,6 @@
     "ui/progression-hud.js:nextStageAttention:highlightNext:nextStageAttention&&isCampaignMode()&&!$('nextStage').hidden&&!$('nextStage').disabled",
     "ui/progression-flow-contract.js:clearShown:{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation'},",
     "ui/progression-flow-contract.js:clearShown:{id:'reload-clear',mode:'campaign',from:'page-load',event:'clearShownかつ解決済み',entry:'restoreDialogState→showClearDialog',persist:'clear状態を維持',cancel:'clear状態不整合時は通常盤面',to:'clear-dialog'},",
-    "ui/progression-clear-flow.js:clearShown:// clearShown は保存・進行用の状態なので、表示予約の重複防止には使わない。",
-    "ui/progression-clear-flow.js:activeMode:// 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを",
-    "ui/progression-clear-flow.js:stageIndex:// 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを",
     "ui/progression-clear-flow.js:satoriIndex:mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,",
     "ui/progression-clear-flow.js:stageIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
     "ui/progression-clear-flow.js:extraIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
@@ -270,45 +260,6 @@
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};",
       "expiresOn": "2026-12-02",
       "owner": "state/progression-policy.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "data/clear-content.js:stageIndex:// だるま学園卒業→だるま修行の間に挟む案内ダイアログ。stageIndexで言えばacademy4_8とtraining1_1の境目。",
-      "expiresOn": "2026-12-02",
-      "owner": "data/clear-content.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "data/core-data.js:stageIndex:// stageIndex/extraIndex から CLEAR_CONTENT のキーへ変換する。",
-      "expiresOn": "2026-12-02",
-      "owner": "data/core-data.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "data/core-data.js:extraIndex:// stageIndex/extraIndex から CLEAR_CONTENT のキーへ変換する。",
-      "expiresOn": "2026-12-02",
-      "owner": "data/core-data.js",
       "migrationTarget": "gateway:navigation",
       "priority": 1,
       "relatedTests": [
@@ -1606,32 +1557,6 @@
       "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
-      "fingerprint": "ui/quiz.js:activeMode:// クリア後は activeMode が次の導線用に切り替わることがあるため、",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/quiz.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/quiz.js:extraIndex:// 名人の盤面を最後に表示した文脈を優先する。extraIndex は常に整数で",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/quiz.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
       "fingerprint": "ui/message.js:stageIndex:function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries(",
       "expiresOn": "2026-12-02",
       "owner": "ui/message.js",
@@ -1775,19 +1700,6 @@
       "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
-      "fingerprint": "ui/progression-ui.js:activeLap:// 称号一覧で選択した周（activeLap）を、そのまま問題選択にも引き継ぐ。",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/progression-ui.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
       "fingerprint": "ui/progression-ui.js:stageIndex:return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));",
       "expiresOn": "2026-12-02",
       "owner": "ui/progression-ui.js",
@@ -1802,19 +1714,6 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/progression-ui.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/progression-ui.js:stageIndex:// 通常ステージの古い stageIndex / masteryClearContext を使って",
       "expiresOn": "2026-12-02",
       "owner": "ui/progression-ui.js",
       "migrationTarget": "gateway:navigation",
@@ -2176,45 +2075,6 @@
         "state-restore"
       ],
       "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/progression-clear-flow.js:clearShown:// clearShown は保存・進行用の状態なので、表示予約の重複防止には使わない。",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/progression-clear-flow.js",
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ],
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/progression-clear-flow.js:activeMode:// 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/progression-clear-flow.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/progression-clear-flow.js:stageIndex:// 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/progression-clear-flow.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,",

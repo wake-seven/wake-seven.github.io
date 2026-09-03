@@ -18,6 +18,9 @@ for(const file of publishedSourceFiles){
   const lines=text.split('\n');
   for(let index=0;index<lines.length;index++){
     const line=lines[index];
+    // コメントだけの行は状態参照ではないため、監査対象から除外する。
+    // コメント内の例示や設計メモがtemporary件数を水増ししないようにする。
+    if(/^\s*\/\//.test(line)||/^\s*\/\*/.test(line)||/^\s*\*/.test(line)||/^\s*\*\//.test(line))continue;
     for(const name of names){
       const re=new RegExp(`\\b${name}\\b`,'g');
       for(const match of line.matchAll(re)){
