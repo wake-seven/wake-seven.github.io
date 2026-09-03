@@ -27,6 +27,7 @@ const steps = [
   { name: 'browser-flow', command: process.execPath, args: ['scripts/check-browser-flow.mjs'] },
   { name: 'dialog-chains', command: process.execPath, args: ['scripts/check-dialog-chains.mjs'] },
   { name: 'ui-effects', command: process.execPath, args: ['scripts/check-ui-effects.mjs'] },
+  { name: 'animation-contract', command: process.execPath, args: ['scripts/check-animation-contract.mjs'] },
   { name: 'progression-flows', command: process.execPath, args: ['scripts/check-progression-flows.mjs'] },
   { name: 'progression-flow-contract', command: process.execPath, args: ['scripts/check-progression-flow-contract.mjs'] },
   { name: 'progression-orchestrators', command: process.execPath, args: ['scripts/check-progression-orchestrators.mjs'] },
