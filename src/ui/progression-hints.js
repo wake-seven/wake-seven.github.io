@@ -32,8 +32,9 @@ function showBestMoveHint(persistent=false){
   for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){const next=rollOnce(ori,ti,dir);if(dist[enc(next)]!==d-1)continue;const el=svg.querySelector('.pivot[data-tri="'+ti+'"]');el.classList.add('hi');setUiEffectTimer('hint','pivot',()=>el.classList.remove('hi'),1100);showHintArrow(ti,dir,false,persistent);return;}
 }
 function cancelTutorialHint(preserveSelection=false){clearUiEffectTimers('hint');clearAxisGuide();clearHintVisuals(preserveSelection);svg.querySelectorAll('.pivot.hi').forEach(el=>el.classList.remove('hi'));}
-function scheduleStageOneTutorial(){cancelTutorialHint();}
-function scheduleBasicLessonAssist(){cancelTutorialHint();}
+// 問題開始時に残っているヒント表示を消す共通処理。
+// 旧来の2つの名前は挙動が完全に同じだったため、呼び出し側もこの入口へ統合する。
+function clearScheduledHint(){cancelTutorialHint();}
 $('hint').addEventListener('click',()=>{cancelTutorialHint();if(isFourthVolume())revealFourthDistance();else showBestMoveHint();});
 
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。

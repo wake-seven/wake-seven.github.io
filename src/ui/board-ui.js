@@ -1284,8 +1284,7 @@ function loadStage(index){
   renderCurrentView();
   animateBoardArrival();
   trackStageView();
-  if(stageIndex===0&&!hasMasterReward())scheduleStageOneTutorial();
-  else scheduleBasicLessonAssist();
+  clearScheduledHint();
   syncGameState();
 }
 function loadExtraStage(index){
@@ -2201,7 +2200,7 @@ $('reset').addEventListener('click',()=>{
   if(editingBoard){resetMakerBoard();return;}
   restartWithAnimation();
   if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&stageIndex===0&&!hasMasterReward())
-    setTimeout(scheduleStageOneTutorial,500);
+    setTimeout(clearScheduledHint,500);
 });
 $('tutorialReset').addEventListener('click',()=>{
   if(busy||!isMode('tutorial'))return;
