@@ -39,6 +39,8 @@ npm run check
 
 共有状態の直接参照は `npm run check:global-access` で監査します。`build/report/global-access.json` に、参照を `gateway`（入口経由）、`owner`（状態所有者）、`needs-migration`（個別移行候補）へ分類し、読み取り・書き換え別の件数と前回レポートとの差分を出力します。候補は一括置換せず、対応するE2Eを先に確認します。
 
+進行処理の追跡は `build/report/progression-responsibility.json` を入口にします。シンボルを責務（状態・遷移・表示など）と処理順（`entry → state-decision → transition → render`）の両方で分類し、ファイルごとの責務と複数責務シンボルを自動生成します。関数一覧を手書きで複製せず、`npm run trace:generate` と `npm run check:progression-responsibility` でソースとの差分を検査します。
+
 公開版のサイズ比較や基準値の更新手順も、固定値を文書へ転記せず、対応する `scripts/` の検査結果を正とします。
 
 ## 大規模な構造変更の停止基準
