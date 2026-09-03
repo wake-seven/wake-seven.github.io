@@ -183,6 +183,7 @@ function openSpeedPauseDialog(){
   pauseSpeedClock();persistSpeedSession();
   renderSpeedPauseStats();
   setVisible(getSpeedUiRefs().speedPauseDialog,true);
+  persistDialogState();
 }
 function rotateSpeedSnapshot(data){
   if(!validSavedBoard(data))return data;

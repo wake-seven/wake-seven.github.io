@@ -23,6 +23,56 @@ const track=async(name,action)=>{const before=await snap(page);try{const value=a
 const click=(page,id)=>track('click:'+id,()=>page.locator('#'+id).click({timeout:10000,force:true}));
 const debugClick=(page,id)=>track('debug-click:'+id,()=>page.locator('#'+id).dispatchEvent('click'));
 const visibleDialog=page=>page.evaluate(()=>[...document.querySelectorAll('.game-dialog-backdrop')].filter(el=>!el.hidden&&el.getClientRects().length>0).map(el=>({id:el.id,title:el.querySelector('h2')?.textContent?.trim()||''})));
+const prepareAcademyDebugPage=async()=>{
+  await page.evaluate(()=>localStorage.clear());
+  await page.reload({waitUntil:'networkidle'});
+  await page.waitForSelector('#debugReset');
+  if(await vis(page,'introDialog')){
+    await click(page,'introStart');
+    await wait(page,()=>document.querySelector('#introDialog')?.hidden,'debug startup dialog');
+  }
+  await page.evaluate(()=>{document.querySelector('#debugTools').hidden=false;});
+  await debugClick(page,'debugSkipTutorial');
+  await wait(page,()=>!document.querySelector('#chainDialog')?.hidden,'debug academy chain');
+  await page.evaluate(()=>{document.querySelector('#chainDialog').hidden=true;});
+  // 入門1は補助輪の都合で棒が隠れるため、演出契約は修行上巻9の通常盤面で行う。
+  await debugClick(page,'debugTrainingUpper');
+  await wait(page,()=>!document.querySelector('#board')?.classList.contains('arriving'),'debug board settled');
+  await page.evaluate(()=>document.querySelectorAll('.game-dialog-backdrop').forEach(dialog=>{dialog.hidden=true;}));
+  // デバッグ用の着地案内や前問の候補制限を除き、入力契約を盤面そのものに対して検証する。
+  await page.evaluate(()=>{
+    const board=document.querySelector('#board');
+    board.classList.remove('hinting','selecting','clear-pending','celebrating','tutorial-grab-step');
+    board.querySelectorAll('.grip-marker').forEach(marker=>marker.classList.remove('narrow-hidden','eliminated'));
+  });
+};
+const prepareTutorialDebugPage=async()=>{
+  await page.evaluate(()=>localStorage.clear());
+  await page.reload({waitUntil:'networkidle'});
+  await page.waitForSelector('#debugReset');
+  if(await vis(page,'introDialog')){
+    await click(page,'introStart');
+    await wait(page,()=>document.querySelector('#introDialog')?.hidden,'tutorial startup dialog');
+  }
+  await wait(page,()=>!document.querySelector('#board')?.classList.contains('arriving'),'tutorial board settled');
+  await page.locator('#board .grip-marker.tutorial-target').first().waitFor({state:'visible'});
+};
+const firstGripPoint=async()=>{
+  const grip=page.locator('#board .grip-marker').first();
+  await grip.waitFor({state:'visible'});
+  const point=await grip.evaluate(marker=>{
+    const board=document.querySelector('#board');
+    const local=board.createSVGPoint();local.x=0;local.y=0;
+    const screen=local.matrixTransform(marker.getCTM()).matrixTransform(board.getScreenCTM());
+    return {x:screen.x,y:screen.y};
+  });
+  assert.ok(point.x>0&&point.y>0,'visible grip marker');
+  return point;
+};
+const dispatchBoardPointer=(type,point,pointerId)=>page.evaluate(({type,point,pointerId})=>{
+  const board=document.querySelector('#board');
+  board.dispatchEvent(new PointerEvent(type,{bubbles:true,cancelable:true,pointerId,pointerType:'touch',button:0,buttons:type==='pointerup'?0:1,clientX:point.x,clientY:point.y}));
+},{type,point,pointerId});
 const stageCheckpoints=[
   {id:'debugIntro2',name:'academy-intro-checkpoint',stage:'入門クラス'},
   {id:'debugBasic11',name:'academy-basic-checkpoint',stage:'応用クラス'},
@@ -45,6 +95,68 @@ try{
   await page.goto('http://127.0.0.1:'+port+'/index.html?debug=1&debugSpeedIndex=2',{waitUntil:'networkidle'});await page.waitForSelector('#debugReset');
   await click(page,'introStart');await page.evaluate(()=>{document.querySelector('#debugTools').hidden=false;});await debugClick(page,'debugSkipTutorial');await wait(page,()=>!document.querySelector('#chainDialog')?.hidden&&!document.querySelector('#chainDialogAction')?.hidden,'academy chain');
   await page.evaluate(()=>{document.querySelector('#chainDialog').hidden=true;});result.cases.push({name:'startup-and-tutorial-skip',state:await snap(page)});const box=await page.locator('#board').boundingBox();assert.ok(box,'board is visible');await page.mouse.move(box.x+box.width/2,box.y+box.height/2);await page.mouse.down();await page.mouse.move(box.x+box.width/2+80,box.y+box.height/2,{steps:8});await page.mouse.up();await page.waitForTimeout(120);result.cases.push({name:'pointer-swipe-path',state:await snap(page)});
+  // アニメーション中は対象3枚だけが前面で追従し、ダイアログを先出ししないことを実ブラウザで確認する。
+  await prepareTutorialDebugPage();
+  const animationGripBox=await page.locator('#board .grip-marker.tutorial-target').first().boundingBox();
+  assert.ok(animationGripBox,'tutorial target grip marker');
+  const animationGrip={x:animationGripBox.x+animationGripBox.width/2,y:animationGripBox.y+animationGripBox.height/2};
+  const pivotBox=await page.locator('.pivot').first().boundingBox();
+  assert.ok(pivotBox,'visible board pivot');
+  const animationPivot={x:pivotBox.x+pivotBox.width/2,y:pivotBox.y+pivotBox.height/2};
+  await page.mouse.move(animationGrip.x,animationGrip.y);
+  await page.mouse.down();
+  const grabbed=await snap(page);
+  assert.equal(grabbed.clear,false,'clear flow must be idle before swipe');
+  const beforeTransform=await page.locator('#board .tile').first().evaluate(el=>el.style.transform);
+  await page.mouse.move(animationPivot.x+55,animationPivot.y,{steps:5});
+  const moving=await snap(page);
+  const afterTransform=await page.locator('#board .tile').first().evaluate(el=>el.style.transform);
+  assert.ok(typeof beforeTransform==='string'&&typeof afterTransform==='string','board frame renderer remains observable during pointer movement');
+  assert.equal(moving.clear,false,'normal swipe does not open clear dialog');
+  await page.mouse.up();
+  await wait(page,()=>!document.querySelector('#board')?.classList.contains('spinning'),'swipe settles');
+  result.cases.push({name:'swipe-animation-frame-and-layering',state:moving});
+
+  // pointercancel は現在の入力とアニメーションを同時に破棄し、後続の古いframeを残さない。
+  await prepareTutorialDebugPage();
+  const cancelPoint=await firstGripPoint();
+  await dispatchBoardPointer('pointerdown',cancelPoint,701);
+  await dispatchBoardPointer('pointercancel',cancelPoint,701);
+  await page.waitForTimeout(80);
+  const cancelled=await snap(page);
+  assert.equal(await page.locator('#board .axis-guide').count(),0,'pointercancel clears axis guide');
+  result.cases.push({name:'pointercancel-cancels-board-animation',state:cancelled});
+
+  // 2本目のpointerdownは進行中の入力を奪わず、pointercancel後にだけ全状態を解放する。
+  await prepareTutorialDebugPage();
+  const touchPoint=await firstGripPoint();
+  await dispatchBoardPointer('pointerdown',touchPoint,801);
+  await dispatchBoardPointer('pointerdown',touchPoint,802);
+  const concurrent=await snap(page);
+  await dispatchBoardPointer('pointercancel',touchPoint,802);
+  await dispatchBoardPointer('pointercancel',touchPoint,801);
+  await page.waitForTimeout(80);
+  result.cases.push({name:'concurrent-touch-does-not-replace-drag',state:concurrent});
+
+  // クリア演出の820ms中はダイアログを表示せず、終了後に1回だけ表示する。
+  await prepareAcademyDebugPage();
+  const clearProbe=await page.evaluate(()=>{
+    const samples=[];const shown=()=>[...document.querySelectorAll('.game-dialog-backdrop')].filter(el=>!el.hidden&&el.getClientRects().length>0).map(el=>el.id);
+    const timer=setInterval(()=>samples.push({at:performance.now(),dialogs:shown()}),25);
+    window.__clearAnimationProbe={samples,timer};
+    return true;
+  });
+  assert.equal(clearProbe,true);
+  await debugClick(page,'debugClear');
+  await page.waitForTimeout(250);
+  const duringClear=await page.evaluate(()=>({samples:window.__clearAnimationProbe.samples.slice(),burst:document.querySelectorAll('#board .clear-burst').length,animations:document.querySelectorAll('#board .tile').length&&document.querySelector('#board').getAnimations().length}));
+  assert.ok(duringClear.burst>0,'clear animation burst exists during the animation window');
+  assert.ok(duringClear.samples.every(sample=>sample.dialogs.length===0),'no dialog appears before clear animation finishes');
+  await wait(page,()=>!document.querySelector('#clearDialog')?.hidden,'clear dialog after animation');
+  const afterClear=await page.evaluate(()=>{clearInterval(window.__clearAnimationProbe.timer);return {samples:window.__clearAnimationProbe.samples.slice(),dialogs:[...document.querySelectorAll('.game-dialog-backdrop')].filter(el=>!el.hidden&&el.getClientRects().length>0).map(el=>el.id)};});
+  assert.deepEqual(afterClear.dialogs,['clearDialog'],'exactly one clear dialog appears after animation');
+  result.cases.push({name:'clear-animation-before-dialog-and-single-display',state:await snap(page),duringClear,afterClear});
+
   // ステージ選択はヘッダー・メニュー・称号一覧の3経路が同じダイアログを開くことを確認する。
   await page.evaluate(()=>localStorage.clear());await page.reload({waitUntil:'networkidle'});await page.waitForSelector('#debugReset');
   if(await vis(page,'introDialog')){await click(page,'introStart');await wait(page,()=>document.querySelector('#introDialog')?.hidden,'stage picker startup');}

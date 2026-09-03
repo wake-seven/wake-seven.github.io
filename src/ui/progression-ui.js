@@ -361,6 +361,9 @@ function showClearDialog(contextOverride=null){
   // クリア結果と次の操作まで巻き込んでダイアログを失わないようにする。
   showProgressionQuiz({rootId:'boardQuiz',boardQuizConfig:boardQuizConfigForCurrent(),requireAnswer:true});
   $('clearDialog').hidden=false;
+  // クリアダイアログを表示した時点で保存する。演出完了直前の保存では
+  // リロード時に盤面だけ復元され、表示中だったダイアログが失われる。
+  persistDialogState();
 }
 // ===== クリア後メッセージと雑学 =====
 function tipPaperCraftArt(){

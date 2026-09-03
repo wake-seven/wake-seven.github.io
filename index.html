@@ -4415,7 +4415,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-13:15';
+const APP_VERSION='2026.09.03-13:49';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5412,6 +5412,7 @@ function openSpeedPauseDialog(){
   pauseSpeedClock();persistSpeedSession();
   renderSpeedPauseStats();
   setVisible(getSpeedUiRefs().speedPauseDialog,true);
+  persistDialogState();
 }
 function rotateSpeedSnapshot(data){
   if(!validSavedBoard(data))return data;
@@ -9732,6 +9733,9 @@ function showClearDialog(contextOverride=null){
   // クリア結果と次の操作まで巻き込んでダイアログを失わないようにする。
   showProgressionQuiz({rootId:'boardQuiz',boardQuizConfig:boardQuizConfigForCurrent(),requireAnswer:true});
   $('clearDialog').hidden=false;
+  // クリアダイアログを表示した時点で保存する。演出完了直前の保存では
+  // リロード時に盤面だけ復元され、表示中だったダイアログが失われる。
+  persistDialogState();
 }
 // ===== クリア後メッセージと雑学 =====
 function tipPaperCraftArt(){
