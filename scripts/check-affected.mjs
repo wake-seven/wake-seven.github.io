@@ -1,51 +1,64 @@
-import { execFileSync } from 'node:child_process';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { execFileSync, spawn } from 'node:child_process';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// 変更ファイルから確認範囲を選ぶ。判定を狭くしすぎないよう、迷った変更はaffectedへ昇格する。
+// 変更範囲を選び、選んだプロファイルを実行して結果を一つの証跡へ残す。
+// 未実行を成功扱いにしないため、失敗と未完了を明示的に分ける。
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const reportDir = join(root, 'build', 'report');
+const config = JSON.parse(await readFile(join(root, 'scripts/check-profiles.json'), 'utf8'));
+const requested = process.argv[2] && !process.argv[2].startsWith('-') ? process.argv[2] : null;
 const raw = execFileSync('git', ['status', '--porcelain=v1', '-z'], { cwd: root, encoding: 'utf8' });
 const changedFiles = raw.split('\0').filter(Boolean).map(entry => entry.slice(3)).filter(Boolean);
 const ignoredFiles = changedFiles.filter(file => file.startsWith('build/report/'));
 const files = changedFiles.filter(file => !ignoredFiles.includes(file));
-const reasons = [];
-let profile = 'fast';
-const fullRules = [
-  /^scripts\//, /^package(?:-lock)?\.json$/, /^src\/(?:state|runtime|commands)\//,
-  /^src\/.*(?:progression|navigation|speed)/i, /^scripts\/application-manifest\.mjs$/,
-  /^index\.html$/
-];
+const fullRules = [/^scripts\//, /^package(?:-lock)?\.json$/, /^src\/(?:state|runtime|commands)\//, /^src\/.*(?:progression|navigation|speed)/i, /^index\.html$/];
 const affectedRules = [/^src\//, /^(?:styles?|public)\//, /\.(?:css|html|svg)$/i];
-const ambiguous = [];
-for (const file of files) {
-  if (fullRules.some(rule => rule.test(file))) {
-    profile = 'full';
-    reasons.push(`${file}: 構造・状態・入口・公開物に影響するためfull`);
-  } else if (profile !== 'full' && affectedRules.some(rule => rule.test(file))) {
-    profile = 'affected';
-    reasons.push(`${file}: ソースまたは表示領域の変更のためaffected`);
-  } else if (file) {
-    if (profile === 'fast') profile = 'affected';
-    ambiguous.push(file);
-    reasons.push(`${file}: 判定規則がないため安全側のaffected`);
+const reasons = [];
+let selected = requested;
+if (!selected) {
+  selected = 'fast';
+  for (const file of files) {
+    if (fullRules.some(rule => rule.test(file))) selected = 'full';
+    else if (selected === 'fast' && affectedRules.some(rule => rule.test(file))) selected = 'affected';
+    else if (selected === 'fast') selected = 'affected';
   }
-}
-if (!files.length) reasons.push('変更ファイルがないためfast');
-const report = {
-  schemaVersion: 1,
-  name: 'wake7-check-profile-selection',
-  generatedAt: new Date().toISOString(),
-  status: 'passed',
-  summary: { profile, changedFileCount: files.length, ignoredReportCount: ignoredFiles.length, ambiguousCount: ambiguous.length },
-  changedFiles: files,
-  ignoredFiles,
-  ambiguous,
-  reasons,
-  command: `npm run check:${profile}`,
-  policy: { full: 'scripts/state/runtime/commands・manifest・主要導線・公開物の変更', affected: 'ソース・表示変更または判定不能な変更', fast: '変更なし、またはドキュメントのみ' }
+  reasons.push(files.length ? '変更ファイルから自動選択' : '変更ファイルがないためfast');
+} else reasons.push(`指定されたプロファイル: ${selected}`);
+if (!config.profiles[selected]) throw new Error(`不明な検査プロファイルです: ${selected}`);
+const requiredChecks = config.profiles[selected].steps;
+const commandFor = name => {
+  const direct = {
+    'domain-classification': ['node', ['scripts/check-domain-classification.mjs']],
+    'development-entrypoints': ['node', ['scripts/check-development-entrypoints.mjs']],
+    build: ['npm', ['run', 'build']], version: ['node', ['scripts/check-version.mjs']],
+    'board-domain': ['node', ['scripts/test-board-domain.mjs']],
+    'application-services': ['node', ['scripts/test-application-services.mjs']],
+    'application-targets': ['node', ['scripts/check-application-targets.mjs']], state: ['node', ['scripts/check-state.mjs']]
+  };
+  return direct[name] || ['npm', ['run', `check:${name}`]];
 };
+const run = (name, command, args) => new Promise(resolve => {
+  const startedAt = new Date().toISOString(); const started = Date.now(); let output = ''; let error = '';
+  const child = spawn(command, args, { cwd: root, shell: process.platform === 'win32' && command === 'npm' });
+  child.stdout.on('data', data => { output += data; }); child.stderr.on('data', data => { error += data; });
+  child.on('close', exitCode => resolve({ name, command: [command, ...args].join(' '), startedAt, finishedAt: new Date().toISOString(), durationMs: Date.now() - started, exitCode: exitCode ?? 1, output: output.trim(), error: error.trim() }));
+  child.on('error', cause => resolve({ name, command: [command, ...args].join(' '), startedAt, finishedAt: new Date().toISOString(), durationMs: Date.now() - started, exitCode: 1, output: output.trim(), error: cause.message }));
+});
+const executed = []; const unexecuted = [];
+if (selected === 'full') {
+  const gate = await run('check:gate', 'npm', ['run', 'check:gate']);
+  let report = null; try { report = JSON.parse(await readFile(join(reportDir, 'check-gate.json'), 'utf8')); } catch { /* 結果がなければ未完了 */ }
+  const byName = new Map((report?.steps || []).map(step => [step.name, step]));
+  for (const name of requiredChecks) executed.push(byName.get(name) || { name, exitCode: gate.exitCode, durationMs: gate.durationMs, output: gate.output, error: gate.error });
+  if (!report) unexecuted.push(...requiredChecks.map(name => ({ name, reason: 'check:gate結果レポートがない' })));
+} else {
+  for (const name of requiredChecks) executed.push(await run(name, ...commandFor(name)));
+}
+const failed = executed.filter(item => item.exitCode !== 0 && item.passed !== true);
+const result = { schemaVersion: 1, name: 'wake7-check-profile-result', generatedAt: new Date().toISOString(), status: failed.length ? 'failed' : unexecuted.length ? 'incomplete' : 'passed', profile: selected, changedFiles: files, ignoredFiles, selectionReasons: reasons, requiredChecks, executed: executed.map(item => ({ name: item.name, command: item.command || `check:gate → ${item.name}`, startedAt: item.startedAt || null, finishedAt: item.finishedAt || null, durationMs: item.durationMs || 0, exitCode: item.exitCode ?? 1, passed: item.passed ?? item.exitCode === 0 })), unexecuted, summary: { required: requiredChecks.length, executed: executed.length, unexecuted: unexecuted.length, failed: failed.length, durationMs: executed.reduce((total, item) => total + (item.durationMs || 0), 0) }, policy: { passed: '必須検査をすべて実行し、全件成功', incomplete: '未実行があるため成功扱いにしない', failed: '実行済み検査に失敗がある' } };
 await mkdir(reportDir, { recursive: true });
-await writeFile(join(reportDir, 'check-profile-selection.json'), JSON.stringify(report, null, 2) + '\n');
-console.log(`Check profile selected: ${profile} (${files.length} changed files, ${ambiguous.length} ambiguous). Report: build/report/check-profile-selection.json`);
+await writeFile(join(reportDir, 'check-profile-result.json'), JSON.stringify(result, null, 2) + '\n');
+console.log(`Check profile ${selected}: ${result.status}. ${result.summary.executed}/${result.summary.required} executed. Report: build/report/check-profile-result.json`);
+if (result.status !== 'passed') process.exitCode = 1;
