@@ -1,0 +1,1336 @@
+{
+  "schemaVersion": 1,
+  "generatedForVersion": "2026.09.03-10:10",
+  "source": {
+    "manifest": "scripts/application-manifest.mjs:publishedSourceFiles",
+    "trace": "build/report/symbol-index.json"
+  },
+  "entries": [
+    {
+      "key": "remaining-moves",
+      "label": "あと○くるり / 現在手数",
+      "elements": [
+        {
+          "id": "stagePar",
+          "references": [
+            {
+              "id": "stagePar",
+              "file": "runtime/runtime.js",
+              "line": 769,
+              "updater": "showRemaining"
+            },
+            {
+              "id": "stagePar",
+              "file": "ui/board-ui.js",
+              "line": 1511,
+              "updater": "showMakerMessage"
+            },
+            {
+              "id": "stagePar",
+              "file": "ui/progression-hud.js",
+              "line": 174,
+              "updater": "inSideMode"
+            }
+          ]
+        },
+        {
+          "id": "moves",
+          "references": [
+            {
+              "id": "moves",
+              "file": "runtime/runtime.js",
+              "line": 759,
+              "updater": "showMoves"
+            }
+          ]
+        },
+        {
+          "id": "academyRemainingCallout",
+          "references": [
+            {
+              "id": "academyRemainingCallout",
+              "file": "ui/board-ui.js",
+              "line": 1134,
+              "updater": "showAcademyRemainingCallout"
+            }
+          ]
+        }
+      ],
+      "data": [
+        {
+          "file": "runtime/runtime.js",
+          "line": 241,
+          "name": "runtimeSnapshot"
+        },
+        {
+          "file": "data/core-data.js",
+          "line": 78,
+          "name": "STAGES"
+        },
+        {
+          "file": "data/core-data.js",
+          "line": 413,
+          "name": "EXTRA_STAGES"
+        },
+        {
+          "file": "data/satori.js",
+          "line": 95,
+          "name": "SATORI_STAGES"
+        }
+      ],
+      "renderers": [
+        {
+          "file": "runtime/runtime.js",
+          "line": 766,
+          "name": "showRemaining"
+        },
+        {
+          "file": "runtime/runtime.js",
+          "line": 758,
+          "name": "showMoves"
+        },
+        {
+          "file": "ui/progression-render.js",
+          "line": 26,
+          "name": "renderMovesMetric"
+        },
+        {
+          "file": "ui/board-ui.js",
+          "line": 1132,
+          "name": "showAcademyRemainingCallout"
+        }
+      ]
+    },
+    {
+      "key": "application-target",
+      "label": "応用クラスの目標3枚枠",
+      "elements": [
+        {
+          "id": "applicationTargetPreview",
+          "references": [
+            {
+              "id": "applicationTargetPreview",
+              "file": "ui/progression-academy-support.js",
+              "line": 85,
+              "updater": "renderApplicationTargetPreview"
+            }
+          ]
+        },
+        {
+          "id": "applicationTargetPreviewBoard",
+          "references": [
+            {
+              "id": "applicationTargetPreviewBoard",
+              "file": "ui/progression-academy-support.js",
+              "line": 85,
+              "updater": "renderApplicationTargetPreview"
+            }
+          ]
+        },
+        {
+          "id": "board",
+          "references": [
+            {
+              "id": "board",
+              "file": "runtime/runtime.js",
+              "line": 48,
+              "updater": "key"
+            }
+          ]
+        }
+      ],
+      "data": [
+        {
+          "file": "data/core-data.js",
+          "line": 78,
+          "name": "STAGES"
+        },
+        {
+          "file": "runtime/runtime.js",
+          "line": 679,
+          "name": "PROGRESSION"
+        }
+      ],
+      "renderers": [
+        {
+          "file": "ui/progression-academy-support.js",
+          "line": 84,
+          "name": "renderApplicationTargetPreview"
+        },
+        {
+          "file": "ui/progression-academy-support.js",
+          "line": 59,
+          "name": "renderApplicationTargetCells"
+        },
+        {
+          "file": "ui/progression-hud.js",
+          "line": 33,
+          "name": "renderStageNav"
+        }
+      ]
+    },
+    {
+      "key": "clear-message",
+      "label": "クリア後メッセージ",
+      "elements": [
+        {
+          "id": "clearDialog",
+          "references": [
+            {
+              "id": "clearDialog",
+              "file": "ui/progression-ui.js",
+              "line": 279,
+              "updater": "showClearDialog"
+            },
+            {
+              "id": "clearDialog",
+              "file": "ui/progression-ui.js",
+              "line": 346,
+              "updater": "showClearDialog"
+            },
+            {
+              "id": "clearDialog",
+              "file": "ui/progression-ui.js",
+              "line": 504,
+              "updater": "renderClearTip"
+            },
+            {
+              "id": "clearDialog",
+              "file": "ui/progression-ui.js",
+              "line": 527,
+              "updater": "showClearDialog"
+            },
+            {
+              "id": "clearDialog",
+              "file": "ui/progression-ui.js",
+              "line": 737,
+              "updater": "from"
+            },
+            {
+              "id": "clearDialog",
+              "file": "ui/progression-clear-flow.js",
+              "line": 123,
+              "updater": "hasBeforeDialog"
+            },
+            {
+              "id": "clearDialog",
+              "file": "ui/progression-clear-flow.js",
+              "line": 183,
+              "updater": "returnToClearDialog"
+            },
+            {
+              "id": "clearDialog",
+              "file": "runtime/app-events.js",
+              "line": 223,
+              "updater": "handleClearTipLink"
+            },
+            {
+              "id": "clearDialog",
+              "file": "runtime/app-events.js",
+              "line": 228,
+              "updater": "handleClearTipLink"
+            }
+          ]
+        },
+        {
+          "id": "clearDialogMessage",
+          "references": [
+            {
+              "id": "clearDialogMessage",
+              "file": "ui/progression-ui.js",
+              "line": 337,
+              "updater": "showClearDialog"
+            },
+            {
+              "id": "clearDialogMessage",
+              "file": "ui/progression-clear-flow.js",
+              "line": 180,
+              "updater": "returnToClearDialog"
+            },
+            {
+              "id": "clearDialogMessage",
+              "file": "runtime/app-events.js",
+              "line": 911,
+              "updater": "button"
+            }
+          ]
+        },
+        {
+          "id": "clearStageContext",
+          "references": [
+            {
+              "id": "clearStageContext",
+              "file": "ui/progression-ui.js",
+              "line": 248,
+              "updater": "renderClearStageContext"
+            }
+          ]
+        },
+        {
+          "id": "clearTipIllustration",
+          "references": [
+            {
+              "id": "clearTipIllustration",
+              "file": "ui/progression-ui.js",
+              "line": 443,
+              "updater": "renderClearTip"
+            }
+          ]
+        },
+        {
+          "id": "clearQuiz",
+          "references": [
+            {
+              "id": "clearQuiz",
+              "file": "ui/quiz.js",
+              "line": 44,
+              "updater": "renderClearQuizForEntry"
+            }
+          ]
+        }
+      ],
+      "data": [
+        {
+          "file": "data/clear-content.js",
+          "line": 4,
+          "name": "CLEAR_CONTENT"
+        },
+        {
+          "file": "data/core-data.js",
+          "line": 182,
+          "name": "clearContentAt"
+        },
+        {
+          "file": "ui/clear-flow.js",
+          "line": 18,
+          "name": "clearEntryForCurrent"
+        }
+      ],
+      "renderers": [
+        {
+          "file": "ui/progression-ui.js",
+          "line": 272,
+          "name": "showClearDialog"
+        },
+        {
+          "file": "ui/progression-ui.js",
+          "line": 247,
+          "name": "renderClearStageContext"
+        },
+        {
+          "file": "ui/progression-ui.js",
+          "line": 442,
+          "name": "renderClearTip"
+        },
+        {
+          "file": "ui/progression-ui.js",
+          "line": 548,
+          "name": "renderClearQuiz"
+        },
+        {
+          "file": "ui/quiz.js",
+          "line": 42,
+          "name": "renderClearQuizForEntry"
+        }
+      ]
+    },
+    {
+      "key": "rank",
+      "label": "称号・ランク",
+      "elements": [
+        {
+          "id": "rankBadge",
+          "references": [
+            {
+              "id": "rankBadge",
+              "file": "ui/rank.js",
+              "line": 17,
+              "updater": "renderRankBadge"
+            },
+            {
+              "id": "rankBadge",
+              "file": "runtime/app-events.js",
+              "line": 455,
+              "updater": "chain"
+            },
+            {
+              "id": "rankBadge",
+              "file": "runtime/app-events.js",
+              "line": 466,
+              "updater": "dialogId"
+            }
+          ]
+        },
+        {
+          "id": "rankDialog",
+          "references": [
+            {
+              "id": "rankDialog",
+              "file": "ui/progression-ui.js",
+              "line": 232,
+              "updater": "openStagePickerForRank"
+            },
+            {
+              "id": "rankDialog",
+              "file": "ui/progression-ui.js",
+              "line": 538,
+              "updater": "openStagePickerForRank"
+            },
+            {
+              "id": "rankDialog",
+              "file": "ui/rank.js",
+              "line": 87,
+              "updater": "volume"
+            },
+            {
+              "id": "rankDialog",
+              "file": "ui/rank.js",
+              "line": 98,
+              "updater": "openRankDialog"
+            },
+            {
+              "id": "rankDialog",
+              "file": "runtime/app-events.js",
+              "line": 465,
+              "updater": "dialogId"
+            },
+            {
+              "id": "rankDialog",
+              "file": "runtime/app-events.js",
+              "line": 900,
+              "updater": "button"
+            }
+          ]
+        },
+        {
+          "id": "rankList",
+          "references": [
+            {
+              "id": "rankList",
+              "file": "ui/rank.js",
+              "line": 59,
+              "updater": "renderRankList"
+            }
+          ]
+        },
+        {
+          "id": "masterSeal",
+          "references": [
+            {
+              "id": "masterSeal",
+              "file": "ui/progression-ui.js",
+              "line": 790,
+              "updater": "showMasterDialog"
+            },
+            {
+              "id": "masterSeal",
+              "file": "runtime/app-events.js",
+              "line": 456,
+              "updater": "chain"
+            }
+          ]
+        },
+        {
+          "id": "messageMasterSeal",
+          "references": [
+            {
+              "id": "messageMasterSeal",
+              "file": "runtime/app-events.js",
+              "line": 457,
+              "updater": "dialogId"
+            }
+          ]
+        }
+      ],
+      "data": [
+        {
+          "file": "ui/progression-ui.js",
+          "line": 36,
+          "name": "RANK_FRAME_COLORS"
+        },
+        {
+          "file": "ui/progression-ui.js",
+          "line": 17,
+          "name": "masterPath"
+        },
+        {
+          "file": "ui/progression-ui.js",
+          "line": 19,
+          "name": "rankForVolume"
+        }
+      ],
+      "renderers": [
+        {
+          "file": "ui/progression-ui.js",
+          "line": 45,
+          "name": "setSealColor"
+        },
+        {
+          "file": "ui/rank.js",
+          "line": 16,
+          "name": "renderRankBadge"
+        },
+        {
+          "file": "ui/rank.js",
+          "line": 53,
+          "name": "renderRankList"
+        },
+        {
+          "file": "ui/rank.js",
+          "line": 94,
+          "name": "openRankDialog"
+        }
+      ]
+    },
+    {
+      "key": "dialogs",
+      "label": "ダイアログ連鎖",
+      "elements": [
+        {
+          "id": "aboutDialog",
+          "references": [
+            {
+              "id": "aboutDialog",
+              "file": "ui/progression-ui.js",
+              "line": 537,
+              "updater": "hideGameDialogs"
+            },
+            {
+              "id": "aboutDialog",
+              "file": "runtime/app-events.js",
+              "line": 285,
+              "updater": "resume"
+            },
+            {
+              "id": "aboutDialog",
+              "file": "runtime/app-events.js",
+              "line": 289,
+              "updater": "resume"
+            }
+          ]
+        },
+        {
+          "id": "boardThemeDialog",
+          "references": [
+            {
+              "id": "boardThemeDialog",
+              "file": "runtime/runtime.js",
+              "line": 671,
+              "updater": "openBoardThemeDialog"
+            },
+            {
+              "id": "boardThemeDialog",
+              "file": "ui/progression-ui.js",
+              "line": 534,
+              "updater": "hideGameDialogs"
+            },
+            {
+              "id": "boardThemeDialog",
+              "file": "runtime/app-events.js",
+              "line": 968,
+              "updater": "menu"
+            },
+            {
+              "id": "boardThemeDialog",
+              "file": "runtime/app-events.js",
+              "line": 969,
+              "updater": "menu"
+            },
+            {
+              "id": "boardThemeDialog",
+              "file": "runtime/app-events.js",
+              "line": 970,
+              "updater": "menu"
+            },
+            {
+              "id": "boardThemeDialog",
+              "file": "runtime/app-events.js",
+              "line": 970,
+              "updater": "menu"
+            }
+          ]
+        },
+        {
+          "id": "chainDialog",
+          "references": [
+            {
+              "id": "chainDialog",
+              "file": "ui/board-ui.js",
+              "line": 213,
+              "updater": "token"
+            },
+            {
+              "id": "chainDialog",
+              "file": "ui/board-ui.js",
+              "line": 497,
+              "updater": "openChainedDialog"
+            },
+            {
+              "id": "chainDialog",
+              "file": "runtime/app-events.js",
+              "line": 521,
+              "updater": "speedTarget"
+            },
+            {
+              "id": "chainDialog",
+              "file": "runtime/app-events.js",
+              "line": 897,
+              "updater": "button"
+            }
+          ]
+        },
+        {
+          "id": "clearDialog",
+          "references": [
+            {
+              "id": "clearDialog",
+              "file": "ui/progression-ui.js",
+              "line": 279,
+              "updater": "showClearDialog"
+            },
+            {
+              "id": "clearDialog",
+              "file": "ui/progression-ui.js",
+              "line": 346,
+              "updater": "showClearDialog"
+            },
+            {
+              "id": "clearDialog",
+              "file": "ui/progression-ui.js",
+              "line": 504,
+              "updater": "renderClearTip"
+            },
+            {
+              "id": "clearDialog",
+              "file": "ui/progression-ui.js",
+              "line": 527,
+              "updater": "showClearDialog"
+            },
+            {
+              "id": "clearDialog",
+              "file": "ui/progression-ui.js",
+              "line": 737,
+              "updater": "from"
+            },
+            {
+              "id": "clearDialog",
+              "file": "ui/progression-clear-flow.js",
+              "line": 123,
+              "updater": "hasBeforeDialog"
+            },
+            {
+              "id": "clearDialog",
+              "file": "ui/progression-clear-flow.js",
+              "line": 183,
+              "updater": "returnToClearDialog"
+            },
+            {
+              "id": "clearDialog",
+              "file": "runtime/app-events.js",
+              "line": 223,
+              "updater": "handleClearTipLink"
+            },
+            {
+              "id": "clearDialog",
+              "file": "runtime/app-events.js",
+              "line": 228,
+              "updater": "handleClearTipLink"
+            }
+          ]
+        },
+        {
+          "id": "closeRankDialog",
+          "references": [
+            {
+              "id": "closeRankDialog",
+              "file": "ui/rank.js",
+              "line": 99,
+              "updater": "openRankDialog"
+            },
+            {
+              "id": "closeRankDialog",
+              "file": "runtime/app-events.js",
+              "line": 463,
+              "updater": "dialogId"
+            }
+          ]
+        },
+        {
+          "id": "guideHubDialog",
+          "references": [
+            {
+              "id": "guideHubDialog",
+              "file": "ui/progression-ui.js",
+              "line": 536,
+              "updater": "hideGameDialogs"
+            },
+            {
+              "id": "guideHubDialog",
+              "file": "runtime/app-events.js",
+              "line": 761,
+              "updater": "target"
+            },
+            {
+              "id": "guideHubDialog",
+              "file": "runtime/app-events.js",
+              "line": 761,
+              "updater": "target"
+            },
+            {
+              "id": "guideHubDialog",
+              "file": "runtime/app-events.js",
+              "line": 765,
+              "updater": "openGuideHub"
+            },
+            {
+              "id": "guideHubDialog",
+              "file": "runtime/app-events.js",
+              "line": 769,
+              "updater": "closeGuideHub"
+            }
+          ]
+        },
+        {
+          "id": "introDialog",
+          "references": [
+            {
+              "id": "introDialog",
+              "file": "ui/board-ui.js",
+              "line": 120,
+              "updater": "openIntroGuide"
+            },
+            {
+              "id": "introDialog",
+              "file": "runtime/app-events.js",
+              "line": 507,
+              "updater": "speedTarget"
+            }
+          ]
+        },
+        {
+          "id": "masterDialog",
+          "references": [
+            {
+              "id": "masterDialog",
+              "file": "ui/progression-ui.js",
+              "line": 531,
+              "updater": "hideGameDialogs"
+            },
+            {
+              "id": "masterDialog",
+              "file": "ui/progression-ui.js",
+              "line": 762,
+              "updater": "showMasterDialog"
+            },
+            {
+              "id": "masterDialog",
+              "file": "runtime/app-events.js",
+              "line": 901,
+              "updater": "button"
+            }
+          ]
+        },
+        {
+          "id": "messageDialog",
+          "references": [
+            {
+              "id": "messageDialog",
+              "file": "ui/message.js",
+              "line": 51,
+              "updater": "saved"
+            },
+            {
+              "id": "messageDialog",
+              "file": "ui/progression-ui.js",
+              "line": 528,
+              "updater": "hideGameDialogs"
+            },
+            {
+              "id": "messageDialog",
+              "file": "ui/progression-ui.js",
+              "line": 743,
+              "updater": "from"
+            },
+            {
+              "id": "messageDialog",
+              "file": "runtime/app-events.js",
+              "line": 354,
+              "updater": "bindMessageReviewEvents"
+            },
+            {
+              "id": "messageDialog",
+              "file": "runtime/app-events.js",
+              "line": 374,
+              "updater": "target"
+            },
+            {
+              "id": "messageDialog",
+              "file": "runtime/app-events.js",
+              "line": 382,
+              "updater": "target"
+            },
+            {
+              "id": "messageDialog",
+              "file": "runtime/app-events.js",
+              "line": 423,
+              "updater": "bindMessageReviewEvents"
+            },
+            {
+              "id": "messageDialog",
+              "file": "runtime/app-events.js",
+              "line": 429,
+              "updater": "bindMessageReviewEvents"
+            },
+            {
+              "id": "messageDialog",
+              "file": "runtime/app-events.js",
+              "line": 436,
+              "updater": "bindMessageReviewEvents"
+            },
+            {
+              "id": "messageDialog",
+              "file": "runtime/app-events.js",
+              "line": 445,
+              "updater": "bindMessageReviewEvents"
+            },
+            {
+              "id": "messageDialog",
+              "file": "runtime/app-events.js",
+              "line": 452,
+              "updater": "bindMessageReviewEvents"
+            },
+            {
+              "id": "messageDialog",
+              "file": "runtime/app-events.js",
+              "line": 905,
+              "updater": "button"
+            }
+          ]
+        },
+        {
+          "id": "optimalFailDialog",
+          "references": [
+            {
+              "id": "optimalFailDialog",
+              "file": "runtime/runtime.js",
+              "line": 152,
+              "updater": "el"
+            },
+            {
+              "id": "optimalFailDialog",
+              "file": "ui/board-ui.js",
+              "line": 953,
+              "updater": "completeBoard"
+            },
+            {
+              "id": "optimalFailDialog",
+              "file": "ui/board-ui.js",
+              "line": 1015,
+              "updater": "paint"
+            },
+            {
+              "id": "optimalFailDialog",
+              "file": "ui/progression-ui.js",
+              "line": 530,
+              "updater": "hideGameDialogs"
+            },
+            {
+              "id": "optimalFailDialog",
+              "file": "runtime/app-events.js",
+              "line": 270,
+              "updater": "resetIntro"
+            },
+            {
+              "id": "optimalFailDialog",
+              "file": "runtime/app-events.js",
+              "line": 906,
+              "updater": "button"
+            }
+          ]
+        },
+        {
+          "id": "rankDialog",
+          "references": [
+            {
+              "id": "rankDialog",
+              "file": "ui/progression-ui.js",
+              "line": 232,
+              "updater": "openStagePickerForRank"
+            },
+            {
+              "id": "rankDialog",
+              "file": "ui/progression-ui.js",
+              "line": 538,
+              "updater": "openStagePickerForRank"
+            },
+            {
+              "id": "rankDialog",
+              "file": "ui/rank.js",
+              "line": 87,
+              "updater": "volume"
+            },
+            {
+              "id": "rankDialog",
+              "file": "ui/rank.js",
+              "line": 98,
+              "updater": "openRankDialog"
+            },
+            {
+              "id": "rankDialog",
+              "file": "runtime/app-events.js",
+              "line": 465,
+              "updater": "dialogId"
+            },
+            {
+              "id": "rankDialog",
+              "file": "runtime/app-events.js",
+              "line": 900,
+              "updater": "button"
+            }
+          ]
+        },
+        {
+          "id": "resetDialog",
+          "references": [
+            {
+              "id": "resetDialog",
+              "file": "ui/progression-ui.js",
+              "line": 233,
+              "updater": "openStagePickerForRank"
+            },
+            {
+              "id": "resetDialog",
+              "file": "runtime/app-events.js",
+              "line": 1182,
+              "updater": "left"
+            },
+            {
+              "id": "resetDialog",
+              "file": "runtime/app-events.js",
+              "line": 1185,
+              "updater": "canKeepRewards"
+            },
+            {
+              "id": "resetDialog",
+              "file": "runtime/app-events.js",
+              "line": 1187,
+              "updater": "canKeepRewards"
+            },
+            {
+              "id": "resetDialog",
+              "file": "runtime/app-events.js",
+              "line": 1191,
+              "updater": "canKeepRewards"
+            }
+          ]
+        },
+        {
+          "id": "settingsDialog",
+          "references": [
+            {
+              "id": "settingsDialog",
+              "file": "ui/progression-ui.js",
+              "line": 535,
+              "updater": "hideGameDialogs"
+            },
+            {
+              "id": "settingsDialog",
+              "file": "runtime/app-events.js",
+              "line": 284,
+              "updater": "resume"
+            },
+            {
+              "id": "settingsDialog",
+              "file": "runtime/app-events.js",
+              "line": 292,
+              "updater": "resume"
+            },
+            {
+              "id": "settingsDialog",
+              "file": "runtime/app-events.js",
+              "line": 296,
+              "updater": "resume"
+            },
+            {
+              "id": "settingsDialog",
+              "file": "runtime/app-events.js",
+              "line": 964,
+              "updater": "resume"
+            },
+            {
+              "id": "settingsDialog",
+              "file": "runtime/app-events.js",
+              "line": 1176,
+              "updater": "resume"
+            }
+          ]
+        },
+        {
+          "id": "speedPauseDialog",
+          "references": [
+            {
+              "id": "speedPauseDialog",
+              "file": "ui/progression-ui.js",
+              "line": 532,
+              "updater": "hideGameDialogs"
+            },
+            {
+              "id": "speedPauseDialog",
+              "file": "runtime/app-events.js",
+              "line": 308,
+              "updater": "resumeSpeedRun"
+            },
+            {
+              "id": "speedPauseDialog",
+              "file": "runtime/app-events.js",
+              "line": 327,
+              "updater": "bindSpeedEvents"
+            },
+            {
+              "id": "speedPauseDialog",
+              "file": "runtime/app-events.js",
+              "line": 333,
+              "updater": "bindSpeedEvents"
+            },
+            {
+              "id": "speedPauseDialog",
+              "file": "runtime/app-events.js",
+              "line": 338,
+              "updater": "bindSpeedEvents"
+            },
+            {
+              "id": "speedPauseDialog",
+              "file": "runtime/app-events.js",
+              "line": 342,
+              "updater": "bindSpeedEvents"
+            },
+            {
+              "id": "speedPauseDialog",
+              "file": "runtime/app-events.js",
+              "line": 346,
+              "updater": "bindSpeedEvents"
+            },
+            {
+              "id": "speedPauseDialog",
+              "file": "runtime/app-events.js",
+              "line": 892,
+              "updater": "updateExternalMenuLabel"
+            },
+            {
+              "id": "speedPauseDialog",
+              "file": "runtime/app-bootstrap.js",
+              "line": 31,
+              "updater": "savedLanguage"
+            }
+          ]
+        },
+        {
+          "id": "speedRestartDialog",
+          "references": [
+            {
+              "id": "speedRestartDialog",
+              "file": "ui/progression-ui.js",
+              "line": 533,
+              "updater": "hideGameDialogs"
+            },
+            {
+              "id": "speedRestartDialog",
+              "file": "runtime/app-events.js",
+              "line": 313,
+              "updater": "confirmSpeedRestart"
+            },
+            {
+              "id": "speedRestartDialog",
+              "file": "runtime/app-events.js",
+              "line": 328,
+              "updater": "bindSpeedEvents"
+            },
+            {
+              "id": "speedRestartDialog",
+              "file": "runtime/app-events.js",
+              "line": 332,
+              "updater": "bindSpeedEvents"
+            }
+          ]
+        },
+        {
+          "id": "speedStartOverlay",
+          "references": [
+            {
+              "id": "speedStartOverlay",
+              "file": "ui/progression-hud.js",
+              "line": 64,
+              "updater": "renderStageNav"
+            },
+            {
+              "id": "speedStartOverlay",
+              "file": "ui/progression-hud.js",
+              "line": 108,
+              "updater": "renderStageNavControls"
+            }
+          ]
+        },
+        {
+          "id": "tipGuideDialog",
+          "references": [
+            {
+              "id": "tipGuideDialog",
+              "file": "ui/progression-ui.js",
+              "line": 541,
+              "updater": "hideGameDialogs"
+            },
+            {
+              "id": "tipGuideDialog",
+              "file": "runtime/app-events.js",
+              "line": 718,
+              "updater": "label"
+            },
+            {
+              "id": "tipGuideDialog",
+              "file": "runtime/app-events.js",
+              "line": 747,
+              "updater": "closeTipGuide"
+            },
+            {
+              "id": "tipGuideDialog",
+              "file": "runtime/app-events.js",
+              "line": 782,
+              "updater": "startTipGuideDrag"
+            },
+            {
+              "id": "tipGuideDialog",
+              "file": "runtime/app-events.js",
+              "line": 795,
+              "updater": "finishTipGuideDrag"
+            },
+            {
+              "id": "tipGuideDialog",
+              "file": "runtime/app-events.js",
+              "line": 816,
+              "updater": "button"
+            },
+            {
+              "id": "tipGuideDialog",
+              "file": "runtime/app-events.js",
+              "line": 820,
+              "updater": "button"
+            },
+            {
+              "id": "tipGuideDialog",
+              "file": "runtime/app-events.js",
+              "line": 820,
+              "updater": "button"
+            },
+            {
+              "id": "tipGuideDialog",
+              "file": "runtime/app-events.js",
+              "line": 924,
+              "updater": "button"
+            }
+          ]
+        },
+        {
+          "id": "twoMoveDetailDialog",
+          "references": [
+            {
+              "id": "twoMoveDetailDialog",
+              "file": "ui/progression-insights.js",
+              "line": 119,
+              "updater": "openTwoMoveDetail"
+            },
+            {
+              "id": "twoMoveDetailDialog",
+              "file": "ui/progression-insights.js",
+              "line": 124,
+              "updater": "closeTwoMoveDetail"
+            },
+            {
+              "id": "twoMoveDetailDialog",
+              "file": "ui/progression-insights.js",
+              "line": 195,
+              "updater": "startDetailDrag"
+            },
+            {
+              "id": "twoMoveDetailDialog",
+              "file": "ui/progression-insights.js",
+              "line": 207,
+              "updater": "finishDetailDrag"
+            },
+            {
+              "id": "twoMoveDetailDialog",
+              "file": "ui/progression-ui.js",
+              "line": 540,
+              "updater": "hideGameDialogs"
+            },
+            {
+              "id": "twoMoveDetailDialog",
+              "file": "runtime/app-events.js",
+              "line": 904,
+              "updater": "button"
+            },
+            {
+              "id": "twoMoveDetailDialog",
+              "file": "runtime/app-events.js",
+              "line": 1011,
+              "updater": "card"
+            },
+            {
+              "id": "twoMoveDetailDialog",
+              "file": "runtime/app-events.js",
+              "line": 1019,
+              "updater": "card"
+            },
+            {
+              "id": "twoMoveDetailDialog",
+              "file": "runtime/app-events.js",
+              "line": 1033,
+              "updater": "target"
+            },
+            {
+              "id": "twoMoveDetailDialog",
+              "file": "runtime/app-events.js",
+              "line": 1034,
+              "updater": "target"
+            },
+            {
+              "id": "twoMoveDetailDialog",
+              "file": "runtime/app-events.js",
+              "line": 1039,
+              "updater": "card"
+            }
+          ]
+        },
+        {
+          "id": "twoMoveDialog",
+          "references": [
+            {
+              "id": "twoMoveDialog",
+              "file": "ui/progression-insights.js",
+              "line": 95,
+              "updater": "button"
+            },
+            {
+              "id": "twoMoveDialog",
+              "file": "ui/progression-insights.js",
+              "line": 118,
+              "updater": "openTwoMoveDetail"
+            },
+            {
+              "id": "twoMoveDialog",
+              "file": "ui/progression-ui.js",
+              "line": 539,
+              "updater": "hideGameDialogs"
+            },
+            {
+              "id": "twoMoveDialog",
+              "file": "runtime/app-events.js",
+              "line": 903,
+              "updater": "button"
+            },
+            {
+              "id": "twoMoveDialog",
+              "file": "runtime/app-events.js",
+              "line": 978,
+              "updater": "closeTwoMovePatterns"
+            },
+            {
+              "id": "twoMoveDialog",
+              "file": "runtime/app-events.js",
+              "line": 990,
+              "updater": "closeTwoMovePatterns"
+            },
+            {
+              "id": "twoMoveDialog",
+              "file": "runtime/app-events.js",
+              "line": 991,
+              "updater": "button"
+            }
+          ]
+        },
+        {
+          "id": "twoMoveLessonDialog",
+          "references": [
+            {
+              "id": "twoMoveLessonDialog",
+              "file": "ui/board-ui.js",
+              "line": 769,
+              "updater": "openTwoMoveLessonDialog"
+            },
+            {
+              "id": "twoMoveLessonDialog",
+              "file": "ui/board-ui.js",
+              "line": 774,
+              "updater": "closeTwoMoveLessonDialog"
+            },
+            {
+              "id": "twoMoveLessonDialog",
+              "file": "runtime/app-events.js",
+              "line": 539,
+              "updater": "previous"
+            },
+            {
+              "id": "twoMoveLessonDialog",
+              "file": "runtime/app-events.js",
+              "line": 540,
+              "updater": "previous"
+            },
+            {
+              "id": "twoMoveLessonDialog",
+              "file": "runtime/app-events.js",
+              "line": 891,
+              "updater": "updateExternalMenuLabel"
+            }
+          ]
+        }
+      ],
+      "data": [
+        {
+          "file": "data/ui-text.js",
+          "line": 8,
+          "name": "UI_TEXT"
+        },
+        {
+          "file": "data/clear-content.js",
+          "line": 4,
+          "name": "CLEAR_CONTENT"
+        },
+        {
+          "file": "ui/message.js",
+          "line": 8,
+          "name": "INTRO_MILESTONE_COPY"
+        }
+      ],
+      "renderers": [
+        {
+          "file": "ui/board-ui.js",
+          "line": 493,
+          "name": "openChainedDialog"
+        },
+        {
+          "file": "ui/progression-ui.js",
+          "line": 761,
+          "name": "showMasterDialog"
+        },
+        {
+          "file": "ui/message.js",
+          "line": 51,
+          "name": "openMessageReview"
+        },
+        {
+          "file": "ui/board-ui.js",
+          "line": 118,
+          "name": "openIntroGuide"
+        },
+        {
+          "file": "ui/progression-ui.js",
+          "line": 272,
+          "name": "showClearDialog"
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "要素の位置と参照は公開版マニフェストに含まれるソースから生成しています。",
+    "not-found は対応表の候補名が索引にないことを示し、手書きの推測ではありません。"
+  ]
+}
