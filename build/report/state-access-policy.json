@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-03T10:35:36.001Z",
+  "generatedAt": "2026-09-03T10:42:31.446Z",
   "names": [
     "activeMode",
     "activeLap",
@@ -31,20 +31,20 @@
     ],
     "description": "移行対象は実行コードの状態アクセスだけ。宣言・オブジェクトキー・プロパティ・文字列・データ定義は検出結果として記録するがtemporary例外には含めない"
   },
-  "baselineTracked": 163,
+  "baselineTracked": 158,
   "counts": {
-    "detected": 360,
-    "tracked": 163,
-    "excluded": 197,
-    "allowed": 163,
+    "detected": 359,
+    "tracked": 158,
+    "excluded": 201,
+    "allowed": 158,
     "newReferences": 0,
     "retiredExceptions": 0,
-    "temporary": 163,
+    "temporary": 158,
     "expiredTemporary": 0
   },
   "excludedCounts": {
     "declaration": 4,
-    "object-key": 55,
+    "object-key": 59,
     "property": 125,
     "string": 13
   },
@@ -955,11 +955,35 @@
     },
     {
       "file": "ui/board-ui.js",
+      "name": "nextStageAttention",
+      "line": 1277,
+      "source": "updateDialogStateOwner({nextStageAttention:false});",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/board-ui.js",
       "name": "stageIndex",
       "line": 1279,
       "source": "setNavigationIndexCommand('stageIndex',nextStageIndex);",
       "kind": "string",
       "exclusionReason": "文字列リテラル内の名前"
+    },
+    {
+      "file": "ui/board-ui.js",
+      "name": "nextStageAttention",
+      "line": 1295,
+      "source": "updateDialogStateOwner({nextStageAttention:false});",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/board-ui.js",
+      "name": "nextStageAttention",
+      "line": 1314,
+      "source": "updateDialogStateOwner({nextStageAttention:false});",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
     },
     {
       "file": "ui/board-ui.js",
@@ -1000,6 +1024,14 @@
       "source": "loadTutorialStep(Number.isInteger(saved.step)?saved.step:Number(storage.get(STORAGE_KEY_GROUPS.progression.tutorialStep,'0'))||0);",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/board-ui.js",
+      "name": "nextStageAttention",
+      "line": 1761,
+      "source": "updateDialogStateOwner({nextStageAttention:false});",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
     },
     {
       "file": "commands/state-commands.js",
@@ -1627,8 +1659,8 @@
     }
   ],
   "countsByPurpose": {
-    "navigation": 141,
-    "dialog": 22,
+    "navigation": 140,
+    "dialog": 18,
     "progress": 0,
     "session": 0,
     "board": 0,
@@ -1636,19 +1668,19 @@
     "animation": 0
   },
   "countsByDialogRole": {
-    "chain": 20,
+    "chain": 16,
     "display": 2
   },
   "countsByEntrypoint": {
     "commands": 7,
     "data": 1,
     "other": 7,
-    "runtime": 10,
-    "ui": 138
+    "runtime": 9,
+    "ui": 134
   },
   "countsByAccess": {
     "read": 139,
-    "write": 24
+    "write": 19
   },
   "exceptionMetadata": [
     {
@@ -2120,15 +2152,6 @@
       "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する"
     },
     {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "priority": 1,
-      "migrationTarget": "gateway:dialog",
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する"
-    },
-    {
       "fingerprint": "ui/board-ui.js:stageIndex:returnStageContext={extra:false,satori:false,index:stageIndex};",
       "purpose": "navigation",
       "ownerOnly": false,
@@ -2154,15 +2177,6 @@
       "priority": 1,
       "migrationTarget": "gateway:navigation",
       "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "priority": 1,
-      "migrationTarget": "gateway:dialog",
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する"
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:returnStageContext={extra:true,satori:false,index:extraIndex};",
@@ -2199,15 +2213,6 @@
       "priority": 1,
       "migrationTarget": "gateway:navigation",
       "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "priority": 1,
-      "migrationTarget": "gateway:dialog",
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する"
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:returnStageContext={extra:false,satori:true,index:satoriIndex};",
@@ -2355,15 +2360,6 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isSolved()&&clearShown){",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "priority": 1,
-      "migrationTarget": "gateway:dialog",
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
       "purpose": "dialog",
       "ownerOnly": false,
       "temporary": true,
@@ -3101,15 +3097,6 @@
       "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する"
     },
     {
-      "fingerprint": "runtime/app-events.js:activeLap:activeLap=1;secondLapUnlocked=false;",
-      "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "priority": 1,
-      "migrationTarget": "gateway:navigation",
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する"
-    },
-    {
       "fingerprint": "runtime/app-bootstrap.js:clearShown:if(!clearShown)ProgressionEntryPoints.finishStage({mode:'speed'});else WakeSevenProgressionCommands.advanceSpeedRun();",
       "purpose": "dialog",
       "ownerOnly": false,
@@ -3665,19 +3652,6 @@
         "clear-flow-order"
       ],
       "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ],
-      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:returnStageContext={extra:false,satori:false,index:stageIndex};",
@@ -4874,19 +4848,6 @@
         "state-restore"
       ],
       "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:activeLap:activeLap=1;secondLapUnlocked=false;",
-      "expiresOn": "2026-12-02",
-      "owner": "runtime/app-events.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "runtime/app-bootstrap.js:clearShown:if(!clearShown)ProgressionEntryPoints.finishStage({mode:'speed'});else WakeSevenProgressionCommands.advanceSpeedRun();",
@@ -6204,31 +6165,6 @@
       ]
     },
     {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
-      "classification": "executable",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1277,
-        "excerpt": "nextStageAttention=false;"
-      },
-      "symbol": "nextStageAttention",
-      "entrypoint": "ui",
-      "access": "write",
-      "purpose": "dialog",
-      "dialogRole": "chain",
-      "dialogReason": "連続ダイアログの次段階または戻り先を管理する参照",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
       "fingerprint": "ui/board-ui.js:stageIndex:returnStageContext={extra:false,satori:false,index:stageIndex};",
       "classification": "executable",
       "source": {
@@ -6301,31 +6237,6 @@
         "browser-e2e",
         "progression-flows",
         "clear-flow-order"
-      ]
-    },
-    {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
-      "classification": "executable",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1295,
-        "excerpt": "nextStageAttention=false;"
-      },
-      "symbol": "nextStageAttention",
-      "entrypoint": "ui",
-      "access": "write",
-      "purpose": "dialog",
-      "dialogRole": "chain",
-      "dialogReason": "連続ダイアログの次段階または戻り先を管理する参照",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
       ]
     },
     {
@@ -6426,31 +6337,6 @@
         "browser-e2e",
         "progression-flows",
         "clear-flow-order"
-      ]
-    },
-    {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
-      "classification": "executable",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1314,
-        "excerpt": "nextStageAttention=false;"
-      },
-      "symbol": "nextStageAttention",
-      "entrypoint": "ui",
-      "access": "write",
-      "purpose": "dialog",
-      "dialogRole": "chain",
-      "dialogReason": "連続ダイアログの次段階または戻り先を管理する参照",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
       ]
     },
     {
@@ -6864,31 +6750,6 @@
       "symbol": "clearShown",
       "entrypoint": "ui",
       "access": "read",
-      "purpose": "dialog",
-      "dialogRole": "chain",
-      "dialogReason": "連続ダイアログの次段階または戻り先を管理する参照",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
-      "classification": "executable",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1761,
-        "excerpt": "nextStageAttention=false;"
-      },
-      "symbol": "nextStageAttention",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "dialog",
       "dialogRole": "chain",
       "dialogReason": "連続ダイアログの次段階または戻り先を管理する参照",
@@ -8926,31 +8787,6 @@
         "browser-e2e",
         "browser-flow",
         "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:activeLap:activeLap=1;secondLapUnlocked=false;",
-      "classification": "executable",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 1117,
-        "excerpt": "activeLap=1;secondLapUnlocked=false;"
-      },
-      "symbol": "activeLap",
-      "entrypoint": "runtime",
-      "access": "write",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
       ]
     },
     {

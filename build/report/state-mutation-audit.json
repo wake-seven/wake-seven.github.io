@@ -1,14 +1,16 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-03T10:30:22.094Z",
+  "generatedAt": "2026-09-03T10:41:29.390Z",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles",
   "trackedNames": [
     "activeMode",
+    "activeLap",
     "stageIndex",
     "extraIndex",
     "satoriIndex",
     "tutorialStep",
     "clearShown",
+    "nextStageAttention",
     "speedSession",
     "speedVariant"
   ],
@@ -21,9 +23,30 @@
     "commands/tutorial-commands.js"
   ],
   "counts": {
-    "directAssignments": 18,
+    "directAssignments": 24,
     "commandAssignments": 0,
     "violations": 0
+  },
+  "migration": {
+    "migratedOutsideOwner": [
+      {
+        "state": "nextStageAttention",
+        "from": "ui/board-ui.js",
+        "to": "updateDialogStateOwner"
+      },
+      {
+        "state": "activeLap",
+        "from": "runtime/app-events.js",
+        "to": "updateNavigationStateCommand"
+      }
+    ],
+    "remainingDirectAssignments": "状態所有者内の初期化・同期、およびチュートリアル／速解きの所有コマンド内だけを許可",
+    "relatedE2E": [
+      "browser-e2e",
+      "device-e2e",
+      "progression-flows",
+      "clear-flow-order"
+    ]
   },
   "remaining": [
     {
@@ -76,6 +99,12 @@
     },
     {
       "file": "runtime/runtime.js",
+      "line": 85,
+      "name": "nextStageAttention",
+      "snippet": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navig"
+    },
+    {
+      "file": "runtime/runtime.js",
       "line": 108,
       "name": "activeMode",
       "snippet": "activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;"
@@ -106,9 +135,39 @@
     },
     {
       "file": "runtime/runtime.js",
-      "line": 502,
+      "line": 109,
+      "name": "activeLap",
+      "snippet": "satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "line": 479,
+      "name": "activeLap",
+      "snippet": "let activeLap=initialNavigationState.lap===2?2:1;"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "line": 507,
       "name": "clearShown",
       "snippet": "clearShown=dialogState.clearShown;nextStageAttention=dialogState.nextStageAttention;"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "line": 507,
+      "name": "nextStageAttention",
+      "snippet": "clearShown=dialogState.clearShown;nextStageAttention=dialogState.nextStageAttention;"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "line": 562,
+      "name": "activeLap",
+      "snippet": "if(activeLap===2&&!secondLapUnlocked)activeLap=1;"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "line": 609,
+      "name": "activeLap",
+      "snippet": "activeLap=lap;"
     },
     {
       "file": "runtime/speed.js",

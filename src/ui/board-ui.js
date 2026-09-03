@@ -1274,7 +1274,7 @@ function loadStage(index){
   }
   if(isMode('speed'))pauseSpeedRun();
   setCampaignModeCommand('stage');editingBoard=false;
-  nextStageAttention=false;
+  updateDialogStateOwner({nextStageAttention:false});
   const nextStageIndex=Math.max(0,Math.min(STAGES.length-1,index));
   setNavigationIndexCommand('stageIndex',nextStageIndex);
   returnStageContext={extra:false,satori:false,index:stageIndex};
@@ -1292,7 +1292,7 @@ function loadExtraStage(index){
   if(!canEnterMastery()){showMasterDialog('intermediate');return;}
   if(isMode('speed'))pauseSpeedRun();
   setCampaignModeCommand('mastery');editingBoard=false;
-  nextStageAttention=false;
+  updateDialogStateOwner({nextStageAttention:false});
   const nextExtraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
   setNavigationIndexCommand('masteryIndex',nextExtraIndex);
   returnStageContext={extra:true,satori:false,index:extraIndex};
@@ -1311,7 +1311,7 @@ function loadSatoriStage(index){
   }
   if(isMode('speed'))pauseSpeedRun();
   setCampaignModeCommand('satori');editingBoard=false;
-  nextStageAttention=false;
+  updateDialogStateOwner({nextStageAttention:false});
   const nextSatoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
   setNavigationIndexCommand('satoriIndex',nextSatoriIndex);
   returnStageContext={extra:false,satori:true,index:satoriIndex};
@@ -1758,7 +1758,7 @@ function handleBoardPointerDown(e){
     return;
   }
   if(isSolved()&&clearShown){
-    nextStageAttention=false;
+    updateDialogStateOwner({nextStageAttention:false});
     $('msg').classList.remove('show');
     svg.classList.remove('clear-pending','celebrating');
     svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());

@@ -6,7 +6,7 @@
     "state/game-state.js",
     "app/app-context.js"
   ],
-  "baselineTracked": 163,
+  "baselineTracked": 158,
   "allowedReferences": [
     "state/progression-policy.js:stageIndex:uiPolicy({mode,lap,stageIndex,speedVariant}) {",
     "state/progression-policy.js:stageIndex:if(stageIndex < academyTotal) {",
@@ -60,16 +60,13 @@
     "ui/board-ui.js:tutorialStep:const step=TUTORIAL_STEPS[tutorialStep];",
     "ui/board-ui.js:tutorialStep:if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}",
     "ui/board-ui.js:tutorialStep:if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}",
-    "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
     "ui/board-ui.js:stageIndex:returnStageContext={extra:false,satori:false,index:stageIndex};",
     "ui/board-ui.js:stageIndex:const stage=STAGES[stageIndex];",
     "ui/board-ui.js:stageIndex:persistCurrentStage(false,stageIndex);",
-    "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
     "ui/board-ui.js:extraIndex:returnStageContext={extra:true,satori:false,index:extraIndex};",
     "ui/board-ui.js:extraIndex:const stage=EXTRA_STAGES[extraIndex];",
     "ui/board-ui.js:extraIndex:persistCurrentStage(true,extraIndex);",
     "ui/board-ui.js:activeLap:if(activeLap===1&&isMastered())showMasterDialog('mastery');",
-    "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
     "ui/board-ui.js:satoriIndex:returnStageContext={extra:false,satori:true,index:satoriIndex};",
     "ui/board-ui.js:satoriIndex:const stage=SATORI_STAGES[satoriIndex];",
     "ui/board-ui.js:activeLap:try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}",
@@ -87,7 +84,6 @@
     "ui/board-ui.js:tutorialStep:const tutorialCue=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]?.cue:'';",
     "ui/board-ui.js:clearShown:if(isMode('tutorial')&&clearShown)return;",
     "ui/board-ui.js:clearShown:if(isSolved()&&clearShown){",
-    "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
     "ui/board-ui.js:tutorialStep:const tutorialStepData=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]:null;",
     "ui/board-ui.js:tutorialStep:const tutorialCue=TUTORIAL_STEPS[tutorialStep]?.cue;",
     "ui/board-ui.js:tutorialStep:const turnPrompt=tutorialStep===1?tr('tutorialSecondArrowPrompt')",
@@ -169,7 +165,6 @@
     "runtime/app-events.js:tutorialStep:$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');",
     "runtime/app-events.js:masterDialogKind:if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);",
     "runtime/app-events.js:clearShown:else if(clearShown){",
-    "runtime/app-events.js:activeLap:activeLap=1;secondLapUnlocked=false;",
     "runtime/app-bootstrap.js:clearShown:if(!clearShown)ProgressionEntryPoints.finishStage({mode:'speed'});else WakeSevenProgressionCommands.advanceSpeedRun();"
   ],
   "temporaryExceptions": [
@@ -850,19 +845,6 @@
       "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ],
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
       "fingerprint": "ui/board-ui.js:stageIndex:returnStageContext={extra:false,satori:false,index:stageIndex};",
       "expiresOn": "2026-12-02",
       "owner": "ui/board-ui.js",
@@ -900,19 +882,6 @@
         "clear-flow-order"
       ],
       "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ],
-      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:returnStageContext={extra:true,satori:false,index:extraIndex};",
@@ -965,19 +934,6 @@
         "clear-flow-order"
       ],
       "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ],
-      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:returnStageContext={extra:false,satori:true,index:satoriIndex};",
@@ -1189,19 +1145,6 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isSolved()&&clearShown){",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ],
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
       "expiresOn": "2026-12-02",
       "owner": "ui/board-ui.js",
       "migrationTarget": "gateway:dialog",
@@ -2265,19 +2208,6 @@
         "state-restore"
       ],
       "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:activeLap:activeLap=1;secondLapUnlocked=false;",
-      "expiresOn": "2026-12-02",
-      "owner": "runtime/app-events.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "runtime/app-bootstrap.js:clearShown:if(!clearShown)ProgressionEntryPoints.finishStage({mode:'speed'});else WakeSevenProgressionCommands.advanceSpeedRun();",

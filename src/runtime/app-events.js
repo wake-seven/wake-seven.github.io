@@ -1114,7 +1114,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   if(isMode('speed'))pauseSpeedRun();
   lap1ClearedStages=new Set();lap1ClearedExtraStages=new Set();lap1ClearedSatoriStages=new Set();
   lap2ClearedStages=new Set();lap2ClearedExtraStages=new Set();lap2ClearedSatoriStages=new Set();
-  activeLap=1;secondLapUnlocked=false;
+  secondLapUnlocked=false;updateNavigationStateCommand({lap:1});
   clearedStages=lap1ClearedStages;clearedExtraStages=lap1ClearedExtraStages;clearedSatoriStages=lap1ClearedSatoriStages;
   fourthCheckUsage={};
   try{

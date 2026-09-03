@@ -6,7 +6,7 @@ import { publishedSourceFiles } from './application-manifest.mjs';
 // 状態変数の直接書き換えを棚卸しする。状態所有モジュール以外では
 // 直接代入を禁止し、コマンド／ゲートウェイ経由への移行を毎回検査する。
 const root=dirname(dirname(fileURLToPath(import.meta.url)));
-const names=['activeMode','stageIndex','extraIndex','satoriIndex','tutorialStep','clearShown','speedSession','speedVariant'];
+const names=['activeMode','activeLap','stageIndex','extraIndex','satoriIndex','tutorialStep','clearShown','nextStageAttention','speedSession','speedVariant'];
 const assignment=new RegExp('(?<![.$\\w])\\b('+names.join('|')+')\\s*(?<![=!<>])=(?!=)','g');
 const entries=[];
 for(const relative of publishedSourceFiles){
@@ -26,8 +26,11 @@ for(const name of ['updateNavigationStateCommand','updateDialogStateCommand','up
 const ownerFiles=new Set(['app/app-context.js','runtime/runtime.js','runtime/speed.js','commands/speed-commands.js','commands/tutorial-commands.js']);
 const violations=entries.filter(entry=>!ownerFiles.has(entry.file));
 if(violations.length)throw new Error(`Direct state assignments outside owner modules: ${violations.map(entry=>`${entry.file}:${entry.line}:${entry.name}`).join(', ')}`);
+for(const [file,name] of [['ui/board-ui.js','nextStageAttention'],['runtime/app-events.js','activeLap']]){
+  if(entries.some(entry=>entry.file===file&&entry.name===name))throw new Error(`Migrated state still has a direct assignment: ${file}:${name}`);
+}
 const migrated=entries.filter(entry=>entry.file==='commands/state-commands.js').length;
-const report={schemaVersion:2,generatedAt:new Date().toISOString(),source:'scripts/application-manifest.mjs:publishedSourceFiles',trackedNames:names,commandFile,ownerFiles:[...ownerFiles],counts:{directAssignments:entries.length,commandAssignments:migrated,violations:violations.length},remaining:entries};
+const report={schemaVersion:2,generatedAt:new Date().toISOString(),source:'scripts/application-manifest.mjs:publishedSourceFiles',trackedNames:names,commandFile,ownerFiles:[...ownerFiles],counts:{directAssignments:entries.length,commandAssignments:migrated,violations:violations.length},migration:{migratedOutsideOwner:[{state:'nextStageAttention',from:'ui/board-ui.js',to:'updateDialogStateOwner'},{state:'activeLap',from:'runtime/app-events.js',to:'updateNavigationStateCommand'}],remainingDirectAssignments:'状態所有者内の初期化・同期、およびチュートリアル／速解きの所有コマンド内だけを許可',relatedE2E:['browser-e2e','device-e2e','progression-flows','clear-flow-order']},remaining:entries};
 const output=join(root,'build','report','state-mutation-audit.json');
 await mkdir(dirname(output),{recursive:true});
 await writeFile(output,JSON.stringify(report,null,2)+'\n');

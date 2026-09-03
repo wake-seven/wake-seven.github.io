@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "name": "state-access-baseline",
-  "generatedAt": "2026-09-03T10:35:36.001Z",
+  "generatedAt": "2026-09-03T10:42:31.446Z",
   "source": "scripts/state-access-exceptions.json",
   "counts": {
-    "temporary": 163,
+    "temporary": 158,
     "byPurpose": {
-      "navigation": 141,
-      "dialog": 22,
+      "navigation": 140,
+      "dialog": 18,
       "progress": 0,
       "session": 0,
       "board": 0,
@@ -18,12 +18,12 @@
       "commands": 7,
       "data": 1,
       "other": 7,
-      "runtime": 10,
-      "ui": 138
+      "runtime": 9,
+      "ui": 134
     },
     "byAccess": {
       "read": 139,
-      "write": 24
+      "write": 19
     }
   },
   "entries": [
@@ -1328,31 +1328,6 @@
       ]
     },
     {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
-      "classification": "executable",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1277,
-        "excerpt": "nextStageAttention=false;"
-      },
-      "symbol": "nextStageAttention",
-      "entrypoint": "ui",
-      "access": "write",
-      "purpose": "dialog",
-      "dialogRole": "chain",
-      "dialogReason": "連続ダイアログの次段階または戻り先を管理する参照",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
       "fingerprint": "ui/board-ui.js:stageIndex:returnStageContext={extra:false,satori:false,index:stageIndex};",
       "classification": "executable",
       "source": {
@@ -1425,31 +1400,6 @@
         "browser-e2e",
         "progression-flows",
         "clear-flow-order"
-      ]
-    },
-    {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
-      "classification": "executable",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1295,
-        "excerpt": "nextStageAttention=false;"
-      },
-      "symbol": "nextStageAttention",
-      "entrypoint": "ui",
-      "access": "write",
-      "purpose": "dialog",
-      "dialogRole": "chain",
-      "dialogReason": "連続ダイアログの次段階または戻り先を管理する参照",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
       ]
     },
     {
@@ -1550,31 +1500,6 @@
         "browser-e2e",
         "progression-flows",
         "clear-flow-order"
-      ]
-    },
-    {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
-      "classification": "executable",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1314,
-        "excerpt": "nextStageAttention=false;"
-      },
-      "symbol": "nextStageAttention",
-      "entrypoint": "ui",
-      "access": "write",
-      "purpose": "dialog",
-      "dialogRole": "chain",
-      "dialogReason": "連続ダイアログの次段階または戻り先を管理する参照",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
       ]
     },
     {
@@ -1988,31 +1913,6 @@
       "symbol": "clearShown",
       "entrypoint": "ui",
       "access": "read",
-      "purpose": "dialog",
-      "dialogRole": "chain",
-      "dialogReason": "連続ダイアログの次段階または戻り先を管理する参照",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
-      "classification": "executable",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1761,
-        "excerpt": "nextStageAttention=false;"
-      },
-      "symbol": "nextStageAttention",
-      "entrypoint": "ui",
-      "access": "write",
       "purpose": "dialog",
       "dialogRole": "chain",
       "dialogReason": "連続ダイアログの次段階または戻り先を管理する参照",
@@ -4050,31 +3950,6 @@
         "browser-e2e",
         "browser-flow",
         "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:activeLap:activeLap=1;secondLapUnlocked=false;",
-      "classification": "executable",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 1117,
-        "excerpt": "activeLap=1;secondLapUnlocked=false;"
-      },
-      "symbol": "activeLap",
-      "entrypoint": "runtime",
-      "access": "write",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
       ]
     },
     {
