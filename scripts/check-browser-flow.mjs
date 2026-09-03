@@ -63,6 +63,11 @@ for (const phase of ['clear-animation','clear-dialog','quiz/message','next-stage
   assert.match(clearFlow, new RegExp(`['"]${phase.replace('/', '\\/')}['"]`), `clear flow phase is missing: ${phase}`);
 }
 assert.match(clearFlow, /function setClearFlowPhase\(phase/, 'clear flow phase changes must use one transition helper');
+assert.match(clearFlow, /function persistClearFlowCheckpoint\(/, 'clear flow persistence must use a named checkpoint entry point');
+assert.match(clearFlow, /function cancelClearFlow\(reason/, 'clear flow cancellation must use a named entry point');
+assert.match(clearFlow, /function startClearFlow\(\{animation=true,context=\{\},nextAction=null\}/, 'clear flow start options must be explicit');
+assert.match(clearFlow, /persistClearFlowCheckpoint\(\);[\s\S]*if\(flowContext\.mode==='speed'\)/, 'clear flow must checkpoint before mode-specific handling');
+assert.match(clearFlow, /cancelClearFlow\('reset'\)/, 'clear flow reset must invalidate pending work');
 assert.match(clearFlow, /function markClearFlowContent\(kind/, 'quiz/message phase must have a named transition');
 assert.match(clearFlow, /setClearFlowPhase\(CLEAR_FLOW_PHASE\.nextDialog/, 'next-stage-dialog phase must be explicit');
 assert.match(clearFlow, /setClearFlowPhase\(CLEAR_FLOW_PHASE\.playing/, 'next-playing phase must be explicit');

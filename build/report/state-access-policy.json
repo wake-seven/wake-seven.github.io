@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-03T05:48:21.888Z",
+  "generatedAt": "2026-09-03T05:56:39.120Z",
   "names": [
     "activeMode",
     "activeLap",
@@ -23,16 +23,19 @@
   ],
   "baselineTracked": 226,
   "counts": {
-    "tracked": 221,
-    "allowed": 221,
+    "tracked": 218,
+    "allowed": 218,
     "newReferences": 0,
-    "retiredExceptions": 3,
-    "delta": -5
+    "retiredExceptions": 6,
+    "delta": -8
   },
   "newReferences": [],
   "retiredExceptions": [
     "ui/progression-ui.js:activeLap:if(activeLap===1&&isMastered())showMasterDialog('mastery');",
     "ui/progression-ui.js:activeLap:pickerLap=activeLap;",
-    "ui/progression-ui.js:satoriIndex:satoriPickerPage=isMode('satori')?Math.floor(satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0;"
+    "ui/progression-ui.js:satoriIndex:satoriPickerPage=isMode('satori')?Math.floor(satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0;",
+    "ui/progression-clear-flow.js:stageIndex:const context=createClearTransitionContext(stageIndex+1);",
+    "ui/progression-clear-flow.js:stageIndex:function createClearTransitionContext(nextStageIndex=stageIndex){",
+    "ui/progression-clear-flow.js:stageIndex:const currentStageIndex=Number.isInteger(appState.stageIndex)?appState.stageIndex:stageIndex;"
   ]
 }

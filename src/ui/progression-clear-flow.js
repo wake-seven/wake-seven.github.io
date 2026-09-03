@@ -14,12 +14,27 @@ const CLEAR_FLOW_PHASE=Object.freeze({
   nextDialog:'next-stage-dialog',
   playing:'next-playing'
 });
-const CLEAR_FLOW_ACTION=Object.freeze({start:'start',show:'show',next:'next',reset:'reset'});
-let clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.idle,action:null,context:null,route:null,content:null,cycle:1});
+const CLEAR_FLOW_ACTION=Object.freeze({start:'start',show:'show',next:'next',reset:'reset',cancel:'cancel'});
+let clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.idle,action:null,context:null,route:null,content:null,cycle:1,persisted:false,cancelReason:null});
 let clearFlowPhase=CLEAR_FLOW_PHASE.idle;
 function setClearFlowPhase(phase,action=null,patch={}){
   clearFlowPhase=phase;
   clearFlowState=Object.freeze({...clearFlowState,...patch,phase,action});
+  return clearFlowState;
+}
+// クリア後フローの副作用を、このファイルの入口からだけ実行する。
+// 保存とキャンセルをフェーズ遷移の隣に置くことで、表示側が個別に
+// persistDialogState やタイマー解除を呼び出して順序を壊すことを防ぐ。
+function persistClearFlowCheckpoint(){
+  if(typeof persistDialogState==='function')persistDialogState();
+  clearFlowState=Object.freeze({...clearFlowState,persisted:true});
+  return clearFlowState;
+}
+function cancelClearFlow(reason='cancelled'){
+  clearFlowCycle++;
+  clearUiEffectTimers('clear-transition');
+  clearFlowState=Object.freeze({...clearFlowState,phase:CLEAR_FLOW_PHASE.idle,action:CLEAR_FLOW_ACTION.cancel,cycle:clearFlowCycle,context:null,route:null,content:null,persisted:false,cancelReason:reason});
+  clearFlowPhase=CLEAR_FLOW_PHASE.idle;
   return clearFlowState;
 }
 // E2Eとデバッグが現在の段階を読み取るための副作用のない入口。
@@ -52,27 +67,27 @@ function celebrateClear(){
   svg.classList.add('celebrating');playClearSound(clearSoundKind());if(reduced)return 0;playWakeCelebrationEffect(svg,tileEls);return 820;
 }
 // クリア処理の開始入口。演出とダイアログ表示を一度だけ予約する。
-function startClearFlow(){
+function startClearFlow({animation=true,context={},nextAction=null}={}){
   const clearCycle=beginClearFlow();if(!clearCycle)return;
   // クリア開始時点のモード・問題番号・周回を固定する。演出中に別の
   // 復元や再描画が走っても、後続の表示が古いグローバル状態を拾わない。
-  const context=createClearTransitionContext(stageIndex+1);
-  clearFlowState=Object.freeze({...clearFlowState,context,cycle:clearCycle});
-  if(context.mode==='speed'){
+  const flowContext=Object.freeze({...createClearTransitionContext(),...(context||{}),nextAction});
+  clearFlowState=Object.freeze({...clearFlowState,context:flowContext,cycle:clearCycle,persisted:false,cancelReason:null});
+  persistClearFlowCheckpoint();
+  if(flowContext.mode==='speed'){
     // 速解きは専用の完了処理が次問を進める。通常クリア予約を作らない。
     resetClearFlow();
     return;
   }
-  const delay=celebrateClear();
+  const delay=animation===false?0:celebrateClear();
   scheduleClearFlowDialog(()=>{if(!WakeSevenAppContext.isClearShown()||!isSolved()){resetClearFlow();return;}finishClearFlow();},delay,clearCycle);
 }
 // クリア周期を識別する世代番号。表示予約がキャンセルされても、古い
 // 完了処理が後から実行された場合に現在の盤面へ作用しないようにする。
 let clearFlowCycle=1;
 function resetClearFlow(){
-  clearFlowCycle++;
-  setClearFlowPhase(CLEAR_FLOW_PHASE.idle,CLEAR_FLOW_ACTION.reset,{context:null,route:null,content:null,cycle:clearFlowCycle});
-  clearUiEffectTimers('clear-transition');
+  cancelClearFlow('reset');
+  setClearFlowPhase(CLEAR_FLOW_PHASE.idle,CLEAR_FLOW_ACTION.reset,{cycle:clearFlowCycle});
 }
 function beginClearFlow(){
   if(clearFlowPhase!==CLEAR_FLOW_PHASE.idle)return false;
@@ -96,10 +111,10 @@ function finishClearFlowDialog(){
 // 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを
 // 閉じる副作用や連続表示の切り替えで判定がずれるため、同じクリア周期の
 // ルート判定と表示判定にはこの入口を使う。
-function createClearTransitionContext(nextStageIndex=stageIndex){
+function createClearTransitionContext(nextStageIndex){
   const appState=WakeSevenAppContext.snapshot();
   const {mode,lap,masteryIndex}=appState;
-  const currentStageIndex=Number.isInteger(appState.stageIndex)?appState.stageIndex:stageIndex;
+  const currentStageIndex=Number.isInteger(appState.stageIndex)?appState.stageIndex:0;
   const resolvedNextStageIndex=Number.isInteger(nextStageIndex)?nextStageIndex:currentStageIndex+1;
   const currentLapPrimaryCleared=lap===2?lap2ClearedStages:lap1ClearedStages;
   return Object.freeze({
@@ -122,6 +137,7 @@ function finishClearFlow(){
   requestAnimationFrame(()=>{
     if(WakeSevenAppContext.isClearShown()&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
   });
+  persistClearFlowCheckpoint();
   return true;
 }
 // クリア後の次の進行先を副作用なしで決める。
@@ -156,6 +172,9 @@ function dispatchClearFlowAction(action){
   const nextStageIndex=context.nextStageIndex;
   const route=resolveAfterClearRoute(context);
   clearFlowState=Object.freeze({...clearFlowState,action,context,route});
+  // 進行先を確定した時点で保存する。ダイアログを閉じる副作用や
+  // 次画面の初期化より先に、今回のクリア周期の判断を記録する。
+  persistClearFlowCheckpoint();
   // 現在のダイアログだけを閉じてから、確定済みの遷移先を開く。
   // ボタン側では閉じる処理を行わず、クリア後遷移をこの入口に一本化する。
   hideGameDialogs();
