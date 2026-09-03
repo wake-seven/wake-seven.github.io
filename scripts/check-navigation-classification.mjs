@@ -17,6 +17,15 @@ const classify=({file,access,source})=>{
   if(/^\/\//.test(source))return ['derived-value','監査用コメント内の名前で、実行時の状態参照ではない'];
   if(STATE_OWNER_FILES.includes(file))return ['owner-only','状態所有者の内部処理。公開gatewayへ移す対象ではない'];
   if(/pointer|drag|swipe|animate|animation|spin|tile/i.test(file+' '+source))return ['event-local','pointer座標・スワイプ・逐次アニメーションに密接なイベント局所値'];
+  if(file==='state/progression-policy.js'||file==='commands/tutorial-commands.js')return [file.startsWith('state/')?'derived-value':'owner-only',file.startsWith('state/')?'引数で受け取る進行ポリシーの計算値':'チュートリアルcommandが所有する状態操作'];
+  if(['ui/progression-render.js','ui/progression-dialogs.js','ui/progression-hud.js'].includes(file))return ['derived-value','表示contextまたはappStateから作る進行表示値'];
+  if(file==='ui/progression-academy-support.js')return ['event-local','盤面補助の再計算時点に必要な現在問題・盤面の値'];
+  if(file==='ui/progression-ui.js'&&/loadStage|loadSatoriStage|loadExtraStage/.test(source))return ['event-local','ナビゲーションボタン操作時にだけ確定する遷移先'];
+  if(file==='ui/progression-ui.js')return ['derived-value','clear contextまたはダイアログ表示から算出する進行表示値'];
+  if(file==='ui/board-ui.js'&&/currentTwoMove|stageIndex-TRAINING|TRAINING_UPPER|TWO_MOVE/.test(source))return ['derived-value','現在盤面・出題位置から算出する解説表示値'];
+  if(file==='ui/board-ui.js'&&/academyBoardStep|onAction\(\)|returnStageContext|persistCurrentStage/.test(source))return ['intentional-exception','画面・command入口の実行時に現在問題を確定する処理。別バッチで引数context化する'];
+  if(file==='ui/board-ui.js'&&/completeBoard|recordProgressClear|loadStage|loadExtraStage|loadSatoriStage|persistActiveSession|speedVariant|activeMode|activeLap/.test(source))return ['intentional-exception','クリア・遷移・保存の実行入口で、その時点の状態を確定する処理'];
+  if(file==='ui/board-ui.js')return ['intentional-exception','盤面所有UIのライブ状態。表示・遷移・保存を同じ実行入口で確定するためgateway化しない'];
   // クリア後遷移は createClearTransitionContext が入口で固定し、以降は
   // 引数contextだけを使う。ファイル内の同名ローカル値をglobal候補に戻さない。
   if(file==='ui/progression-clear-flow.js')return ['derived-value','createClearTransitionContextで固定したクリア後navigation contextのローカル値'];
