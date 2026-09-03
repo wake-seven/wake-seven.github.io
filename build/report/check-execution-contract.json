@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "name": "wake7-execution-contract",
+  "generatedAt": "2026-09-03T14:16:01.447Z",
+  "sourceRevision": "442dba0",
+  "status": "passed",
+  "warnings": [],
+  "errors": [],
+  "scope": "sensitive",
+  "profile": "full",
+  "mustRun": [
+    "check:gate",
+    "browser-e2e",
+    "device-e2e"
+  ],
+  "mustNotRun": [
+    "check:fast",
+    "check:affected"
+  ],
+  "fullGateRequired": true,
+  "changedFiles": [
+    "README.md",
+    "package.json",
+    "scripts/check-affected.mjs",
+    "scripts/check-domains.json",
+    "scripts/lib/report.mjs",
+    "scripts/check-execution-contract.json",
+    "scripts/check-execution-contract.mjs"
+  ],
+  "policy": {
+    "precedence": [
+      "sensitive",
+      "source",
+      "documentation",
+      "clean"
+    ],
+    "unknownChanges": "source",
+    "incompleteIsSuccess": false
+  },
+  "command": "npm run check:full",
+  "summary": {}
+}

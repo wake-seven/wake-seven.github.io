@@ -1,13 +1,22 @@
 {
   "schemaVersion": 1,
   "name": "wake7-check-profile-result",
-  "generatedAt": "2026-09-03T14:10:33.197Z",
+  "generatedAt": "2026-09-03T14:16:00.843Z",
+  "sourceRevision": "442dba0",
   "status": "incomplete",
+  "warnings": [
+    "未実行またはfull gate未完了"
+  ],
+  "errors": [],
   "profile": "fast",
   "changedFiles": [
+    "README.md",
+    "package.json",
     "scripts/check-affected.mjs",
-    "scripts/check-profiles.json",
-    "scripts/run-check-profile.mjs"
+    "scripts/check-domains.json",
+    "scripts/lib/report.mjs",
+    "scripts/check-execution-contract.json",
+    "scripts/check-execution-contract.mjs"
   ],
   "ignoredFiles": [
     "build/report/change-check-map.json",
@@ -42,7 +51,7 @@
     "build/report/temporary-exception-audit.json",
     "build/report/ui-data-map.json",
     "build/report/unused-file-audit.json",
-    "build/report/check-profile-result.json"
+    "build/report/check-execution-contract.json"
   ],
   "fullGateRequired": true,
   "selectionReasons": [
@@ -60,54 +69,54 @@
     {
       "name": "domain-classification",
       "command": "node scripts/check-domain-classification.mjs",
-      "startedAt": "2026-09-03T14:10:21.167Z",
-      "finishedAt": "2026-09-03T14:10:21.231Z",
-      "durationMs": 64,
+      "startedAt": "2026-09-03T14:15:49.659Z",
+      "finishedAt": "2026-09-03T14:15:49.722Z",
+      "durationMs": 62,
       "exitCode": 0,
       "passed": true
     },
     {
       "name": "build",
       "command": "npm run build",
-      "startedAt": "2026-09-03T14:10:21.231Z",
-      "finishedAt": "2026-09-03T14:10:32.310Z",
-      "durationMs": 11079,
+      "startedAt": "2026-09-03T14:15:49.722Z",
+      "finishedAt": "2026-09-03T14:15:59.950Z",
+      "durationMs": 10228,
       "exitCode": 0,
       "passed": true
     },
     {
       "name": "version",
       "command": "node scripts/check-version.mjs",
-      "startedAt": "2026-09-03T14:10:32.310Z",
-      "finishedAt": "2026-09-03T14:10:32.513Z",
-      "durationMs": 203,
+      "startedAt": "2026-09-03T14:15:59.950Z",
+      "finishedAt": "2026-09-03T14:16:00.162Z",
+      "durationMs": 212,
       "exitCode": 0,
       "passed": true
     },
     {
       "name": "board-domain",
       "command": "node scripts/test-board-domain.mjs",
-      "startedAt": "2026-09-03T14:10:32.513Z",
-      "finishedAt": "2026-09-03T14:10:32.596Z",
-      "durationMs": 83,
+      "startedAt": "2026-09-03T14:16:00.162Z",
+      "finishedAt": "2026-09-03T14:16:00.238Z",
+      "durationMs": 76,
       "exitCode": 0,
       "passed": true
     },
     {
       "name": "application-services",
       "command": "node scripts/test-application-services.mjs",
-      "startedAt": "2026-09-03T14:10:32.596Z",
-      "finishedAt": "2026-09-03T14:10:32.660Z",
-      "durationMs": 64,
+      "startedAt": "2026-09-03T14:16:00.238Z",
+      "finishedAt": "2026-09-03T14:16:00.297Z",
+      "durationMs": 59,
       "exitCode": 0,
       "passed": true
     },
     {
       "name": "browser-flow",
       "command": "npm run check:browser-flow",
-      "startedAt": "2026-09-03T14:10:32.660Z",
-      "finishedAt": "2026-09-03T14:10:33.197Z",
-      "durationMs": 537,
+      "startedAt": "2026-09-03T14:16:00.297Z",
+      "finishedAt": "2026-09-03T14:16:00.802Z",
+      "durationMs": 505,
       "exitCode": 0,
       "passed": true
     }
@@ -118,7 +127,7 @@
     "executed": 6,
     "unexecuted": 0,
     "failed": 0,
-    "durationMs": 12030
+    "durationMs": 11142
   },
   "policy": {
     "passed": "必須検査をすべて実行し、全件成功",

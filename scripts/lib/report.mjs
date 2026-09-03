@@ -40,7 +40,7 @@ export function validateReport(report, file = 'report') {
   const required = ['name', 'status', 'summary', 'warnings', 'errors', 'generatedAt', 'sourceRevision'];
   const missing = required.filter(key => !(key in report));
   if (missing.length) throw new Error(`${file}: missing common report fields: ${missing.join(', ')}`);
-  if (!['passed', 'failed', 'warning'].includes(report.status)) throw new Error(`${file}: invalid status`);
+  if (!['passed', 'failed', 'warning', 'incomplete'].includes(report.status)) throw new Error(`${file}: invalid status`);
   if (!report.summary || typeof report.summary !== 'object' || Array.isArray(report.summary)) throw new Error(`${file}: summary must be an object`);
   if (!Array.isArray(report.warnings) || !Array.isArray(report.errors)) throw new Error(`${file}: warnings/errors must be arrays`);
   if (!report.sourceRevision || !Number.isFinite(Date.parse(report.generatedAt))) throw new Error(`${file}: invalid provenance`);

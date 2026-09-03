@@ -41,6 +41,8 @@ npm run check
 
 `npm run check` には、公開HTMLの生成物監査とブラウザ相当の導線検査（`npm run check:browser-flow`）も含まれます。
 
+変更範囲に応じた実行契約は `npm run check:execution-contract` で確認できます。変更対象から scope、推奨profile、必須検査、full gate の要否を `build/report/check-execution-contract.json` に出力します。未実行や契約違反は成功扱いにしません。
+
 Aboutダイアログに表示する公開版バージョンは `src/runtime/runtime.js` の `APP_VERSION` だけを更新します。形式は `YYYY.MM.DD-HH:mm`（日本時間）です。`npm run build` で生成版にも反映され、Pages上の版を画面から識別できます。テンプレートや生成物へ別のバージョン値を直接書かないでください。
 
 公開版の構成を意図的に大きく変更した場合だけ、生成物を確認してから `npm run metrics:update -- --reason "変更理由"` を実行し、baseline更新前後の `npm run check:public-esm` が通ることを確認します。通常の `npm run check` はbaselineを更新しません。更新理由はコミットメッセージまたはレビューにも残します。
