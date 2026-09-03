@@ -39,12 +39,17 @@ const commandFor = name => {
     'board-domain': ['node', ['scripts/test-board-domain.mjs']],
     'application-services': ['node', ['scripts/test-application-services.mjs']],
     'application-targets': ['node', ['scripts/check-application-targets.mjs']], state: ['node', ['scripts/check-state.mjs']]
+    , 'reward-access': ['node', ['scripts/check-reward-access.mjs']]
   };
   return direct[name] || ['npm', ['run', `check:${name}`]];
 };
 const run = (name, command, args) => new Promise(resolve => {
   const startedAt = new Date().toISOString(); const started = Date.now(); let output = ''; let error = '';
-  const child = spawn(command, args, { cwd: root, shell: process.platform === 'win32' && command === 'npm' });
+  const child = spawn(command, args, {
+    cwd: root,
+    shell: process.platform === 'win32' && command === 'npm',
+    env: { ...process.env, WAKE7_REPORT_SCOPE: selected === 'full' ? 'full' : 'affected' }
+  });
   child.stdout.on('data', data => { output += data; }); child.stderr.on('data', data => { error += data; });
   child.on('close', exitCode => resolve({ name, command: [command, ...args].join(' '), startedAt, finishedAt: new Date().toISOString(), durationMs: Date.now() - started, exitCode: exitCode ?? 1, output: output.trim(), error: error.trim() }));
   child.on('error', cause => resolve({ name, command: [command, ...args].join(' '), startedAt, finishedAt: new Date().toISOString(), durationMs: Date.now() - started, exitCode: 1, output: output.trim(), error: cause.message }));
@@ -62,7 +67,8 @@ if (selected === 'full') {
 const failed = executed.filter(item => item.exitCode !== 0 && item.passed !== true);
 const status = failed.length ? 'failed' : unexecuted.length || fullGateRequired ? 'incomplete' : 'passed';
 const sourceRevision = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim() || 'working-tree';
-const result = { schemaVersion: 1, name: 'wake7-check-profile-result', generatedAt: new Date().toISOString(), sourceRevision, status, warnings: status === 'incomplete' ? ['未実行またはfull gate未完了'] : [], errors: failed.map(item => item.name), profile: selected, changedFiles: files, ignoredFiles, fullGateRequired, selectionReasons: reasons, requiredChecks, executed: executed.map(item => ({ name: item.name, command: item.command || `check:gate → ${item.name}`, startedAt: item.startedAt || null, finishedAt: item.finishedAt || null, durationMs: item.durationMs || 0, exitCode: item.exitCode ?? 1, passed: item.passed ?? item.exitCode === 0 })), unexecuted, summary: { required: requiredChecks.length, executed: executed.length, unexecuted: unexecuted.length, failed: failed.length, durationMs: executed.reduce((total, item) => total + (item.durationMs || 0), 0) }, policy: { passed: '必須検査をすべて実行し、全件成功', incomplete: '未実行またはfullGateRequiredの変更があるため成功扱いにしない', failed: '実行済み検査に失敗がある', fullGateRequiredReason: config.policy?.fullGateRequired?.reason || null } };
+const skippedChecks = selected === 'full' ? [] : [{ name: 'device-e2e', reason: 'デバイス差分は公開前のcheck:gateで実行' }];
+const result = { schemaVersion: 1, name: 'wake7-check-profile-result', generatedAt: new Date().toISOString(), sourceRevision, status, warnings: status === 'incomplete' ? ['未実行またはfull gate未完了'] : [], errors: failed.map(item => item.name), profile: selected, changedFiles: files, ignoredFiles, fullGateRequired, selectionReasons: reasons, requiredChecks, executed: executed.map(item => ({ name: item.name, command: item.command || `check:gate → ${item.name}`, startedAt: item.startedAt || null, finishedAt: item.finishedAt || null, durationMs: item.durationMs || 0, exitCode: item.exitCode ?? 1, passed: item.passed ?? item.exitCode === 0 })), unexecuted, skippedChecks, summary: { required: requiredChecks.length, executed: executed.length, unexecuted: unexecuted.length, skipped: skippedChecks.length, failed: failed.length, durationMs: executed.reduce((total, item) => total + (item.durationMs || 0), 0) }, policy: { passed: '必須検査をすべて実行し、全件成功', incomplete: '未実行またはfull gate未完了のため成功扱いにしない', failed: '実行済み検査に失敗がある', fullGateRequiredReason: config.policy?.fullGateRequired?.reason || null } };
 await mkdir(reportDir, { recursive: true });
 await writeFile(join(reportDir, 'check-profile-result.json'), JSON.stringify(result, null, 2) + '\n');
 console.log(`Check profile ${selected}: ${result.status}. ${result.summary.executed}/${result.summary.required} executed. Report: build/report/check-profile-result.json`);

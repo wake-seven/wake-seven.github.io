@@ -35,6 +35,7 @@ const steps = [
   { name: 'source-boundaries', command: process.execPath, args: ['scripts/check-source-boundaries.mjs'] },
   { name: 'compat-e2e', command: process.execPath, args: ['scripts/check-compat-e2e.mjs'] },
   { name: 'browser-e2e', command: process.execPath, args: ['scripts/check-browser-e2e.mjs'] },
+  { name: 'reward-access', command: process.execPath, args: ['scripts/check-reward-access.mjs'] },
   { name: 'device-e2e', command: process.execPath, args: ['scripts/check-device-e2e.mjs'] },
   { name: 'translations', command: process.execPath, args: ['scripts/check-translations.mjs'] },
   { name: 'dialog-state-map', command: process.execPath, args: ['scripts/check-dialog-state-map.mjs'] },
@@ -83,7 +84,12 @@ const run = (step) => new Promise(resolve => {
   const started = Date.now();
   // shellを介さず実行する。Windowsではnode.exeのパスに空白が含まれるため、
   // shell=trueにすると検査自体が「C:\Program」を実行しようとして失敗する。
-  const child = spawn(step.command, step.args, { cwd: root, shell: false });
+  // 最終ゲートは環境変数の残留に左右されず、必ず全レポートを再生成する。
+  const child = spawn(step.command, step.args, {
+    cwd: root,
+    shell: false,
+    env: step.name === 'build' ? { ...process.env, WAKE7_REPORT_SCOPE: 'full' } : process.env
+  });
   let stdout = '';
   let stderr = '';
   child.stdout.on('data', chunk => { stdout += chunk; });

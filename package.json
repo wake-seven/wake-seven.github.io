@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "build": "node scripts/build-index.mjs && npm run build:esm && npm run trace:generate",
-    "trace:generate": "node scripts/generate-trace-index.mjs && node scripts/generate-refactor-report.mjs && node scripts/generate-ui-data-map.mjs && node scripts/generate-event-wiring-map.mjs && node scripts/generate-progression-responsibility.mjs && node scripts/generate-progression-flow-report.mjs",
+    "trace:generate": "node scripts/generate-reports.mjs",
     "trace": "node scripts/trace.mjs",
     "trace:entry": "node scripts/trace-entrypoint.mjs",
     "trace:impact": "node scripts/trace-impact.mjs",
@@ -32,6 +32,7 @@
     "check:public-esm": "node scripts/check-public-esm.mjs",
     "check:browser-flow": "node scripts/check-browser-flow.mjs",
     "check:browser-e2e": "node scripts/check-browser-e2e.mjs",
+    "check:reward-access": "node scripts/check-reward-access.mjs",
     "check:device-e2e": "node scripts/check-device-e2e.mjs",
     "test:board-domain": "node scripts/test-board-domain.mjs",
     "test:application-services": "node scripts/test-application-services.mjs",

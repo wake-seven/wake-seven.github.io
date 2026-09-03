@@ -3,6 +3,15 @@
   "description": "変更領域から、最小確認・影響範囲確認・全体確認へ昇格する対応表。check:gateは常にfullを実行する。",
   "tiers": ["fast", "affected", "full"],
   "areas": {
+    "reward-pages": {
+      "paths": ["index_3D.html", "all-patterns.html"],
+      "fast": ["reward-access"],
+      "affected": ["reward-access"],
+      "full": ["reward-access", "browser-e2e", "device-e2e"],
+      "promoteToAffectedWhen": ["報酬ページの権限判定・表示を変更"],
+      "promoteToFullWhen": ["報酬状態の保存形式・公開生成経路を変更"],
+      "relatedE2E": ["reward-access", "browser-e2e"]
+    },
     "ui/progression": {
       "paths": ["src/ui/progression-", "src/ui/progression.js"],
       "fast": ["progression-flows", "progression-flow-contract"],
