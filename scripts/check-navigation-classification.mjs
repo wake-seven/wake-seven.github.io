@@ -20,11 +20,20 @@ const classify=({file,access,source})=>{
   if(access==='read')return ['gateway-candidate','読み取り専用のため用途別navigation gatewayへ移行可能'];
   return ['intentional-exception','書き込みを伴うため所有者・command入口との整合確認が必要'];
 };
-const entries=refs.map(ref=>{const source=files.get(ref.file)?.[ref.line-1]?.trim()||'';const [category,reason]=classify({...ref,source});return {...ref,category,reason,codeEvidence:{file:ref.file,line:ref.line,source}};});
+const entries=refs.map(ref=>{
+  const source=files.get(ref.file)?.[ref.line-1]?.trim()||'';
+  const [category,reason]=classify({...ref,source});
+  const temporary=category==='gateway-candidate';
+  return {...ref,category,reason,temporary,owner:category==='owner-only'?ref.file:'runtime/runtime.js / app/app-context.js',nextMigrationUnit:temporary?'navigation context取得を入口で固定して判定へ渡す':null,expiresOn:temporary?'2026-12-31':null,relatedE2E:temporary?['browser-e2e','device-e2e','progression-flows','clear-flow-order']:[],codeEvidence:{file:ref.file,line:ref.line,source}};
+});
 const categories=['gateway-candidate','owner-only','derived-value','event-local','intentional-exception'];
 assert.equal(entries.length,refs.length,'navigation参照の分類漏れがあります');
 assert.ok(entries.every(entry=>categories.includes(entry.category)),'不明なnavigation分類があります');
 const counts=Object.fromEntries(categories.map(category=>[category,entries.filter(entry=>entry.category===category).length]));
+for(const entry of entries){
+  if(entry.temporary){assert.ok(entry.owner&&entry.nextMigrationUnit&&entry.expiresOn&&entry.relatedE2E.length>0,`temporary navigation候補の移行メタデータが不足しています: ${entry.file}:${entry.line}:${entry.name}`);assert.ok(Date.parse(`${entry.expiresOn}T23:59:59+09:00`)>Date.now(),`temporary navigation候補の期限が切れています: ${entry.file}:${entry.line}:${entry.name}`);}
+  else assert.ok(entry.reason&&entry.owner,`navigation残件の理由または所有者がありません: ${entry.file}:${entry.line}:${entry.name}`);
+}
 const byName=Object.fromEntries(NAVIGATION_NAMES.map(name=>[name,entries.filter(entry=>entry.name===name).length]));
 // 行や抜粋は改修で変わるため、追加検出の指紋はファイルとシンボルで固定する。
 const gatewayFingerprint=entry=>`${entry.file}:${entry.name}`;
@@ -33,6 +42,6 @@ const currentGateway=new Set(entries.filter(entry=>entry.category==='gateway-can
 const newGatewayCandidates=[...currentGateway].filter(value=>!previousGateway.has(value));
 assert.equal(newGatewayCandidates.length,0,`新しいnavigation gateway候補を検出しました。移行理由と関連E2Eを確認してください: ${newGatewayCandidates.join(', ')}`);
 const stateNavigationCount=stateAccessReport?.countsByPurpose?.navigation??null;
-const report={schemaVersion:1,name:'wake7-navigation-classification',generatedAt:new Date().toISOString(),status:'passed',summary:{references:entries.length,byCategory:counts,byName,stateAccessNavigationReferences:stateNavigationCount,priorityOrder:['gateway-candidate','derived-value','event-local','intentional-exception','owner-only']},migrationGate:{baseline:'既存のgateway候補集合',newGatewayCandidates,addedCount:newGatewayCandidates.length,removedCount:[...previousGateway].filter(value=>!currentGateway.has(value)).length},policy:{gatewayCandidate:'次の1バッチでE2E付き移行を検討',ownerOnly:'状態所有者に保持',derivedValue:'計算元と表示境界を確認',eventLocal:'イベント側に保持',intentionalException:'理由と関連E2Eを維持'},entries};
+const report={schemaVersion:2,name:'wake7-navigation-classification',generatedAt:new Date().toISOString(),status:'passed',summary:{references:entries.length,byCategory:counts,temporaryCount:entries.filter(entry=>entry.temporary).length,temporaryZero:entries.every(entry=>!entry.temporary),byName,stateAccessNavigationReferences:stateNavigationCount,priorityOrder:['gateway-candidate','derived-value','event-local','intentional-exception','owner-only']},migrationGate:{baseline:'既存のgateway候補集合',newGatewayCandidates,addedCount:newGatewayCandidates.length,removedCount:[...previousGateway].filter(value=>!currentGateway.has(value)).length},policy:{gatewayCandidate:'未移行の間はtemporaryとして期限・所有者・次の移行単位・関連E2Eを維持',ownerOnly:'状態所有者に保持',derivedValue:'計算元と表示境界を確認',eventLocal:'イベント側に保持',intentionalException:'理由と関連E2Eを維持'},entries};
 const path=join(root,'build/report/navigation-classification.json');await mkdir(dirname(path),{recursive:true});await writeFile(path,JSON.stringify(report,null,2)+'\n');
 console.log(`Navigation classification OK: ${entries.length} references (${counts['gateway-candidate']} gateway candidates, ${counts['owner-only']} owner-only). Report: ${path}`);
