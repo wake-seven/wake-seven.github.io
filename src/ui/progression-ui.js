@@ -301,7 +301,7 @@ function hasCompetingDialogForClear(){
     .some(id=>$(id)&&!$(id).hidden);
 }
 function showClearDialog(contextOverride=null){
-  finishClearFlowDialog();
+  if(!finishClearFlowDialog()&&!contextOverride)return false;
   const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);
   // 速解きのクリアは専用のタイマー・次問遷移で処理する。
   // 通常ステージの古い stageIndex / masteryClearContext を使って

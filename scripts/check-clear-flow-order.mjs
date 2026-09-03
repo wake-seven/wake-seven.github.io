@@ -51,7 +51,12 @@ assert.match(progression, /function renderClearQuiz\(\)/,
 assert.match(progression, /function clearDialogUsesStageProgression\(\)/,
   'clear dialog must have an explicit campaign/free route predicate');
 checks.push({ id: 'clear-route-predicate', passed: true });
-assert.match(runtime, /state\.id==='clear'[\s\S]*clearShown&&isSolved\(\)[\s\S]*showClearDialog\(\)/,
+assert.match(clearFlow, /function finishClearFlowDialog\(\)\{[\s\S]*animationPending[\s\S]*return true[\s\S]*return clearFlowPhase===CLEAR_FLOW_PHASE\.dialog/,
+  'clear dialog phase must not be entered from an unrelated flow phase');
+assert.match(runtime, /state\.id==='clear'[\s\S]*showClearDialog\(createClearTransitionContext\(\)\)/,
+  'reload clear dialog must restore through an explicit clear context');
+checks.push({ id: 'clear-phase-guard', passed: true });
+assert.match(runtime, /state\.id==='clear'[\s\S]*clearShown&&isSolved\(\)[\s\S]*showClearDialog\([^)]*\)/,
   'reload clear dialog must require a solved board and clearShown');
 checks.push({ id: 'reload-clear-guard', passed: true });
 

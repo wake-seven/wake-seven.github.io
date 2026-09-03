@@ -104,7 +104,11 @@ function scheduleClearFlowDialog(callback,delay,cycle=clearFlowCycle){
   return true;
 }
 function finishClearFlowDialog(){
-  setClearFlowPhase(CLEAR_FLOW_PHASE.dialog,CLEAR_FLOW_ACTION.show,{content:null});
+  if(clearFlowPhase===CLEAR_FLOW_PHASE.animationPending){
+    setClearFlowPhase(CLEAR_FLOW_PHASE.dialog,CLEAR_FLOW_ACTION.show,{content:null});
+    return true;
+  }
+  return clearFlowPhase===CLEAR_FLOW_PHASE.dialog||clearFlowPhase===CLEAR_FLOW_PHASE.content;
 }
 
 // クリア後の画面が参照する進行状態を、ひとつの読み取り専用文脈に固定する。

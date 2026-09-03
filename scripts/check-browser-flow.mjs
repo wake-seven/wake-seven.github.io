@@ -142,7 +142,7 @@ assert.match(runtime, /if\(visible\('clearDialog'\)\)return \{type:'clear'\}/,
   'clear dialog visibility must be captured for reload restoration');
 assert.match(runtime, /if\(visible\('messageDialog'\)[\s\S]*return \{type:'message'/,
   'message dialog and its review position must be captured for reload restoration');
-assert.match(runtime, /state\.id==='clear'[\s\S]*clearShown&&isSolved\(\)[\s\S]*showClearDialog\(\)/,
+assert.match(runtime, /state\.id==='clear'[\s\S]*clearShown&&isSolved\(\)[\s\S]*showClearDialog\([^)]*\)/,
   'restoring a clear dialog must require the solved board and clear state');
 assert.match(runtime, /state\.id==='message'[\s\S]*openMessageReview\(\{resume:true\}\)/,
   'restoring message review must rebuild it through the normal resume route');

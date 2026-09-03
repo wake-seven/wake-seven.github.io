@@ -4415,7 +4415,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-17:11';
+const APP_VERSION='2026.09.03-17:23';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -4572,7 +4572,7 @@ function restoreDialogState(state){
   if(!state||typeof state.id!=='string')return false;
   try{
     if(state.id==='chain'&&CHAIN_STEPS[state.name]){openChainedDialog(state.name);return true;}
-    if(state.id==='clear'&&clearShown&&isSolved()){showClearDialog();return true;}
+    if(state.id==='clear'&&clearShown&&isSolved()){showClearDialog(createClearTransitionContext());return true;}
     if(state.id==='message'){openMessageReview({resume:true});if(state.key){const index=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===state.key);if(index>=0){messageReviewIndex=index;renderMessageReview();}}return true;}
     if(state.id==='master'){showMasterDialog(state.kind||'primary');return true;}
     if(state.id==='speedPause'&&isMode('speed')){openSpeedPauseDialog();return true;}
@@ -9716,7 +9716,7 @@ function hasCompetingDialogForClear(){
     .some(id=>$(id)&&!$(id).hidden);
 }
 function showClearDialog(contextOverride=null){
-  finishClearFlowDialog();
+  if(!finishClearFlowDialog()&&!contextOverride)return false;
   const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);
   // 速解きのクリアは専用のタイマー・次問遷移で処理する。
   // 通常ステージの古い stageIndex / masteryClearContext を使って
@@ -10911,7 +10911,11 @@ function scheduleClearFlowDialog(callback,delay,cycle=clearFlowCycle){
   return true;
 }
 function finishClearFlowDialog(){
-  setClearFlowPhase(CLEAR_FLOW_PHASE.dialog,CLEAR_FLOW_ACTION.show,{content:null});
+  if(clearFlowPhase===CLEAR_FLOW_PHASE.animationPending){
+    setClearFlowPhase(CLEAR_FLOW_PHASE.dialog,CLEAR_FLOW_ACTION.show,{content:null});
+    return true;
+  }
+  return clearFlowPhase===CLEAR_FLOW_PHASE.dialog||clearFlowPhase===CLEAR_FLOW_PHASE.content;
 }
 
 // クリア後の画面が参照する進行状態を、ひとつの読み取り専用文脈に固定する。
