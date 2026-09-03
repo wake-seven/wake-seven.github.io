@@ -55,5 +55,23 @@
     "manifest-dependencies": "large-change-only",
     "public-symbols": "large-change-only",
     "report-schema": "build-required"
+  },
+  "groups": {
+    "structure": {
+      "label": "構造",
+      "steps": ["domain-classification", "build", "version", "application-targets", "esm", "source-boundaries", "esm-dependencies", "public-esm", "metrics-update-policy", "refactor-policy", "trace", "ui-data-map", "event-wiring", "refactor-report", "compat-boundaries", "unused-files", "manifest-dependencies", "public-symbols", "report-schema"]
+    },
+    "state": {
+      "label": "状態",
+      "steps": ["state", "state-classification", "state-mutations", "state-restore", "global-access", "state-access-policy", "refactor-baseline-generate", "refactor-baseline", "refactor-budgets"]
+    },
+    "flows": {
+      "label": "進行",
+      "steps": ["board-domain", "application-services", "dialog-chains", "ui-effects", "progression-flows", "progression-flow-contract", "progression-responsibility"]
+    },
+    "browser": {
+      "label": "ブラウザ",
+      "steps": ["browser-flow", "compat-e2e", "browser-e2e", "device-e2e"]
+    }
   }
 }

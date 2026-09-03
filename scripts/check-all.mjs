@@ -1,4 +1,4 @@
-import { mkdir, readFile } from 'node:fs/promises';
+import { access, mkdir, readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
@@ -56,6 +56,15 @@ const steps = [
   { name: 'report-schema', command: process.execPath, args: ['scripts/check-report-schema.mjs'] }
 ];
 
+const groups = pipeline.groups || {};
+const groupByStep = new Map(Object.entries(groups).flatMap(([name, group]) =>
+  (group.steps || []).map(stepName => [stepName, { name, label: group.label }])));
+const missingGroups = steps.map(step => step.name).filter(name => !groupByStep.has(name));
+const duplicateGroups = [...new Set(steps.map(step => step.name))].filter(name =>
+  Object.values(groups).filter(group => (group.steps || []).includes(name)).length > 1);
+if (missingGroups.length) throw new Error(`check-pipeline.json に未分類のゲート手順があります: ${missingGroups.join(', ')}`);
+if (duplicateGroups.length) throw new Error(`check-pipeline.json で複数領域に分類された手順があります: ${duplicateGroups.join(', ')}`);
+
 const run = (step) => new Promise(resolve => {
   const startedAt = new Date().toISOString();
   const started = Date.now();
@@ -67,7 +76,8 @@ const run = (step) => new Promise(resolve => {
   child.stdout.on('data', chunk => { stdout += chunk; });
   child.stderr.on('data', chunk => { stderr += chunk; });
   child.on('close', code => resolve({
-    name: step.name, profile: pipeline.steps[step.name], command: [step.command, ...step.args].join(' '), startedAt,
+    name: step.name, profile: pipeline.steps[step.name], group: groupByStep.get(step.name).name,
+    groupLabel: groupByStep.get(step.name).label, command: [step.command, ...step.args].join(' '), startedAt,
     finishedAt: new Date().toISOString(), durationMs: Date.now() - started,
     exitCode: code ?? 1, stdout: stdout.trim(), stderr: stderr.trim()
   }));
@@ -77,6 +87,23 @@ const run = (step) => new Promise(resolve => {
     exitCode: 1, stdout: stdout.trim(), stderr: `${stderr.trim()}\n${error.message}`.trim()
   }));
 });
+
+const reportLinksFor = async result => {
+  const links = new Set();
+  const text = `${result.stdout}\n${result.stderr}`;
+  for (const match of text.matchAll(/(?:build[\\/]report[\\/])([^\s"']+)/g)) {
+    links.add(`build/report/${match[1].replaceAll('\\\\', '/')}`);
+  }
+  const candidates = [
+    `build/report/${result.name}.json`,
+    `build/report/${result.name.replaceAll('-contract', '')}.json`,
+    `build/report/${result.name.replaceAll('-policy', '')}.json`
+  ];
+  for (const candidate of candidates) {
+    try { await access(join(root, candidate)); links.add(candidate); } catch { /* レポートを持たない検査もある */ }
+  }
+  return [...links];
+};
 
 const unmapped = steps.map(step => step.name).filter(name => !pipeline.steps[name]);
 if (unmapped.length) throw new Error(`check-pipeline.json に未分類の検査があります: ${unmapped.join(', ')}`);
@@ -96,13 +123,17 @@ const report = { schemaVersion: 1, name: 'wake7-check-gate', startedAt: new Date
 await mkdir(dirname(reportPath), { recursive: true });
 for (const step of steps) {
   const result = await run(step);
+  result.reportLinks = await reportLinksFor(result);
   report.steps.push(result);
   console.log(`[${result.exitCode === 0 ? 'ok' : 'FAIL'}] ${result.name} (${result.durationMs}ms)`);
   if (result.exitCode !== 0) {
     report.failedStep = result.name;
+    report.failedGroup = { name: result.group, label: result.groupLabel };
+    report.summary = summarize(report.steps);
     report.finishedAt = new Date().toISOString();
     await writeReport(reportPath, { ...report, generatedAt: report.finishedAt });
-    console.error(`Check gate failed at ${result.name}. Report: ${reportPath}`);
+    console.error(`Check gate failed in ${result.groupLabel} (${result.group}): ${result.name}. Report: ${reportPath}`);
+    if (result.reportLinks.length) console.error(`詳細レポート: ${result.reportLinks.join(', ')}`);
     process.exitCode = result.exitCode;
     break;
   }
@@ -117,11 +148,31 @@ if (!report.failedStep) {
     const budgetMs = pipeline.profiles[profile].budgetMs;
     return [profile, { steps: profileSteps.length, durationMs, budgetMs, withinBudget: durationMs <= budgetMs }];
   }));
+  const byGroup = Object.fromEntries(Object.entries(groups).map(([name, group]) => {
+    const groupSteps = report.steps.filter(step => step.group === name);
+    return [name, { label: group.label, steps: groupSteps.length,
+      durationMs: groupSteps.reduce((total, step) => total + step.durationMs, 0),
+      passed: groupSteps.every(step => step.exitCode === 0) }];
+  }));
   const slowest = [...report.steps].sort((a, b) => b.durationMs - a.durationMs).slice(0, 5)
     .map(step => ({ name: step.name, profile: step.profile, durationMs: step.durationMs }));
-  report.summary = { steps: report.steps.length, failedStep: null, byProfile, slowest };
-  report.runtime = { schemaVersion: 1, generatedAt: report.finishedAt, contextPath: 'build/report/check-context.json', profiles: byProfile, slowest };
-  await writeReport(runtimeReportPath, { schemaVersion: 1, name: 'wake7-check-runtime', generatedAt: report.finishedAt, sourceRevision: report.sourceRevision, profiles: byProfile, slowest });
+  report.summary = { steps: report.steps.length, failedStep: null, byProfile, byGroup, slowest };
+  report.runtime = { schemaVersion: 1, generatedAt: report.finishedAt, contextPath: 'build/report/check-context.json', profiles: byProfile, groups: byGroup, slowest };
+  await writeReport(runtimeReportPath, { schemaVersion: 1, name: 'wake7-check-runtime', generatedAt: report.finishedAt, sourceRevision: report.sourceRevision, profiles: byProfile, groups: byGroup, slowest });
   await writeReport(reportPath, { ...report, generatedAt: report.finishedAt });
+  console.log('Check gate summary:');
+  for (const [name, summary] of Object.entries(byGroup)) {
+    console.log(`  [${summary.label}] ${summary.steps}件 / ${summary.durationMs}ms / ${summary.passed ? 'ok' : 'FAIL'} (${name})`);
+  }
   console.log(`Check gate passed: ${report.steps.length} steps. Report: ${reportPath}`);
+}
+
+function summarize(results) {
+  return { steps: results.length, failedStep: results.find(step => step.exitCode !== 0)?.name || null,
+    byGroup: Object.fromEntries(Object.entries(groups).map(([name, group]) => {
+      const groupSteps = results.filter(step => step.group === name);
+      return [name, { label: group.label, steps: groupSteps.length,
+        durationMs: groupSteps.reduce((total, step) => total + step.durationMs, 0),
+        passed: groupSteps.length > 0 && groupSteps.every(step => step.exitCode === 0) }];
+    })) };
 }
