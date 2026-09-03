@@ -48,7 +48,7 @@ for(const file of publishedSourceFiles){
 const tracked=refs.filter(ref=>!STATE_OWNER_FILES.includes(ref.file)&&ref.file!=='app/app-context.js');
 if(process.argv.includes('--refresh')){
   const expiresOn='2026-12-02';
-  const temporaryExceptions=tracked.map(ref=>{const meta=classifyStateException(ref);return {fingerprint:`${ref.file}:${ref.name}:${ref.source}`,expiresOn,owner:ref.file,migrationTarget:meta.migrationTarget,priority:meta.priority,relatedTests:relatedTestsForStateException(meta),reason:`${meta.purpose}状態の移行完了まで保持する既存参照`};});
+  const temporaryExceptions=tracked.map(ref=>{const meta=classifyStateException(ref);return meta.temporary?{fingerprint:`${ref.file}:${ref.name}:${ref.source}`,expiresOn,owner:ref.file,migrationTarget:meta.migrationTarget,priority:meta.priority,relatedTests:relatedTestsForStateException(meta),reason:`${meta.purpose}状態の移行完了まで保持する既存参照`}:null;}).filter(Boolean);
   await (await import('node:fs/promises')).writeFile(join(root,POLICY_PATH),JSON.stringify({schemaVersion:1,ownerFiles:[...STATE_OWNER_FILES],baselineTracked:tracked.length,allowedReferences:tracked.map(ref=>`${ref.file}:${ref.name}:${ref.source}`),temporaryExceptions},null,2)+'\n');
   console.log(`Refreshed ${POLICY_PATH} with ${tracked.length} existing exceptions.`);
   process.exit(0);
@@ -78,6 +78,7 @@ assert.equal(exceptionMetadata.length,tracked.length,'State access exception met
 for(const meta of exceptionMetadata){
   assert.ok(STATE_EXCEPTION_PURPOSES.includes(meta.purpose),`Unknown state exception purpose: ${meta.purpose}`);
   assert.equal(typeof meta.ownerOnly,'boolean',`ownerOnly is missing: ${meta.fingerprint}`);
+  assert.ok(['owner-only','intentional-exception','temporary'].includes(meta.exceptionClass),`exceptionClass is invalid: ${meta.fingerprint}`);
   assert.equal(typeof meta.temporary,'boolean',`temporary is missing: ${meta.fingerprint}`);
   assert.ok(Number.isInteger(meta.priority)&&meta.priority>=1&&meta.priority<=3,`priority is invalid: ${meta.fingerprint}`);
   assert.ok(typeof meta.reason==='string'&&meta.reason.length>0,`reason is missing: ${meta.fingerprint}`);
@@ -97,18 +98,21 @@ const entrypointOf=ref=>ref.file.startsWith('commands/')?'commands':ref.file.sta
 const baselineEntries=tracked.map(ref=>{
   const meta=exceptionMetadata.find(item=>item.fingerprint===fingerprint(ref));
   const dialog=meta.purpose==='dialog'?classifyDialogReference(ref):null;
-  return {fingerprint:fingerprint(ref),classification:'executable',source:{file:ref.file,line:ref.line,excerpt:ref.source},symbol:ref.name,entrypoint:entrypointOf(ref),access:accessOf(ref),purpose:meta.purpose,dialogRole:dialog?.role||null,dialogReason:dialog?.reason||null,ownerOnly:meta.ownerOnly,temporary:meta.temporary,migrationTarget:meta.migrationTarget,priority:meta.priority,reason:meta.reason,relatedE2E:relatedTestsForStateException(meta)};
+  const temporary=temporaryMetadata.get(fingerprint(ref));
+  const migrationUnit=meta.temporary?(meta.purpose==='dialog'?'dialog context gateway（表示・復元・連鎖）':meta.purpose==='navigation'?'navigation context gateway（進行先判定）':meta.purpose==='progress'?'progress gateway（クリア記録）':'state gateway（用途別読み書き）'):null;
+  return {fingerprint:fingerprint(ref),classification:'executable',source:{file:ref.file,line:ref.line,excerpt:ref.source},symbol:ref.name,entrypoint:entrypointOf(ref),access:accessOf(ref),purpose:meta.purpose,dialogRole:dialog?.role||null,dialogReason:dialog?.reason||null,exceptionClass:meta.exceptionClass,ownerOnly:meta.ownerOnly,temporary:meta.temporary,migrationTarget:meta.migrationTarget,migrationUnit,expiresOn:temporary?.expiresOn||null,priority:meta.priority,reason:meta.reason,relatedE2E:relatedTestsForStateException(meta)};
 });
 const countsByEntrypoint=Object.fromEntries([...new Set(baselineEntries.map(entry=>entry.entrypoint))].sort().map(key=>[key,baselineEntries.filter(entry=>entry.entrypoint===key).length]));
 const countsByAccess={read:baselineEntries.filter(entry=>entry.access==='read').length,write:baselineEntries.filter(entry=>entry.access==='write').length};
 const dialogEntries=baselineEntries.filter(entry=>entry.purpose==='dialog');
 const countsByDialogRole=Object.fromEntries([...new Set(dialogEntries.map(entry=>entry.dialogRole))].sort().map(role=>[role,dialogEntries.filter(entry=>entry.dialogRole===role).length]));
 const excludedCounts=Object.fromEntries([...new Set(excludedRefs.map(ref=>ref.kind))].sort().map(kind=>[kind,excludedRefs.filter(ref=>ref.kind===kind).length]));
-const report={schemaVersion:1,generatedAt:new Date().toISOString(),names:[...names],ownerFiles:[...STATE_OWNER_FILES],migrationScope:{includedClassification:'executable',excludedClassifications:Object.keys(excludedCounts),description:'移行対象は実行コードの状態アクセスだけ。宣言・オブジェクトキー・プロパティ・文字列・データ定義は検出結果として記録するがtemporary例外には含めない'},baselineTracked:baselineCount,counts:{detected:tracked.length+excludedRefs.length,tracked:tracked.length,excluded:excludedRefs.length,allowed:tracked.filter(ref=>allowed.has(fingerprint(ref))).length,newReferences:newRefs.length,retiredExceptions:missing.length,temporary:exceptionMetadata.filter(meta=>meta.temporary).length,expiredTemporary:expiredTemporary.length},excludedCounts,excludedReferences:excludedRefs,countsByPurpose,countsByDialogRole,countsByEntrypoint,countsByAccess,exceptionMetadata,temporaryExceptions:[...temporaryMetadata.values()],baselineEntries,newReferences:newRefs,retiredExceptions:missing};
+const countsByExceptionClass=Object.fromEntries([...new Set(exceptionMetadata.map(meta=>meta.exceptionClass))].sort().map(kind=>[kind,exceptionMetadata.filter(meta=>meta.exceptionClass===kind).length]));
+const report={schemaVersion:1,generatedAt:new Date().toISOString(),names:[...names],ownerFiles:[...STATE_OWNER_FILES],migrationScope:{includedClassification:'executable',excludedClassifications:Object.keys(excludedCounts),description:'移行対象は実行コードの状態アクセスだけ。宣言・オブジェクトキー・プロパティ・文字列・データ定義は検出結果として記録するがtemporary例外には含めない'},baselineTracked:baselineCount,counts:{detected:tracked.length+excludedRefs.length,tracked:tracked.length,excluded:excludedRefs.length,allowed:tracked.filter(ref=>allowed.has(fingerprint(ref))).length,newReferences:newRefs.length,retiredExceptions:missing.length,temporary:exceptionMetadata.filter(meta=>meta.temporary).length,expiredTemporary:expiredTemporary.length},excludedCounts,excludedReferences:excludedRefs,countsByPurpose,countsByExceptionClass,countsByDialogRole,countsByEntrypoint,countsByAccess,exceptionMetadata,temporaryExceptions:[...temporaryMetadata.values()],baselineEntries,newReferences:newRefs,retiredExceptions:missing};
 const reportPath=join(root,'build','report','state-access-policy.json');
 await mkdir(dirname(reportPath),{recursive:true});
 await writeFile(reportPath,JSON.stringify(report,null,2)+'\n');
-await writeFile(join(root,'build','report','dialog-state-access-audit.json'),JSON.stringify({schemaVersion:1,name:'dialog-state-access-audit',generatedAt:report.generatedAt,scope:'dialog実行コードの状態参照',counts:countsByDialogRole,entries:dialogEntries.map(entry=>({fingerprint:entry.fingerprint,symbol:entry.symbol,source:entry.source,role:entry.dialogRole,reason:entry.dialogReason,temporary:entry.temporary,migrationTarget:entry.migrationTarget,relatedE2E:entry.relatedE2E}))},null,2)+'\n');
+await writeFile(join(root,'build','report','dialog-state-access-audit.json'),JSON.stringify({schemaVersion:1,name:'dialog-state-access-audit',generatedAt:report.generatedAt,scope:'dialog実行コードの状態参照',counts:countsByDialogRole,entries:dialogEntries.map(entry=>({fingerprint:entry.fingerprint,symbol:entry.symbol,source:entry.source,role:entry.dialogRole,reason:entry.dialogReason,exceptionClass:entry.exceptionClass,temporary:entry.temporary,migrationTarget:entry.migrationTarget,relatedE2E:entry.relatedE2E}))},null,2)+'\n');
 const baselinePath=join(root,'build','report','state-access-baseline.json');
 let previousBaseline=null;try{previousBaseline=JSON.parse(await readFile(baselinePath,'utf8'));}catch{}
 const previousFingerprints=new Set((previousBaseline?.entries||[]).map(entry=>entry.fingerprint));

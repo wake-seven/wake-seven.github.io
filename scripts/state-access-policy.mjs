@@ -30,11 +30,13 @@ export function classifyStateException(ref) {
   else if (/initialState|initialPar|ori|spin|board/i.test(name + source)) purpose = 'board';
   else if (/progress|clear|stage|mastery|satori|tutorial|unlock/i.test(name + source)) purpose = 'progress';
   const ownerOnly = STATE_OWNER_FILES.includes(file);
-  const temporary = !ownerOnly;
+  const intentionalException = !ownerOnly && (purpose === 'animation' || (purpose === 'dialog' && /next|return|chain|attention/i.test(name + source)));
+  const temporary = !ownerOnly && !intentionalException;
   const migrationTarget = ownerOnly ? null : `gateway:${purpose}`;
   return Object.freeze({
     purpose,
     ownerOnly,
+    exceptionClass: ownerOnly ? 'owner-only' : intentionalException ? 'intentional-exception' : 'temporary',
     temporary,
     priority: purpose === 'dialog' || purpose === 'navigation' ? 1 : purpose === 'progress' ? 2 : 3,
     migrationTarget,
