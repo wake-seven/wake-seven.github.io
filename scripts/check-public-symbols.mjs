@@ -40,8 +40,20 @@ const addMatches = expression => {
   for (const match of code.matchAll(expression)) names.add(match[1]);
 };
 
+// 分割代入の束縛名も宣言として扱う。単純な名前の集合だけで判定すると、
+// `{ value }` や関数引数の `{ value }` を未定義参照と誤認してしまう。
+const addBindingNames = expression => {
+  for (const match of code.matchAll(expression)) {
+    for (const binding of match[1].matchAll(identifier)) names.add(binding[0]);
+  }
+};
+
 // ブロックスコープを個別に再構築せず、宣言された名前を全体の候補集合にする。
 addMatches(/\b(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)/g);
+addBindingNames(/\b(?:const|let|var)\s*[={[^]([^\n;]*?)[}\]]\s*=/g);
+addBindingNames(/\bfunction(?:\s+[A-Za-z_$][\w$]*)?\s*\(([^)]*)\)/g);
+addBindingNames(/\(([^)]*)\)\s*=>/g);
+addBindingNames(/\bcatch\s*\(([^)]*)\)/g);
 for (const match of code.matchAll(/\bfunction(?:\s+[A-Za-z_$][\w$]*)?\s*\(([^)]*)\)/g)) {
   for (const parameter of match[1].matchAll(identifier)) names.add(parameter[0]);
 }
@@ -51,7 +63,7 @@ for (const match of code.matchAll(/(?:^|[=(,])\s*([A-Za-z_$][\w$]*)\s*=>/g)) nam
 const allowed = new Set((
   'as async await break case catch class const continue debugger default delete do else export extends false finally for from function get if import in instanceof let new null of return set static super switch this throw true try typeof var void while with yield '
   + 'Array ArrayBuffer BigInt Boolean DataView Date Error EvalError Float32Array Float64Array FormData Function Headers Intl JSON Map Math NaN Number Object Promise Proxy RangeError ReferenceError Reflect RegExp Set String Symbol SyntaxError TypeError URIError URL URLSearchParams WeakMap WeakSet Infinity undefined '
-  + 'alert atob btoa cancelAnimationFrame clearInterval clearTimeout confirm decodeURIComponent document encodeURIComponent escape eval fetch globalThis isFinite isNaN localStorage location navigator parseFloat parseInt performance queueMicrotask requestAnimationFrame screen setInterval setTimeout structuredClone unescape window crypto CSS CustomEvent Event HTMLElement Node SVGElement Text DOMParser ResizeObserver MutationObserver'
+  + 'alert atob btoa cancelAnimationFrame clearInterval clearTimeout confirm console decodeURIComponent document encodeURIComponent escape eval fetch getComputedStyle globalThis isFinite isNaN localStorage location matchMedia navigator parseFloat parseInt performance queueMicrotask requestAnimationFrame screen sessionStorage setInterval setTimeout structuredClone unescape window crypto CSS CustomEvent Event HTMLElement Node SVGElement Text DOMParser ResizeObserver MutationObserver WebSocket'
 ).split(/\s+/));
 const candidates = [];
 for (const match of code.matchAll(identifier)) {
@@ -67,7 +79,28 @@ for (const match of code.matchAll(identifier)) {
 }
 const unique = [...new Map(candidates.map(item => [item.name, item])).values()]
   .sort((left, right) => left.name.localeCompare(right.name));
-const externalCandidates = unique.filter(item => /^(?:WakeSeven|STORAGE_|ACTIVE_|SPEED_|PRIMARY_|TRAINING_|MASTER_|SATORI_|EXTRA_)/.test(item.name));
+const classify = item => {
+  if (/^(?:WakeSeven|STORAGE_|ACTIVE_|SPEED_|PRIMARY_|TRAINING_|MASTER_|SATORI_|EXTRA_)/.test(item.name)) return 'public-or-configuration';
+  if (/^[A-Z][A-Za-z0-9_$]*$/.test(item.name)) return 'browser-api-or-namespace';
+  const escaped = item.name.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&');
+  const occurrences = [...code.matchAll(new RegExp(`\\b${escaped}\\b`, 'g'))];
+  const call = occurrences.some(match => /^\s*\(/.test(code.slice(match.index + item.name.length)));
+  if (call) return 'unresolved-call-candidate';
+  return 'local-variable-or-scope-candidate';
+};
+const classifiedCandidates = unique.map(item => ({ ...item, category: classify(item) }));
+// 名前集合による静的監査はブロックスコープを完全には再構築できない。
+// 実行時に検証できない候補をエラー扱いせず、call-siteだけを要確認として出力する。
+// 連結順の実害は check-manifest-dependencies と browser E2E が検出する。
+// 既存公開版で確認済みのブロックスコープ由来候補。これらは呼び出し記法でも
+// 宣言位置が別スコープにあるため、この名前集合解析では解決できない。
+const knownScopeCandidates = new Set('arm awakening begin canEnter commit definitions intermediate isClearShown json mastery on openReview pathInfo pause pauseClock persist query queryAll remove renderReview reset satoriIntro secondLapIntro setClearShown setJson setMode speedComplete speedIntro speedTrialFailed speedUnlocked startClock uiPolicy update'.split(' '));
+const actualUndefinedCandidates = classifiedCandidates.filter(item => item.category === 'unresolved-call-candidate' && !knownScopeCandidates.has(item.name));
+const classificationExamples = Object.fromEntries([...new Set(classifiedCandidates.map(item => item.category))].map(category => [
+  category,
+  classifiedCandidates.filter(item => item.category === category).slice(0, 5).map(item => item.name)
+]));
+const externalCandidates = classifiedCandidates.filter(item => item.category === 'public-or-configuration');
 const report = {
   generatedAt: new Date().toISOString(),
   source: 'index.html generated application module',
@@ -75,10 +108,15 @@ const report = {
   allowlistSize: allowed.size,
   declaredNameCount: names.size,
   unresolvedCandidates: unique,
+  classifiedCandidates,
+  classificationCounts: Object.fromEntries([...new Set(classifiedCandidates.map(item => item.category))].map(category => [category, classifiedCandidates.filter(item => item.category === category).length])),
+  classificationExamples,
+  actualUndefinedCandidates,
   externalCandidates,
-  passed: true,
-  note: '候補は名前単位で出力する警告。プロパティ名・組み込みAPI・ブラウザAPIは許可リストで除外する。候補が出た場合は生成物の該当行を確認し、正当な公開グローバルなら許可リストへ理由付きで追加する。既存のmanifest-depsが連結順の失敗を検出するため、この監査は誤検出を含む候補を失敗条件にしない。'
+  passed: actualUndefinedCandidates.length === 0,
+  note: '候補を公開API、プラットフォーム名、スコープ/解析候補、呼び出し位置候補に分類する。実際の未定義候補（call-site）はエラー扱いし、その他は誤検出としてレポートに残す。'
 };
 await mkdir(dirname(reportPath), { recursive: true });
 await writeFile(reportPath, JSON.stringify(report, null, 2) + '\n');
-console.log(`Public symbols audit OK: ${names.size} declarations, ${scripts.length} scripts; candidates ${unique.length}, external-looking ${externalCandidates.length}.`);
+assert.equal(actualUndefinedCandidates.length, 0, `Possible undefined call-site symbols: ${actualUndefinedCandidates.map(item => item.name).join(', ')}`);
+console.log(`Public symbols audit OK: ${names.size} declarations, ${scripts.length} scripts; candidates ${unique.length}, classified ${classifiedCandidates.length}.`);
