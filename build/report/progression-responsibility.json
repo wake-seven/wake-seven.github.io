@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T07:46:47.987Z",
+  "generatedAt": "2026-09-03T07:50:46.992Z",
   "source": "build/report/symbol-index.json",
   "target": "progression-related symbols",
   "summary": {
@@ -21,7 +21,12 @@
       "transition": 32
     },
     "mixedSymbols": 157,
-    "unclassifiedSymbols": 0
+    "unclassifiedSymbols": 0,
+    "candidates": {
+      "display-transition-mixed": 7,
+      "duplicate": 2,
+      "orchestrator": 6
+    }
   },
   "pipeline": [
     "entry",
@@ -1649,6 +1654,246 @@
         "transition",
         "render"
       ]
+    }
+  ],
+  "candidateClassifications": [
+    {
+      "name": "finishClearFlowDialog",
+      "file": "ui/progression-clear-flow.js",
+      "line": 106,
+      "flowRoles": [
+        "state-decision",
+        "transition",
+        "render"
+      ],
+      "category": "display-transition-mixed",
+      "priority": 2,
+      "reason": "表示更新と遷移処理の両方を含むため、変更時に影響範囲を確認する候補です。",
+      "evidence": {
+        "callCount": 0
+      }
+    },
+    {
+      "name": "dispatchClearFlowAction",
+      "file": "ui/progression-clear-flow.js",
+      "line": 164,
+      "flowRoles": [
+        "state-decision",
+        "transition"
+      ],
+      "category": "orchestrator",
+      "priority": 3,
+      "reason": "状態判定・遷移・表示の複数処理を順序づける呼び出しがあり、正当なオーケストレーター候補です。",
+      "evidence": {
+        "callCount": 6
+      }
+    },
+    {
+      "name": "returnToClearDialog",
+      "file": "ui/progression-clear-flow.js",
+      "line": 198,
+      "flowRoles": [
+        "state-decision",
+        "transition",
+        "render"
+      ],
+      "category": "orchestrator",
+      "priority": 3,
+      "reason": "状態判定・遷移・表示の複数処理を順序づける呼び出しがあり、正当なオーケストレーター候補です。",
+      "evidence": {
+        "callCount": 4
+      }
+    },
+    {
+      "name": "closeProgressionDialog",
+      "file": "ui/progression-dialogs.js",
+      "line": 42,
+      "flowRoles": [
+        "state-decision",
+        "transition",
+        "render"
+      ],
+      "category": "display-transition-mixed",
+      "priority": 2,
+      "reason": "表示更新と遷移処理の両方を含むため、変更時に影響範囲を確認する候補です。",
+      "evidence": {
+        "callCount": 0
+      }
+    },
+    {
+      "name": "restoreProgressionDialog",
+      "file": "ui/progression-dialogs.js",
+      "line": 48,
+      "flowRoles": [
+        "state-decision",
+        "transition",
+        "render"
+      ],
+      "category": "display-transition-mixed",
+      "priority": 2,
+      "reason": "表示更新と遷移処理の両方を含むため、変更時に影響範囲を確認する候補です。",
+      "evidence": {
+        "callCount": 0
+      }
+    },
+    {
+      "name": "closeProgressionQuiz",
+      "file": "ui/progression-dialogs.js",
+      "line": 68,
+      "flowRoles": [
+        "state-decision",
+        "transition",
+        "render"
+      ],
+      "category": "display-transition-mixed",
+      "priority": 2,
+      "reason": "表示更新と遷移処理の両方を含むため、変更時に影響範囲を確認する候補です。",
+      "evidence": {
+        "callCount": 0
+      }
+    },
+    {
+      "name": "startAngle",
+      "file": "ui/progression-hints.js",
+      "line": 15,
+      "flowRoles": [
+        "state-decision",
+        "transition",
+        "render"
+      ],
+      "category": "display-transition-mixed",
+      "priority": 2,
+      "reason": "表示更新と遷移処理の両方を含むため、変更時に影響範囲を確認する候補です。",
+      "evidence": {
+        "callCount": 0
+      }
+    },
+    {
+      "name": "scheduleStageOneTutorial",
+      "file": "ui/progression-hints.js",
+      "line": 35,
+      "flowRoles": [
+        "state-decision",
+        "render"
+      ],
+      "category": "duplicate",
+      "priority": 1,
+      "reason": "関数本体が完全一致する候補が2件あります: ui/progression-hints.js:scheduleBasicLessonAssist",
+      "evidence": {
+        "duplicateSymbols": [
+          "ui/progression-hints.js:scheduleStageOneTutorial",
+          "ui/progression-hints.js:scheduleBasicLessonAssist"
+        ]
+      }
+    },
+    {
+      "name": "scheduleBasicLessonAssist",
+      "file": "ui/progression-hints.js",
+      "line": 36,
+      "flowRoles": [
+        "state-decision",
+        "render"
+      ],
+      "category": "duplicate",
+      "priority": 1,
+      "reason": "関数本体が完全一致する候補が2件あります: ui/progression-hints.js:scheduleStageOneTutorial",
+      "evidence": {
+        "duplicateSymbols": [
+          "ui/progression-hints.js:scheduleStageOneTutorial",
+          "ui/progression-hints.js:scheduleBasicLessonAssist"
+        ]
+      }
+    },
+    {
+      "name": "openSatoriPicker",
+      "file": "ui/progression-ui.js",
+      "line": 169,
+      "flowRoles": [
+        "state-decision",
+        "transition"
+      ],
+      "category": "orchestrator",
+      "priority": 3,
+      "reason": "状態判定・遷移・表示の複数処理を順序づける呼び出しがあり、正当なオーケストレーター候補です。",
+      "evidence": {
+        "callCount": 2
+      }
+    },
+    {
+      "name": "openStagePickerAt",
+      "file": "ui/progression-ui.js",
+      "line": 180,
+      "flowRoles": [
+        "state-decision",
+        "transition"
+      ],
+      "category": "orchestrator",
+      "priority": 3,
+      "reason": "状態判定・遷移・表示の複数処理を順序づける呼び出しがあり、正当なオーケストレーター候補です。",
+      "evidence": {
+        "callCount": 2
+      }
+    },
+    {
+      "name": "openStagePicker",
+      "file": "ui/progression-ui.js",
+      "line": 253,
+      "flowRoles": [
+        "state-decision",
+        "transition"
+      ],
+      "category": "orchestrator",
+      "priority": 3,
+      "reason": "状態判定・遷移・表示の複数処理を順序づける呼び出しがあり、正当なオーケストレーター候補です。",
+      "evidence": {
+        "callCount": 2
+      }
+    },
+    {
+      "name": "openStagePickerForRank",
+      "file": "ui/progression-ui.js",
+      "line": 263,
+      "flowRoles": [
+        "state-decision",
+        "transition",
+        "render"
+      ],
+      "category": "orchestrator",
+      "priority": 3,
+      "reason": "状態判定・遷移・表示の複数処理を順序づける呼び出しがあり、正当なオーケストレーター候補です。",
+      "evidence": {
+        "callCount": 2
+      }
+    },
+    {
+      "name": "openRankDialog",
+      "file": "ui/rank.js",
+      "line": 94,
+      "flowRoles": [
+        "transition",
+        "render"
+      ],
+      "category": "display-transition-mixed",
+      "priority": 2,
+      "reason": "表示更新と遷移処理の両方を含むため、変更時に影響範囲を確認する候補です。",
+      "evidence": {
+        "callCount": 1
+      }
+    },
+    {
+      "name": "openRankDialogFrom",
+      "file": "ui/rank.js",
+      "line": 103,
+      "flowRoles": [
+        "transition",
+        "render"
+      ],
+      "category": "display-transition-mixed",
+      "priority": 2,
+      "reason": "表示更新と遷移処理の両方を含むため、変更時に影響範囲を確認する候補です。",
+      "evidence": {
+        "callCount": 1
+      }
     }
   ],
   "unclassifiedSymbols": [],

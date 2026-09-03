@@ -11,6 +11,41 @@ const symbolIndex = JSON.parse(await readFile(indexPath, 'utf8'));
 const targetFiles = /(?:^|\/)(?:progression[^/]*|clear-flow|master-dialog|rank)\.(?:js|mjs)$/i;
 const symbols = Object.values(symbolIndex.definitions || {}).filter(symbol => targetFiles.test(symbol.file || ''));
 
+// 関数本体の比較用に、progression対象ファイルだけを読み込む。
+// AST変換や削除は行わず、完全一致した本体だけを「実際の重複」として扱う。
+const sourceCache = new Map();
+const sourceText = async file => {
+  if (!sourceCache.has(file)) sourceCache.set(file, await readFile(join(root, 'src', file), 'utf8').catch(() => ''));
+  return sourceCache.get(file);
+};
+const functionBodies = new Map();
+const extractFunctions = text => {
+  const result = [];
+  const pattern = /(?:function\s+([A-Za-z_$][\w$]*)\s*\([^)]*\)|(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?\([^)]*\)\s*=>)\s*\{/g;
+  for (const match of text.matchAll(pattern)) {
+    const name = match[1] || match[2];
+    const start = match.index + match[0].length - 1;
+    let depth = 0;
+    let end = start;
+    for (; end < text.length; end++) {
+      if (text[end] === '{') depth++;
+      if (text[end] === '}' && --depth === 0) break;
+    }
+    const body = text.slice(start + 1, end).replace(/\/\/.*|\/\*[\s\S]*?\*\//g, '').replace(/\s+/g, ' ').trim();
+    if (body) result.push({ name, body });
+  }
+  return result;
+};
+for (const file of new Set(symbols.map(symbol => symbol.file))) {
+  for (const fn of extractFunctions(await sourceText(file))) functionBodies.set(`${file}:${fn.name}`, fn.body);
+}
+const duplicateBodies = new Map();
+for (const [key, body] of functionBodies) {
+  const group = duplicateBodies.get(body) || [];
+  group.push(key);
+  duplicateBodies.set(body, group);
+}
+
 const rules = [
   ['clear-flow', /clear|complete|finish|solved|reward|celebrat|transition/i],
   ['dialog', /dialog|message|intro|welcome|milestone|tip|quiz/i],
@@ -62,6 +97,29 @@ const entries = symbols
     mixedResponsibility: flowRoles(symbol).length > 1,
     callers: (symbol.callers || []).filter(caller => caller.caller).map(caller => `${caller.file}:${caller.line}:${caller.caller}`)
   }));
+const classifyCandidate = entry => {
+  const body = functionBodies.get(`${entry.file}:${entry.name}`) || '';
+  const duplicateGroup = duplicateBodies.get(body) || [];
+  if (body && duplicateGroup.length > 1) return {
+    category: 'duplicate', priority: 1,
+    reason: `関数本体が完全一致する候補が${duplicateGroup.length}件あります: ${duplicateGroup.filter(key => key !== `${entry.file}:${entry.name}`).join(', ')}`,
+    evidence: { duplicateSymbols: duplicateGroup }
+  };
+  const callCount = [...body.matchAll(/\b(?:show|render|open|close|advance|start|finish|complete|update|paint|navigate|resolve|dispatch)[A-Za-z_$\w]*\s*\(/g)].length;
+  if (entry.flowRoles.includes('transition') && (entry.flowRoles.includes('state-decision') || entry.flowRoles.includes('render')) && callCount >= 2) return {
+    category: 'orchestrator', priority: 3,
+    reason: '状態判定・遷移・表示の複数処理を順序づける呼び出しがあり、正当なオーケストレーター候補です。',
+    evidence: { callCount }
+  };
+  if (entry.flowRoles.includes('render') && entry.flowRoles.includes('transition')) return {
+    category: 'display-transition-mixed', priority: 2,
+    reason: '表示更新と遷移処理の両方を含むため、変更時に影響範囲を確認する候補です。',
+    evidence: { callCount }
+  };
+  return null;
+};
+const candidateEntries = entries.map(entry => ({ ...entry, candidate: classifyCandidate(entry) })).filter(entry => entry.candidate);
+const candidateCounts = Object.fromEntries([...new Set(candidateEntries.map(entry => entry.candidate.category))].sort().map(category => [category, candidateEntries.filter(entry => entry.candidate.category === category).length]));
 const counts = Object.fromEntries([...new Set(entries.map(entry => entry.responsibility))].sort().map(role => [role, entries.filter(entry => entry.responsibility === role).length]));
 const flowCounts = Object.fromEntries([...new Set(entries.flatMap(entry => entry.flowRoles))].sort().map(role => [role, entries.filter(entry => entry.flowRoles.includes(role)).length]));
 const fileSummary = Object.values(entries.reduce((summary, entry) => {
@@ -76,10 +134,11 @@ const report = {
   generatedAt: new Date().toISOString(),
   source: 'build/report/symbol-index.json',
   target: 'progression-related symbols',
-  summary: { symbols: entries.length, files: new Set(entries.map(entry => entry.file)).size, responsibilities: counts, flowRoles: flowCounts, mixedSymbols: entries.filter(entry => entry.mixedResponsibility).length, unclassifiedSymbols: entries.filter(entry => entry.responsibility === 'unclassified').length },
+  summary: { symbols: entries.length, files: new Set(entries.map(entry => entry.file)).size, responsibilities: counts, flowRoles: flowCounts, mixedSymbols: entries.filter(entry => entry.mixedResponsibility).length, unclassifiedSymbols: entries.filter(entry => entry.responsibility === 'unclassified').length, candidates: candidateCounts },
   pipeline: ['entry', 'state-decision', 'transition', 'render'],
   fileSummary,
   mixedResponsibilitySymbols: entries.filter(entry => entry.mixedResponsibility).map(entry => ({ name: entry.name, file: entry.file, line: entry.line, flowRoles: entry.flowRoles })),
+  candidateClassifications: candidateEntries.map(entry => ({ name: entry.name, file: entry.file, line: entry.line, flowRoles: entry.flowRoles, category: entry.candidate.category, priority: entry.candidate.priority, reason: entry.candidate.reason, evidence: entry.candidate.evidence })),
   unclassifiedSymbols: entries.filter(entry => entry.responsibility === 'unclassified').map(entry => ({ name: entry.name, file: entry.file, line: entry.line })),
   entries,
   note: '責務は関数名・ファイル名からの監査用分類。移動・削除・統合を自動実行しない。'
