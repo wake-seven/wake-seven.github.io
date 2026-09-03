@@ -676,7 +676,8 @@ function darumaBodyColor(index){
   return rainbowDarumaGranted&&darumaColor==='rainbow'?AWAKENED_DARUMA_COLORS[index%AWAKENED_DARUMA_COLORS.length]:'';
 }
 function applyBoardTheme(){
-  const tones=BOARD_THEME_TONES[boardTheme];
+  const settings=WakeSevenAppContext.state.settings.read();
+  const tones=BOARD_THEME_TONES[settings.boardTheme];
   tileEls.forEach(tile=>{
     const hex=tile.querySelector('.hex');
     if(!hex)return;
@@ -687,7 +688,7 @@ function applyBoardTheme(){
   const bodyPath=document.querySelector('#daruma-body path:first-child');
   // 二周目の名人への道を制覇した人だけに見える、七色のだるま。
   baseTiles.forEach((tile,index)=>{
-    const color=darumaBodyColor(index);
+    const color=rainbowDarumaGranted&&settings.darumaColor==='rainbow'?AWAKENED_DARUMA_COLORS[index%AWAKENED_DARUMA_COLORS.length]:'';
     if(color)tile.style.setProperty('--daruma-body',color);
     else tile.style.removeProperty('--daruma-body');
   });
@@ -696,6 +697,7 @@ function applyBoardTheme(){
   if(accentPath)accentPath.style.stroke='';
 }
 function renderBoardThemeOptions(){
+  const settings=WakeSevenAppContext.state.settings.read();
   const colors={default:true,gold:hasMasterReward(),satori:hasSatoriReward()};
   $('boardThemeLayoutSection').hidden=!hasSatoriReward();
   $('boardThemeColorLabel').closest('.board-theme-section').classList.toggle('two-color-choice',!hasSatoriReward());
@@ -703,21 +705,21 @@ function renderBoardThemeOptions(){
     const color=button.dataset.boardColor;
     button.hidden=color==='satori'&&!hasSatoriReward();
     button.disabled=!colors[color];
-    button.classList.toggle('selected',color===boardTheme);
-    button.setAttribute('aria-pressed',String(color===boardTheme));
+    button.classList.toggle('selected',color===settings.boardTheme);
+    button.setAttribute('aria-pressed',String(color===settings.boardTheme));
   });
   document.querySelectorAll('[data-board-layout]').forEach(button=>{
     const layout=button.dataset.boardLayout;
     button.hidden=layout==='tilted'&&!hasSatoriReward();
     button.disabled=layout==='tilted'&&!hasSatoriReward();
-    button.classList.toggle('selected',layout===boardLayout);
-    button.setAttribute('aria-pressed',String(layout===boardLayout));
+    button.classList.toggle('selected',layout===settings.boardLayout);
+    button.setAttribute('aria-pressed',String(layout===settings.boardLayout));
   });
   $('darumaColorSection').hidden=!rainbowDarumaGranted;
   document.querySelectorAll('[data-daruma-color]').forEach(button=>{
     const color=button.dataset.darumaColor;
-    button.classList.toggle('selected',color===darumaColor);
-    button.setAttribute('aria-pressed',String(color===darumaColor));
+    button.classList.toggle('selected',color===settings.darumaColor);
+    button.setAttribute('aria-pressed',String(color===settings.darumaColor));
   });
 }
 function openBoardThemeDialog(){

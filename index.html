@@ -4415,7 +4415,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-18:22';
+const APP_VERSION='2026.09.03-18:31';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -5090,7 +5090,8 @@ function darumaBodyColor(index){
   return rainbowDarumaGranted&&darumaColor==='rainbow'?AWAKENED_DARUMA_COLORS[index%AWAKENED_DARUMA_COLORS.length]:'';
 }
 function applyBoardTheme(){
-  const tones=BOARD_THEME_TONES[boardTheme];
+  const settings=WakeSevenAppContext.state.settings.read();
+  const tones=BOARD_THEME_TONES[settings.boardTheme];
   tileEls.forEach(tile=>{
     const hex=tile.querySelector('.hex');
     if(!hex)return;
@@ -5101,7 +5102,7 @@ function applyBoardTheme(){
   const bodyPath=document.querySelector('#daruma-body path:first-child');
   // 二周目の名人への道を制覇した人だけに見える、七色のだるま。
   baseTiles.forEach((tile,index)=>{
-    const color=darumaBodyColor(index);
+    const color=rainbowDarumaGranted&&settings.darumaColor==='rainbow'?AWAKENED_DARUMA_COLORS[index%AWAKENED_DARUMA_COLORS.length]:'';
     if(color)tile.style.setProperty('--daruma-body',color);
     else tile.style.removeProperty('--daruma-body');
   });
@@ -5110,6 +5111,7 @@ function applyBoardTheme(){
   if(accentPath)accentPath.style.stroke='';
 }
 function renderBoardThemeOptions(){
+  const settings=WakeSevenAppContext.state.settings.read();
   const colors={default:true,gold:hasMasterReward(),satori:hasSatoriReward()};
   $('boardThemeLayoutSection').hidden=!hasSatoriReward();
   $('boardThemeColorLabel').closest('.board-theme-section').classList.toggle('two-color-choice',!hasSatoriReward());
@@ -5117,21 +5119,21 @@ function renderBoardThemeOptions(){
     const color=button.dataset.boardColor;
     button.hidden=color==='satori'&&!hasSatoriReward();
     button.disabled=!colors[color];
-    button.classList.toggle('selected',color===boardTheme);
-    button.setAttribute('aria-pressed',String(color===boardTheme));
+    button.classList.toggle('selected',color===settings.boardTheme);
+    button.setAttribute('aria-pressed',String(color===settings.boardTheme));
   });
   document.querySelectorAll('[data-board-layout]').forEach(button=>{
     const layout=button.dataset.boardLayout;
     button.hidden=layout==='tilted'&&!hasSatoriReward();
     button.disabled=layout==='tilted'&&!hasSatoriReward();
-    button.classList.toggle('selected',layout===boardLayout);
-    button.setAttribute('aria-pressed',String(layout===boardLayout));
+    button.classList.toggle('selected',layout===settings.boardLayout);
+    button.setAttribute('aria-pressed',String(layout===settings.boardLayout));
   });
   $('darumaColorSection').hidden=!rainbowDarumaGranted;
   document.querySelectorAll('[data-daruma-color]').forEach(button=>{
     const color=button.dataset.darumaColor;
-    button.classList.toggle('selected',color===darumaColor);
-    button.setAttribute('aria-pressed',String(color===darumaColor));
+    button.classList.toggle('selected',color===settings.darumaColor);
+    button.setAttribute('aria-pressed',String(color===settings.darumaColor));
   });
 }
 function openBoardThemeDialog(){
@@ -10567,6 +10569,7 @@ function createProgressionViewContext({
 function renderStageNav(){
   const appState=WakeSevenAppContext.snapshot();
   const navigation=WakeSevenAppContext.state.navigation.read();
+  const session=WakeSevenAppContext.state.session.read().speedSession;
   const {currentLang:language}=WakeSevenAppContext.state.settings.read();
   const viewContext=createProgressionViewContext({
     mode:appState.mode,
@@ -10578,8 +10581,8 @@ function renderStageNav(){
     tutorial:isMode('tutorial'),
     assisted:isAssistedLearningStage(),
     speedRemaining:speedShowsRemaining(),
-    speedIndex:speedSession?.index??0,
-    speedTotal:speedSession?.total||activeSpeedDefinition().total
+    speedIndex:session?.index??0,
+    speedTotal:session?.total||activeSpeedDefinition().total
   });
   const navModel=createStageNavDisplayModel(viewContext);
   const tutorialMode=navModel.tutorialMode;
@@ -12434,7 +12437,7 @@ window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();per
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'){if(isMode('speed'))pauseSpeedClock();persistActiveSession();}
   else if(isMode('speed')&&!speedAwaitingStart()){
-    if(isSolved()&&speedSession){
+    if(isSolved()&&WakeSevenAppContext.state.session.read().speedSession){
       // 非表示の間にクリア演出や、その後の次の問題へ進む処理が止まってしまうことがある
       // (裏に回った端末がタイマーの発火を止める・遅らせる等)。
       // 復帰時にクリア済みの盤面が残っていたら、保留中のタイマーは捨てて即座に確定させる。

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-03T09:29:17.127Z",
+  "generatedAt": "2026-09-03T09:37:19.460Z",
   "source": "build/report/refactor-candidates.json",
   "summary": {
     "candidates": 16,
@@ -157,6 +157,19 @@
       "reassessOn": "2026-12-02"
     },
     {
+      "file": "commands/settings-commands.js",
+      "classification": "small-module",
+      "disposition": "保持",
+      "reason": "公開マニフェストに含まれる単体index.htmlの構成要素",
+      "purpose": "状態変更と操作の入口",
+      "referenceSources": [
+        "scripts/application-manifest.mjs",
+        "scripts/application-manifest.mjs:publishedSourceFiles"
+      ],
+      "removalCondition": "公開マニフェスト・開発入口・公開API・検査・E2Eの参照がすべて0であることを確認し、npm run check:gate を通過すること",
+      "reassessOn": "2026-12-02"
+    },
+    {
       "file": "ui/master-dialog.js",
       "classification": "small-module",
       "disposition": "保持",
@@ -166,19 +179,6 @@
         "scripts/application-manifest.mjs",
         "scripts/application-manifest.mjs:publishedSourceFiles",
         "scripts/check-state.mjs"
-      ],
-      "removalCondition": "公開マニフェスト・開発入口・公開API・検査・E2Eの参照がすべて0であることを確認し、npm run check:gate を通過すること",
-      "reassessOn": "2026-12-02"
-    },
-    {
-      "file": "commands/settings-commands.js",
-      "classification": "small-module",
-      "disposition": "保持",
-      "reason": "公開マニフェストに含まれる単体index.htmlの構成要素",
-      "purpose": "状態変更と操作の入口",
-      "referenceSources": [
-        "scripts/application-manifest.mjs",
-        "scripts/application-manifest.mjs:publishedSourceFiles"
       ],
       "removalCondition": "公開マニフェスト・開発入口・公開API・検査・E2Eの参照がすべて0であることを確認し、npm run check:gate を通過すること",
       "reassessOn": "2026-12-02"
