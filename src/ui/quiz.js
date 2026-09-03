@@ -65,14 +65,15 @@ function boardQuizEnoughMatchingStates(state,match,limit,accept=()=>true){
 function boardQuizSameShapeState(state,shapeState){const shape=dec(shapeState);for(const symmetry of SYMMETRIES){const transformed=transformStateBySymmetry(state,symmetry),board=dec(transformed);if(board.every((value,index)=>(value===0)===(shape[index]===0)))return transformed;}return state;}
 function boardQuizCenterIsNotOdd(board){if(board[3]===0)return true;const count=[0,0,0];board.forEach(value=>{if(value!==0)count[value]++;});return count[board[3]]===Math.max(...count);}
 function boardQuizConfigForCurrent(){
+  const {masteryIndex}=WakeSevenAppContext.state.navigation.read();
   const masteryContext=isMode('mastery')||returnStageContext?.extra===true;
   if(!masteryContext)return null;
   // クリア後は activeMode が次の導線用に切り替わることがあるため、
   // 名人の盤面を最後に表示した文脈を優先する。extraIndex は常に整数で
   // 初期化されるので、単純なフォールバックにすると序盤の問題 (0) を
   // 参照して boardQuiz が消える。
-  const index=isMode('mastery')&&Number.isInteger(extraIndex)
-    ?extraIndex
+  const index=isMode('mastery')&&Number.isInteger(masteryIndex)
+    ?masteryIndex
     :(Number.isInteger(returnStageContext?.index)?returnStageContext.index:-1);
   const config=Number.isInteger(index)?clearContentAt(true,index)?.boardQuiz:null;
   if(!config)return null;

@@ -32,6 +32,8 @@ function createProgressionViewContext({
 }
 function renderStageNav(){
   const appState=WakeSevenAppContext.snapshot();
+  const navigation=WakeSevenAppContext.state.navigation.read();
+  const {currentLang:language}=WakeSevenAppContext.state.settings.read();
   const viewContext=createProgressionViewContext({
     mode:appState.mode,
     lap:appState.lap,
@@ -83,8 +85,8 @@ function renderStageNav(){
     $('stageSubtitle').hidden=true;
     $('stageCount').hidden=true;
     $('stagePickerTrigger').disabled=false;
-    $('stagePickerTrigger').classList.toggle('second-lap-stage',activeLap===2&&isCampaignMode());
-    $('lapBadge').hidden=activeLap!==2||!isCampaignMode();
+    $('stagePickerTrigger').classList.toggle('second-lap-stage',navigation.lap===2&&isCampaignMode());
+    $('lapBadge').hidden=navigation.lap!==2||!isCampaignMode();
     $('lapBadge').textContent=secondLapMark();
     $('shuffle').hidden=true;
     $('undo').hidden=hideLearningControls||editingBoard||isMode('satori')||(isMode('speed')&&!speedAllowsUndo());
@@ -108,9 +110,9 @@ function renderStageNav(){
     $('speedPause').hidden=!isMode('speed');
     $('speedStartOverlay').hidden=!awaitingSpeedStart;
     $('playbar').hidden=hideLearningControls||(awaitingSpeedStart&&!speedShowsRemaining());
-    const hideBoardViewControls=assistedLearning||isMode('speed')||(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT);
+    const hideBoardViewControls=assistedLearning||isMode('speed')||(isMode('stage')&&navigation.stageIndex>=TRAINING_STAGE_START&&navigation.stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT);
     for(const id of ['rotateBoardBack','rotateBoard','mirrorBoard','flipBoardVertical'])$(id).hidden=hideBoardViewControls;
-    $('twoMoveLessonOpen').hidden=!((isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)||isTwoMoveLessonSpeedStage());
+    $('twoMoveLessonOpen').hidden=!((isMode('stage')&&navigation.stageIndex>=TRAINING_STAGE_START&&navigation.stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)||isTwoMoveLessonSpeedStage());
     $('twoMoveLessonOpen').textContent=tr('twoMoveLessonOpen');
   }
   function renderStageNavModeButtons(){
@@ -119,15 +121,15 @@ function renderStageNav(){
     $('stageNav').classList.toggle('side-mode-nav',inSideMode);
     $('prevStage').textContent=inSideMode?tr('stageModeReturn'):tr('prev');
     $('prevStage').setAttribute('aria-label',inSideMode?tr('stageModeReturn'):tr('prev'));
-    $('prevStage').disabled=isMode('speed')||(!inSideMode&&(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===1));
+    $('prevStage').disabled=isMode('speed')||(!inSideMode&&(!isMode('mastery')&&!isMode('satori')&&navigation.stageIndex===0&&navigation.lap===1));
     const customPlaying=isMode('custom')&&!editingBoard;
     const nextLabel=customPlaying?tr('boardMaker'):isMode('free')?tr('shuffle'):tr('next');
     $('nextStage').textContent=nextLabel;
     $('nextStage').setAttribute('aria-label',nextLabel);
     $('nextStage').hidden=isMode('speed')||(isMode('custom')&&!customPlaying);
     $('nextStage').disabled=customPlaying?false:isMode('custom')?true:isMode('free')?false:isMode('mastery')
-      ?(extraIndex===EXTRA_STAGES.length-1?!canEnterSatori():!clearedExtraStages.has(extraIndex))
-      :(stageIndex===STAGES.length-1?!allPrimaryCleared():!clearedStages.has(stageIndex));
+      ?(navigation.masteryIndex===EXTRA_STAGES.length-1?!canEnterSatori():!clearedExtraStages.has(navigation.masteryIndex))
+      :(navigation.stageIndex===STAGES.length-1?!allPrimaryCleared():!clearedStages.has(navigation.stageIndex));
     $('stageMode').classList.toggle('on',isCampaignMode());
     $('freeMode').classList.toggle('on',isMode('free'));
     $('menuSpeed').classList.toggle('on',isMode('speed'));
@@ -176,18 +178,18 @@ function renderStageNav(){
       else showRemainingModel(d);
     }else if(isMode('satori')){
       setText('stageKind',tr('satori'));
-      $('stageNumber').textContent=(satoriIndex+1)+' / '+SATORI_STAGES.length;
+      $('stageNumber').textContent=(navigation.satoriIndex+1)+' / '+SATORI_STAGES.length;
       showRemainingModel('?');
     }else if(isMode('mastery')){
-      const volume=Math.floor(extraIndex/MASTER_VOLUME_SIZE)+1;
-      setText('stageKind',currentLang==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume));
+      const volume=Math.floor(navigation.masteryIndex/MASTER_VOLUME_SIZE)+1;
+      setText('stageKind',language==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume));
       $('stageNumber').textContent=masterSubtitle(volume);
-      $('stageCount').textContent=(extraIndex%MASTER_VOLUME_SIZE+1)+' / '+MASTER_VOLUME_SIZE;
+      $('stageCount').textContent=(navigation.masteryIndex%MASTER_VOLUME_SIZE+1)+' / '+MASTER_VOLUME_SIZE;
       $('stageCount').hidden=false;
       $('stageSubtitle').hidden=true;
       showRemainingModel(remainingForDisplay(SOLVER.dist[enc(ori)]));
     }else{
-      const {section,position}=primarySectionPosition(stageIndex);
+      const {section,position}=primarySectionPosition(navigation.stageIndex);
       const isAcademySection=['intro','basic','application','development'].includes(section.id);
       if(isAcademySection){
         setText('stageKind',tr('academyPickerRound'));
@@ -206,7 +208,7 @@ function renderStageNav(){
     const customPlaying=isMode('custom')&&!editingBoard;
     const speed=isMode('speed'),satori=isMode('satori');
     const nextDisabled=satori
-      ?(satoriIndex===SATORI_STAGES.length-1?!(activeLap===1&&secondLapUnlocked):!clearedSatoriStages.has(satoriIndex))
+      ?(navigation.satoriIndex===SATORI_STAGES.length-1?!(navigation.lap===1&&secondLapUnlocked):!clearedSatoriStages.has(navigation.satoriIndex))
       :speed?true:undefined;
     renderStageNavPager({
       nextHidden:!speed&&!satori&&isMode('custom')&&!customPlaying,
