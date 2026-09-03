@@ -1,10 +1,10 @@
+import { domIds } from './lib/source-analysis.mjs';
+
 // 公開版の生成物を、セクション単位で比較できる形に計測する。
 // ここは判定を持たず、check/update の両方から同じ計測結果を利用する。
 const commentPattern = /\/\/[^\r\n]*|\/\*[\s\S]*?\*\//g;
 const headingPattern = /^\/\/ ===== (.+) =====$/gm;
 const functionPattern = /\bfunction\s+[A-Za-z_$][\w$]*\s*\(|\b(?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*(?:async\s*)?\(?[^=]*?\)?\s*=>/g;
-// HTML属性として成立する識別子だけを拾う。JS文字列内の動的な `id="...` は除外する。
-const idPattern = /\bid=["']([A-Za-z][A-Za-z0-9_:-]*)["']/g;
 
 const countComments = text => {
   const comments = text.match(commentPattern) || [];
@@ -48,10 +48,10 @@ export const extractBundleMetrics = ({ script, template, globalNames = [] }) => 
       japaneseComments: sectionComments.japanese,
       functionCount: (text.match(functionPattern) || []).length,
       globalReferenceCount: countGlobalReferences(text, globalNames),
-      domIdCount: (text.match(idPattern) || []).length
+      domIdCount: domIds(text).length
     };
   });
-  const templateIds = [...template.matchAll(idPattern)].map(([, id]) => id);
+  const templateIds = domIds(template);
   return {
     schemaVersion: 2,
     bytes: Buffer.byteLength(script, 'utf8'),

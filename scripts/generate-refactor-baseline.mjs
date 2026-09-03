@@ -2,6 +2,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { publishedSourceFiles } from './application-manifest.mjs';
+import { lineOf, functionAt } from './lib/source-analysis.mjs';
 
 // 構造変更前後を比較するための、現状の解析ベースラインを生成する。
 // 完全なJavaScript AST解析ではなく、依存を増やさない保守用の計測である。
@@ -16,13 +17,6 @@ const sources = await Promise.all(publishedSourceFiles.map(async file => ({
   file,
   text: await readFile(join(root, 'src', file), 'utf8')
 })));
-const lineOf = (text, offset) => text.slice(0, offset).split('\n').length;
-const functionAt = (text, offset) => {
-  const before = text.slice(0, offset);
-  const matches = [...before.matchAll(/(?:function\s+([A-Za-z_$][\w$]*)|(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?\(?[^>]*?\)?\s*=>)/g)];
-  return matches.length ? (matches.at(-1)[1] || matches.at(-1)[2]) : null;
-};
-
 const mutable = [];
 const references = [];
 for (const { file, text } of sources) {

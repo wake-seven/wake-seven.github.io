@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { extractBundleMetrics } from './public-bundle-metrics.mjs';
+import { domIds, compareMetrics } from './lib/source-analysis.mjs';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const html = await readFile(join(root, 'index.html'), 'utf8');
@@ -39,7 +40,7 @@ for (const marker of sourceEndMarkers) assert.ok(html.includes(marker), `Generat
 
 // 生成HTMLの構造重複を検出する。重複idは導線イベントが別要素へ結び付くため、
 // 単なるサイズ増加より優先して失敗させる。
-const ids = [...template.matchAll(/\bid=["']([^"']+)["']/g)].map(([, id]) => id);
+const ids = domIds(template);
 const duplicateIds = [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))];
 assert.deepEqual(duplicateIds, [], `Generated HTML contains duplicate ids: ${duplicateIds.join(', ')}`);
 
@@ -78,9 +79,9 @@ const warnings = [];
 if (moduleBytes > metricsBaseline.bytes * 1.25) warnings.push(`payload grew ${(moduleBytes / metricsBaseline.bytes * 100 - 100).toFixed(1)}% from snapshot`);
 if (lineCount > metricsBaseline.lines * 1.25) warnings.push(`payload lines grew ${(lineCount / metricsBaseline.lines * 100 - 100).toFixed(1)}% from snapshot`);
 for (const section of sectionSizes) if (section.bytes > 90 * 1024) warnings.push(`section ${section.name} is ${(section.bytes / 1024).toFixed(1)} KiB`);
-const baselineMetric = key => Number(metricsBaseline[key]);
 for (const key of ['functionCount', 'globalReferenceCount', 'domIdCount']) {
-  if (Number.isFinite(baselineMetric(key)) && metrics[key] > baselineMetric(key) * 1.2) warnings.push(`${key} grew ${((metrics[key] / baselineMetric(key) - 1) * 100).toFixed(1)}% from snapshot`);
+  warnings.push(...compareMetrics(metrics, metricsBaseline, [key], 1.2)
+    .map(item => `${key} grew ${(item.growth * 100).toFixed(1)}% from snapshot`));
 }
 for (const section of sectionSizes) {
   const previous = previousSection(section);
