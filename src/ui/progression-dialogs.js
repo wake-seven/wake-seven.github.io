@@ -2,11 +2,12 @@
 // 値の決定だけを担当し、状態やDOMは変更しない。
 function createProgressionMessageContext(context={}){
   const source=context||{};
+  const appState=typeof WakeSevenAppContext!=='undefined'?WakeSevenAppContext.snapshot():{};
   return Object.freeze({
-    mode:source.mode??(typeof activeMode==='undefined'?null:activeMode),
-    stageIndex:source.stageIndex??(typeof stageIndex==='undefined'?null:stageIndex),
+    mode:source.mode??appState.mode??null,
+    stageIndex:source.stageIndex??appState.stageIndex??null,
     section:source.section??null,
-    lap:source.lap??(typeof activeLap==='undefined'?null:activeLap),
+    lap:source.lap??appState.lap??null,
     clearType:source.clearType??null,
     dialogId:source.dialogId??null,
     quizId:source.quizId??null

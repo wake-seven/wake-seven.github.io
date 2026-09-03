@@ -31,12 +31,13 @@ function createProgressionViewContext({
   });
 }
 function renderStageNav(){
+  const appState=WakeSevenAppContext.snapshot();
   const viewContext=createProgressionViewContext({
-    mode:activeMode,
-    lap:activeLap,
-    stage:stageIndex,
-    extra:extraIndex,
-    satori:satoriIndex,
+    mode:appState.mode,
+    lap:appState.lap,
+    stage:appState.stageIndex,
+    extra:appState.masteryIndex,
+    satori:appState.satoriIndex,
     editing:editingBoard,
     tutorial:isMode('tutorial'),
     assisted:isAssistedLearningStage(),

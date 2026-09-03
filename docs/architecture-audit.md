@@ -36,7 +36,7 @@ npm run check
 
 `npm run check` は、ソース境界・状態復元・進行・ダイアログ・公開版生成物など、現在の実装に対応した契約を検査します。個別の検査が必要な場合は `package.json` と `scripts/check-*.mjs` を確認してください。
 
-共有状態の直接参照は `npm run check:global-access` で監査します。`build/report/global-access.json` に、参照を `gateway`（入口経由）、`owner`（状態所有者）、`needs-migration`（個別移行候補）へ分類して出力します。候補は一括置換せず、対応するE2Eを先に確認します。
+共有状態の直接参照は `npm run check:global-access` で監査します。`build/report/global-access.json` に、参照を `gateway`（入口経由）、`owner`（状態所有者）、`needs-migration`（個別移行候補）へ分類し、読み取り・書き換え別の件数と前回レポートとの差分を出力します。候補は一括置換せず、対応するE2Eを先に確認します。
 
 公開版のサイズ比較や基準値の更新手順も、固定値を文書へ転記せず、対応する `scripts/` の検査結果を正とします。
 

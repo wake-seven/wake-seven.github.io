@@ -11,4 +11,6 @@ const report=JSON.parse(await readFile(join(root,'build','report','global-access
 if(!report.counts||!['gateway','owner','needs-migration'].every(key=>Number.isInteger(report.counts[key])))throw new Error('global-access.json is missing classification counts.');
 if(!Array.isArray(report.references))throw new Error('global-access.json is missing references.');
 if(Object.values(report.counts).reduce((sum,count)=>sum+count,0)!==report.references.length)throw new Error('Global access counts do not match references.');
+if(!report.accessCounts||!Number.isInteger(report.accessCounts.read)||!Number.isInteger(report.accessCounts.write)||report.accessCounts.read+report.accessCounts.write!==report.references.length)throw new Error('Global access read/write counts do not match references.');
+if(report.delta!==null&&!report.delta)throw new Error('Global access delta is malformed.');
 console.log(`Global access contract OK: ${report.references.length} references; gateway ${report.counts.gateway}, owner ${report.counts.owner}, needs-migration ${report.counts['needs-migration']}.`);

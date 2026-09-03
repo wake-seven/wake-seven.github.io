@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-10:10';
+const APP_VERSION='2026.09.03-10:19';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -8925,11 +8925,12 @@ function masterCommonRules(){return currentLang==='ja'?'名人への道は最短
 // 値の決定だけを担当し、状態やDOMは変更しない。
 function createProgressionMessageContext(context={}){
   const source=context||{};
+  const appState=typeof WakeSevenAppContext!=='undefined'?WakeSevenAppContext.snapshot():{};
   return Object.freeze({
-    mode:source.mode??(typeof activeMode==='undefined'?null:activeMode),
-    stageIndex:source.stageIndex??(typeof stageIndex==='undefined'?null:stageIndex),
+    mode:source.mode??appState.mode??null,
+    stageIndex:source.stageIndex??appState.stageIndex??null,
     section:source.section??null,
-    lap:source.lap??(typeof activeLap==='undefined'?null:activeLap),
+    lap:source.lap??appState.lap??null,
     clearType:source.clearType??null,
     dialogId:source.dialogId??null,
     quizId:source.quizId??null
@@ -10373,12 +10374,13 @@ function createProgressionViewContext({
   });
 }
 function renderStageNav(){
+  const appState=WakeSevenAppContext.snapshot();
   const viewContext=createProgressionViewContext({
-    mode:activeMode,
-    lap:activeLap,
-    stage:stageIndex,
-    extra:extraIndex,
-    satori:satoriIndex,
+    mode:appState.mode,
+    lap:appState.lap,
+    stage:appState.stageIndex,
+    extra:appState.masteryIndex,
+    satori:appState.satoriIndex,
     editing:editingBoard,
     tutorial:isMode('tutorial'),
     assisted:isAssistedLearningStage(),
