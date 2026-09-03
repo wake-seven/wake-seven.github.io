@@ -1,0 +1,16 @@
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root=join(fileURLToPath(new URL('.',import.meta.url)),'..');
+const report=JSON.parse(await readFile(join(root,'build/report/progression-flow-map.json'),'utf8'));
+const required=['id','mode','from','event','entry','persist','cancel','to'];
+const ids=new Set();
+for(const entry of report.entries){
+  for(const key of required)if(typeof entry[key]!=='string'||!entry[key])throw new Error(`進行フロー契約の${key}が不足: ${entry.id||'unknown'}`);
+  if(ids.has(entry.id))throw new Error(`進行フロー契約IDが重複: ${entry.id}`);ids.add(entry.id);
+}
+for(const id of ['campaign-clear','campaign-next','speed-clear','rank-reward','reload-session','reload-clear','reload-speed'])if(!ids.has(id))throw new Error(`必須の進行フローが不足: ${id}`);
+const source=await readFile(join(root,'src/ui/progression-flow-contract.js'),'utf8');
+if(!source.includes('getProgressionFlowContract'))throw new Error('実行時の進行フロー参照入口がありません');
+console.log(`Progression flow contract OK: ${report.entries.length} transitions`);

@@ -20,6 +20,7 @@ const steps = [
   { name: 'dialog-chains', command: process.execPath, args: ['scripts/check-dialog-chains.mjs'] },
   { name: 'ui-effects', command: process.execPath, args: ['scripts/check-ui-effects.mjs'] },
   { name: 'progression-flows', command: process.execPath, args: ['scripts/check-progression-flows.mjs'] },
+  { name: 'progression-flow-contract', command: process.execPath, args: ['scripts/check-progression-flow-contract.mjs'] },
   { name: 'esm', command: process.execPath, args: ['scripts/check-esm.mjs'] },
   { name: 'source-boundaries', command: process.execPath, args: ['scripts/check-source-boundaries.mjs'] },
   { name: 'compat-e2e', command: process.execPath, args: ['scripts/check-compat-e2e.mjs'] },
