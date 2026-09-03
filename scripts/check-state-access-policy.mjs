@@ -3,7 +3,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { publishedSourceFiles } from './application-manifest.mjs';
-import { NAVIGATION_NAMES, DIALOG_NAMES, STATE_OWNER_FILES, POLICY_PATH } from './state-access-policy.mjs';
+import { NAVIGATION_NAMES, DIALOG_NAMES, STATE_OWNER_FILES, POLICY_PATH, STATE_EXCEPTION_PURPOSES, classifyStateException } from './state-access-policy.mjs';
 
 // navigation/dialog状態は所有者の外で新しい直接参照を増やさない。
 // 移行途中の既存参照だけを指紋で許可し、行番号変更には依存しない。
@@ -43,7 +43,17 @@ const newRefs=tracked.filter(ref=>!allowed.has(fingerprint(ref)));
 const missing=([...allowed]).filter(key=>!tracked.some(ref=>fingerprint(ref)===key));
 assert.equal(newRefs.length,0,`New navigation/dialog direct references: ${newRefs.map(ref=>`${ref.file}:${ref.line}:${ref.name}`).join(', ')}`);
 assert.ok(tracked.length<=baselineCount,`State access exception budget exceeded: baseline ${baselineCount}, current ${tracked.length}`);
-const report={schemaVersion:1,generatedAt:new Date().toISOString(),names:[...names],ownerFiles:[...STATE_OWNER_FILES],baselineTracked:baselineCount,counts:{tracked:tracked.length,allowed:tracked.filter(ref=>allowed.has(fingerprint(ref))).length,newReferences:newRefs.length,retiredExceptions:missing.length,delta:tracked.length-baselineCount},newReferences:newRefs,retiredExceptions:missing};
+const exceptionMetadata=tracked.map(ref=>({fingerprint:fingerprint(ref),...classifyStateException(ref)}));
+assert.equal(exceptionMetadata.length,tracked.length,'State access exception metadata is incomplete.');
+for(const meta of exceptionMetadata){
+  assert.ok(STATE_EXCEPTION_PURPOSES.includes(meta.purpose),`Unknown state exception purpose: ${meta.purpose}`);
+  assert.equal(typeof meta.ownerOnly,'boolean',`ownerOnly is missing: ${meta.fingerprint}`);
+  assert.equal(typeof meta.temporary,'boolean',`temporary is missing: ${meta.fingerprint}`);
+  assert.ok(Number.isInteger(meta.priority)&&meta.priority>=1&&meta.priority<=3,`priority is invalid: ${meta.fingerprint}`);
+  assert.ok(typeof meta.reason==='string'&&meta.reason.length>0,`reason is missing: ${meta.fingerprint}`);
+}
+const countsByPurpose=Object.fromEntries(STATE_EXCEPTION_PURPOSES.map(purpose=>[purpose,exceptionMetadata.filter(meta=>meta.purpose===purpose).length]));
+const report={schemaVersion:1,generatedAt:new Date().toISOString(),names:[...names],ownerFiles:[...STATE_OWNER_FILES],baselineTracked:baselineCount,counts:{tracked:tracked.length,allowed:tracked.filter(ref=>allowed.has(fingerprint(ref))).length,newReferences:newRefs.length,retiredExceptions:missing.length,delta:tracked.length-baselineCount},countsByPurpose,exceptionMetadata,newReferences:newRefs,retiredExceptions:missing};
 const reportPath=join(root,'build','report','state-access-policy.json');
 await mkdir(dirname(reportPath),{recursive:true});
 await writeFile(reportPath,JSON.stringify(report,null,2)+'\n');
