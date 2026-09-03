@@ -49,6 +49,8 @@ progressionの外部入口を調べる場合は `npm run trace:progression` を�
 
 共有状態の直接参照は `npm run check:global-access` で監査します。`build/report/global-access.json` に、参照を `gateway`（入口経由）、`owner`（状態所有者）、`needs-migration`（個別移行候補）へ分類し、読み取り・書き換え別の件数と前回レポートとの差分を出力します。候補は一括置換せず、対応するE2Eを先に確認します。
 
+navigation/dialogの移行途中参照は `scripts/state-access-exceptions.json` の `temporaryExceptions` で期限と理由を管理します。`npm run check:state-access-policy` は新規temporary参照、期限メタデータ漏れ、期限超過を失敗にします。状態所有者（ownerFiles）の内部参照は期限対象外です。期限を延長する場合は、移行理由を更新してから明示的にポリシーを再生成します。
+
 進行処理の追跡は `build/report/progression-responsibility.json` を入口にします。シンボルを責務（状態・遷移・表示など）と処理順（`entry → state-decision → transition → render`）の両方で分類し、ファイルごとの責務と複数責務シンボルを自動生成します。関数一覧を手書きで複製せず、`npm run trace:generate` と `npm run check:progression-responsibility` でソースとの差分を検査します。
 
 公開版のサイズ比較や基準値の更新手順も、固定値を文書へ転記せず、対応する `scripts/` の検査結果を正とします。

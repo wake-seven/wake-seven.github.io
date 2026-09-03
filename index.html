@@ -4415,7 +4415,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-15:01';
+const APP_VERSION='2026.09.03-17:11';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -7150,8 +7150,7 @@ function loadStage(index){
   renderCurrentView();
   animateBoardArrival();
   trackStageView();
-  if(stageIndex===0&&!hasMasterReward())scheduleStageOneTutorial();
-  else scheduleBasicLessonAssist();
+  clearScheduledHint();
   syncGameState();
 }
 function loadExtraStage(index){
@@ -8067,7 +8066,7 @@ $('reset').addEventListener('click',()=>{
   if(editingBoard){resetMakerBoard();return;}
   restartWithAnimation();
   if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&stageIndex===0&&!hasMasterReward())
-    setTimeout(scheduleStageOneTutorial,500);
+    setTimeout(clearScheduledHint,500);
 });
 $('tutorialReset').addEventListener('click',()=>{
   if(busy||!isMode('tutorial'))return;
@@ -10777,8 +10776,9 @@ function showBestMoveHint(persistent=false){
   for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){const next=rollOnce(ori,ti,dir);if(dist[enc(next)]!==d-1)continue;const el=svg.querySelector('.pivot[data-tri="'+ti+'"]');el.classList.add('hi');setUiEffectTimer('hint','pivot',()=>el.classList.remove('hi'),1100);showHintArrow(ti,dir,false,persistent);return;}
 }
 function cancelTutorialHint(preserveSelection=false){clearUiEffectTimers('hint');clearAxisGuide();clearHintVisuals(preserveSelection);svg.querySelectorAll('.pivot.hi').forEach(el=>el.classList.remove('hi'));}
-function scheduleStageOneTutorial(){cancelTutorialHint();}
-function scheduleBasicLessonAssist(){cancelTutorialHint();}
+// 問題開始時に残っているヒント表示を消す共通処理。
+// 旧来の2つの名前は挙動が完全に同じだったため、呼び出し側もこの入口へ統合する。
+function clearScheduledHint(){cancelTutorialHint();}
 $('hint').addEventListener('click',()=>{cancelTutorialHint();if(isFourthVolume())revealFourthDistance();else showBestMoveHint();});
 
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
