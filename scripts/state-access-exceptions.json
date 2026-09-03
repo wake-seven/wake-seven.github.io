@@ -16,10 +16,6 @@
     "state/progression-policy.js:stageIndex:if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};",
     "state/progression-policy.js:stageIndex:if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};",
     "data/core-data.js:activeLap:return activeLap===2?transformStateBySymmetry(state,SECOND_LAP_BOARD_VIEW):state;",
-    "ui/board-ui.js:stageIndex:basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),",
-    "ui/board-ui.js:stageIndex:applicationWelcome:academyBoardStep('application','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(stageIndex+1)),",
-    "ui/board-ui.js:stageIndex:onAction(){loadStage(stageIndex+1);}",
-    "ui/board-ui.js:stageIndex:onAction(){loadStage(stageIndex+1);}",
     "ui/board-ui.js:stageIndex:if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)",
     "ui/board-ui.js:stageIndex:if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)",
     "ui/board-ui.js:stageIndex:return stageIndex-TRAINING_STAGE_START<5?'joinOne':'joinTwo';",
@@ -250,58 +246,6 @@
       "fingerprint": "data/core-data.js:activeLap:return activeLap===2?transformStateBySymmetry(state,SECOND_LAP_BOARD_VIEW):state;",
       "expiresOn": "2026-12-02",
       "owner": "data/core-data.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:stageIndex:basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:stageIndex:applicationWelcome:academyBoardStep('application','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(stageIndex+1)),",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:stageIndex:onAction(){loadStage(stageIndex+1);}",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:stageIndex:onAction(){loadStage(stageIndex+1);}",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
       "migrationTarget": "gateway:navigation",
       "priority": 1,
       "relatedTests": [

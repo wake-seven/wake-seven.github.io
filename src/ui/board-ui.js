@@ -391,8 +391,8 @@ const CHAIN_STEPS={
     onAction(){openChainedDialog('academyWelcome');}
   },
   academyWelcome:{...academyBoardStep('enroll','academyWelcomeTitle','academyWelcomeText','academyWelcomeStart',()=>{}),noFrame:true},
-  basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),
-  applicationWelcome:academyBoardStep('application','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(stageIndex+1)),
+  basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(readNavigationContext().stageIndex+1)),
+  applicationWelcome:academyBoardStep('application','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(readNavigationContext().stageIndex+1)),
   developmentWelcome:{
     titleKey:'developmentWelcomeTitle', actionKey:'developmentWelcomeStart',
     render(body){
@@ -418,7 +418,7 @@ const CHAIN_STEPS={
       buildTrainingMiddleSpinBoard('developmentWelcomeSpinBoard','developmentWelcomeSpinCounter',DEVELOPMENT_THREE_STAGES[0].state);
       return ()=>stopClearGuideBoard('developmentWelcomeSpinBoard');
     },
-    onAction(){loadStage(stageIndex+1);}
+    onAction(){loadStage(readNavigationContext().stageIndex+1);}
   },
   developmentFourStart:{
     titleKey:'developmentFourStartTitle', actionKey:'developmentFourStartStart',
@@ -427,7 +427,7 @@ const CHAIN_STEPS={
       body.querySelector('[data-chain-dialog-text]')?.setAttribute('id','chainDialogText');
       $('chainDialogText').textContent=tr('developmentFourStartText');
     },
-    onAction(){loadStage(stageIndex+1);}
+    onAction(){loadStage(readNavigationContext().stageIndex+1);}
   },
   trainingWelcome:{
     wide:true, titleKey:'trainingWelcomeTitle', actionKey:'trainingWelcomeNext',
