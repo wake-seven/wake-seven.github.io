@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-10:19';
+const APP_VERSION='2026.09.03-10:23';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -10914,8 +10914,13 @@ function openRankDialogFrom(dialogId,sealId){
 export {};
 
 // ===== 公開API名前空間 =====
-// ===== SVG表示境界 =====
-// SVGを生成するrendererと、DOMコンテナへの取り付けを分離する。
+/* ---- 画面描画の境界 ----
+ * 進行状態を変更する処理と、現在の状態を画面へ反映する処理を分ける。
+ * 既存の個別レンダラーは互換のため残し、画面全体を更新する入口だけを
+ * ここへ集約していく。
+ */
+// SVGアイコンの差し替えは描画処理の一部なので、専用の薄いモジュールへ
+// 分散させず、画面描画の入口と同じ場所で追跡できるようにする。
 function svgMount(root,markup=''){
   if(!root)return null;
   root.replaceChildren();
@@ -10923,14 +10928,7 @@ function svgMount(root,markup=''){
   return root;
 }
 function svgSetIcon(root,markup=''){return svgMount(root,markup);}
-export {};
 
-// ===== ui/render.js =====
-/* ---- 画面描画の境界 ----
- * 進行状態を変更する処理と、現在の状態を画面へ反映する処理を分ける。
- * 既存の個別レンダラーは互換のため残し、画面全体を更新する入口だけを
- * ここへ集約していく。
- */
 const WakeSevenRendererRegistry=Object.freeze({
   create(renderers={}){const entries=new Map(Object.entries(renderers).filter(([,render])=>typeof render==='function').map(([name,render])=>[name,Object.freeze({render})]));return Object.freeze({get:name=>entries.get(name)||null,names:()=>[...entries.keys()]});}
 });
@@ -10948,8 +10946,10 @@ function replaceRenderedContent(root,markup=''){return svgMount(root,markup);}
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== runtime/event-bindings.js =====
-// DOMイベント登録の共通境界。イベント配線から要素検索の細部を分離する。
+// ===== runtime/app-events.js =====
+// ===== アプリケーションイベント =====
+// 要素検索とイベント登録は、公開イベントの単一入口でまとめて追跡する。
+// 小さな別ファイルへ分散させず、イベント配線と同じ境界に置く。
 const WakeSevenEventBindings=Object.freeze({
   click(id,handler){
     const element=$(id);
@@ -10964,9 +10964,7 @@ const WakeSevenEventBindings=Object.freeze({
     return element;
   }
 });
-export {};
 
-// ===== runtime/app-events.js =====
 // ===== デバッグツール =====
 function debugClearCurrent(extraMoves=0){
   if(!DEBUG_MODE||busy||editingBoard)return;

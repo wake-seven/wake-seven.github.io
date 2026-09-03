@@ -3,6 +3,16 @@
  * 既存の個別レンダラーは互換のため残し、画面全体を更新する入口だけを
  * ここへ集約していく。
  */
+// SVGアイコンの差し替えは描画処理の一部なので、専用の薄いモジュールへ
+// 分散させず、画面描画の入口と同じ場所で追跡できるようにする。
+function svgMount(root,markup=''){
+  if(!root)return null;
+  root.replaceChildren();
+  if(markup)root.insertAdjacentHTML('afterbegin',markup);
+  return root;
+}
+function svgSetIcon(root,markup=''){return svgMount(root,markup);}
+
 const WakeSevenRendererRegistry=Object.freeze({
   create(renderers={}){const entries=new Map(Object.entries(renderers).filter(([,render])=>typeof render==='function').map(([name,render])=>[name,Object.freeze({render})]));return Object.freeze({get:name=>entries.get(name)||null,names:()=>[...entries.keys()]});}
 });
