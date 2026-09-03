@@ -95,6 +95,13 @@ function speedStorageKey(base,variant=speedVariant){return variant==='standard'?
 function speedSessionStorageKey(variant=speedVariant){return speedStorageKey(SPEED_SESSION_KEY,variant);}
 function speedBestStorageKey(variant=speedVariant){return speedStorageKey(SPEED_BEST_KEY,variant);}
 function speedHistoryStorageKey(variant=speedVariant){return speedStorageKey(SPEED_HISTORY_KEY,variant);}
+// 速解きの開始・終了で使う共有状態を、入口ごとに一度だけ取得する。
+// セッション保存や画面遷移の途中でactiveLap/variantを読み直さないための境界。
+function createSpeedTransitionContext(){
+  const navigation=readNavigationContext();
+  const session=WakeSevenAppContext.state.session.read();
+  return Object.freeze({navigation,session,speedVariant:session.speedVariant||speedVariant,returnMode:navigation.lastStageMode||navigation.mode});
+}
 let speedSession=null,speedClockStarted=0,speedManuallyPaused=false;
 function shuffleCopy(values){
   const result=[...values];
@@ -268,7 +275,8 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
 }
 function enterSpeedMode(forceNew=false){
   pauseSpeedRun();
-  const requestedVariant=WakeSevenAppContext.state.session.read().speedVariant||speedVariant;
+  const transitionContext=createSpeedTransitionContext();
+  const requestedVariant=transitionContext.speedVariant;
   const saved=forceNew?null:readSpeedSession();
   const isNew=forceNew||!saved;
   setSpeedVariantCommand(saved?.variant&&SPEED_MODE_DEFINITIONS[saved.variant]?saved.variant:requestedVariant);
@@ -283,8 +291,8 @@ function beginSpeedRun(){
 }
 function finishSpeedRun(){
   pauseSpeedClock();
-  const navigation=readNavigationContext();
-  const sessionContext=WakeSevenAppContext.state.session.read();
+  const transitionContext=createSpeedTransitionContext();
+  const {navigation,session:sessionContext}=transitionContext;
   // セッションを保存・削除する前に、卒業試験として起動されたかを確定する。
   const trialVariant=(speedSession?.requiredTrial===true?'training9':speedSession?.requiredTrial)
     ||pendingSpeedTrial(speedSession?.variant||sessionContext.speedVariant||speedVariant,navigation);

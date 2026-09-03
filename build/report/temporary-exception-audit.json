@@ -1,31 +1,31 @@
 {
   "schemaVersion": 2,
   "name": "wake7-state-access-final-audit",
-  "generatedAt": "2026-09-03T12:00:13.738Z",
+  "generatedAt": "2026-09-03T12:10:24.077Z",
   "status": "warning",
   "completion": "in-progress",
   "summary": {
-    "temporaryCount": 141,
+    "temporaryCount": 139,
     "temporaryZero": false,
-    "progress": "7/148",
+    "progress": "6/145",
     "byClassification": {
       "intentional-exception": 6,
-      "temporary": 141,
+      "temporary": 139,
       "owner-only": 4
     },
     "byPurpose": {
       "dialog": 18,
-      "navigation": 129
+      "navigation": 127
     },
     "byEntrypoint": {
       "commands": 7,
       "data": 1,
       "other": 7,
       "runtime": 3,
-      "ui": 129
+      "ui": 127
     },
     "byPriority": {
-      "1": 147,
+      "1": 145,
       "2": 0,
       "3": 0
     },
@@ -1654,42 +1654,10 @@
       "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
-      "fingerprint": "ui/progression-ui.js:stageIndex:return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));",
-      "source": {
-        "file": "ui/progression-ui.js",
-        "line": 296,
-        "excerpt": "return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));"
-      },
-      "symbol": "stageIndex",
-      "purpose": "navigation",
-      "entrypoint": "ui",
-      "priority": 1,
-      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
-      "expiresOn": "2026-12-02",
-      "nextMigrationUnit": "gateway:navigation",
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/progression-ui.js:stageIndex:const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);",
-      "source": {
-        "file": "ui/progression-ui.js",
-        "line": 310,
-        "excerpt": "const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);"
-      },
-      "symbol": "stageIndex",
-      "purpose": "navigation",
-      "entrypoint": "ui",
-      "priority": 1,
-      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
-      "expiresOn": "2026-12-02",
-      "nextMigrationUnit": "gateway:navigation",
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
       "fingerprint": "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 498,
+        "line": 501,
         "excerpt": "const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;"
       },
       "symbol": "stageIndex",
@@ -1705,7 +1673,7 @@
       "fingerprint": "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 498,
+        "line": 501,
         "excerpt": "const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;"
       },
       "symbol": "stageIndex",
@@ -1721,7 +1689,7 @@
       "fingerprint": "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 498,
+        "line": 501,
         "excerpt": "const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;"
       },
       "symbol": "stageIndex",
@@ -1737,7 +1705,7 @@
       "fingerprint": "ui/progression-ui.js:stageIndex:const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 499,
+        "line": 502,
         "excerpt": "const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;"
       },
       "symbol": "stageIndex",
@@ -1753,7 +1721,7 @@
       "fingerprint": "ui/progression-ui.js:stageIndex:const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 499,
+        "line": 502,
         "excerpt": "const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;"
       },
       "symbol": "stageIndex",
@@ -1769,7 +1737,7 @@
       "fingerprint": "ui/progression-ui.js:stageIndex:const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 499,
+        "line": 502,
         "excerpt": "const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;"
       },
       "symbol": "stageIndex",
@@ -1785,7 +1753,7 @@
       "fingerprint": "ui/progression-ui.js:masterDialogKind:const shouldAnimate=masterDialog.hidden||masterDialogKind!==kind;",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 816,
+        "line": 819,
         "excerpt": "const shouldAnimate=masterDialog.hidden||masterDialogKind!==kind;"
       },
       "symbol": "masterDialogKind",
@@ -1801,7 +1769,7 @@
       "fingerprint": "ui/progression-ui.js:extraIndex:const volume=Math.ceil((extraIndex+1)/MASTER_VOLUME_SIZE);",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 900,
+        "line": 903,
         "excerpt": "const volume=Math.ceil((extraIndex+1)/MASTER_VOLUME_SIZE);"
       },
       "symbol": "extraIndex",
@@ -1817,7 +1785,7 @@
       "fingerprint": "ui/progression-ui.js:activeLap:if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1066,
+        "line": 1069,
         "excerpt": "if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){"
       },
       "symbol": "activeLap",
@@ -1833,7 +1801,7 @@
       "fingerprint": "ui/progression-ui.js:stageIndex:if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1066,
+        "line": 1069,
         "excerpt": "if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){"
       },
       "symbol": "stageIndex",
@@ -1849,7 +1817,7 @@
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1069,
+        "line": 1072,
         "excerpt": "if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}"
       },
       "symbol": "satoriIndex",
@@ -1865,7 +1833,7 @@
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1069,
+        "line": 1072,
         "excerpt": "if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}"
       },
       "symbol": "satoriIndex",
@@ -1881,7 +1849,7 @@
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1070,
+        "line": 1073,
         "excerpt": "if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}"
       },
       "symbol": "extraIndex",
@@ -1897,7 +1865,7 @@
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1070,
+        "line": 1073,
         "excerpt": "if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}"
       },
       "symbol": "extraIndex",
@@ -1913,7 +1881,7 @@
       "fingerprint": "ui/progression-ui.js:stageIndex:else loadStage(stageIndex-1);",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1071,
+        "line": 1074,
         "excerpt": "else loadStage(stageIndex-1);"
       },
       "symbol": "stageIndex",
@@ -1929,7 +1897,7 @@
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1077,
+        "line": 1080,
         "excerpt": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);"
       },
       "symbol": "satoriIndex",
@@ -1945,7 +1913,7 @@
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1077,
+        "line": 1080,
         "excerpt": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);"
       },
       "symbol": "satoriIndex",
@@ -1961,7 +1929,7 @@
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1077,
+        "line": 1080,
         "excerpt": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);"
       },
       "symbol": "satoriIndex",
@@ -1977,7 +1945,7 @@
       "fingerprint": "ui/progression-ui.js:activeLap:else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1078,
+        "line": 1081,
         "excerpt": "else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}"
       },
       "symbol": "activeLap",
@@ -1993,7 +1961,7 @@
       "fingerprint": "ui/progression-ui.js:satoriIndex:else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1078,
+        "line": 1081,
         "excerpt": "else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}"
       },
       "symbol": "satoriIndex",
@@ -2009,7 +1977,7 @@
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1081,
+        "line": 1084,
         "excerpt": "if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}"
       },
       "symbol": "extraIndex",
@@ -2025,7 +1993,7 @@
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1081,
+        "line": 1084,
         "excerpt": "if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}"
       },
       "symbol": "extraIndex",
@@ -2041,7 +2009,7 @@
       "fingerprint": "ui/progression-ui.js:stageIndex:else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1082,
+        "line": 1085,
         "excerpt": "else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);"
       },
       "symbol": "stageIndex",
@@ -2057,7 +2025,7 @@
       "fingerprint": "ui/progression-ui.js:stageIndex:else loadStage(stageIndex+1);",
       "source": {
         "file": "ui/progression-ui.js",
-        "line": 1083,
+        "line": 1086,
         "excerpt": "else loadStage(stageIndex+1);"
       },
       "symbol": "stageIndex",

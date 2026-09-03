@@ -14,6 +14,7 @@ let previousReport=null;try{previousReport=JSON.parse(await readFile(join(root,'
 let stateAccessReport=null;try{stateAccessReport=JSON.parse(await readFile(join(root,'build/report/state-access-policy.json'),'utf8'));}catch{}
 const refs=access.references.filter(ref=>NAVIGATION_NAMES.includes(ref.name));
 const classify=({file,access,source})=>{
+  if(/^\/\//.test(source))return ['derived-value','監査用コメント内の名前で、実行時の状態参照ではない'];
   if(STATE_OWNER_FILES.includes(file))return ['owner-only','状態所有者の内部処理。公開gatewayへ移す対象ではない'];
   if(/pointer|drag|swipe|animate|animation|spin|tile/i.test(file+' '+source))return ['event-local','pointer座標・スワイプ・逐次アニメーションに密接なイベント局所値'];
   // クリア後遷移は createClearTransitionContext が入口で固定し、以降は
