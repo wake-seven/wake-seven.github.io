@@ -45,7 +45,9 @@ async function shareWakeSeven(kind='game',button){
 // iPadOS Safariは:hover付きの要素だと「1回目のタップはhoverだけ、2回目でclick」になることがある。
 // ダミーのtouchstartリスナーを一つ登録しておくと、その挙動を止められる（既知の回避策）。
 document.addEventListener('touchstart',()=>{},{passive:true});
-const svg=document.getElementById('board'), $=id=>document.getElementById(id);
+// DOM取得はWakeSevenAppContext.domを唯一の入口にする。
+const $=WakeSevenAppContext.dom.get;
+const svg=$('board');
 const DEBUG_MODE=new URLSearchParams(location.search).get('debug')==='1'
   &&(location.protocol==='file:'||['localhost','127.0.0.1','::1'].includes(location.hostname));
 document.body.classList.toggle('debug-mode',DEBUG_MODE);
@@ -180,10 +182,10 @@ function syncGameState(){
 const SPEED_LAST_TAB_STORAGE_KEY=STORAGE_KEY_GROUPS.speed.lastTab;
 const SPEED_NEW_TAB_STORAGE_KEY=STORAGE_KEY_GROUPS.speed.newTab;
 const COURSE_DEFINITIONS=Object.freeze({
-  tutorial:{id:'tutorial',total:TUTORIAL_STEPS.length,label:'tutorial',indexKey:'tutorialStep'},
-  primary:{id:'primary',total:STAGES.length,label:'training',indexKey:'stageIndex'},
-  mastery:{id:'mastery',total:EXTRA_STAGES.length,label:'mastery',indexKey:'masteryIndex'},
-  satori:{id:'satori',total:SATORI_STAGES.length,label:'satori',indexKey:'satoriIndex'},
+  tutorial:{id:'tutorial',total:WakeSevenAppContext.courses.tutorial().length,label:'tutorial',indexKey:'tutorialStep'},
+  primary:{id:'primary',total:WakeSevenAppContext.courses.primary().length,label:'training',indexKey:'stageIndex'},
+  mastery:{id:'mastery',total:WakeSevenAppContext.courses.mastery().length,label:'mastery',indexKey:'masteryIndex'},
+  satori:{id:'satori',total:WakeSevenAppContext.courses.satori().length,label:'satori',indexKey:'satoriIndex'},
   speed:{id:'speed',total:SATORI_STAGES.length,label:'speed',indexKey:'speedIndex'},
   free:{id:'free',total:null,label:'free',indexKey:null},
   custom:{id:'custom',total:null,label:'custom',indexKey:null}

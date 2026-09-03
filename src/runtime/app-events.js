@@ -1,20 +1,8 @@
 // ===== アプリケーションイベント =====
 // 要素検索とイベント登録は、公開イベントの単一入口でまとめて追跡する。
 // 小さな別ファイルへ分散させず、イベント配線と同じ境界に置く。
-const WakeSevenEventBindings=Object.freeze({
-  click(id,handler){
-    const element=$(id);
-    if(!element)return null;
-    element.addEventListener('click',handler);
-    return element;
-  },
-  on(id,type,handler,options){
-    const element=$(id);
-    if(!element)return null;
-    element.addEventListener(type,handler,options);
-    return element;
-  }
-});
+// イベント配線の提供場所は共有コンテキストに統一する。
+const WakeSevenEventBindings=WakeSevenAppContext.events;
 
 // ===== デバッグツール =====
 function debugClearCurrent(extraMoves=0){

@@ -4229,6 +4229,53 @@ const TRAINING_WELCOME_ART_SVG=`<svg id="trainingWelcomeArt" viewBox="0 0 320 22
 export {};
 
 // ===== 実行設定 =====
+// ===== アプリケーション共有状態の入口 =====
+// 画面やコマンドから runtime.js の変数を直接読み書きする箇所を
+// 少しずつ減らすための、小さな共有状態ゲートウェイ。
+// ここでは状態の所有権を奪わず、既存ランタイムの値へ安全に委譲する。
+// 共有状態・コース定義・DOM・イベントの提供場所をここに集約する。
+// 各機能は必要な時に遅延評価するため、runtime.jsで初期化される値も安全に参照できる。
+const WakeSevenAppContext=Object.freeze({
+  dom:Object.freeze({
+    get(id){return document.getElementById(id);},
+    query(selector,root=document){return root.querySelector(selector);},
+    queryAll(selector,root=document){return [...root.querySelectorAll(selector)];},
+    refs(ids,documentRef=document){return Object.freeze(Object.fromEntries(ids.map(id=>[id,documentRef?.getElementById(id)||null])));}
+  }),
+  events:Object.freeze({
+    click(id,handler){const element=WakeSevenAppContext.dom.get(id);if(!element)return null;element.addEventListener('click',handler);return element;},
+    on(id,type,handler,options){const element=WakeSevenAppContext.dom.get(id);if(!element)return null;element.addEventListener(type,handler,options);return element;}
+  }),
+  // コース定義の源泉はデータ配列そのもの。画面ごとに配列名を再定義しない。
+  courses:Object.freeze({
+    primary:()=>STAGES,
+    mastery:()=>EXTRA_STAGES,
+    satori:()=>SATORI_STAGES,
+    tutorial:()=>TUTORIAL_STEPS
+  }),
+  state:Object.freeze({
+    read(){return gameState;},
+    snapshot(){return WakeSevenAppContext.snapshot();}
+  }),
+  // 現在の画面状態を、表示処理が使える読み取り専用スナップショットで返す。
+  snapshot(){
+    return Object.freeze({
+      mode:activeMode,
+      clearShown,
+      lap:activeLap,
+      stageIndex,
+      masteryIndex:extraIndex,
+      satoriIndex,
+      tutorialStep
+    });
+  },
+  isClearShown(){return clearShown===true;},
+  // clearShown の変更はここを通す。保存は既存の syncGameState の責務とする。
+  setClearShown(value){clearShown=value===true;return clearShown;},
+  setMode(mode){setActiveMode(mode);return activeMode;}
+});
+
+// ===== サウンド =====
 // ===== 実行設定 =====
 // 設定の初期化だけを担当する。
 // gameState / storage / STORAGE_KEY_GROUPS は runtime.js 側で準備された後に呼び出す。
@@ -4253,7 +4300,7 @@ function initializeRuntimeSettings(){
 // 公開バンドルではネイティブモジュールへ連結されることを明示する境界。
 export {};
 
-// ===== サウンド =====
+// ===== 速解き解放状態 =====
 // ===== サウンド =====
 let audioContext=null;
 
@@ -4313,7 +4360,7 @@ function updateSoundToggle(){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 速解き解放状態 =====
+// ===== 実行状態 =====
 // 速解き解放状態の読み込み。
 // 実行時の状態変数は runtime.js が所有し、ここは保存境界だけを担当する。
 function initializeSpeedUnlockState({initialUnlocks={},awakenedGranted=false}={}){
@@ -4331,7 +4378,7 @@ function initializeSpeedUnlockState({initialUnlocks={},awakenedGranted=false}={}
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 実行状態 =====
+// ===== コマンド実行境界 =====
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
@@ -4379,7 +4426,9 @@ async function shareWakeSeven(kind='game',button){
 // iPadOS Safariは:hover付きの要素だと「1回目のタップはhoverだけ、2回目でclick」になることがある。
 // ダミーのtouchstartリスナーを一つ登録しておくと、その挙動を止められる（既知の回避策）。
 document.addEventListener('touchstart',()=>{},{passive:true});
-const svg=document.getElementById('board'), $=id=>document.getElementById(id);
+// DOM取得はWakeSevenAppContext.domを唯一の入口にする。
+const $=WakeSevenAppContext.dom.get;
+const svg=$('board');
 const DEBUG_MODE=new URLSearchParams(location.search).get('debug')==='1'
   &&(location.protocol==='file:'||['localhost','127.0.0.1','::1'].includes(location.hostname));
 document.body.classList.toggle('debug-mode',DEBUG_MODE);
@@ -4514,10 +4563,10 @@ function syncGameState(){
 const SPEED_LAST_TAB_STORAGE_KEY=STORAGE_KEY_GROUPS.speed.lastTab;
 const SPEED_NEW_TAB_STORAGE_KEY=STORAGE_KEY_GROUPS.speed.newTab;
 const COURSE_DEFINITIONS=Object.freeze({
-  tutorial:{id:'tutorial',total:TUTORIAL_STEPS.length,label:'tutorial',indexKey:'tutorialStep'},
-  primary:{id:'primary',total:STAGES.length,label:'training',indexKey:'stageIndex'},
-  mastery:{id:'mastery',total:EXTRA_STAGES.length,label:'mastery',indexKey:'masteryIndex'},
-  satori:{id:'satori',total:SATORI_STAGES.length,label:'satori',indexKey:'satoriIndex'},
+  tutorial:{id:'tutorial',total:WakeSevenAppContext.courses.tutorial().length,label:'tutorial',indexKey:'tutorialStep'},
+  primary:{id:'primary',total:WakeSevenAppContext.courses.primary().length,label:'training',indexKey:'stageIndex'},
+  mastery:{id:'mastery',total:WakeSevenAppContext.courses.mastery().length,label:'mastery',indexKey:'masteryIndex'},
+  satori:{id:'satori',total:WakeSevenAppContext.courses.satori().length,label:'satori',indexKey:'satoriIndex'},
   speed:{id:'speed',total:SATORI_STAGES.length,label:'speed',indexKey:'speedIndex'},
   free:{id:'free',total:null,label:'free',indexKey:null},
   custom:{id:'custom',total:null,label:'custom',indexKey:null}
@@ -5133,7 +5182,7 @@ function hexPath(r){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== コマンド実行境界 =====
+// ===== アプリケーション共有状態 =====
 // commandからブラウザAPIと保存形式を隔離する実行境界。
 // command側は状態変更の意図だけを記述し、時計・保存APIへ直接依存しない。
 function commandStorageGet(key,fallback=''){return storage.get(key,fallback);}
@@ -5143,30 +5192,6 @@ function commandStorageJson(key,fallback=null){return storage.json(key,fallback)
 function commandStorageSetJson(key,value){storage.setJson(key,value);return value;}
 function commandNow(){return performance.now();}
 function commandTimestamp(){return Date.now();}
-
-// ===== アプリケーション共有状態 =====
-// ===== アプリケーション共有状態の入口 =====
-// 画面やコマンドから runtime.js の変数を直接読み書きする箇所を
-// 少しずつ減らすための、小さな共有状態ゲートウェイ。
-// ここでは状態の所有権を奪わず、既存ランタイムの値へ安全に委譲する。
-const WakeSevenAppContext=Object.freeze({
-  // 現在の画面状態を、表示処理が使える読み取り専用スナップショットで返す。
-  snapshot(){
-    return Object.freeze({
-      mode:activeMode,
-      clearShown,
-      lap:activeLap,
-      stageIndex,
-      masteryIndex:extraIndex,
-      satoriIndex,
-      tutorialStep
-    });
-  },
-  isClearShown(){return clearShown===true;},
-  // clearShown の変更はここを通す。保存は既存の syncGameState の責務とする。
-  setClearShown(value){clearShown=value===true;return clearShown;},
-  setMode(mode){setActiveMode(mode);return activeMode;}
-});
 
 // ===== スピードランランタイム =====
 // ===== スピードラン(速解き)ランタイム =====
@@ -10975,20 +11000,8 @@ export {};
 // ===== アプリケーションイベント =====
 // 要素検索とイベント登録は、公開イベントの単一入口でまとめて追跡する。
 // 小さな別ファイルへ分散させず、イベント配線と同じ境界に置く。
-const WakeSevenEventBindings=Object.freeze({
-  click(id,handler){
-    const element=$(id);
-    if(!element)return null;
-    element.addEventListener('click',handler);
-    return element;
-  },
-  on(id,type,handler,options){
-    const element=$(id);
-    if(!element)return null;
-    element.addEventListener(type,handler,options);
-    return element;
-  }
-});
+// イベント配線の提供場所は共有コンテキストに統一する。
+const WakeSevenEventBindings=WakeSevenAppContext.events;
 
 // ===== デバッグツール =====
 function debugClearCurrent(extraMoves=0){
