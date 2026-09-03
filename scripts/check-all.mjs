@@ -27,6 +27,9 @@ const steps = [
   { name: 'source-boundaries', command: process.execPath, args: ['scripts/check-source-boundaries.mjs'] },
   { name: 'compat-e2e', command: process.execPath, args: ['scripts/check-compat-e2e.mjs'] },
   { name: 'browser-e2e', command: process.execPath, args: ['scripts/check-browser-e2e.mjs'] },
+  // 構造予算より先に、最新の状態参照レポートを生成する。
+  { name: 'global-access', command: process.execPath, args: ['scripts/check-global-access-contract.mjs'] },
+  { name: 'state-access-policy', command: process.execPath, args: ['scripts/check-state-access-policy.mjs'] },
   { name: 'refactor-baseline-generate', command: process.execPath, args: ['scripts/generate-refactor-baseline.mjs'] },
   { name: 'refactor-baseline', command: process.execPath, args: ['scripts/check-refactor-baseline.mjs'] },
   { name: 'refactor-budgets', command: process.execPath, args: ['scripts/check-refactor-budgets.mjs'] },
@@ -39,7 +42,6 @@ const steps = [
   { name: 'ui-data-map', command: process.execPath, args: ['scripts/check-ui-data-map.mjs'] },
   { name: 'event-wiring', command: process.execPath, args: ['scripts/check-event-wiring.mjs'] },
   { name: 'refactor-report', command: process.execPath, args: ['scripts/check-refactor-report.mjs'] },
-  { name: 'global-access', command: process.execPath, args: ['scripts/check-global-access-contract.mjs'] },
   { name: 'unused-files', command: process.execPath, args: ['scripts/check-unused-files.mjs'] },
   { name: 'compat-boundaries', command: process.execPath, args: ['scripts/check-compat-boundaries.mjs'] },
   { name: 'manifest-dependencies', command: process.execPath, args: ['scripts/check-manifest-dependencies.mjs'] },

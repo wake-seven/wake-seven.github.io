@@ -2,15 +2,16 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { publishedSourceFiles } from './application-manifest.mjs';
+import { NAVIGATION_NAMES, STATE_OWNER_FILES } from './state-access-policy.mjs';
 
 // 共有状態の直接参照を数え、入口・所有者・個別移行候補に分類する。
 // 自動置換は行わない。責務とE2Eを確認して安全な箇所だけを移行する。
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const reportDir = join(root, 'build', 'report');
 const reportPath = join(reportDir, 'global-access.json');
-const stateNames = ['activeMode','stageIndex','extraIndex','satoriIndex','activeLap','clearShown','tutorialStep','lastStageMode','currentInitialState','currentInitialPar','gameState'];
+const stateNames = [...NAVIGATION_NAMES,'currentInitialState','currentInitialPar','gameState'];
 const gatewayFiles = new Set(['app/app-context.js']);
-const ownerFiles = new Set(['runtime/runtime.js','runtime/progression-runtime.js','state/game-state.js']);
+const ownerFiles = new Set(STATE_OWNER_FILES);
 const sources = await Promise.all(publishedSourceFiles.map(async file => ({file,text:await readFile(join(root,'src',file),'utf8')})));
 const entries=[];
 for(const {file,text} of sources){
