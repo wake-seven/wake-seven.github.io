@@ -84,7 +84,7 @@ function renderRankList(){
     count.textContent=rankProblemCount(index);
     if(linkable)path.addEventListener('click',()=>{
       activateCampaignLap(second?2:1);
-      rankDialogReturn=null;$('rankDialog').hidden=true;
+      updateDialogStateOwner({rankDialogReturn:null});$('rankDialog').hidden=true;
       if(index===6||index===5)openDialog('stagePicker',{lap:second?2:1,round:'satori'});
       else openDialog('stagePicker',{lap:second?2:1,round:index===0?-PRIMARY_PICKER_SECTION_COUNT:index===1?PICKER_TRAINING_FIRST_ROUND:index-2});
     });
@@ -92,7 +92,7 @@ function renderRankList(){
   });
 }
 function openRankDialog(returnTarget=null){
-  rankDialogReturn=returnTarget;
+  updateDialogStateOwner({rankDialogReturn:returnTarget});
   rankListLap=activeLap;
   renderRankList();
   $('rankDialog').hidden=false;

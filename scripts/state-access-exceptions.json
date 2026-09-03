@@ -6,7 +6,7 @@
     "state/game-state.js",
     "app/app-context.js"
   ],
-  "baselineTracked": 197,
+  "baselineTracked": 178,
   "allowedReferences": [
     "state/progression-policy.js:stageIndex:uiPolicy({mode,lap,stageIndex,speedVariant}) {",
     "state/progression-policy.js:stageIndex:if(stageIndex < academyTotal) {",
@@ -176,29 +176,10 @@
     "ui/progression-clear-flow.js:stageIndex:if(stageIndex===STAGES.length-1&&allPrimaryIsCleared)return {kind:'master-dialog',section:'intermediate'};",
     "ui/progression-clear-flow.js:stageIndex:if(stageIndex===STAGES.length-1)return {kind:'restore-free'};",
     "ui/progression-clear-flow.js:stageIndex:return {kind:'stage',index:stageIndex+1};",
-    "ui/rank.js:rankDialogReturn:rankDialogReturn=null;$('rankDialog').hidden=true;",
-    "ui/rank.js:rankDialogReturn:rankDialogReturn=returnTarget;",
     "ui/rank.js:activeLap:rankListLap=activeLap;",
     "runtime/app-events.js:stageIndex:rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);",
     "runtime/app-events.js:extraIndex:const clickClearEntry=clearContentAt(true,extraIndex);",
     "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
-    "runtime/app-events.js:masterDialogKind:const chain=MASTER_DIALOG_CHAIN[masterDialogKind];",
-    "runtime/app-events.js:masterDialogKind:const restartTraining=masterDialogKind==='awakening';",
-    "runtime/app-events.js:masterDialogKind:const leaveSpeed=['speedComplete','speedTrialFailed'].includes(masterDialogKind);",
-    "runtime/app-events.js:masterDialogKind:const resumeSpeed=masterDialogKind==='speedIntro'&&isMode('speed');",
-    "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='awakening'){enterSpeedMode(true);return;}",
-    "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='speedIntro'){enterSpeedMode(!readSpeedSession());return;}",
-    "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='speedTrialFailed'){",
-    "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='speedComplete'){enterSpeedMode(true);return;}",
-    "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='primary'){",
-    "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared){",
-    "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared){",
-    "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='intermediate'){GameNavigation.mastery(0);return;}",
-    "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='pathInfo')GameNavigation.mastery(0);",
-    "runtime/app-events.js:masterDialogKind:else if(masterDialogKind==='secondLapIntro')GameNavigation.stage(0);",
-    "runtime/app-events.js:masterDialogKind:else if(masterDialogKind==='satoriIntro')GameNavigation.satori(0);",
-    "runtime/app-events.js:masterDialogKind:else if(masterDialogKind==='satori')openSatoriPicker();",
-    "runtime/app-events.js:masterDialogKind:else if(masterDialogKind==='mastery')openSatoriPicker();",
     "runtime/app-events.js:extraIndex:else GameNavigation.mastery(extraIndex+1);",
     "runtime/app-events.js:tutorialStep:$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');",
     "runtime/app-events.js:masterDialogKind:if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);",
@@ -1048,16 +1029,6 @@
       "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
-      "fingerprint": "ui/rank.js:rankDialogReturn:rankDialogReturn=null;$('rankDialog').hidden=true;",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/rank.js:rankDialogReturn:rankDialogReturn=returnTarget;",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
       "fingerprint": "ui/rank.js:activeLap:rankListLap=activeLap;",
       "expiresOn": "2026-12-02",
       "reason": "navigation状態の移行完了まで保持する既存参照"
@@ -1076,91 +1047,6 @@
       "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
       "expiresOn": "2026-12-02",
       "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:const chain=MASTER_DIALOG_CHAIN[masterDialogKind];",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:const restartTraining=masterDialogKind==='awakening';",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:const leaveSpeed=['speedComplete','speedTrialFailed'].includes(masterDialogKind);",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:const resumeSpeed=masterDialogKind==='speedIntro'&&isMode('speed');",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='awakening'){enterSpeedMode(true);return;}",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='speedIntro'){enterSpeedMode(!readSpeedSession());return;}",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='speedTrialFailed'){",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='speedComplete'){enterSpeedMode(true);return;}",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='primary'){",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared){",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared){",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='intermediate'){GameNavigation.mastery(0);return;}",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='pathInfo')GameNavigation.mastery(0);",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:else if(masterDialogKind==='secondLapIntro')GameNavigation.stage(0);",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:else if(masterDialogKind==='satoriIntro')GameNavigation.satori(0);",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:else if(masterDialogKind==='satori')openSatoriPicker();",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:else if(masterDialogKind==='mastery')openSatoriPicker();",
-      "expiresOn": "2026-12-02",
-      "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
       "fingerprint": "runtime/app-events.js:extraIndex:else GameNavigation.mastery(extraIndex+1);",

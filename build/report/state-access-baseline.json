@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "name": "state-access-baseline",
-  "generatedAt": "2026-09-03T09:19:39.858Z",
+  "generatedAt": "2026-09-03T09:24:23.120Z",
   "source": "scripts/state-access-exceptions.json",
   "counts": {
-    "temporary": 197,
+    "temporary": 178,
     "byPurpose": {
       "navigation": 153,
-      "dialog": 44,
+      "dialog": 25,
       "progress": 0,
       "session": 0,
       "board": 0,
@@ -18,12 +18,12 @@
       "commands": 7,
       "data": 4,
       "other": 7,
-      "runtime": 27,
-      "ui": 152
+      "runtime": 10,
+      "ui": 150
     },
     "byAccess": {
-      "read": 158,
-      "write": 39
+      "read": 154,
+      "write": 24
     }
   },
   "entries": [
@@ -3724,50 +3724,6 @@
       ]
     },
     {
-      "fingerprint": "ui/rank.js:rankDialogReturn:rankDialogReturn=null;$('rankDialog').hidden=true;",
-      "source": {
-        "file": "ui/rank.js",
-        "line": 87,
-        "excerpt": "rankDialogReturn=null;$('rankDialog').hidden=true;"
-      },
-      "symbol": "rankDialogReturn",
-      "entrypoint": "ui",
-      "access": "write",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "ui/rank.js:rankDialogReturn:rankDialogReturn=returnTarget;",
-      "source": {
-        "file": "ui/rank.js",
-        "line": 95,
-        "excerpt": "rankDialogReturn=returnTarget;"
-      },
-      "symbol": "rankDialogReturn",
-      "entrypoint": "ui",
-      "access": "write",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
       "fingerprint": "ui/rank.js:activeLap:rankListLap=activeLap;",
       "source": {
         "file": "ui/rank.js",
@@ -3856,384 +3812,10 @@
       ]
     },
     {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:const chain=MASTER_DIALOG_CHAIN[masterDialogKind];",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 420,
-        "excerpt": "const chain=MASTER_DIALOG_CHAIN[masterDialogKind];"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "read",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:const restartTraining=masterDialogKind==='awakening';",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 422,
-        "excerpt": "const restartTraining=masterDialogKind==='awakening';"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "read",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:const leaveSpeed=['speedComplete','speedTrialFailed'].includes(masterDialogKind);",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 423,
-        "excerpt": "const leaveSpeed=['speedComplete','speedTrialFailed'].includes(masterDialogKind);"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "read",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:const resumeSpeed=masterDialogKind==='speedIntro'&&isMode('speed');",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 424,
-        "excerpt": "const resumeSpeed=masterDialogKind==='speedIntro'&&isMode('speed');"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "read",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='awakening'){enterSpeedMode(true);return;}",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 490,
-        "excerpt": "if(masterDialogKind==='awakening'){enterSpeedMode(true);return;}"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "write",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='speedIntro'){enterSpeedMode(!readSpeedSession());return;}",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 491,
-        "excerpt": "if(masterDialogKind==='speedIntro'){enterSpeedMode(!readSpeedSession());return;}"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "write",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='speedTrialFailed'){",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 492,
-        "excerpt": "if(masterDialogKind==='speedTrialFailed'){"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "write",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='speedComplete'){enterSpeedMode(true);return;}",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 496,
-        "excerpt": "if(masterDialogKind==='speedComplete'){enterSpeedMode(true);return;}"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "write",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='primary'){",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 497,
-        "excerpt": "if(masterDialogKind==='primary'){"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "write",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared){",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 503,
-        "excerpt": "if(masterDialogKind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared){"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "write",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared){",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 506,
-        "excerpt": "if(masterDialogKind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared){"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "write",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='intermediate'){GameNavigation.mastery(0);return;}",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 509,
-        "excerpt": "if(masterDialogKind==='intermediate'){GameNavigation.mastery(0);return;}"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "write",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:if(masterDialogKind==='pathInfo')GameNavigation.mastery(0);",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 510,
-        "excerpt": "if(masterDialogKind==='pathInfo')GameNavigation.mastery(0);"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "write",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:else if(masterDialogKind==='secondLapIntro')GameNavigation.stage(0);",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 511,
-        "excerpt": "else if(masterDialogKind==='secondLapIntro')GameNavigation.stage(0);"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "write",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:else if(masterDialogKind==='satoriIntro')GameNavigation.satori(0);",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 512,
-        "excerpt": "else if(masterDialogKind==='satoriIntro')GameNavigation.satori(0);"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "write",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:else if(masterDialogKind==='satori')openSatoriPicker();",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 513,
-        "excerpt": "else if(masterDialogKind==='satori')openSatoriPicker();"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "write",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:masterDialogKind:else if(masterDialogKind==='mastery')openSatoriPicker();",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 514,
-        "excerpt": "else if(masterDialogKind==='mastery')openSatoriPicker();"
-      },
-      "symbol": "masterDialogKind",
-      "entrypoint": "runtime",
-      "access": "write",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
       "fingerprint": "runtime/app-events.js:extraIndex:else GameNavigation.mastery(extraIndex+1);",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 515,
+        "line": 518,
         "excerpt": "else GameNavigation.mastery(extraIndex+1);"
       },
       "symbol": "extraIndex",
@@ -4255,7 +3837,7 @@
       "fingerprint": "runtime/app-events.js:tutorialStep:$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 917,
+        "line": 920,
         "excerpt": "$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');"
       },
       "symbol": "tutorialStep",
@@ -4277,7 +3859,7 @@
       "fingerprint": "runtime/app-events.js:masterDialogKind:if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 919,
+        "line": 922,
         "excerpt": "if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);"
       },
       "symbol": "masterDialogKind",
@@ -4299,7 +3881,7 @@
       "fingerprint": "runtime/app-events.js:clearShown:else if(clearShown){",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 928,
+        "line": 931,
         "excerpt": "else if(clearShown){"
       },
       "symbol": "clearShown",
@@ -4321,7 +3903,7 @@
       "fingerprint": "runtime/app-events.js:activeLap:activeLap=1;secondLapUnlocked=false;",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 1114,
+        "line": 1117,
         "excerpt": "activeLap=1;secondLapUnlocked=false;"
       },
       "symbol": "activeLap",

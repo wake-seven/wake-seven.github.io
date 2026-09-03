@@ -417,11 +417,13 @@ const MASTER_DIALOG_CHAIN={
   mastery:{via:'close',when:()=>secondLapActive||speedMasteryTrialCleared,open:'satoriIntro'}
 };
 $('masterClose').addEventListener('click',()=>{
-  const chain=MASTER_DIALOG_CHAIN[masterDialogKind];
+  const dialogContext=readDialogContext();
+  const dialogKind=dialogContext.masterDialogKind;
+  const chain=MASTER_DIALOG_CHAIN[dialogKind];
   const chainActive=chain?.via==='close'&&chain.when();
-  const restartTraining=masterDialogKind==='awakening';
-  const leaveSpeed=['speedComplete','speedTrialFailed'].includes(masterDialogKind);
-  const resumeSpeed=masterDialogKind==='speedIntro'&&isMode('speed');
+  const restartTraining=dialogKind==='awakening';
+  const leaveSpeed=['speedComplete','speedTrialFailed'].includes(dialogKind);
+  const resumeSpeed=dialogKind==='speedIntro'&&isMode('speed');
   hideGameDialogs();
   if(resumeSpeed){startSpeedClock();return;}
   if(chainActive){
@@ -484,34 +486,35 @@ $('closeRankDialog').addEventListener('click',()=>{
   if(!focusReturnTarget(returnTarget))$('rankBadge').focus();
 });
 $('masterStart').addEventListener('click',()=>{
+  const dialogKind=readDialogContext().masterDialogKind;
   const speedTarget=$('masterStart').dataset.speedVariant;
   hideGameDialogs();
   if(speedTarget){setSpeedVariantCommand(speedTarget);setSpeedSessionCommand(null);enterSpeedMode(true);return;}
-  if(masterDialogKind==='awakening'){enterSpeedMode(true);return;}
-  if(masterDialogKind==='speedIntro'){enterSpeedMode(!readSpeedSession());return;}
-  if(masterDialogKind==='speedTrialFailed'){
+  if(dialogKind==='awakening'){enterSpeedMode(true);return;}
+  if(dialogKind==='speedIntro'){enterSpeedMode(!readSpeedSession());return;}
+  if(dialogKind==='speedTrialFailed'){
     setSpeedVariantCommand(['training9','training18','mastery27'].includes(speedSession?.requiredTrial)?speedSession.requiredTrial:'training9');
     setSpeedSessionCommand(null);enterSpeedMode(true);return;
   }
-  if(masterDialogKind==='speedComplete'){enterSpeedMode(true);return;}
-  if(masterDialogKind==='primary'){
+  if(dialogKind==='speedComplete'){enterSpeedMode(true);return;}
+  if(dialogKind==='primary'){
     if(!secondLapActive&&!speedTrainingTrialCleared){setSpeedVariantCommand('training9');setSpeedSessionCommand(null);enterSpeedMode(true);return;}
     const before=clearContentBefore(false,TRAINING_STAGE_START);
     if(before?.dialog){rememberSpecialMessage(before.dialog);openChainedDialog(before.dialog);return;}
     GameNavigation.stage(TRAINING_STAGE_START);return;
   }
-  if(masterDialogKind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared){
+  if(dialogKind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared){
     setSpeedVariantCommand('training18');setSpeedSessionCommand(null);enterSpeedMode(true);return;
   }
-  if(masterDialogKind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared){
+  if(dialogKind==='mastery'&&!secondLapActive&&!speedMasteryTrialCleared){
     setSpeedVariantCommand('mastery27');setSpeedSessionCommand(null);enterSpeedMode(true);return;
   }
-  if(masterDialogKind==='intermediate'){GameNavigation.mastery(0);return;}
-  if(masterDialogKind==='pathInfo')GameNavigation.mastery(0);
-  else if(masterDialogKind==='secondLapIntro')GameNavigation.stage(0);
-  else if(masterDialogKind==='satoriIntro')GameNavigation.satori(0);
-  else if(masterDialogKind==='satori')openSatoriPicker();
-  else if(masterDialogKind==='mastery')openSatoriPicker();
+  if(dialogKind==='intermediate'){GameNavigation.mastery(0);return;}
+  if(dialogKind==='pathInfo')GameNavigation.mastery(0);
+  else if(dialogKind==='secondLapIntro')GameNavigation.stage(0);
+  else if(dialogKind==='satoriIntro')GameNavigation.satori(0);
+  else if(dialogKind==='satori')openSatoriPicker();
+  else if(dialogKind==='mastery')openSatoriPicker();
   else GameNavigation.mastery(extraIndex+1);
 });
 $('masterSpeedUnlockStart').addEventListener('click',()=>{
