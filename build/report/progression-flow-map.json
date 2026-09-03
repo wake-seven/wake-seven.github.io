@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T22:17:30.931Z",
+  "generatedAt": "2026-09-03T22:34:57.101Z",
   "source": "src/ui/progression-flow-contract.js",
   "entries": [
     {
@@ -57,7 +57,7 @@
       "mode": "campaign|speed",
       "from": "clear-dialog|speed-finished",
       "event": "称号条件達成",
-      "entry": "showRankDialog",
+      "entry": "openRankDialog",
       "persist": "称号・報酬・解放状態",
       "cancel": "closeRankDialog",
       "to": "rank-dialog|next-stage-dialog"
@@ -87,7 +87,7 @@
       "mode": "speed",
       "from": "page-load",
       "event": "speed sessionを検出",
-      "entry": "restoreActiveSession→restoreSpeedSession",
+      "entry": "restoreActiveSession→readActiveSpeedSession",
       "persist": "speed sessionを維持",
       "cancel": "一時停止状態へ退避",
       "to": "speed-pause-dialog|playing"

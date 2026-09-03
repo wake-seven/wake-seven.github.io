@@ -23,6 +23,13 @@ for(const entry of map.dialogs){
   assert.ok(entry.captureCondition&&entry.restoreCondition&&entry.restoreFunction&&entry.returnTo,'dialog metadata is incomplete');
   assert.ok(Array.isArray(entry.state)&&Array.isArray(entry.relatedE2E),'dialog metadata arrays are missing');
 }
+// 対応表に追加したIDが、保存側にも復元側にも現れることを確認する。
+const captureSource=source.slice(source.indexOf('function captureDialogState'),source.indexOf('const DIALOG_STATE_STORAGE_KEY'));
+const restoreSource=source.slice(source.indexOf('function restoreDialogState'),source.indexOf('function restoreDialogState')+4000);
+for(const id of ids){
+  assert.ok(captureSource.includes(`type:'${id}'`)||captureSource.includes(`'${id}'`),`capture path is missing: ${id}`);
+  assert.ok(restoreSource.includes(`${id}:`)||restoreSource.includes(`state.id==='${id}'`)||restoreSource.includes('const element=$(state.id)'),`restore path is missing: ${id}`);
+}
 for(const id of ['chain','clear','message','rank','tipGuide','guideHub']) assert.match(source,new RegExp(`${id}:`),`mapped restore handler is missing: ${id}`);
 const report={schemaVersion:1,name:'dialog-state-map',generatedAt:new Date().toISOString(),source:'src/runtime/runtime.js',count:map.dialogs.length,dialogs:map.dialogs,contract:{capture:'表示中のdialogIdと必要状態を保存',restore:'保存状態を検証して既存描画関数または固定DOMへ戻す',behavior:'対応表は現状固定用であり分岐置換を行わない'}};
 await mkdir(join(root,'build/report'),{recursive:true});
