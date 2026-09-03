@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "name": "clear-flow-order",
+  "generatedAt": "2026-09-03T07:56:08.353Z",
+  "status": "passed",
+  "passed": true,
+  "summary": {
+    "checks": 7,
+    "stages": [
+      "complete",
+      "checkpoint",
+      "animation",
+      "dialog",
+      "message/quiz",
+      "next route",
+      "next stage"
+    ]
+  },
+  "checks": [
+    {
+      "id": "campaign-clear",
+      "passed": true,
+      "positions": {
+        "function startClearFlow(": 3910,
+        "beginClearFlow()": 4002,
+        "persistClearFlowCheckpoint()": 4344,
+        "celebrateClear()": 4520,
+        "scheduleClearFlowDialog(": 4540,
+        "function finishClearFlow(": 6874,
+        "requestProgressionDialog('clear'": 7001
+      }
+    },
+    {
+      "id": "campaign-next",
+      "passed": true,
+      "positions": {
+        "function dispatchClearFlowAction(": 8343,
+        "const route=resolveAfterClearRoute(context)": 8946,
+        "persistClearFlowCheckpoint()": 9137,
+        "hideGameDialogs()": 9244,
+        "setClearFlowPhase(": 9329
+      }
+    },
+    {
+      "id": "speed-clear",
+      "passed": true,
+      "positions": {
+        "function completeSpeedStage()": 18134,
+        "setClearShownCommand(true);": 18168,
+        "pauseSpeedClock();persistSpeedSession();": 18298,
+        "celebrateClear()": 18354,
+        "setUiEffectTimer('clear-transition','advance-speed'": 18375
+      }
+    },
+    {
+      "id": "speed-clear-guard",
+      "passed": true
+    },
+    {
+      "id": "clear-content",
+      "passed": true,
+      "positions": {
+        "function showClearDialog(": 17096,
+        "showProgressionQuiz({rootId:'clearQuiz'": 20476,
+        "showProgressionQuiz({rootId:'boardQuiz'": 20681
+      }
+    },
+    {
+      "id": "clear-route-predicate",
+      "passed": true
+    },
+    {
+      "id": "reload-clear-guard",
+      "passed": true
+    }
+  ],
+  "warnings": [],
+  "errors": [],
+  "sourceRevision": "working-tree"
+}
