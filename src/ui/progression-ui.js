@@ -105,13 +105,10 @@ function extraRoundLabel(round){
   if(currentLang==='ja')return (['序','破','急'][round]||String(round+1))+'　'+masterSubtitle(round+1);
   return volumeLabel(round+1)+' · '+masterSubtitle(round+1);
 }
-function closeStagePickerCore(){
-  $('stagePicker').hidden=true;
-}
 // ステージ選択を閉じる公開入口。動的に生成した問題ボタンと共通イベントから
 // 同じ関数を呼び、閉じる処理の名前解決を一箇所にそろえる。
 function closeStagePicker(){
-  closeStagePickerCore();
+  $('stagePicker').hidden=true;
 }
 function moveStagePickerRound(direction){
   if(pickerRound==='satori'){
@@ -156,13 +153,26 @@ function renderSatoriStagePicker(){
 }
 function openSatoriPicker(){
   if(!canEnterSatori()){
-    if(activeLap===1&&isMastered())showMasterDialog('mastery');
+    if(WakeSevenAppContext.snapshot().lap===1&&isMastered())showMasterDialog('mastery');
     return;
   }
-  pickerLap=activeLap;
-  pickerRound='satori';
-  satoriPickerPage=isMode('satori')?Math.floor(satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0;
-  renderSatoriStagePicker();
+  openStagePickerAt({lap:WakeSevenAppContext.snapshot().lap,round:'satori',satoriPage:isMode('satori')?Math.floor(WakeSevenAppContext.snapshot().satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0});
+}
+// ステージ選択を開く共通入口。呼び出し側は「どの周・巻を選ぶか」だけを渡し、
+// 状態の反映・表示更新・ダイアログ公開の順序はここで固定する。
+// 入口を分けたままにすると、通常メニューと称号一覧で picker の状態だけが
+// ずれるため、状態判定後の表示経路を一つにする。
+function openStagePickerAt({lap,round,satoriPage=null}={}){
+  lap=Number.isInteger(lap)?lap:WakeSevenAppContext.snapshot().lap;
+  round=typeof round==='undefined'?pickerRound:round;
+  pickerLap=lap;
+  pickerRound=round;
+  if(round==='satori'){
+    satoriPickerPage=Number.isInteger(satoriPage)?satoriPage:0;
+    renderSatoriStagePicker();
+  }else{
+    renderStagePicker();
+  }
   $('stagePicker').hidden=false;
 }
 function renderStagePicker(){
@@ -236,23 +246,22 @@ function renderStagePicker(){
   }
 }
 function openStagePicker(){
-  pickerLap=activeLap;
-  if(isMode('satori')||(isSideCourseMode()&&returnStageContext.satori)){openSatoriPicker();return;}
+  if(isMode('satori')||(isSideCourseMode()&&returnStageContext.satori)){
+    openSatoriPicker();
+    return;
+  }
   const showingExtra=isMode('mastery')||(isSideCourseMode()&&returnStageContext.extra);
   const showingIndex=isMode('mastery')?extraIndex:returnStageContext.index;
-  pickerRound=showingExtra?Math.floor(showingIndex/MASTER_VOLUME_SIZE):PRIMARY_SECTIONS.indexOf(primarySection(showingIndex))-PRIMARY_PICKER_SECTION_COUNT;
-  renderStagePicker();
-  $('stagePicker').hidden=false;
+  const round=showingExtra?Math.floor(showingIndex/MASTER_VOLUME_SIZE):PRIMARY_SECTIONS.indexOf(primarySection(showingIndex))-PRIMARY_PICKER_SECTION_COUNT;
+  openStagePickerAt({lap:WakeSevenAppContext.snapshot().lap,round});
 }
 function openStagePickerForRank(rankIndex){
   updateDialogStateOwner({rankDialogReturn:null});
   $('rankDialog').hidden=true;
   $('resetDialog').hidden=true;
   // 称号一覧で選択した周（activeLap）を、そのまま問題選択にも引き継ぐ。
-  pickerLap=activeLap;
-  pickerRound=rankIndex===0?-PRIMARY_PICKER_SECTION_COUNT:rankIndex===1?PICKER_TRAINING_FIRST_ROUND:rankIndex-2;
-  renderStagePicker();
-  $('stagePicker').hidden=false;
+  const round=rankIndex===0?-PRIMARY_PICKER_SECTION_COUNT:rankIndex===1?PICKER_TRAINING_FIRST_ROUND:rankIndex-2;
+  openStagePickerAt({lap:WakeSevenAppContext.snapshot().lap,round});
 }
 // ===== ステージナビゲーション表示 =====
 // 現在モードの状態をヘッダー、操作欄、案内へ反映する。前後ボタンのイベントは
