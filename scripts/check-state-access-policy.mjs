@@ -13,6 +13,17 @@ assert.equal(policy.schemaVersion,1,'state access policy schemaVersion is invali
 assert.deepEqual(policy.ownerFiles,[...STATE_OWNER_FILES],'state access owner list drifted');
 const names=new Set([...NAVIGATION_NAMES,...DIALOG_NAMES]);
 const refs=[];
+const excludedRefs=[];
+const isInsideString=(line,index)=>{
+  let quote=null;
+  for(let cursor=0;cursor<index;cursor++){
+    const char=line[cursor];
+    if(char==='\\'){cursor++;continue;}
+    if(quote===null&&(char==='"'||char==="'"||line.charCodeAt(cursor)===96)) quote=char||'`';
+    else if(quote===char) quote=null;
+  }
+  return quote!==null;
+};
 for(const file of publishedSourceFiles){
   const text=await readFile(join(root,'src',file),'utf8');
   const lines=text.split('\n');
@@ -25,10 +36,11 @@ for(const file of publishedSourceFiles){
       const re=new RegExp(`\\b${name}\\b`,'g');
       for(const match of line.matchAll(re)){
         const before=line.slice(0,match.index);
-        if(new RegExp(`(?:let|const|var|function)\\s+${name}\\b`).test(before))continue;
+        if(new RegExp(`(?:let|const|var|function)\\s+${name}\\b`).test(before)){excludedRefs.push({file,name,line:index+1,source:line.trim(),kind:'declaration',exclusionReason:'状態変数自身の宣言'});continue;}
         // オブジェクトのキーやプロパティ名は共有状態の直接参照ではない。
-        if(/^\s*:\s*/.test(line.slice(match.index+name.length))||/\.\s*$/.test(before))continue;
-        refs.push({file,name,line:index+1,source:line.trim().replace(/\s+/g,' ').slice(0,220)});
+        if(/^\s*:\s*/.test(line.slice(match.index+name.length))||/\.\s*$/.test(before)){const kind=/\.\s*$/.test(before)?'property':'object-key';excludedRefs.push({file,name,line:index+1,source:line.trim(),kind,exclusionReason:kind==='property'?'オブジェクトのプロパティ名':'オブジェクトリテラルのキー'});continue;}
+        if(isInsideString(line,match.index)){excludedRefs.push({file,name,line:index+1,source:line.trim(),kind:'string',exclusionReason:'文字列リテラル内の名前'});continue;}
+        refs.push({file,name,line:index+1,source:line.trim().replace(/\s+/g,' ').slice(0,220),kind:'executable'});
       }
     }
   }
@@ -84,11 +96,12 @@ const accessOf=ref=>new RegExp(`(?:^|[\\s;,(])(?:[+\\-]{2})?${ref.name}\\s*(?:[+
 const entrypointOf=ref=>ref.file.startsWith('commands/')?'commands':ref.file.startsWith('runtime/')?'runtime':ref.file.startsWith('ui/')?'ui':ref.file.startsWith('data/')?'data':'other';
 const baselineEntries=tracked.map(ref=>{
   const meta=exceptionMetadata.find(item=>item.fingerprint===fingerprint(ref));
-  return {fingerprint:fingerprint(ref),source:{file:ref.file,line:ref.line,excerpt:ref.source},symbol:ref.name,entrypoint:entrypointOf(ref),access:accessOf(ref),purpose:meta.purpose,ownerOnly:meta.ownerOnly,temporary:meta.temporary,migrationTarget:meta.migrationTarget,priority:meta.priority,reason:meta.reason,relatedE2E:relatedTestsForStateException(meta)};
+  return {fingerprint:fingerprint(ref),classification:'executable',source:{file:ref.file,line:ref.line,excerpt:ref.source},symbol:ref.name,entrypoint:entrypointOf(ref),access:accessOf(ref),purpose:meta.purpose,ownerOnly:meta.ownerOnly,temporary:meta.temporary,migrationTarget:meta.migrationTarget,priority:meta.priority,reason:meta.reason,relatedE2E:relatedTestsForStateException(meta)};
 });
 const countsByEntrypoint=Object.fromEntries([...new Set(baselineEntries.map(entry=>entry.entrypoint))].sort().map(key=>[key,baselineEntries.filter(entry=>entry.entrypoint===key).length]));
 const countsByAccess={read:baselineEntries.filter(entry=>entry.access==='read').length,write:baselineEntries.filter(entry=>entry.access==='write').length};
-const report={schemaVersion:1,generatedAt:new Date().toISOString(),names:[...names],ownerFiles:[...STATE_OWNER_FILES],baselineTracked:baselineCount,counts:{tracked:tracked.length,allowed:tracked.filter(ref=>allowed.has(fingerprint(ref))).length,newReferences:newRefs.length,retiredExceptions:missing.length,temporary:exceptionMetadata.filter(meta=>meta.temporary).length,expiredTemporary:expiredTemporary.length},countsByPurpose,countsByEntrypoint,countsByAccess,exceptionMetadata,temporaryExceptions:[...temporaryMetadata.values()],baselineEntries,newReferences:newRefs,retiredExceptions:missing};
+const excludedCounts=Object.fromEntries([...new Set(excludedRefs.map(ref=>ref.kind))].sort().map(kind=>[kind,excludedRefs.filter(ref=>ref.kind===kind).length]));
+const report={schemaVersion:1,generatedAt:new Date().toISOString(),names:[...names],ownerFiles:[...STATE_OWNER_FILES],migrationScope:{includedClassification:'executable',excludedClassifications:Object.keys(excludedCounts),description:'移行対象は実行コードの状態アクセスだけ。宣言・オブジェクトキー・プロパティ・文字列・データ定義は検出結果として記録するがtemporary例外には含めない'},baselineTracked:baselineCount,counts:{detected:tracked.length+excludedRefs.length,tracked:tracked.length,excluded:excludedRefs.length,allowed:tracked.filter(ref=>allowed.has(fingerprint(ref))).length,newReferences:newRefs.length,retiredExceptions:missing.length,temporary:exceptionMetadata.filter(meta=>meta.temporary).length,expiredTemporary:expiredTemporary.length},excludedCounts,excludedReferences:excludedRefs,countsByPurpose,countsByEntrypoint,countsByAccess,exceptionMetadata,temporaryExceptions:[...temporaryMetadata.values()],baselineEntries,newReferences:newRefs,retiredExceptions:missing};
 const reportPath=join(root,'build','report','state-access-policy.json');
 await mkdir(dirname(reportPath),{recursive:true});
 await writeFile(reportPath,JSON.stringify(report,null,2)+'\n');

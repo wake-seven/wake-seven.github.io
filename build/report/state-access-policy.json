@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-03T09:58:49.224Z",
+  "generatedAt": "2026-09-03T10:10:17.102Z",
   "names": [
     "activeMode",
     "activeLap",
@@ -21,18 +21,1614 @@
     "state/game-state.js",
     "app/app-context.js"
   ],
-  "baselineTracked": 168,
+  "migrationScope": {
+    "includedClassification": "executable",
+    "excludedClassifications": [
+      "declaration",
+      "object-key",
+      "property",
+      "string"
+    ],
+    "description": "移行対象は実行コードの状態アクセスだけ。宣言・オブジェクトキー・プロパティ・文字列・データ定義は検出結果として記録するがtemporary例外には含めない"
+  },
+  "baselineTracked": 164,
   "counts": {
-    "tracked": 168,
-    "allowed": 168,
+    "detected": 361,
+    "tracked": 164,
+    "excluded": 197,
+    "allowed": 164,
     "newReferences": 0,
     "retiredExceptions": 0,
-    "temporary": 168,
+    "temporary": 164,
     "expiredTemporary": 0
   },
+  "excludedCounts": {
+    "declaration": 4,
+    "object-key": 54,
+    "property": 126,
+    "string": 13
+  },
+  "excludedReferences": [
+    {
+      "file": "state/game-state.js",
+      "name": "activeLap",
+      "line": 22,
+      "source": "currentStage: 'wake7-current-stage', activeSession: 'wake7-active-session', activeLap: 'wake7-active-lap',",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "tutorialStep",
+      "line": 23,
+      "source": "introSeen: 'wake7-intro-seen', tutorialComplete: 'wake7-tutorial-complete', tutorialStep: 'wake7-tutorial-step',",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "activeLap",
+      "line": 40,
+      "source": "progression: Object.freeze({ cleared: STORAGE_KEYS.cleared, extraCleared: STORAGE_KEYS.extraCleared, satoriCleared: STORAGE_KEYS.satoriCleared, currentStage: STORAGE_KEYS.currentStage, activeSession: STORAGE_KEYS.activeSession, activeLap: STORAGE_KEYS.activeLap, secondLapActive: STORAGE_KEYS.secondLapActive, secondLapUnlocked: STORAGE_KEYS.secondLapUnlocked, stagesLayoutVersion: STORAGE_KEYS.stagesLayoutVersion, satoriOrderVersion: STORAGE_KEYS.satoriOrderVersion, introSeen: STORAGE_KEYS.introSeen, tutorialComplete: STORAGE_KEYS.tutorialComplete, tutorialStep: STORAGE_KEYS.tutorialStep, lapCleared: (lap, part) => 'wake7-lap' + lap + '-' + part + '-cleared' }),",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "activeLap",
+      "line": 40,
+      "source": "progression: Object.freeze({ cleared: STORAGE_KEYS.cleared, extraCleared: STORAGE_KEYS.extraCleared, satoriCleared: STORAGE_KEYS.satoriCleared, currentStage: STORAGE_KEYS.currentStage, activeSession: STORAGE_KEYS.activeSession, activeLap: STORAGE_KEYS.activeLap, secondLapActive: STORAGE_KEYS.secondLapActive, secondLapUnlocked: STORAGE_KEYS.secondLapUnlocked, stagesLayoutVersion: STORAGE_KEYS.stagesLayoutVersion, satoriOrderVersion: STORAGE_KEYS.satoriOrderVersion, introSeen: STORAGE_KEYS.introSeen, tutorialComplete: STORAGE_KEYS.tutorialComplete, tutorialStep: STORAGE_KEYS.tutorialStep, lapCleared: (lap, part) => 'wake7-lap' + lap + '-' + part + '-cleared' }),",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "tutorialStep",
+      "line": 40,
+      "source": "progression: Object.freeze({ cleared: STORAGE_KEYS.cleared, extraCleared: STORAGE_KEYS.extraCleared, satoriCleared: STORAGE_KEYS.satoriCleared, currentStage: STORAGE_KEYS.currentStage, activeSession: STORAGE_KEYS.activeSession, activeLap: STORAGE_KEYS.activeLap, secondLapActive: STORAGE_KEYS.secondLapActive, secondLapUnlocked: STORAGE_KEYS.secondLapUnlocked, stagesLayoutVersion: STORAGE_KEYS.stagesLayoutVersion, satoriOrderVersion: STORAGE_KEYS.satoriOrderVersion, introSeen: STORAGE_KEYS.introSeen, tutorialComplete: STORAGE_KEYS.tutorialComplete, tutorialStep: STORAGE_KEYS.tutorialStep, lapCleared: (lap, part) => 'wake7-lap' + lap + '-' + part + '-cleared' }),",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "tutorialStep",
+      "line": 40,
+      "source": "progression: Object.freeze({ cleared: STORAGE_KEYS.cleared, extraCleared: STORAGE_KEYS.extraCleared, satoriCleared: STORAGE_KEYS.satoriCleared, currentStage: STORAGE_KEYS.currentStage, activeSession: STORAGE_KEYS.activeSession, activeLap: STORAGE_KEYS.activeLap, secondLapActive: STORAGE_KEYS.secondLapActive, secondLapUnlocked: STORAGE_KEYS.secondLapUnlocked, stagesLayoutVersion: STORAGE_KEYS.stagesLayoutVersion, satoriOrderVersion: STORAGE_KEYS.satoriOrderVersion, introSeen: STORAGE_KEYS.introSeen, tutorialComplete: STORAGE_KEYS.tutorialComplete, tutorialStep: STORAGE_KEYS.tutorialStep, lapCleared: (lap, part) => 'wake7-lap' + lap + '-' + part + '-cleared' }),",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "stageIndex",
+      "line": 89,
+      "source": "stageIndex: asIndex(seed.navigation?.stageIndex),",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "stageIndex",
+      "line": 89,
+      "source": "stageIndex: asIndex(seed.navigation?.stageIndex),",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "satoriIndex",
+      "line": 91,
+      "source": "satoriIndex: asIndex(seed.navigation?.satoriIndex),",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "satoriIndex",
+      "line": 91,
+      "source": "satoriIndex: asIndex(seed.navigation?.satoriIndex),",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "tutorialStep",
+      "line": 92,
+      "source": "tutorialStep: asIndex(seed.navigation?.tutorialStep)",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "tutorialStep",
+      "line": 92,
+      "source": "tutorialStep: asIndex(seed.navigation?.tutorialStep)",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "stageIndex",
+      "line": 154,
+      "source": "stageIndex: asIndex(navigation.stageIndex),",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "stageIndex",
+      "line": 154,
+      "source": "stageIndex: asIndex(navigation.stageIndex),",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "satoriIndex",
+      "line": 156,
+      "source": "satoriIndex: asIndex(navigation.satoriIndex),",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "satoriIndex",
+      "line": 156,
+      "source": "satoriIndex: asIndex(navigation.satoriIndex),",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "tutorialStep",
+      "line": 157,
+      "source": "tutorialStep: asIndex(navigation.tutorialStep)",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "tutorialStep",
+      "line": 157,
+      "source": "tutorialStep: asIndex(navigation.tutorialStep)",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "tutorialStep",
+      "line": 164,
+      "source": "case 'tutorial': return view.tutorialStep;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "satoriIndex",
+      "line": 166,
+      "source": "case 'satori': return view.satoriIndex;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "stageIndex",
+      "line": 167,
+      "source": "case 'stage': return view.stageIndex;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "stageIndex",
+      "line": 181,
+      "source": "stageIndex: asIndex(next.stageIndex),",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "stageIndex",
+      "line": 181,
+      "source": "stageIndex: asIndex(next.stageIndex),",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "satoriIndex",
+      "line": 183,
+      "source": "satoriIndex: asIndex(next.satoriIndex),",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "satoriIndex",
+      "line": 183,
+      "source": "satoriIndex: asIndex(next.satoriIndex),",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "tutorialStep",
+      "line": 184,
+      "source": "tutorialStep: asIndex(next.tutorialStep)",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "tutorialStep",
+      "line": 184,
+      "source": "tutorialStep: asIndex(next.tutorialStep)",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "satoriIndex",
+      "line": 204,
+      "source": ": mode === 'satori' ? 'satoriIndex'",
+      "kind": "string",
+      "exclusionReason": "文字列リテラル内の名前"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "stageIndex",
+      "line": 205,
+      "source": ": mode === 'tutorial' ? 'tutorialStep' : 'stageIndex';",
+      "kind": "string",
+      "exclusionReason": "文字列リテラル内の名前"
+    },
+    {
+      "file": "state/game-state.js",
+      "name": "tutorialStep",
+      "line": 205,
+      "source": ": mode === 'tutorial' ? 'tutorialStep' : 'stageIndex';",
+      "kind": "string",
+      "exclusionReason": "文字列リテラル内の名前"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "lastStageMode",
+      "line": 31,
+      "source": "read(){return typeof readNavigationStateOwner==='function'?readNavigationStateOwner():Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});},",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "clearShown",
+      "line": 44,
+      "source": "update(patch={}){return typeof updateDialogStateOwner==='function'?updateDialogStateOwner(patch):(patch.clearShown!==undefined&&setClearShownCommand(patch.clearShown),this.read());}",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "clearShown",
+      "line": 44,
+      "source": "update(patch={}){return typeof updateDialogStateOwner==='function'?updateDialogStateOwner(patch):(patch.clearShown!==undefined&&setClearShownCommand(patch.clearShown),this.read());}",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "clearShown",
+      "line": 63,
+      "source": "clearShown:WakeSevenAppContext.state.dialog.read().clearShown",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "clearShown",
+      "line": 63,
+      "source": "clearShown:WakeSevenAppContext.state.dialog.read().clearShown",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "clearShown",
+      "line": 66,
+      "source": "isClearShown(){return WakeSevenAppContext.state.dialog.read().clearShown===true;},",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "clearShown",
+      "line": 68,
+      "source": "setClearShown(value){return WakeSevenAppContext.state.dialog.update({clearShown:value}).clearShown;},",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "clearShown",
+      "line": 68,
+      "source": "setClearShown(value){return WakeSevenAppContext.state.dialog.update({clearShown:value}).clearShown;},",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "stageIndex",
+      "line": 73,
+      "source": "const patch=kind==='stageIndex'?{stageIndex:value}:kind==='masteryIndex'?{masteryIndex:value}:kind==='satoriIndex'?{satoriIndex:value}:kind==='tutorialStep'?{tutorialStep:value}:{};",
+      "kind": "string",
+      "exclusionReason": "文字列リテラル内の名前"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "stageIndex",
+      "line": 73,
+      "source": "const patch=kind==='stageIndex'?{stageIndex:value}:kind==='masteryIndex'?{masteryIndex:value}:kind==='satoriIndex'?{satoriIndex:value}:kind==='tutorialStep'?{tutorialStep:value}:{};",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "satoriIndex",
+      "line": 73,
+      "source": "const patch=kind==='stageIndex'?{stageIndex:value}:kind==='masteryIndex'?{masteryIndex:value}:kind==='satoriIndex'?{satoriIndex:value}:kind==='tutorialStep'?{tutorialStep:value}:{};",
+      "kind": "string",
+      "exclusionReason": "文字列リテラル内の名前"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "satoriIndex",
+      "line": 73,
+      "source": "const patch=kind==='stageIndex'?{stageIndex:value}:kind==='masteryIndex'?{masteryIndex:value}:kind==='satoriIndex'?{satoriIndex:value}:kind==='tutorialStep'?{tutorialStep:value}:{};",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "tutorialStep",
+      "line": 73,
+      "source": "const patch=kind==='stageIndex'?{stageIndex:value}:kind==='masteryIndex'?{masteryIndex:value}:kind==='satoriIndex'?{satoriIndex:value}:kind==='tutorialStep'?{tutorialStep:value}:{};",
+      "kind": "string",
+      "exclusionReason": "文字列リテラル内の名前"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "tutorialStep",
+      "line": 73,
+      "source": "const patch=kind==='stageIndex'?{stageIndex:value}:kind==='masteryIndex'?{masteryIndex:value}:kind==='satoriIndex'?{satoriIndex:value}:kind==='tutorialStep'?{tutorialStep:value}:{};",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "clearShown",
+      "line": 76,
+      "source": "function setClearShownCommand(value){return updateDialogStateCommand({clearShown:value}).clearShown;}",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "app/app-context.js",
+      "name": "clearShown",
+      "line": 76,
+      "source": "function setClearShownCommand(value){return updateDialogStateCommand({clearShown:value}).clearShown;}",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/audio.js",
+      "name": "satoriIndex",
+      "line": 38,
+      "source": "if(navigation.mode==='satori'&&navigation.satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/audio.js",
+      "name": "stageIndex",
+      "line": 39,
+      "source": "if(navigation.mode!=='mastery'&&navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "stageIndex",
+      "line": 84,
+      "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "stageIndex",
+      "line": 84,
+      "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "satoriIndex",
+      "line": 84,
+      "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "satoriIndex",
+      "line": 84,
+      "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "tutorialStep",
+      "line": 84,
+      "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "tutorialStep",
+      "line": 84,
+      "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "stageIndex",
+      "line": 85,
+      "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;",
+      "kind": "declaration",
+      "exclusionReason": "状態変数自身の宣言"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "satoriIndex",
+      "line": 85,
+      "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "tutorialStep",
+      "line": 85,
+      "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "stageIndex",
+      "line": 97,
+      "source": "navigationState.mode=activeMode;navigationState.lap=activeLap;navigationState.stageIndex=stageIndex;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "satoriIndex",
+      "line": 98,
+      "source": "navigationState.masteryIndex=extraIndex;navigationState.satoriIndex=satoriIndex;navigationState.tutorialStep=tutorialStep;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "tutorialStep",
+      "line": 98,
+      "source": "navigationState.masteryIndex=extraIndex;navigationState.satoriIndex=satoriIndex;navigationState.tutorialStep=tutorialStep;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "lastStageMode",
+      "line": 99,
+      "source": "return Object.freeze({...navigationState,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "stageIndex",
+      "line": 104,
+      "source": "if(patch.stageIndex!==undefined)navigationState.stageIndex=Math.max(0,Number(patch.stageIndex)||0);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "stageIndex",
+      "line": 104,
+      "source": "if(patch.stageIndex!==undefined)navigationState.stageIndex=Math.max(0,Number(patch.stageIndex)||0);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "stageIndex",
+      "line": 104,
+      "source": "if(patch.stageIndex!==undefined)navigationState.stageIndex=Math.max(0,Number(patch.stageIndex)||0);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "satoriIndex",
+      "line": 106,
+      "source": "if(patch.satoriIndex!==undefined)navigationState.satoriIndex=Math.max(0,Number(patch.satoriIndex)||0);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "satoriIndex",
+      "line": 106,
+      "source": "if(patch.satoriIndex!==undefined)navigationState.satoriIndex=Math.max(0,Number(patch.satoriIndex)||0);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "satoriIndex",
+      "line": 106,
+      "source": "if(patch.satoriIndex!==undefined)navigationState.satoriIndex=Math.max(0,Number(patch.satoriIndex)||0);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "tutorialStep",
+      "line": 107,
+      "source": "if(patch.tutorialStep!==undefined)navigationState.tutorialStep=Math.max(0,Number(patch.tutorialStep)||0);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "tutorialStep",
+      "line": 107,
+      "source": "if(patch.tutorialStep!==undefined)navigationState.tutorialStep=Math.max(0,Number(patch.tutorialStep)||0);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "tutorialStep",
+      "line": 107,
+      "source": "if(patch.tutorialStep!==undefined)navigationState.tutorialStep=Math.max(0,Number(patch.tutorialStep)||0);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "stageIndex",
+      "line": 108,
+      "source": "activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "satoriIndex",
+      "line": 109,
+      "source": "satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "tutorialStep",
+      "line": 109,
+      "source": "satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "lastStageMode",
+      "line": 110,
+      "source": "if(patch.lastStageMode!==undefined&&typeof lastStageMode!=='undefined')lastStageMode=patch.lastStageMode;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "lastStageMode",
+      "line": 110,
+      "source": "if(patch.lastStageMode!==undefined&&typeof lastStageMode!=='undefined')lastStageMode=patch.lastStageMode;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "tutorialStep",
+      "line": 206,
+      "source": "tutorial:{id:'tutorial',total:WakeSevenAppContext.courses.tutorial().length,label:'tutorial',indexKey:'tutorialStep'},",
+      "kind": "string",
+      "exclusionReason": "文字列リテラル内の名前"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "stageIndex",
+      "line": 207,
+      "source": "primary:{id:'primary',total:WakeSevenAppContext.courses.primary().length,label:'training',indexKey:'stageIndex'},",
+      "kind": "string",
+      "exclusionReason": "文字列リテラル内の名前"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "satoriIndex",
+      "line": 209,
+      "source": "satori:{id:'satori',total:WakeSevenAppContext.courses.satori().length,label:'satori',indexKey:'satoriIndex'},",
+      "kind": "string",
+      "exclusionReason": "文字列リテラル内の名前"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "clearShown",
+      "line": 480,
+      "source": "const dialogState={clearShown:false,nextStageAttention:false,masterDialogKind:'primary',rankDialogReturn:null,messageDialogReturn:null};",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "nextStageAttention",
+      "line": 480,
+      "source": "const dialogState={clearShown:false,nextStageAttention:false,masterDialogKind:'primary',rankDialogReturn:null,messageDialogReturn:null};",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "masterDialogKind",
+      "line": 480,
+      "source": "const dialogState={clearShown:false,nextStageAttention:false,masterDialogKind:'primary',rankDialogReturn:null,messageDialogReturn:null};",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "rankDialogReturn",
+      "line": 480,
+      "source": "const dialogState={clearShown:false,nextStageAttention:false,masterDialogKind:'primary',rankDialogReturn:null,messageDialogReturn:null};",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "messageDialogReturn",
+      "line": 480,
+      "source": "const dialogState={clearShown:false,nextStageAttention:false,masterDialogKind:'primary',rankDialogReturn:null,messageDialogReturn:null};",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "masterDialogKind",
+      "line": 481,
+      "source": "let masterDialogKind=dialogState.masterDialogKind;",
+      "kind": "declaration",
+      "exclusionReason": "状態変数自身の宣言"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "rankDialogReturn",
+      "line": 482,
+      "source": "let rankDialogReturn=dialogState.rankDialogReturn;",
+      "kind": "declaration",
+      "exclusionReason": "状態変数自身の宣言"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "messageDialogReturn",
+      "line": 488,
+      "source": "let messageDialogReturn=dialogState.messageDialogReturn;",
+      "kind": "declaration",
+      "exclusionReason": "状態変数自身の宣言"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "clearShown",
+      "line": 491,
+      "source": "dialogState.clearShown=clearShown===true;dialogState.nextStageAttention=nextStageAttention===true;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "nextStageAttention",
+      "line": 491,
+      "source": "dialogState.clearShown=clearShown===true;dialogState.nextStageAttention=nextStageAttention===true;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "masterDialogKind",
+      "line": 492,
+      "source": "dialogState.masterDialogKind=masterDialogKind;dialogState.rankDialogReturn=rankDialogReturn;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "rankDialogReturn",
+      "line": 492,
+      "source": "dialogState.masterDialogKind=masterDialogKind;dialogState.rankDialogReturn=rankDialogReturn;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "messageDialogReturn",
+      "line": 493,
+      "source": "dialogState.messageDialogReturn=messageDialogReturn;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "clearShown",
+      "line": 497,
+      "source": "if(patch.clearShown!==undefined)dialogState.clearShown=patch.clearShown===true;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "clearShown",
+      "line": 497,
+      "source": "if(patch.clearShown!==undefined)dialogState.clearShown=patch.clearShown===true;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "clearShown",
+      "line": 497,
+      "source": "if(patch.clearShown!==undefined)dialogState.clearShown=patch.clearShown===true;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "nextStageAttention",
+      "line": 498,
+      "source": "if(patch.nextStageAttention!==undefined)dialogState.nextStageAttention=patch.nextStageAttention===true;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "nextStageAttention",
+      "line": 498,
+      "source": "if(patch.nextStageAttention!==undefined)dialogState.nextStageAttention=patch.nextStageAttention===true;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "nextStageAttention",
+      "line": 498,
+      "source": "if(patch.nextStageAttention!==undefined)dialogState.nextStageAttention=patch.nextStageAttention===true;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "masterDialogKind",
+      "line": 499,
+      "source": "if(patch.masterDialogKind!==undefined)dialogState.masterDialogKind=patch.masterDialogKind;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "masterDialogKind",
+      "line": 499,
+      "source": "if(patch.masterDialogKind!==undefined)dialogState.masterDialogKind=patch.masterDialogKind;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "masterDialogKind",
+      "line": 499,
+      "source": "if(patch.masterDialogKind!==undefined)dialogState.masterDialogKind=patch.masterDialogKind;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "rankDialogReturn",
+      "line": 500,
+      "source": "if(patch.rankDialogReturn!==undefined)dialogState.rankDialogReturn=patch.rankDialogReturn;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "rankDialogReturn",
+      "line": 500,
+      "source": "if(patch.rankDialogReturn!==undefined)dialogState.rankDialogReturn=patch.rankDialogReturn;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "rankDialogReturn",
+      "line": 500,
+      "source": "if(patch.rankDialogReturn!==undefined)dialogState.rankDialogReturn=patch.rankDialogReturn;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "messageDialogReturn",
+      "line": 501,
+      "source": "if(patch.messageDialogReturn!==undefined)dialogState.messageDialogReturn=patch.messageDialogReturn;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "messageDialogReturn",
+      "line": 501,
+      "source": "if(patch.messageDialogReturn!==undefined)dialogState.messageDialogReturn=patch.messageDialogReturn;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "messageDialogReturn",
+      "line": 501,
+      "source": "if(patch.messageDialogReturn!==undefined)dialogState.messageDialogReturn=patch.messageDialogReturn;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "clearShown",
+      "line": 502,
+      "source": "clearShown=dialogState.clearShown;nextStageAttention=dialogState.nextStageAttention;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "nextStageAttention",
+      "line": 502,
+      "source": "clearShown=dialogState.clearShown;nextStageAttention=dialogState.nextStageAttention;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "masterDialogKind",
+      "line": 503,
+      "source": "masterDialogKind=dialogState.masterDialogKind;rankDialogReturn=dialogState.rankDialogReturn;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "rankDialogReturn",
+      "line": 503,
+      "source": "masterDialogKind=dialogState.masterDialogKind;rankDialogReturn=dialogState.rankDialogReturn;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "messageDialogReturn",
+      "line": 504,
+      "source": "messageDialogReturn=dialogState.messageDialogReturn;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "name": "activeLap",
+      "line": 596,
+      "source": "storage.set(STORAGE_KEY_GROUPS.progression.activeLap,String(activeLap));",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/board-ui.js",
+      "name": "tutorialStep",
+      "line": 1259,
+      "source": "const savedStep=Number(storage.get(STORAGE_KEY_GROUPS.progression.tutorialStep,'0'));",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/board-ui.js",
+      "name": "stageIndex",
+      "line": 1279,
+      "source": "setNavigationIndexCommand('stageIndex',nextStageIndex);",
+      "kind": "string",
+      "exclusionReason": "文字列リテラル内の名前"
+    },
+    {
+      "file": "ui/board-ui.js",
+      "name": "satoriIndex",
+      "line": 1316,
+      "source": "setNavigationIndexCommand('satoriIndex',nextSatoriIndex);",
+      "kind": "string",
+      "exclusionReason": "文字列リテラル内の名前"
+    },
+    {
+      "file": "ui/board-ui.js",
+      "name": "clearShown",
+      "line": 1370,
+      "source": "setClearShownCommand(!!data.clearShown||isSolved());",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/board-ui.js",
+      "name": "extraIndex",
+      "line": 1401,
+      "source": "mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/board-ui.js",
+      "name": "satoriIndex",
+      "line": 1401,
+      "source": "mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/board-ui.js",
+      "name": "tutorialStep",
+      "line": 1412,
+      "source": "loadTutorialStep(Number.isInteger(saved.step)?saved.step:Number(storage.get(STORAGE_KEY_GROUPS.progression.tutorialStep,'0'))||0);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "commands/state-commands.js",
+      "name": "stageIndex",
+      "line": 19,
+      "source": "stageIndex:navigation.stageIndex,",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "commands/state-commands.js",
+      "name": "stageIndex",
+      "line": 19,
+      "source": "stageIndex:navigation.stageIndex,",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "commands/state-commands.js",
+      "name": "satoriIndex",
+      "line": 21,
+      "source": "satoriIndex:navigation.satoriIndex,",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "commands/state-commands.js",
+      "name": "satoriIndex",
+      "line": 21,
+      "source": "satoriIndex:navigation.satoriIndex,",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "commands/state-commands.js",
+      "name": "tutorialStep",
+      "line": 22,
+      "source": "tutorialStep:navigation.tutorialStep,",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "commands/state-commands.js",
+      "name": "tutorialStep",
+      "line": 22,
+      "source": "tutorialStep:navigation.tutorialStep,",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "commands/state-commands.js",
+      "name": "lastStageMode",
+      "line": 23,
+      "source": "lastStageMode:navigation.lastStageMode",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "commands/state-commands.js",
+      "name": "lastStageMode",
+      "line": 23,
+      "source": "lastStageMode:navigation.lastStageMode",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "commands/board-commands.js",
+      "name": "clearShown",
+      "line": 50,
+      "source": "currentInitialState=session.initialState;currentInitialPar=session.initialPar;WakeSevenAppContext.setClearShown(session.clearShown);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "commands/tutorial-commands.js",
+      "name": "tutorialStep",
+      "line": 5,
+      "source": "commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialStep,String(tutorialStep));",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "commands/tutorial-commands.js",
+      "name": "tutorialStep",
+      "line": 10,
+      "source": "commandStorageRemove(STORAGE_KEY_GROUPS.progression.tutorialStep);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "commands/tutorial-commands.js",
+      "name": "tutorialStep",
+      "line": 15,
+      "source": "commandStorageRemove(STORAGE_KEY_GROUPS.progression.tutorialStep);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "commands/tutorial-commands.js",
+      "name": "tutorialStep",
+      "line": 22,
+      "source": "commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialStep,String(step));",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/clear-flow.js",
+      "name": "stageIndex",
+      "line": 17,
+      "source": "function stageClearText(){const navigation=readNavigationContext(),{mode}=navigation;return mode==='free'||mode==='custom'||mode==='satori'?'':stageClearTextAt(mode==='mastery',mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);}",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/clear-flow.js",
+      "name": "stageIndex",
+      "line": 22,
+      "source": "return clearContentAt(false,navigation.stageIndex);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/clear-flow.js",
+      "name": "stageIndex",
+      "line": 31,
+      "source": "function stageClearArt(){const navigation=readNavigationContext(),{mode}=navigation;return mode==='satori'?'':stageClearArtAt(mode==='mastery',mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);}",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-dialogs.js",
+      "name": "stageIndex",
+      "line": 8,
+      "source": "stageIndex:source.stageIndex??appState.stageIndex??null,",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/progression-dialogs.js",
+      "name": "stageIndex",
+      "line": 8,
+      "source": "stageIndex:source.stageIndex??appState.stageIndex??null,",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-dialogs.js",
+      "name": "stageIndex",
+      "line": 8,
+      "source": "stageIndex:source.stageIndex??appState.stageIndex??null,",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "satoriIndex",
+      "line": 166,
+      "source": "appendStagePickerButton(grid,{label:index+1,ariaLabel:tr('satori')+' '+(index+1),cleared:pickerSatori.has(index),current:pickerLap===currentContext.lap&&isMode('satori')&&currentContext.satoriIndex===index,disabled:!(index===0||pickerSatori.has(index)||pickerSatori.has(index-1)),onClick:()=>{closeStagePicker();activateCampaignLap(pickerLap);loadSatoriStage(index);}});",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "satoriIndex",
+      "line": 174,
+      "source": "openDialog('stagePicker',{lap:WakeSevenAppContext.snapshot().lap,round:'satori',satoriPage:isMode('satori')?Math.floor(WakeSevenAppContext.snapshot().satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0});",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "stageIndex",
+      "line": 241,
+      "source": "b.classList.toggle('current',pickerLap===navigation.lap&&!isMode('speed')&&(isPrimary?!isMode('mastery')&&!isMode('satori')&&navigation.stageIndex===index:isMode('mastery')&&navigation.masteryIndex===index));",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "extraIndex",
+      "line": 261,
+      "source": "const showingIndex=isMode('mastery')?extraIndex:returnStageContext.index;",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "rankDialogReturn",
+      "line": 266,
+      "source": "updateDialogStateOwner({rankDialogReturn:null});",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "satoriIndex",
+      "line": 321,
+      "source": "const showSatoriMastery=clearContext.mode==='satori'&&clearContext.satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered();",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "stageIndex",
+      "line": 330,
+      "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===ACADEMY_STAGE_COUNT-1&&clearContext.academyIsCleared){",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "stageIndex",
+      "line": 336,
+      "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===INTRO_STAGE_COUNT-1){",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "stageIndex",
+      "line": 341,
+      "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===APPLICATION_STAGE_START-1){",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "stageIndex",
+      "line": 346,
+      "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===DEVELOPMENT_STAGE_START-1){",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "stageIndex",
+      "line": 350,
+      "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===STAGES.length-1&&clearContext.currentLapPrimaryComplete){",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "extraIndex",
+      "line": 355,
+      "source": "const clearedMasteryIndex=masteryClearContext&&Number.isInteger(clearContext.extraIndex)",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "extraIndex",
+      "line": 356,
+      "source": "?clearContext.extraIndex",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "satoriIndex",
+      "line": 365,
+      "source": "else if(clearContext.mode==='satori')action.textContent=clearContext.satoriIndex===SATORI_STAGES.length-1?tr('satoriChoose'):tr('nextPuzzle');",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "extraIndex",
+      "line": 366,
+      "source": "else if(clearContext.mode==='mastery')action.textContent=clearContext.extraIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "stageIndex",
+      "line": 367,
+      "source": "else if(clearContext.stageIndex===STAGES.length-1&&clearContext.allPrimaryIsCleared)action.textContent=tr('allPatternsNext');",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "stageIndex",
+      "line": 368,
+      "source": "else if(clearContext.stageIndex===STAGES.length-1)action.textContent=tr('toFree');",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "messageDialogReturn",
+      "line": 565,
+      "source": "updateDialogStateOwner({messageDialogReturn:null});",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/progression-ui.js",
+      "name": "masterDialogKind",
+      "line": 814,
+      "source": "updateDialogStateOwner({masterDialogKind:kind});",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "activeLap",
+      "line": 17,
+      "source": "activeLap:lap,",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "stageIndex",
+      "line": 18,
+      "source": "stageIndex:stage,",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "extraIndex",
+      "line": 19,
+      "source": "extraIndex:extra,",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "satoriIndex",
+      "line": 20,
+      "source": "satoriIndex:satori,",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "stageIndex",
+      "line": 41,
+      "source": "stage:appState.stageIndex,",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "satoriIndex",
+      "line": 43,
+      "source": "satori:appState.satoriIndex,",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "stageIndex",
+      "line": 114,
+      "source": "const hideBoardViewControls=assistedLearning||isMode('speed')||(isMode('stage')&&navigation.stageIndex>=TRAINING_STAGE_START&&navigation.stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "stageIndex",
+      "line": 114,
+      "source": "const hideBoardViewControls=assistedLearning||isMode('speed')||(isMode('stage')&&navigation.stageIndex>=TRAINING_STAGE_START&&navigation.stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "stageIndex",
+      "line": 116,
+      "source": "$('twoMoveLessonOpen').hidden=!((isMode('stage')&&navigation.stageIndex>=TRAINING_STAGE_START&&navigation.stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)||isTwoMoveLessonSpeedStage());",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "stageIndex",
+      "line": 116,
+      "source": "$('twoMoveLessonOpen').hidden=!((isMode('stage')&&navigation.stageIndex>=TRAINING_STAGE_START&&navigation.stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)||isTwoMoveLessonSpeedStage());",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "stageIndex",
+      "line": 125,
+      "source": "$('prevStage').disabled=isMode('speed')||(!inSideMode&&(!isMode('mastery')&&!isMode('satori')&&navigation.stageIndex===0&&navigation.lap===1));",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "stageIndex",
+      "line": 133,
+      "source": ":(navigation.stageIndex===STAGES.length-1?!allPrimaryCleared():!clearedStages.has(navigation.stageIndex));",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "stageIndex",
+      "line": 133,
+      "source": ":(navigation.stageIndex===STAGES.length-1?!allPrimaryCleared():!clearedStages.has(navigation.stageIndex));",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "satoriIndex",
+      "line": 182,
+      "source": "$('stageNumber').textContent=(navigation.satoriIndex+1)+' / '+SATORI_STAGES.length;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "stageIndex",
+      "line": 193,
+      "source": "const {section,position}=primarySectionPosition(navigation.stageIndex);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "satoriIndex",
+      "line": 212,
+      "source": "?(navigation.satoriIndex===SATORI_STAGES.length-1?!(navigation.lap===1&&secondLapUnlocked):!clearedSatoriStages.has(navigation.satoriIndex))",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-hud.js",
+      "name": "satoriIndex",
+      "line": 212,
+      "source": "?(navigation.satoriIndex===SATORI_STAGES.length-1?!(navigation.lap===1&&secondLapUnlocked):!clearedSatoriStages.has(navigation.satoriIndex))",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-flow-contract.js",
+      "name": "clearShown",
+      "line": 6,
+      "source": "{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation'},",
+      "kind": "string",
+      "exclusionReason": "文字列リテラル内の名前"
+    },
+    {
+      "file": "ui/progression-flow-contract.js",
+      "name": "clearShown",
+      "line": 13,
+      "source": "{id:'reload-clear',mode:'campaign',from:'page-load',event:'clearShownかつ解決済み',entry:'restoreDialogState→showClearDialog',persist:'clear状態を維持',cancel:'clear状態不整合時は通常盤面',to:'clear-dialog'},",
+      "kind": "string",
+      "exclusionReason": "文字列リテラル内の名前"
+    },
+    {
+      "file": "ui/progression-clear-flow.js",
+      "name": "stageIndex",
+      "line": 121,
+      "source": "const currentStageIndex=Number.isInteger(appState.stageIndex)?appState.stageIndex:0;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-clear-flow.js",
+      "name": "stageIndex",
+      "line": 121,
+      "source": "const currentStageIndex=Number.isInteger(appState.stageIndex)?appState.stageIndex:0;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-clear-flow.js",
+      "name": "activeLap",
+      "line": 125,
+      "source": "mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/progression-clear-flow.js",
+      "name": "stageIndex",
+      "line": 125,
+      "source": "mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/progression-clear-flow.js",
+      "name": "extraIndex",
+      "line": 125,
+      "source": "mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/progression-clear-flow.js",
+      "name": "clearShown",
+      "line": 127,
+      "source": "solved:isSolved(),clearShown:appState.clearShown,",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/progression-clear-flow.js",
+      "name": "clearShown",
+      "line": 127,
+      "source": "solved:isSolved(),clearShown:appState.clearShown,",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/progression-clear-flow.js",
+      "name": "stageIndex",
+      "line": 175,
+      "source": "const context=clearFlowState.context||createClearTransitionContext(WakeSevenAppContext.snapshot().stageIndex+1);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "ui/rank.js",
+      "name": "rankDialogReturn",
+      "line": 87,
+      "source": "updateDialogStateOwner({rankDialogReturn:null});$('rankDialog').hidden=true;",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "ui/rank.js",
+      "name": "rankDialogReturn",
+      "line": 95,
+      "source": "updateDialogStateOwner({rankDialogReturn:returnTarget});",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "runtime/app-events.js",
+      "name": "extraIndex",
+      "line": 28,
+      "source": "rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "runtime/app-events.js",
+      "name": "nextStageAttention",
+      "line": 272,
+      "source": "updateDialogStateOwner({nextStageAttention:isCampaignMode()&&!editingBoard});",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "runtime/app-events.js",
+      "name": "messageDialogReturn",
+      "line": 358,
+      "source": "const returnTarget=readDialogContext().messageDialogReturn;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/app-events.js",
+      "name": "messageDialogReturn",
+      "line": 359,
+      "source": "updateDialogStateOwner({messageDialogReturn:null});",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "runtime/app-events.js",
+      "name": "masterDialogKind",
+      "line": 421,
+      "source": "const dialogKind=dialogContext.masterDialogKind;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/app-events.js",
+      "name": "rankDialogReturn",
+      "line": 484,
+      "source": "const returnTarget=readDialogContext().rankDialogReturn;updateDialogStateOwner({rankDialogReturn:null});",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/app-events.js",
+      "name": "rankDialogReturn",
+      "line": 484,
+      "source": "const returnTarget=readDialogContext().rankDialogReturn;updateDialogStateOwner({rankDialogReturn:null});",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
+      "file": "runtime/app-events.js",
+      "name": "masterDialogKind",
+      "line": 489,
+      "source": "const dialogKind=readDialogContext().masterDialogKind;",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/app-events.js",
+      "name": "stageIndex",
+      "line": 942,
+      "source": "else if(navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/app-events.js",
+      "name": "stageIndex",
+      "line": 943,
+      "source": "else if(navigation.stageIndex===STAGES.length-1)action.textContent=tr('toFree');",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    },
+    {
+      "file": "runtime/app-events.js",
+      "name": "activeLap",
+      "line": 1128,
+      "source": "storage.remove(STORAGE_KEY_GROUPS.progression.activeLap);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
+    }
+  ],
   "countsByPurpose": {
-    "navigation": 144,
-    "dialog": 24,
+    "navigation": 142,
+    "dialog": 22,
     "progress": 0,
     "session": 0,
     "board": 0,
@@ -44,10 +1640,10 @@
     "data": 1,
     "other": 7,
     "runtime": 10,
-    "ui": 143
+    "ui": 139
   },
   "countsByAccess": {
-    "read": 144,
+    "read": 140,
     "write": 24
   },
   "exceptionMetadata": [
@@ -529,15 +2125,6 @@
       "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する"
     },
     {
-      "fingerprint": "ui/board-ui.js:stageIndex:setNavigationIndexCommand('stageIndex',nextStageIndex);",
-      "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "priority": 1,
-      "migrationTarget": "gateway:navigation",
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する"
-    },
-    {
       "fingerprint": "ui/board-ui.js:stageIndex:returnStageContext={extra:false,satori:false,index:stageIndex};",
       "purpose": "navigation",
       "ownerOnly": false,
@@ -617,15 +2204,6 @@
       "priority": 1,
       "migrationTarget": "gateway:dialog",
       "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:satoriIndex:setNavigationIndexCommand('satoriIndex',nextSatoriIndex);",
-      "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "priority": 1,
-      "migrationTarget": "gateway:navigation",
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する"
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:returnStageContext={extra:false,satori:true,index:satoriIndex};",
@@ -1340,24 +2918,6 @@
     },
     {
       "fingerprint": "ui/progression-hud.js:nextStageAttention:highlightNext:nextStageAttention&&isCampaignMode()&&!$('nextStage').hidden&&!$('nextStage').disabled",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "priority": 1,
-      "migrationTarget": "gateway:dialog",
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する"
-    },
-    {
-      "fingerprint": "ui/progression-flow-contract.js:clearShown:{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation'},",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "priority": 1,
-      "migrationTarget": "gateway:dialog",
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する"
-    },
-    {
-      "fingerprint": "ui/progression-flow-contract.js:clearShown:{id:'reload-clear',mode:'campaign',from:'page-load',event:'clearShownかつ解決済み',entry:'restoreDialogState→showClearDialog',persist:'clear状態を維持',cancel:'clear状態不整合時は通常盤面',to:'clear-dialog'},",
       "purpose": "dialog",
       "ownerOnly": false,
       "temporary": true,
@@ -2125,19 +3685,6 @@
       "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
-      "fingerprint": "ui/board-ui.js:stageIndex:setNavigationIndexCommand('stageIndex',nextStageIndex);",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
       "fingerprint": "ui/board-ui.js:stageIndex:returnStageContext={extra:false,satori:false,index:stageIndex};",
       "expiresOn": "2026-12-02",
       "owner": "ui/board-ui.js",
@@ -2217,19 +3764,6 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:if(activeLap===1&&isMastered())showMasterDialog('mastery');",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:satoriIndex:setNavigationIndexCommand('satoriIndex',nextSatoriIndex);",
       "expiresOn": "2026-12-02",
       "owner": "ui/board-ui.js",
       "migrationTarget": "gateway:navigation",
@@ -3100,32 +4634,6 @@
       "reason": "dialog状態の移行完了まで保持する既存参照"
     },
     {
-      "fingerprint": "ui/progression-flow-contract.js:clearShown:{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation'},",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/progression-flow-contract.js",
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ],
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/progression-flow-contract.js:clearShown:{id:'reload-clear',mode:'campaign',from:'page-load',event:'clearShownかつ解決済み',entry:'restoreDialogState→showClearDialog',persist:'clear状態を維持',cancel:'clear状態不整合時は通常盤面',to:'clear-dialog'},",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/progression-flow-contract.js",
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ],
-      "reason": "dialog状態の移行完了まで保持する既存参照"
-    },
-    {
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,",
       "expiresOn": "2026-12-02",
       "owner": "ui/progression-clear-flow.js",
@@ -3415,6 +4923,7 @@
   "baselineEntries": [
     {
       "fingerprint": "state/progression-policy.js:stageIndex:uiPolicy({mode,lap,stageIndex,speedVariant}) {",
+      "classification": "executable",
       "source": {
         "file": "state/progression-policy.js",
         "line": 42,
@@ -3437,6 +4946,7 @@
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex < academyTotal) {",
+      "classification": "executable",
       "source": {
         "file": "state/progression-policy.js",
         "line": 46,
@@ -3459,6 +4969,7 @@
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= developmentStart) return {id:'development',assisted:true,development:lap === 1,eliminateWrongRods:lap === 1};",
+      "classification": "executable",
       "source": {
         "file": "state/progression-policy.js",
         "line": 47,
@@ -3481,6 +4992,7 @@
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= applicationStart) return {id:'application',assisted:true,application:lap === 1,showTargetCells:lap === 1,rewindWrongMove:lap === 1,eliminateWrongRods:lap === 1};",
+      "classification": "executable",
       "source": {
         "file": "state/progression-policy.js",
         "line": 48,
@@ -3503,6 +5015,7 @@
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= basicStart) return {id:'basic',assisted:true,guidedBasic:lap === 1,narrowRods:lap === 1};",
+      "classification": "executable",
       "source": {
         "file": "state/progression-policy.js",
         "line": 49,
@@ -3525,6 +5038,7 @@
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};",
+      "classification": "executable",
       "source": {
         "file": "state/progression-policy.js",
         "line": 52,
@@ -3547,6 +5061,7 @@
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};",
+      "classification": "executable",
       "source": {
         "file": "state/progression-policy.js",
         "line": 52,
@@ -3569,6 +5084,7 @@
     },
     {
       "fingerprint": "data/core-data.js:activeLap:return activeLap===2?transformStateBySymmetry(state,SECOND_LAP_BOARD_VIEW):state;",
+      "classification": "executable",
       "source": {
         "file": "data/core-data.js",
         "line": 264,
@@ -3591,6 +5107,7 @@
     },
     {
       "fingerprint": "runtime/speed.js:activeLap:if(activeLap===2)return null;",
+      "classification": "executable",
       "source": {
         "file": "runtime/speed.js",
         "line": 210,
@@ -3613,6 +5130,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 394,
@@ -3635,6 +5153,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:applicationWelcome:academyBoardStep('application','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(stageIndex+1)),",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 395,
@@ -3657,6 +5176,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:onAction(){loadStage(stageIndex+1);}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 421,
@@ -3679,6 +5199,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:onAction(){loadStage(stageIndex+1);}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 430,
@@ -3701,6 +5222,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 660,
@@ -3723,6 +5245,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 660,
@@ -3745,6 +5268,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:return stageIndex-TRAINING_STAGE_START<5?'joinOne':'joinTwo';",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 661,
@@ -3767,6 +5291,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:const isTwoMoveLessonStage=()=>isMode('stage')&&((stageIndex>=BASIC_STAGE_START&&stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT)",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 691,
@@ -3789,6 +5314,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:const isTwoMoveLessonStage=()=>isMode('stage')&&((stageIndex>=BASIC_STAGE_START&&stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT)",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 691,
@@ -3811,6 +5337,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:||(stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT));",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 692,
@@ -3833,6 +5360,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:||(stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT));",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 692,
@@ -3855,6 +5383,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:const base=stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT?BASIC_STAGE_START:TRAINING_STAGE_START;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 698,
@@ -3877,6 +5406,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:const position=stageIndex-base+1;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 700,
@@ -3899,6 +5429,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:return {state:transformStateBySymmetry(campaignStageState(STAGES[stageIndex].state),SECOND_LAP_BOARD_VIEW),position,group:position<=5?'joinOne':'joinTwo'};",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 702,
@@ -3921,6 +5452,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeMode:function completeBoard({mode=activeMode,context={},animation=true,nextAction=null}={}){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 946,
@@ -3943,6 +5475,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeMode:const target=mode||activeMode;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 948,
@@ -3965,6 +5498,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:const firstClear=target==='satori'?!clearedSatoriStages.has(satoriIndex)",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 957,
@@ -3987,6 +5521,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex::target==='mastery'?!clearedExtraStages.has(extraIndex)",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 958,
@@ -4009,6 +5544,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex::!clearedStages.has(stageIndex);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 959,
@@ -4031,6 +5567,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:const wasSatoriMastered=isSatoriMastered();recordProgressClearCommand('satori',satoriIndex);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 963,
@@ -4053,6 +5590,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:if(isSatoriMastered())rememberClearedMessage(false,satoriIndex,true);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 964,
@@ -4075,6 +5613,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:recordProgressClearCommand('mastery',extraIndex);rememberClearedMessage(true,extraIndex);updateMasterTheme();",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 967,
@@ -4097,6 +5636,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:recordProgressClearCommand('mastery',extraIndex);rememberClearedMessage(true,extraIndex);updateMasterTheme();",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 967,
@@ -4119,6 +5659,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:recordProgressClearCommand('primary',stageIndex);rememberClearedMessage(false,stageIndex);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 969,
@@ -4141,6 +5682,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:recordProgressClearCommand('primary',stageIndex);rememberClearedMessage(false,stageIndex);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 969,
@@ -4163,6 +5705,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isSolved()&&!clearShown){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 987,
@@ -4185,6 +5728,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isMode('speed')&&isSolved()&&!clearShown&&speedSession&&!speedAwaitingStart()){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1006,
@@ -4207,6 +5751,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isMode('satori')&&!isSolved()&&moves>=satoriFailureLimit&&!clearShown){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1011,
@@ -4229,6 +5774,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeMode:if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){ProgressionEntryPoints.finishStage({mode:activeMode});}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1018,
@@ -4251,6 +5797,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){ProgressionEntryPoints.finishStage({mode:activeMode});}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1018,
@@ -4273,6 +5820,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1114,
@@ -4295,6 +5843,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1114,
@@ -4317,6 +5866,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1114,
@@ -4339,6 +5889,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves>=5&&!isSolved())",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1116,
@@ -4361,6 +5912,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves>=5&&!isSolved())",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1116,
@@ -4383,6 +5935,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:if(TUTORIAL_STEPS[tutorialStep]?.cue==='none')return solutions.some(move=>move.ti===ti&&move.dir===dir);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1179,
@@ -4405,6 +5958,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const second=tutorialStep===1;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1184,
@@ -4427,6 +5981,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const cue=TUTORIAL_STEPS[tutorialStep]?.cue;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1185,
@@ -4449,6 +6004,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:clear:second?'tutorialSecondClearPrompt':tutorialStep===0?'tutorialFirstClearPrompt':'tutorialClearPrompt'",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1199,
@@ -4471,6 +6027,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const step=TUTORIAL_STEPS[tutorialStep],move=tutorialSolvingMoves()[0];",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1205,
@@ -4493,6 +6050,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const step=TUTORIAL_STEPS[tutorialStep];",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1249,
@@ -4515,6 +6073,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1264,
@@ -4537,6 +6096,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1264,
@@ -4559,6 +6119,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1277,
@@ -4580,29 +6141,8 @@
       ]
     },
     {
-      "fingerprint": "ui/board-ui.js:stageIndex:setNavigationIndexCommand('stageIndex',nextStageIndex);",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1279,
-        "excerpt": "setNavigationIndexCommand('stageIndex',nextStageIndex);"
-      },
-      "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
       "fingerprint": "ui/board-ui.js:stageIndex:returnStageContext={extra:false,satori:false,index:stageIndex};",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1280,
@@ -4625,6 +6165,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:const stage=STAGES[stageIndex];",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1281,
@@ -4647,6 +6188,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:persistCurrentStage(false,stageIndex);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1282,
@@ -4669,6 +6211,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1295,
@@ -4691,6 +6234,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:returnStageContext={extra:true,satori:false,index:extraIndex};",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1298,
@@ -4713,6 +6257,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:const stage=EXTRA_STAGES[extraIndex];",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1299,
@@ -4735,6 +6280,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:persistCurrentStage(true,extraIndex);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1300,
@@ -4757,6 +6303,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:if(activeLap===1&&isMastered())showMasterDialog('mastery');",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1309,
@@ -4779,6 +6326,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1314,
@@ -4800,29 +6348,8 @@
       ]
     },
     {
-      "fingerprint": "ui/board-ui.js:satoriIndex:setNavigationIndexCommand('satoriIndex',nextSatoriIndex);",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1316,
-        "excerpt": "setNavigationIndexCommand('satoriIndex',nextSatoriIndex);"
-      },
-      "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
       "fingerprint": "ui/board-ui.js:satoriIndex:returnStageContext={extra:false,satori:true,index:satoriIndex};",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1317,
@@ -4845,6 +6372,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:const stage=SATORI_STAGES[satoriIndex];",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1318,
@@ -4867,6 +6395,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1319,
@@ -4889,6 +6418,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1319,
@@ -4911,6 +6441,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({extra,index,lap:activeLap}));}catch(_){}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1327,
@@ -4933,6 +6464,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:clearShown,fourthChecksUsed,fourthDistanceRevealed",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1351,
@@ -4955,6 +6487,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:svg.classList.toggle('clear-pending',clearShown&&isSolved());",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1376,
@@ -4977,6 +6510,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:$('clearNext').hidden=!clearShown;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1378,
@@ -4999,6 +6533,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:const payload={mode:'speed',variant:speedVariant,lap:activeLap};",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1392,
@@ -5021,6 +6556,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeMode:const mode=activeMode;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1399,
@@ -5043,6 +6579,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1401,
@@ -5065,6 +6602,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1401,
@@ -5087,6 +6625,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:$('clearNext').hidden=!clearShown;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1493,
@@ -5109,6 +6648,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(clearShown)$('clearNext').textContent=tr('another');",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1494,
@@ -5131,6 +6671,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const tutorialCue=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]?.cue:'';",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1568,
@@ -5153,6 +6694,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isMode('tutorial')&&clearShown)return;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1742,
@@ -5175,6 +6717,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isSolved()&&clearShown){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1760,
@@ -5197,6 +6740,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1761,
@@ -5219,6 +6763,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const tutorialStepData=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]:null;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1770,
@@ -5241,6 +6786,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const tutorialCue=TUTORIAL_STEPS[tutorialStep]?.cue;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1843,
@@ -5263,6 +6809,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const turnPrompt=tutorialStep===1?tr('tutorialSecondArrowPrompt')",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1866,
@@ -5285,6 +6832,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep::tutorialStep===3?tr('tutorialChainTurnPrompt'):tutorialPrompt('turn');",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1867,
@@ -5307,6 +6855,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:renderTutorialFeedback({text:tr(TUTORIAL_STEPS[tutorialStep]?.cue==='chain-direction'?'tutorialWrongPlacePrompt':'tutorialWrongPrompt')});",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1919,
@@ -5329,6 +6878,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:target,direction:dir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1920,
@@ -5351,6 +6901,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:rewindDir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cu",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1933,
@@ -5373,6 +6924,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&stageIndex===0&&!hasMasterReward())",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 2202,
@@ -5395,6 +6947,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:const forceTopRight=stageIndex===BASIC_STAGE_START+5&&correctTis.includes(TOP_RIGHT_TI);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 15,
@@ -5417,6 +6970,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:const count=academyGripDisplayCount(undefined,stageIndex-BASIC_STAGE_START+1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 17,
@@ -5439,6 +6993,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:const stage=STAGES[stageIndex],correctTis=[];",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 24,
@@ -5461,6 +7016,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:for(const index of STAGES[stageIndex]?.targetCells||[]){",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 53,
@@ -5483,6 +7039,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:const stage=isApplicationTargetStage()?STAGES[stageIndex]:null;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 88,
@@ -5505,6 +7062,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:const stage=STAGES[stageIndex];",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 123,
@@ -5527,6 +7085,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:else {const signature=stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=computeDevelopmentCandidateTis()||fullSet();guidedBasicCandidateSignature",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 125,
@@ -5549,6 +7108,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:else {const signature='application:'+stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=fullSet();guidedBasicCandidateSignature=signature;}}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 131,
@@ -5571,6 +7131,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:else {const signature=stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=(isNarrowedBasicStage()&&SOLVER.dist[enc(ori)]>1)?computeGuidedBasicCandi",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 134,
@@ -5593,6 +7154,7 @@
     },
     {
       "fingerprint": "commands/board-commands.js:clearShown:savedFreeSession={ori:Uint8Array.from(ori),spin:Int16Array.from(spin),tileEls:tileEls.slice(),moves,best,history:history.map(cloneHistoryEntry),initialState:currentInitialState,initialPar:currentInitialPar,clearShown};",
+      "classification": "executable",
       "source": {
         "file": "commands/board-commands.js",
         "line": 44,
@@ -5615,6 +7177,7 @@
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:tutorialStep=Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index));",
+      "classification": "executable",
       "source": {
         "file": "commands/tutorial-commands.js",
         "line": 3,
@@ -5637,6 +7200,7 @@
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:WakeSevenState.setNavigationIndex(gameState,'tutorial',tutorialStep);",
+      "classification": "executable",
       "source": {
         "file": "commands/tutorial-commands.js",
         "line": 4,
@@ -5659,6 +7223,7 @@
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialStep,String(tutorialStep));",
+      "classification": "executable",
       "source": {
         "file": "commands/tutorial-commands.js",
         "line": 5,
@@ -5681,6 +7246,7 @@
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:return tutorialStep;",
+      "classification": "executable",
       "source": {
         "file": "commands/tutorial-commands.js",
         "line": 6,
@@ -5703,6 +7269,7 @@
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:tutorialStep=0;",
+      "classification": "executable",
       "source": {
         "file": "commands/tutorial-commands.js",
         "line": 14,
@@ -5725,6 +7292,7 @@
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:function persistTutorialSessionCommand(step=tutorialStep){",
+      "classification": "executable",
       "source": {
         "file": "commands/tutorial-commands.js",
         "line": 19,
@@ -5747,6 +7315,7 @@
     },
     {
       "fingerprint": "ui/message.js:stageIndex:function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries(",
+      "classification": "executable",
       "source": {
         "file": "ui/message.js",
         "line": 51,
@@ -5769,6 +7338,7 @@
     },
     {
       "fingerprint": "ui/message.js:stageIndex:function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries(",
+      "classification": "executable",
       "source": {
         "file": "ui/message.js",
         "line": 51,
@@ -5791,6 +7361,7 @@
     },
     {
       "fingerprint": "ui/message.js:messageDialogReturn:function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries(",
+      "classification": "executable",
       "source": {
         "file": "ui/message.js",
         "line": 51,
@@ -5813,6 +7384,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:stageIndex:function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 11,
@@ -5835,6 +7407,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:extraIndex:function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 11,
@@ -5857,6 +7430,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:satoriIndex:function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 11,
@@ -5879,6 +7453,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:satoriIndex:else if(mode==='satori')fraction=(satoriIndex+1)/(satoriTotal||1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 14,
@@ -5901,6 +7476,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:extraIndex:else if(mode==='mastery')fraction=(extraIndex+1)/(masteryTotal||1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 15,
@@ -5923,6 +7499,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 16,
@@ -5945,6 +7522,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 16,
@@ -5967,6 +7545,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 16,
@@ -5989,6 +7568,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 293,
@@ -6011,6 +7591,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 307,
@@ -6033,6 +7614,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 495,
@@ -6055,6 +7637,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 495,
@@ -6077,6 +7660,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 495,
@@ -6099,6 +7683,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 496,
@@ -6121,6 +7706,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 496,
@@ -6143,6 +7729,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 496,
@@ -6165,6 +7752,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:masterDialogKind:const shouldAnimate=masterDialog.hidden||masterDialogKind!==kind;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 813,
@@ -6187,6 +7775,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:extraIndex:const volume=Math.ceil((extraIndex+1)/MASTER_VOLUME_SIZE);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 897,
@@ -6209,6 +7798,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:activeLap:if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1063,
@@ -6231,6 +7821,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1063,
@@ -6253,6 +7844,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1066,
@@ -6275,6 +7867,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1066,
@@ -6297,6 +7890,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1067,
@@ -6319,6 +7913,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1067,
@@ -6341,6 +7936,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:else loadStage(stageIndex-1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1068,
@@ -6363,6 +7959,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1074,
@@ -6385,6 +7982,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1074,
@@ -6407,6 +8005,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1074,
@@ -6429,6 +8028,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:activeLap:else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1075,
@@ -6451,6 +8051,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1075,
@@ -6473,6 +8074,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1078,
@@ -6495,6 +8097,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1078,
@@ -6517,6 +8120,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1079,
@@ -6539,6 +8143,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:else loadStage(stageIndex+1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1080,
@@ -6561,6 +8166,7 @@
     },
     {
       "fingerprint": "ui/progression-hud.js:nextStageAttention:highlightNext:nextStageAttention&&isCampaignMode()&&!$('nextStage').hidden&&!$('nextStage').disabled",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-hud.js",
         "line": 218,
@@ -6582,51 +8188,8 @@
       ]
     },
     {
-      "fingerprint": "ui/progression-flow-contract.js:clearShown:{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation'},",
-      "source": {
-        "file": "ui/progression-flow-contract.js",
-        "line": 6,
-        "excerpt": "{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation'},"
-      },
-      "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "ui/progression-flow-contract.js:clearShown:{id:'reload-clear',mode:'campaign',from:'page-load',event:'clearShownかつ解決済み',entry:'restoreDialogState→showClearDialog',persist:'clear状態を維持',cancel:'clear状態不整合時は通常盤面',to:'clear-dialog'},",
-      "source": {
-        "file": "ui/progression-flow-contract.js",
-        "line": 13,
-        "excerpt": "{id:'reload-clear',mode:'campaign',from:'page-load',event:'clearShownかつ解決済み',entry:'restoreDialogState→showClearDialog',persist:'clear状態を維持',cancel:'clear状態不整合時は通常盤面',to:'clear-dialog'},"
-      },
-      "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 125,
@@ -6649,6 +8212,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 150,
@@ -6671,6 +8235,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:extraIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 150,
@@ -6693,6 +8258,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 150,
@@ -6715,6 +8281,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:if(mode==='satori')return satoriIndex<SATORI_STAGES.length-1",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 153,
@@ -6737,6 +8304,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:? {kind:'satori-stage',index:satoriIndex+1}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 154,
@@ -6759,6 +8327,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:extraIndex:if(mode==='mastery')return extraIndex===EXTRA_STAGES.length-1",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 156,
@@ -6781,6 +8350,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:extraIndex:: {kind:'mastery-stage',index:extraIndex+1};",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 158,
@@ -6803,6 +8373,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:if(stageIndex===ACADEMY_STAGE_COUNT-1&&academyIsCleared)return {kind:'master-dialog',section:'primary'};",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 159,
@@ -6825,6 +8396,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:if(stageIndex===STAGES.length-1&&allPrimaryIsCleared)return {kind:'master-dialog',section:'intermediate'};",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 160,
@@ -6847,6 +8419,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:if(stageIndex===STAGES.length-1)return {kind:'restore-free'};",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 161,
@@ -6869,6 +8442,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:return {kind:'stage',index:stageIndex+1};",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 163,
@@ -6891,6 +8465,7 @@
     },
     {
       "fingerprint": "ui/rank.js:activeLap:rankListLap=activeLap;",
+      "classification": "executable",
       "source": {
         "file": "ui/rank.js",
         "line": 96,
@@ -6913,6 +8488,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:stageIndex:rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 28,
@@ -6935,6 +8511,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:extraIndex:const clickClearEntry=clearContentAt(true,extraIndex);",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 251,
@@ -6957,6 +8534,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 414,
@@ -6979,6 +8557,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:extraIndex:else GameNavigation.mastery(extraIndex+1);",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 518,
@@ -7001,6 +8580,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:tutorialStep:$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 920,
@@ -7023,6 +8603,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:masterDialogKind:if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 922,
@@ -7045,6 +8626,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:clearShown:else if(clearShown){",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 931,
@@ -7067,6 +8649,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:activeLap:activeLap=1;secondLapUnlocked=false;",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 1117,
@@ -7089,6 +8672,7 @@
     },
     {
       "fingerprint": "runtime/app-bootstrap.js:clearShown:if(!clearShown)ProgressionEntryPoints.finishStage({mode:'speed'});else WakeSevenProgressionCommands.advanceSpeedRun();",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-bootstrap.js",
         "line": 28,

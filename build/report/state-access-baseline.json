@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "name": "state-access-baseline",
-  "generatedAt": "2026-09-03T09:58:49.224Z",
+  "generatedAt": "2026-09-03T10:10:17.102Z",
   "source": "scripts/state-access-exceptions.json",
   "counts": {
-    "temporary": 168,
+    "temporary": 164,
     "byPurpose": {
-      "navigation": 144,
-      "dialog": 24,
+      "navigation": 142,
+      "dialog": 22,
       "progress": 0,
       "session": 0,
       "board": 0,
@@ -19,16 +19,17 @@
       "data": 1,
       "other": 7,
       "runtime": 10,
-      "ui": 143
+      "ui": 139
     },
     "byAccess": {
-      "read": 144,
+      "read": 140,
       "write": 24
     }
   },
   "entries": [
     {
       "fingerprint": "state/progression-policy.js:stageIndex:uiPolicy({mode,lap,stageIndex,speedVariant}) {",
+      "classification": "executable",
       "source": {
         "file": "state/progression-policy.js",
         "line": 42,
@@ -51,6 +52,7 @@
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex < academyTotal) {",
+      "classification": "executable",
       "source": {
         "file": "state/progression-policy.js",
         "line": 46,
@@ -73,6 +75,7 @@
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= developmentStart) return {id:'development',assisted:true,development:lap === 1,eliminateWrongRods:lap === 1};",
+      "classification": "executable",
       "source": {
         "file": "state/progression-policy.js",
         "line": 47,
@@ -95,6 +98,7 @@
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= applicationStart) return {id:'application',assisted:true,application:lap === 1,showTargetCells:lap === 1,rewindWrongMove:lap === 1,eliminateWrongRods:lap === 1};",
+      "classification": "executable",
       "source": {
         "file": "state/progression-policy.js",
         "line": 48,
@@ -117,6 +121,7 @@
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= basicStart) return {id:'basic',assisted:true,guidedBasic:lap === 1,narrowRods:lap === 1};",
+      "classification": "executable",
       "source": {
         "file": "state/progression-policy.js",
         "line": 49,
@@ -139,6 +144,7 @@
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};",
+      "classification": "executable",
       "source": {
         "file": "state/progression-policy.js",
         "line": 52,
@@ -161,6 +167,7 @@
     },
     {
       "fingerprint": "state/progression-policy.js:stageIndex:if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};",
+      "classification": "executable",
       "source": {
         "file": "state/progression-policy.js",
         "line": 52,
@@ -183,6 +190,7 @@
     },
     {
       "fingerprint": "data/core-data.js:activeLap:return activeLap===2?transformStateBySymmetry(state,SECOND_LAP_BOARD_VIEW):state;",
+      "classification": "executable",
       "source": {
         "file": "data/core-data.js",
         "line": 264,
@@ -205,6 +213,7 @@
     },
     {
       "fingerprint": "runtime/speed.js:activeLap:if(activeLap===2)return null;",
+      "classification": "executable",
       "source": {
         "file": "runtime/speed.js",
         "line": 210,
@@ -227,6 +236,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 394,
@@ -249,6 +259,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:applicationWelcome:academyBoardStep('application','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(stageIndex+1)),",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 395,
@@ -271,6 +282,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:onAction(){loadStage(stageIndex+1);}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 421,
@@ -293,6 +305,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:onAction(){loadStage(stageIndex+1);}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 430,
@@ -315,6 +328,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 660,
@@ -337,6 +351,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 660,
@@ -359,6 +374,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:return stageIndex-TRAINING_STAGE_START<5?'joinOne':'joinTwo';",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 661,
@@ -381,6 +397,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:const isTwoMoveLessonStage=()=>isMode('stage')&&((stageIndex>=BASIC_STAGE_START&&stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT)",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 691,
@@ -403,6 +420,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:const isTwoMoveLessonStage=()=>isMode('stage')&&((stageIndex>=BASIC_STAGE_START&&stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT)",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 691,
@@ -425,6 +443,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:||(stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT));",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 692,
@@ -447,6 +466,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:||(stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT));",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 692,
@@ -469,6 +489,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:const base=stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT?BASIC_STAGE_START:TRAINING_STAGE_START;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 698,
@@ -491,6 +512,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:const position=stageIndex-base+1;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 700,
@@ -513,6 +535,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:return {state:transformStateBySymmetry(campaignStageState(STAGES[stageIndex].state),SECOND_LAP_BOARD_VIEW),position,group:position<=5?'joinOne':'joinTwo'};",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 702,
@@ -535,6 +558,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeMode:function completeBoard({mode=activeMode,context={},animation=true,nextAction=null}={}){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 946,
@@ -557,6 +581,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeMode:const target=mode||activeMode;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 948,
@@ -579,6 +604,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:const firstClear=target==='satori'?!clearedSatoriStages.has(satoriIndex)",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 957,
@@ -601,6 +627,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex::target==='mastery'?!clearedExtraStages.has(extraIndex)",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 958,
@@ -623,6 +650,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex::!clearedStages.has(stageIndex);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 959,
@@ -645,6 +673,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:const wasSatoriMastered=isSatoriMastered();recordProgressClearCommand('satori',satoriIndex);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 963,
@@ -667,6 +696,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:if(isSatoriMastered())rememberClearedMessage(false,satoriIndex,true);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 964,
@@ -689,6 +719,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:recordProgressClearCommand('mastery',extraIndex);rememberClearedMessage(true,extraIndex);updateMasterTheme();",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 967,
@@ -711,6 +742,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:recordProgressClearCommand('mastery',extraIndex);rememberClearedMessage(true,extraIndex);updateMasterTheme();",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 967,
@@ -733,6 +765,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:recordProgressClearCommand('primary',stageIndex);rememberClearedMessage(false,stageIndex);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 969,
@@ -755,6 +788,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:recordProgressClearCommand('primary',stageIndex);rememberClearedMessage(false,stageIndex);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 969,
@@ -777,6 +811,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isSolved()&&!clearShown){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 987,
@@ -799,6 +834,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isMode('speed')&&isSolved()&&!clearShown&&speedSession&&!speedAwaitingStart()){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1006,
@@ -821,6 +857,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isMode('satori')&&!isSolved()&&moves>=satoriFailureLimit&&!clearShown){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1011,
@@ -843,6 +880,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeMode:if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){ProgressionEntryPoints.finishStage({mode:activeMode});}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1018,
@@ -865,6 +903,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){ProgressionEntryPoints.finishStage({mode:activeMode});}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1018,
@@ -887,6 +926,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1114,
@@ -909,6 +949,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1114,
@@ -931,6 +972,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(save&&activeLap===1&&isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves===5&&SOLVER.dist[enc(ori)]!==0){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1114,
@@ -953,6 +995,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves>=5&&!isSolved())",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1116,
@@ -975,6 +1018,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(isMode('stage')&&stageIndex>=TRAINING_STAGE_START&&stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT&&moves>=5&&!isSolved())",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1116,
@@ -997,6 +1041,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:if(TUTORIAL_STEPS[tutorialStep]?.cue==='none')return solutions.some(move=>move.ti===ti&&move.dir===dir);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1179,
@@ -1019,6 +1064,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const second=tutorialStep===1;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1184,
@@ -1041,6 +1087,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const cue=TUTORIAL_STEPS[tutorialStep]?.cue;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1185,
@@ -1063,6 +1110,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:clear:second?'tutorialSecondClearPrompt':tutorialStep===0?'tutorialFirstClearPrompt':'tutorialClearPrompt'",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1199,
@@ -1085,6 +1133,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const step=TUTORIAL_STEPS[tutorialStep],move=tutorialSolvingMoves()[0];",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1205,
@@ -1107,6 +1156,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const step=TUTORIAL_STEPS[tutorialStep];",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1249,
@@ -1129,6 +1179,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1264,
@@ -1151,6 +1202,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:if(tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(tutorialStep+1);return;}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1264,
@@ -1173,6 +1225,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1277,
@@ -1194,29 +1247,8 @@
       ]
     },
     {
-      "fingerprint": "ui/board-ui.js:stageIndex:setNavigationIndexCommand('stageIndex',nextStageIndex);",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1279,
-        "excerpt": "setNavigationIndexCommand('stageIndex',nextStageIndex);"
-      },
-      "symbol": "stageIndex",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
       "fingerprint": "ui/board-ui.js:stageIndex:returnStageContext={extra:false,satori:false,index:stageIndex};",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1280,
@@ -1239,6 +1271,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:const stage=STAGES[stageIndex];",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1281,
@@ -1261,6 +1294,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:persistCurrentStage(false,stageIndex);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1282,
@@ -1283,6 +1317,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1295,
@@ -1305,6 +1340,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:returnStageContext={extra:true,satori:false,index:extraIndex};",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1298,
@@ -1327,6 +1363,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:const stage=EXTRA_STAGES[extraIndex];",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1299,
@@ -1349,6 +1386,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:extraIndex:persistCurrentStage(true,extraIndex);",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1300,
@@ -1371,6 +1409,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:if(activeLap===1&&isMastered())showMasterDialog('mastery');",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1309,
@@ -1393,6 +1432,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1314,
@@ -1414,29 +1454,8 @@
       ]
     },
     {
-      "fingerprint": "ui/board-ui.js:satoriIndex:setNavigationIndexCommand('satoriIndex',nextSatoriIndex);",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1316,
-        "excerpt": "setNavigationIndexCommand('satoriIndex',nextSatoriIndex);"
-      },
-      "symbol": "satoriIndex",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
       "fingerprint": "ui/board-ui.js:satoriIndex:returnStageContext={extra:false,satori:true,index:satoriIndex};",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1317,
@@ -1459,6 +1478,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:const stage=SATORI_STAGES[satoriIndex];",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1318,
@@ -1481,6 +1501,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1319,
@@ -1503,6 +1524,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:satoriIndex:try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1319,
@@ -1525,6 +1547,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({extra,index,lap:activeLap}));}catch(_){}",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1327,
@@ -1547,6 +1570,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:clearShown,fourthChecksUsed,fourthDistanceRevealed",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1351,
@@ -1569,6 +1593,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:svg.classList.toggle('clear-pending',clearShown&&isSolved());",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1376,
@@ -1591,6 +1616,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:$('clearNext').hidden=!clearShown;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1378,
@@ -1613,6 +1639,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:const payload={mode:'speed',variant:speedVariant,lap:activeLap};",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1392,
@@ -1635,6 +1662,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeMode:const mode=activeMode;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1399,
@@ -1657,6 +1685,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:activeLap:mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1401,
@@ -1679,6 +1708,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:mode,editingBoard,extra:isMode('mastery'),satori:isMode('satori'),index:isMode('satori')?satoriIndex:isMode('mastery')?extraIndex:stageIndex,lap:activeLap,",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1401,
@@ -1701,6 +1731,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:$('clearNext').hidden=!clearShown;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1493,
@@ -1723,6 +1754,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(clearShown)$('clearNext').textContent=tr('another');",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1494,
@@ -1745,6 +1777,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const tutorialCue=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]?.cue:'';",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1568,
@@ -1767,6 +1800,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isMode('tutorial')&&clearShown)return;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1742,
@@ -1789,6 +1823,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:clearShown:if(isSolved()&&clearShown){",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1760,
@@ -1811,6 +1846,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:nextStageAttention:nextStageAttention=false;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1761,
@@ -1833,6 +1869,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const tutorialStepData=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]:null;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1770,
@@ -1855,6 +1892,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const tutorialCue=TUTORIAL_STEPS[tutorialStep]?.cue;",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1843,
@@ -1877,6 +1915,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:const turnPrompt=tutorialStep===1?tr('tutorialSecondArrowPrompt')",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1866,
@@ -1899,6 +1938,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep::tutorialStep===3?tr('tutorialChainTurnPrompt'):tutorialPrompt('turn');",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1867,
@@ -1921,6 +1961,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:renderTutorialFeedback({text:tr(TUTORIAL_STEPS[tutorialStep]?.cue==='chain-direction'?'tutorialWrongPlacePrompt':'tutorialWrongPrompt')});",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1919,
@@ -1943,6 +1984,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:target,direction:dir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1920,
@@ -1965,6 +2007,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:rewindDir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cu",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 1933,
@@ -1987,6 +2030,7 @@
     },
     {
       "fingerprint": "ui/board-ui.js:stageIndex:if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&stageIndex===0&&!hasMasterReward())",
+      "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
         "line": 2202,
@@ -2009,6 +2053,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:const forceTopRight=stageIndex===BASIC_STAGE_START+5&&correctTis.includes(TOP_RIGHT_TI);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 15,
@@ -2031,6 +2076,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:const count=academyGripDisplayCount(undefined,stageIndex-BASIC_STAGE_START+1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 17,
@@ -2053,6 +2099,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:const stage=STAGES[stageIndex],correctTis=[];",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 24,
@@ -2075,6 +2122,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:for(const index of STAGES[stageIndex]?.targetCells||[]){",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 53,
@@ -2097,6 +2145,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:const stage=isApplicationTargetStage()?STAGES[stageIndex]:null;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 88,
@@ -2119,6 +2168,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:const stage=STAGES[stageIndex];",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 123,
@@ -2141,6 +2191,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:else {const signature=stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=computeDevelopmentCandidateTis()||fullSet();guidedBasicCandidateSignature",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 125,
@@ -2163,6 +2214,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:else {const signature='application:'+stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=fullSet();guidedBasicCandidateSignature=signature;}}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 131,
@@ -2185,6 +2237,7 @@
     },
     {
       "fingerprint": "ui/progression-academy-support.js:stageIndex:else {const signature=stageIndex+':'+moves+':'+enc(ori);if(signature!==guidedBasicCandidateSignature){fallenRodTis.clear();guidedBasicCandidateTis=(isNarrowedBasicStage()&&SOLVER.dist[enc(ori)]>1)?computeGuidedBasicCandi",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-academy-support.js",
         "line": 134,
@@ -2207,6 +2260,7 @@
     },
     {
       "fingerprint": "commands/board-commands.js:clearShown:savedFreeSession={ori:Uint8Array.from(ori),spin:Int16Array.from(spin),tileEls:tileEls.slice(),moves,best,history:history.map(cloneHistoryEntry),initialState:currentInitialState,initialPar:currentInitialPar,clearShown};",
+      "classification": "executable",
       "source": {
         "file": "commands/board-commands.js",
         "line": 44,
@@ -2229,6 +2283,7 @@
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:tutorialStep=Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index));",
+      "classification": "executable",
       "source": {
         "file": "commands/tutorial-commands.js",
         "line": 3,
@@ -2251,6 +2306,7 @@
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:WakeSevenState.setNavigationIndex(gameState,'tutorial',tutorialStep);",
+      "classification": "executable",
       "source": {
         "file": "commands/tutorial-commands.js",
         "line": 4,
@@ -2273,6 +2329,7 @@
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialStep,String(tutorialStep));",
+      "classification": "executable",
       "source": {
         "file": "commands/tutorial-commands.js",
         "line": 5,
@@ -2295,6 +2352,7 @@
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:return tutorialStep;",
+      "classification": "executable",
       "source": {
         "file": "commands/tutorial-commands.js",
         "line": 6,
@@ -2317,6 +2375,7 @@
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:tutorialStep=0;",
+      "classification": "executable",
       "source": {
         "file": "commands/tutorial-commands.js",
         "line": 14,
@@ -2339,6 +2398,7 @@
     },
     {
       "fingerprint": "commands/tutorial-commands.js:tutorialStep:function persistTutorialSessionCommand(step=tutorialStep){",
+      "classification": "executable",
       "source": {
         "file": "commands/tutorial-commands.js",
         "line": 19,
@@ -2361,6 +2421,7 @@
     },
     {
       "fingerprint": "ui/message.js:stageIndex:function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries(",
+      "classification": "executable",
       "source": {
         "file": "ui/message.js",
         "line": 51,
@@ -2383,6 +2444,7 @@
     },
     {
       "fingerprint": "ui/message.js:stageIndex:function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries(",
+      "classification": "executable",
       "source": {
         "file": "ui/message.js",
         "line": 51,
@@ -2405,6 +2467,7 @@
     },
     {
       "fingerprint": "ui/message.js:messageDialogReturn:function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries(",
+      "classification": "executable",
       "source": {
         "file": "ui/message.js",
         "line": 51,
@@ -2427,6 +2490,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:stageIndex:function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 11,
@@ -2449,6 +2513,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:extraIndex:function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 11,
@@ -2471,6 +2536,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:satoriIndex:function createProgressDisplayModel({mode,stageIndex=0,extraIndex=0,satoriIndex=0,speedIndex=0,speedTotal=0,satoriTotal=0,masteryTotal=0,academyCount=0,trainingCount=0}={}){",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 11,
@@ -2493,6 +2559,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:satoriIndex:else if(mode==='satori')fraction=(satoriIndex+1)/(satoriTotal||1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 14,
@@ -2515,6 +2582,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:extraIndex:else if(mode==='mastery')fraction=(extraIndex+1)/(masteryTotal||1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 15,
@@ -2537,6 +2605,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 16,
@@ -2559,6 +2628,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 16,
@@ -2581,6 +2651,7 @@
     },
     {
       "fingerprint": "ui/progression-render.js:stageIndex:else if(!['free','custom'].includes(mode))fraction=stageIndex<academyCount?(stageIndex+1)/(academyCount||1):(stageIndex-academyCount+1)/(trainingCount||1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-render.js",
         "line": 16,
@@ -2603,6 +2674,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:return isMode('mastery')||(!isMode('satori')&&!isMode('speed')&&['intro','basic','application','development'].includes(primarySectionPosition(stageIndex).section.id));",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 293,
@@ -2625,6 +2697,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(stageIndex+1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 307,
@@ -2647,6 +2720,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 495,
@@ -2669,6 +2743,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 495,
@@ -2691,6 +2766,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 495,
@@ -2713,6 +2789,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 496,
@@ -2735,6 +2812,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 496,
@@ -2757,6 +2835,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 496,
@@ -2779,6 +2858,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:masterDialogKind:const shouldAnimate=masterDialog.hidden||masterDialogKind!==kind;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 813,
@@ -2801,6 +2881,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:extraIndex:const volume=Math.ceil((extraIndex+1)/MASTER_VOLUME_SIZE);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 897,
@@ -2823,6 +2904,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:activeLap:if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1063,
@@ -2845,6 +2927,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1063,
@@ -2867,6 +2950,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1066,
@@ -2889,6 +2973,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1066,
@@ -2911,6 +2996,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1067,
@@ -2933,6 +3019,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1067,
@@ -2955,6 +3042,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:else loadStage(stageIndex-1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1068,
@@ -2977,6 +3065,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1074,
@@ -2999,6 +3088,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1074,
@@ -3021,6 +3111,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1074,
@@ -3043,6 +3134,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:activeLap:else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1075,
@@ -3065,6 +3157,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:satoriIndex:else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1075,
@@ -3087,6 +3180,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1078,
@@ -3109,6 +3203,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:extraIndex:if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1078,
@@ -3131,6 +3226,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1079,
@@ -3153,6 +3249,7 @@
     },
     {
       "fingerprint": "ui/progression-ui.js:stageIndex:else loadStage(stageIndex+1);",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-ui.js",
         "line": 1080,
@@ -3175,6 +3272,7 @@
     },
     {
       "fingerprint": "ui/progression-hud.js:nextStageAttention:highlightNext:nextStageAttention&&isCampaignMode()&&!$('nextStage').hidden&&!$('nextStage').disabled",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-hud.js",
         "line": 218,
@@ -3196,51 +3294,8 @@
       ]
     },
     {
-      "fingerprint": "ui/progression-flow-contract.js:clearShown:{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation'},",
-      "source": {
-        "file": "ui/progression-flow-contract.js",
-        "line": 6,
-        "excerpt": "{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation'},"
-      },
-      "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
-      "fingerprint": "ui/progression-flow-contract.js:clearShown:{id:'reload-clear',mode:'campaign',from:'page-load',event:'clearShownかつ解決済み',entry:'restoreDialogState→showClearDialog',persist:'clear状態を維持',cancel:'clear状態不整合時は通常盤面',to:'clear-dialog'},",
-      "source": {
-        "file": "ui/progression-flow-contract.js",
-        "line": 13,
-        "excerpt": "{id:'reload-clear',mode:'campaign',from:'page-load',event:'clearShownかつ解決済み',entry:'restoreDialogState→showClearDialog',persist:'clear状態を維持',cancel:'clear状態不整合時は通常盤面',to:'clear-dialog'},"
-      },
-      "symbol": "clearShown",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "dialog",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:dialog",
-      "priority": 1,
-      "reason": "既存のdialog処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "browser-flow",
-        "state-restore"
-      ]
-    },
-    {
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:mode,stageIndex:currentStageIndex,extraIndex:masteryIndex,satoriIndex,activeLap:lap,",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 125,
@@ -3263,6 +3318,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 150,
@@ -3285,6 +3341,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:extraIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 150,
@@ -3307,6 +3364,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 150,
@@ -3329,6 +3387,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:if(mode==='satori')return satoriIndex<SATORI_STAGES.length-1",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 153,
@@ -3351,6 +3410,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:satoriIndex:? {kind:'satori-stage',index:satoriIndex+1}",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 154,
@@ -3373,6 +3433,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:extraIndex:if(mode==='mastery')return extraIndex===EXTRA_STAGES.length-1",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 156,
@@ -3395,6 +3456,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:extraIndex:: {kind:'mastery-stage',index:extraIndex+1};",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 158,
@@ -3417,6 +3479,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:if(stageIndex===ACADEMY_STAGE_COUNT-1&&academyIsCleared)return {kind:'master-dialog',section:'primary'};",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 159,
@@ -3439,6 +3502,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:if(stageIndex===STAGES.length-1&&allPrimaryIsCleared)return {kind:'master-dialog',section:'intermediate'};",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 160,
@@ -3461,6 +3525,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:if(stageIndex===STAGES.length-1)return {kind:'restore-free'};",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 161,
@@ -3483,6 +3548,7 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:return {kind:'stage',index:stageIndex+1};",
+      "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
         "line": 163,
@@ -3505,6 +3571,7 @@
     },
     {
       "fingerprint": "ui/rank.js:activeLap:rankListLap=activeLap;",
+      "classification": "executable",
       "source": {
         "file": "ui/rank.js",
         "line": 96,
@@ -3527,6 +3594,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:stageIndex:rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 28,
@@ -3549,6 +3617,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:extraIndex:const clickClearEntry=clearContentAt(true,extraIndex);",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 251,
@@ -3571,6 +3640,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 414,
@@ -3593,6 +3663,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:extraIndex:else GameNavigation.mastery(extraIndex+1);",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 518,
@@ -3615,6 +3686,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:tutorialStep:$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 920,
@@ -3637,6 +3709,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:masterDialogKind:if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 922,
@@ -3659,6 +3732,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:clearShown:else if(clearShown){",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 931,
@@ -3681,6 +3755,7 @@
     },
     {
       "fingerprint": "runtime/app-events.js:activeLap:activeLap=1;secondLapUnlocked=false;",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
         "line": 1117,
@@ -3703,6 +3778,7 @@
     },
     {
       "fingerprint": "runtime/app-bootstrap.js:clearShown:if(!clearShown)ProgressionEntryPoints.finishStage({mode:'speed'});else WakeSevenProgressionCommands.advanceSpeedRun();",
+      "classification": "executable",
       "source": {
         "file": "runtime/app-bootstrap.js",
         "line": 28,
