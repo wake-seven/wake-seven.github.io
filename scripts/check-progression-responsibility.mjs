@@ -17,6 +17,7 @@ assert.ok(report.generatedAt && report.summary && Array.isArray(report.entries),
 assert.equal(report.entries.length, expected.length, 'progression責務レポートが古いです。npm run trace:generate を実行してください');
 assert.deepEqual(report.pipeline, ['entry', 'state-decision', 'transition', 'render'], '進行処理の追跡順が不正です');
 assert.ok(report.summary.flowRoles && Number.isInteger(report.summary.mixedSymbols), '進行処理の流れ分類がありません');
+assert.deepEqual(Object.keys(report.summary.flowClassifications).sort(), ['orchestration', 'render', 'state-decision', 'transition'], '4分類の定義が不正です');
 assert.ok(Array.isArray(report.fileSummary) && report.fileSummary.length > 0, 'ファイル責務サマリーがありません');
 assert.ok(Array.isArray(report.mixedResponsibilitySymbols) && Array.isArray(report.unclassifiedSymbols), '複数責務・未分類一覧がありません');
 assert.ok(Array.isArray(report.candidateClassifications) && report.summary.candidates, '責務候補の分類一覧がありません');
@@ -29,8 +30,12 @@ for (const entry of report.entries) {
   assert.ok(entry.name && entry.file && Number.isInteger(entry.line), `責務エントリが不正です: ${entry.name}`);
   assert.ok(roles.has(entry.responsibility), `未知の責務です: ${entry.name}`);
   assert.ok(Array.isArray(entry.flowRoles) && entry.flowRoles.length > 0, `流れ分類がありません: ${entry.name}`);
+  assert.ok(['state-decision', 'transition', 'render', 'orchestration'].includes(entry.flowClassification), `4分類がありません: ${entry.name}`);
   for (const role of entry.flowRoles) assert.ok(flowRoles.has(role), `未知の流れ分類です: ${entry.name} (${role})`);
   assert.equal(entry.mixedResponsibility, entry.flowRoles.length > 1, `複数責務フラグが不正です: ${entry.name}`);
+}
+for (const [classification, count] of Object.entries(report.summary.flowClassifications)) {
+  assert.equal(report.entries.filter(entry => entry.flowClassification === classification).length, count, `4分類集計が不一致です: ${classification}`);
 }
 for (const candidate of report.candidateClassifications) {
   assert.ok(candidate.name && candidate.file && Number.isInteger(candidate.line), `責務候補が不正です: ${candidate.name}`);

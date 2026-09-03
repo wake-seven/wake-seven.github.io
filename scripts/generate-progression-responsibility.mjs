@@ -73,6 +73,15 @@ function flowRoles(symbol) {
   return [...new Set(roles.length ? roles : ['unclassified'])];
 }
 
+// 読み始めるときの主責務を4分類へ固定する。複数のflowRolesを残したまま、
+// 入口・状態判断・遷移・表示のどこを最初に追うべきかを機械的に示す。
+function flowClassification(roles) {
+  if (roles.includes('transition') && (roles.includes('state-decision') || roles.includes('render'))) return 'orchestration';
+  if (roles.includes('state-decision')) return 'state-decision';
+  if (roles.includes('transition')) return 'transition';
+  return 'render';
+}
+
 function classify(symbol) {
   const text = `${symbol.name} ${symbol.file}`;
   // ファイルの責務を優先し、関数名に複数の語がある場合は入口の役割を安定させる。
@@ -94,6 +103,7 @@ const entries = symbols
     kind: symbol.kind,
     responsibility: classify(symbol),
     flowRoles: flowRoles(symbol),
+    flowClassification: flowClassification(flowRoles(symbol)),
     mixedResponsibility: flowRoles(symbol).length > 1,
     callers: (symbol.callers || []).filter(caller => caller.caller).map(caller => `${caller.file}:${caller.line}:${caller.caller}`)
   }));
@@ -122,6 +132,7 @@ const candidateEntries = entries.map(entry => ({ ...entry, candidate: classifyCa
 const candidateCounts = Object.fromEntries([...new Set(candidateEntries.map(entry => entry.candidate.category))].sort().map(category => [category, candidateEntries.filter(entry => entry.candidate.category === category).length]));
 const counts = Object.fromEntries([...new Set(entries.map(entry => entry.responsibility))].sort().map(role => [role, entries.filter(entry => entry.responsibility === role).length]));
 const flowCounts = Object.fromEntries([...new Set(entries.flatMap(entry => entry.flowRoles))].sort().map(role => [role, entries.filter(entry => entry.flowRoles.includes(role)).length]));
+const flowClassifications = Object.fromEntries(['state-decision', 'transition', 'render', 'orchestration'].map(role => [role, entries.filter(entry => entry.flowClassification === role).length]));
 const fileSummary = Object.values(entries.reduce((summary, entry) => {
   const item = summary[entry.file] ||= { file: entry.file, symbols: 0, responsibilities: new Set(), flowRoles: new Set(), mixedSymbols: 0 };
   item.symbols++;
@@ -134,7 +145,7 @@ const report = {
   generatedAt: new Date().toISOString(),
   source: 'build/report/symbol-index.json',
   target: 'progression-related symbols',
-  summary: { symbols: entries.length, files: new Set(entries.map(entry => entry.file)).size, responsibilities: counts, flowRoles: flowCounts, mixedSymbols: entries.filter(entry => entry.mixedResponsibility).length, unclassifiedSymbols: entries.filter(entry => entry.responsibility === 'unclassified').length, candidates: candidateCounts },
+  summary: { symbols: entries.length, files: new Set(entries.map(entry => entry.file)).size, responsibilities: counts, flowRoles: flowCounts, flowClassifications, mixedSymbols: entries.filter(entry => entry.mixedResponsibility).length, unclassifiedSymbols: entries.filter(entry => entry.responsibility === 'unclassified').length, candidates: candidateCounts },
   pipeline: ['entry', 'state-decision', 'transition', 'render'],
   fileSummary,
   mixedResponsibilitySymbols: entries.filter(entry => entry.mixedResponsibility).map(entry => ({ name: entry.name, file: entry.file, line: entry.line, flowRoles: entry.flowRoles })),
