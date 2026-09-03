@@ -3,7 +3,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { publishedSourceFiles } from './application-manifest.mjs';
-import { NAVIGATION_NAMES, DIALOG_NAMES, STATE_OWNER_FILES, POLICY_PATH, STATE_EXCEPTION_PURPOSES, classifyStateException, relatedTestsForStateException } from './state-access-policy.mjs';
+import { NAVIGATION_NAMES, DIALOG_NAMES, STATE_OWNER_FILES, POLICY_PATH, STATE_EXCEPTION_PURPOSES, classifyStateException, relatedTestsForStateException, classifyDialogReference } from './state-access-policy.mjs';
 
 // navigation/dialog状態は所有者の外で新しい直接参照を増やさない。
 // 移行途中の既存参照だけを指紋で許可し、行番号変更には依存しない。
@@ -96,15 +96,19 @@ const accessOf=ref=>new RegExp(`(?:^|[\\s;,(])(?:[+\\-]{2})?${ref.name}\\s*(?:[+
 const entrypointOf=ref=>ref.file.startsWith('commands/')?'commands':ref.file.startsWith('runtime/')?'runtime':ref.file.startsWith('ui/')?'ui':ref.file.startsWith('data/')?'data':'other';
 const baselineEntries=tracked.map(ref=>{
   const meta=exceptionMetadata.find(item=>item.fingerprint===fingerprint(ref));
-  return {fingerprint:fingerprint(ref),classification:'executable',source:{file:ref.file,line:ref.line,excerpt:ref.source},symbol:ref.name,entrypoint:entrypointOf(ref),access:accessOf(ref),purpose:meta.purpose,ownerOnly:meta.ownerOnly,temporary:meta.temporary,migrationTarget:meta.migrationTarget,priority:meta.priority,reason:meta.reason,relatedE2E:relatedTestsForStateException(meta)};
+  const dialog=meta.purpose==='dialog'?classifyDialogReference(ref):null;
+  return {fingerprint:fingerprint(ref),classification:'executable',source:{file:ref.file,line:ref.line,excerpt:ref.source},symbol:ref.name,entrypoint:entrypointOf(ref),access:accessOf(ref),purpose:meta.purpose,dialogRole:dialog?.role||null,dialogReason:dialog?.reason||null,ownerOnly:meta.ownerOnly,temporary:meta.temporary,migrationTarget:meta.migrationTarget,priority:meta.priority,reason:meta.reason,relatedE2E:relatedTestsForStateException(meta)};
 });
 const countsByEntrypoint=Object.fromEntries([...new Set(baselineEntries.map(entry=>entry.entrypoint))].sort().map(key=>[key,baselineEntries.filter(entry=>entry.entrypoint===key).length]));
 const countsByAccess={read:baselineEntries.filter(entry=>entry.access==='read').length,write:baselineEntries.filter(entry=>entry.access==='write').length};
+const dialogEntries=baselineEntries.filter(entry=>entry.purpose==='dialog');
+const countsByDialogRole=Object.fromEntries([...new Set(dialogEntries.map(entry=>entry.dialogRole))].sort().map(role=>[role,dialogEntries.filter(entry=>entry.dialogRole===role).length]));
 const excludedCounts=Object.fromEntries([...new Set(excludedRefs.map(ref=>ref.kind))].sort().map(kind=>[kind,excludedRefs.filter(ref=>ref.kind===kind).length]));
-const report={schemaVersion:1,generatedAt:new Date().toISOString(),names:[...names],ownerFiles:[...STATE_OWNER_FILES],migrationScope:{includedClassification:'executable',excludedClassifications:Object.keys(excludedCounts),description:'移行対象は実行コードの状態アクセスだけ。宣言・オブジェクトキー・プロパティ・文字列・データ定義は検出結果として記録するがtemporary例外には含めない'},baselineTracked:baselineCount,counts:{detected:tracked.length+excludedRefs.length,tracked:tracked.length,excluded:excludedRefs.length,allowed:tracked.filter(ref=>allowed.has(fingerprint(ref))).length,newReferences:newRefs.length,retiredExceptions:missing.length,temporary:exceptionMetadata.filter(meta=>meta.temporary).length,expiredTemporary:expiredTemporary.length},excludedCounts,excludedReferences:excludedRefs,countsByPurpose,countsByEntrypoint,countsByAccess,exceptionMetadata,temporaryExceptions:[...temporaryMetadata.values()],baselineEntries,newReferences:newRefs,retiredExceptions:missing};
+const report={schemaVersion:1,generatedAt:new Date().toISOString(),names:[...names],ownerFiles:[...STATE_OWNER_FILES],migrationScope:{includedClassification:'executable',excludedClassifications:Object.keys(excludedCounts),description:'移行対象は実行コードの状態アクセスだけ。宣言・オブジェクトキー・プロパティ・文字列・データ定義は検出結果として記録するがtemporary例外には含めない'},baselineTracked:baselineCount,counts:{detected:tracked.length+excludedRefs.length,tracked:tracked.length,excluded:excludedRefs.length,allowed:tracked.filter(ref=>allowed.has(fingerprint(ref))).length,newReferences:newRefs.length,retiredExceptions:missing.length,temporary:exceptionMetadata.filter(meta=>meta.temporary).length,expiredTemporary:expiredTemporary.length},excludedCounts,excludedReferences:excludedRefs,countsByPurpose,countsByDialogRole,countsByEntrypoint,countsByAccess,exceptionMetadata,temporaryExceptions:[...temporaryMetadata.values()],baselineEntries,newReferences:newRefs,retiredExceptions:missing};
 const reportPath=join(root,'build','report','state-access-policy.json');
 await mkdir(dirname(reportPath),{recursive:true});
 await writeFile(reportPath,JSON.stringify(report,null,2)+'\n');
+await writeFile(join(root,'build','report','dialog-state-access-audit.json'),JSON.stringify({schemaVersion:1,name:'dialog-state-access-audit',generatedAt:report.generatedAt,scope:'dialog実行コードの状態参照',counts:countsByDialogRole,entries:dialogEntries.map(entry=>({fingerprint:entry.fingerprint,symbol:entry.symbol,source:entry.source,role:entry.dialogRole,reason:entry.dialogReason,temporary:entry.temporary,migrationTarget:entry.migrationTarget,relatedE2E:entry.relatedE2E}))},null,2)+'\n');
 const baselinePath=join(root,'build','report','state-access-baseline.json');
 let previousBaseline=null;try{previousBaseline=JSON.parse(await readFile(baselinePath,'utf8'));}catch{}
 const previousFingerprints=new Set((previousBaseline?.entries||[]).map(entry=>entry.fingerprint));

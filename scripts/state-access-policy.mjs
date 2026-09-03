@@ -49,3 +49,19 @@ export function relatedTestsForStateException(meta) {
   if (meta?.purpose === 'animation') return ['browser-e2e', 'ui-effects'];
   return ['state-restore', 'browser-e2e'];
 }
+export function classifyDialogReference(ref) {
+  const text = `${ref?.name || ''} ${ref?.source || ''}`;
+  if (/persist|restore|storage|readDialog|writeDialog|activeSession/i.test(text)) {
+    return { role: 'persistence', reason: 'ダイアログの表示状態または復元情報を保存・復元する参照' };
+  }
+  if (/animation|timer|clearShown.*false|cancelClear/i.test(text)) {
+    return { role: 'animation', reason: '演出中の一時状態を管理する参照' };
+  }
+  if (/next|advance|route|open|show|return|attention/i.test(text)) {
+    return { role: 'chain', reason: '連続ダイアログの次段階または戻り先を管理する参照' };
+  }
+  if (/Context|Gateway|Owner|Command/i.test(text)) {
+    return { role: 'gateway-candidate', reason: '共有状態の入口へ移行候補となる参照' };
+  }
+  return { role: 'display', reason: '表示内容・表示条件だけに使う参照' };
+}
