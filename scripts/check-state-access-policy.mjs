@@ -60,9 +60,23 @@ const expiredTemporary=tracked.filter(ref=>{const item=exceptionMetadata.find(me
 assert.equal(missingTemporary.length,0,`temporary例外に期限メタデータがありません: ${missingTemporary.map(ref=>fingerprint(ref)).join(', ')}`);
 assert.equal(expiredTemporary.length,0,`temporary例外の期限が切れています: ${expiredTemporary.map(ref=>fingerprint(ref)).join(', ')}`);
 const countsByPurpose=Object.fromEntries(STATE_EXCEPTION_PURPOSES.map(purpose=>[purpose,exceptionMetadata.filter(meta=>meta.purpose===purpose).length]));
-const report={schemaVersion:1,generatedAt:new Date().toISOString(),names:[...names],ownerFiles:[...STATE_OWNER_FILES],baselineTracked:baselineCount,counts:{tracked:tracked.length,allowed:tracked.filter(ref=>allowed.has(fingerprint(ref))).length,newReferences:newRefs.length,retiredExceptions:missing.length,temporary:exceptionMetadata.filter(meta=>meta.temporary).length,expiredTemporary:expiredTemporary.length},countsByPurpose,exceptionMetadata,temporaryExceptions:[...temporaryMetadata.values()],newReferences:newRefs,retiredExceptions:missing};
+const accessOf=ref=>new RegExp(`(?:^|[\\s;,(])(?:[+\\-]{2})?${ref.name}\\s*(?:[+\\-*/%]?=|[+\\-]{2})`).test(ref.source+' '+ref.name)||/^(?:\+\+|--)/.test(ref.source)?'write':'read';
+const entrypointOf=ref=>ref.file.startsWith('commands/')?'commands':ref.file.startsWith('runtime/')?'runtime':ref.file.startsWith('ui/')?'ui':ref.file.startsWith('data/')?'data':'other';
+const relatedE2EOf=meta=>meta.purpose==='dialog'?['browser-e2e','browser-flow','state-restore']
+  :meta.purpose==='navigation'||meta.purpose==='progress'?['browser-e2e','progression-flows','clear-flow-order']
+  :meta.purpose==='animation'?['browser-e2e','ui-effects']
+  :['state-restore','browser-e2e'];
+const baselineEntries=tracked.map(ref=>{
+  const meta=exceptionMetadata.find(item=>item.fingerprint===fingerprint(ref));
+  return {fingerprint:fingerprint(ref),source:{file:ref.file,line:ref.line,excerpt:ref.source},symbol:ref.name,entrypoint:entrypointOf(ref),access:accessOf(ref),purpose:meta.purpose,ownerOnly:meta.ownerOnly,temporary:meta.temporary,migrationTarget:meta.migrationTarget,priority:meta.priority,reason:meta.reason,relatedE2E:relatedE2EOf(meta)};
+});
+const countsByEntrypoint=Object.fromEntries([...new Set(baselineEntries.map(entry=>entry.entrypoint))].sort().map(key=>[key,baselineEntries.filter(entry=>entry.entrypoint===key).length]));
+const countsByAccess={read:baselineEntries.filter(entry=>entry.access==='read').length,write:baselineEntries.filter(entry=>entry.access==='write').length};
+const report={schemaVersion:1,generatedAt:new Date().toISOString(),names:[...names],ownerFiles:[...STATE_OWNER_FILES],baselineTracked:baselineCount,counts:{tracked:tracked.length,allowed:tracked.filter(ref=>allowed.has(fingerprint(ref))).length,newReferences:newRefs.length,retiredExceptions:missing.length,temporary:exceptionMetadata.filter(meta=>meta.temporary).length,expiredTemporary:expiredTemporary.length},countsByPurpose,countsByEntrypoint,countsByAccess,exceptionMetadata,temporaryExceptions:[...temporaryMetadata.values()],baselineEntries,newReferences:newRefs,retiredExceptions:missing};
 const reportPath=join(root,'build','report','state-access-policy.json');
 await mkdir(dirname(reportPath),{recursive:true});
 await writeFile(reportPath,JSON.stringify(report,null,2)+'\n');
+await writeFile(join(root,'build','report','state-access-baseline.json'),JSON.stringify({schemaVersion:1,name:'state-access-baseline',generatedAt:report.generatedAt,source:'scripts/state-access-exceptions.json',counts:{temporary:baselineEntries.filter(entry=>entry.temporary).length,byPurpose:countsByPurpose,byEntrypoint:countsByEntrypoint,byAccess:countsByAccess},entries:baselineEntries},null,2)+'\n');
 console.log(`State access policy OK: ${tracked.length} tracked references; ${missing.length} retired exceptions.`);
+console.log(`State access baseline: ${baselineEntries.length} entries; temporary ${baselineEntries.filter(entry=>entry.temporary).length}; report build/report/state-access-baseline.json`);
 console.log(`Report: ${relative(root,reportPath)}`);
