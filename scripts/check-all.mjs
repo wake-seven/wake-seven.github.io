@@ -15,6 +15,7 @@ const steps = [
   { name: 'domain-classification', command: process.execPath, args: ['scripts/check-domain-classification.mjs'] },
   { name: 'build', command: process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : 'npm',
     args: process.platform === 'win32' ? ['/d', '/s', '/c', 'npm run build'] : ['run', 'build'] },
+  { name: 'development-entrypoints', command: process.execPath, args: ['scripts/check-development-entrypoints.mjs'] },
   { name: 'version', command: process.execPath, args: ['scripts/check-version.mjs'] },
   { name: 'board-domain', command: process.execPath, args: ['scripts/test-board-domain.mjs'] },
   { name: 'application-services', command: process.execPath, args: ['scripts/test-application-services.mjs'] },

@@ -24,6 +24,7 @@
 - `src/main.mjs` — 開発用ESMの入口
 - `scripts/` — 公開版生成と自動監査
 - `scripts/build-index.mjs` — 単体HTMLを生成するスクリプト
+- 主要処理の追跡は `npm run trace:entry -- progression` / `state` / `clear-flow`、変更影響の確認は `npm run trace:impact -- <変更ファイル>` です。詳細な確認と公開版の検証は `npm run check:gate` で行います。
 - `all-patterns.html` — クリア後に楽しめる盤面一覧
 - `docs/architecture-audit.md` — 公開境界・保存方針・アーキテクチャ監査
 

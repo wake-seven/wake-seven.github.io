@@ -33,7 +33,9 @@
 npm run check
 ```
 
-`npm run check` は `check:gate` の別名です。`scripts/check-all.mjs` が最初に公開版をビルドし、その後に39手順を定義順で一度ずつ実行します。利用者向けの表示とレポートは、手順を「構造」「状態」「進行」「ブラウザ」の4領域に集約します。途中で失敗した場合は後続を実行せず、`build/report/check-gate.json` に失敗した領域・検査、終了コード、標準出力・標準エラー、所要時間、詳細レポートへのリンクを保存します。個別の検査が必要な場合だけ `package.json` と `scripts/check-*.mjs` を確認してください。
+`npm run check` は `check:gate` の別名です。`scripts/check-all.mjs` が最初に公開版をビルドし、その後に定義順で検査を一度ずつ実行します。利用者向けの表示とレポートは、手順を「構造」「状態」「進行」「ブラウザ」の4領域に集約します。途中で失敗した場合は後続を実行せず、`build/report/check-gate.json` に失敗した領域・検査、終了コード、標準出力・標準エラー、所要時間、詳細レポートへのリンクを保存します。個別の検査が必要な場合だけ `package.json` と `scripts/check-*.mjs` を確認してください。
+
+開発時の固定入口は `scripts/development-entrypoints.json` にまとめています。`npm run trace:entry -- progression`（または `state` / `clear-flow`）で、主要ソース・入口シンボル・関連する状態/DOM/E2E/フローレポートを一覧できます。変更対象を確認するときは `npm run trace:impact -- <変更ファイル>` を使い、生成された `build/report/change-impact.json` から影響範囲を確認してから `npm run check:gate` を実行します。入口の定義自体は `npm run check:development-entrypoints` で検査され、詳細な関数一覧は生成済みtraceレポートを正とします。
 
 検査を領域単位で実行する公開入口は `check:structure`（構造）、`check:state`（状態）、`check:flows`（進行）、`check:browser`（ブラウザ）です。各入口は `scripts/check-entry-groups.json` で内部検査と対応付けています。個別の `check:*` は内部検査として残し、通常は領域入口または `npm run check` を使用してください。`check:script-audit` は `audit:scripts` への移行前のlegacy aliasで、新規利用は禁止です。削除条件は同JSONに記録します。
 
