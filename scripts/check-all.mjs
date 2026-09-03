@@ -28,6 +28,7 @@ const steps = [
   { name: 'browser-e2e', command: process.execPath, args: ['scripts/check-browser-e2e.mjs'] },
   { name: 'refactor-baseline-generate', command: process.execPath, args: ['scripts/generate-refactor-baseline.mjs'] },
   { name: 'refactor-baseline', command: process.execPath, args: ['scripts/check-refactor-baseline.mjs'] },
+  { name: 'refactor-budgets', command: process.execPath, args: ['scripts/check-refactor-budgets.mjs'] },
   { name: 'esm-dependencies', command: process.execPath, args: ['scripts/check-esm-dependencies.mjs'] },
   { name: 'public-esm', command: process.execPath, args: ['scripts/check-public-esm.mjs'] },
   { name: 'metrics-update-policy', command: process.execPath, args: ['scripts/check-metrics-update.mjs'] },

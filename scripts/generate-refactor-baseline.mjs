@@ -5,7 +5,7 @@ import { publishedSourceFiles } from './application-manifest.mjs';
 
 // 構造変更前後を比較するための、現状の解析ベースラインを生成する。
 // 完全なJavaScript AST解析ではなく、依存を増やさない保守用の計測である。
-// このスクリプトはソースを変更せず、build/report/refactor-baseline.jsonだけを書き換える。
+// このスクリプトはソースを変更せず、比較用の一時レポートだけを書き換える。
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const reportDir = join(root, 'build', 'report');
 const readReport = async name => {
@@ -61,6 +61,8 @@ const progressionEntries = (flowMap?.progressionEntries || []).map(entry => ({
   entryWrapper: entry.entryWrapper || []
 }));
 const browser = await readReport('browser-e2e-result.json');
+const globalAccess = await readReport('global-access.json');
+const stateMutations = await readReport('state-mutation-audit.json');
 const e2e = browser ? {
   name: browser.name,
   appVersion: browser.appVersion,
@@ -87,7 +89,9 @@ const report = {
     progressionEntryCount: progressionEntries.length,
     e2eCaseCount: e2e.caseCount,
     e2ePassed: e2e.passed,
-    e2eConsoleErrorCount: e2e.consoleErrorCount
+    e2eConsoleErrorCount: e2e.consoleErrorCount,
+    needsMigrationGlobalAccessCount: globalAccess?.counts?.['needs-migration'] ?? 0,
+    directStateAssignmentCount: stateMutations?.counts?.directAssignments ?? 0
   },
   mutableVariables: uniqueMutable,
   mutableReferences: uniqueReferences,
@@ -95,7 +99,7 @@ const report = {
   e2e
 };
 await mkdir(reportDir, { recursive: true });
-const reportPath = join(reportDir, 'refactor-baseline.json');
+const reportPath = join(reportDir, 'current-refactor-baseline.json');
 await writeFile(reportPath, JSON.stringify(report, null, 2) + '\n');
 console.log(`Refactor baseline: ${report.summary.mutableVariableCount} mutable variables, ${report.summary.progressionFunctionCount} progression functions, ${report.summary.e2eCaseCount} E2E cases.`);
 console.log(`Report: ${relative(root, reportPath)}`);
