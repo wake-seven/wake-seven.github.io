@@ -1,7 +1,8 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
+import { sourceRevision, writeReport } from './lib/report.mjs';
 
 // 公開版を作り直してから、検査を定義順に一度ずつ実行する最終ゲート。
 // 個別スクリプトは単独でも使えるが、通常の入口はこのファイルに集約する。
@@ -48,7 +49,8 @@ const steps = [
   { name: 'compat-boundaries', command: process.execPath, args: ['scripts/check-compat-boundaries.mjs'] },
   { name: 'unused-files', command: process.execPath, args: ['scripts/check-unused-files.mjs'] },
   { name: 'manifest-dependencies', command: process.execPath, args: ['scripts/check-manifest-dependencies.mjs'] },
-  { name: 'public-symbols', command: process.execPath, args: ['scripts/check-public-symbols.mjs'] }
+  { name: 'public-symbols', command: process.execPath, args: ['scripts/check-public-symbols.mjs'] },
+  { name: 'report-schema', command: process.execPath, args: ['scripts/check-report-schema.mjs'] }
 ];
 
 const run = (step) => new Promise(resolve => {
@@ -73,7 +75,8 @@ const run = (step) => new Promise(resolve => {
   }));
 });
 
-const report = { schemaVersion: 1, name: 'wake7-check-gate', startedAt: new Date().toISOString(), steps: [], passed: false };
+const report = { schemaVersion: 1, name: 'wake7-check-gate', startedAt: new Date().toISOString(), steps: [], passed: false,
+  status: 'failed', summary: {}, warnings: [], errors: [], sourceRevision: await sourceRevision(root) };
 await mkdir(dirname(reportPath), { recursive: true });
 for (const step of steps) {
   const result = await run(step);
@@ -82,7 +85,7 @@ for (const step of steps) {
   if (result.exitCode !== 0) {
     report.failedStep = result.name;
     report.finishedAt = new Date().toISOString();
-    await writeFile(reportPath, JSON.stringify(report, null, 2) + '\n');
+    await writeReport(reportPath, { ...report, generatedAt: report.finishedAt });
     console.error(`Check gate failed at ${result.name}. Report: ${reportPath}`);
     process.exitCode = result.exitCode;
     break;
@@ -91,6 +94,8 @@ for (const step of steps) {
 if (!report.failedStep) {
   report.passed = true;
   report.finishedAt = new Date().toISOString();
-  await writeFile(reportPath, JSON.stringify(report, null, 2) + '\n');
+  report.status = 'passed';
+  report.summary = { steps: report.steps.length, failedStep: null };
+  await writeReport(reportPath, { ...report, generatedAt: report.finishedAt });
   console.log(`Check gate passed: ${report.steps.length} steps. Report: ${reportPath}`);
 }
