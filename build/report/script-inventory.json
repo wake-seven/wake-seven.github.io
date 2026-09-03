@@ -1,0 +1,1663 @@
+{
+  "schemaVersion": 1,
+  "name": "wake7-script-inventory",
+  "generatedAt": "2026-09-03T06:42:36.603Z",
+  "measurement": "runtime is copied from the latest check-gate report; null means the script was not a gate step",
+  "selection": "scripts whose names are check/test/generate or known pipeline support scripts",
+  "counts": {
+    "files": 51,
+    "commands": 40,
+    "measured": 36,
+    "overlapGroups": 80
+  },
+  "entries": [
+    {
+      "file": "scripts/accept-refactor-baseline.mjs",
+      "command": "npm run baseline:accept",
+      "category": "support",
+      "purpose": "意図した構造変更を、レビュー済みの比較基準として明示的に採用する。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": null,
+      "overlapKeys": [],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-all.mjs",
+      "command": "npm run check:gate",
+      "category": "check",
+      "purpose": "公開版を作り直してから、検査を定義順に一度ずつ実行する最終ゲート。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": null,
+      "overlapKeys": [],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-application-targets.mjs",
+      "command": null,
+      "category": "check",
+      "purpose": "コースの位置は個別の数値で複製せず、応用9問の直後から発展を開始する。",
+      "inputs": [
+        "src"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 67,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "src"
+      ],
+      "integrationCandidate": "internal-only"
+    },
+    {
+      "file": "scripts/check-browser-e2e.mjs",
+      "command": "npm run check:browser-e2e",
+      "category": "check",
+      "purpose": "公開版をChromeで実操作し、成功時だけ証跡を保存する実ブラウザE2E。",
+      "inputs": [
+        "src/runtime/runtime.js"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 35592,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "src/runtime/runtime.js"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-browser-flow.mjs",
+      "command": "npm run check:browser-flow",
+      "category": "check",
+      "purpose": "ブラウザ相当の導線契約。起動復元の前に画面の骨格が存在することを確認する。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 93,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-compat-boundaries.mjs",
+      "command": "npm run check:compat-boundaries",
+      "category": "check",
+      "purpose": "互換層・薄い入口は「参照回数が少ない」だけでは削除しない。",
+      "inputs": [
+        "refactor-candidates.json"
+      ],
+      "outputs": [
+        "compat-boundary-audit.json"
+      ],
+      "runtime": {
+        "durationMs": 108,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "refactor-candidates.json",
+        "compat-boundary-audit.json"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-compat-e2e.mjs",
+      "command": "npm run check:compat-e2e",
+      "category": "check",
+      "purpose": "過去保存データ互換は提供しない。移行関数や旧並び替え識別子が復活したら失敗させる。",
+      "inputs": [
+        "docs",
+        "scripts",
+        "index.html"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 352,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "docs",
+        "scripts",
+        "index.html"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-device-e2e.mjs",
+      "command": "npm run check:device-e2e",
+      "category": "check",
+      "purpose": "端末差分を補うChrome E2E。通常の導線E2Eとは分け、touch/viewport固有の契約を検証する。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 26724,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-dialog-chains.mjs",
+      "command": null,
+      "category": "check",
+      "purpose": "連鎖は共有ダイアログの登録表を入口にする。名前を直接条件分岐へ",
+      "inputs": [
+        "src"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 72,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "src"
+      ],
+      "integrationCandidate": "internal-only"
+    },
+    {
+      "file": "scripts/check-esm-dependencies.mjs",
+      "command": "npm run check:esm-deps",
+      "category": "check",
+      "purpose": "ESMサービスはブラウザ機能を注入で受け取り、直接参照で依存関係を隠さない。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 81,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-esm.mjs",
+      "command": "npm run check:esm",
+      "category": "check",
+      "purpose": "check esm",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 79,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-event-wiring.mjs",
+      "command": "npm run check:event-wiring",
+      "category": "check",
+      "purpose": "主要画面要素のイベント登録漏れと表示先の参照漏れを検査する。",
+      "inputs": [
+        "build"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 257,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "build"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-global-access-contract.mjs",
+      "command": "npm run check:global-access",
+      "category": "check",
+      "purpose": "直接参照監査を現行ソースから再生成し、分類件数を検証する。",
+      "inputs": [
+        "build"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 216,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "build"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-global-access.mjs",
+      "command": "npm run check:global-access-report",
+      "category": "check",
+      "purpose": "共有状態の直接参照を数え、入口・所有者・個別移行候補に分類する。",
+      "inputs": [
+        "src"
+      ],
+      "outputs": [],
+      "runtime": null,
+      "overlapKeys": [
+        "src"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-manifest-dependencies.mjs",
+      "command": "npm run check:manifest-deps",
+      "category": "check",
+      "purpose": "classic公開版はESMのimportグラフを持たないため、連結前に「提供側が先か」を検査する。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 941,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-metrics-update.mjs",
+      "command": "npm run check:metrics-update",
+      "category": "check",
+      "purpose": "check metrics update",
+      "inputs": [
+        "package.json"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 184,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "package.json"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-progression-flow-contract.mjs",
+      "command": "npm run check:progression-flow",
+      "category": "check",
+      "purpose": "check progression flow contract",
+      "inputs": [
+        "build/report/progression-flow-map.json",
+        "src/ui/progression-flow-contract.js"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 62,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "build/report/progression-flow-map.json",
+        "src/ui/progression-flow-contract.js"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-progression-flows.mjs",
+      "command": "npm run check:progression-flows",
+      "category": "check",
+      "purpose": "check progression flows",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 65,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-progression-responsibility.mjs",
+      "command": "npm run check:progression-responsibility",
+      "category": "check",
+      "purpose": "progression 責務レポートが、最新のシンボル索引から生成されているか確認する。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 72,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-public-esm.mjs",
+      "command": "npm run check:public-esm",
+      "category": "check",
+      "purpose": "生成HTMLの構造重複を検出する。重複idは導線イベントが別要素へ結び付くため、",
+      "inputs": [
+        "index.html",
+        "src",
+        "scripts"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 1269,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "index.html",
+        "src",
+        "scripts"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-public-symbols.mjs",
+      "command": "npm run check:public-symbols",
+      "category": "check",
+      "purpose": "公開版は連結された1本のmodule scriptになるため、生成後の実体を監査する。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 431,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-refactor-baseline.mjs",
+      "command": "npm run check:baseline",
+      "category": "check",
+      "purpose": "ベースラインが比較可能な形式で生成されていることだけを検査する。",
+      "inputs": [
+        "build/report/refactor-baseline.json"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 71,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "build/report/refactor-baseline.json"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-refactor-budgets.mjs",
+      "command": null,
+      "category": "check",
+      "purpose": "構造改善の基準値を、検査のたびに上書きせず比較する。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 82,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [],
+      "integrationCandidate": "internal-only"
+    },
+    {
+      "file": "scripts/check-refactor-policy.mjs",
+      "command": "npm run check:refactor-policy",
+      "category": "check",
+      "purpose": "check refactor policy",
+      "inputs": [
+        "docs",
+        "package.json",
+        "progression-ui.js",
+        "build"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 69,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "docs",
+        "package.json",
+        "progression-ui.js",
+        "build"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-refactor-report.mjs",
+      "command": "npm run check:refactor-report",
+      "category": "check",
+      "purpose": "統合候補レポートが、現在の参照グラフから生成されたものか確認する。",
+      "inputs": [
+        "build/report/refactor-candidates.json"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 71,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "build/report/refactor-candidates.json"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-source-boundaries.mjs",
+      "command": "npm run check:source-boundaries",
+      "category": "check",
+      "purpose": "classic実装の残存は移行課題として可視化する。公開ビルド対象外の漏れだけを失敗にする。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 81,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-state-access-policy.mjs",
+      "command": "npm run check:state-access-policy",
+      "category": "check",
+      "purpose": "navigation/dialog状態は所有者の外で新しい直接参照を増やさない。",
+      "inputs": [
+        "src"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 173,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "src"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-state-classification.mjs",
+      "command": "npm run check:state-classification",
+      "category": "check",
+      "purpose": "分類の漏れ・重複を検査し、前回baselineとの差分を必ずレポートに残す。",
+      "inputs": [
+        "build/report/state-classification.json"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 141,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "build/report/state-classification.json"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-state-mutations.mjs",
+      "command": "npm run check:state-mutations",
+      "category": "check",
+      "purpose": "状態変数の直接書き換えを棚卸しする。状態所有モジュール以外では",
+      "inputs": [
+        "src"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 87,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "src"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-state-restore.mjs",
+      "command": null,
+      "category": "check",
+      "purpose": "2つのVMコンテキストで共有する小さなlocalStorage実装により、",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 89,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [],
+      "integrationCandidate": "internal-only"
+    },
+    {
+      "file": "scripts/check-state.mjs",
+      "command": null,
+      "category": "check",
+      "purpose": "classic互換ソースをvmで単体検査する際は、公開module境界だけを除去する。",
+      "inputs": [
+        "index.html",
+        "src"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 109,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "index.html",
+        "src"
+      ],
+      "integrationCandidate": "internal-only"
+    },
+    {
+      "file": "scripts/check-trace-index.mjs",
+      "command": "npm run check:trace",
+      "category": "check",
+      "purpose": "索引を毎回再生成して、追跡レポートが現行ソースから作れることを確認する。",
+      "inputs": [
+        "build"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 9134,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "build"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-ui-data-map.mjs",
+      "command": "npm run check:ui-data-map",
+      "category": "check",
+      "purpose": "対応表を現行ソースから再生成し、必須の画面領域が追跡可能なことを確認する。",
+      "inputs": [
+        "build"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 9102,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "build"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-ui-effects.mjs",
+      "command": null,
+      "category": "check",
+      "purpose": "check ui effects",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 76,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [],
+      "integrationCandidate": "internal-only"
+    },
+    {
+      "file": "scripts/check-unused-files.mjs",
+      "command": "npm run check:unused-files",
+      "category": "check",
+      "purpose": "削除は「参照が少ない」だけでは決めない。公開マニフェスト、ESM依存、",
+      "inputs": [
+        "scripts/application-manifest.mjs",
+        "build/report/refactor-candidates.json",
+        "build/report/compat-boundary-audit.json"
+      ],
+      "outputs": [
+        "build/report/unused-file-audit.json"
+      ],
+      "runtime": {
+        "durationMs": 69,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "scripts/application-manifest.mjs",
+        "build/report/refactor-candidates.json",
+        "build/report/compat-boundary-audit.json",
+        "build/report/unused-file-audit.json"
+      ],
+      "integrationCandidate": "keep-as-pipeline-step"
+    },
+    {
+      "file": "scripts/check-version.mjs",
+      "command": null,
+      "category": "check",
+      "purpose": "バージョンの日時が実行環境の現在時刻より未来になっていないことを確認する。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 197,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [],
+      "integrationCandidate": "internal-only"
+    },
+    {
+      "file": "scripts/generate-event-wiring-map.mjs",
+      "command": "npm run trace:generate",
+      "category": "generate",
+      "purpose": "主要操作要素のイベント配線を、現行ソースから機械的に索引化する。",
+      "inputs": [
+        "index.html"
+      ],
+      "outputs": [
+        "event-wiring-map.json"
+      ],
+      "runtime": null,
+      "overlapKeys": [
+        "index.html",
+        "event-wiring-map.json"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/generate-progression-flow-report.mjs",
+      "command": "npm run trace:generate",
+      "category": "generate",
+      "purpose": "generate progression flow report",
+      "inputs": [
+        "src/ui/progression-flow-contract.js"
+      ],
+      "outputs": [
+        "progression-flow-map.json"
+      ],
+      "runtime": null,
+      "overlapKeys": [
+        "src/ui/progression-flow-contract.js",
+        "progression-flow-map.json"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/generate-progression-responsibility.mjs",
+      "command": "npm run trace:generate",
+      "category": "generate",
+      "purpose": "progression 周辺の責務を、現在のシンボル索引から自動分類する。",
+      "inputs": [],
+      "outputs": [
+        "progression-responsibility.json"
+      ],
+      "runtime": null,
+      "overlapKeys": [
+        "progression-responsibility.json"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/generate-refactor-baseline.mjs",
+      "command": "npm run baseline:generate",
+      "category": "generate",
+      "purpose": "構造変更前後を比較するための、現状の解析ベースラインを生成する。",
+      "inputs": [
+        "src"
+      ],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 593,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [
+        "src"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/generate-refactor-report.mjs",
+      "command": "npm run trace:generate",
+      "category": "generate",
+      "purpose": "参照グラフを使って、統合候補を機械的に可視化する。",
+      "inputs": [
+        "symbol-index.json",
+        "flow-map.json"
+      ],
+      "outputs": [
+        "refactor-candidates.json"
+      ],
+      "runtime": null,
+      "overlapKeys": [
+        "symbol-index.json",
+        "flow-map.json",
+        "refactor-candidates.json"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/generate-trace-index.mjs",
+      "command": "npm run trace:generate",
+      "category": "generate",
+      "purpose": "公開版のソースを機械的に検索し、処理の入口を辿るための索引を生成する。",
+      "inputs": [
+        "src"
+      ],
+      "outputs": [
+        "symbol-index.json",
+        "flow-map.json"
+      ],
+      "runtime": null,
+      "overlapKeys": [
+        "src",
+        "symbol-index.json",
+        "flow-map.json"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/generate-ui-data-map.mjs",
+      "command": "npm run trace:generate",
+      "category": "generate",
+      "purpose": "画面要素と、それを組み立てるデータ・表示関数の対応表を生成する。",
+      "inputs": [],
+      "outputs": [
+        "ui-data-map.json"
+      ],
+      "runtime": null,
+      "overlapKeys": [
+        "ui-data-map.json"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/progression-entry-points.mjs",
+      "command": null,
+      "category": "support",
+      "purpose": "進行処理を調べるときに最初に見る公開入口と、その実装名。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": null,
+      "overlapKeys": [],
+      "integrationCandidate": "internal-only"
+    },
+    {
+      "file": "scripts/public-bundle-metrics.mjs",
+      "command": null,
+      "category": "support",
+      "purpose": "公開版の生成物を、セクション単位で比較できる形に計測する。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": null,
+      "overlapKeys": [],
+      "integrationCandidate": "internal-only"
+    },
+    {
+      "file": "scripts/state-access-policy.mjs",
+      "command": null,
+      "category": "support",
+      "purpose": "状態所有者と、移行途中に残る直接参照を明示するためのポリシー。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": null,
+      "overlapKeys": [],
+      "integrationCandidate": "internal-only"
+    },
+    {
+      "file": "scripts/state-classification.mjs",
+      "command": null,
+      "category": "support",
+      "purpose": "トップレベルの可変状態を、用途ごとに追跡するための分類メタデータ。",
+      "inputs": [
+        "src"
+      ],
+      "outputs": [],
+      "runtime": null,
+      "overlapKeys": [
+        "src"
+      ],
+      "integrationCandidate": "internal-only"
+    },
+    {
+      "file": "scripts/test-application-services.mjs",
+      "command": "npm run test:application-services",
+      "category": "test",
+      "purpose": "このテストはDOM・公開版の連結順・ブラウザタイマーを使わない。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 71,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/test-board-domain.mjs",
+      "command": "npm run test:board-domain",
+      "category": "test",
+      "purpose": "実ゲームと同じ7枚配置・6つの三角形を、DOMなしで組み立てる。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 99,
+        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "source": "check-gate"
+      },
+      "overlapKeys": [],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/trace.mjs",
+      "command": "npm run trace",
+      "category": "support",
+      "purpose": "生成済みの追跡索引を、改修時の入口として検索するCLI。",
+      "inputs": [
+        "symbol-index.json",
+        "flow-map.json"
+      ],
+      "outputs": [],
+      "runtime": null,
+      "overlapKeys": [
+        "symbol-index.json",
+        "flow-map.json"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/update-public-esm-metrics.mjs",
+      "command": "npm run metrics:update",
+      "category": "support",
+      "purpose": "明示的な大規模変更だけをbaselineへ反映する。更新前後に同じ監査を行う。",
+      "inputs": [
+        "index.html",
+        "src"
+      ],
+      "outputs": [],
+      "runtime": null,
+      "overlapKeys": [
+        "index.html",
+        "src"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    }
+  ],
+  "overlapGroups": [
+    {
+      "files": [
+        "scripts/check-application-targets.mjs",
+        "scripts/check-dialog-chains.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-application-targets.mjs",
+        "scripts/check-global-access.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-application-targets.mjs",
+        "scripts/check-public-esm.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-application-targets.mjs",
+        "scripts/check-state-access-policy.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-application-targets.mjs",
+        "scripts/check-state-mutations.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-application-targets.mjs",
+        "scripts/check-state.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-application-targets.mjs",
+        "scripts/generate-refactor-baseline.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-application-targets.mjs",
+        "scripts/generate-trace-index.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-application-targets.mjs",
+        "scripts/state-classification.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-application-targets.mjs",
+        "scripts/update-public-esm-metrics.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-compat-boundaries.mjs",
+        "scripts/generate-refactor-report.mjs"
+      ],
+      "shared": [
+        "refactor-candidates.json"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-compat-e2e.mjs",
+        "scripts/check-public-esm.mjs"
+      ],
+      "shared": [
+        "scripts",
+        "index.html"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-compat-e2e.mjs",
+        "scripts/check-refactor-policy.mjs"
+      ],
+      "shared": [
+        "docs"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-compat-e2e.mjs",
+        "scripts/check-state.mjs"
+      ],
+      "shared": [
+        "index.html"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-compat-e2e.mjs",
+        "scripts/generate-event-wiring-map.mjs"
+      ],
+      "shared": [
+        "index.html"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-compat-e2e.mjs",
+        "scripts/update-public-esm-metrics.mjs"
+      ],
+      "shared": [
+        "index.html"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-dialog-chains.mjs",
+        "scripts/check-global-access.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-dialog-chains.mjs",
+        "scripts/check-public-esm.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-dialog-chains.mjs",
+        "scripts/check-state-access-policy.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-dialog-chains.mjs",
+        "scripts/check-state-mutations.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-dialog-chains.mjs",
+        "scripts/check-state.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-dialog-chains.mjs",
+        "scripts/generate-refactor-baseline.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-dialog-chains.mjs",
+        "scripts/generate-trace-index.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-dialog-chains.mjs",
+        "scripts/state-classification.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-dialog-chains.mjs",
+        "scripts/update-public-esm-metrics.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-event-wiring.mjs",
+        "scripts/check-global-access-contract.mjs"
+      ],
+      "shared": [
+        "build"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-event-wiring.mjs",
+        "scripts/check-refactor-policy.mjs"
+      ],
+      "shared": [
+        "build"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-event-wiring.mjs",
+        "scripts/check-trace-index.mjs"
+      ],
+      "shared": [
+        "build"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-event-wiring.mjs",
+        "scripts/check-ui-data-map.mjs"
+      ],
+      "shared": [
+        "build"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-global-access-contract.mjs",
+        "scripts/check-refactor-policy.mjs"
+      ],
+      "shared": [
+        "build"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-global-access-contract.mjs",
+        "scripts/check-trace-index.mjs"
+      ],
+      "shared": [
+        "build"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-global-access-contract.mjs",
+        "scripts/check-ui-data-map.mjs"
+      ],
+      "shared": [
+        "build"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-global-access.mjs",
+        "scripts/check-public-esm.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-global-access.mjs",
+        "scripts/check-state-access-policy.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-global-access.mjs",
+        "scripts/check-state-mutations.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-global-access.mjs",
+        "scripts/check-state.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-global-access.mjs",
+        "scripts/generate-refactor-baseline.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-global-access.mjs",
+        "scripts/generate-trace-index.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-global-access.mjs",
+        "scripts/state-classification.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-global-access.mjs",
+        "scripts/update-public-esm-metrics.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-metrics-update.mjs",
+        "scripts/check-refactor-policy.mjs"
+      ],
+      "shared": [
+        "package.json"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-progression-flow-contract.mjs",
+        "scripts/generate-progression-flow-report.mjs"
+      ],
+      "shared": [
+        "src/ui/progression-flow-contract.js"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-public-esm.mjs",
+        "scripts/check-state-access-policy.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-public-esm.mjs",
+        "scripts/check-state-mutations.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-public-esm.mjs",
+        "scripts/check-state.mjs"
+      ],
+      "shared": [
+        "index.html",
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-public-esm.mjs",
+        "scripts/generate-event-wiring-map.mjs"
+      ],
+      "shared": [
+        "index.html"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-public-esm.mjs",
+        "scripts/generate-refactor-baseline.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-public-esm.mjs",
+        "scripts/generate-trace-index.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-public-esm.mjs",
+        "scripts/state-classification.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-public-esm.mjs",
+        "scripts/update-public-esm-metrics.mjs"
+      ],
+      "shared": [
+        "index.html",
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-refactor-policy.mjs",
+        "scripts/check-trace-index.mjs"
+      ],
+      "shared": [
+        "build"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-refactor-policy.mjs",
+        "scripts/check-ui-data-map.mjs"
+      ],
+      "shared": [
+        "build"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-refactor-report.mjs",
+        "scripts/check-unused-files.mjs"
+      ],
+      "shared": [
+        "build/report/refactor-candidates.json"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state-access-policy.mjs",
+        "scripts/check-state-mutations.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state-access-policy.mjs",
+        "scripts/check-state.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state-access-policy.mjs",
+        "scripts/generate-refactor-baseline.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state-access-policy.mjs",
+        "scripts/generate-trace-index.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state-access-policy.mjs",
+        "scripts/state-classification.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state-access-policy.mjs",
+        "scripts/update-public-esm-metrics.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state-mutations.mjs",
+        "scripts/check-state.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state-mutations.mjs",
+        "scripts/generate-refactor-baseline.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state-mutations.mjs",
+        "scripts/generate-trace-index.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state-mutations.mjs",
+        "scripts/state-classification.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state-mutations.mjs",
+        "scripts/update-public-esm-metrics.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state.mjs",
+        "scripts/generate-event-wiring-map.mjs"
+      ],
+      "shared": [
+        "index.html"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state.mjs",
+        "scripts/generate-refactor-baseline.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state.mjs",
+        "scripts/generate-trace-index.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state.mjs",
+        "scripts/state-classification.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-state.mjs",
+        "scripts/update-public-esm-metrics.mjs"
+      ],
+      "shared": [
+        "index.html",
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-trace-index.mjs",
+        "scripts/check-ui-data-map.mjs"
+      ],
+      "shared": [
+        "build"
+      ]
+    },
+    {
+      "files": [
+        "scripts/generate-event-wiring-map.mjs",
+        "scripts/update-public-esm-metrics.mjs"
+      ],
+      "shared": [
+        "index.html"
+      ]
+    },
+    {
+      "files": [
+        "scripts/generate-refactor-baseline.mjs",
+        "scripts/generate-trace-index.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/generate-refactor-baseline.mjs",
+        "scripts/state-classification.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/generate-refactor-baseline.mjs",
+        "scripts/update-public-esm-metrics.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/generate-refactor-report.mjs",
+        "scripts/generate-trace-index.mjs"
+      ],
+      "shared": [
+        "symbol-index.json",
+        "flow-map.json"
+      ]
+    },
+    {
+      "files": [
+        "scripts/generate-refactor-report.mjs",
+        "scripts/trace.mjs"
+      ],
+      "shared": [
+        "symbol-index.json",
+        "flow-map.json"
+      ]
+    },
+    {
+      "files": [
+        "scripts/generate-trace-index.mjs",
+        "scripts/state-classification.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/generate-trace-index.mjs",
+        "scripts/trace.mjs"
+      ],
+      "shared": [
+        "symbol-index.json",
+        "flow-map.json"
+      ]
+    },
+    {
+      "files": [
+        "scripts/generate-trace-index.mjs",
+        "scripts/update-public-esm-metrics.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    },
+    {
+      "files": [
+        "scripts/state-classification.mjs",
+        "scripts/update-public-esm-metrics.mjs"
+      ],
+      "shared": [
+        "src"
+      ]
+    }
+  ],
+  "groupingCandidates": [
+    "scripts/accept-refactor-baseline.mjs",
+    "scripts/check-all.mjs",
+    "scripts/check-browser-e2e.mjs",
+    "scripts/check-browser-flow.mjs",
+    "scripts/check-compat-boundaries.mjs",
+    "scripts/check-compat-e2e.mjs",
+    "scripts/check-device-e2e.mjs",
+    "scripts/check-esm-dependencies.mjs",
+    "scripts/check-esm.mjs",
+    "scripts/check-event-wiring.mjs",
+    "scripts/check-global-access-contract.mjs",
+    "scripts/check-global-access.mjs",
+    "scripts/check-manifest-dependencies.mjs",
+    "scripts/check-metrics-update.mjs",
+    "scripts/check-progression-flow-contract.mjs",
+    "scripts/check-progression-flows.mjs",
+    "scripts/check-progression-responsibility.mjs",
+    "scripts/check-public-esm.mjs",
+    "scripts/check-public-symbols.mjs",
+    "scripts/check-refactor-baseline.mjs",
+    "scripts/check-refactor-policy.mjs",
+    "scripts/check-refactor-report.mjs",
+    "scripts/check-source-boundaries.mjs",
+    "scripts/check-state-access-policy.mjs",
+    "scripts/check-state-classification.mjs",
+    "scripts/check-state-mutations.mjs",
+    "scripts/check-trace-index.mjs",
+    "scripts/check-ui-data-map.mjs",
+    "scripts/generate-event-wiring-map.mjs",
+    "scripts/generate-progression-flow-report.mjs",
+    "scripts/generate-progression-responsibility.mjs",
+    "scripts/generate-refactor-baseline.mjs",
+    "scripts/generate-refactor-report.mjs",
+    "scripts/generate-trace-index.mjs",
+    "scripts/generate-ui-data-map.mjs",
+    "scripts/test-application-services.mjs",
+    "scripts/test-board-domain.mjs",
+    "scripts/trace.mjs",
+    "scripts/update-public-esm-metrics.mjs"
+  ],
+  "deletionCandidates": []
+}
