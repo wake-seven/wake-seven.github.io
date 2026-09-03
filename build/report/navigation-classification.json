@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "name": "wake7-navigation-classification",
-  "generatedAt": "2026-09-03T11:36:06.720Z",
+  "generatedAt": "2026-09-03T11:41:31.848Z",
   "status": "passed",
   "summary": {
     "references": 381,
@@ -37,6 +37,363 @@
     "newGatewayCandidates": [],
     "addedCount": 0,
     "removedCount": 0
+  },
+  "contracts": {
+    "directAssignments": [],
+    "contextReloads": [],
+    "transitionCalls": [
+      {
+        "file": "runtime/runtime.js",
+        "line": 637,
+        "source": "loadStage(0);",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 394,
+        "source": "basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 395,
+        "source": "applicationWelcome:academyBoardStep('application','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(stageIndex+1)),",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 421,
+        "source": "onAction(){loadStage(stageIndex+1);}",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 430,
+        "source": "onAction(){loadStage(stageIndex+1);}",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 451,
+        "source": "onAction(){loadStage(TRAINING_STAGE_START);}",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 474,
+        "source": "onAction(){loadStage(TRAINING_STAGE_START+TRAINING_UPPER_COUNT);}",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 484,
+        "source": "onAction(){loadStage(TRAINING_STAGE_START+TRAINING_UPPER_COUNT+TRAINING_MIDDLE_COUNT);}",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 1260,
+        "source": "if(storage.get(STORAGE_KEY_GROUPS.progression.tutorialComplete)==='1'){loadStage(0);return;}",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 1269,
+        "source": "loadStage(0);",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 1273,
+        "source": "function loadStage(index){",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 1293,
+        "source": "function loadExtraStage(index){",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 1310,
+        "source": "function loadSatoriStage(index){",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 1338,
+        "source": "loadSatoriStage(saved.index);",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 1341,
+        "source": "loadExtraStage(saved.index);",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 1344,
+        "source": "loadStage(saved.index);",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 1345,
+        "source": "}else loadStage(0);",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 1434,
+        "source": "if(canRestoreSatori)loadSatoriStage(saved.index);",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 1435,
+        "source": "else if(canRestoreExtra)loadExtraStage(saved.index);",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 1436,
+        "source": "else if(canRestoreStage)loadStage(saved.index);",
+        "allowed": true
+      },
+      {
+        "file": "ui/board-ui.js",
+        "line": 1503,
+        "source": "returnStageContext.satori?loadSatoriStage(returnStageContext.index):returnStageContext.extra?loadExtraStage(returnStageContext.index):loadStage(returnStageContext.index);",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 166,
+        "source": "appendStagePickerButton(grid,{label:index+1,ariaLabel:tr('satori')+' '+(index+1),cleared:pickerSatori.has(index),current:pickerLap===currentContext.lap&&isMode('satori')&&currentContext.satoriIndex===index,disabled:!(index===0||pickerSatori.has(index)||pickerSatori.has(index-1)),onClick:()=>{closeStagePicker();activateCampaignLap(pickerLap);loadSatoriStage(index);}});",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 250,
+        "source": "if(isPrimary)loadStage(index);",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 251,
+        "source": "else if(allPrimaryCleared())loadExtraStage(index);",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 1049,
+        "source": "else if(returnStageContext.satori)loadSatoriStage(returnStageContext.index);",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 1050,
+        "source": "else if(returnStageContext.extra)loadExtraStage(returnStageContext.index);",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 1051,
+        "source": "else loadStage(returnStageContext.index);",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 1067,
+        "source": "activateCampaignLap(1);loadSatoriStage(SATORI_STAGES.length-1);return;",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 1069,
+        "source": "if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 1070,
+        "source": "if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 1071,
+        "source": "else loadStage(stageIndex-1);",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 1077,
+        "source": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 1078,
+        "source": "else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 1081,
+        "source": "if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 1082,
+        "source": "else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 1083,
+        "source": "else loadStage(stageIndex+1);",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-ui.js",
+        "line": 1094,
+        "source": "if(isMode('free'))leaveFreeMode();else if(returnStageContext.satori)loadSatoriStage(returnStageContext.index);else if(returnStageContext.extra)loadExtraStage(returnStageContext.index);else loadStage(returnStageContext.index);",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-clear-flow.js",
+        "line": 195,
+        "source": "if(route.kind==='satori-stage')return loadSatoriStage(route.index);",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-clear-flow.js",
+        "line": 197,
+        "source": "if(route.kind==='mastery-stage')return loadExtraStage(route.index);",
+        "allowed": true
+      },
+      {
+        "file": "ui/progression-clear-flow.js",
+        "line": 199,
+        "source": "return loadStage(route.index);",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 105,
+        "source": "GameNavigation.stage(index);",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 134,
+        "source": "GameNavigation.mastery(Math.min(count,EXTRA_STAGES.length-1));",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 157,
+        "source": "GameNavigation.satori(Math.min(count,SATORI_STAGES.length-1));",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 221,
+        "source": "GameNavigation.stage(0);",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 310,
+        "source": "if(isMode('speed')){pauseSpeedRun();GameNavigation.speedPicker();return;}",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 311,
+        "source": "GameNavigation.speedPicker();",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 347,
+        "source": "pauseSpeedRun();GameNavigation.stageMenu();",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 417,
+        "source": "setup:()=>{if(!secondLapUnlocked)beginSecondLap();else{activateCampaignLap(2);GameNavigation.stage(0);}},",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 438,
+        "source": "if(restartTraining){activateCampaignLap(1);GameNavigation.stage(0);return;}",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 439,
+        "source": "if(leaveSpeed){GameNavigation.stageMenu();return;}",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 508,
+        "source": "GameNavigation.stage(TRAINING_STAGE_START);return;",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 516,
+        "source": "if(dialogKind==='intermediate'){GameNavigation.mastery(0);return;}",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 517,
+        "source": "if(dialogKind==='pathInfo')GameNavigation.mastery(0);",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 518,
+        "source": "else if(dialogKind==='secondLapIntro')GameNavigation.stage(0);",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 519,
+        "source": "else if(dialogKind==='satoriIntro')GameNavigation.satori(0);",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 522,
+        "source": "else GameNavigation.mastery(navigation.masteryIndex+1);",
+        "allowed": true
+      },
+      {
+        "file": "runtime/app-events.js",
+        "line": 1198,
+        "source": "GameNavigation.stage(0);",
+        "allowed": true
+      }
+    ],
+    "disallowedTransitions": [],
+    "allowedTransitionEntrances": [
+      "runtime/runtime.js",
+      "runtime/app-events.js",
+      "runtime/speed.js",
+      "ui/board-ui.js",
+      "ui/progression-clear-flow.js",
+      "ui/progression-ui.js"
+    ]
   },
   "policy": {
     "gatewayCandidate": "未移行の間はtemporaryとして期限・所有者・次の移行単位・関連E2Eを維持",
