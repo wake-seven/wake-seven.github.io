@@ -7,6 +7,7 @@ const WakeSevenEventBindings=WakeSevenAppContext.events;
 // ===== デバッグツール =====
 function debugClearCurrent(extraMoves=0){
   if(!DEBUG_MODE||busy||editingBoard)return;
+  const navigation=readNavigationContext();
   extraMoves=Number.isInteger(extraMoves)?extraMoves:0;
   cancelTutorialHint();
   cancelTileAnimations();
@@ -19,13 +20,13 @@ function debugClearCurrent(extraMoves=0){
   GameBoard.repaint();
   // 速解きのデバッグ即クリアは、通常クリアダイアログではなく
   // 実プレイと同じ専用の完了処理（保存→次問）へ接続する。
-  if(isMode('speed')){ProgressionEntryPoints.finishStage({mode:'speed'});return;}
+  if(navigation.mode==='speed'){ProgressionEntryPoints.finishStage({mode:'speed'});return;}
   // デバッグ即クリアでも、通常操作と同じクリア演出・ダイアログ遷移を直ちに予約する。
   // 再描画側の予約と重なっても、同じタイマーキーで冪等に置き換わる。
   startClearFlow();
   // 即クリアでも、通常操作と同じくメッセージ一覧の開始位置を更新する。
-  if(extraMoves===0&&!isMode('satori')&&!isMode('free')&&!isMode('custom')){
-    rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);
+  if(extraMoves===0&&!['satori','free','custom'].includes(navigation.mode)){
+    rememberClearedMessage(navigation.mode==='mastery',navigation.mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);
   }
 }
 $('debugClear').addEventListener('click',()=>debugClearCurrent(0));
@@ -225,6 +226,7 @@ $('tutorialDebugSkip').addEventListener('click',debugSkipTutorial);
 $('debugReset').addEventListener('click',()=>resetStoredProgress({resetIntro:true,showIntro:true}));
 // ===== イベントリスナー群A =====
 function handleClearTipLink(){
+  const navigation=readNavigationContext();
   if($('clearTipLink').dataset.target==='rank'){
     $('clearDialog').hidden=true;
     GameDialogs.ranks({dialogId:'clearDialog',focusId:'clearTipLink'});
@@ -247,8 +249,8 @@ function handleClearTipLink(){
     openTwoMovePatterns({returnToClear:true});
     return;
   }
-  if(!isMode('mastery'))return;
-  const clickClearEntry=clearContentAt(true,extraIndex);
+  if(navigation.mode!=='mastery')return;
+  const clickClearEntry=clearContentAt(true,navigation.masteryIndex);
   const twoMoveCard=clickClearEntry?.twoMoveCard,guideCard=clickClearEntry?.guideCard;
   if(twoMoveCard!==undefined){
     returnToClearCard=true;
@@ -487,6 +489,7 @@ $('closeRankDialog').addEventListener('click',()=>{
 });
 $('masterStart').addEventListener('click',()=>{
   const dialogKind=readDialogContext().masterDialogKind;
+  const navigation=readNavigationContext();
   const speedTarget=$('masterStart').dataset.speedVariant;
   hideGameDialogs();
   if(speedTarget){setSpeedVariantCommand(speedTarget);setSpeedSessionCommand(null);enterSpeedMode(true);return;}
@@ -515,7 +518,7 @@ $('masterStart').addEventListener('click',()=>{
   else if(dialogKind==='satoriIntro')GameNavigation.satori(0);
   else if(dialogKind==='satori')openSatoriPicker();
   else if(dialogKind==='mastery')openSatoriPicker();
-  else GameNavigation.mastery(extraIndex+1);
+  else GameNavigation.mastery(navigation.masteryIndex+1);
 });
 $('masterSpeedUnlockStart').addEventListener('click',()=>{
   hideGameDialogs();

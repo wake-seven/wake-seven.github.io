@@ -1,31 +1,31 @@
 {
   "schemaVersion": 2,
   "name": "wake7-state-access-final-audit",
-  "generatedAt": "2026-09-03T10:57:46.367Z",
+  "generatedAt": "2026-09-03T11:14:46.306Z",
   "status": "warning",
   "completion": "in-progress",
   "summary": {
-    "temporaryCount": 152,
+    "temporaryCount": 149,
     "temporaryZero": false,
-    "progress": "6/158",
+    "progress": "6/155",
     "byClassification": {
       "intentional-exception": 6,
-      "temporary": 152,
+      "temporary": 149,
       "owner-only": 4
     },
     "byPurpose": {
       "dialog": 18,
-      "navigation": 140
+      "navigation": 137
     },
     "byEntrypoint": {
       "commands": 7,
       "data": 1,
       "other": 7,
-      "runtime": 9,
+      "runtime": 6,
       "ui": 134
     },
     "byPriority": {
-      "1": 158,
+      "1": 155,
       "2": 0,
       "3": 0
     },
@@ -2342,42 +2342,10 @@
       "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
-      "fingerprint": "runtime/app-events.js:stageIndex:rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 28,
-        "excerpt": "rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);"
-      },
-      "symbol": "stageIndex",
-      "purpose": "navigation",
-      "entrypoint": "runtime",
-      "priority": 1,
-      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
-      "expiresOn": "2026-12-02",
-      "nextMigrationUnit": "gateway:navigation",
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:extraIndex:const clickClearEntry=clearContentAt(true,extraIndex);",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 251,
-        "excerpt": "const clickClearEntry=clearContentAt(true,extraIndex);"
-      },
-      "symbol": "extraIndex",
-      "purpose": "navigation",
-      "entrypoint": "runtime",
-      "priority": 1,
-      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
-      "expiresOn": "2026-12-02",
-      "nextMigrationUnit": "gateway:navigation",
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
       "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 414,
+        "line": 416,
         "excerpt": "satori:{via:'close',when:()=>activeLap===1,"
       },
       "symbol": "activeLap",
@@ -2390,26 +2358,10 @@
       "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
-      "fingerprint": "runtime/app-events.js:extraIndex:else GameNavigation.mastery(extraIndex+1);",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 518,
-        "excerpt": "else GameNavigation.mastery(extraIndex+1);"
-      },
-      "symbol": "extraIndex",
-      "purpose": "navigation",
-      "entrypoint": "runtime",
-      "priority": 1,
-      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
-      "expiresOn": "2026-12-02",
-      "nextMigrationUnit": "gateway:navigation",
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
       "fingerprint": "runtime/app-events.js:tutorialStep:$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 920,
+        "line": 923,
         "excerpt": "$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');"
       },
       "symbol": "tutorialStep",
@@ -2425,7 +2377,7 @@
       "fingerprint": "runtime/app-events.js:masterDialogKind:if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 922,
+        "line": 925,
         "excerpt": "if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);"
       },
       "symbol": "masterDialogKind",
@@ -2441,7 +2393,7 @@
       "fingerprint": "runtime/app-events.js:clearShown:else if(clearShown){",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 931,
+        "line": 934,
         "excerpt": "else if(clearShown){"
       },
       "symbol": "clearShown",

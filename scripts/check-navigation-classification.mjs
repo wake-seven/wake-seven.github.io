@@ -16,7 +16,7 @@ const refs=access.references.filter(ref=>NAVIGATION_NAMES.includes(ref.name));
 const classify=({file,access,source})=>{
   if(STATE_OWNER_FILES.includes(file))return ['owner-only','状態所有者の内部処理。公開gatewayへ移す対象ではない'];
   if(/pointer|drag|swipe|animate|animation|spin|tile/i.test(file+' '+source))return ['event-local','pointer座標・スワイプ・逐次アニメーションに密接なイベント局所値'];
-  if(/primarySectionPosition|courseDefinition|runtimeNavigation|isMode\(/.test(source))return ['derived-value','navigationから計算した表示・判定値で、直接参照を機械置換しない'];
+  if(/primarySectionPosition|courseDefinition|runtimeNavigation|isMode\(|rememberClearedMessage/.test(source))return ['derived-value','navigationから計算した表示・判定値で、直接参照を機械置換しない'];
   if(access==='read')return ['gateway-candidate','読み取り専用のため用途別navigation gatewayへ移行可能'];
   return ['intentional-exception','書き込みを伴うため所有者・command入口との整合確認が必要'];
 };

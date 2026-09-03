@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-03T10:57:46.267Z",
+  "generatedAt": "2026-09-03T11:14:46.229Z",
   "names": [
     "activeMode",
     "activeLap",
@@ -31,21 +31,21 @@
     ],
     "description": "移行対象は実行コードの状態アクセスだけ。宣言・オブジェクトキー・プロパティ・文字列・データ定義は検出結果として記録するがtemporary例外には含めない"
   },
-  "baselineTracked": 158,
+  "baselineTracked": 155,
   "counts": {
-    "detected": 359,
-    "tracked": 158,
+    "detected": 356,
+    "tracked": 155,
     "excluded": 201,
-    "allowed": 158,
+    "allowed": 155,
     "newReferences": 0,
     "retiredExceptions": 0,
-    "temporary": 152,
+    "temporary": 149,
     "expiredTemporary": 0
   },
   "excludedCounts": {
     "declaration": 4,
-    "object-key": 59,
-    "property": 125,
+    "object-key": 58,
+    "property": 126,
     "string": 13
   },
   "excludedReferences": [
@@ -1571,16 +1571,16 @@
     },
     {
       "file": "runtime/app-events.js",
-      "name": "extraIndex",
-      "line": 28,
-      "source": "rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);",
-      "kind": "object-key",
-      "exclusionReason": "オブジェクトリテラルのキー"
+      "name": "stageIndex",
+      "line": 29,
+      "source": "rememberClearedMessage(navigation.mode==='mastery',navigation.mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);",
+      "kind": "property",
+      "exclusionReason": "オブジェクトのプロパティ名"
     },
     {
       "file": "runtime/app-events.js",
       "name": "nextStageAttention",
-      "line": 272,
+      "line": 274,
       "source": "updateDialogStateOwner({nextStageAttention:isCampaignMode()&&!editingBoard});",
       "kind": "object-key",
       "exclusionReason": "オブジェクトリテラルのキー"
@@ -1588,7 +1588,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "messageDialogReturn",
-      "line": 358,
+      "line": 360,
       "source": "const returnTarget=readDialogContext().messageDialogReturn;",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1596,7 +1596,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "messageDialogReturn",
-      "line": 359,
+      "line": 361,
       "source": "updateDialogStateOwner({messageDialogReturn:null});",
       "kind": "object-key",
       "exclusionReason": "オブジェクトリテラルのキー"
@@ -1604,7 +1604,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "masterDialogKind",
-      "line": 421,
+      "line": 423,
       "source": "const dialogKind=dialogContext.masterDialogKind;",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1612,7 +1612,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "rankDialogReturn",
-      "line": 484,
+      "line": 486,
       "source": "const returnTarget=readDialogContext().rankDialogReturn;updateDialogStateOwner({rankDialogReturn:null});",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1620,7 +1620,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "rankDialogReturn",
-      "line": 484,
+      "line": 486,
       "source": "const returnTarget=readDialogContext().rankDialogReturn;updateDialogStateOwner({rankDialogReturn:null});",
       "kind": "object-key",
       "exclusionReason": "オブジェクトリテラルのキー"
@@ -1628,7 +1628,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "masterDialogKind",
-      "line": 489,
+      "line": 491,
       "source": "const dialogKind=readDialogContext().masterDialogKind;",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1636,7 +1636,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "stageIndex",
-      "line": 942,
+      "line": 945,
       "source": "else if(navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1644,7 +1644,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "stageIndex",
-      "line": 943,
+      "line": 946,
       "source": "else if(navigation.stageIndex===STAGES.length-1)action.textContent=tr('toFree');",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1652,14 +1652,14 @@
     {
       "file": "runtime/app-events.js",
       "name": "activeLap",
-      "line": 1128,
+      "line": 1131,
       "source": "storage.remove(STORAGE_KEY_GROUPS.progression.activeLap);",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
     }
   ],
   "countsByPurpose": {
-    "navigation": 140,
+    "navigation": 137,
     "dialog": 18,
     "progress": 0,
     "session": 0,
@@ -1669,7 +1669,7 @@
   },
   "countsByExceptionClass": {
     "intentional-exception": 6,
-    "temporary": 152
+    "temporary": 149
   },
   "countsByDialogRole": {
     "chain": 16,
@@ -1679,11 +1679,11 @@
     "commands": 7,
     "data": 1,
     "other": 7,
-    "runtime": 9,
+    "runtime": 6,
     "ui": 134
   },
   "countsByAccess": {
-    "read": 139,
+    "read": 136,
     "write": 19
   },
   "exceptionMetadata": [
@@ -3188,37 +3188,7 @@
       "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する"
     },
     {
-      "fingerprint": "runtime/app-events.js:stageIndex:rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);",
-      "purpose": "navigation",
-      "ownerOnly": false,
-      "exceptionClass": "temporary",
-      "temporary": true,
-      "priority": 1,
-      "migrationTarget": "gateway:navigation",
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:extraIndex:const clickClearEntry=clearContentAt(true,extraIndex);",
-      "purpose": "navigation",
-      "ownerOnly": false,
-      "exceptionClass": "temporary",
-      "temporary": true,
-      "priority": 1,
-      "migrationTarget": "gateway:navigation",
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する"
-    },
-    {
       "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
-      "purpose": "navigation",
-      "ownerOnly": false,
-      "exceptionClass": "temporary",
-      "temporary": true,
-      "priority": 1,
-      "migrationTarget": "gateway:navigation",
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:extraIndex:else GameNavigation.mastery(extraIndex+1);",
       "purpose": "navigation",
       "ownerOnly": false,
       "exceptionClass": "temporary",
@@ -4856,46 +4826,7 @@
       "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
-      "fingerprint": "runtime/app-events.js:stageIndex:rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);",
-      "expiresOn": "2026-12-02",
-      "owner": "runtime/app-events.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:extraIndex:const clickClearEntry=clearContentAt(true,extraIndex);",
-      "expiresOn": "2026-12-02",
-      "owner": "runtime/app-events.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
       "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
-      "expiresOn": "2026-12-02",
-      "owner": "runtime/app-events.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/app-events.js:extraIndex:else GameNavigation.mastery(extraIndex+1);",
       "expiresOn": "2026-12-02",
       "owner": "runtime/app-events.js",
       "migrationTarget": "gateway:navigation",
@@ -9162,98 +9093,14 @@
       ]
     },
     {
-      "fingerprint": "runtime/app-events.js:stageIndex:rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);",
-      "classification": "executable",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 28,
-        "excerpt": "rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);"
-      },
-      "symbol": "stageIndex",
-      "entrypoint": "runtime",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:extraIndex:const clickClearEntry=clearContentAt(true,extraIndex);",
-      "classification": "executable",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 251,
-        "excerpt": "const clickClearEntry=clearContentAt(true,extraIndex);"
-      },
-      "symbol": "extraIndex",
-      "entrypoint": "runtime",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
       "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
       "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 414,
+        "line": 416,
         "excerpt": "satori:{via:'close',when:()=>activeLap===1,"
       },
       "symbol": "activeLap",
-      "entrypoint": "runtime",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
-      "fingerprint": "runtime/app-events.js:extraIndex:else GameNavigation.mastery(extraIndex+1);",
-      "classification": "executable",
-      "source": {
-        "file": "runtime/app-events.js",
-        "line": 518,
-        "excerpt": "else GameNavigation.mastery(extraIndex+1);"
-      },
-      "symbol": "extraIndex",
       "entrypoint": "runtime",
       "access": "read",
       "purpose": "navigation",
@@ -9278,7 +9125,7 @@
       "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 920,
+        "line": 923,
         "excerpt": "$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');"
       },
       "symbol": "tutorialStep",
@@ -9306,7 +9153,7 @@
       "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 922,
+        "line": 925,
         "excerpt": "if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);"
       },
       "symbol": "masterDialogKind",
@@ -9334,7 +9181,7 @@
       "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 931,
+        "line": 934,
         "excerpt": "else if(clearShown){"
       },
       "symbol": "clearShown",

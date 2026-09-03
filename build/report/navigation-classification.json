@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "name": "wake7-navigation-classification",
-  "generatedAt": "2026-09-03T11:06:20.522Z",
+  "generatedAt": "2026-09-03T11:14:46.441Z",
   "status": "passed",
   "summary": {
-    "references": 386,
+    "references": 383,
     "byCategory": {
-      "gateway-candidate": 132,
+      "gateway-candidate": 125,
       "owner-only": 167,
-      "derived-value": 47,
+      "derived-value": 51,
       "event-local": 3,
       "intentional-exception": 37
     },
@@ -16,12 +16,12 @@
       "activeMode": 19,
       "activeLap": 49,
       "stageIndex": 134,
-      "extraIndex": 51,
+      "extraIndex": 48,
       "satoriIndex": 61,
       "tutorialStep": 60,
       "lastStageMode": 12
     },
-    "stateAccessNavigationReferences": 140,
+    "stateAccessNavigationReferences": 137,
     "priorityOrder": [
       "gateway-candidate",
       "derived-value",
@@ -2864,8 +2864,8 @@
       "line": 964,
       "access": "read",
       "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
         "line": 964,
@@ -2878,8 +2878,8 @@
       "line": 967,
       "access": "read",
       "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
         "line": 967,
@@ -2892,8 +2892,8 @@
       "line": 967,
       "access": "read",
       "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
         "line": 967,
@@ -2906,8 +2906,8 @@
       "line": 969,
       "access": "read",
       "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
         "line": 969,
@@ -2920,8 +2920,8 @@
       "line": 969,
       "access": "read",
       "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
+      "category": "derived-value",
+      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "ui/board-ui.js",
         "line": 969,
@@ -5325,126 +5325,84 @@
     {
       "name": "stageIndex",
       "file": "runtime/app-events.js",
-      "line": 28,
+      "line": 29,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
       "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "runtime/app-events.js",
-        "line": 28,
-        "source": "rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);"
-      }
-    },
-    {
-      "name": "extraIndex",
-      "file": "runtime/app-events.js",
-      "line": 28,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
-      "codeEvidence": {
-        "file": "runtime/app-events.js",
-        "line": 28,
-        "source": "rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);"
-      }
-    },
-    {
-      "name": "extraIndex",
-      "file": "runtime/app-events.js",
-      "line": 251,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
-      "codeEvidence": {
-        "file": "runtime/app-events.js",
-        "line": 251,
-        "source": "const clickClearEntry=clearContentAt(true,extraIndex);"
+        "line": 29,
+        "source": "rememberClearedMessage(navigation.mode==='mastery',navigation.mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/app-events.js",
-      "line": 414,
+      "line": 416,
       "access": "write",
       "classification": "needs-migration",
       "category": "intentional-exception",
       "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
       "codeEvidence": {
         "file": "runtime/app-events.js",
-        "line": 414,
+        "line": 416,
         "source": "satori:{via:'close',when:()=>activeLap===1,"
-      }
-    },
-    {
-      "name": "extraIndex",
-      "file": "runtime/app-events.js",
-      "line": 518,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
-      "codeEvidence": {
-        "file": "runtime/app-events.js",
-        "line": 518,
-        "source": "else GameNavigation.mastery(extraIndex+1);"
       }
     },
     {
       "name": "tutorialStep",
       "file": "runtime/app-events.js",
-      "line": 920,
+      "line": 923,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
       "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "runtime/app-events.js",
-        "line": 920,
+        "line": 923,
         "source": "$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/app-events.js",
-      "line": 942,
+      "line": 945,
       "access": "write",
       "classification": "needs-migration",
       "category": "intentional-exception",
       "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
       "codeEvidence": {
         "file": "runtime/app-events.js",
-        "line": 942,
+        "line": 945,
         "source": "else if(navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/app-events.js",
-      "line": 943,
+      "line": 946,
       "access": "write",
       "classification": "needs-migration",
       "category": "intentional-exception",
       "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
       "codeEvidence": {
         "file": "runtime/app-events.js",
-        "line": 943,
+        "line": 946,
         "source": "else if(navigation.stageIndex===STAGES.length-1)action.textContent=tr('toFree');"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/app-events.js",
-      "line": 1128,
+      "line": 1131,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "runtime/app-events.js",
-        "line": 1128,
+        "line": 1131,
         "source": "storage.remove(STORAGE_KEY_GROUPS.progression.activeLap);"
       }
     }

@@ -4415,7 +4415,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-19:45';
+const APP_VERSION='2026.09.03-20:10';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -10965,7 +10965,7 @@ function finishClearFlowDialog(){
 // 閉じる副作用や連続表示の切り替えで判定がずれるため、同じクリア周期の
 // ルート判定と表示判定にはこの入口を使う。
 function createClearTransitionContext(nextStageIndex){
-  const {navigation}=readProgressionContext();
+  const navigation=readNavigationContext();
   const mode=navigation.mode;
   const lap=navigation.lap;
   const currentStageIndex=navigation.stageIndex;
@@ -11022,7 +11022,7 @@ function dispatchClearFlowAction(action){
   makerButtonBlockedUntil=performance.now()+600;
   clearUiEffectTimers('maker-reveal');
   setUiEffectTimer('maker-reveal','unlock',()=>{makerButtonBlockedUntil=0;renderStageNav();},600);
-  const {navigation}=readProgressionContext();
+  const navigation=readNavigationContext();
   const context=clearFlowState.context||createClearTransitionContext(navigation.stageIndex+1);
   const nextStageIndex=context.nextStageIndex;
   const route=resolveAfterClearRoute(context);
@@ -11215,6 +11215,7 @@ const WakeSevenEventBindings=WakeSevenAppContext.events;
 // ===== デバッグツール =====
 function debugClearCurrent(extraMoves=0){
   if(!DEBUG_MODE||busy||editingBoard)return;
+  const navigation=readNavigationContext();
   extraMoves=Number.isInteger(extraMoves)?extraMoves:0;
   cancelTutorialHint();
   cancelTileAnimations();
@@ -11227,13 +11228,13 @@ function debugClearCurrent(extraMoves=0){
   GameBoard.repaint();
   // 速解きのデバッグ即クリアは、通常クリアダイアログではなく
   // 実プレイと同じ専用の完了処理（保存→次問）へ接続する。
-  if(isMode('speed')){ProgressionEntryPoints.finishStage({mode:'speed'});return;}
+  if(navigation.mode==='speed'){ProgressionEntryPoints.finishStage({mode:'speed'});return;}
   // デバッグ即クリアでも、通常操作と同じクリア演出・ダイアログ遷移を直ちに予約する。
   // 再描画側の予約と重なっても、同じタイマーキーで冪等に置き換わる。
   startClearFlow();
   // 即クリアでも、通常操作と同じくメッセージ一覧の開始位置を更新する。
-  if(extraMoves===0&&!isMode('satori')&&!isMode('free')&&!isMode('custom')){
-    rememberClearedMessage(isMode('mastery'),isMode('mastery')?extraIndex:stageIndex);
+  if(extraMoves===0&&!['satori','free','custom'].includes(navigation.mode)){
+    rememberClearedMessage(navigation.mode==='mastery',navigation.mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);
   }
 }
 $('debugClear').addEventListener('click',()=>debugClearCurrent(0));
@@ -11433,6 +11434,7 @@ $('tutorialDebugSkip').addEventListener('click',debugSkipTutorial);
 $('debugReset').addEventListener('click',()=>resetStoredProgress({resetIntro:true,showIntro:true}));
 // ===== イベントリスナー群A =====
 function handleClearTipLink(){
+  const navigation=readNavigationContext();
   if($('clearTipLink').dataset.target==='rank'){
     $('clearDialog').hidden=true;
     GameDialogs.ranks({dialogId:'clearDialog',focusId:'clearTipLink'});
@@ -11455,8 +11457,8 @@ function handleClearTipLink(){
     openTwoMovePatterns({returnToClear:true});
     return;
   }
-  if(!isMode('mastery'))return;
-  const clickClearEntry=clearContentAt(true,extraIndex);
+  if(navigation.mode!=='mastery')return;
+  const clickClearEntry=clearContentAt(true,navigation.masteryIndex);
   const twoMoveCard=clickClearEntry?.twoMoveCard,guideCard=clickClearEntry?.guideCard;
   if(twoMoveCard!==undefined){
     returnToClearCard=true;
@@ -11695,6 +11697,7 @@ $('closeRankDialog').addEventListener('click',()=>{
 });
 $('masterStart').addEventListener('click',()=>{
   const dialogKind=readDialogContext().masterDialogKind;
+  const navigation=readNavigationContext();
   const speedTarget=$('masterStart').dataset.speedVariant;
   hideGameDialogs();
   if(speedTarget){setSpeedVariantCommand(speedTarget);setSpeedSessionCommand(null);enterSpeedMode(true);return;}
@@ -11723,7 +11726,7 @@ $('masterStart').addEventListener('click',()=>{
   else if(dialogKind==='satoriIntro')GameNavigation.satori(0);
   else if(dialogKind==='satori')openSatoriPicker();
   else if(dialogKind==='mastery')openSatoriPicker();
-  else GameNavigation.mastery(extraIndex+1);
+  else GameNavigation.mastery(navigation.masteryIndex+1);
 });
 $('masterSpeedUnlockStart').addEventListener('click',()=>{
   hideGameDialogs();
