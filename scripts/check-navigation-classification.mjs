@@ -10,6 +10,8 @@ import { NAVIGATION_NAMES, STATE_OWNER_FILES } from './state-access-policy.mjs';
 const root=dirname(dirname(fileURLToPath(import.meta.url)));
 const files=new Map(await Promise.all(publishedSourceFiles.map(async file=>[file,(await readFile(join(root,'src',file),'utf8')).split('\n')])));
 const access=JSON.parse(await readFile(join(root,'build/report/global-access.json'),'utf8'));
+let previousReport=null;try{previousReport=JSON.parse(await readFile(join(root,'build/report/navigation-classification.json'),'utf8'));}catch{}
+let stateAccessReport=null;try{stateAccessReport=JSON.parse(await readFile(join(root,'build/report/state-access-policy.json'),'utf8'));}catch{}
 const refs=access.references.filter(ref=>NAVIGATION_NAMES.includes(ref.name));
 const classify=({file,access,source})=>{
   if(STATE_OWNER_FILES.includes(file))return ['owner-only','状態所有者の内部処理。公開gatewayへ移す対象ではない'];
@@ -24,6 +26,12 @@ assert.equal(entries.length,refs.length,'navigation参照の分類漏れがあ�
 assert.ok(entries.every(entry=>categories.includes(entry.category)),'不明なnavigation分類があります');
 const counts=Object.fromEntries(categories.map(category=>[category,entries.filter(entry=>entry.category===category).length]));
 const byName=Object.fromEntries(NAVIGATION_NAMES.map(name=>[name,entries.filter(entry=>entry.name===name).length]));
-const report={schemaVersion:1,name:'wake7-navigation-classification',generatedAt:new Date().toISOString(),status:'passed',summary:{references:entries.length,byCategory:counts,byName,priorityOrder:['gateway-candidate','derived-value','event-local','intentional-exception','owner-only']},policy:{gatewayCandidate:'次の1バッチでE2E付き移行を検討',ownerOnly:'状態所有者に保持',derivedValue:'計算元と表示境界を確認',eventLocal:'イベント側に保持',intentionalException:'理由と関連E2Eを維持'},entries};
+const gatewayFingerprint=entry=>`${entry.file}:${entry.name}:${entry.source}`;
+const previousGateway=new Set((previousReport?.entries||[]).filter(entry=>entry.category==='gateway-candidate').map(gatewayFingerprint));
+const currentGateway=new Set(entries.filter(entry=>entry.category==='gateway-candidate').map(gatewayFingerprint));
+const newGatewayCandidates=[...currentGateway].filter(value=>!previousGateway.has(value));
+assert.equal(newGatewayCandidates.length,0,`新しいnavigation gateway候補を検出しました。移行理由と関連E2Eを確認してください: ${newGatewayCandidates.join(', ')}`);
+const stateNavigationCount=stateAccessReport?.countsByPurpose?.navigation??null;
+const report={schemaVersion:1,name:'wake7-navigation-classification',generatedAt:new Date().toISOString(),status:'passed',summary:{references:entries.length,byCategory:counts,byName,stateAccessNavigationReferences:stateNavigationCount,priorityOrder:['gateway-candidate','derived-value','event-local','intentional-exception','owner-only']},migrationGate:{baseline:'既存のgateway候補集合',newGatewayCandidates,addedCount:newGatewayCandidates.length,removedCount:[...previousGateway].filter(value=>!currentGateway.has(value)).length},policy:{gatewayCandidate:'次の1バッチでE2E付き移行を検討',ownerOnly:'状態所有者に保持',derivedValue:'計算元と表示境界を確認',eventLocal:'イベント側に保持',intentionalException:'理由と関連E2Eを維持'},entries};
 const path=join(root,'build/report/navigation-classification.json');await mkdir(dirname(path),{recursive:true});await writeFile(path,JSON.stringify(report,null,2)+'\n');
 console.log(`Navigation classification OK: ${entries.length} references (${counts['gateway-candidate']} gateway candidates, ${counts['owner-only']} owner-only). Report: ${path}`);
