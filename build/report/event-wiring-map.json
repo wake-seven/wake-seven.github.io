@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-03T05:09:06.149Z",
+  "generatedAt": "2026-09-03T05:28:11.281Z",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles + index.html",
   "entries": [
     {
@@ -226,7 +226,7 @@
                 "rankBadge",
                 "masterStart"
               ],
-              "sourceSnippet": "$('closeRankDialog').addEventListener('click',()=>{ const returnTarget=rankDialogReturn;rankDialogReturn=null; $('rankDialog').hidden=true; if(!focusReturnTarget(returnTarget))$('rankBadge').focus(); }); $('masterStart').addEvent"
+              "sourceSnippet": "$('closeRankDialog').addEventListener('click',()=>{ const returnTarget=rankDialogReturn;updateDialogStateOwner({rankDialogReturn:null}); $('rankDialog').hidden=true; if(!focusReturnTarget(returnTarget))$('rankBadge').focus(); });"
             }
           ]
         }
@@ -442,8 +442,7 @@
                 "closeAppMenu",
                 "openGuideHub",
                 "openStagePicker",
-                "ranks",
-                "open"
+                "ranks"
               ],
               "displayTargets": [
                 "optimalFailDialog",
@@ -452,7 +451,7 @@
                 "aboutDialogCloseBtn",
                 "settingsDialogClose"
               ],
-              "sourceSnippet": "WakeSevenEventBindings.click('clearNext',()=>{ WakeSevenProgressionCommands.advanceAfterClear(); }); WakeSevenEventBindings.click('clearClose',()=>{ hideGameDialogs(); nextStageAttention=isCampaignMode()&&!editingBoard;"
+              "sourceSnippet": "WakeSevenEventBindings.click('clearNext',()=>{ WakeSevenProgressionCommands.advanceAfterClear(); }); WakeSevenEventBindings.click('clearClose',()=>{ hideGameDialogs(); updateDialogStateOwner({nextStageAttention:isCampaignMo"
             }
           ]
         },
@@ -480,7 +479,7 @@
                 "aboutDialogCloseBtn",
                 "settingsDialogClose"
               ],
-              "sourceSnippet": "WakeSevenEventBindings.click('clearClose',()=>{ hideGameDialogs(); nextStageAttention=isCampaignMode()&&!editingBoard; renderStageNav(); }); WakeSevenEventBindings.click('optimalRetry',()=>{ $('optimalFailDialog').hi"
+              "sourceSnippet": "WakeSevenEventBindings.click('clearClose',()=>{ hideGameDialogs(); updateDialogStateOwner({nextStageAttention:isCampaignMode()&&!editingBoard}); renderStageNav(); }); WakeSevenEventBindings.click('optimalRetry',()=>{"
             }
           ]
         }
@@ -531,9 +530,7 @@
               "line": 331,
               "registration": "click",
               "type": "click",
-              "handlers": [
-                "closeAppMenu"
-              ],
+              "handlers": [],
               "displayTargets": [
                 "speedPauseDialog",
                 "speedRestartDialog",

@@ -79,7 +79,10 @@ const gameState=window.WakeSevenState.read()||window.WakeSevenState.create();
 // 旧バージョンのフラットな保存キーは現行状態へ持ち込まず破棄する。
 WakeSevenState.purgeExternalStorage();
 const initialNavigation=WakeSevenState.navigationView(gameState);
-let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep,activeMode=initialNavigation.mode,clearShown=false,nextStageAttention=false;
+// ナビゲーション状態の所有者。既存のローカル変数は段階移行中の読み取り互換として残し、
+// 変更は updateNavigationStateOwner 経由でここへ反映する。
+const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};
+let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;
 let pendingMasterThemeRefresh=false;
 let lastAnalyticsStageKey='';
 
@@ -87,7 +90,25 @@ let lastAnalyticsStageKey='';
 const ACTIVE_MODES=Object.freeze(['tutorial','stage','mastery','satori','speed','free','custom']);
 function setActiveMode(mode){
   const navigation=WakeSevenState.updateNavigation(gameState,{mode:ACTIVE_MODES.includes(mode)?mode:'stage'});
-  activeMode=navigation.mode;
+  updateNavigationStateOwner({mode:navigation.mode});
+}
+function readNavigationStateOwner(){
+  // 旧経路の読み書きが残る移行期間は、公開ビュー生成時に値を同期する。
+  navigationState.mode=activeMode;navigationState.lap=activeLap;navigationState.stageIndex=stageIndex;
+  navigationState.masteryIndex=extraIndex;navigationState.satoriIndex=satoriIndex;navigationState.tutorialStep=tutorialStep;
+  return Object.freeze({...navigationState,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});
+}
+function updateNavigationStateOwner(patch={}){
+  if(patch.mode!==undefined)navigationState.mode=ACTIVE_MODES.includes(patch.mode)?patch.mode:'stage';
+  if(patch.lap!==undefined)navigationState.lap=patch.lap===2?2:1;
+  if(patch.stageIndex!==undefined)navigationState.stageIndex=Math.max(0,Number(patch.stageIndex)||0);
+  if(patch.masteryIndex!==undefined)navigationState.masteryIndex=Math.max(0,Number(patch.masteryIndex)||0);
+  if(patch.satoriIndex!==undefined)navigationState.satoriIndex=Math.max(0,Number(patch.satoriIndex)||0);
+  if(patch.tutorialStep!==undefined)navigationState.tutorialStep=Math.max(0,Number(patch.tutorialStep)||0);
+  activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;
+  satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;
+  if(patch.lastStageMode!==undefined&&typeof lastStageMode!=='undefined')lastStageMode=patch.lastStageMode;
+  return readNavigationStateOwner();
 }
 const isMode=mode=>activeMode===mode;
 function setUnlock(key,value){
@@ -452,14 +473,34 @@ let activeLap=initialNavigationState.lap===2?2:1;
 // 2つ目のモード状態と誤認しないようにする。
 let returnStageContext={extra:false,satori:false,index:0};
 let editingBoard=false;
-let masterDialogKind='primary';
-let rankDialogReturn=null;
+// ダイアログの一時状態も所有者を一つにし、表示処理はこの入口から更新する。
+const dialogState={clearShown:false,nextStageAttention:false,masterDialogKind:'primary',rankDialogReturn:null,messageDialogReturn:null};
+let masterDialogKind=dialogState.masterDialogKind;
+let rankDialogReturn=dialogState.rankDialogReturn;
 let rankListLap=activeLap;
 // ステージ選択画面の一時的な表示位置。現在のゲーム位置とは分離して保持する。
 let pickerLap=activeLap;
 let pickerRound=-PRIMARY_PICKER_SECTION_COUNT;
 let satoriPickerPage=0;
-let messageDialogReturn=null;
+let messageDialogReturn=dialogState.messageDialogReturn;
+function readDialogStateOwner(){
+  // 段階移行中の旧参照が書き換えた場合も、公開ビューへ取り込む。
+  dialogState.clearShown=clearShown===true;dialogState.nextStageAttention=nextStageAttention===true;
+  dialogState.masterDialogKind=masterDialogKind;dialogState.rankDialogReturn=rankDialogReturn;
+  dialogState.messageDialogReturn=messageDialogReturn;
+  return Object.freeze({...dialogState});
+}
+function updateDialogStateOwner(patch={}){
+  if(patch.clearShown!==undefined)dialogState.clearShown=patch.clearShown===true;
+  if(patch.nextStageAttention!==undefined)dialogState.nextStageAttention=patch.nextStageAttention===true;
+  if(patch.masterDialogKind!==undefined)dialogState.masterDialogKind=patch.masterDialogKind;
+  if(patch.rankDialogReturn!==undefined)dialogState.rankDialogReturn=patch.rankDialogReturn;
+  if(patch.messageDialogReturn!==undefined)dialogState.messageDialogReturn=patch.messageDialogReturn;
+  clearShown=dialogState.clearShown;nextStageAttention=dialogState.nextStageAttention;
+  masterDialogKind=dialogState.masterDialogKind;rankDialogReturn=dialogState.rankDialogReturn;
+  messageDialogReturn=dialogState.messageDialogReturn;
+  return readDialogStateOwner();
+}
 // ダイアログを閉じたときに元の場所へ戻る「戻り先」の共通形: {dialogId,focusId}を
 // unhide+focusする。rankDialogReturn/messageDialogReturn/tipGuideReturnTarget/
 // twoMovePatternsReturnTarget/twoMoveDetailReturnTargetの5つが、この形でセット→消費される。

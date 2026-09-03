@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-03T05:07:53.858Z",
+  "generatedAt": "2026-09-03T05:27:10.250Z",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles",
   "trackedNames": [
     "activeMode",
@@ -28,36 +28,6 @@
   "remaining": [
     {
       "file": "app/app-context.js",
-      "line": 32,
-      "name": "stageIndex",
-      "snippet": "update(patch={}){if(patch.mode!==undefined)setActiveMode(patch.mode);if(patch.lap!==undefined)activeLap=patch.lap===2?2:1;if(patch.stageIndex!==undefined)stageIndex=patch.stageInde"
-    },
-    {
-      "file": "app/app-context.js",
-      "line": 32,
-      "name": "extraIndex",
-      "snippet": "update(patch={}){if(patch.mode!==undefined)setActiveMode(patch.mode);if(patch.lap!==undefined)activeLap=patch.lap===2?2:1;if(patch.stageIndex!==undefined)stageIndex=patch.stageInde"
-    },
-    {
-      "file": "app/app-context.js",
-      "line": 32,
-      "name": "satoriIndex",
-      "snippet": "update(patch={}){if(patch.mode!==undefined)setActiveMode(patch.mode);if(patch.lap!==undefined)activeLap=patch.lap===2?2:1;if(patch.stageIndex!==undefined)stageIndex=patch.stageInde"
-    },
-    {
-      "file": "app/app-context.js",
-      "line": 32,
-      "name": "tutorialStep",
-      "snippet": "update(patch={}){if(patch.mode!==undefined)setActiveMode(patch.mode);if(patch.lap!==undefined)activeLap=patch.lap===2?2:1;if(patch.stageIndex!==undefined)stageIndex=patch.stageInde"
-    },
-    {
-      "file": "app/app-context.js",
-      "line": 44,
-      "name": "clearShown",
-      "snippet": "update(patch={}){if(patch.clearShown!==undefined)clearShown=patch.clearShown===true;if(patch.nextStageAttention!==undefined)nextStageAttention=patch.nextStageAttention===true;if(pa"
-    },
-    {
-      "file": "app/app-context.js",
       "line": 52,
       "name": "speedSession",
       "snippet": "update(patch={}){if(patch.savedFreeSession!==undefined)savedFreeSession=patch.savedFreeSession;if(patch.speedSession!==undefined&&typeof speedSession!=='undefined')speedSession=pat"
@@ -70,45 +40,75 @@
     },
     {
       "file": "runtime/runtime.js",
-      "line": 82,
+      "line": 85,
       "name": "stageIndex",
-      "snippet": "let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep,activeMo"
+      "snippet": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navig"
     },
     {
       "file": "runtime/runtime.js",
-      "line": 82,
+      "line": 85,
       "name": "extraIndex",
-      "snippet": "let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep,activeMo"
+      "snippet": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navig"
     },
     {
       "file": "runtime/runtime.js",
-      "line": 82,
+      "line": 85,
       "name": "satoriIndex",
-      "snippet": "let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep,activeMo"
+      "snippet": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navig"
     },
     {
       "file": "runtime/runtime.js",
-      "line": 82,
+      "line": 85,
       "name": "tutorialStep",
-      "snippet": "let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep,activeMo"
+      "snippet": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navig"
     },
     {
       "file": "runtime/runtime.js",
-      "line": 82,
+      "line": 85,
       "name": "activeMode",
-      "snippet": "let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep,activeMo"
+      "snippet": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navig"
     },
     {
       "file": "runtime/runtime.js",
-      "line": 82,
+      "line": 85,
       "name": "clearShown",
-      "snippet": "let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep,activeMo"
+      "snippet": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navig"
     },
     {
       "file": "runtime/runtime.js",
-      "line": 90,
+      "line": 108,
       "name": "activeMode",
-      "snippet": "activeMode=navigation.mode;"
+      "snippet": "activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "line": 108,
+      "name": "stageIndex",
+      "snippet": "activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "line": 108,
+      "name": "extraIndex",
+      "snippet": "activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "line": 109,
+      "name": "satoriIndex",
+      "snippet": "satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "line": 109,
+      "name": "tutorialStep",
+      "snippet": "satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;"
+    },
+    {
+      "file": "runtime/runtime.js",
+      "line": 499,
+      "name": "clearShown",
+      "snippet": "clearShown=dialogState.clearShown;nextStageAttention=dialogState.nextStageAttention;"
     },
     {
       "file": "runtime/speed.js",

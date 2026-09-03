@@ -245,7 +245,7 @@ function openStagePicker(){
   $('stagePicker').hidden=false;
 }
 function openStagePickerForRank(rankIndex){
-  rankDialogReturn=null;
+  updateDialogStateOwner({rankDialogReturn:null});
   $('rankDialog').hidden=true;
   $('resetDialog').hidden=true;
   // 称号一覧で選択した周（activeLap）を、そのまま問題選択にも引き継ぐ。
@@ -546,7 +546,7 @@ function hideGameDialogs(){
   stopClearGuideBoard('messageTwoMoveLessonBoard');
   $('clearDialog').hidden=true;
   $('messageDialog').hidden=true;
-  messageDialogReturn=null;
+  updateDialogStateOwner({messageDialogReturn:null});
   $('optimalFailDialog').hidden=true;
   $('masterDialog').hidden=true;
   $('speedPauseDialog').hidden=true;
@@ -795,7 +795,7 @@ function showMasterDialog(kind='primary'){
   // 同じ節目ダイアログを状態更新のために再描画することがあるが、
   // そのたびに称号アニメーションを再開すると「称号が二度出る」ように見える。
   const shouldAnimate=masterDialog.hidden||masterDialogKind!==kind;
-  masterDialogKind=kind;
+  updateDialogStateOwner({masterDialogKind:kind});
   $('masterStart').dataset.speedVariant='';
   const trialState=masterDialogTrialState(kind);
   const needsMasteryTrial=trialState.mastery;

@@ -28,8 +28,8 @@ const WakeSevenAppContext=Object.freeze({
     read(){return gameState;},
     snapshot(){return WakeSevenAppContext.snapshot();},
     navigation:Object.freeze({
-      read(){return Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});},
-      update(patch={}){if(patch.mode!==undefined)setActiveMode(patch.mode);if(patch.lap!==undefined)activeLap=patch.lap===2?2:1;if(patch.stageIndex!==undefined)stageIndex=patch.stageIndex;if(patch.masteryIndex!==undefined)extraIndex=patch.masteryIndex;if(patch.satoriIndex!==undefined)satoriIndex=patch.satoriIndex;if(patch.tutorialStep!==undefined)tutorialStep=patch.tutorialStep;if(patch.lastStageMode!==undefined&&typeof lastStageMode!=='undefined')lastStageMode=patch.lastStageMode;return this.read();}
+      read(){return typeof readNavigationStateOwner==='function'?readNavigationStateOwner():Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});},
+      update(patch={}){return typeof updateNavigationStateOwner==='function'?updateNavigationStateOwner(patch):(patch.mode!==undefined&&setActiveMode(patch.mode),this.read());}
     }),
     board:Object.freeze({
       read(){return Object.freeze({ori,spin,history,moves,best,drag,busy,boardTouchActive});},
@@ -40,8 +40,8 @@ const WakeSevenAppContext=Object.freeze({
       update(patch={}){if(patch.clearedStages!==undefined)clearedStages=patch.clearedStages;if(patch.clearedExtraStages!==undefined)clearedExtraStages=patch.clearedExtraStages;if(patch.clearedSatoriStages!==undefined)clearedSatoriStages=patch.clearedSatoriStages;if(patch.lap1ClearedStages!==undefined)lap1ClearedStages=patch.lap1ClearedStages;if(patch.lap1ClearedExtraStages!==undefined)lap1ClearedExtraStages=patch.lap1ClearedExtraStages;if(patch.lap1ClearedSatoriStages!==undefined)lap1ClearedSatoriStages=patch.lap1ClearedSatoriStages;if(patch.lap2ClearedStages!==undefined)lap2ClearedStages=patch.lap2ClearedStages;if(patch.lap2ClearedExtraStages!==undefined)lap2ClearedExtraStages=patch.lap2ClearedExtraStages;if(patch.lap2ClearedSatoriStages!==undefined)lap2ClearedSatoriStages=patch.lap2ClearedSatoriStages;return this.read();}
     }),
     dialog:Object.freeze({
-      read(){return Object.freeze({clearShown,nextStageAttention,masterDialogKind,rankDialogReturn,messageDialogReturn});},
-      update(patch={}){if(patch.clearShown!==undefined)clearShown=patch.clearShown===true;if(patch.nextStageAttention!==undefined)nextStageAttention=patch.nextStageAttention===true;if(patch.masterDialogKind!==undefined)masterDialogKind=patch.masterDialogKind;if(patch.rankDialogReturn!==undefined)rankDialogReturn=patch.rankDialogReturn;if(patch.messageDialogReturn!==undefined)messageDialogReturn=patch.messageDialogReturn;return this.read();}
+      read(){return typeof readDialogStateOwner==='function'?readDialogStateOwner():Object.freeze({clearShown,nextStageAttention,masterDialogKind,rankDialogReturn,messageDialogReturn});},
+      update(patch={}){return typeof updateDialogStateOwner==='function'?updateDialogStateOwner(patch):(patch.clearShown!==undefined&&setClearShownCommand(patch.clearShown),this.read());}
     }),
     animation:Object.freeze({
       read(){return Object.freeze({busy,drag,clearFlowState:typeof clearFlowState!=='undefined'?clearFlowState:null});},

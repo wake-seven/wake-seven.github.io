@@ -269,7 +269,7 @@ function bindClearDialogEvents(){
   });
   WakeSevenEventBindings.click('clearClose',()=>{
     hideGameDialogs();
-    nextStageAttention=isCampaignMode()&&!editingBoard;
+    updateDialogStateOwner({nextStageAttention:isCampaignMode()&&!editingBoard});
     renderStageNav();
   });
   WakeSevenEventBindings.click('optimalRetry',()=>{
@@ -356,7 +356,7 @@ function bindSpeedEvents(){
 function bindMessageReviewEvents(){
   $('closeMessages').addEventListener('click',()=>{
     const returnTarget=messageDialogReturn;
-    messageDialogReturn=null;
+    updateDialogStateOwner({messageDialogReturn:null});
     $('messageDialog').hidden=true;
     focusReturnTarget(returnTarget);
   });
@@ -479,7 +479,7 @@ for(const [sealId,dialogId] of [['masterSeal','masterDialog'],['messageMasterSea
   });
 }
 $('closeRankDialog').addEventListener('click',()=>{
-  const returnTarget=rankDialogReturn;rankDialogReturn=null;
+  const returnTarget=rankDialogReturn;updateDialogStateOwner({rankDialogReturn:null});
   $('rankDialog').hidden=true;
   if(!focusReturnTarget(returnTarget))$('rankBadge').focus();
 });
