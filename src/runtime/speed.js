@@ -205,9 +205,9 @@ function randomTrainingSpeedView(){
   // 対称変換なので最短手数は保ったまま、暗記ではなく盤面の読み取りを問える。
   return SYMMETRIES[Math.floor(Math.random()*SYMMETRIES.length)];
 }
-function pendingSpeedTrial(variant=activeSpeedDefinition().id){
+function pendingSpeedTrial(variant=activeSpeedDefinition().id,navigation=readNavigationContext()){
   // 卒業試験は一周目だけ。二周目は各コースをそのまま進める。
-  if(activeLap===2)return null;
+  if(navigation.lap===2)return null;
   if(variant==='training9'&&!speedTrainingTrialCleared)return 'training9';
   if(variant==='training18'&&!speedIntermediateTrialCleared)return 'training18';
   if(variant==='mastery27'&&!speedMasteryTrialCleared)return 'mastery27';
@@ -241,6 +241,8 @@ function animateBoardArrival(){
 }
 function loadSpeedStage(restoreBoard=false,arriving=false){
   if(!speedSession)return;
+  const sessionContext=WakeSevenAppContext.state.session.read();
+  const currentVariant=sessionContext.speedVariant||speedVariant;
   if(speedSession.index>0)speedSession.started=true;
   setSpeedManualPauseCommand(false);
   setCampaignModeCommand('speed');editingBoard=false;
@@ -253,7 +255,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
     return;
   }
   const stage=pool[speedSession.order[speedSession.index]];
-  const view=speedVariant==='training9'?randomTrainingSpeedView():SPEED_BOARD_VIEW;
+  const view=currentVariant==='training9'?randomTrainingSpeedView():SPEED_BOARD_VIEW;
   setPosition(transformStateBySymmetry(stage.state,view),stage.par);
   if(restoreBoard&&validSavedBoard(speedSession.board)){
     restoreSavedBoard(speedSession.board);
@@ -266,7 +268,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
 }
 function enterSpeedMode(forceNew=false){
   pauseSpeedRun();
-  const requestedVariant=speedVariant;
+  const requestedVariant=WakeSevenAppContext.state.session.read().speedVariant||speedVariant;
   const saved=forceNew?null:readSpeedSession();
   const isNew=forceNew||!saved;
   setSpeedVariantCommand(saved?.variant&&SPEED_MODE_DEFINITIONS[saved.variant]?saved.variant:requestedVariant);
@@ -281,9 +283,11 @@ function beginSpeedRun(){
 }
 function finishSpeedRun(){
   pauseSpeedClock();
+  const navigation=readNavigationContext();
+  const sessionContext=WakeSevenAppContext.state.session.read();
   // セッションを保存・削除する前に、卒業試験として起動されたかを確定する。
   const trialVariant=(speedSession?.requiredTrial===true?'training9':speedSession?.requiredTrial)
-    ||pendingSpeedTrial(speedSession?.variant||speedVariant);
+    ||pendingSpeedTrial(speedSession?.variant||sessionContext.speedVariant||speedVariant,navigation);
   const elapsed=Math.round(speedSession.elapsedMs);
   const optimalClears=speedOptimalClears();
   const record=recordSpeedCompletionCommand(elapsed,optimalClears);

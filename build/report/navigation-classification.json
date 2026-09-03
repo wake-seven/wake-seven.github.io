@@ -1,27 +1,27 @@
 {
   "schemaVersion": 1,
   "name": "wake7-navigation-classification",
-  "generatedAt": "2026-09-03T11:14:46.441Z",
+  "generatedAt": "2026-09-03T11:24:12.577Z",
   "status": "passed",
   "summary": {
-    "references": 383,
+    "references": 381,
     "byCategory": {
-      "gateway-candidate": 125,
+      "gateway-candidate": 124,
       "owner-only": 167,
       "derived-value": 51,
       "event-local": 3,
-      "intentional-exception": 37
+      "intentional-exception": 36
     },
     "byName": {
       "activeMode": 19,
-      "activeLap": 49,
+      "activeLap": 47,
       "stageIndex": 134,
       "extraIndex": 48,
       "satoriIndex": 61,
       "tutorialStep": 60,
       "lastStageMode": 12
     },
-    "stateAccessNavigationReferences": 137,
+    "stateAccessNavigationReferences": 135,
     "priorityOrder": [
       "gateway-candidate",
       "derived-value",
@@ -2562,20 +2562,6 @@
         "file": "runtime/runtime.js",
         "line": 805,
         "source": "delete fourthCheckUsage[extraIndex];"
-      }
-    },
-    {
-      "name": "activeLap",
-      "file": "runtime/speed.js",
-      "line": 210,
-      "access": "write",
-      "classification": "needs-migration",
-      "category": "intentional-exception",
-      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
-      "codeEvidence": {
-        "file": "runtime/speed.js",
-        "line": 210,
-        "source": "if(activeLap===2)return null;"
       }
     },
     {
@@ -5309,20 +5295,6 @@
       }
     },
     {
-      "name": "activeLap",
-      "file": "ui/rank.js",
-      "line": 96,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "gateway-candidate",
-      "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
-      "codeEvidence": {
-        "file": "ui/rank.js",
-        "line": 96,
-        "source": "rankListLap=activeLap;"
-      }
-    },
-    {
       "name": "stageIndex",
       "file": "runtime/app-events.js",
       "line": 29,
@@ -5353,29 +5325,15 @@
     {
       "name": "tutorialStep",
       "file": "runtime/app-events.js",
-      "line": 923,
+      "line": 924,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
       "reason": "navigationから計算した表示・判定値で、直接参照を機械置換しない",
       "codeEvidence": {
         "file": "runtime/app-events.js",
-        "line": 923,
+        "line": 924,
         "source": "$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "runtime/app-events.js",
-      "line": 945,
-      "access": "write",
-      "classification": "needs-migration",
-      "category": "intentional-exception",
-      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
-      "codeEvidence": {
-        "file": "runtime/app-events.js",
-        "line": 945,
-        "source": "else if(navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');"
       }
     },
     {
@@ -5389,20 +5347,34 @@
       "codeEvidence": {
         "file": "runtime/app-events.js",
         "line": 946,
+        "source": "else if(navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/app-events.js",
+      "line": 947,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "intentional-exception",
+      "reason": "書き込みを伴うため所有者・command入口との整合確認が必要",
+      "codeEvidence": {
+        "file": "runtime/app-events.js",
+        "line": 947,
         "source": "else if(navigation.stageIndex===STAGES.length-1)action.textContent=tr('toFree');"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/app-events.js",
-      "line": 1131,
+      "line": 1132,
       "access": "read",
       "classification": "needs-migration",
       "category": "gateway-candidate",
       "reason": "読み取り専用のため用途別navigation gatewayへ移行可能",
       "codeEvidence": {
         "file": "runtime/app-events.js",
-        "line": 1131,
+        "line": 1132,
         "source": "storage.remove(STORAGE_KEY_GROUPS.progression.activeLap);"
       }
     }

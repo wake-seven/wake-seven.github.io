@@ -6,7 +6,7 @@
     "state/game-state.js",
     "app/app-context.js"
   ],
-  "baselineTracked": 154,
+  "baselineTracked": 153,
   "allowedReferences": [
     "state/progression-policy.js:stageIndex:uiPolicy({mode,lap,stageIndex,speedVariant}) {",
     "state/progression-policy.js:stageIndex:if(stageIndex < academyTotal) {",
@@ -16,7 +16,6 @@
     "state/progression-policy.js:stageIndex:if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};",
     "state/progression-policy.js:stageIndex:if(stageIndex >= trainingStart && stageIndex < trainingStart + trainingTotal) return {id:'training',trainingShapes:true};",
     "data/core-data.js:activeLap:return activeLap===2?transformStateBySymmetry(state,SECOND_LAP_BOARD_VIEW):state;",
-    "runtime/speed.js:activeLap:if(activeLap===2)return null;",
     "ui/board-ui.js:stageIndex:basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(stageIndex+1)),",
     "ui/board-ui.js:stageIndex:applicationWelcome:academyBoardStep('application','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(stageIndex+1)),",
     "ui/board-ui.js:stageIndex:onAction(){loadStage(stageIndex+1);}",
@@ -259,19 +258,6 @@
       "fingerprint": "data/core-data.js:activeLap:return activeLap===2?transformStateBySymmetry(state,SECOND_LAP_BOARD_VIEW):state;",
       "expiresOn": "2026-12-02",
       "owner": "data/core-data.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/speed.js:activeLap:if(activeLap===2)return null;",
-      "expiresOn": "2026-12-02",
-      "owner": "runtime/speed.js",
       "migrationTarget": "gateway:navigation",
       "priority": 1,
       "relatedTests": [

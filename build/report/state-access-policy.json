@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-03T11:19:12.063Z",
+  "generatedAt": "2026-09-03T11:24:12.348Z",
   "names": [
     "activeMode",
     "activeLap",
@@ -31,15 +31,15 @@
     ],
     "description": "移行対象は実行コードの状態アクセスだけ。宣言・オブジェクトキー・プロパティ・文字列・データ定義は検出結果として記録するがtemporary例外には含めない"
   },
-  "baselineTracked": 154,
+  "baselineTracked": 153,
   "counts": {
-    "detected": 355,
-    "tracked": 154,
+    "detected": 354,
+    "tracked": 153,
     "excluded": 201,
-    "allowed": 154,
+    "allowed": 153,
     "newReferences": 0,
     "retiredExceptions": 0,
-    "temporary": 148,
+    "temporary": 147,
     "expiredTemporary": 0
   },
   "excludedCounts": {
@@ -1659,7 +1659,7 @@
     }
   ],
   "countsByPurpose": {
-    "navigation": 136,
+    "navigation": 135,
     "dialog": 18,
     "progress": 0,
     "session": 0,
@@ -1669,7 +1669,7 @@
   },
   "countsByExceptionClass": {
     "intentional-exception": 6,
-    "temporary": 148
+    "temporary": 147
   },
   "countsByDialogRole": {
     "chain": 16,
@@ -1679,12 +1679,12 @@
     "commands": 7,
     "data": 1,
     "other": 7,
-    "runtime": 6,
+    "runtime": 5,
     "ui": 133
   },
   "countsByAccess": {
     "read": 135,
-    "write": 19
+    "write": 18
   },
   "exceptionMetadata": [
     {
@@ -1759,16 +1759,6 @@
     },
     {
       "fingerprint": "data/core-data.js:activeLap:return activeLap===2?transformStateBySymmetry(state,SECOND_LAP_BOARD_VIEW):state;",
-      "purpose": "navigation",
-      "ownerOnly": false,
-      "exceptionClass": "temporary",
-      "temporary": true,
-      "priority": 1,
-      "migrationTarget": "gateway:navigation",
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する"
-    },
-    {
-      "fingerprint": "runtime/speed.js:activeLap:if(activeLap===2)return null;",
       "purpose": "navigation",
       "ownerOnly": false,
       "exceptionClass": "temporary",
@@ -3311,19 +3301,6 @@
       "fingerprint": "data/core-data.js:activeLap:return activeLap===2?transformStateBySymmetry(state,SECOND_LAP_BOARD_VIEW):state;",
       "expiresOn": "2026-12-02",
       "owner": "data/core-data.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/speed.js:activeLap:if(activeLap===2)return null;",
-      "expiresOn": "2026-12-02",
-      "owner": "runtime/speed.js",
       "migrationTarget": "gateway:navigation",
       "priority": 1,
       "relatedTests": [
@@ -5075,34 +5052,6 @@
       },
       "symbol": "activeLap",
       "entrypoint": "data",
-      "access": "write",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
-      "fingerprint": "runtime/speed.js:activeLap:if(activeLap===2)return null;",
-      "classification": "executable",
-      "source": {
-        "file": "runtime/speed.js",
-        "line": 210,
-        "excerpt": "if(activeLap===2)return null;"
-      },
-      "symbol": "activeLap",
-      "entrypoint": "runtime",
       "access": "write",
       "purpose": "navigation",
       "dialogRole": null,

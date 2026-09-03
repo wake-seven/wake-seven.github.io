@@ -1,31 +1,31 @@
 {
   "schemaVersion": 2,
   "name": "wake7-state-access-final-audit",
-  "generatedAt": "2026-09-03T11:14:46.306Z",
+  "generatedAt": "2026-09-03T11:24:12.434Z",
   "status": "warning",
   "completion": "in-progress",
   "summary": {
-    "temporaryCount": 149,
+    "temporaryCount": 147,
     "temporaryZero": false,
-    "progress": "6/155",
+    "progress": "6/153",
     "byClassification": {
       "intentional-exception": 6,
-      "temporary": 149,
+      "temporary": 147,
       "owner-only": 4
     },
     "byPurpose": {
       "dialog": 18,
-      "navigation": 137
+      "navigation": 135
     },
     "byEntrypoint": {
       "commands": 7,
       "data": 1,
       "other": 7,
-      "runtime": 6,
-      "ui": 134
+      "runtime": 5,
+      "ui": 133
     },
     "byPriority": {
-      "1": 155,
+      "1": 153,
       "2": 0,
       "3": 0
     },
@@ -159,22 +159,6 @@
       "symbol": "activeLap",
       "purpose": "navigation",
       "entrypoint": "data",
-      "priority": 1,
-      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
-      "expiresOn": "2026-12-02",
-      "nextMigrationUnit": "gateway:navigation",
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "runtime/speed.js:activeLap:if(activeLap===2)return null;",
-      "source": {
-        "file": "runtime/speed.js",
-        "line": 210,
-        "excerpt": "if(activeLap===2)return null;"
-      },
-      "symbol": "activeLap",
-      "purpose": "navigation",
-      "entrypoint": "runtime",
       "priority": 1,
       "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
       "expiresOn": "2026-12-02",
@@ -2326,22 +2310,6 @@
       "reason": "navigation状態の移行完了まで保持する既存参照"
     },
     {
-      "fingerprint": "ui/rank.js:activeLap:rankListLap=activeLap;",
-      "source": {
-        "file": "ui/rank.js",
-        "line": 96,
-        "excerpt": "rankListLap=activeLap;"
-      },
-      "symbol": "activeLap",
-      "purpose": "navigation",
-      "entrypoint": "ui",
-      "priority": 1,
-      "owner": "runtime/runtime.js / app/app-context.js（共有状態所有者）",
-      "expiresOn": "2026-12-02",
-      "nextMigrationUnit": "gateway:navigation",
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
       "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
       "source": {
         "file": "runtime/app-events.js",
@@ -2361,7 +2329,7 @@
       "fingerprint": "runtime/app-events.js:tutorialStep:$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 923,
+        "line": 924,
         "excerpt": "$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');"
       },
       "symbol": "tutorialStep",
@@ -2377,7 +2345,7 @@
       "fingerprint": "runtime/app-events.js:masterDialogKind:if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 925,
+        "line": 926,
         "excerpt": "if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);"
       },
       "symbol": "masterDialogKind",
@@ -2393,7 +2361,7 @@
       "fingerprint": "runtime/app-events.js:clearShown:else if(clearShown){",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 934,
+        "line": 935,
         "excerpt": "else if(clearShown){"
       },
       "symbol": "clearShown",

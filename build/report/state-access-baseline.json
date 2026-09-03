@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "name": "state-access-baseline",
-  "generatedAt": "2026-09-03T11:19:12.063Z",
+  "generatedAt": "2026-09-03T11:24:12.348Z",
   "source": "scripts/state-access-exceptions.json",
   "counts": {
-    "temporary": 148,
+    "temporary": 147,
     "byPurpose": {
-      "navigation": 136,
+      "navigation": 135,
       "dialog": 18,
       "progress": 0,
       "session": 0,
@@ -18,12 +18,12 @@
       "commands": 7,
       "data": 1,
       "other": 7,
-      "runtime": 6,
+      "runtime": 5,
       "ui": 133
     },
     "byAccess": {
       "read": 135,
-      "write": 19
+      "write": 18
     }
   },
   "entries": [
@@ -233,34 +233,6 @@
       },
       "symbol": "activeLap",
       "entrypoint": "data",
-      "access": "write",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
-      "fingerprint": "runtime/speed.js:activeLap:if(activeLap===2)return null;",
-      "classification": "executable",
-      "source": {
-        "file": "runtime/speed.js",
-        "line": 210,
-        "excerpt": "if(activeLap===2)return null;"
-      },
-      "symbol": "activeLap",
-      "entrypoint": "runtime",
       "access": "write",
       "purpose": "navigation",
       "dialogRole": null,

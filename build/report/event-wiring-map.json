@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-03T11:15:05.628Z",
+  "generatedAt": "2026-09-03T11:24:34.322Z",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles + index.html",
   "entries": [
     {
@@ -19,8 +19,7 @@
               "handlers": [
                 "openDialog",
                 "closeStagePicker",
-                "startSpeedClock",
-                "openChainedDialog"
+                "startSpeedClock"
               ],
               "displayTargets": [
                 "stagePickerTrigger",
@@ -77,8 +76,7 @@
               "displayTargets": [
                 "stagePicker",
                 "masterClose",
-                "shareGame",
-                "masterShare"
+                "shareGame"
               ],
               "sourceSnippet": "WakeSevenEventBindings.click('stagePickerRankBadge',()=>{ $('stagePicker').hidden=true; openDialog('rankDialog',{returnTarget:{dialogId:'stagePicker',focusId:'stagePickerRankBadge'}}); }); bindSpeedEvents(); bindMessageReviewEvents();"
             }
@@ -130,7 +128,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 477,
+              "line": 478,
               "registration": "addEventListener",
               "type": "click",
               "handlers": [
@@ -197,8 +195,7 @@
               "displayTargets": [
                 "stagePicker",
                 "masterClose",
-                "shareGame",
-                "masterShare"
+                "shareGame"
               ],
               "sourceSnippet": "WakeSevenEventBindings.click('stagePickerRankBadge',()=>{ $('stagePicker').hidden=true; openDialog('rankDialog',{returnTarget:{dialogId:'stagePicker',focusId:'stagePickerRankBadge'}}); }); bindSpeedEvents(); bindMessageReviewEvents();"
             }
@@ -210,7 +207,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 485,
+              "line": 486,
               "registration": "addEventListener",
               "type": "click",
               "handlers": [
@@ -249,7 +246,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 967,
+              "line": 968,
               "registration": "addEventListener",
               "type": "click",
               "handlers": [
@@ -544,7 +541,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 490,
+              "line": 491,
               "registration": "addEventListener",
               "type": "click",
               "handlers": [
@@ -554,7 +551,7 @@
               "displayTargets": [
                 "masterStart"
               ],
-              "sourceSnippet": "$('masterStart').addEventListener('click',()=>{ const dialogKind=readDialogContext().masterDialogKind; const navigation=readNavigationContext(); const speedTarget=$('masterStart').dataset.speedVariant; hideGameDialogs(); if(speed"
+              "sourceSnippet": "$('masterStart').addEventListener('click',()=>{ const dialogKind=readDialogContext().masterDialogKind; const {navigation}=readProgressionContext(); const speedTarget=$('masterStart').dataset.speedVariant; hideGameDialogs(); if(sp"
             }
           ]
         }
