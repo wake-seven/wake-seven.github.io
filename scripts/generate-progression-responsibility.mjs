@@ -12,13 +12,13 @@ const targetFiles = /(?:^|\/)(?:progression[^/]*|clear-flow|master-dialog|rank)\
 const symbols = Object.values(symbolIndex.definitions || {}).filter(symbol => targetFiles.test(symbol.file || ''));
 
 const rules = [
-  ['state', /state|storage|persist|unlock|cleared|lap|variant|mode|session|progress/i],
-  ['navigation', /navigate|route|return|advance|start|open|close|back|next|menu|select|picker/i],
-  ['dialog', /dialog|message|intro|welcome|milestone|tip|quiz/i],
   ['clear-flow', /clear|complete|finish|solved|reward|celebrat|transition/i],
+  ['dialog', /dialog|message|intro|welcome|milestone|tip|quiz/i],
   ['stage-picker', /picker|stage|volume|section|round|chapter/i],
+  ['navigation', /navigate|route|return|advance|start|open|close|back|next|menu|select/i],
   ['rank', /rank|title|master|名人|称号/i],
-  ['render', /render|paint|view|badge|label|text|html|template|display/i]
+  ['render', /render|paint|view|badge|label|text|html|template|display/i],
+  ['state', /state|storage|persist|unlock|cleared|lap|variant|mode|session|progress/i]
 ];
 
 function classify(symbol) {
