@@ -420,9 +420,10 @@ const MASTER_DIALOG_CHAIN={
 };
 $('masterClose').addEventListener('click',()=>{
   const dialogContext=readDialogContext();
+  const {navigation}=readProgressionContext();
   const dialogKind=dialogContext.masterDialogKind;
   const chain=MASTER_DIALOG_CHAIN[dialogKind];
-  const chainActive=chain?.via==='close'&&chain.when();
+  const chainActive=chain?.via==='close'&&(dialogKind==='satori'?navigation.lap===1:chain.when());
   const restartTraining=dialogKind==='awakening';
   const leaveSpeed=['speedComplete','speedTrialFailed'].includes(dialogKind);
   const resumeSpeed=dialogKind==='speedIntro'&&isMode('speed');
@@ -489,7 +490,7 @@ $('closeRankDialog').addEventListener('click',()=>{
 });
 $('masterStart').addEventListener('click',()=>{
   const dialogKind=readDialogContext().masterDialogKind;
-  const navigation=readNavigationContext();
+  const {navigation}=readProgressionContext();
   const speedTarget=$('masterStart').dataset.speedVariant;
   hideGameDialogs();
   if(speedTarget){setSpeedVariantCommand(speedTarget);setSpeedSessionCommand(null);enterSpeedMode(true);return;}

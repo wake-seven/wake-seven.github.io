@@ -6,7 +6,7 @@
     "state/game-state.js",
     "app/app-context.js"
   ],
-  "baselineTracked": 155,
+  "baselineTracked": 154,
   "allowedReferences": [
     "state/progression-policy.js:stageIndex:uiPolicy({mode,lap,stageIndex,speedVariant}) {",
     "state/progression-policy.js:stageIndex:if(stageIndex < academyTotal) {",
@@ -157,7 +157,6 @@
     "ui/progression-clear-flow.js:stageIndex:if(stageIndex===STAGES.length-1&&allPrimaryIsCleared)return {kind:'master-dialog',section:'intermediate'};",
     "ui/progression-clear-flow.js:stageIndex:if(stageIndex===STAGES.length-1)return {kind:'restore-free'};",
     "ui/progression-clear-flow.js:stageIndex:return {kind:'stage',index:stageIndex+1};",
-    "ui/rank.js:activeLap:rankListLap=activeLap;",
     "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
     "runtime/app-events.js:tutorialStep:$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');",
     "runtime/app-events.js:masterDialogKind:if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);",
@@ -2015,19 +2014,6 @@
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:return {kind:'stage',index:stageIndex+1};",
       "expiresOn": "2026-12-02",
       "owner": "ui/progression-clear-flow.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/rank.js:activeLap:rankListLap=activeLap;",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/rank.js",
       "migrationTarget": "gateway:navigation",
       "priority": 1,
       "relatedTests": [

@@ -92,8 +92,9 @@ function renderRankList(){
   });
 }
 function openRankDialog(returnTarget=null){
+  const {navigation}=readProgressionContext();
   updateDialogStateOwner({rankDialogReturn:returnTarget});
-  rankListLap=activeLap;
+  rankListLap=navigation.lap;
   renderRankList();
   $('rankDialog').hidden=false;
   $('closeRankDialog').focus();

@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "name": "state-access-baseline",
-  "generatedAt": "2026-09-03T11:14:46.229Z",
+  "generatedAt": "2026-09-03T11:19:12.063Z",
   "source": "scripts/state-access-exceptions.json",
   "counts": {
-    "temporary": 149,
+    "temporary": 148,
     "byPurpose": {
-      "navigation": 137,
+      "navigation": 136,
       "dialog": 18,
       "progress": 0,
       "session": 0,
@@ -19,10 +19,10 @@
       "data": 1,
       "other": 7,
       "runtime": 6,
-      "ui": 134
+      "ui": 133
     },
     "byAccess": {
-      "read": 136,
+      "read": 135,
       "write": 19
     }
   },
@@ -4200,34 +4200,6 @@
       ]
     },
     {
-      "fingerprint": "ui/rank.js:activeLap:rankListLap=activeLap;",
-      "classification": "executable",
-      "source": {
-        "file": "ui/rank.js",
-        "line": 96,
-        "excerpt": "rankListLap=activeLap;"
-      },
-      "symbol": "activeLap",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
       "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
       "classification": "executable",
       "source": {
@@ -4260,7 +4232,7 @@
       "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 923,
+        "line": 924,
         "excerpt": "$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');"
       },
       "symbol": "tutorialStep",
@@ -4288,7 +4260,7 @@
       "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 925,
+        "line": 926,
         "excerpt": "if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);"
       },
       "symbol": "masterDialogKind",
@@ -4316,7 +4288,7 @@
       "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 934,
+        "line": 935,
         "excerpt": "else if(clearShown){"
       },
       "symbol": "clearShown",

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-03T11:14:46.229Z",
+  "generatedAt": "2026-09-03T11:19:12.063Z",
   "names": [
     "activeMode",
     "activeLap",
@@ -31,15 +31,15 @@
     ],
     "description": "移行対象は実行コードの状態アクセスだけ。宣言・オブジェクトキー・プロパティ・文字列・データ定義は検出結果として記録するがtemporary例外には含めない"
   },
-  "baselineTracked": 155,
+  "baselineTracked": 154,
   "counts": {
-    "detected": 356,
-    "tracked": 155,
+    "detected": 355,
+    "tracked": 154,
     "excluded": 201,
-    "allowed": 155,
+    "allowed": 154,
     "newReferences": 0,
     "retiredExceptions": 0,
-    "temporary": 149,
+    "temporary": 148,
     "expiredTemporary": 0
   },
   "excludedCounts": {
@@ -1564,7 +1564,7 @@
     {
       "file": "ui/rank.js",
       "name": "rankDialogReturn",
-      "line": 95,
+      "line": 96,
       "source": "updateDialogStateOwner({rankDialogReturn:returnTarget});",
       "kind": "object-key",
       "exclusionReason": "オブジェクトリテラルのキー"
@@ -1604,7 +1604,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "masterDialogKind",
-      "line": 423,
+      "line": 424,
       "source": "const dialogKind=dialogContext.masterDialogKind;",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1612,7 +1612,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "rankDialogReturn",
-      "line": 486,
+      "line": 487,
       "source": "const returnTarget=readDialogContext().rankDialogReturn;updateDialogStateOwner({rankDialogReturn:null});",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1620,7 +1620,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "rankDialogReturn",
-      "line": 486,
+      "line": 487,
       "source": "const returnTarget=readDialogContext().rankDialogReturn;updateDialogStateOwner({rankDialogReturn:null});",
       "kind": "object-key",
       "exclusionReason": "オブジェクトリテラルのキー"
@@ -1628,7 +1628,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "masterDialogKind",
-      "line": 491,
+      "line": 492,
       "source": "const dialogKind=readDialogContext().masterDialogKind;",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1636,7 +1636,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "stageIndex",
-      "line": 945,
+      "line": 946,
       "source": "else if(navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1644,7 +1644,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "stageIndex",
-      "line": 946,
+      "line": 947,
       "source": "else if(navigation.stageIndex===STAGES.length-1)action.textContent=tr('toFree');",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1652,14 +1652,14 @@
     {
       "file": "runtime/app-events.js",
       "name": "activeLap",
-      "line": 1131,
+      "line": 1132,
       "source": "storage.remove(STORAGE_KEY_GROUPS.progression.activeLap);",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
     }
   ],
   "countsByPurpose": {
-    "navigation": 137,
+    "navigation": 136,
     "dialog": 18,
     "progress": 0,
     "session": 0,
@@ -1669,7 +1669,7 @@
   },
   "countsByExceptionClass": {
     "intentional-exception": 6,
-    "temporary": 149
+    "temporary": 148
   },
   "countsByDialogRole": {
     "chain": 16,
@@ -1680,10 +1680,10 @@
     "data": 1,
     "other": 7,
     "runtime": 6,
-    "ui": 134
+    "ui": 133
   },
   "countsByAccess": {
-    "read": 136,
+    "read": 135,
     "write": 19
   },
   "exceptionMetadata": [
@@ -3169,16 +3169,6 @@
     },
     {
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:return {kind:'stage',index:stageIndex+1};",
-      "purpose": "navigation",
-      "ownerOnly": false,
-      "exceptionClass": "temporary",
-      "temporary": true,
-      "priority": 1,
-      "migrationTarget": "gateway:navigation",
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する"
-    },
-    {
-      "fingerprint": "ui/rank.js:activeLap:rankListLap=activeLap;",
       "purpose": "navigation",
       "ownerOnly": false,
       "exceptionClass": "temporary",
@@ -4803,19 +4793,6 @@
       "fingerprint": "ui/progression-clear-flow.js:stageIndex:return {kind:'stage',index:stageIndex+1};",
       "expiresOn": "2026-12-02",
       "owner": "ui/progression-clear-flow.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/rank.js:activeLap:rankListLap=activeLap;",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/rank.js",
       "migrationTarget": "gateway:navigation",
       "priority": 1,
       "relatedTests": [
@@ -9065,34 +9042,6 @@
       ]
     },
     {
-      "fingerprint": "ui/rank.js:activeLap:rankListLap=activeLap;",
-      "classification": "executable",
-      "source": {
-        "file": "ui/rank.js",
-        "line": 96,
-        "excerpt": "rankListLap=activeLap;"
-      },
-      "symbol": "activeLap",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
       "fingerprint": "runtime/app-events.js:activeLap:satori:{via:'close',when:()=>activeLap===1,",
       "classification": "executable",
       "source": {
@@ -9125,7 +9074,7 @@
       "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 923,
+        "line": 924,
         "excerpt": "$('gripPromptText').textContent=isMode('tutorial')&&TUTORIAL_STEPS[tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');"
       },
       "symbol": "tutorialStep",
@@ -9153,7 +9102,7 @@
       "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 925,
+        "line": 926,
         "excerpt": "if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);"
       },
       "symbol": "masterDialogKind",
@@ -9181,7 +9130,7 @@
       "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 934,
+        "line": 935,
         "excerpt": "else if(clearShown){"
       },
       "symbol": "clearShown",
