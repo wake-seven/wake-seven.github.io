@@ -1,14 +1,28 @@
 {
   "schemaVersion": 1,
   "name": "wake7-script-inventory",
-  "generatedAt": "2026-09-03T06:42:36.603Z",
+  "generatedAt": "2026-09-03T07:06:41.010Z",
   "measurement": "runtime is copied from the latest check-gate report; null means the script was not a gate step",
+  "executionProfiles": {
+    "build-required": {
+      "description": "公開物を生成した直後に必ず確認する短い契約",
+      "budgetMs": 120000
+    },
+    "normal-check": {
+      "description": "通常の改修で毎回確認する検査",
+      "budgetMs": 180000
+    },
+    "large-change-only": {
+      "description": "大規模な構造変更や監査更新時に個別実行する詳細検査",
+      "budgetMs": 300000
+    }
+  },
   "selection": "scripts whose names are check/test/generate or known pipeline support scripts",
   "counts": {
-    "files": 51,
-    "commands": 40,
-    "measured": 36,
-    "overlapGroups": 80
+    "files": 54,
+    "commands": 43,
+    "measured": 38,
+    "overlapGroups": 82
   },
   "entries": [
     {
@@ -19,6 +33,7 @@
       "inputs": [],
       "outputs": [],
       "runtime": null,
+      "executionProfile": null,
       "overlapKeys": [],
       "integrationCandidate": "review-for-grouping"
     },
@@ -27,10 +42,15 @@
       "command": "npm run check:gate",
       "category": "check",
       "purpose": "公開版を作り直してから、検査を定義順に一度ずつ実行する最終ゲート。",
-      "inputs": [],
+      "inputs": [
+        "scripts"
+      ],
       "outputs": [],
       "runtime": null,
-      "overlapKeys": [],
+      "executionProfile": null,
+      "overlapKeys": [
+        "scripts"
+      ],
       "integrationCandidate": "review-for-grouping"
     },
     {
@@ -43,10 +63,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 67,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 65,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [
         "src"
       ],
@@ -62,10 +84,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 35592,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 34272,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [
         "src/runtime/runtime.js"
       ],
@@ -79,10 +103,12 @@
       "inputs": [],
       "outputs": [],
       "runtime": {
-        "durationMs": 93,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 81,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [],
       "integrationCandidate": "review-for-grouping"
     },
@@ -98,10 +124,12 @@
         "compat-boundary-audit.json"
       ],
       "runtime": {
-        "durationMs": 108,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 105,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [
         "refactor-candidates.json",
         "compat-boundary-audit.json"
@@ -120,10 +148,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 352,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 326,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [
         "docs",
         "scripts",
@@ -139,10 +169,12 @@
       "inputs": [],
       "outputs": [],
       "runtime": {
-        "durationMs": 26724,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 26394,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [],
       "integrationCandidate": "review-for-grouping"
     },
@@ -156,14 +188,33 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 72,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 67,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [
         "src"
       ],
       "integrationCandidate": "internal-only"
+    },
+    {
+      "file": "scripts/check-domain-classification.mjs",
+      "command": "npm run check:domains",
+      "category": "check",
+      "purpose": "検査スクリプトを、利用者向けの4領域へ分類する監査。",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 57,
+        "profile": "build-required",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
+        "source": "check-gate"
+      },
+      "executionProfile": "build-required",
+      "overlapKeys": [],
+      "integrationCandidate": "review-for-grouping"
     },
     {
       "file": "scripts/check-esm-dependencies.mjs",
@@ -173,10 +224,12 @@
       "inputs": [],
       "outputs": [],
       "runtime": {
-        "durationMs": 81,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 65,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [],
       "integrationCandidate": "review-for-grouping"
     },
@@ -188,10 +241,12 @@
       "inputs": [],
       "outputs": [],
       "runtime": {
-        "durationMs": 79,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 76,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [],
       "integrationCandidate": "review-for-grouping"
     },
@@ -205,10 +260,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 257,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 235,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [
         "build"
       ],
@@ -224,10 +281,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 216,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 196,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [
         "build"
       ],
@@ -243,6 +302,7 @@
       ],
       "outputs": [],
       "runtime": null,
+      "executionProfile": null,
       "overlapKeys": [
         "src"
       ],
@@ -256,10 +316,12 @@
       "inputs": [],
       "outputs": [],
       "runtime": {
-        "durationMs": 941,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 1033,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [],
       "integrationCandidate": "review-for-grouping"
     },
@@ -273,10 +335,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 184,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 191,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [
         "package.json"
       ],
@@ -293,10 +357,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 62,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 55,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [
         "build/report/progression-flow-map.json",
         "src/ui/progression-flow-contract.js"
@@ -311,10 +377,12 @@
       "inputs": [],
       "outputs": [],
       "runtime": {
-        "durationMs": 65,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 62,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [],
       "integrationCandidate": "review-for-grouping"
     },
@@ -326,10 +394,12 @@
       "inputs": [],
       "outputs": [],
       "runtime": {
-        "durationMs": 72,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 66,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [],
       "integrationCandidate": "review-for-grouping"
     },
@@ -345,10 +415,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 1269,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 1200,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [
         "index.html",
         "src",
@@ -364,10 +436,12 @@
       "inputs": [],
       "outputs": [],
       "runtime": {
-        "durationMs": 431,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 372,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [],
       "integrationCandidate": "review-for-grouping"
     },
@@ -381,10 +455,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 71,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 64,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [
         "build/report/refactor-baseline.json"
       ],
@@ -398,10 +474,12 @@
       "inputs": [],
       "outputs": [],
       "runtime": {
-        "durationMs": 82,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 65,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [],
       "integrationCandidate": "internal-only"
     },
@@ -418,10 +496,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 69,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 74,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [
         "docs",
         "package.json",
@@ -440,12 +520,47 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 71,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 63,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [
         "build/report/refactor-candidates.json"
+      ],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-report-schema.mjs",
+      "command": "npm run check:report-schema",
+      "category": "check",
+      "purpose": "check report schema",
+      "inputs": [],
+      "outputs": [],
+      "runtime": {
+        "durationMs": 153,
+        "profile": "build-required",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
+        "source": "check-gate"
+      },
+      "executionProfile": "build-required",
+      "overlapKeys": [],
+      "integrationCandidate": "review-for-grouping"
+    },
+    {
+      "file": "scripts/check-runtime-budget.mjs",
+      "command": "npm run check:runtime",
+      "category": "check",
+      "purpose": "check:gate が直近に計測した区分別時間を、人が確認しやすい形で検査する。",
+      "inputs": [
+        "build/report/check-runtime.json"
+      ],
+      "outputs": [],
+      "runtime": null,
+      "executionProfile": null,
+      "overlapKeys": [
+        "build/report/check-runtime.json"
       ],
       "integrationCandidate": "review-for-grouping"
     },
@@ -457,10 +572,12 @@
       "inputs": [],
       "outputs": [],
       "runtime": {
-        "durationMs": 81,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 76,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [],
       "integrationCandidate": "review-for-grouping"
     },
@@ -474,10 +591,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 173,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 170,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [
         "src"
       ],
@@ -493,10 +612,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 141,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 125,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [
         "build/report/state-classification.json"
       ],
@@ -512,10 +633,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 87,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 82,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [
         "src"
       ],
@@ -529,10 +652,12 @@
       "inputs": [],
       "outputs": [],
       "runtime": {
-        "durationMs": 89,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 69,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [],
       "integrationCandidate": "internal-only"
     },
@@ -547,10 +672,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 109,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 90,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [
         "index.html",
         "src"
@@ -567,10 +694,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 9134,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 8849,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [
         "build"
       ],
@@ -586,10 +715,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 9102,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 8493,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [
         "build"
       ],
@@ -603,10 +734,12 @@
       "inputs": [],
       "outputs": [],
       "runtime": {
-        "durationMs": 76,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 72,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [],
       "integrationCandidate": "internal-only"
     },
@@ -624,10 +757,12 @@
         "build/report/unused-file-audit.json"
       ],
       "runtime": {
-        "durationMs": 69,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 64,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [
         "scripts/application-manifest.mjs",
         "build/report/refactor-candidates.json",
@@ -644,10 +779,12 @@
       "inputs": [],
       "outputs": [],
       "runtime": {
-        "durationMs": 197,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 181,
+        "profile": "build-required",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "build-required",
       "overlapKeys": [],
       "integrationCandidate": "internal-only"
     },
@@ -663,6 +800,7 @@
         "event-wiring-map.json"
       ],
       "runtime": null,
+      "executionProfile": null,
       "overlapKeys": [
         "index.html",
         "event-wiring-map.json"
@@ -681,6 +819,7 @@
         "progression-flow-map.json"
       ],
       "runtime": null,
+      "executionProfile": null,
       "overlapKeys": [
         "src/ui/progression-flow-contract.js",
         "progression-flow-map.json"
@@ -697,6 +836,7 @@
         "progression-responsibility.json"
       ],
       "runtime": null,
+      "executionProfile": null,
       "overlapKeys": [
         "progression-responsibility.json"
       ],
@@ -712,10 +852,12 @@
       ],
       "outputs": [],
       "runtime": {
-        "durationMs": 593,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 544,
+        "profile": "large-change-only",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "large-change-only",
       "overlapKeys": [
         "src"
       ],
@@ -734,6 +876,7 @@
         "refactor-candidates.json"
       ],
       "runtime": null,
+      "executionProfile": null,
       "overlapKeys": [
         "symbol-index.json",
         "flow-map.json",
@@ -754,6 +897,7 @@
         "flow-map.json"
       ],
       "runtime": null,
+      "executionProfile": null,
       "overlapKeys": [
         "src",
         "symbol-index.json",
@@ -771,6 +915,7 @@
         "ui-data-map.json"
       ],
       "runtime": null,
+      "executionProfile": null,
       "overlapKeys": [
         "ui-data-map.json"
       ],
@@ -784,6 +929,7 @@
       "inputs": [],
       "outputs": [],
       "runtime": null,
+      "executionProfile": null,
       "overlapKeys": [],
       "integrationCandidate": "internal-only"
     },
@@ -795,6 +941,7 @@
       "inputs": [],
       "outputs": [],
       "runtime": null,
+      "executionProfile": null,
       "overlapKeys": [],
       "integrationCandidate": "internal-only"
     },
@@ -806,6 +953,7 @@
       "inputs": [],
       "outputs": [],
       "runtime": null,
+      "executionProfile": "large-change-only",
       "overlapKeys": [],
       "integrationCandidate": "internal-only"
     },
@@ -819,6 +967,7 @@
       ],
       "outputs": [],
       "runtime": null,
+      "executionProfile": "normal-check",
       "overlapKeys": [
         "src"
       ],
@@ -832,10 +981,12 @@
       "inputs": [],
       "outputs": [],
       "runtime": {
-        "durationMs": 71,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 60,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [],
       "integrationCandidate": "review-for-grouping"
     },
@@ -847,10 +998,12 @@
       "inputs": [],
       "outputs": [],
       "runtime": {
-        "durationMs": 99,
-        "measuredAt": "2026-09-03T06:42:26.090Z",
+        "durationMs": 78,
+        "profile": "normal-check",
+        "measuredAt": "2026-09-03T07:06:34.725Z",
         "source": "check-gate"
       },
+      "executionProfile": "normal-check",
       "overlapKeys": [],
       "integrationCandidate": "review-for-grouping"
     },
@@ -865,6 +1018,7 @@
       ],
       "outputs": [],
       "runtime": null,
+      "executionProfile": "large-change-only",
       "overlapKeys": [
         "symbol-index.json",
         "flow-map.json"
@@ -882,6 +1036,7 @@
       ],
       "outputs": [],
       "runtime": null,
+      "executionProfile": null,
       "overlapKeys": [
         "index.html",
         "src"
@@ -890,6 +1045,24 @@
     }
   ],
   "overlapGroups": [
+    {
+      "files": [
+        "scripts/check-all.mjs",
+        "scripts/check-compat-e2e.mjs"
+      ],
+      "shared": [
+        "scripts"
+      ]
+    },
+    {
+      "files": [
+        "scripts/check-all.mjs",
+        "scripts/check-public-esm.mjs"
+      ],
+      "shared": [
+        "scripts"
+      ]
+    },
     {
       "files": [
         "scripts/check-application-targets.mjs",
@@ -1626,6 +1799,7 @@
     "scripts/check-compat-boundaries.mjs",
     "scripts/check-compat-e2e.mjs",
     "scripts/check-device-e2e.mjs",
+    "scripts/check-domain-classification.mjs",
     "scripts/check-esm-dependencies.mjs",
     "scripts/check-esm.mjs",
     "scripts/check-event-wiring.mjs",
@@ -1641,6 +1815,8 @@
     "scripts/check-refactor-baseline.mjs",
     "scripts/check-refactor-policy.mjs",
     "scripts/check-refactor-report.mjs",
+    "scripts/check-report-schema.mjs",
+    "scripts/check-runtime-budget.mjs",
     "scripts/check-source-boundaries.mjs",
     "scripts/check-state-access-policy.mjs",
     "scripts/check-state-classification.mjs",
@@ -1659,10 +1835,5 @@
     "scripts/trace.mjs",
     "scripts/update-public-esm-metrics.mjs"
   ],
-  "deletionCandidates": [],
-  "status": "passed",
-  "summary": {},
-  "warnings": [],
-  "errors": [],
-  "sourceRevision": "working-tree"
+  "deletionCandidates": []
 }

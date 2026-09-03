@@ -1,4 +1,4 @@
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
@@ -8,6 +8,9 @@ import { sourceRevision, writeReport } from './lib/report.mjs';
 // 個別スクリプトは単独でも使えるが、通常の入口はこのファイルに集約する。
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const reportPath = join(root, 'build', 'report', 'check-gate.json');
+const runtimeReportPath = join(root, 'build', 'report', 'check-runtime.json');
+const contextPath = join(root, 'build', 'report', 'check-context.json');
+const pipeline = JSON.parse(await readFile(join(root, 'scripts', 'check-pipeline.json'), 'utf8'));
 const steps = [
   { name: 'domain-classification', command: process.execPath, args: ['scripts/check-domain-classification.mjs'] },
   { name: 'build', command: process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : 'npm',
@@ -64,18 +67,31 @@ const run = (step) => new Promise(resolve => {
   child.stdout.on('data', chunk => { stdout += chunk; });
   child.stderr.on('data', chunk => { stderr += chunk; });
   child.on('close', code => resolve({
-    name: step.name, command: [step.command, ...step.args].join(' '), startedAt,
+    name: step.name, profile: pipeline.steps[step.name], command: [step.command, ...step.args].join(' '), startedAt,
     finishedAt: new Date().toISOString(), durationMs: Date.now() - started,
     exitCode: code ?? 1, stdout: stdout.trim(), stderr: stderr.trim()
   }));
   child.on('error', error => resolve({
-    name: step.name, command: [step.command, ...step.args].join(' '), startedAt,
+    name: step.name, profile: pipeline.steps[step.name], command: [step.command, ...step.args].join(' '), startedAt,
     finishedAt: new Date().toISOString(), durationMs: Date.now() - started,
     exitCode: 1, stdout: stdout.trim(), stderr: `${stderr.trim()}\n${error.message}`.trim()
   }));
 });
 
-const report = { schemaVersion: 1, name: 'wake7-check-gate', startedAt: new Date().toISOString(), steps: [], passed: false,
+const unmapped = steps.map(step => step.name).filter(name => !pipeline.steps[name]);
+if (unmapped.length) throw new Error(`check-pipeline.json に未分類の検査があります: ${unmapped.join(', ')}`);
+const context = {
+  schemaVersion: 1,
+  name: 'wake7-check-context',
+  generatedAt: new Date().toISOString(),
+  sourceRevision: await sourceRevision(root),
+  purpose: '同一ゲート内の検査が参照する生成物・ソース基準を共有する。個別検査の厳格さは変更しない。',
+  artifacts: { publicHtml: 'index.html', manifest: 'scripts/application-manifest.mjs' },
+  reusePolicy: '検査は必要な入力を個別に再読込してよい。将来の共有解析導入時も、この基準と結果形式を維持する。'
+};
+await mkdir(dirname(contextPath), { recursive: true });
+await writeReport(contextPath, context);
+const report = { schemaVersion: 1, name: 'wake7-check-gate', startedAt: new Date().toISOString(), contextPath: 'build/report/check-context.json', steps: [], passed: false,
   status: 'failed', summary: {}, warnings: [], errors: [], sourceRevision: await sourceRevision(root) };
 await mkdir(dirname(reportPath), { recursive: true });
 for (const step of steps) {
@@ -95,7 +111,17 @@ if (!report.failedStep) {
   report.passed = true;
   report.finishedAt = new Date().toISOString();
   report.status = 'passed';
-  report.summary = { steps: report.steps.length, failedStep: null };
+  const byProfile = Object.fromEntries(Object.keys(pipeline.profiles).map(profile => {
+    const profileSteps = report.steps.filter(step => step.profile === profile);
+    const durationMs = profileSteps.reduce((total, step) => total + step.durationMs, 0);
+    const budgetMs = pipeline.profiles[profile].budgetMs;
+    return [profile, { steps: profileSteps.length, durationMs, budgetMs, withinBudget: durationMs <= budgetMs }];
+  }));
+  const slowest = [...report.steps].sort((a, b) => b.durationMs - a.durationMs).slice(0, 5)
+    .map(step => ({ name: step.name, profile: step.profile, durationMs: step.durationMs }));
+  report.summary = { steps: report.steps.length, failedStep: null, byProfile, slowest };
+  report.runtime = { schemaVersion: 1, generatedAt: report.finishedAt, contextPath: 'build/report/check-context.json', profiles: byProfile, slowest };
+  await writeReport(runtimeReportPath, { schemaVersion: 1, name: 'wake7-check-runtime', generatedAt: report.finishedAt, sourceRevision: report.sourceRevision, profiles: byProfile, slowest });
   await writeReport(reportPath, { ...report, generatedAt: report.finishedAt });
   console.log(`Check gate passed: ${report.steps.length} steps. Report: ${reportPath}`);
 }

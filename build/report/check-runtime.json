@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "name": "wake7-check-runtime",
+  "generatedAt": "2026-09-03T07:06:34.725Z",
+  "sourceRevision": "d91164d",
+  "profiles": {
+    "build-required": {
+      "steps": 4,
+      "durationMs": 10360,
+      "budgetMs": 120000,
+      "withinBudget": true
+    },
+    "normal-check": {
+      "steps": 17,
+      "durationMs": 62050,
+      "budgetMs": 180000,
+      "withinBudget": true
+    },
+    "large-change-only": {
+      "steps": 18,
+      "durationMs": 21849,
+      "budgetMs": 300000,
+      "withinBudget": true
+    }
+  },
+  "slowest": [
+    {
+      "name": "browser-e2e",
+      "profile": "normal-check",
+      "durationMs": 34272
+    },
+    {
+      "name": "device-e2e",
+      "profile": "normal-check",
+      "durationMs": 26394
+    },
+    {
+      "name": "build",
+      "profile": "build-required",
+      "durationMs": 9969
+    },
+    {
+      "name": "trace",
+      "profile": "large-change-only",
+      "durationMs": 8849
+    },
+    {
+      "name": "ui-data-map",
+      "profile": "large-change-only",
+      "durationMs": 8493
+    }
+  ]
+}

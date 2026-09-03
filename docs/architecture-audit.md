@@ -39,6 +39,8 @@ npm run check
 
 最終ゲートには、公開マニフェストの依存順・公開シンボル・イベント配線・導線契約・実Chrome E2Eを含みます。`npm run build` を別に実行する必要はありません。`npm run build` は生成物だけを確認したい場合に使います。
 
+検査の実行区分と時間予算は `scripts/check-pipeline.json` を正とします。`build-required` は公開物生成直後、`normal-check` は通常変更、`large-change-only` は大規模変更時の詳細監査向けです。ただし `npm run check:gate` は品質を落とさないため全区分を実行します。実測値は `build/report/check-runtime.json`、同一ゲートの入力基準は `build/report/check-context.json` で確認できます。検査スクリプトを追加・改名した場合は、同JSONへ区分を追加しないとゲートが失敗します。
+
 共有状態の直接参照は `npm run check:global-access` で監査します。`build/report/global-access.json` に、参照を `gateway`（入口経由）、`owner`（状態所有者）、`needs-migration`（個別移行候補）へ分類し、読み取り・書き換え別の件数と前回レポートとの差分を出力します。候補は一括置換せず、対応するE2Eを先に確認します。
 
 進行処理の追跡は `build/report/progression-responsibility.json` を入口にします。シンボルを責務（状態・遷移・表示など）と処理順（`entry → state-decision → transition → render`）の両方で分類し、ファイルごとの責務と複数責務シンボルを自動生成します。関数一覧を手書きで複製せず、`npm run trace:generate` と `npm run check:progression-responsibility` でソースとの差分を検査します。

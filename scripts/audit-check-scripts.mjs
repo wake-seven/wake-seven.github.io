@@ -8,6 +8,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const scriptsDir = join(root, 'scripts');
 const reportPath = join(root, 'build', 'report', 'script-inventory.json');
 const packageJson = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
+const pipeline = JSON.parse(await readFile(join(root, 'scripts', 'check-pipeline.json'), 'utf8'));
 const packageScripts = packageJson.scripts || {};
 const files = (await readdir(scriptsDir)).filter(name => /\.(?:mjs|js)$/.test(name));
 const selected = files.filter(name => /^(?:check|test|generate|accept|update|trace|public-bundle|state-access-policy|state-classification|progression-entry-points)\b/.test(name.replace(/\.(?:mjs|js)$/, '')));
@@ -28,7 +29,7 @@ try { gate = JSON.parse(await readFile(gatePath, 'utf8')); } catch { /* 初回�
 const durations = new Map();
 for (const step of gate.steps || []) {
   const match = step.command?.match(/scripts[\\/]([^\\/ ]+\.(?:mjs|js))/);
-  if (match) durations.set(match[1], { durationMs: step.durationMs, measuredAt: gate.finishedAt || gate.startedAt || null, source: 'check-gate' });
+  if (match) durations.set(match[1], { durationMs: step.durationMs, profile: step.profile || null, measuredAt: gate.finishedAt || gate.startedAt || null, source: 'check-gate' });
 }
 
 const entries = [];
@@ -44,6 +45,9 @@ for (const name of selected.sort()) {
     ...paths(source, /writeFile(?:Sync)?\(\s*['"]([^'"]+)/g)
   ]);
   const runtime = durations.get(name) || null;
+  const stepName = command?.replace(/^check:/, '').replace(/^test:/, '').replace(/^npm run check:/, '').replace(/^npm run /, '')
+    || name.replace(/\.(?:mjs|js)$/, '').replace(/^check-/, '').replace(/^test-/, '') || null;
+  const profile = runtime?.profile || (stepName ? pipeline.steps[stepName] || null : null);
   entries.push({
     file: `scripts/${name}`,
     command: command ? `npm run ${command}` : null,
@@ -52,6 +56,7 @@ for (const name of selected.sort()) {
     inputs,
     outputs,
     runtime,
+    executionProfile: profile,
     overlapKeys: unique([...inputs, ...outputs]),
     integrationCandidate: outputs.some(path => /report|index\.html|build/i.test(path)) ? 'keep-as-pipeline-step' : command ? 'review-for-grouping' : 'internal-only'
   });
@@ -68,6 +73,7 @@ const report = {
   name: 'wake7-script-inventory',
   generatedAt: new Date().toISOString(),
   measurement: 'runtime is copied from the latest check-gate report; null means the script was not a gate step',
+  executionProfiles: pipeline.profiles,
   selection: 'scripts whose names are check/test/generate or known pipeline support scripts',
   counts: {
     files: entries.length,
