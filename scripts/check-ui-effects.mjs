@@ -29,7 +29,8 @@ assert.match(events,/setUiEffectTimer\('dialog-transition'/,'Deferred dialog tra
 for(const [text,name] of [[board,'academy/intro effect timers'],[hints,'hint effect timers'],[mastery,'mastery effect timers'],[speed,'speed clock effect timer']])assert.match(text,/setUiEffect(?:Timer|Interval)|clearUiEffectTimers/,`${name} are not scoped by effect.`);
 assert.doesNotMatch(speed,/speedClockTimer/,'Speed clock must not retain a direct timer handle.');
 assert.match(clearFlow,/setUiEffectTimer\('maker-reveal'/,'Maker reveal cleanup must use an effect-scoped timer.');
-assert.match(clearFlow,/CLEAR_FLOW_PHASE=Object\.freeze\(\{idle:'idle',celebrating:'celebrating',dialogPending:'dialog-pending',dialog:'dialog'\}\)/,'Clear flow phases must be explicit.');
+for(const phase of ['clear-animation','clear-dialog','quiz/message','next-stage-dialog','next-playing'])assert.match(clearFlow,new RegExp(`['"]${phase.replace('/','\\/')}['"]`),`Clear flow phase is missing: ${phase}.`);
+assert.match(clearFlow,/function setClearFlowPhase\(phase/,'Clear flow phase changes must use one transition helper.');
 assert.match(clearFlow,/function scheduleClearFlowDialog\(callback,delay(?:,cycle=clearFlowCycle)?\)/,'Clear dialog scheduling must use the clear-flow boundary.');
 assert.match(clearFlow,/scheduleClearFlowDialog\(\(\)=>\{/,'Clear dialog must be scheduled through the clear-flow boundary.');
 assert.match(board,/clearUiEffectTimers\('clear-transition'\)/,'Board transitions must cancel delayed clear effects.');

@@ -54,6 +54,9 @@ let progressionQuizContext=null;
 function showProgressionQuiz(context={}){
   const options={...(context||{}),...createProgressionMessageContext({...context,quizId:context?.quizId??context?.rootId??'boardQuiz'})};
   const rootId=options.rootId||'boardQuiz';progressionQuizContext={...options,rootId};
+  // クリアダイアログ内のクイズは、クリア後フローの表示段階として記録する。
+  // 通常の盤面クイズはプレイ中のUIなので、状態機械を変更しない。
+  if(['clearQuiz','boardQuiz','messageQuiz','messageBoardQuiz'].includes(rootId)&&typeof markClearFlowContent==='function')markClearFlowContent('quiz');
   if(options.quiz!==undefined){renderQuizInto(options.ids||{root:rootId,options:rootId==='messageQuiz'?'messageQuizOptions':'quizOptions',note:rootId==='messageQuiz'?'messageQuizNote':'quizNote',title:rootId==='messageQuiz'?'messageQuizTitle':'quizTitle',question:rootId==='messageQuiz'?'messageQuizQuestion':'quizQuestion'},options.quiz);return true;}
   const entry=options.clearEntry??clearEntryForCurrent();if(rootId==='clearQuiz')renderClearQuizForEntry(entry);
   const config=options.boardQuizConfig??boardQuizConfigForCurrent?.();

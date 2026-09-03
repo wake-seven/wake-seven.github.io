@@ -4335,7 +4335,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.03-03:55';
+const APP_VERSION='2026.09.03-09:57';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
@@ -8969,6 +8969,9 @@ let progressionQuizContext=null;
 function showProgressionQuiz(context={}){
   const options={...(context||{}),...createProgressionMessageContext({...context,quizId:context?.quizId??context?.rootId??'boardQuiz'})};
   const rootId=options.rootId||'boardQuiz';progressionQuizContext={...options,rootId};
+  // クリアダイアログ内のクイズは、クリア後フローの表示段階として記録する。
+  // 通常の盤面クイズはプレイ中のUIなので、状態機械を変更しない。
+  if(['clearQuiz','boardQuiz','messageQuiz','messageBoardQuiz'].includes(rootId)&&typeof markClearFlowContent==='function')markClearFlowContent('quiz');
   if(options.quiz!==undefined){renderQuizInto(options.ids||{root:rootId,options:rootId==='messageQuiz'?'messageQuizOptions':'quizOptions',note:rootId==='messageQuiz'?'messageQuizNote':'quizNote',title:rootId==='messageQuiz'?'messageQuizTitle':'quizTitle',question:rootId==='messageQuiz'?'messageQuizQuestion':'quizQuestion'},options.quiz);return true;}
   const entry=options.clearEntry??clearEntryForCurrent();if(rootId==='clearQuiz')renderClearQuizForEntry(entry);
   const config=options.boardQuizConfig??boardQuizConfigForCurrent?.();
@@ -10605,10 +10608,34 @@ export {};
 // clearShown は保存・進行用の状態なので、表示予約の重複防止には使わない。
 // 演出とタイマーの段階を名前で持ち、同じクリアに対する再描画が
 // 「演出を再生し直す」「ダイアログを前倒しする」ことを防ぐ。
-const CLEAR_FLOW_PHASE=Object.freeze({idle:'idle',celebrating:'celebrating',dialogPending:'dialog-pending',dialog:'dialog'});
+// クリア後フローの段階。表示中のDOMではなく、この状態を見れば
+// 「いま何を待っているか」「次に何が起きるか」を追跡できる。
+const CLEAR_FLOW_PHASE=Object.freeze({
+  idle:'idle',
+  animation:'clear-animation',
+  animationPending:'clear-animation-pending',
+  dialog:'clear-dialog',
+  content:'quiz/message',
+  nextDialog:'next-stage-dialog',
+  playing:'next-playing'
+});
 const CLEAR_FLOW_ACTION=Object.freeze({start:'start',show:'show',next:'next',reset:'reset'});
-let clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.idle,action:null,context:null,route:null,cycle:1});
+let clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.idle,action:null,context:null,route:null,content:null,cycle:1});
 let clearFlowPhase=CLEAR_FLOW_PHASE.idle;
+function setClearFlowPhase(phase,action=null,patch={}){
+  clearFlowPhase=phase;
+  clearFlowState=Object.freeze({...clearFlowState,...patch,phase,action});
+  return clearFlowState;
+}
+// E2Eとデバッグが現在の段階を読み取るための副作用のない入口。
+function getClearFlowState(){return clearFlowState;}
+function markClearFlowContent(kind='quiz/message'){
+  if(clearFlowPhase===CLEAR_FLOW_PHASE.dialog||clearFlowPhase===CLEAR_FLOW_PHASE.content){
+    setClearFlowPhase(CLEAR_FLOW_PHASE.content,'show-content',{content:kind});
+    return true;
+  }
+  return false;
+}
 // クリア時の揺れと円の拡大を担当する。盤面入力や進行状態は変更しない。
 function playWakeCelebrationEffect(targetSvg,tilesArr){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
@@ -10649,29 +10676,25 @@ function startClearFlow(){
 let clearFlowCycle=1;
 function resetClearFlow(){
   clearFlowCycle++;
-  clearFlowPhase=CLEAR_FLOW_PHASE.idle;
-  clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.idle,action:CLEAR_FLOW_ACTION.reset,context:null,route:null,cycle:clearFlowCycle});
+  setClearFlowPhase(CLEAR_FLOW_PHASE.idle,CLEAR_FLOW_ACTION.reset,{context:null,route:null,content:null,cycle:clearFlowCycle});
   clearUiEffectTimers('clear-transition');
 }
 function beginClearFlow(){
   if(clearFlowPhase!==CLEAR_FLOW_PHASE.idle)return false;
-  clearFlowPhase=CLEAR_FLOW_PHASE.celebrating;
-  clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.celebrating,action:CLEAR_FLOW_ACTION.start,context:null,route:null,cycle:clearFlowCycle});
+  setClearFlowPhase(CLEAR_FLOW_PHASE.animation,CLEAR_FLOW_ACTION.start,{context:null,route:null,content:null,cycle:clearFlowCycle});
   return clearFlowCycle;
 }
 function scheduleClearFlowDialog(callback,delay,cycle=clearFlowCycle){
-  if(clearFlowPhase!==CLEAR_FLOW_PHASE.celebrating)return false;
-  clearFlowPhase=CLEAR_FLOW_PHASE.dialogPending;
-  clearFlowState=Object.freeze({...clearFlowState,phase:CLEAR_FLOW_PHASE.dialogPending,action:CLEAR_FLOW_ACTION.show,cycle});
+  if(clearFlowPhase!==CLEAR_FLOW_PHASE.animation)return false;
+  setClearFlowPhase(CLEAR_FLOW_PHASE.animationPending,CLEAR_FLOW_ACTION.show,{cycle});
   setUiEffectTimer('clear-transition','show-dialog',()=>{
-    if(cycle!==clearFlowCycle||clearFlowPhase!==CLEAR_FLOW_PHASE.dialogPending)return;
+    if(cycle!==clearFlowCycle||clearFlowPhase!==CLEAR_FLOW_PHASE.animationPending)return;
     callback();
   },delay);
   return true;
 }
 function finishClearFlowDialog(){
-  clearFlowPhase=CLEAR_FLOW_PHASE.dialog;
-  clearFlowState=Object.freeze({...clearFlowState,phase:CLEAR_FLOW_PHASE.dialog,action:CLEAR_FLOW_ACTION.show});
+  setClearFlowPhase(CLEAR_FLOW_PHASE.dialog,CLEAR_FLOW_ACTION.show,{content:null});
 }
 
 // クリア後の画面が参照する進行状態を、ひとつの読み取り専用文脈に固定する。
@@ -10698,7 +10721,7 @@ function createClearTransitionContext(nextStageIndex=stageIndex){
 }
 // クリア演出完了後の表示入口。予約済みの周期だけを完了させる。
 function finishClearFlow(){
-  if(clearFlowPhase!==CLEAR_FLOW_PHASE.dialogPending)return false;
+  if(clearFlowPhase!==CLEAR_FLOW_PHASE.animationPending)return false;
   finishClearFlowDialog();
   requestProgressionDialog('clear',clearFlowState.context||{},'clear');
   requestAnimationFrame(()=>{
@@ -10728,7 +10751,7 @@ function resolveAfterClearRoute(context){
 // クリア後状態を一つの入口で進める。route は action='next' の確定時だけ作り、
 // ダイアログを閉じる副作用より先に保存する。これで phase/route/action を追跡できる。
 function dispatchClearFlowAction(action){
-  if(action!==CLEAR_FLOW_ACTION.next||clearFlowState.phase!==CLEAR_FLOW_PHASE.dialog)return false;
+  if(action!==CLEAR_FLOW_ACTION.next||![CLEAR_FLOW_PHASE.dialog,CLEAR_FLOW_PHASE.content].includes(clearFlowState.phase))return false;
   // 遷移判定に必要な状態を先に確定する。ダイアログを閉じる処理が
   // クイズや連鎖の後始末を行っても、次の進行先が変わらないようにする。
   makerButtonBlockedUntil=performance.now()+600;
@@ -10741,14 +10764,18 @@ function dispatchClearFlowAction(action){
   // 現在のダイアログだけを閉じてから、確定済みの遷移先を開く。
   // ボタン側では閉じる処理を行わず、クリア後遷移をこの入口に一本化する。
   hideGameDialogs();
+  if(['master-dialog','before-dialog'].includes(route.kind)){
+    setClearFlowPhase(CLEAR_FLOW_PHASE.nextDialog,'open-next-dialog',{route});
+    if(route.kind==='master-dialog')return showMasterDialog(route.section);
+    return requestProgressionDialog('chain',{name:clearContentBefore(false,nextStageIndex).dialog},'clear');
+  }
+  setClearFlowPhase(CLEAR_FLOW_PHASE.playing,'open-next-playing',{route});
   if(route.kind==='free')return startFree();
   if(route.kind==='custom'){setPosition(currentInitialState,currentInitialPar);return renderStageNav();}
   if(route.kind==='satori-stage')return loadSatoriStage(route.index);
   if(route.kind==='satori-picker')return openSatoriPicker();
   if(route.kind==='mastery-stage')return loadExtraStage(route.index);
-  if(route.kind==='master-dialog')return showMasterDialog(route.section);
   if(route.kind==='restore-free')return restoreFreeSession();
-  if(route.kind==='before-dialog')return requestProgressionDialog('chain',{name:clearContentBefore(false,nextStageIndex).dialog},'clear');
   return loadStage(route.index);
 }
 // 既存イベントからの互換入口。実際の遷移は状態機械の action dispatcher に集約する。

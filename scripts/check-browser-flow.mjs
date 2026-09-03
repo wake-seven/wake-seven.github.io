@@ -59,6 +59,13 @@ assert.match(clearFlow, /function finishClearFlow\(/, 'clear transition must hav
 assert.match(clearFlow, /function advanceAfterClear\(/, 'clear transition must have a named advance entry point');
 assert.match(clearFlow, /const CLEAR_FLOW_ACTION=Object\.freeze/, 'clear transition actions must be explicit');
 assert.match(clearFlow, /function dispatchClearFlowAction\(action\)/, 'clear transition actions must use one dispatcher');
+for (const phase of ['clear-animation','clear-dialog','quiz/message','next-stage-dialog','next-playing']) {
+  assert.match(clearFlow, new RegExp(`['"]${phase.replace('/', '\\/')}['"]`), `clear flow phase is missing: ${phase}`);
+}
+assert.match(clearFlow, /function setClearFlowPhase\(phase/, 'clear flow phase changes must use one transition helper');
+assert.match(clearFlow, /function markClearFlowContent\(kind/, 'quiz/message phase must have a named transition');
+assert.match(clearFlow, /setClearFlowPhase\(CLEAR_FLOW_PHASE\.nextDialog/, 'next-stage-dialog phase must be explicit');
+assert.match(clearFlow, /setClearFlowPhase\(CLEAR_FLOW_PHASE\.playing/, 'next-playing phase must be explicit');
 assert.match(board, /if\(isSolved\(\)&&!clearShown\)/,
   'board paint must guard against duplicate clear transitions');
 assert.match(board, /bindApplicationTargetTiles\(\);/,
