@@ -12,6 +12,7 @@ const steps = [
     args: process.platform === 'win32' ? ['/d', '/s', '/c', 'npm run build'] : ['run', 'build'] },
   { name: 'version', command: process.execPath, args: ['scripts/check-version.mjs'] },
   { name: 'board-domain', command: process.execPath, args: ['scripts/test-board-domain.mjs'] },
+  { name: 'application-services', command: process.execPath, args: ['scripts/test-application-services.mjs'] },
   { name: 'application-targets', command: process.execPath, args: ['scripts/check-application-targets.mjs'] },
   { name: 'state', command: process.execPath, args: ['scripts/check-state.mjs'] },
   { name: 'state-classification', command: process.execPath, args: ['scripts/check-state-classification.mjs'] },
