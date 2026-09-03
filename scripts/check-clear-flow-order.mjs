@@ -56,11 +56,11 @@ assert.match(clearFlow, /function finishClearFlowDialog\(\)\{[\s\S]*animationPen
 assert.match(runtime, /state\.id==='clear'[\s\S]*createClearTransitionContext\(\)[\s\S]*showClearDialog\(/,
   'reload clear dialog must restore through an explicit clear context');
 checks.push({ id: 'clear-phase-guard', passed: true });
-assert.match(clearFlow, /function createClearTransitionContext\(nextStageIndex\)\{[\s\S]*const navigation=readNavigationContext\(\)/,
+assert.match(clearFlow, /function createClearTransitionContext\(nextStageIndex\)\{[\s\S]*const (?:navigation=readNavigationContext\(\)|\{navigation\}=readProgressionContext\(\))/,
   'clear transition context must capture navigation at the flow entry');
 assert.match(clearFlow, /const mode=navigation\.mode[\s\S]*const lap=navigation\.lap[\s\S]*const currentStageIndex=navigation\.stageIndex/,
   'clear transition context must derive route fields from the captured navigation context');
-assert.match(clearFlow, /function dispatchClearFlowAction\(action\)[\s\S]*const navigation=readNavigationContext\(\)[\s\S]*createClearTransitionContext\(navigation\.stageIndex\+1\)/,
+assert.match(clearFlow, /function dispatchClearFlowAction\(action\)[\s\S]*const (?:navigation=readNavigationContext\(\)|\{navigation\}=readProgressionContext\(\))[\s\S]*createClearTransitionContext\(navigation\.stageIndex\+1\)/,
   'clear next route fallback must use the entry navigation context');
 assert.match(runtime, /state\.id==='clear'[\s\S]*clearShown&&isSolved\(\)[\s\S]*showClearDialog\([^)]*\)/,
   'reload clear dialog must require a solved board and clearShown');

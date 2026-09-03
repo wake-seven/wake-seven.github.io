@@ -116,7 +116,7 @@ function finishClearFlowDialog(){
 // 閉じる副作用や連続表示の切り替えで判定がずれるため、同じクリア周期の
 // ルート判定と表示判定にはこの入口を使う。
 function createClearTransitionContext(nextStageIndex){
-  const navigation=readNavigationContext();
+  const {navigation}=readProgressionContext();
   const mode=navigation.mode;
   const lap=navigation.lap;
   const currentStageIndex=navigation.stageIndex;
@@ -173,7 +173,7 @@ function dispatchClearFlowAction(action){
   makerButtonBlockedUntil=performance.now()+600;
   clearUiEffectTimers('maker-reveal');
   setUiEffectTimer('maker-reveal','unlock',()=>{makerButtonBlockedUntil=0;renderStageNav();},600);
-  const navigation=readNavigationContext();
+  const {navigation}=readProgressionContext();
   const context=clearFlowState.context||createClearTransitionContext(navigation.stageIndex+1);
   const nextStageIndex=context.nextStageIndex;
   const route=resolveAfterClearRoute(context);

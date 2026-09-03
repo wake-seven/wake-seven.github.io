@@ -269,6 +269,11 @@ function runtimeSnapshot(){const navigation=WakeSevenAppContext.state.navigation
 // navigation/dialogの読み取りは、呼び出し側が個別の可変変数へ依存しないよう用途別入口を使う。
 function readNavigationContext(){return WakeSevenAppContext.state.navigation.read();}
 function readDialogContext(){return WakeSevenAppContext.state.dialog.read();}
+// 進行・復元経路では、同じ入口で必要な状態を一度だけ取得する。
+// 各値の所有者と更新経路は変えず、呼び出し側の再読込だけを減らす。
+function readProgressionContext(){
+  return Object.freeze({navigation:readNavigationContext(),dialog:readDialogContext(),session:WakeSevenAppContext.state.session.read()});
+}
 function runtimeStageKey(){
   const ctx=getGameContext();
   return ctx.position===null?ctx.mode:ctx.mode+':'+ctx.index;
