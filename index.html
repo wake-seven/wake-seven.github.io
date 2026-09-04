@@ -9287,28 +9287,6 @@ function openDialog(dialogId, options={}){
   return true;
 }
 
-// 進行に関わるダイアログの唯一の要求入口。
-// kind/context/sourceを固定し、既存の描画関数へ委譲する。
-function requestProgressionDialog(kind,context={},source='unknown'){
-  const options={...(context||{}),source,...createProgressionMessageContext({...context,dialogId:context?.dialogId??kind})};
-  const name=options.name||options.dialogName||kind;
-  if(kind==='chain'||CHAIN_STEPS[name])return WakeSevenDialogChainFeature.start(name);
-  if(kind==='clear')return showClearDialog(options);
-  if(kind==='message'||kind==='messages')return openMessageReview({resume:!!options.resume,returnTarget:options.returnTarget||null});
-  if(kind==='master'||kind==='mastery')return showMasterDialog(options.kind||'primary');
-  if(kind==='rank'||kind==='ranks')return openRankDialog(options.returnTarget||null);
-  if(kind==='tipGuide')return openTipGuide();
-  if(kind==='guideHub')return openGuideHub();
-  if(kind==='twoMove')return openTwoMovePatterns();
-  if(kind==='twoMoveDetail')return openTwoMoveDetail(options.state,options.index);
-  if(kind==='twoMoveLesson')return openTwoMoveLessonDialog(!!options.retry);
-  if(kind==='speedPause')return openSpeedPauseDialog();
-  if(kind==='optimalFail')return renderOptimalFail();
-  const dialog=$(kind);
-  if(dialog){dialog.hidden=false;return true;}
-  return false;
-}
-
 // 進行中のダイアログと、その付随する案内演出をまとめて閉じる。
 function closeProgressionDialog(){
   if(typeof hideGameDialogs==='function'){hideGameDialogs();return true;}
@@ -9365,7 +9343,7 @@ function resolveClearFeatureContext(context=null){
 function renderClearFeatureDialog(context=null,source='clear-feature'){
   const resolved=resolveClearFeatureContext(context);
   traceClearFeature('show-dialog',resolved);
-  return requestProgressionDialog('clear',resolved,source);
+  return showClearDialog({...(resolved||{}),source,...createProgressionMessageContext({...resolved,dialogId:resolved?.dialogId??'clear'})});
 }
 const WakeSevenClearFeature=Object.freeze({
   start(options={}){traceClearFeature('start',options);return startClearFlow(options);},
@@ -10042,17 +10020,17 @@ function showClearDialog(contextOverride=null){
   // 入門クラス最終問題のクリアは、通常のクリアダイアログの代わりに
   // だるま学園入学と同じ演出の「基本クラスへようこそ」を毎回そのまま見せる。
   if(clearDialogUsesStageProgression()&&clearContext.stageIndex===INTRO_STAGE_COUNT-1){
-    requestProgressionDialog('chain',{name:'basicWelcome'},'progression');
+    WakeSevenDialogChainFeature.start('basicWelcome');
     return;
   }
   // 基本クラス最終問題のクリア後は、目標の3枚から回す場所を考える応用クラスへ進む。
   if(clearDialogUsesStageProgression()&&clearContext.stageIndex===APPLICATION_STAGE_START-1){
-    requestProgressionDialog('chain',{name:'applicationWelcome'},'progression');
+    WakeSevenDialogChainFeature.start('applicationWelcome');
     return;
   }
   // 応用クラス最終問題のクリア後に、発展クラス開始を案内する。
   if(clearDialogUsesStageProgression()&&clearContext.stageIndex===DEVELOPMENT_STAGE_START-1){
-    requestProgressionDialog('chain',{name:'developmentWelcome'},'progression');
+    WakeSevenDialogChainFeature.start('developmentWelcome');
     return;
   }
   if(clearDialogUsesStageProgression()&&clearContext.stageIndex===STAGES.length-1&&clearContext.currentLapPrimaryComplete){
@@ -11377,7 +11355,7 @@ function dispatchClearFlowAction(action){
   if(['master-dialog','before-dialog'].includes(route.kind)){
     setClearFlowPhase(CLEAR_FLOW_PHASE.nextDialog,'open-next-dialog',{route});
     if(route.kind==='master-dialog')return showMasterDialog(route.section);
-    return requestProgressionDialog('chain',{name:clearContentBefore(false,nextStageIndex).dialog},'clear');
+    return WakeSevenDialogChainFeature.start(clearContentBefore(false,nextStageIndex).dialog||'chain');
   }
   setClearFlowPhase(CLEAR_FLOW_PHASE.playing,'open-next-playing',{route});
   if(route.kind==='free')return startFree();
@@ -11830,12 +11808,12 @@ function handleClearTipLink(){
   const navigation=readNavigationContext();
   if($('clearTipLink').dataset.target==='rank'){
     $('clearDialog').hidden=true;
-    requestProgressionDialog('ranks',{dialogId:'clearDialog',focusId:'clearTipLink'},'menu');
+    openRankDialog(null);
     return;
   }
   if($('clearTipLink').dataset.target==='messages'){
     $('clearDialog').hidden=true;
-    requestProgressionDialog('messages',{resume:true,returnTarget:{dialogId:'clearDialog',focusId:'clearTipLink'}},'menu');
+    openMessageReview({resume:true,returnTarget:{dialogId:'clearDialog',focusId:'clearTipLink'}});
     return;
   }
   if($('clearTipLink').dataset.target==='tips'){
@@ -11876,7 +11854,7 @@ function bindClearDialogEvents(){
     GameBoard.reset(currentInitialState,currentInitialPar);
     renderStageNav();
   });
-  WakeSevenEventBindings.click('clearMessages',()=>requestProgressionDialog('messages',{resume:true},'menu'));
+  WakeSevenEventBindings.click('clearMessages',()=>openMessageReview({resume:true,returnTarget:null}));
   WakeSevenEventBindings.click('clearTipLink',handleClearTipLink);
 }
 bindClearDialogEvents();
@@ -11977,7 +11955,7 @@ function bindMessageReviewEvents(){
     if(!dialogOpen&&buildMessageReviewEntries().length){
       event.preventDefault();
       closeAppMenu();
-      requestProgressionDialog('messages',{resume:true},'menu');
+      openMessageReview({resume:true,returnTarget:null});
       return;
     }
   }
@@ -12067,7 +12045,7 @@ $('messageRankLink').addEventListener('click',()=>{
     return;
   }
   $('messageDialog').hidden=true;
-  requestProgressionDialog('ranks',{dialogId:'messageDialog',focusId:'messageRankLink'},'menu');
+  openRankDialog(null);
 });
 $('rankBadge').addEventListener('click',()=>WakeSevenStagePickerFeature.openRank());
 $('masterSeal').addEventListener('click',()=>WakeSevenStagePickerFeature.openRankFrom('masterDialog','masterSeal'));
@@ -12530,7 +12508,7 @@ function applyLanguage(lang){
   $('tutorialReset').textContent='↻ '+tr('tutorialReset');
   $('gripPromptText').textContent=navigation.mode==='tutorial'&&TUTORIAL_STEPS[navigation.tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');
   if(!$('rankDialog').hidden)renderRankList();
-  if(!$('masterDialog').hidden)requestProgressionDialog('mastery',{kind:masterDialogKind},'progression');
+  if(!$('masterDialog').hidden)showMasterDialog(masterDialogKind||'primary');
   renderCurrentView();
   if(!$('twoMoveDialog').hidden)renderTwoMovePatterns();
   if(!$('twoMoveDetailDialog').hidden)renderTwoMoveDetail();
