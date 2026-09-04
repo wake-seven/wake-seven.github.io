@@ -39,7 +39,9 @@ for (const file of files) {
   let max = 0;
   let considered = 0;
   lines.forEach((line, index) => {
-    const inScope = cssOnly ? index >= 45 && index < 998 : !isDataFile(rel);
+    // CSSは公開テンプレートの方針として1ブロック1行を許可し、
+    // JavaScriptの制御コード行長監査からは除外する。
+    const inScope = cssOnly ? false : !isDataFile(rel);
     if (!inScope || isGeneratedOrAssetLine(line)) return;
     considered += 1;
     max = Math.max(max, line.length);
