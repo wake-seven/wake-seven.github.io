@@ -32,4 +32,8 @@ for (const [domain, steps] of Object.entries(profiles.profiles.affected.byDomain
   assert.ok(steps.every(step => profiles.profiles.affected.steps.includes(step)), `affected.${domain} にaffected外の手順があります`);
 }
 assert.equal(profiles.policy?.gateProfile, 'full', 'check:gateのプロファイルはfullに固定してください');
+assert.equal(pipeline.profiles?.['device-serial']?.serial, true, 'device-serial はserial実行を明示してください');
+assert.equal(pipeline.steps?.['device-e2e'], 'device-serial', 'device-e2e はdevice-serial区分で実行してください');
+assert.equal(profiles.policy?.deviceE2E?.stabilityRuns, 3, 'device E2Eの安定性確認は3回で固定してください');
+assert.deepEqual(profiles.policy?.deviceE2E?.automaticInProfiles, ['full'], 'device E2Eはfull以外で自動実行しない契約にしてください');
 console.log('Check profiles schema OK: fast, affected, full. check:gate behavior unchanged.');

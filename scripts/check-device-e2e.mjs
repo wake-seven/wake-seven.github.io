@@ -17,7 +17,10 @@ const chrome = [
   'C:/Users/user/AppData/Local/Google/Chrome/Application/chrome.exe'
 ].filter(Boolean).find(existsSync);
 const result = {
+  schemaVersion: 1,
   name: 'device-variation-browser-e2e',
+  executionProfile: 'device-serial',
+  serial: true,
   startedAt: new Date().toISOString(),
   contexts: [],
   passed: false,

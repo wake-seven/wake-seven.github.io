@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "description": "開発者・サブエージェントが変更範囲に応じて守る検査実行契約。",
   "scopes": {
-    "clean": { "profile": "fast", "mustRun": ["build", "version", "architecture-guide", "browser-flow"], "mustNotRun": [], "fullGateRequired": false },
-    "documentation": { "profile": "fast", "mustRun": ["build", "version", "architecture-guide"], "mustNotRun": [], "fullGateRequired": false },
-    "source": { "profile": "affected", "mustRun": ["build", "browser-flow", "browser-e2e"], "mustNotRun": [], "fullGateRequired": false },
+    "clean": { "profile": "fast", "mustRun": ["build", "version", "architecture-guide", "browser-flow"], "mustNotRun": ["device-e2e"], "fullGateRequired": false },
+    "documentation": { "profile": "fast", "mustRun": ["build", "version", "architecture-guide"], "mustNotRun": ["device-e2e"], "fullGateRequired": false },
+    "source": { "profile": "affected", "mustRun": ["build", "browser-flow", "browser-e2e"], "mustNotRun": ["device-e2e"], "fullGateRequired": false },
     "sensitive": { "profile": "full", "mustRun": ["check:gate", "browser-e2e", "device-e2e"], "mustNotRun": ["check:fast", "check:affected"], "fullGateRequired": true }
   },
   "rules": [
