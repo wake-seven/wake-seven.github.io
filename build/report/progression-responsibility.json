@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T05:59:47.717Z",
+  "generatedAt": "2026-09-04T06:04:27.932Z",
   "source": "build/report/symbol-index.json",
   "target": "progression-related symbols",
   "summary": {
@@ -1489,7 +1489,7 @@
     {
       "name": "dialogVisibility",
       "file": "ui/progression-ui.js",
-      "line": 766,
+      "line": 760,
       "flowRoles": [
         "state-decision",
         "render"
@@ -1498,7 +1498,7 @@
     {
       "name": "rankText",
       "file": "ui/progression-ui.js",
-      "line": 774,
+      "line": 768,
       "flowRoles": [
         "state-decision",
         "render"
@@ -1507,7 +1507,7 @@
     {
       "name": "showRankSeal",
       "file": "ui/progression-ui.js",
-      "line": 805,
+      "line": 799,
       "flowRoles": [
         "state-decision",
         "render"
@@ -1516,7 +1516,7 @@
     {
       "name": "kindRenderers",
       "file": "ui/progression-ui.js",
-      "line": 815,
+      "line": 809,
       "flowRoles": [
         "state-decision",
         "render"
@@ -1525,7 +1525,7 @@
     {
       "name": "showSpeedTabs",
       "file": "ui/progression-ui.js",
-      "line": 919,
+      "line": 913,
       "flowRoles": [
         "state-decision",
         "render"
@@ -1534,7 +1534,7 @@
     {
       "name": "returnToStageMode",
       "file": "ui/progression-ui.js",
-      "line": 990,
+      "line": 984,
       "flowRoles": [
         "state-decision",
         "transition"
@@ -2203,17 +2203,17 @@
       "kind": "major-transition-outside-entry",
       "name": "returnToStageMode",
       "file": "ui/progression-ui.js",
-      "line": 990,
+      "line": 984,
       "priority": 2,
       "allowed": true,
       "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
       "evidence": {
         "callers": [
           "commands/progression-commands.js:32:returnToMenu",
-          "ui/progression-ui.js:990:shouldAnimate",
-          "ui/progression-ui.js:1009:failedVariant",
-          "ui/progression-ui.js:1037:VIEW_TILTED_FLIP_VERTICAL",
-          "ui/progression-ui.js:1040:VIEW_TILTED_FLIP_VERTICAL"
+          "ui/progression-ui.js:984:masterDialog",
+          "ui/progression-ui.js:1003:failedVariant",
+          "ui/progression-ui.js:1031:VIEW_TILTED_FLIP_VERTICAL",
+          "ui/progression-ui.js:1034:VIEW_TILTED_FLIP_VERTICAL"
         ],
         "externallyCalled": true
       }
@@ -2252,7 +2252,7 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": true,
       "callers": [
-        "ui/progression-ui.js:767:showMasterDialog"
+        "ui/progression-ui.js:761:showMasterDialog"
       ]
     },
     {
@@ -2563,7 +2563,7 @@
       "flowClassification": "render",
       "mixedResponsibility": false,
       "callers": [
-        "ui/progression-ui.js:763:showMasterDialog"
+        "ui/progression-ui.js:757:showMasterDialog"
       ]
     },
     {
@@ -2592,7 +2592,7 @@
       "mixedResponsibility": false,
       "callers": [
         "ui/master-dialog.js:11:masterDialogTrialState",
-        "ui/progression-ui.js:769:showMasterDialog"
+        "ui/progression-ui.js:763:showMasterDialog"
       ]
     },
     {
@@ -2608,7 +2608,7 @@
       "mixedResponsibility": false,
       "callers": [
         "ui/master-dialog.js:17:masterDialogBoardTheme",
-        "ui/progression-ui.js:770:showMasterDialog"
+        "ui/progression-ui.js:764:showMasterDialog"
       ]
     },
     {
@@ -2624,7 +2624,7 @@
       "mixedResponsibility": false,
       "callers": [
         "ui/master-dialog.js:23:masterDialogBoardOptions",
-        "ui/progression-ui.js:799:showMasterDialog"
+        "ui/progression-ui.js:793:showMasterDialog"
       ]
     },
     {
@@ -2641,7 +2641,7 @@
       "mixedResponsibility": true,
       "callers": [
         "ui/master-dialog.js:26:masterDialogShareKind",
-        "ui/progression-ui.js:766:showMasterDialog"
+        "ui/progression-ui.js:760:showMasterDialog"
       ]
     },
     {
@@ -2743,7 +2743,7 @@
       "mixedResponsibility": false,
       "callers": [
         "runtime/runtime.js:231:mappedRestore",
-        "ui/progression-ui.js:816:shouldAnimate"
+        "ui/progression-ui.js:810:masterDialog"
       ]
     },
     {
@@ -3411,7 +3411,7 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": false,
       "callers": [
-        "runtime/speed.js:361:completeSpeedStage",
+        "runtime/speed.js:360:completeSpeedStage",
         "ui/progression-clear-flow.js:146:ring",
         "ui/progression-clear-flow.js:164:startClearFlow"
       ]
@@ -4263,8 +4263,8 @@
       "mixedResponsibility": true,
       "callers": [
         "runtime/runtime.js:836:resetFourthDistance",
-        "runtime/speed.js:261:loadSpeedStage",
-        "runtime/speed.js:273:loadSpeedStage",
+        "runtime/speed.js:260:loadSpeedStage",
+        "runtime/speed.js:272:loadSpeedStage",
         "ui/board-ui.js:968:completeBoard",
         "ui/board-ui.js:1457:restoreActiveSession",
         "ui/board-ui.js:1468:startFree",
@@ -4691,8 +4691,8 @@
       "callers": [
         "ui/message.js:40:resetMessageReviewView",
         "ui/progression-insights.js:39:from",
-        "ui/progression-ui.js:771:showMasterDialog",
-        "ui/progression-ui.js:772:showMasterDialog"
+        "ui/progression-ui.js:765:showMasterDialog",
+        "ui/progression-ui.js:766:showMasterDialog"
       ]
     },
     {
@@ -4823,7 +4823,7 @@
         "ui/progression-insights.js:115:openTwoMoveDetail",
         "ui/progression-insights.js:152:animateTwoMoveDetail",
         "ui/progression-insights.js:159:from",
-        "ui/progression-ui.js:1003:moveTwoMoveDetail",
+        "ui/progression-ui.js:997:moveTwoMoveDetail",
         "runtime/app-events.js:942:button"
       ]
     },
@@ -5506,7 +5506,7 @@
       "mixedResponsibility": true,
       "callers": [
         "ui/progression-render.js:89:renderStageNavAccent",
-        "ui/progression-ui.js:980:shouldAnimate"
+        "ui/progression-ui.js:974:masterDialog"
       ]
     },
     {
@@ -5715,7 +5715,7 @@
         "ui/board-ui.js:1343:restoreCurrentStage",
         "ui/board-ui.js:1440:restoreActiveSession",
         "ui/progression-ui.js:192:canSeeTraining",
-        "ui/progression-ui.js:1026:failedVariant",
+        "ui/progression-ui.js:1020:failedVariant",
         "ui/progression-hud.js:133:renderStageNavModeButtons",
         "ui/progression-clear-flow.js:212:createClearTransitionContext",
         "runtime/app-events.js:959:button"
@@ -5734,7 +5734,7 @@
       "mixedResponsibility": false,
       "callers": [
         "ui/progression-ui.js:10:progress",
-        "ui/progression-ui.js:937:shouldAnimate"
+        "ui/progression-ui.js:931:masterDialog"
       ]
     },
     {
@@ -5751,7 +5751,7 @@
       "callers": [
         "ui/message.js:63:renderIntroMilestone",
         "ui/progression-ui.js:24:speedSealSvg",
-        "ui/progression-ui.js:949:shouldAnimate"
+        "ui/progression-ui.js:943:masterDialog"
       ]
     },
     {
@@ -5782,7 +5782,7 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": false,
       "callers": [
-        "ui/progression-ui.js:1021:failedVariant"
+        "ui/progression-ui.js:1015:failedVariant"
       ]
     },
     {
@@ -6379,7 +6379,7 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": false,
       "callers": [
-        "runtime/speed.js:300:finishSpeedRun",
+        "runtime/speed.js:299:finishSpeedRun",
         "ui/board-ui.js:138:buildAcademyWelcomeBoard",
         "ui/board-ui.js:275:tile",
         "ui/board-ui.js:283:tile",
@@ -7098,8 +7098,8 @@
         "ui/progression-render.js:107:template",
         "ui/progression-ui.js:36:extraRoundLabel",
         "ui/progression-ui.js:492:renderClearTip",
-        "ui/progression-ui.js:847:shouldAnimate",
-        "ui/progression-ui.js:863:shouldAnimate",
+        "ui/progression-ui.js:841:masterDialog",
+        "ui/progression-ui.js:857:masterDialog",
         "ui/progression-hud.js:186:inSideMode",
         "ui/rank.js:102:rankPathLabel"
       ]
@@ -7727,9 +7727,9 @@
       "mixedResponsibility": true,
       "callers": [
         "runtime/runtime.js:190:restoreDialogState",
-        "runtime/speed.js:89:openSpeedPicker",
+        "runtime/speed.js:88:openSpeedPicker",
+        "runtime/speed.js:314:finishSpeedRun",
         "runtime/speed.js:315:finishSpeedRun",
-        "runtime/speed.js:316:finishSpeedRun",
         "ui/board-ui.js:495:openChainedDialog",
         "ui/board-ui.js:1278:loadStage",
         "ui/board-ui.js:1298:loadExtraStage",
@@ -7761,7 +7761,7 @@
     {
       "name": "shouldAnimate",
       "file": "ui/progression-ui.js",
-      "line": 760,
+      "line": 754,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -7774,7 +7774,7 @@
     {
       "name": "trialState",
       "file": "ui/progression-ui.js",
-      "line": 763,
+      "line": 757,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -7787,7 +7787,7 @@
     {
       "name": "needsMasteryTrial",
       "file": "ui/progression-ui.js",
-      "line": 764,
+      "line": 758,
       "kind": "constant",
       "responsibility": "rank",
       "flowRoles": [
@@ -7800,7 +7800,7 @@
     {
       "name": "needsIntermediateTrial",
       "file": "ui/progression-ui.js",
-      "line": 765,
+      "line": 759,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -7813,7 +7813,7 @@
     {
       "name": "dialogVisibility",
       "file": "ui/progression-ui.js",
-      "line": 766,
+      "line": 760,
       "kind": "constant",
       "responsibility": "dialog",
       "flowRoles": [
@@ -7827,7 +7827,7 @@
     {
       "name": "masteryBoardTheme",
       "file": "ui/progression-ui.js",
-      "line": 769,
+      "line": 763,
       "kind": "constant",
       "responsibility": "rank",
       "flowRoles": [
@@ -7840,7 +7840,7 @@
     {
       "name": "boardOptions",
       "file": "ui/progression-ui.js",
-      "line": 770,
+      "line": 764,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -7853,7 +7853,7 @@
     {
       "name": "seal",
       "file": "ui/progression-ui.js",
-      "line": 773,
+      "line": 767,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -7866,7 +7866,7 @@
     {
       "name": "rankText",
       "file": "ui/progression-ui.js",
-      "line": 774,
+      "line": 768,
       "kind": "constant",
       "responsibility": "rank",
       "flowRoles": [
@@ -7880,7 +7880,7 @@
     {
       "name": "shareButton",
       "file": "ui/progression-ui.js",
-      "line": 775,
+      "line": 769,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -7893,7 +7893,7 @@
     {
       "name": "allPatternsLink",
       "file": "ui/progression-ui.js",
-      "line": 776,
+      "line": 770,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -7906,7 +7906,7 @@
     {
       "name": "threeDRewardBox",
       "file": "ui/progression-ui.js",
-      "line": 777,
+      "line": 771,
       "kind": "constant",
       "responsibility": "clear-flow",
       "flowRoles": [
@@ -7919,7 +7919,7 @@
     {
       "name": "speedUnlockBox",
       "file": "ui/progression-ui.js",
-      "line": 778,
+      "line": 772,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -7932,7 +7932,7 @@
     {
       "name": "trialFooter",
       "file": "ui/progression-ui.js",
-      "line": 779,
+      "line": 773,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -7945,7 +7945,7 @@
     {
       "name": "finalThanks",
       "file": "ui/progression-ui.js",
-      "line": 780,
+      "line": 774,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -7958,7 +7958,7 @@
     {
       "name": "speedStats",
       "file": "ui/progression-ui.js",
-      "line": 781,
+      "line": 775,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -7971,7 +7971,7 @@
     {
       "name": "speedIntroArt",
       "file": "ui/progression-ui.js",
-      "line": 782,
+      "line": 776,
       "kind": "constant",
       "responsibility": "dialog",
       "flowRoles": [
@@ -7984,7 +7984,7 @@
     {
       "name": "speedIntroNote",
       "file": "ui/progression-ui.js",
-      "line": 783,
+      "line": 777,
       "kind": "constant",
       "responsibility": "dialog",
       "flowRoles": [
@@ -7997,7 +7997,7 @@
     {
       "name": "speedModeOptions",
       "file": "ui/progression-ui.js",
-      "line": 784,
+      "line": 778,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -8010,7 +8010,7 @@
     {
       "name": "boardNote",
       "file": "ui/progression-ui.js",
-      "line": 785,
+      "line": 779,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -8023,7 +8023,7 @@
     {
       "name": "showRankSeal",
       "file": "ui/progression-ui.js",
-      "line": 805,
+      "line": 799,
       "kind": "constant",
       "responsibility": "rank",
       "flowRoles": [
@@ -8033,16 +8033,16 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": true,
       "callers": [
-        "ui/progression-ui.js:827:shouldAnimate",
-        "ui/progression-ui.js:846:shouldAnimate",
-        "ui/progression-ui.js:876:shouldAnimate",
-        "ui/progression-ui.js:968:shouldAnimate"
+        "ui/progression-ui.js:821:masterDialog",
+        "ui/progression-ui.js:840:masterDialog",
+        "ui/progression-ui.js:870:masterDialog",
+        "ui/progression-ui.js:962:masterDialog"
       ]
     },
     {
       "name": "kindRenderers",
       "file": "ui/progression-ui.js",
-      "line": 815,
+      "line": 809,
       "kind": "constant",
       "responsibility": "render",
       "flowRoles": [
@@ -8056,7 +8056,7 @@
     {
       "name": "needsTrial",
       "file": "ui/progression-ui.js",
-      "line": 817,
+      "line": 811,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -8069,7 +8069,7 @@
     {
       "name": "nextRule",
       "file": "ui/progression-ui.js",
-      "line": 850,
+      "line": 844,
       "kind": "constant",
       "responsibility": "navigation",
       "flowRoles": [
@@ -8082,7 +8082,7 @@
     {
       "name": "showSpeedTabs",
       "file": "ui/progression-ui.js",
-      "line": 919,
+      "line": 913,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -8096,7 +8096,7 @@
     {
       "name": "failedVariant",
       "file": "ui/progression-ui.js",
-      "line": 928,
+      "line": 922,
       "kind": "constant",
       "responsibility": "state",
       "flowRoles": [
@@ -8109,7 +8109,7 @@
     {
       "name": "returnToStageMode",
       "file": "ui/progression-ui.js",
-      "line": 990,
+      "line": 984,
       "kind": "function",
       "responsibility": "stage-picker",
       "flowRoles": [
@@ -8120,16 +8120,16 @@
       "mixedResponsibility": true,
       "callers": [
         "commands/progression-commands.js:32:returnToMenu",
-        "ui/progression-ui.js:990:shouldAnimate",
-        "ui/progression-ui.js:1009:failedVariant",
-        "ui/progression-ui.js:1037:VIEW_TILTED_FLIP_VERTICAL",
-        "ui/progression-ui.js:1040:VIEW_TILTED_FLIP_VERTICAL"
+        "ui/progression-ui.js:984:masterDialog",
+        "ui/progression-ui.js:1003:failedVariant",
+        "ui/progression-ui.js:1031:VIEW_TILTED_FLIP_VERTICAL",
+        "ui/progression-ui.js:1034:VIEW_TILTED_FLIP_VERTICAL"
       ]
     },
     {
       "name": "moveTwoMoveDetail",
       "file": "ui/progression-ui.js",
-      "line": 997,
+      "line": 991,
       "kind": "function",
       "responsibility": "state",
       "flowRoles": [
@@ -8138,7 +8138,7 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": false,
       "callers": [
-        "ui/progression-ui.js:997:returnToStageMode",
+        "ui/progression-ui.js:991:returnToStageMode",
         "runtime/app-events.js:1061:target",
         "runtime/app-events.js:1062:target"
       ]
@@ -8146,7 +8146,7 @@
     {
       "name": "nextPosition",
       "file": "ui/progression-ui.js",
-      "line": 1000,
+      "line": 994,
       "kind": "constant",
       "responsibility": "navigation",
       "flowRoles": [
@@ -8185,12 +8185,12 @@
         "ui/message.js:60:renderMasteryMilestone",
         "ui/progression-render.js:109:template",
         "ui/progression-ui.js:384:tipArt",
-        "ui/progression-ui.js:827:shouldAnimate",
-        "ui/progression-ui.js:829:shouldAnimate",
-        "ui/progression-ui.js:876:shouldAnimate",
-        "ui/progression-ui.js:878:shouldAnimate",
-        "ui/progression-ui.js:968:shouldAnimate",
-        "ui/progression-ui.js:970:shouldAnimate",
+        "ui/progression-ui.js:821:masterDialog",
+        "ui/progression-ui.js:823:masterDialog",
+        "ui/progression-ui.js:870:masterDialog",
+        "ui/progression-ui.js:872:masterDialog",
+        "ui/progression-ui.js:962:masterDialog",
+        "ui/progression-ui.js:964:masterDialog",
         "ui/rank.js:12:masterSubtitle",
         "ui/rank.js:13:rankForVolume",
         "ui/rank.js:29:rankEarnedText",
@@ -8216,8 +8216,8 @@
         "ui/progression-render.js:108:template",
         "ui/progression-ui.js:35:extraRoundLabel",
         "ui/progression-ui.js:36:extraRoundLabel",
-        "ui/progression-ui.js:847:shouldAnimate",
-        "ui/progression-ui.js:863:shouldAnimate",
+        "ui/progression-ui.js:841:masterDialog",
+        "ui/progression-ui.js:857:masterDialog",
         "ui/progression-hud.js:187:inSideMode",
         "ui/rank.js:102:rankPathLabel"
       ]
@@ -8235,7 +8235,7 @@
       "mixedResponsibility": false,
       "callers": [
         "ui/message.js:64:renderVolumeMilestone",
-        "ui/progression-ui.js:845:shouldAnimate"
+        "ui/progression-ui.js:839:masterDialog"
       ]
     },
     {
@@ -8337,12 +8337,12 @@
         "ui/message.js:61:renderSatoriMilestone",
         "ui/message.js:62:renderAwakeningMilestone",
         "ui/message.js:64:renderVolumeMilestone",
-        "ui/progression-ui.js:829:shouldAnimate",
-        "ui/progression-ui.js:860:shouldAnimate",
-        "ui/progression-ui.js:878:shouldAnimate",
-        "ui/progression-ui.js:887:shouldAnimate",
-        "ui/progression-ui.js:908:shouldAnimate",
-        "ui/progression-ui.js:970:shouldAnimate",
+        "ui/progression-ui.js:823:masterDialog",
+        "ui/progression-ui.js:854:masterDialog",
+        "ui/progression-ui.js:872:masterDialog",
+        "ui/progression-ui.js:881:masterDialog",
+        "ui/progression-ui.js:902:masterDialog",
+        "ui/progression-ui.js:964:masterDialog",
         "ui/rank.js:29:secondLapRankIndex"
       ]
     },
@@ -8377,10 +8377,10 @@
         "ui/message.js:62:renderAwakeningMilestone",
         "ui/message.js:63:renderIntroMilestone",
         "ui/message.js:64:renderVolumeMilestone",
-        "ui/progression-ui.js:806:shouldAnimate",
-        "ui/progression-ui.js:884:shouldAnimate",
-        "ui/progression-ui.js:905:shouldAnimate",
-        "ui/progression-ui.js:937:shouldAnimate",
+        "ui/progression-ui.js:800:masterDialog",
+        "ui/progression-ui.js:878:masterDialog",
+        "ui/progression-ui.js:899:masterDialog",
+        "ui/progression-ui.js:931:masterDialog",
         "ui/rank.js:39:rankEarnedText"
       ]
     },
@@ -8464,9 +8464,9 @@
         "ui/message.js:62:renderAwakeningMilestone",
         "ui/progression-render.js:112:template",
         "ui/progression-ui.js:384:tipArt",
-        "ui/progression-ui.js:810:shouldAnimate",
-        "ui/progression-ui.js:884:shouldAnimate",
-        "ui/progression-ui.js:905:shouldAnimate",
+        "ui/progression-ui.js:804:masterDialog",
+        "ui/progression-ui.js:878:masterDialog",
+        "ui/progression-ui.js:899:masterDialog",
         "ui/rank.js:61:speedExamClearedForRank",
         "ui/rank.js:80:renderRankBadge",
         "ui/rank.js:91:renderStagePickerRankBadge",

@@ -749,12 +749,6 @@ function showMasterDialog(kind='primary'){
     masterDialog.hidden=true;
     return false;
   }
-  // 速解き開始後は、古いメニュー操作や遅延した復元処理から
-  // 「速解き開始」ダイアログを再表示させない。問題切替中も同じ実行を継続する。
-  if(kind==='speedIntro'&&isMode('speed')&&(speedSession?.started||Number(speedSession?.index)>0)){
-    masterDialog.hidden=true;
-    return false;
-  }
   // 同じ節目ダイアログを状態更新のために再描画することがあるが、
   // そのたびに称号アニメーションを再開すると「称号が二度出る」ように見える。
   const shouldAnimate=masterDialog.hidden||masterDialogKind!==kind;

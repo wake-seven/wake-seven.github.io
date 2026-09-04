@@ -104,10 +104,12 @@ assert.match(progression, /!isMode\('speed'\)/,
   'speed clear flow must not use campaign graduation dialogs');
 assert.match(speed, /pauseSpeedClock\(\);persistSpeedSession\(\);[\s\S]*advanceSpeedRun/,
   'speed clear must persist before advancing to the next problem');
-assert.match(speed, /isMode\('speed'\)\&\&\(speedSession\?\.started\|\|Number\(speedSession\?\.index\)>0\)/,
-  'speed picker must not reopen once an active run has advanced');
-assert.match(progression, /kind==='speedIntro'\&\&isMode\('speed'\)\&\&\(speedSession\?\.started\|\|Number\(speedSession\?\.index\)>0\)/,
-  'speed intro dialog must be rejected while an active run is in progress');
+assert.match(events, /menuSpeed[\s\S]*GameNavigation\.speedPicker\(\)/,
+  'speed menu must open the speed picker while a run is active');
+assert.doesNotMatch(speed, /isMode\('speed'\)\&\&\(speedSession\?\.started\|\|Number\(speedSession\?\.index\)>0\)\)return/,
+  'speed picker must not reject the explicit menu entry during an active run');
+assert.doesNotMatch(progression, /kind==='speedIntro'\&\&isMode\('speed'\)\&\&\(speedSession\?\.started\|\|Number\(speedSession\?\.index\)>0\)/,
+  'speed intro dialog must remain available from the explicit menu entry');
 assert.match(progression, /isMode\('speed'\)\&\&\['primary','intermediate','mastery'\]\.includes\(kind\)/,
   'campaign trial dialogs must be rejected during speed question transitions');
 assert.match(board, /syncGameState\(\);[\s\S]{0,240}STORAGE_KEY_GROUPS\.progression\.activeSession/,

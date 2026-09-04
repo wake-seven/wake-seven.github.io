@@ -4415,7 +4415,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-14:59';
+const APP_VERSION='2026.09.04-15:04';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -5387,9 +5387,8 @@ function renderSpeedModeOptions(){
 }
 function openSpeedPicker(){
   if(!DEBUG_MODE&&!featureUnlocked('speedRun'))return;
-  // 実行中の速解きから開始選択へ戻さない。問題切替や再描画で
-  // 同じ入口が再度呼ばれても、開始ダイアログを一瞬表示しない。
-  if(isMode('speed')&&(speedSession?.started||Number(speedSession?.index)>0))return;
+  // メニューからの明示操作では、実行中でも速解きの選択ダイアログを開く。
+  // 問題切替中の古い描画がこの入口を呼ぶ経路はないため、ここで抑止しない。
   setSpeedVariantCommand(preferredSpeedVariant());
   storage.set(SPEED_LAST_TAB_STORAGE_KEY,speedVariant);
   showMasterDialog('speedIntro');
@@ -10473,12 +10472,6 @@ function showMasterDialog(kind='primary'){
   // 速解きの問題切替中に、通常コースの節目ダイアログを再表示しない。
   // 遅延した loadStage / 復元処理が残っていても、速解きの実行状態を優先する。
   if(isMode('speed')&&['primary','intermediate','mastery'].includes(kind)){
-    masterDialog.hidden=true;
-    return false;
-  }
-  // 速解き開始後は、古いメニュー操作や遅延した復元処理から
-  // 「速解き開始」ダイアログを再表示させない。問題切替中も同じ実行を継続する。
-  if(kind==='speedIntro'&&isMode('speed')&&(speedSession?.started||Number(speedSession?.index)>0)){
     masterDialog.hidden=true;
     return false;
   }
