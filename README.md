@@ -26,7 +26,7 @@
 - `scripts/build-index.mjs` — 単体HTMLを生成するスクリプト
 - 主要処理の追跡は `npm run trace:entry -- progression` / `state` / `clear-flow`、変更影響の確認は `npm run trace:impact -- <変更ファイル>` です。通常の検査は `npm run check:auto`（変更範囲から fast / affected / full を自動選択）、公開前の完全検証は `npm run check:gate` で行います。
 - `all-patterns.html` — クリア後に楽しめる盤面一覧
-- `docs/architecture-audit.md` — 公開境界・保存方針・アーキテクチャ監査
+- `docs/architecture-guide.md` — 公開境界・保存方針・アーキテクチャ監査
 
 進行状況や設定は、ブラウザの Local Storage に保存されます。外部サーバーへの送信やアカウント登録はありません。
 

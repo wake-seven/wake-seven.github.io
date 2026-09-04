@@ -72,6 +72,3 @@ data → domain → commands → state → ui
 
 公開版の識別値は `src/runtime/runtime.js` の `APP_VERSION` を定義元とします。`npm run build` が生成後にバージョンを検証し、Aboutダイアログと公開版へ反映します。
 
-## 過去資料
-
-`docs/archive/` は履歴であり、現行仕様の根拠やビルド入力ではありません。現在の動作はソースと検査結果を確認してください。

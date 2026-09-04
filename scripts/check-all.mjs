@@ -13,6 +13,7 @@ const contextPath = join(root, 'build', 'report', 'check-context.json');
 const pipeline = JSON.parse(await readFile(join(root, 'scripts', 'check-pipeline.json'), 'utf8'));
 const steps = [
   { name: 'domain-classification', command: process.execPath, args: ['scripts/check-domain-classification.mjs'] },
+  { name: 'architecture-guide', command: process.execPath, args: ['scripts/check-architecture-guide.mjs'] },
   { name: 'build', command: process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : 'npm',
     args: process.platform === 'win32' ? ['/d', '/s', '/c', 'npm run build'] : ['run', 'build'] },
   { name: 'development-entrypoints', command: process.execPath, args: ['scripts/check-development-entrypoints.mjs'] },

@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const uiRoot = join(root, 'src', 'ui');
-const architectureDoc = await readFile(join(root, 'docs', 'architecture-audit.md'), 'utf8');
+const architectureDoc = await readFile(join(root, 'docs', 'architecture-guide.md'), 'utf8');
 const packageJson = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 
 assert.match(architectureDoc, /## 大規模な構造変更の停止基準/,
