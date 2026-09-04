@@ -70,6 +70,8 @@ const executed = []; const unexecuted = [];
 // 自動プロファイルでも、変更と関連検査の対応表を先に検証・提示する。
 const featureRegistry = await run('feature-registry', process.execPath, ['scripts/check-feature-registry.mjs', '--changed']);
 executed.push(featureRegistry);
+const changeClassification = await run('change-classification', process.execPath, ['scripts/check-change-classification.mjs']);
+executed.push(changeClassification);
 if (selected === 'full') {
   const gate = await run('check:gate', 'npm', ['run', 'check:gate']);
   let report = null; try { report = JSON.parse(await readFile(join(reportDir, 'check-gate.json'), 'utf8')); } catch { /* 結果がなければ未完了 */ }

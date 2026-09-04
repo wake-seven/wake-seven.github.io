@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "description": "変更の意図を4分類し、パスと実際の差分の食い違いを検出する。",
+  "kinds": ["rule", "progression", "assist", "presentation"],
+  "pathRules": [
+    { "prefix": "src/domain/", "kind": "rule", "layer": "domain" },
+    { "prefix": "src/data/", "kind": "rule", "layer": "data" },
+    { "prefix": "src/state/", "kind": "progression", "layer": "state" },
+    { "prefix": "src/commands/", "kind": "progression", "layer": "commands" },
+    { "prefix": "src/runtime/", "kind": "progression", "layer": "runtime" },
+    { "prefix": "src/ui/progression", "kind": "progression", "layer": "ui" },
+    { "prefix": "src/ui/tutorial", "kind": "assist", "layer": "ui" },
+    { "prefix": "src/ui/", "kind": "presentation", "layer": "ui" },
+    { "prefix": "src/", "kind": "presentation", "layer": "source" }
+  ],
+  "semanticSignals": {
+    "rule": ["rollOnce", "buildSolver", "CELL", "TRI", "enc(", "dec("],
+    "progression": ["activeMode", "lastStageMode", "localStorage", "setItem(", "advanceAfterClear", "openDialog"],
+    "assist": ["tutorial", "guidance", "hint", "assist"],
+    "presentation": ["innerHTML", "textContent", "classList", "render", "paint("]
+  },
+  "policy": {
+    "unknownPath": "warning",
+    "semanticMismatch": "warning",
+    "strictFlag": "--strict",
+    "metadataRequired": "source files must match a path rule; feature entries must declare kind"
+  }
+}
