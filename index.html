@@ -5553,7 +5553,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
   if(restoreBoard&&validSavedBoard(speedSession.board)){
     restoreSavedBoard(speedSession.board);
     // クリア演出中に閉じた場合は、同じ問題を重ねて出さず次へ進める。
-    if(isSolved()){setClearShownCommand(false);WakeSevenProgressionCommands.advanceSpeedRun();return;}
+    if(isSolved()){setClearShownCommand(false);WakeSevenSpeedFeature.advance();return;}
   }
   renderStageNav();
   if(arriving)animateBoardArrival();
@@ -5644,7 +5644,7 @@ function completeSpeedStage(){
   if(speedSession&&moves===best&&!speedSession.restartedCurrent) updateSpeedOptimalClearsCommand();
   pauseSpeedClock();persistSpeedSession();
   const delay=celebrateClear();
-  setUiEffectTimer('clear-transition','advance-speed',WakeSevenProgressionCommands.advanceSpeedRun,delay+120);
+  setUiEffectTimer('clear-transition','advance-speed',WakeSevenSpeedFeature.advance,delay+120);
 }
 
 // ===== 速解きセッションの入口 =====
@@ -8768,13 +8768,6 @@ const GameDialogs=Object.freeze({
   ranks:options=>ProgressionEntryPoints.showProgressionDialog('ranks',options,options?.source||'menu'),
   mastery:kind=>ProgressionEntryPoints.showProgressionDialog('mastery',{kind},'progression')
 });
-const WakeSevenProgressionCommands=Object.freeze({
-  startSpeedRun:()=>WakeSevenSpeedFeature.begin(), advanceSpeedRun:()=>WakeSevenSpeedFeature.advance(),
-  loadStage:index=>ProgressionEntryPoints.startStage(index), loadMasteryStage:index=>loadExtraStage(index),
-  loadSatoriStage:index=>loadSatoriStage(index), startFree:()=>startFree(),
-  advanceAfterClear:()=>ProgressionEntryPoints.advanceAfterClear()
-});
-
 // ===== 速解きセッションコマンド =====
 // 速解き固有のセッション状態を書き込む操作命令。時計・表示・遷移は実行側に残す。
 function startSpeedSessionCommand(){
@@ -11945,7 +11938,7 @@ function confirmSpeedRestart(){
   enterSpeedMode(true);
 }
 function bindSpeedEvents(){
-  WakeSevenEventBindings.click('speedBoardStart',WakeSevenProgressionCommands.startSpeedRun);
+  WakeSevenEventBindings.click('speedBoardStart',WakeSevenSpeedFeature.begin);
   WakeSevenEventBindings.click('speedPause',()=>{
     if(!isMode('speed'))return;
     openSpeedPauseDialog();
@@ -12872,7 +12865,7 @@ document.addEventListener('visibilitychange',()=>{
       // (裏に回った端末がタイマーの発火を止める・遅らせる等)。
       // 復帰時にクリア済みの盤面が残っていたら、保留中のタイマーは捨てて即座に確定させる。
       clearUiEffectTimers('clear-transition');
-      if(!clearShown)ProgressionEntryPoints.finishStage({mode:'speed'});else WakeSevenProgressionCommands.advanceSpeedRun();
+      if(!clearShown)ProgressionEntryPoints.finishStage({mode:'speed'});else WakeSevenSpeedFeature.advance();
     }
     // 非表示から戻った時はタイマーを黙って再開せず、一時停止ダイアログを出して本人の操作で再開させる。
     else if($('speedPauseDialog').hidden)openSpeedPauseDialog();
