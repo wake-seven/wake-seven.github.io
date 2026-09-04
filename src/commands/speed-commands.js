@@ -24,8 +24,11 @@ function pauseSpeedClockStateCommand(now=commandNow()){
 function persistSpeedSessionCommand(){
   if(!speedSession)return false;
   const elapsed=speedElapsedMs();
-  const payload={...speedSession,variant:activeSpeedDefinition().id,elapsedMs:elapsed,board:isMode('speed')?serializeActiveBoard():speedSession.board};
-  commandStorageSetJson(speedSessionStorageKey(),payload);commandStorageSet(STORAGE_KEY_GROUPS.speed.activeVariant,payload.variant);
+  // 保存先と定義は、画面の選択状態ではなく実行中セッション自身のvariantで決める。
+  // 九番勝負から十八番勝負へ切り替えた直後に、古いセッションへ上書きする事故を防ぐ。
+  const variant=SPEED_MODE_DEFINITIONS[speedSession.variant]?speedSession.variant:'training9';
+  const payload={...speedSession,variant,elapsedMs:elapsed,board:isMode('speed')?serializeActiveBoard():speedSession.board};
+  commandStorageSetJson(speedSessionStorageKey(variant),payload);commandStorageSet(STORAGE_KEY_GROUPS.speed.activeVariant,variant);
   return true;
 }
 function clearSpeedSessionCommand(variant=speedVariant){commandStorageRemove(speedSessionStorageKey(variant));return true;}

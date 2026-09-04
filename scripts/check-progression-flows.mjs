@@ -22,6 +22,11 @@ assert.match(events, /speedPause|pauseSpeedRun/, 'Speed pause flow is not wired.
 assert.match(events, /speedResume|resumeSpeedRun|startSpeedClock/, 'Speed resume/start flow is not wired.');
 assert.match(academy, /questionIndex=Math\.max\(0,Number\(speedSession\?\.index\)\|\|0\)/, '九番勝負の段階的な棒本数計算がありません。');
 assert.match(academy, /questionIndex<3\?3:questionIndex<6\?4:5/, '九番勝負の棒本数境界が不正です。');
+const speed = await read('src/runtime/speed.js');
+const speedCommands = await read('src/commands/speed-commands.js');
+assert.match(speed, /readSpeedSession\(requestedVariant\)/, '速解き開始時に選択variantを明示していません。');
+assert.match(speed, /SPEED_MODE_DEFINITIONS\[speedSession\.variant\]/, '速解きの問題プールがセッションvariantを基準にしていません。');
+assert.match(speedCommands, /speedSessionStorageKey\(variant\)/, '速解き保存先がセッションvariantを基準にしていません。');
 for (const id of ['settingsDialog', 'menuSettings', 'settingsDialogClose']) {
   assert.match(template, new RegExp(`id="${id}"`), `Settings UI contract is missing: ${id}`);
 }

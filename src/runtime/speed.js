@@ -249,11 +249,12 @@ function animateBoardArrival(){
 function loadSpeedStage(restoreBoard=false,arriving=false){
   if(!speedSession)return;
   const sessionContext=WakeSevenAppContext.state.session.read();
-  const currentVariant=sessionContext.speedVariant||speedVariant;
+  // 問題プール・表示ルールは、実行中セッションのvariantに固定する。
+  const currentVariant=SPEED_MODE_DEFINITIONS[speedSession.variant]?speedSession.variant:(sessionContext.speedVariant||speedVariant);
   if(speedSession.index>0)speedSession.started=true;
   setSpeedManualPauseCommand(false);
   setCampaignModeCommand('speed');editingBoard=false;
-  const pool=speedStagePool(activeSpeedDefinition());
+  const pool=speedStagePool(SPEED_MODE_DEFINITIONS[currentVariant]||activeSpeedDefinition());
   if(!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent){
     // スタート前は問題を見せず、全員が起きたまっさらな盤面で開始を促す。
     setPosition(0,0);
@@ -277,7 +278,7 @@ function enterSpeedMode(forceNew=false){
   pauseSpeedRun();
   const transitionContext=createSpeedTransitionContext();
   const requestedVariant=transitionContext.speedVariant;
-  const saved=forceNew?null:readSpeedSession();
+  const saved=forceNew?null:readSpeedSession(requestedVariant);
   const isNew=forceNew||!saved;
   setSpeedVariantCommand(saved?.variant&&SPEED_MODE_DEFINITIONS[saved.variant]?saved.variant:requestedVariant);
   setSpeedSessionCommand(saved||newSpeedSession());
