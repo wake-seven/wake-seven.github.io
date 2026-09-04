@@ -4,7 +4,8 @@ import { join, relative, extname } from 'node:path';
 const root = process.cwd();
 const sourceRoot = join(root, 'src');
 const reportPath = join(root, 'build', 'report', 'source-format-baseline.json');
-const maxLength = 160;
+const policy = JSON.parse(await readFile(join(root, 'scripts', 'source-format-policy.json'), 'utf8'));
+const maxLength = policy.javascript.maxControlLineLength;
 const ignoredFileParts = ['/data/', '/core-data.', '/clear-content.', '/board-quiz.'];
 
 const isDataFile = file => ignoredFileParts.some(part => file.replaceAll('\\', '/').includes(part));
@@ -53,7 +54,13 @@ for (const file of files) {
 const report = {
   schemaVersion: 1,
   generatedAt: new Date().toISOString(),
-  policy: { maxControlLineLength: maxLength, mode: 'warning', excluded: ['SVG', 'data', 'favicon', 'generated JSON'] },
+    policy: {
+      maxControlLineLength: maxLength,
+      mode: policy.javascript.mode,
+      cssFormat: policy.css.format,
+      cssLineLengthAudit: policy.css.lineLengthAudit,
+      excluded: policy.excluded
+    },
   files: fileMetrics,
   issueCount: issues.length,
   issues

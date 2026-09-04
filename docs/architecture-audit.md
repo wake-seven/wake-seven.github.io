@@ -25,6 +25,10 @@
 
 公開版の識別値は `src/runtime/runtime.js` の `APP_VERSION` を定義元とします。形式と更新時の検査は `scripts/check-version.mjs` に従います。Aboutダイアログと生成版の値はビルド時にこの定義から反映されるため、現在値を文書へ重複記載しません。
 
+## ソース整形
+
+整形方針の正本は `scripts/source-format-policy.json` です。`scripts/check-source-format.mjs` がこの設定を読み、JavaScriptの制御コードを監査します。CSSは1ブロック1行を維持し、SVG・データ・文言は整形対象外です。方針の詳細をMarkdownへ複製しないことで、実装と文書の不一致を防ぎます。
+
 ## 変更時の確認
 
 通常の変更では、最終ゲートを1回実行します。
