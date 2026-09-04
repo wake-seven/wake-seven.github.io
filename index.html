@@ -9287,12 +9287,6 @@ function openDialog(dialogId, options={}){
   return true;
 }
 
-// 進行中のダイアログと、その付随する案内演出をまとめて閉じる。
-function closeProgressionDialog(){
-  if(typeof hideGameDialogs==='function'){hideGameDialogs();return true;}
-  return false;
-}
-
 // 保存済みのダイアログ状態を既存の復元処理へ渡す共通入口。
 function restoreProgressionDialog(state){
   if(typeof restoreDialogState!=='function')return false;
@@ -10001,7 +9995,7 @@ function showClearDialog(contextOverride=null){
   }
   // クリア演出の遅延中に別ダイアログが残っていても、現在のクリア結果を
   // 表示できずに終わらせない。先に古いダイアログを閉じてから描画する。
-  if(hasCompetingDialogForClear())closeProgressionDialog();
+  if(hasCompetingDialogForClear()&&typeof hideGameDialogs==='function')hideGameDialogs();
   // 悟りの最終問題は、再挑戦で解いた場合も制覇ダイアログを見せる。
   // それ以外の悟り問題は、制覇後も通常のクリアダイアログにする。
   const showSatoriMastery=clearContext.mode==='satori'&&clearContext.satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered();
