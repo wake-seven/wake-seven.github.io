@@ -2,27 +2,21 @@
   "name": "wake7-change-classification",
   "status": "passed",
   "summary": {
-    "changedFiles": 11,
-    "classified": 5,
-    "unknown": 6,
-    "mismatches": 4,
+    "changedFiles": 5,
+    "classified": 2,
+    "unknown": 3,
+    "mismatches": 1,
     "missingFeatureKinds": 0
   },
   "warnings": [
     "分類ルールがありません: index.html",
     "分類ルールがありません: scripts/application-manifest.mjs",
-    "分類ルールがありません: scripts/check-dialog-chains.mjs",
-    "分類ルールがありません: scripts/check-public-symbols.mjs",
     "分類ルールがありません: scripts/feature-registry.json",
-    "分類ルールがありません: scripts/public-symbols-budget.json",
-    "src/runtime/app-events.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です",
-    "src/runtime/runtime.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です",
-    "src/ui/board-ui.js: 宣言分類 presentation と差分シグナル rule, progression が不一致です",
-    "src/ui/progression-dialogs.js: 宣言分類 progression と差分シグナル presentation が不一致です"
+    "src/runtime/runtime.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です"
   ],
   "errors": [],
-  "generatedAt": "2026-09-04T11:26:52.790Z",
-  "sourceRevision": "a394edd",
+  "generatedAt": "2026-09-04T11:42:07.692Z",
+  "sourceRevision": "196d568",
   "entries": [
     {
       "file": "index.html",
@@ -39,49 +33,11 @@
       "status": "unknown"
     },
     {
-      "file": "scripts/check-dialog-chains.mjs",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
-    },
-    {
-      "file": "scripts/check-public-symbols.mjs",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
-    },
-    {
       "file": "scripts/feature-registry.json",
       "kind": null,
       "layer": null,
       "signals": [],
       "status": "unknown"
-    },
-    {
-      "file": "scripts/public-symbols-budget.json",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
-    },
-    {
-      "file": "src/runtime/app-events.js",
-      "kind": "progression",
-      "layer": "runtime",
-      "signals": [
-        "rule",
-        "progression",
-        "assist",
-        "presentation"
-      ],
-      "mismatched": [
-        "rule",
-        "assist",
-        "presentation"
-      ],
-      "status": "warning"
     },
     {
       "file": "src/runtime/runtime.js",
@@ -101,36 +57,7 @@
       "status": "warning"
     },
     {
-      "file": "src/ui/board-ui.js",
-      "kind": "presentation",
-      "layer": "ui",
-      "signals": [
-        "rule",
-        "progression",
-        "assist",
-        "presentation"
-      ],
-      "mismatched": [
-        "rule",
-        "progression"
-      ],
-      "status": "warning"
-    },
-    {
-      "file": "src/ui/progression-dialogs.js",
-      "kind": "progression",
-      "layer": "ui",
-      "signals": [
-        "progression",
-        "presentation"
-      ],
-      "mismatched": [
-        "presentation"
-      ],
-      "status": "warning"
-    },
-    {
-      "file": "src/ui/dialog-chain-feature.js",
+      "file": "src/ui/speed-feature.js",
       "kind": "presentation",
       "layer": "ui",
       "signals": [],

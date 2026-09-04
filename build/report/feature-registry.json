@@ -2,16 +2,16 @@
   "name": "wake7-feature-registry",
   "status": "passed",
   "summary": {
-    "features": 12,
-    "matched": 5,
-    "unknown": 5,
+    "features": 13,
+    "matched": 3,
+    "unknown": 1,
     "unregisteredNewFiles": 0,
     "references": 44
   },
   "warnings": [],
   "errors": [],
-  "generatedAt": "2026-09-04T11:26:53.724Z",
-  "sourceRevision": "a394edd",
+  "generatedAt": "2026-09-04T11:42:08.634Z",
+  "sourceRevision": "196d568",
   "features": [
     {
       "name": "reward-pages",
@@ -86,6 +86,21 @@
       ],
       "checks": [
         "dialog-chains",
+        "state-restore",
+        "manifest-dependencies"
+      ],
+      "relatedE2E": [
+        "browser-e2e",
+        "device-e2e"
+      ]
+    },
+    {
+      "name": "speed-feature",
+      "paths": [
+        "src/ui/speed-feature.js"
+      ],
+      "checks": [
+        "e2e-speed-contract",
         "state-restore",
         "manifest-dependencies"
       ],
@@ -317,29 +332,17 @@
   "changedFiles": [
     "index.html",
     "scripts/application-manifest.mjs",
-    "scripts/check-dialog-chains.mjs",
-    "scripts/check-public-symbols.mjs",
     "scripts/feature-registry.json",
-    "scripts/public-symbols-budget.json",
-    "src/runtime/app-events.js",
     "src/runtime/runtime.js",
-    "src/ui/board-ui.js",
-    "src/ui/progression-dialogs.js",
-    "src/ui/dialog-chain-feature.js"
+    "src/ui/speed-feature.js"
   ],
   "matchedFeatures": [
     "scripts/manifest",
-    "runtime/speed",
     "dialog-restore",
-    "ui/progression",
-    "dialog-chain-feature"
+    "speed-feature"
   ],
   "unknownChangedFiles": [
-    "index.html",
-    "scripts/check-dialog-chains.mjs",
-    "scripts/check-public-symbols.mjs",
-    "scripts/public-symbols-budget.json",
-    "src/ui/board-ui.js"
+    "index.html"
   ],
   "unregisteredNewFiles": [],
   "recommendation": "full",
@@ -349,14 +352,9 @@
     "manifest-dependencies",
     "browser-e2e",
     "device-e2e",
-    "application-services",
-    "progression-flows",
-    "e2e-speed-contract",
     "state-restore",
     "dialog-state-map",
-    "progression-flow-contract",
-    "dialog-chains",
-    "browser-flow"
+    "e2e-speed-contract"
   ],
   "policy": {
     "unknownChangedFiles": "affected",
