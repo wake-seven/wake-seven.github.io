@@ -34,7 +34,7 @@ const ProgressionEntryPoints=Object.freeze({
 const GameNavigation=Object.freeze({
   tutorial:()=>startTutorial(), stage:index=>ProgressionEntryPoints.startStage(index), mastery:index=>loadExtraStage(index),
   satori:index=>loadSatoriStage(index), free:()=>startFree(), maker:()=>enterBoardMaker(),
-  stageMenu:()=>ProgressionEntryPoints.returnToMenu(), speedPicker:()=>openSpeedPicker()
+  stageMenu:()=>ProgressionEntryPoints.returnToMenu(), speedPicker:()=>WakeSevenSpeedFeature.openPicker()
 });
 // ダイアログ要求の実装はui/progression-dialogs.jsの単一入口へ集約する。
 const GameDialogs=Object.freeze({

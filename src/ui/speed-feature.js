@@ -9,6 +9,7 @@ function readSpeedFeatureContext(){const navigation=readNavigationContext();retu
 });}
 const WakeSevenSpeedFeature=Object.freeze({
   context:readSpeedFeatureContext,
+  openPicker(){return openSpeedPicker();},
   start(forceNew=false){return enterSpeedMode(forceNew);},
   pause(){return pauseSpeedRun();},
   resume(){return resumeSpeedRun();},
