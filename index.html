@@ -4273,8 +4273,8 @@ const WakeSevenAppContext=Object.freeze({
       update(patch={}){if(patch.busy!==undefined)busy=patch.busy;if(patch.drag!==undefined)drag=patch.drag;return this.read();}
     }),
     session:Object.freeze({
-      read(){return Object.freeze({savedFreeSession,speedSession:typeof speedSession!=='undefined'?speedSession:null,speedVariant});},
-      update(patch={}){if(patch.savedFreeSession!==undefined)savedFreeSession=patch.savedFreeSession;if(patch.speedSession!==undefined&&typeof speedSession!=='undefined')speedSession=patch.speedSession;if(patch.speedVariant!==undefined)speedVariant=patch.speedVariant;return this.read();}
+      read(){return readSessionStateOwner();},
+      update(patch={}){return updateSessionStateOwner(patch);}
     }),
     settings:Object.freeze({
       read(){return readSettingsStateOwner();},
@@ -4299,6 +4299,7 @@ function setNavigationIndexCommand(kind,value){
   return updateNavigationStateCommand(patch);
 }
 function setClearShownCommand(value){return updateDialogStateCommand({clearShown:value}).clearShown;}
+function setSavedFreeSessionCommand(value){return updateSessionStateCommand({savedFreeSession:value}).savedFreeSession;}
 function setSpeedSessionCommand(value){return updateSessionStateCommand({speedSession:value}).speedSession;}
 function setSpeedVariantCommand(value){return updateSessionStateCommand({speedVariant:value}).speedVariant;}
 
@@ -5426,6 +5427,19 @@ function createSpeedTransitionContext(){
   return Object.freeze({navigation,session,speedVariant:session.speedVariant||speedVariant,returnMode:navigation.lastStageMode||navigation.mode});
 }
 let speedSession=null,speedClockStarted=0,speedManuallyPaused=false;
+// 実行中のセッション参照はこの3変数だけが所有する。savedFreeSession は
+// フリーモードへ戻るための意図的なスナップショットで、ライブ盤面とは統合しない。
+function readSessionStateOwner(){
+  return Object.freeze({savedFreeSession,speedSession,speedVariant});
+}
+function updateSessionStateOwner(patch={}){
+  patch=patch&&typeof patch==='object'&&!Array.isArray(patch)?patch:{};
+  // undefined は変更なし、null は明示的なセッション破棄として扱う。
+  if(patch.savedFreeSession!==undefined)savedFreeSession=patch.savedFreeSession;
+  if(patch.speedSession!==undefined)speedSession=patch.speedSession;
+  if(patch.speedVariant!==undefined)speedVariant=patch.speedVariant;
+  return readSessionStateOwner();
+}
 function shuffleCopy(values){
   const result=[...values];
   for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]];}
@@ -7525,7 +7539,7 @@ function restoreActiveSession(){
 }
 function startFree(){
   if(isMode('speed'))pauseSpeedRun();
-  savedFreeSession=null;
+  setSavedFreeSessionCommand(null);
   setActiveMode('free');editingBoard=false;
   const pool=[...SOLVER.byDepth[2],...SOLVER.byDepth[3],...SOLVER.byDepth[4]];
   let state=pool[(Math.random()*pool.length)|0];
@@ -7543,7 +7557,7 @@ function revealFourthDistance(){
 }
 function startFreeFromState(state){
   if(isMode('speed'))pauseSpeedRun();
-  savedFreeSession=null;
+  setSavedFreeSessionCommand(null);
   setActiveMode('free');editingBoard=false;
   setPosition(state,SOLVER.dist[state]);
   renderStageNav();
@@ -8702,8 +8716,7 @@ function replaceBoardStateCommand(next,{paintNow=false}={}){
   if(paintNow)paint();
 }
 function captureFreeSessionCommand(){
-  savedFreeSession={ori:Uint8Array.from(ori),spin:Int16Array.from(spin),tileEls:tileEls.slice(),moves,best,history:history.map(cloneHistoryEntry),initialState:currentInitialState,initialPar:currentInitialPar,clearShown};
-  return savedFreeSession;
+  return setSavedFreeSessionCommand({ori:Uint8Array.from(ori),spin:Int16Array.from(spin),tileEls:tileEls.slice(),moves,best,history:history.map(cloneHistoryEntry),initialState:currentInitialState,initialPar:currentInitialPar,clearShown});
 }
 function restoreFreeSessionBoardCommand(session){
   if(!session)return false;
