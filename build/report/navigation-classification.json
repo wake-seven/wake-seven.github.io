@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "name": "wake7-navigation-classification",
-  "generatedAt": "2026-09-04T04:12:10.094Z",
+  "generatedAt": "2026-09-04T05:07:58.016Z",
   "status": "passed",
   "summary": {
     "references": 382,
@@ -183,97 +183,97 @@
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 175,
+        "line": 105,
         "source": "loadSatoriStage(index);",
         "allowed": true
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 261,
+        "line": 191,
         "source": "if(isPrimary)loadStage(index);",
         "allowed": true
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 262,
+        "line": 192,
         "source": "else if(allPrimaryCleared())loadExtraStage(index);",
         "allowed": true
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 1063,
+        "line": 993,
         "source": "else if(returnStageContext.satori)loadSatoriStage(returnStageContext.index);",
         "allowed": true
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 1064,
+        "line": 994,
         "source": "else if(returnStageContext.extra)loadExtraStage(returnStageContext.index);",
         "allowed": true
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 1065,
+        "line": 995,
         "source": "else loadStage(returnStageContext.index);",
         "allowed": true
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 1081,
+        "line": 1011,
         "source": "activateCampaignLap(1);loadSatoriStage(SATORI_STAGES.length-1);return;",
         "allowed": true
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 1083,
+        "line": 1013,
         "source": "if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}",
         "allowed": true
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 1084,
+        "line": 1014,
         "source": "if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}",
         "allowed": true
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 1085,
+        "line": 1015,
         "source": "else loadStage(stageIndex-1);",
         "allowed": true
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 1091,
+        "line": 1021,
         "source": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);",
         "allowed": true
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 1092,
+        "line": 1022,
         "source": "else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}",
         "allowed": true
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 1095,
+        "line": 1025,
         "source": "if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}",
         "allowed": true
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 1096,
+        "line": 1026,
         "source": "else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);",
         "allowed": true
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 1097,
+        "line": 1027,
         "source": "else loadStage(stageIndex+1);",
         "allowed": true
       },
       {
         "file": "ui/progression-ui.js",
-        "line": 1108,
+        "line": 1038,
         "source": "if(isMode('free'))leaveFreeMode();else if(returnStageContext.satori)loadSatoriStage(returnStageContext.index);else if(returnStageContext.extra)loadExtraStage(returnStageContext.index);else loadStage(returnStageContext.index);",
         "allowed": true
       },
@@ -6062,7 +6062,7 @@
     {
       "name": "satoriIndex",
       "file": "ui/progression-ui.js",
-      "line": 170,
+      "line": 100,
       "access": "write",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6074,14 +6074,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 170,
+        "line": 100,
         "source": "current: pickerLap===currentContext.lap&&isMode('satori')&&currentContext.satoriIndex===index,"
       }
     },
     {
       "name": "satoriIndex",
       "file": "ui/progression-ui.js",
-      "line": 186,
+      "line": 116,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6093,14 +6093,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 186,
+        "line": 116,
         "source": "openDialog('stagePicker',{lap:navigation.lap,round:'satori',satoriPage:isMode('satori')?Math.floor(navigation.satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0});"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 253,
+      "line": 183,
       "access": "write",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6112,14 +6112,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 253,
+        "line": 183,
         "source": "b.classList.toggle('current',pickerLap===navigation.lap&&!isMode('speed')&&(isPrimary?!isMode('mastery')&&!isMode('satori')&&navigation.stageIndex===index:isMode('mastery')&&navigation.masteryIndex===index));"
       }
     },
     {
       "name": "extraIndex",
       "file": "ui/progression-ui.js",
-      "line": 274,
+      "line": 204,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6131,18 +6131,132 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 274,
+        "line": 204,
         "source": "const showingIndex=isMode('mastery')?extraIndex:returnStageContext.index;"
       }
     },
     {
       "name": "activeLap",
       "file": "ui/progression-ui.js",
-      "line": 283,
+      "line": 213,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
       "reason": "監査用コメント内の名前で、実行時の状態参照ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 213,
+        "source": "// 称号一覧で選択した周（activeLap）を、そのまま問題選択にも引き継ぐ。"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 238,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "clear contextまたはダイアログ表示から算出する進行表示値",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 238,
+        "source": "return navigation.mode==='mastery'||(navigation.mode!=='satori'&&navigation.mode!=='speed'&&['intro','basic','application','development'].includes(primarySectionPosition(navigation.stageIndex).section.id));"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 254,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "clear contextまたはダイアログ表示から算出する進行表示値",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 254,
+        "source": "const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(navigation.stageIndex+1);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 256,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "監査用コメント内の名前で、実行時の状態参照ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 256,
+        "source": "// 通常ステージの古い stageIndex / masteryClearContext を使って"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-ui.js",
+      "line": 268,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "clear contextまたはダイアログ表示から算出する進行表示値",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 268,
+        "source": "const showSatoriMastery=clearContext.mode==='satori'&&clearContext.satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered();"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 277,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "clear contextまたはダイアログ表示から算出する進行表示値",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/progression-ui.js",
+        "line": 277,
+        "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===ACADEMY_STAGE_COUNT-1&&clearContext.academyIsCleared){"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-ui.js",
+      "line": 283,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "clear contextまたはダイアログ表示から算出する進行表示値",
       "temporary": false,
       "owner": "runtime/runtime.js / app/app-context.js",
       "nextMigrationUnit": null,
@@ -6151,127 +6265,13 @@
       "codeEvidence": {
         "file": "ui/progression-ui.js",
         "line": 283,
-        "source": "// 称号一覧で選択した周（activeLap）を、そのまま問題選択にも引き継ぐ。"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "ui/progression-ui.js",
-      "line": 308,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "clear contextまたはダイアログ表示から算出する進行表示値",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "ui/progression-ui.js",
-        "line": 308,
-        "source": "return navigation.mode==='mastery'||(navigation.mode!=='satori'&&navigation.mode!=='speed'&&['intro','basic','application','development'].includes(primarySectionPosition(navigation.stageIndex).section.id));"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "ui/progression-ui.js",
-      "line": 324,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "clear contextまたはダイアログ表示から算出する進行表示値",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "ui/progression-ui.js",
-        "line": 324,
-        "source": "const clearContext=contextOverride?.mode?contextOverride:createClearTransitionContext(navigation.stageIndex+1);"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "ui/progression-ui.js",
-      "line": 326,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "監査用コメント内の名前で、実行時の状態参照ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "ui/progression-ui.js",
-        "line": 326,
-        "source": "// 通常ステージの古い stageIndex / masteryClearContext を使って"
-      }
-    },
-    {
-      "name": "satoriIndex",
-      "file": "ui/progression-ui.js",
-      "line": 338,
-      "access": "write",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "clear contextまたはダイアログ表示から算出する進行表示値",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "ui/progression-ui.js",
-        "line": 338,
-        "source": "const showSatoriMastery=clearContext.mode==='satori'&&clearContext.satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered();"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "ui/progression-ui.js",
-      "line": 347,
-      "access": "write",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "clear contextまたはダイアログ表示から算出する進行表示値",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "ui/progression-ui.js",
-        "line": 347,
-        "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===ACADEMY_STAGE_COUNT-1&&clearContext.academyIsCleared){"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "ui/progression-ui.js",
-      "line": 353,
-      "access": "write",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "clear contextまたはダイアログ表示から算出する進行表示値",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "ui/progression-ui.js",
-        "line": 353,
         "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===INTRO_STAGE_COUNT-1){"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 358,
+      "line": 288,
       "access": "write",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6283,14 +6283,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 358,
+        "line": 288,
         "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===APPLICATION_STAGE_START-1){"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 363,
+      "line": 293,
       "access": "write",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6302,14 +6302,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 363,
+        "line": 293,
         "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===DEVELOPMENT_STAGE_START-1){"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 367,
+      "line": 297,
       "access": "write",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6321,14 +6321,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 367,
+        "line": 297,
         "source": "if(clearDialogUsesStageProgression()&&clearContext.stageIndex===STAGES.length-1&&clearContext.currentLapPrimaryComplete){"
       }
     },
     {
       "name": "extraIndex",
       "file": "ui/progression-ui.js",
-      "line": 372,
+      "line": 302,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6340,14 +6340,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 372,
+        "line": 302,
         "source": "const clearedMasteryIndex=masteryClearContext&&Number.isInteger(clearContext.extraIndex)"
       }
     },
     {
       "name": "extraIndex",
       "file": "ui/progression-ui.js",
-      "line": 373,
+      "line": 303,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6359,14 +6359,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 373,
+        "line": 303,
         "source": "?clearContext.extraIndex"
       }
     },
     {
       "name": "satoriIndex",
       "file": "ui/progression-ui.js",
-      "line": 382,
+      "line": 312,
       "access": "write",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6378,14 +6378,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 382,
+        "line": 312,
         "source": "else if(clearContext.mode==='satori')action.textContent=clearContext.satoriIndex===SATORI_STAGES.length-1?tr('satoriChoose'):tr('nextPuzzle');"
       }
     },
     {
       "name": "extraIndex",
       "file": "ui/progression-ui.js",
-      "line": 383,
+      "line": 313,
       "access": "write",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6397,14 +6397,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 383,
+        "line": 313,
         "source": "else if(clearContext.mode==='mastery')action.textContent=clearContext.extraIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 384,
+      "line": 314,
       "access": "write",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6416,14 +6416,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 384,
+        "line": 314,
         "source": "else if(clearContext.stageIndex===STAGES.length-1&&clearContext.allPrimaryIsCleared)action.textContent=tr('allPatternsNext');"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 385,
+      "line": 315,
       "access": "write",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6435,14 +6435,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 385,
+        "line": 315,
         "source": "else if(clearContext.stageIndex===STAGES.length-1)action.textContent=tr('toFree');"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 512,
+      "line": 442,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6454,14 +6454,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 512,
+        "line": 442,
         "source": "const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 512,
+      "line": 442,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6473,14 +6473,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 512,
+        "line": 442,
         "source": "const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 512,
+      "line": 442,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6492,14 +6492,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 512,
+        "line": 442,
         "source": "const middleIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=middleStart&&stageIndex<middleStart+TRAINING_MIDDLE_COUNT?stageIndex-middleStart:-1;"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 513,
+      "line": 443,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6511,14 +6511,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 513,
+        "line": 443,
         "source": "const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 513,
+      "line": 443,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6530,14 +6530,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 513,
+        "line": 443,
         "source": "const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 513,
+      "line": 443,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6549,14 +6549,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 513,
+        "line": 443,
         "source": "const developmentIndex=!isMode('mastery')&&!isMode('satori')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT?stageIndex-DEVELOPMENT_STAGE_START:-1;"
       }
     },
     {
       "name": "extraIndex",
       "file": "ui/progression-ui.js",
-      "line": 914,
+      "line": 844,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6568,14 +6568,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 914,
+        "line": 844,
         "source": "const volume=Math.ceil((extraIndex+1)/MASTER_VOLUME_SIZE);"
       }
     },
     {
       "name": "activeLap",
       "file": "ui/progression-ui.js",
-      "line": 1080,
+      "line": 1010,
       "access": "write",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6587,14 +6587,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1080,
+        "line": 1010,
         "source": "if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 1080,
+      "line": 1010,
       "access": "write",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -6606,14 +6606,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1080,
+        "line": 1010,
         "source": "if(!isMode('mastery')&&!isMode('satori')&&stageIndex===0&&activeLap===2){"
       }
     },
     {
       "name": "satoriIndex",
       "file": "ui/progression-ui.js",
-      "line": 1083,
+      "line": 1013,
       "access": "read",
       "classification": "needs-migration",
       "category": "event-local",
@@ -6625,14 +6625,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1083,
+        "line": 1013,
         "source": "if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}"
       }
     },
     {
       "name": "satoriIndex",
       "file": "ui/progression-ui.js",
-      "line": 1083,
+      "line": 1013,
       "access": "read",
       "classification": "needs-migration",
       "category": "event-local",
@@ -6644,14 +6644,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1083,
+        "line": 1013,
         "source": "if(isMode('satori')){if(satoriIndex>0)loadSatoriStage(satoriIndex-1);else loadExtraStage(EXTRA_STAGES.length-1);return;}"
       }
     },
     {
       "name": "extraIndex",
       "file": "ui/progression-ui.js",
-      "line": 1084,
+      "line": 1014,
       "access": "write",
       "classification": "needs-migration",
       "category": "event-local",
@@ -6663,14 +6663,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1084,
+        "line": 1014,
         "source": "if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}"
       }
     },
     {
       "name": "extraIndex",
       "file": "ui/progression-ui.js",
-      "line": 1084,
+      "line": 1014,
       "access": "write",
       "classification": "needs-migration",
       "category": "event-local",
@@ -6682,14 +6682,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1084,
+        "line": 1014,
         "source": "if(isMode('mastery')){if(extraIndex===0)loadStage(STAGES.length-1);else loadExtraStage(extraIndex-1);}"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 1085,
+      "line": 1015,
       "access": "read",
       "classification": "needs-migration",
       "category": "event-local",
@@ -6701,14 +6701,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1085,
+        "line": 1015,
         "source": "else loadStage(stageIndex-1);"
       }
     },
     {
       "name": "satoriIndex",
       "file": "ui/progression-ui.js",
-      "line": 1091,
+      "line": 1021,
       "access": "read",
       "classification": "needs-migration",
       "category": "event-local",
@@ -6720,14 +6720,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1091,
+        "line": 1021,
         "source": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);"
       }
     },
     {
       "name": "satoriIndex",
       "file": "ui/progression-ui.js",
-      "line": 1091,
+      "line": 1021,
       "access": "read",
       "classification": "needs-migration",
       "category": "event-local",
@@ -6739,14 +6739,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1091,
+        "line": 1021,
         "source": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);"
       }
     },
     {
       "name": "satoriIndex",
       "file": "ui/progression-ui.js",
-      "line": 1091,
+      "line": 1021,
       "access": "read",
       "classification": "needs-migration",
       "category": "event-local",
@@ -6758,14 +6758,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1091,
+        "line": 1021,
         "source": "if(satoriIndex<SATORI_STAGES.length-1&&satoriStageUnlocked(satoriIndex+1))loadSatoriStage(satoriIndex+1);"
       }
     },
     {
       "name": "activeLap",
       "file": "ui/progression-ui.js",
-      "line": 1092,
+      "line": 1022,
       "access": "write",
       "classification": "needs-migration",
       "category": "event-local",
@@ -6777,14 +6777,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1092,
+        "line": 1022,
         "source": "else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}"
       }
     },
     {
       "name": "satoriIndex",
       "file": "ui/progression-ui.js",
-      "line": 1092,
+      "line": 1022,
       "access": "write",
       "classification": "needs-migration",
       "category": "event-local",
@@ -6796,14 +6796,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1092,
+        "line": 1022,
         "source": "else if(satoriIndex===SATORI_STAGES.length-1&&activeLap===1&&secondLapUnlocked){activateCampaignLap(2);loadStage(0);}"
       }
     },
     {
       "name": "extraIndex",
       "file": "ui/progression-ui.js",
-      "line": 1095,
+      "line": 1025,
       "access": "write",
       "classification": "needs-migration",
       "category": "event-local",
@@ -6815,14 +6815,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1095,
+        "line": 1025,
         "source": "if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}"
       }
     },
     {
       "name": "extraIndex",
       "file": "ui/progression-ui.js",
-      "line": 1095,
+      "line": 1025,
       "access": "write",
       "classification": "needs-migration",
       "category": "event-local",
@@ -6834,14 +6834,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1095,
+        "line": 1025,
         "source": "if(isMode('mastery')){if(extraIndex===EXTRA_STAGES.length-1&&canEnterSatori())loadSatoriStage(0);else loadExtraStage(extraIndex+1);}"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 1096,
+      "line": 1026,
       "access": "write",
       "classification": "needs-migration",
       "category": "event-local",
@@ -6853,14 +6853,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1096,
+        "line": 1026,
         "source": "else if(stageIndex===STAGES.length-1&&allPrimaryCleared())loadExtraStage(0);"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-ui.js",
-      "line": 1097,
+      "line": 1027,
       "access": "read",
       "classification": "needs-migration",
       "category": "event-local",
@@ -6872,7 +6872,7 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-ui.js",
-        "line": 1097,
+        "line": 1027,
         "source": "else loadStage(stageIndex+1);"
       }
     },
