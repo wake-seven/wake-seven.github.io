@@ -23,6 +23,8 @@ const investigationExit = await new Promise(resolve => {
   investigation.on('error', () => resolve(1));
 });
 if (investigationExit !== 0) throw new Error('影響調査に失敗したため、検査を中断します');
+let investigationReport = null;
+try { investigationReport = JSON.parse(await readFile(join(reportDir, 'feature-investigation-changed.json'), 'utf8')); } catch { /* 調査スクリプトが生成するため通常は到達しない */ }
 // 検査基盤・共有状態・主要導線・公開生成物の変更は、部分検査を成功扱いにしない。
 const fullRules = (config.policy?.fullGateRequired?.paths || []).map(path =>
   new RegExp(`^${path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
@@ -30,7 +32,7 @@ const affectedRules = [/^src\//, /^(?:styles?|public)\//, /\.(?:css|html|svg)$/i
 const reasons = [];
 let selected = requested;
 if (!selected) {
-  selected = 'fast';
+  selected = investigationReport?.recommendedProfile || 'fast';
   for (const file of files) {
     if (fullRules.some(rule => rule.test(file))) selected = 'full';
     else if (selected === 'fast' && affectedRules.some(rule => rule.test(file))) selected = 'affected';
