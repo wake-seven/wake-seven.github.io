@@ -4909,32 +4909,24 @@ try{secondLapUnlocked=secondLapUnlocked||storage.get(STORAGE_KEY_GROUPS.progress
 // 2つ目のモード状態と誤認しないようにする。
 let returnStageContext={extra:false,satori:false,index:0};
 let editingBoard=false;
-// ダイアログの一時状態も所有者を一つにし、表示処理はこの入口から更新する。
-const dialogState={clearShown:false,nextStageAttention:false,masterDialogKind:'primary',rankDialogReturn:null,messageDialogReturn:null};
-let masterDialogKind=dialogState.masterDialogKind;
-let rankDialogReturn=dialogState.rankDialogReturn;
+// ダイアログの一時状態はこの変数群だけが所有し、表示処理はowner経由で更新する。
+let masterDialogKind='primary';
+let rankDialogReturn=null;
 let rankListLap=activeLap;
 // ステージ選択画面の一時的な表示位置。現在のゲーム位置とは分離して保持する。
 let pickerLap=activeLap;
 let pickerRound=-PRIMARY_PICKER_SECTION_COUNT;
 let satoriPickerPage=0;
-let messageDialogReturn=dialogState.messageDialogReturn;
+let messageDialogReturn=null;
 function readDialogStateOwner(){
-  // 段階移行中の旧参照が書き換えた場合も、公開ビューへ取り込む。
-  dialogState.clearShown=clearShown===true;dialogState.nextStageAttention=nextStageAttention===true;
-  dialogState.masterDialogKind=masterDialogKind;dialogState.rankDialogReturn=rankDialogReturn;
-  dialogState.messageDialogReturn=messageDialogReturn;
-  return Object.freeze({...dialogState});
+  return Object.freeze({clearShown,nextStageAttention,masterDialogKind,rankDialogReturn,messageDialogReturn});
 }
 function updateDialogStateOwner(patch={}){
-  if(patch.clearShown!==undefined)dialogState.clearShown=patch.clearShown===true;
-  if(patch.nextStageAttention!==undefined)dialogState.nextStageAttention=patch.nextStageAttention===true;
-  if(patch.masterDialogKind!==undefined)dialogState.masterDialogKind=patch.masterDialogKind;
-  if(patch.rankDialogReturn!==undefined)dialogState.rankDialogReturn=patch.rankDialogReturn;
-  if(patch.messageDialogReturn!==undefined)dialogState.messageDialogReturn=patch.messageDialogReturn;
-  clearShown=dialogState.clearShown;nextStageAttention=dialogState.nextStageAttention;
-  masterDialogKind=dialogState.masterDialogKind;rankDialogReturn=dialogState.rankDialogReturn;
-  messageDialogReturn=dialogState.messageDialogReturn;
+  if(patch.clearShown!==undefined)clearShown=patch.clearShown===true;
+  if(patch.nextStageAttention!==undefined)nextStageAttention=patch.nextStageAttention===true;
+  if(patch.masterDialogKind!==undefined)masterDialogKind=patch.masterDialogKind;
+  if(patch.rankDialogReturn!==undefined)rankDialogReturn=patch.rankDialogReturn;
+  if(patch.messageDialogReturn!==undefined)messageDialogReturn=patch.messageDialogReturn;
   return readDialogStateOwner();
 }
 // ダイアログを閉じたときに元の場所へ戻る「戻り先」の共通形: {dialogId,focusId}を
@@ -9152,7 +9144,7 @@ function messageReviewRenderer(entry){if(entry.quiz!==undefined)return MESSAGE_R
 function renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule){const classByArt={'move-graph':art==='moveGraph','board-card':art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'),'controls-art':art==='controls','navigation-art':art==='navigation','menu-art':art==='menuButtons','rank-badge-art':art==='rankBadgeArt','unwritten-art':art==='unwritten','cheer-art':art==='cheer','intro-guide-art':art==='introGuide','two-move-lesson-art':!!twoMoveLesson};Object.entries(classByArt).forEach(([className,enabled])=>illustration.classList.toggle(className,enabled));stopClearGuideBoard('messageClearGuideBoard');stopClearGuideBoard('messageTwoMoveLessonBoard');illustration.replaceChildren();if(art==='introGuide'){const template=document.getElementById('message-intro-guide-frame-template');if(template){const board=template.content.cloneNode(true).firstElementChild;board.id='messageClearGuideBoard';illustration.append(board);}else illustration.innerHTML='<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>';}else if(twoMoveLesson){const template=document.getElementById('message-two-move-lesson-frame-template');if(template){const board=template.content.cloneNode(true).firstElementChild;board.id='messageTwoMoveLessonBoard';illustration.append(board);}else illustration.innerHTML='<svg id="messageTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>';}else if(art)illustration.innerHTML=tipArt(art);if(art==='cheer'){const template=document.getElementById('message-cheer-caption-template');if(template){const caption=template.content.cloneNode(true);caption.querySelector('[data-cheer-caption]').textContent=tr('cheerCaption');illustration.append(caption);}}if(art==='introGuide')buildClearGuideBoard('messageClearGuideBoard');if(twoMoveLesson)buildTwoMoveLessonBoard('messageTwoMoveLessonBoard',twoMoveLesson);illustration.hidden=!art;lessonCopy.hidden=!twoMoveLesson;lessonRule.hidden=!twoMoveLesson;}
 function renderMessageLesson(twoMoveLesson,illustration,lessonCopy,lessonRule){if(twoMoveLesson){renderTwoMoveLessonRule('messageTwoMoveLessonRule');renderTwoMoveLessonCopy('messageTwoMoveLessonCopy',twoMoveLesson);$('messageDialogText').after(illustration);illustration.before(lessonRule);illustration.after(lessonCopy);}else{lessonRule.replaceChildren();lessonCopy.replaceChildren();}}
 function renderMessageQuiz(quiz){renderQuizInto({root:'messageQuiz',options:'messageQuizOptions',note:'messageQuizNote',title:'messageQuizTitle',question:'messageQuizQuestion'},quiz);}
-function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();messageDialogReturn=returnTarget;messageReviewEntries=buildMessageReviewEntries();if(resume){let lastKey='',lastClearKey='';try{lastKey=storage.get(MESSAGE_REVIEW_STORAGE_KEY)||'';lastClearKey=storage.get(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY)||'';}catch(_){}if(!lastClearKey&&isSatoriMastered()){const satoriEntry=messageReviewEntries.findIndex(entry=>entry.satori);if(satoriEntry>=0){messageReviewIndex=satoriEntry;const key=messageReviewEntryKey(messageReviewEntries[satoriEntry]);try{storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);}catch(_){}}else messageReviewIndex=0;}else{const saved=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===lastKey);messageReviewIndex=saved>=0?saved:0;}}else{const currentExtra=isMode('mastery'),currentIndex=currentExtra?masteryIndex:stageIndex;const exact=messageReviewEntries.findIndex(entry=>entry.extra===currentExtra&&entry.index===currentIndex);messageReviewIndex=exact>=0?exact:0;}renderMessageReview();$('messageDialog').hidden=false;$('closeMessages').focus();}
+function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();updateDialogStateOwner({messageDialogReturn:returnTarget});messageReviewEntries=buildMessageReviewEntries();if(resume){let lastKey='',lastClearKey='';try{lastKey=storage.get(MESSAGE_REVIEW_STORAGE_KEY)||'';lastClearKey=storage.get(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY)||'';}catch(_){}if(!lastClearKey&&isSatoriMastered()){const satoriEntry=messageReviewEntries.findIndex(entry=>entry.satori);if(satoriEntry>=0){messageReviewIndex=satoriEntry;const key=messageReviewEntryKey(messageReviewEntries[satoriEntry]);try{storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);}catch(_){}}else messageReviewIndex=0;}else{const saved=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===lastKey);messageReviewIndex=saved>=0?saved:0;}}else{const currentExtra=isMode('mastery'),currentIndex=currentExtra?masteryIndex:stageIndex;const exact=messageReviewEntries.findIndex(entry=>entry.extra===currentExtra&&entry.index===currentIndex);messageReviewIndex=exact>=0?exact:0;}renderMessageReview();$('messageDialog').hidden=false;$('closeMessages').focus();}
 const MESSAGE_RENDERERS=Object.freeze({
   quiz:entry=>{configureMessageReviewHeader(entry);renderMessageQuiz(entry.quiz);},
   boardQuiz:entry=>{configureMessageReviewHeader(entry);renderBoardQuiz('messageBoardQuiz',clearContentAt(true,entry.index).boardQuiz);},
