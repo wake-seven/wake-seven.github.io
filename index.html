@@ -1911,8 +1911,8 @@ const WakeSevenBoardDomain=(()=>{
 })();
 // 公開ネイティブモジュールの構文境界。
 
-// ===== クリア後メッセージデータ =====
-// ===== クリア後・開始前メッセージデータ =====
+// ===== クリアコンテンツデータ =====
+// ===== クリア後・開始前メッセージ定義 =====
 // 問題データやUIロジックから分離した、クリア後・開始前の多言語コンテンツ。
 // キーと内容は変更せず、公開用index.htmlへビルド時に埋め込む。
 const CLEAR_CONTENT={
@@ -2533,8 +2533,8 @@ const SATORI_ORDER_VERSION='mixed-depths-final-swap-10';
 const satoriStageIndexByState=new Map(SATORI_STAGES.map((stage,index)=>[stage.state,index]));
 // 公開ネイティブモジュールの構文境界。
 
-// ===== 多言語UIテキスト =====
-// ===== UI_TEXT(多言語辞書) =====
+// ===== 多言語UIデータ =====
+// ===== 多言語文言辞書 =====
 // 現在tr()から呼ばれていないキーが一定数ある(2026年時点で384キー中20キー、
 // makerKind/customKind/speedModeSelect/speedUnlockedStart系など)。
 // 今後のステージ・演出追加で使う予定の下書き文言なので、「未使用だから」という理由だけで
@@ -4131,7 +4131,6 @@ const UI_TEXT={
 // 公開ネイティブモジュールの構文境界。
 
 // ===== 盤面クイズデータ =====
-// ===== 盤面クイズデータ =====
 /* クイズは見直すたびに選択肢の位置を変える。 */
 // en/zh/koのnotTwoは現状どこからも読まれていない下書きの出題文(「最短2手でない盤面はどれ？」)。
 // 未使用だからと削除しないこと(後で使う予定)。
@@ -4146,7 +4145,6 @@ Object.assign(BOARD_QUIZ_COPY.zh,{chooseThree:'哪一个最少需要3步？',lar
 Object.assign(BOARD_QUIZ_COPY.ko,{chooseThree:'어느 보드가 최단 3수일까요?',largeTriangle:'누운 다루마의 큰 삼각형은 방향에 따라 최단 3수 또는 4수가 됩니다.'});
 // 公開ネイティブモジュールの構文境界。
 
-// ===== 固定挿絵・SVGデータ =====
 // ===== 固定挿絵・SVGデータ =====
 // 画面ロジックから分離した、内容を変更しない固定アセット。
 function academyEnrollArtSvg(){
@@ -4234,8 +4232,7 @@ const TRAINING_WELCOME_ART_SVG=`<svg id="trainingWelcomeArt" viewBox="0 0 320 22
 
 // 公開バンドルではネイティブモジュールへ連結されることを明示する境界。
 
-// ===== 実行設定 =====
-// ===== アプリケーション共有状態の入口 =====
+// ===== 実行設定・共有状態API =====
 // 画面やコマンドから runtime.js の変数を直接読み書きする箇所を
 // 少しずつ減らすための、小さな共有状態ゲートウェイ。
 // ここでは状態の所有権を奪わず、既存ランタイムの値へ安全に委譲する。
@@ -4314,8 +4311,7 @@ function setClearShownCommand(value){return updateDialogStateCommand({clearShown
 function setSpeedSessionCommand(value){return updateSessionStateCommand({speedSession:value}).speedSession;}
 function setSpeedVariantCommand(value){return updateSessionStateCommand({speedVariant:value}).speedVariant;}
 
-// ===== サウンド =====
-// ===== 実行設定 =====
+// ===== 実行設定（テーマ・サウンド） =====
 // 設定の初期化だけを担当する。
 // gameState / storage / STORAGE_KEY_GROUPS は runtime.js 側で準備された後に呼び出す。
 let soundEnabled=false;
@@ -4338,8 +4334,7 @@ function initializeRuntimeSettings(){
 
 // 公開バンドルではネイティブモジュールへ連結されることを明示する境界。
 
-// ===== 速解き解放状態 =====
-// ===== サウンド =====
+// ===== サウンド制御 =====
 let audioContext=null;
 
 function playTone(frequency,duration=.06,volume=.028,delay=0){
@@ -4397,7 +4392,7 @@ function updateSoundToggle(){
 }
 // 公開ネイティブモジュールの構文境界。
 
-// ===== 実行状態 =====
+// ===== 速解き解放状態 =====
 // 速解き解放状態の読み込み。
 // 実行時の状態変数は runtime.js が所有し、ここは保存境界だけを担当する。
 function initializeSpeedUnlockState({initialUnlocks={},awakenedGranted=false}={}){
@@ -5683,8 +5678,7 @@ function completeSpeedStage(){
 }
 // 公開ネイティブモジュールの構文境界。
 
-// ===== 盤面アニメーション補助 =====
-// ===== 速解きセッションの入口 =====
+// ===== 速解きセッション・盤面アニメーション補助 =====
 // 開始・一時停止・再開・復元の呼び出しを一つの機能入口から追跡する。
 // タイマー計算、問題データ、保存の実装は既存の所有モジュールへ委譲する。
 function readSpeedFeatureContext(){const navigation=readNavigationContext();return Object.freeze({
@@ -5705,8 +5699,7 @@ const WakeSevenSpeedFeature=Object.freeze({
   restore(){return enterSpeedMode(false);}
 });
 
-// ===== 盤面座標変換 =====
-// ===== 盤面アニメーション補助 =====
+// ===== 盤面座標変換・アニメーション補助 =====
 // 自動回転・戻す演出で共有する、クローン盤面の生成と状態反映だけを担当する。
 // 実際の盤面状態は board-ui.js 側で確定し、このヘルパーは表示中の一時状態を扱う。
 function animationTileState(turn){
@@ -8495,7 +8488,7 @@ function createNamedAnimationGuard(name='ui-animation'){
 }
 function setDialogOpenState(id,open){const dialog=$(id);if(dialog)dialog.hidden=!open;return !!open;}
 
-// ===== 進行command =====
+// ===== 進行状態コマンド =====
 // 学園・応用・速解きで使う候補棒の計算。
 // DOMは変更せず、現在の盤面から「候補にする棒」を返す。
 const ACADEMY_GRIP_DISPLAY_RULE=Object.freeze({oneMove:TRI.length,maxGuided:3});
@@ -8641,7 +8634,7 @@ function refreshGuidedBasicCandidates(){
   });
 }
 
-// ===== 速解きcommand =====
+// ===== 速解きコマンド =====
 // 共有状態を書き換える操作命令。
 // 画面イベントは個別の let や保存形式を直接変更せず、この入口へ意図を渡す。
 function updateNavigationStateCommand(patch={}){
@@ -8668,7 +8661,7 @@ function restoreNavigationStateCommand(navigation={}){
   });
 }
 
-// ===== 速解き記録command =====
+// ===== 速解き記録コマンド =====
 // 盤面操作のコマンド入口。実装本体は当面 board-ui.js に残し、入力経路だけを統一する。
 // options をオブジェクト化しておくことで、将来の状態ストア移行時に呼び出し側を変えずに済む。
 const WakeSevenBoardCommands=Object.freeze({
@@ -8733,7 +8726,7 @@ function applyBoardOrientationCommand(permutation,flip=false){
 }
 // 公開ネイティブモジュールの構文境界。
 
-// ===== チュートリアルcommand =====
+// ===== チュートリアルコマンド =====
 // 設定変更の書き込み境界。UIイベントはこのcommandを呼び、保存形式を直接扱わない。
 function toggleSoundCommand(){
   const settings=WakeSevenAppContext.state.settings.read();
@@ -9850,7 +9843,6 @@ const WakeSevenSettingsFeature=Object.freeze({
   restore:openSettingsFeature
 });
 
-// ===== ui/progression-ui.js =====
 // ===== 進行UI（このファイルの責務） =====
 // ステージ選択、進行表示、クリア後表示をまとめる。前後移動イベントは
 // progression-navigation.js、共通の小さな表示処理は progression-render.js が担当する。
@@ -10889,7 +10881,6 @@ $('freeMode').addEventListener('click',()=>{if(busy||isMode('free'))return;resto
 
 // 公開ネイティブモジュールの構文境界。
 
-// ===== ui/progression-hud.js =====
 // 進行画面のHUDとステージナビを描画する。状態遷移は行わず、表示更新だけを担当する。
 function createProgressionViewContext({
   mode,
@@ -11122,7 +11113,6 @@ function renderStageNav(){
   renderStageNavGuidance();
 }
 
-// ===== ui/progression-hints.js =====
 // ===== ヒント表示・チュートリアル補助 =====
 function clearHintVisuals(preserveSelection=false){
   clearAxisGuide();
@@ -11164,7 +11154,6 @@ $('hint').addEventListener('click',()=>{cancelTutorialHint();if(isFourthVolume()
 
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 
-// ===== ui/progression-flow-contract.js =====
 // ===== 進行フローの遷移契約 =====
 // 画面ごとの条件分岐を再実装するためのものではなく、既存の入口が
 // どの状態を経由するかを読み取るための監査用の宣言データ。
@@ -11192,7 +11181,6 @@ const PROGRESSION_ORCHESTRATORS=Object.freeze([
   {id:'stage-advance',name:'ステージ進行オーケストレーター',entry:'dispatchClearFlowAction',source:'src/ui/progression-clear-flow.js',order:{decision:['resolveAfterClearRoute'],transition:['setClearFlowPhase'],render:['loadStage']}}
 ]);
 
-// ===== ui/progression-clear-flow.js =====
 // ===== クリア後の状態遷移 =====
 // クリア演出の表示と、次の問題/コースへの遷移を進行UI本体から分離する。
 // clearShown は保存・進行用の状態なので、表示予約の重複防止には使わない。
@@ -11501,7 +11489,6 @@ function returnToClearDialog(){
 
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 
-// ===== ui/rank.js =====
 // 称号表示と称号一覧ダイアログ。
 // 盤面選択画面やクリア後演出からも利用するため、描画の共通部をここに集約する。
 // 称号の定義・判定・色は、ステージ選択や進行UIから参照される共通の称号領域。
@@ -11671,7 +11658,6 @@ function openRankDialogFrom(dialogId,sealId){
 }
 // 公開ネイティブモジュールの構文境界。
 
-// ===== ui/render.js =====
 /* ---- 画面描画の境界 ----
  * 進行状態を変更する処理と、現在の状態を画面へ反映する処理を分ける。
  * 既存の個別レンダラーは互換のため残し、画面全体を更新する入口だけを
@@ -11703,7 +11689,6 @@ function renderCurrentView(model={},context={}){
 function replaceRenderedContent(root,markup=''){return svgMount(root,markup);}
 // 公開ネイティブモジュールの構文境界。
 
-// ===== runtime/app-events.js =====
 // ===== アプリケーションイベント =====
 // 要素検索とイベント登録は、公開イベントの単一入口でまとめて追跡する。
 // 小さな別ファイルへ分散させず、イベント配線と同じ境界に置く。
@@ -12926,7 +12911,6 @@ $('resetDialogAll').addEventListener('click',()=>{
 
 // 公開ネイティブモジュールの構文境界。
 
-// ===== runtime/app-bootstrap.js =====
 // 起動・復元・ページライフサイクル。画面イベントの定義とは分離する。
 const canShowDeferredBootDialog=()=>[
   'introDialog','chainDialog','clearDialog','messageDialog','masterDialog',
@@ -12987,7 +12971,6 @@ if(document.documentElement.classList.contains('embed')&&window.parent!==window)
 }
 // 公開ネイティブモジュールの構文境界。
 
-// ===== runtime/namespace.js =====
 /* 公開APIの境界。既存のグローバル関数は互換のため残し、外部からはこの名前空間を入口にする。 */
 (function attachWakeSevenNamespace(global) {
   'use strict';
@@ -13037,7 +13020,6 @@ if(document.documentElement.classList.contains('embed')&&window.parent!==window)
 })(window);
 // 公開ネイティブモジュールの構文境界。
 
-// ===== ui/dom.js =====
 // ===== 共通DOM更新API =====
 function resolveElement(elementOrId) {
   return typeof elementOrId === 'string'
@@ -13078,7 +13060,6 @@ function createRefs(ids,documentRef=document){return Object.freeze(Object.fromEn
 
 // 公開バンドルへ連結する断片でもESM境界を明示する。
 
-// ===== ui/template.js =====
 // ===== テンプレート取り付けAPI =====
 // 公開バンドルへ連結する断片でもESM境界を明示する。
 </script>
