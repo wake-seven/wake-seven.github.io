@@ -7,6 +7,10 @@ import { fileURLToPath } from 'node:url';
 const root=dirname(dirname(fileURLToPath(import.meta.url)));
 const stage=process.argv[2];
 if(!['milestone','release'].includes(stage))throw new Error(`不明な検査段階です: ${stage||'(未指定)'}`);
+if(stage==='release'){
+  const session=JSON.parse(await readFile(join(root,'tmp/change-session.json'),'utf8').catch(()=>'{"error":true}'));
+  if(!session.releasePrepared?.version)throw new Error('先に npm run release:prepare を実行してください。バージョン更新と公開版生成をこの工程へ集約しています。');
+}
 
 const run=(command,args,extraEnv={})=>new Promise(resolve=>{
   const child=spawn(command,args,{cwd:root,stdio:'inherit',shell:false,env:{...process.env,...extraEnv}});
