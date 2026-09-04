@@ -3,6 +3,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 import { sourceRevision, writeReport } from './lib/report.mjs';
+import { normalizeTrackedReports } from './lib/report-noise.mjs';
 import { loadCheckRegistry, validateCheckRegistry, writeCheckRegistryReport } from './check-registry.mjs';
 
 // 公開版を作り直してから、検査を定義順に一度ずつ実行する最終ゲート。
@@ -123,6 +124,7 @@ for (const step of steps) {
     report.summary = summarize(report.steps);
     report.finishedAt = new Date().toISOString();
     await attachExecutionEvidence();
+    report.normalizedReports = await normalizeTrackedReports(root);
     await writeReport(reportPath, { ...report, generatedAt: report.finishedAt });
     console.error(`Check gate failed in ${result.groupLabel} (${result.group}): ${result.name}. Report: ${reportPath}`);
     if (result.reportLinks.length) console.error(`詳細レポート: ${result.reportLinks.join(', ')}`);
@@ -151,6 +153,7 @@ if (!report.failedStep) {
   report.summary = { steps: report.steps.length, failedStep: null, byProfile, byGroup, slowest };
   report.runtime = { schemaVersion: 1, generatedAt: report.finishedAt, contextPath: 'build/report/check-context.json', profiles: byProfile, groups: byGroup, slowest };
   await attachExecutionEvidence();
+  report.normalizedReports = await normalizeTrackedReports(root);
   await writeReport(runtimeReportPath, { schemaVersion: 1, name: 'wake7-check-runtime', generatedAt: report.finishedAt, sourceRevision: report.sourceRevision, profiles: byProfile, groups: byGroup, slowest });
   await writeReport(reportPath, { ...report, generatedAt: report.finishedAt });
   console.log('Check gate summary:');
