@@ -4277,8 +4277,8 @@ const WakeSevenAppContext=Object.freeze({
       update(patch={}){if(patch.savedFreeSession!==undefined)savedFreeSession=patch.savedFreeSession;if(patch.speedSession!==undefined&&typeof speedSession!=='undefined')speedSession=patch.speedSession;if(patch.speedVariant!==undefined)speedVariant=patch.speedVariant;return this.read();}
     }),
     settings:Object.freeze({
-      read(){return Object.freeze({soundEnabled,boardTheme,boardLayout,boardThemeChosen,boardLayoutChosen,darumaColor,darumaColorChosen,currentLang});},
-      update(patch={}){if(patch.soundEnabled!==undefined)soundEnabled=patch.soundEnabled===true;if(patch.boardTheme!==undefined)boardTheme=patch.boardTheme;if(patch.boardLayout!==undefined)boardLayout=patch.boardLayout;if(patch.boardThemeChosen!==undefined)boardThemeChosen=patch.boardThemeChosen===true;if(patch.boardLayoutChosen!==undefined)boardLayoutChosen=patch.boardLayoutChosen===true;if(patch.darumaColor!==undefined)darumaColor=patch.darumaColor;if(patch.darumaColorChosen!==undefined)darumaColorChosen=patch.darumaColorChosen===true;if(patch.currentLang!==undefined)currentLang=patch.currentLang;return this.read();}
+      read(){return readSettingsStateOwner();},
+      update(patch={}){return updateSettingsStateOwner(patch);}
     })
   }),
   // 現在の画面状態を、表示処理が使える読み取り専用スナップショットで返す。
@@ -4303,8 +4303,8 @@ function setSpeedSessionCommand(value){return updateSessionStateCommand({speedSe
 function setSpeedVariantCommand(value){return updateSessionStateCommand({speedVariant:value}).speedVariant;}
 
 // ===== 実行設定（テーマ・サウンド） =====
-// 設定の初期化だけを担当する。
-// gameState / storage / STORAGE_KEY_GROUPS は runtime.js 側で準備された後に呼び出す。
+// 実行中の設定はこの変数群だけが所有する。読み書きは owner API に集約し、
+// gameState.settings は同じ更新入口から永続化用スナップショットとして同期する。
 let soundEnabled=false;
 let boardTheme='default';
 let boardLayout='normal';
@@ -4313,14 +4313,50 @@ let boardLayoutChosen=false;
 let darumaColor='red';
 let darumaColorChosen=false;
 
+function readSettingsStateOwner(){
+  return Object.freeze({soundEnabled,boardTheme,boardLayout,boardThemeChosen,boardLayoutChosen,darumaColor,darumaColorChosen,currentLang});
+}
+function settingsPersistenceSnapshot(){
+  return {language:currentLang,sound:soundEnabled,boardTheme,boardLayout,boardThemeChosen,boardLayoutChosen,darumaColor,darumaColorChosen};
+}
+function updateSettingsStateOwner(patch={}){
+  patch=patch&&typeof patch==='object'&&!Array.isArray(patch)?patch:{};
+  const persisted={};
+  if(typeof patch.soundEnabled==='boolean'){soundEnabled=patch.soundEnabled;persisted.sound=soundEnabled;}
+  if(['default','gold','satori'].includes(patch.boardTheme)){boardTheme=patch.boardTheme;persisted.boardTheme=boardTheme;}
+  if(['normal','tilted'].includes(patch.boardLayout)){boardLayout=patch.boardLayout;persisted.boardLayout=boardLayout;}
+  if(typeof patch.boardThemeChosen==='boolean'){boardThemeChosen=patch.boardThemeChosen;persisted.boardThemeChosen=boardThemeChosen;}
+  if(typeof patch.boardLayoutChosen==='boolean'){boardLayoutChosen=patch.boardLayoutChosen;persisted.boardLayoutChosen=boardLayoutChosen;}
+  if(['red','rainbow'].includes(patch.darumaColor)){darumaColor=patch.darumaColor;persisted.darumaColor=darumaColor;}
+  if(typeof patch.darumaColorChosen==='boolean'){darumaColorChosen=patch.darumaColorChosen;persisted.darumaColorChosen=darumaColorChosen;}
+  if(typeof patch.currentLang==='string'&&Object.prototype.hasOwnProperty.call(UI_TEXT,patch.currentLang)){currentLang=patch.currentLang;persisted.language=currentLang;}
+  if(Object.keys(persisted).length)WakeSevenState.updateSettings(gameState,persisted);
+  return readSettingsStateOwner();
+}
+function updatePublicSettingsState(patch={}){
+  patch=patch&&typeof patch==='object'&&!Array.isArray(patch)?patch:{};
+  const runtimePatch={};
+  if(patch.language!==undefined)runtimePatch.currentLang=patch.language;
+  if(patch.sound!==undefined)runtimePatch.soundEnabled=patch.sound;
+  for(const key of ['boardTheme','boardLayout','boardThemeChosen','boardLayoutChosen','darumaColor','darumaColorChosen']){
+    if(patch[key]!==undefined)runtimePatch[key]=patch[key];
+  }
+  updateSettingsStateOwner(runtimePatch);
+  const known=new Set(['language','sound','boardTheme','boardLayout','boardThemeChosen','boardLayoutChosen','darumaColor','darumaColorChosen']);
+  const extra=Object.fromEntries(Object.entries(patch).filter(([key,value])=>!known.has(key)&&value!==undefined));
+  if(Object.keys(extra).length)WakeSevenState.updateSettings(gameState,extra);
+  return gameState.settings;
+}
 function initializeRuntimeSettings(){
-  soundEnabled=gameState.settings.sound!==false;
-  boardTheme=['default','gold','satori'].includes(gameState.settings.boardTheme)?gameState.settings.boardTheme:'default';
-  boardLayout=gameState.settings.boardTheme==='tilted'||gameState.settings.boardLayout==='tilted'?'tilted':'normal';
-  boardThemeChosen=gameState.settings.boardThemeChosen===true;
-  boardLayoutChosen=gameState.settings.boardLayoutChosen===true;
-  darumaColor=['red','rainbow'].includes(gameState.settings.darumaColor)?gameState.settings.darumaColor:'red';
-  darumaColorChosen=gameState.settings.darumaColorChosen===true;
+  updateSettingsStateOwner({
+    soundEnabled:gameState.settings.sound!==false,
+    boardTheme:['default','gold','satori'].includes(gameState.settings.boardTheme)?gameState.settings.boardTheme:'default',
+    boardLayout:gameState.settings.boardTheme==='tilted'||gameState.settings.boardLayout==='tilted'?'tilted':'normal',
+    boardThemeChosen:gameState.settings.boardThemeChosen===true,
+    boardLayoutChosen:gameState.settings.boardLayoutChosen===true,
+    darumaColor:['red','rainbow'].includes(gameState.settings.darumaColor)?gameState.settings.darumaColor:'red',
+    darumaColorChosen:gameState.settings.darumaColorChosen===true
+  });
 }
 
 
@@ -4619,7 +4655,7 @@ function syncGameState(){
     lap1:{primary:[...lap1ClearedStages],mastery:[...lap1ClearedExtraStages],satori:[...lap1ClearedSatoriStages]},
     lap2:{primary:[...lap2ClearedStages],mastery:[...lap2ClearedExtraStages],satori:[...lap2ClearedSatoriStages]}
   });
-  WakeSevenState.updateSettings(gameState,{language:currentLang,sound:soundEnabled,boardTheme,boardLayout,boardThemeChosen,boardLayoutChosen,darumaColor,darumaColorChosen});
+  WakeSevenState.updateSettings(gameState,settingsPersistenceSnapshot());
   WakeSevenState.updateUnlocks(gameState,{
     secondLap:secondLapUnlocked,awakened:awakenedGranted,threeD:threeDUnlocked,
     speedTraining:speedTrainingUnlocked,speedIntermediate:speedIntermediateUnlocked,
@@ -5078,17 +5114,19 @@ function grantMasterReward(){
 function updateMasterTheme(){
   document.body.classList.toggle('mastered',hasMasterReward());
   document.body.classList.toggle('satori-mastered',hasSatoriReward());
+  let nextBoardTheme=boardTheme,nextBoardLayout=boardLayout,nextDarumaColor=darumaColor;
   // 悟り制覇の瞬間は、白黒と縦配置をセットで新しい褒美として見せる。
   if(isSatoriMastered()&&!satoriDesignGranted){
-    boardTheme='satori';boardLayout='tilted';satoriDesignGranted=setUnlock('satoriDesignGranted',true);
+    nextBoardTheme='satori';nextBoardLayout='tilted';satoriDesignGranted=setUnlock('satoriDesignGranted',true);
     try{storage.set(STORAGE_KEY_GROUPS.rewards.satoriDesignGranted,'1');}catch(_){ }
   }
-  if(hasMasterReward()&&!boardThemeChosen)boardTheme=hasSatoriReward()?'satori':'gold';
-  if(hasSatoriReward()&&!boardLayoutChosen)boardLayout='tilted';
-  if(rainbowDarumaGranted&&!darumaColorChosen)darumaColor='rainbow';
-  if(!rainbowDarumaGranted)darumaColor='red';
-  if((boardTheme==='gold'&&!hasMasterReward())||(boardTheme==='satori'&&!hasSatoriReward()))boardTheme='default';
-  if(boardLayout==='tilted'&&!hasSatoriReward())boardLayout='normal';
+  if(hasMasterReward()&&!boardThemeChosen)nextBoardTheme=hasSatoriReward()?'satori':'gold';
+  if(hasSatoriReward()&&!boardLayoutChosen)nextBoardLayout='tilted';
+  if(rainbowDarumaGranted&&!darumaColorChosen)nextDarumaColor='rainbow';
+  if(!rainbowDarumaGranted)nextDarumaColor='red';
+  if((nextBoardTheme==='gold'&&!hasMasterReward())||(nextBoardTheme==='satori'&&!hasSatoriReward()))nextBoardTheme='default';
+  if(nextBoardLayout==='tilted'&&!hasSatoriReward())nextBoardLayout='normal';
+  updateSettingsStateOwner({boardTheme:nextBoardTheme,boardLayout:nextBoardLayout,darumaColor:nextDarumaColor});
   document.body.dataset.boardTheme=boardTheme;
   document.body.dataset.boardLayout=boardLayout;
   applyBoardTheme();
@@ -8728,7 +8766,7 @@ function setLanguageCommand(lang){
 function grantMasterDialogRewardsCommand(kind){
   if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
   if(kind==='mastery'&&secondLapActive&&!rainbowDarumaGranted){
-    rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);darumaColor='rainbow';darumaColorChosen=false;
+    rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);updateSettingsStateOwner({darumaColor:'rainbow',darumaColorChosen:false});
     try{commandStorageSet(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');commandStorageRemove(STORAGE_KEY_GROUPS.settings.darumaColorChosen);}catch(_){ }
     updateMasterTheme();renderStageNav();syncGameState();
   }
@@ -11597,8 +11635,7 @@ function debugClearCurrent(extraMoves=0){
 $('debugClear').addEventListener('click',()=>debugClearCurrent(0));
 function debugGrantRainbowDaruma(){
   rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);
-  darumaColor='rainbow';
-  darumaColorChosen=false;
+  updateSettingsStateOwner({darumaColor:'rainbow',darumaColorChosen:false});
   try{
     storage.set(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');
     storage.set(STORAGE_KEY_GROUPS.settings.darumaColor,'rainbow');
@@ -12857,7 +12894,7 @@ if(document.documentElement.classList.contains('embed')&&window.parent!==window)
     get progress() { return gameState.progress; },
     persist() { return persistActiveSession(); },
     updateNavigation(patch) { return updateNavigationStateOwner(patch); },
-    updateSettings(patch) { return WakeSevenState.updateSettings(gameState, patch); }
+    updateSettings(patch) { return updatePublicSettingsState(patch); }
   });
 
   const progressionApi = Object.freeze({
