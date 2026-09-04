@@ -7035,7 +7035,7 @@ function paint(){
     renderSpeedClock();
   }
   if(isMode('speed')&&isSolved()&&!clearShown&&speedSession&&!speedAwaitingStart()){
-    ProgressionEntryPoints.finishStage({mode:'speed'});return;
+    completeBoard({mode:'speed'});return;
   }
   // 二周目の悟りは、最短手数を手がかりにさせない。成功しない限り4手目まで続けられる。
   const satoriFailureLimit=secondLapActive?4:best;
@@ -7046,7 +7046,7 @@ function paint(){
     $('optimalFailDialog').hidden=false;
     return;
   }
-  if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){ProgressionEntryPoints.finishStage({mode:activeMode});}
+  if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){completeBoard({mode:activeMode});}
 }
 function tileTransform(x,y,turn){
   return WakeSevenBoardGeometry.tileTransform(x,y,turn);
@@ -8748,25 +8748,16 @@ function recordProgressClearCommand(kind,index){
   persistLapProgress();
   return true;
 }
-// 進行処理の公開入口。UIやイベントは実装関数を直接呼ばず、ここを経由する。
-// 入口名と実装名の対応は scripts/progression-entry-points.mjs の追跡レポートにも出力する。
-const ProgressionEntryPoints=Object.freeze({
-  showProgressionDialog:(kind,context={},source='unknown')=>requestProgressionDialog(kind,context,source),
-  advanceAfterClear:()=>advanceAfterClear(),
-  startStage:index=>loadStage(index),
-  finishStage:options=>completeBoard(options),
-  returnToMenu:()=>returnToStageMode()
-});
 const GameNavigation=Object.freeze({
-  tutorial:()=>startTutorial(), stage:index=>ProgressionEntryPoints.startStage(index), mastery:index=>loadExtraStage(index),
+  tutorial:()=>startTutorial(), stage:index=>loadStage(index), mastery:index=>loadExtraStage(index),
   satori:index=>loadSatoriStage(index), free:()=>startFree(), maker:()=>enterBoardMaker(),
-  stageMenu:()=>ProgressionEntryPoints.returnToMenu(), speedPicker:()=>WakeSevenSpeedFeature.openPicker()
+  stageMenu:()=>returnToStageMode(), speedPicker:()=>WakeSevenSpeedFeature.openPicker()
 });
 // ダイアログ要求の実装はui/progression-dialogs.jsの単一入口へ集約する。
 const GameDialogs=Object.freeze({
-  messages:options=>ProgressionEntryPoints.showProgressionDialog('messages',options,options?.source||'menu'),
-  ranks:options=>ProgressionEntryPoints.showProgressionDialog('ranks',options,options?.source||'menu'),
-  mastery:kind=>ProgressionEntryPoints.showProgressionDialog('mastery',{kind},'progression')
+  messages:options=>requestProgressionDialog('messages',options,options?.source||'menu'),
+  ranks:options=>requestProgressionDialog('ranks',options,options?.source||'menu'),
+  mastery:kind=>requestProgressionDialog('mastery',{kind},'progression')
 });
 // ===== 速解きセッションコマンド =====
 // 速解き固有のセッション状態を書き込む操作命令。時計・表示・遷移は実行側に残す。
@@ -11639,7 +11630,7 @@ function debugClearCurrent(extraMoves=0){
   GameBoard.repaint();
   // 速解きのデバッグ即クリアは、通常クリアダイアログではなく
   // 実プレイと同じ専用の完了処理（保存→次問）へ接続する。
-  if(navigation.mode==='speed'){ProgressionEntryPoints.finishStage({mode:'speed'});return;}
+  if(navigation.mode==='speed'){completeBoard({mode:'speed'});return;}
   // デバッグ即クリアでも、通常操作と同じクリア演出・ダイアログ遷移を直ちに予約する。
   // 再描画側の予約と重なっても、同じタイマーキーで冪等に置き換わる。
   WakeSevenClearFeature.start();
@@ -12865,7 +12856,7 @@ document.addEventListener('visibilitychange',()=>{
       // (裏に回った端末がタイマーの発火を止める・遅らせる等)。
       // 復帰時にクリア済みの盤面が残っていたら、保留中のタイマーは捨てて即座に確定させる。
       clearUiEffectTimers('clear-transition');
-      if(!clearShown)ProgressionEntryPoints.finishStage({mode:'speed'});else WakeSevenSpeedFeature.advance();
+      if(!clearShown)completeBoard({mode:'speed'});else WakeSevenSpeedFeature.advance();
     }
     // 非表示から戻った時はタイマーを黙って再開せず、一時停止ダイアログを出して本人の操作で再開させる。
     else if($('speedPauseDialog').hidden)openSpeedPauseDialog();
