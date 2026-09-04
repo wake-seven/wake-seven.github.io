@@ -3,15 +3,15 @@
   "status": "passed",
   "summary": {
     "features": 10,
-    "matched": 3,
-    "unknown": 3,
+    "matched": 2,
+    "unknown": 4,
     "unregisteredNewFiles": 0,
-    "references": 32
+    "references": 44
   },
   "warnings": [],
   "errors": [],
-  "generatedAt": "2026-09-04T05:50:39.145Z",
-  "sourceRevision": "af348f4",
+  "generatedAt": "2026-09-04T06:10:39.712Z",
+  "sourceRevision": "363ab22",
   "features": [
     {
       "name": "reward-pages",
@@ -84,11 +84,40 @@
       "name": "runtime/speed",
       "paths": [
         "src/runtime/speed.js",
+        "src/runtime/app-events.js",
+        "src/commands/speed-commands.js",
+        "src/commands/speed-record-commands.js"
+      ],
+      "entry": [
+        "src/runtime/speed.js",
         "src/runtime/app-events.js"
+      ],
+      "state": [
+        "src/state/game-state.js",
+        "src/app/app-context.js"
+      ],
+      "storage": [
+        "src/state/game-state.js"
+      ],
+      "dom": [
+        "src/index.template.html"
+      ],
+      "next": [
+        "src/commands/speed-commands.js",
+        "src/runtime/speed.js"
+      ],
+      "e2e": [
+        "scripts/check-e2e-speed-contract.mjs",
+        "scripts/check-browser-e2e.mjs"
+      ],
+      "boundaries": [
+        "scripts/check-source-boundaries.mjs",
+        "scripts/check-state-restore.mjs"
       ],
       "checks": [
         "application-services",
-        "progression-flows"
+        "progression-flows",
+        "e2e-speed-contract"
       ],
       "relatedE2E": [
         "browser-e2e",
@@ -254,32 +283,33 @@
     }
   ],
   "changedFiles": [
-    "index.html",
-    "scripts/check-progression-flows.mjs",
-    "src/commands/speed-commands.js",
+    "scripts/change-start.mjs",
+    "scripts/check-affected.mjs",
+    "scripts/check-all.mjs",
+    "scripts/feature-registry.json",
     "src/runtime/runtime.js",
-    "src/runtime/speed.js"
+    "scripts/lib/change-session.mjs"
   ],
   "matchedFeatures": [
-    "dialog-restore",
-    "runtime/speed",
-    "speed-session"
+    "scripts/manifest",
+    "dialog-restore"
   ],
   "unknownChangedFiles": [
-    "index.html",
-    "scripts/check-progression-flows.mjs",
-    "src/commands/speed-commands.js"
+    "scripts/change-start.mjs",
+    "scripts/check-affected.mjs",
+    "scripts/check-all.mjs",
+    "scripts/lib/change-session.mjs"
   ],
   "unregisteredNewFiles": [],
   "recommendation": "full",
   "suggestedChecks": [
-    "state-restore",
-    "dialog-state-map",
-    "application-services",
-    "progression-flows",
+    "development-entrypoints",
+    "esm",
+    "manifest-dependencies",
     "browser-e2e",
     "device-e2e",
-    "e2e-speed-contract"
+    "state-restore",
+    "dialog-state-map"
   ],
   "policy": {
     "unknownChangedFiles": "affected",

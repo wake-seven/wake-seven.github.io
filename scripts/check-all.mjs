@@ -5,10 +5,14 @@ import { spawn } from 'node:child_process';
 import { sourceRevision, writeReport } from './lib/report.mjs';
 import { normalizeTrackedReports } from './lib/report-noise.mjs';
 import { loadCheckRegistry, validateCheckRegistry, writeCheckRegistryReport } from './check-registry.mjs';
+import { assertChangeSession } from './lib/change-session.mjs';
 
 // 公開版を作り直してから、検査を定義順に一度ずつ実行する最終ゲート。
 // 個別スクリプトは単独でも使えるが、通常の入口はこのファイルに集約する。
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
+// check:gateも、変更がある作業ツリーでは開始調査済みであることを必須にする。
+// クリーンなCI checkoutには変更がないため、そのまま実行できる。
+await assertChangeSession(root);
 const reportPath = join(root, 'build', 'report', 'check-gate.json');
 const runtimeReportPath = join(root, 'build', 'report', 'check-runtime.json');
 const contextPath = join(root, 'build', 'report', 'check-context.json');

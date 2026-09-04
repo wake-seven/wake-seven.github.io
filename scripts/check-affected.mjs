@@ -2,6 +2,7 @@ import { execFileSync, spawn } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { assertChangeSession } from './lib/change-session.mjs';
 
 // 変更範囲を選び、選んだプロファイルを実行して結果を一つの証跡へ残す。
 // 未実行を成功扱いにしないため、失敗と未完了を明示的に分ける。
@@ -13,18 +14,8 @@ const raw = execFileSync('git', ['status', '--porcelain=v1', '-z'], { cwd: root,
 const changedFiles = raw.split('\0').filter(Boolean).map(entry => entry.slice(3)).filter(Boolean);
 const ignoredFiles = changedFiles.filter(file => file.startsWith('build/report/'));
 const files = changedFiles.filter(file => !ignoredFiles.includes(file));
-// affected/fast は改修セッションの開始を必須にする。調査なしで部分検査を
-// 走らせる経路を塞ぎ、影響範囲の取りこぼしを開始時点で止める。
-const sessionPath = join(root, 'tmp', 'change-session.json');
-let changeSession = null;
-try { changeSession = JSON.parse(await readFile(sessionPath, 'utf8')); } catch { /* 未開始 */ }
-if (files.length && (!changeSession?.feature || !changeSession?.baseRevision)) {
-  throw new Error('改修セッションがありません。最初に npm run change:start -- <feature> を実行してください。');
-}
-const headRevision = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
-if (files.length && changeSession.baseRevision !== headRevision) {
-  throw new Error('改修セッションの基準コミットが古くなっています。change:startを再実行してください。');
-}
+// affected/fast は改修セッションの開始を必須にする。
+const { session: changeSession } = await assertChangeSession(root);
 // 改修開始時に、変更範囲と関連featureを必ず先に記録する。
 // 失敗時は影響調査なしで検査を進めず、安全側へ倒す。
 const investigation = spawn(process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : 'node',
