@@ -1,17 +1,36 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-09:05';
+const APP_VERSION='2026.09.04-09:15';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
-  let value=Object.prototype.hasOwnProperty.call(locale,key)?locale[key]
-    :Object.prototype.hasOwnProperty.call(fallback,key)?fallback[key]:key;
-  if(vars)Object.keys(vars).forEach(name=>value=value.replaceAll('{'+name+'}',vars[name]));
+  let value=Object.prototype.hasOwnProperty.call(locale,key)
+    ? locale[key]
+    : Object.prototype.hasOwnProperty.call(fallback,key)
+      ? fallback[key]
+      : key;
+  if(vars){
+    Object.keys(vars).forEach(name=>{
+      value=value.replaceAll('{'+name+'}',vars[name]);
+    });
+  }
   return value;
 }
-function secondLapMark(){return currentLang==='zh'?'贰':(currentLang==='en'||currentLang==='ko')?'Ⅱ':'弐'}
+function secondLapMark(){
+  return currentLang==='zh'
+    ? '贰'
+    : (currentLang==='en'||currentLang==='ko')
+      ? 'Ⅱ'
+      : '弐';
+}
 function shareData(kind='game'){
-  const key=kind==='training'?'shareTrainingText':kind==='mastery'?'shareMasteryText':kind==='satori'?'shareSatoriText':'shareGameText';
+  const key=kind==='training'
+    ? 'shareTrainingText'
+    : kind==='mastery'
+      ? 'shareMasteryText'
+      : kind==='satori'
+        ? 'shareSatoriText'
+        : 'shareGameText';
   const url=new URL(location.href);
   url.search='';url.hash='';
   return {title:tr('pageTitle'),text:tr(key),url:url.href};
