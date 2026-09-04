@@ -2,7 +2,7 @@ import { execFileSync, spawn } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { assertChangeSession } from './lib/change-session.mjs';
+import { assertChangeSession, CHANGE_SESSION_PHASES, recordChangeSessionCheck } from './lib/change-session.mjs';
 
 // 変更範囲を選び、選んだプロファイルを実行して結果を一つの証跡へ残す。
 // 未実行を成功扱いにしないため、失敗と未完了を明示的に分ける。
@@ -10,6 +10,10 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const reportDir = join(root, 'build', 'report');
 const config = JSON.parse(await readFile(join(root, 'scripts/check-profiles.json'), 'utf8'));
 const requested = process.argv[2] && !process.argv[2].startsWith('-') ? process.argv[2] : null;
+const requestedPhase = process.argv.find(value => value.startsWith('--phase='))?.slice('--phase='.length) || null;
+if (requestedPhase && !Object.values(CHANGE_SESSION_PHASES).includes(requestedPhase)) {
+  throw new Error(`不明な改修フェーズです: ${requestedPhase}`);
+}
 const raw = execFileSync('git', ['status', '--porcelain=v1', '-z'], { cwd: root, encoding: 'utf8' });
 const changedFiles = raw.split('\0').filter(Boolean).map(entry => entry.slice(3)).filter(Boolean);
 const ignoredFiles = changedFiles.filter(file => file.startsWith('build/report/'));
@@ -91,11 +95,28 @@ if (selected === 'full') {
   for (const name of requiredChecks) executed.push(await run(name, ...commandFor(name)));
 }
 const failed = executed.filter(item => item.exitCode !== 0 && item.passed !== true);
-const status = failed.length ? 'failed' : unexecuted.length || fullGateRequired ? 'incomplete' : 'passed';
+// milestoneは途中確認なので、将来のfull gate要件をreleasePendingとして残しつつ成功にできる。
+// 通常のcheck:affectedは従来どおり、full必須変更を成功扱いにしない。
+const releasePending = fullGateRequired && selected !== 'full';
+const allowPendingRelease = requestedPhase === CHANGE_SESSION_PHASES.milestone;
+const status = failed.length ? 'failed'
+  : unexecuted.length || (releasePending && !allowPendingRelease) ? 'incomplete'
+    : 'passed';
 const sourceRevision = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim() || 'working-tree';
 const skippedChecks = selected === 'full' ? [] : [{ name: 'device-e2e', reason: 'デバイス差分は公開前のcheck:gateで実行' }];
-const result = { schemaVersion: 1, name: 'wake7-check-profile-result', generatedAt: new Date().toISOString(), sourceRevision, status, warnings: status === 'incomplete' ? ['未実行またはfull gate未完了'] : [], errors: failed.map(item => item.name), profile: selected, changedFiles: files, ignoredFiles, fullGateRequired, selectionReasons: reasons, requiredChecks, executed: executed.map(item => ({ name: item.name, command: item.command || `check:gate → ${item.name}`, startedAt: item.startedAt || null, finishedAt: item.finishedAt || null, durationMs: item.durationMs || 0, exitCode: item.exitCode ?? 1, passed: item.passed ?? item.exitCode === 0 })), unexecuted, skippedChecks, summary: { required: requiredChecks.length, executed: executed.length, unexecuted: unexecuted.length, skipped: skippedChecks.length, failed: failed.length, durationMs: executed.reduce((total, item) => total + (item.durationMs || 0), 0) }, policy: { passed: '必須検査をすべて実行し、全件成功', incomplete: '未実行またはfull gate未完了のため成功扱いにしない', failed: '実行済み検査に失敗がある', fullGateRequiredReason: config.policy?.fullGateRequired?.reason || null } };
+const result = { schemaVersion: 1, name: 'wake7-check-profile-result', generatedAt: new Date().toISOString(), sourceRevision, status, warnings: status === 'incomplete' ? ['未実行またはfull gate未完了'] : releasePending ? ['milestone成功。release前にfull gateが必要'] : [], errors: failed.map(item => item.name), profile: selected, sessionPhase: requestedPhase, changedFiles: files, ignoredFiles, fullGateRequired, releasePending, selectionReasons: reasons, requiredChecks, executed: executed.map(item => ({ name: item.name, command: item.command || `check:gate → ${item.name}`, startedAt: item.startedAt || null, finishedAt: item.finishedAt || null, durationMs: item.durationMs || 0, exitCode: item.exitCode ?? 1, passed: item.passed ?? item.exitCode === 0 })), unexecuted, skippedChecks, summary: { required: requiredChecks.length, executed: executed.length, unexecuted: unexecuted.length, skipped: skippedChecks.length, failed: failed.length, durationMs: executed.reduce((total, item) => total + (item.durationMs || 0), 0) }, policy: { passed: '必須検査をすべて実行し、全件成功', incomplete: '未実行またはfull gate未完了のため成功扱いにしない', failed: '実行済み検査に失敗がある', milestone: '途中確認の成功。releasePendingなら最終full gateは未完了', fullGateRequiredReason: config.policy?.fullGateRequired?.reason || null } };
 await mkdir(reportDir, { recursive: true });
 await writeFile(join(reportDir, 'check-profile-result.json'), JSON.stringify(result, null, 2) + '\n');
 console.log(`Check profile ${selected}: ${result.status}. ${result.summary.executed}/${result.summary.required} executed. Report: build/report/check-profile-result.json`);
+if (result.status === 'passed') {
+  const phase = requestedPhase || (selected === 'full' ? CHANGE_SESSION_PHASES.release
+    : selected === 'affected' ? CHANGE_SESSION_PHASES.milestone
+      : CHANGE_SESSION_PHASES.editing);
+  await recordChangeSessionCheck(root, {
+    phase,
+    profile: selected,
+    command: `check:${selected}`,
+    checks: requiredChecks
+  });
+}
 if (result.status !== 'passed') process.exitCode = 1;

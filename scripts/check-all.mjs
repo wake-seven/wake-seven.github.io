@@ -5,7 +5,7 @@ import { spawn } from 'node:child_process';
 import { sourceRevision, writeReport } from './lib/report.mjs';
 import { normalizeTrackedReports } from './lib/report-noise.mjs';
 import { loadCheckRegistry, validateCheckRegistry, writeCheckRegistryReport } from './check-registry.mjs';
-import { assertChangeSession } from './lib/change-session.mjs';
+import { assertChangeSession, CHANGE_SESSION_PHASES, recordChangeSessionCheck } from './lib/change-session.mjs';
 
 // 公開版を作り直してから、検査を定義順に一度ずつ実行する最終ゲート。
 // 個別スクリプトは単独でも使えるが、通常の入口はこのファイルに集約する。
@@ -169,6 +169,12 @@ if (!report.failedStep) {
   report.normalizedReports = await normalizeTrackedReports(root);
   await writeReport(runtimeReportPath, { schemaVersion: 1, name: 'wake7-check-runtime', generatedAt: report.finishedAt, sourceRevision: report.sourceRevision, profiles: byProfile, groups: byGroup, slowest });
   await writeReport(reportPath, { ...report, generatedAt: report.finishedAt });
+  await recordChangeSessionCheck(root, {
+    phase: CHANGE_SESSION_PHASES.release,
+    profile: 'full',
+    command: 'check:gate',
+    checks: report.steps.map(step => step.name)
+  });
   console.log('Check gate summary:');
   for (const [name, summary] of Object.entries(byGroup)) {
     console.log(`  [${summary.label}] ${summary.steps}件 / ${summary.durationMs}ms / ${summary.passed ? 'ok' : 'FAIL'} (${name})`);

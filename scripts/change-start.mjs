@@ -3,6 +3,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { investigateFeatures, formatInvestigation, loadFeatureRegistry } from './lib/feature-investigation.mjs';
+import { CHANGE_SESSION_PHASES } from './lib/change-session.mjs';
 
 // 改修の最初に必ず実行する入口。影響調査を済ませたセッションを作り、
 // 以後の affected 検査が「調査なし」で走らないようにする。
@@ -29,10 +30,30 @@ const initialChangedFiles = raw.split('\0').filter(Boolean).map(entry => entry.s
   .filter(file => !file.startsWith('build/report/'));
 const baseRevision = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
 const investigation = await investigateFeatures({ root, feature });
-const session = { schemaVersion: 1, name: 'wake7-change-session', feature,
-  startedAt: new Date().toISOString(), baseRevision, initialChangedFiles, investigation };
+const requiredChecks = [...new Set(investigation.features.flatMap(item => item.checks || []))];
+const relatedE2E = [...new Set(investigation.features.flatMap(item => item.e2e || []))];
+const startedAt = new Date().toISOString();
+const session = {
+  schemaVersion: 2,
+  name: 'wake7-change-session',
+  feature,
+  phase: CHANGE_SESSION_PHASES.editing,
+  startedAt,
+  baseRevision,
+  initialChangedFiles,
+  requiredVerification: {
+    editing: { profile: 'fast', checks: requiredChecks },
+    milestone: { profile: 'affected', checks: requiredChecks, e2e: relatedE2E.filter(name => name !== 'device-e2e') },
+    release: { profile: 'full', checks: ['check:gate', ...requiredChecks], e2e: relatedE2E }
+  },
+  phaseHistory: [{ phase: CHANGE_SESSION_PHASES.editing, command: 'change:start', completedAt: startedAt }],
+  investigation
+};
 await mkdir(join(root, 'tmp'), { recursive: true });
 await writeFile(join(root, 'tmp/change-session.json'), JSON.stringify(session, null, 2) + '\n');
 console.log(formatInvestigation(investigation));
 console.log(`改修セッションを開始しました: ${feature}`);
+console.log(`現在フェーズ: ${session.phase}`);
+console.log(`milestone必須検査: ${requiredChecks.join(', ') || 'feature固有なし'}`);
+console.log(`関連E2E: ${relatedE2E.join(', ') || 'feature固有なし'}`);
 console.log('次の検査はこのセッションの影響調査を前提に実行されます。');
