@@ -1,23 +1,23 @@
 {
   "schemaVersion": 2,
   "name": "wake7-navigation-classification",
-  "generatedAt": "2026-09-04T10:10:19.117Z",
+  "generatedAt": "2026-09-04T10:33:19.903Z",
   "status": "passed",
   "summary": {
-    "references": 380,
+    "references": 382,
     "byCategory": {
       "gateway-candidate": 0,
       "owner-only": 173,
-      "derived-value": 125,
+      "derived-value": 127,
       "event-local": 24,
       "intentional-exception": 58
     },
     "temporaryCount": 0,
     "temporaryZero": true,
     "byName": {
-      "activeMode": 19,
+      "activeMode": 20,
       "activeLap": 47,
-      "stageIndex": 134,
+      "stageIndex": 135,
       "extraIndex": 48,
       "satoriIndex": 61,
       "tutorialStep": 58,
@@ -6019,6 +6019,44 @@
         "file": "ui/progression-dialogs.js",
         "line": 8,
         "source": "stageIndex:source.stageIndex??appState.stageIndex??null,"
+      }
+    },
+    {
+      "name": "activeMode",
+      "file": "ui/clear-feature.js",
+      "line": 18,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "監査用コメント内の名前で、実行時の状態参照ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/clear-feature.js",
+        "line": 18,
+        "source": "// clear-flowの純粋な文脈生成へ委譲し、呼び出し側がactiveMode等を直接読むのを防ぐ。"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/clear-feature.js",
+      "line": 22,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigation contextから取得済みの値、または保存キーのプロパティ名",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/clear-feature.js",
+        "line": 22,
+        "source": "return createClearTransitionContext(navigation.stageIndex+1);"
       }
     },
     {

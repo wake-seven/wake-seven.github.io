@@ -12,8 +12,7 @@ function traceClearFeature(action,context=null){
 const clearFeatureRestoreDialog=context=>{
     traceClearFeature('restore-dialog',context);
     if(!restoreClearFlowDialog(context))return false;
-    showClearDialog(context);
-    return true;
+    return renderClearFeatureDialog(context,'restore');
 };
 // クリア後の判断に使う文脈を、この機能入口から取得する。判定自体は
 // clear-flowの純粋な文脈生成へ委譲し、呼び出し側がactiveMode等を直接読むのを防ぐ。
@@ -23,10 +22,10 @@ function resolveClearFeatureContext(context=null){
   return createClearTransitionContext(navigation.stageIndex+1);
 }
 // 表示は共通ダイアログへ委譲するが、クリア機能の表示入口を一つにする。
-function renderClearFeatureDialog(context=null){
+function renderClearFeatureDialog(context=null,source='clear-feature'){
   const resolved=resolveClearFeatureContext(context);
   traceClearFeature('show-dialog',resolved);
-  return showClearDialog(resolved);
+  return requestProgressionDialog('clear',resolved,source);
 }
 const WakeSevenClearFeature=Object.freeze({
   start(options={}){traceClearFeature('start',options);return startClearFlow(options);},

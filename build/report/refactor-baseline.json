@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-04T10:02:29.550Z",
+  "generatedAt": "2026-09-04T10:28:57.922Z",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles",
   "purpose": "グローバル可変状態・progression責務・入口経路・ブラウザ検証の比較用ベースライン",
   "method": "依存を増やさない正規表現ベースの静的計測。判定ではなく比較材料として利用する。",
@@ -12,15 +12,15 @@
     "mutableWriteCount": 275,
     "progressionFunctionCount": 491,
     "progressionEntryCount": 5,
-    "e2eCaseCount": 40,
+    "e2eCaseCount": 41,
     "e2ePassed": true,
     "e2eConsoleErrorCount": 0,
-    "needsMigrationGlobalAccessCount": 253,
+    "needsMigrationGlobalAccessCount": 255,
     "directStateAssignmentCount": 24,
-    "responsibilityCandidateCount": 15,
+    "responsibilityCandidateCount": 16,
     "responsibilityCandidates": {
       "display-transition-mixed": 7,
-      "orchestrator": 8
+      "orchestrator": 9
     },
     "reportCount": 60
   },
@@ -11393,7 +11393,7 @@
           },
           {
             "file": "runtime/namespace.js",
-            "line": 30,
+            "line": 34,
             "caller": "attachWakeSevenNamespace"
           }
         ]
@@ -11482,7 +11482,7 @@
           },
           {
             "file": "runtime/namespace.js",
-            "line": 31,
+            "line": 35,
             "caller": "attachWakeSevenNamespace"
           }
         ]
@@ -12056,6 +12056,11 @@
             "caller": "openDialog"
           },
           {
+            "file": "ui/clear-feature.js",
+            "line": 28,
+            "caller": "renderClearFeatureDialog"
+          },
+          {
             "file": "ui/progression-ui.js",
             "line": 284,
             "caller": "showClearDialog"
@@ -12069,11 +12074,6 @@
             "file": "ui/progression-ui.js",
             "line": 294,
             "caller": "showClearDialog"
-          },
-          {
-            "file": "ui/progression-clear-flow.js",
-            "line": 237,
-            "caller": "finishClearFlow"
           },
           {
             "file": "ui/progression-clear-flow.js",
@@ -13719,11 +13719,6 @@
             "caller": "requestProgressionDialog"
           },
           {
-            "file": "ui/clear-feature.js",
-            "line": 9,
-            "caller": null
-          },
-          {
             "file": "ui/progression-ui.js",
             "line": 251,
             "caller": "showingExtra"
@@ -14306,8 +14301,8 @@
           },
           {
             "file": "ui/clear-feature.js",
-            "line": 14,
-            "caller": null
+            "line": 38,
+            "caller": "renderClearFeatureDialog"
           },
           {
             "file": "ui/progression-ui.js",
@@ -15244,8 +15239,8 @@
           },
           {
             "file": "ui/clear-feature.js",
-            "line": 16,
-            "caller": null
+            "line": 40,
+            "caller": "renderClearFeatureDialog"
           },
           {
             "file": "ui/progression-hud.js",
@@ -15987,13 +15982,23 @@
         "line": 86,
         "callers": [
           {
+            "file": "ui/clear-feature.js",
+            "line": 9,
+            "caller": "traceClearFeature"
+          },
+          {
+            "file": "ui/clear-feature.js",
+            "line": 44,
+            "caller": "renderClearFeatureDialog"
+          },
+          {
             "file": "ui/progression-clear-flow.js",
             "line": 86,
             "caller": "consumeClearFlowDialog"
           },
           {
             "file": "runtime/namespace.js",
-            "line": 24,
+            "line": 25,
             "caller": "attachWakeSevenNamespace"
           }
         ]
@@ -16010,7 +16015,7 @@
           },
           {
             "file": "runtime/namespace.js",
-            "line": 24,
+            "line": 26,
             "caller": "attachWakeSevenNamespace"
           }
         ]
@@ -16124,8 +16129,8 @@
         "callers": [
           {
             "file": "ui/clear-feature.js",
-            "line": 6,
-            "caller": null
+            "line": 31,
+            "caller": "renderClearFeatureDialog"
           },
           {
             "file": "ui/progression-clear-flow.js",
@@ -16267,8 +16272,8 @@
         "callers": [
           {
             "file": "ui/clear-feature.js",
-            "line": 8,
-            "caller": null
+            "line": 14,
+            "caller": "clearFeatureRestoreDialog"
           },
           {
             "file": "ui/progression-clear-flow.js",
@@ -16292,6 +16297,11 @@
             "file": "runtime/runtime.js",
             "line": 180,
             "caller": "clear"
+          },
+          {
+            "file": "ui/clear-feature.js",
+            "line": 22,
+            "caller": "resolveClearFeatureContext"
           },
           {
             "file": "ui/progression-ui.js",
@@ -16380,8 +16390,8 @@
         "callers": [
           {
             "file": "ui/clear-feature.js",
-            "line": 12,
-            "caller": null
+            "line": 35,
+            "caller": "renderClearFeatureDialog"
           },
           {
             "file": "ui/progression-clear-flow.js",
@@ -17254,6 +17264,11 @@
             "caller": "openDialog"
           },
           {
+            "file": "ui/clear-feature.js",
+            "line": 28,
+            "caller": "renderClearFeatureDialog"
+          },
+          {
             "file": "ui/progression-ui.js",
             "line": 284,
             "caller": "showClearDialog"
@@ -17267,11 +17282,6 @@
             "file": "ui/progression-ui.js",
             "line": 294,
             "caller": "showClearDialog"
-          },
-          {
-            "file": "ui/progression-clear-flow.js",
-            "line": 237,
-            "caller": "finishClearFlow"
           },
           {
             "file": "ui/progression-clear-flow.js",
@@ -17563,10 +17573,10 @@
   },
   "e2e": {
     "name": "primary-browser-e2e",
-    "appVersion": "2026.09.04-19:01",
-    "gitSha": "02c2319181183ddaa8d8c3ee73cb94d192a8c634",
+    "appVersion": "2026.09.04-19:21",
+    "gitSha": "fb5586b830641cc6826bfa7fd7a870fdce27a781",
     "passed": true,
-    "caseCount": 40,
+    "caseCount": 41,
     "consoleErrorCount": 0,
     "cases": [
       "startup-and-tutorial-skip",
@@ -17602,6 +17612,7 @@
       "satori-checkpoint",
       "satori-checkpoint-clear-dialog",
       "primary-clear-next-action",
+      "primary-clear-close-action",
       "primary-clear-reload-next-action",
       "speed-question-3-to-4-no-exam-dialog-flash",
       "speed-reload-restoration",
@@ -17614,12 +17625,12 @@
   "contract": {
     "stateReferenceCount": 1219,
     "stateAssignmentCount": 24,
-    "responsibilityCandidateCount": 15,
+    "responsibilityCandidateCount": 16,
     "responsibilityCandidates": {
       "display-transition-mixed": 7,
-      "orchestrator": 8
+      "orchestrator": 9
     },
-    "e2eCaseCount": 40,
+    "e2eCaseCount": 41,
     "progressionEntryCount": 5,
     "entryPointCount": 4,
     "reportInventory": [

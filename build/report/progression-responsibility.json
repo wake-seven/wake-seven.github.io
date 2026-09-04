@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T10:09:16.182Z",
+  "generatedAt": "2026-09-04T10:32:18.852Z",
   "source": "build/report/symbol-index.json",
   "target": "progression-related symbols",
   "summary": {
@@ -30,7 +30,7 @@
     "unclassifiedSymbols": 0,
     "candidates": {
       "display-transition-mixed": 7,
-      "orchestrator": 8
+      "orchestrator": 9
     },
     "structuralFindings": {
       "clear-flow-direct-skip": 1,
@@ -1636,6 +1636,21 @@
       "reason": "表示更新と遷移処理の両方を含むため、変更時に影響範囲を確認する候補です。",
       "evidence": {
         "callCount": 1
+      }
+    },
+    {
+      "name": "finishClearFlow",
+      "file": "ui/progression-clear-flow.js",
+      "line": 231,
+      "flowRoles": [
+        "state-decision",
+        "transition"
+      ],
+      "category": "orchestrator",
+      "priority": 3,
+      "reason": "状態判定・遷移・表示の複数処理を順序づける呼び出しがあり、正当なオーケストレーター候補です。",
+      "evidence": {
+        "callCount": 2
       }
     },
     {
@@ -3289,8 +3304,10 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": false,
       "callers": [
+        "ui/clear-feature.js:9:traceClearFeature",
+        "ui/clear-feature.js:44:renderClearFeatureDialog",
         "ui/progression-clear-flow.js:86:consumeClearFlowDialog",
-        "runtime/namespace.js:24:attachWakeSevenNamespace"
+        "runtime/namespace.js:25:attachWakeSevenNamespace"
       ]
     },
     {
@@ -3306,7 +3323,7 @@
       "mixedResponsibility": false,
       "callers": [
         "ui/progression-clear-flow.js:88:getClearFlowState",
-        "runtime/namespace.js:24:attachWakeSevenNamespace"
+        "runtime/namespace.js:26:attachWakeSevenNamespace"
       ]
     },
     {
@@ -3440,7 +3457,7 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "ui/clear-feature.js:11:clearFeatureRestoreDialog",
+        "ui/clear-feature.js:31:renderClearFeatureDialog",
         "ui/progression-clear-flow.js:152:celebrateClear"
       ]
     },
@@ -3573,7 +3590,7 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "ui/clear-feature.js:6:clearFeatureRestoreDialog",
+        "ui/clear-feature.js:14:clearFeatureRestoreDialog",
         "ui/progression-clear-flow.js:198:finishClearFlowDialog"
       ]
     },
@@ -3603,6 +3620,7 @@
       "mixedResponsibility": false,
       "callers": [
         "runtime/runtime.js:180:clear",
+        "ui/clear-feature.js:22:resolveClearFeatureContext",
         "ui/progression-ui.js:254:showClearDialog",
         "ui/progression-clear-flow.js:156:startClearFlow",
         "ui/progression-clear-flow.js:211:restoreClearFlowDialog",
@@ -3708,7 +3726,7 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "ui/clear-feature.js:13:clearFeatureRestoreDialog",
+        "ui/clear-feature.js:35:renderClearFeatureDialog",
         "ui/progression-clear-flow.js:265:resolveAfterClearRoute",
         "ui/progression-clear-flow.js:298:advanceAfterClear"
       ]
@@ -3852,10 +3870,10 @@
       "callers": [
         "commands/progression-commands.js:28:ProgressionEntryPoints",
         "ui/progression-dialogs.js:39:openDialog",
+        "ui/clear-feature.js:28:renderClearFeatureDialog",
         "ui/progression-ui.js:284:showClearDialog",
         "ui/progression-ui.js:289:showClearDialog",
         "ui/progression-ui.js:294:showClearDialog",
-        "ui/progression-clear-flow.js:237:finishClearFlow",
         "ui/progression-clear-flow.js:286:kind"
       ]
     },
@@ -4308,7 +4326,7 @@
         "commands/progression-commands.js:3:grantMasterDialogRewardsCommand",
         "commands/progression-commands.js:7:grantMasterDialogRewardsCommand",
         "commands/progression-commands.js:12:grantMasterDialogRewardsCommand",
-        "ui/clear-feature.js:17:clearFeatureRestoreDialog",
+        "ui/clear-feature.js:40:renderClearFeatureDialog",
         "ui/progression-hud.js:33:createProgressionViewContext",
         "ui/progression-clear-flow.js:271:kind",
         "ui/progression-clear-flow.js:290:kind",
@@ -6558,7 +6576,6 @@
       "mixedResponsibility": true,
       "callers": [
         "ui/progression-dialogs.js:45:requestProgressionDialog",
-        "ui/clear-feature.js:7:clearFeatureRestoreDialog",
         "ui/progression-ui.js:251:showingExtra"
       ]
     },
@@ -7166,7 +7183,7 @@
         "ui/board-ui.js:1016:paint",
         "ui/board-ui.js:1169:setPosition",
         "ui/progression-dialogs.js:63:closeProgressionDialog",
-        "ui/clear-feature.js:15:clearFeatureRestoreDialog",
+        "ui/clear-feature.js:38:renderClearFeatureDialog",
         "ui/progression-ui.js:501:volumeLabel",
         "ui/progression-clear-flow.js:282:kind",
         "runtime/app-events.js:244:handleClearTipLink",

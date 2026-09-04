@@ -239,10 +239,27 @@ try{
     await page.waitForTimeout(180);
     await debugClick(page,'debugClear');
     await page.waitForTimeout(1300);
+    const beforeTrace=await page.evaluate(()=>WakeSeven.progression.clearFlow.featureTrace.map(entry=>entry.action));
+    assert.ok(beforeTrace.includes('start')&&beforeTrace.includes('show-dialog'),'clear start and dialog render must be visible in the feature trace');
     const before=await snap(page);await click(page,'clearNext');
     await wait(page,()=>document.querySelector('#clearDialog')?.hidden,'clear next action');
     const after=await snap(page);assert.ok(after.stage!==before.stage||after.chain||after.speedStart||after.speedPause,'clear next must advance or open the next route');
-    result.cases.push({name:'primary-clear-next-action',before,after});
+    const nextTrace=await page.evaluate(()=>WakeSeven.progression.clearFlow.featureTrace.map(entry=>entry.action));
+    assert.equal(nextTrace.at(-1),'next','clear next must be visible in the feature trace');
+    result.cases.push({name:'primary-clear-next-action',before,after,featureTrace:nextTrace});
+    await prepareAcademyDebugPage();
+    await debugClick(page,'debugTrainingUpper');
+    await page.waitForTimeout(180);
+    await debugClick(page,'debugClear');
+    await wait(page,()=>!document.querySelector('#clearDialog')?.hidden,'clear dialog before close');
+    const beforeClose=await snap(page);
+    await click(page,'clearClose');
+    await wait(page,()=>document.querySelector('#clearDialog')?.hidden,'clear close action');
+    const afterClose=await snap(page);
+    const closeTrace=await page.evaluate(()=>WakeSeven.progression.clearFlow.featureTrace.map(entry=>entry.action));
+    assert.equal(afterClose.stage,beforeClose.stage,'clear close must keep the current stage');
+    assert.equal(closeTrace.at(-1),'close','clear close must be visible in the feature trace');
+    result.cases.push({name:'primary-clear-close-action',before:beforeClose,after:afterClose,featureTrace:closeTrace});
   }
   // リロード復元ケースだけは、起動ごとにstorageを消す通常E2E contextから分離する。
   // 同じlocalStorageを保った実際の再読み込みで、表示後の「次へ」まで確認する。
@@ -267,11 +284,13 @@ try{
     await wait(reloadPage,()=>!document.querySelector('#clearDialog')?.hidden,'restored clear dialog');
     const restored=await snap(reloadPage);
     assert.ok(['clear-dialog','quiz/message'].includes(restored.clearFlowPhase),'restored clear dialog must restore an actionable clear-flow phase');
+    const restoreTrace=await reloadPage.evaluate(()=>WakeSeven.progression.clearFlow.featureTrace.map(entry=>entry.action));
+    assert.deepEqual(restoreTrace.slice(-2),['restore-dialog','show-dialog'],'clear restore and dialog render must be visible in the feature trace');
     await reloadPage.locator('#clearNext').click({force:true});
     await wait(reloadPage,()=>document.querySelector('#clearDialog')?.hidden,'restored clear next action');
     const afterReloadNext=await snap(reloadPage);
     assert.ok(afterReloadNext.stage!==beforeReload.stage||afterReloadNext.chain||afterReloadNext.speedStart||afterReloadNext.speedPause,'restored clear next must advance or open the next route');
-    result.cases.push({name:'primary-clear-reload-next-action',beforeReload,restored,after:afterReloadNext});
+    result.cases.push({name:'primary-clear-reload-next-action',beforeReload,restored,after:afterReloadNext,featureTrace:restoreTrace});
   }finally{await reloadContext.close();}
   await debugClick(page,'debugAcademy20');await page.waitForTimeout(120);await debugClick(page,'debugSpeedTraining8');await wait(page,()=>!document.querySelector('#speedStartOverlay')?.hidden||!document.querySelector('#speedPause')?.hidden,'speed entry');if(await vis(page,'speedBoardStart')){await click(page,'speedBoardStart');}await wait(page,()=>document.querySelector('#speedStartOverlay')?.hidden&&!document.querySelector('#speedPause')?.hidden,'speed start');assert.equal(await vis(page,'speedStartOverlay'),false);await page.evaluate(()=>{const a=[];const o=new MutationObserver(()=>{const visible=[...document.querySelectorAll('.game-dialog-backdrop')].filter(dialog=>!dialog.hidden&&dialog.getClientRects().length>0).map(dialog=>dialog.id);if(visible.length)a.push(visible);});document.querySelectorAll('.game-dialog-backdrop').forEach(dialog=>o.observe(dialog,{attributes:true,attributeFilter:['hidden']}));window.__speedFlashObserver=o;window.__speedFlashLog=a;});await debugClick(page,'debugClear');await wait(page,()=> (document.querySelector('#stageNumber')?.textContent||'').includes('4 / 9'),'speed advances from question 3');await page.waitForTimeout(250);const flashLog=await page.evaluate(()=>{window.__speedFlashObserver?.disconnect();return window.__speedFlashLog||[];});assert.ok(flashLog.every(dialogs=>!dialogs.includes('speedStartOverlay')&&!dialogs.includes('masterDialog')),'speed question transition must not flash a start or mastery dialog');result.cases.push({name:'speed-question-3-to-4-no-exam-dialog-flash',state:await snap(page),flashLog});
   await page.reload({waitUntil:'networkidle'});await wait(page,()=>document.querySelector('#speedStartOverlay')?.hidden,'speed reload restore');

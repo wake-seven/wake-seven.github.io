@@ -234,7 +234,7 @@ function finishClearFlow(){
   const cycle=clearFlowState.cycle;
   enqueueClearFlowDialog({kind:'clear',context:clearFlowState.context||{},source:'clear'},cycle);
   const dialog=consumeClearFlowDialog(cycle);
-  if(dialog)requestProgressionDialog('clear',dialog.context,dialog.source);
+  if(dialog)WakeSevenClearFeature.show(dialog.context,dialog.source);
   requestAnimationFrame(()=>{
     if(WakeSevenAppContext.isClearShown()&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
   });

@@ -4423,7 +4423,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-19:08';
+const APP_VERSION='2026.09.04-19:21';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -9419,21 +9419,46 @@ function closeProgressionQuiz(){const rootIds=new Set([progressionQuizContext?.r
 // クリア完了から次の問題までの「状態判断・表示・操作」を、
 // ひとつの機能入口から追跡できるようにする。
 // 盤面ルール・保存・共通ダイアログの実装は既存の所有モジュールへ委譲する。
+// クリア機能のオーケストレーター入口。実処理はclear-flowや共通UIへ委譲し、
+// ここでは「どの入口がいつ呼ばれたか」だけを一貫して観測できるようにする。
+const clearFeatureTrace=[];
+function traceClearFeature(action,context=null){
+  clearFeatureTrace.push(Object.freeze({action,phase:typeof getClearFlowState==='function'?getClearFlowState().phase:null,cycle:typeof getClearFlowState==='function'?getClearFlowState().cycle:null,context:context||null,at:Date.now()}));
+  if(clearFeatureTrace.length>32)clearFeatureTrace.shift();
+}
 const clearFeatureRestoreDialog=context=>{
+    traceClearFeature('restore-dialog',context);
     if(!restoreClearFlowDialog(context))return false;
-    showClearDialog(context);
-    return true;
+    return renderClearFeatureDialog(context,'restore');
 };
+// クリア後の判断に使う文脈を、この機能入口から取得する。判定自体は
+// clear-flowの純粋な文脈生成へ委譲し、呼び出し側がactiveMode等を直接読むのを防ぐ。
+function resolveClearFeatureContext(context=null){
+  if(context?.mode)return context;
+  const navigation=readNavigationContext();
+  return createClearTransitionContext(navigation.stageIndex+1);
+}
+// 表示は共通ダイアログへ委譲するが、クリア機能の表示入口を一つにする。
+function renderClearFeatureDialog(context=null,source='clear-feature'){
+  const resolved=resolveClearFeatureContext(context);
+  traceClearFeature('show-dialog',resolved);
+  return requestProgressionDialog('clear',resolved,source);
+}
 const WakeSevenClearFeature=Object.freeze({
-  start(options={}){return startClearFlow(options);},
+  start(options={}){traceClearFeature('start',options);return startClearFlow(options);},
   restoreClearDialog:clearFeatureRestoreDialog,
-  next(){return dispatchClearFlowAction(CLEAR_FLOW_ACTION.next);},
+  context:resolveClearFeatureContext,
+  show:renderClearFeatureDialog,
+  next(){traceClearFeature('next');return dispatchClearFlowAction(CLEAR_FLOW_ACTION.next);},
   close(){
+    traceClearFeature('close');
     hideGameDialogs();
     updateDialogStateOwner({nextStageAttention:isCampaignMode()&&!editingBoard});
     renderStageNav();
     return true;
-  }
+  },
+  trace(){return clearFeatureTrace.slice();},
+  state(){return typeof getClearFlowState==='function'?getClearFlowState():null;}
 });
 export {};
 
@@ -11306,7 +11331,7 @@ function finishClearFlow(){
   const cycle=clearFlowState.cycle;
   enqueueClearFlowDialog({kind:'clear',context:clearFlowState.context||{},source:'clear'},cycle);
   const dialog=consumeClearFlowDialog(cycle);
-  if(dialog)requestProgressionDialog('clear',dialog.context,dialog.source);
+  if(dialog)WakeSevenClearFeature.show(dialog.context,dialog.source);
   requestAnimationFrame(()=>{
     if(WakeSevenAppContext.isClearShown()&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
   });
@@ -12903,7 +12928,11 @@ export {};
     // クリア後フローの状態と履歴は、実ブラウザ検証・障害調査の読み取り専用入口。
     get clearFlow() {
       return typeof getClearFlowState === 'function'
-        ? Object.freeze({ state: getClearFlowState(), trace: typeof getClearFlowTrace === 'function' ? getClearFlowTrace() : [] })
+        ? Object.freeze({
+            state: getClearFlowState(),
+            trace: typeof getClearFlowTrace === 'function' ? getClearFlowTrace() : [],
+            featureTrace: typeof WakeSevenClearFeature !== 'undefined' ? WakeSevenClearFeature.trace() : []
+          })
         : null;
     }
   });

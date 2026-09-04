@@ -2,29 +2,27 @@
   "name": "wake7-change-classification",
   "status": "passed",
   "summary": {
-    "changedFiles": 13,
-    "classified": 5,
-    "unknown": 8,
+    "changedFiles": 10,
+    "classified": 4,
+    "unknown": 6,
     "mismatches": 4,
     "missingFeatureKinds": 0
   },
   "warnings": [
     "分類ルールがありません: index.html",
-    "分類ルールがありません: scripts/application-manifest.mjs",
+    "分類ルールがありません: scripts/check-browser-e2e.mjs",
     "分類ルールがありません: scripts/check-browser-flow.mjs",
     "分類ルールがありません: scripts/check-clear-flow-order.mjs",
-    "分類ルールがありません: scripts/check-progression-flow-contract.mjs",
-    "分類ルールがありません: scripts/check-state-restore.mjs",
-    "分類ルールがありません: scripts/feature-registry.json",
+    "分類ルールがありません: scripts/e2e-speed-contract.json",
     "分類ルールがありません: scripts/public-symbols-budget.json",
-    "src/runtime/app-events.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です",
+    "src/runtime/namespace.js: 宣言分類 progression と差分シグナル presentation が不一致です",
     "src/runtime/runtime.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です",
-    "src/ui/board-ui.js: 宣言分類 presentation と差分シグナル rule, progression が不一致です",
-    "src/ui/progression-flow-contract.js: 宣言分類 progression と差分シグナル presentation が不一致です"
+    "src/ui/clear-feature.js: 宣言分類 presentation と差分シグナル progression が不一致です",
+    "src/ui/progression-clear-flow.js: 宣言分類 progression と差分シグナル rule, presentation が不一致です"
   ],
   "errors": [],
-  "generatedAt": "2026-09-04T10:08:56.330Z",
-  "sourceRevision": "02c2319",
+  "generatedAt": "2026-09-04T10:32:06.649Z",
+  "sourceRevision": "fb5586b",
   "entries": [
     {
       "file": "index.html",
@@ -34,7 +32,7 @@
       "status": "unknown"
     },
     {
-      "file": "scripts/application-manifest.mjs",
+      "file": "scripts/check-browser-e2e.mjs",
       "kind": null,
       "layer": null,
       "signals": [],
@@ -55,21 +53,7 @@
       "status": "unknown"
     },
     {
-      "file": "scripts/check-progression-flow-contract.mjs",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
-    },
-    {
-      "file": "scripts/check-state-restore.mjs",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
-    },
-    {
-      "file": "scripts/feature-registry.json",
+      "file": "scripts/e2e-speed-contract.json",
       "kind": null,
       "layer": null,
       "signals": [],
@@ -83,18 +67,13 @@
       "status": "unknown"
     },
     {
-      "file": "src/runtime/app-events.js",
+      "file": "src/runtime/namespace.js",
       "kind": "progression",
       "layer": "runtime",
       "signals": [
-        "rule",
-        "progression",
-        "assist",
         "presentation"
       ],
       "mismatched": [
-        "rule",
-        "assist",
         "presentation"
       ],
       "status": "warning"
@@ -117,42 +96,32 @@
       "status": "warning"
     },
     {
-      "file": "src/ui/board-ui.js",
+      "file": "src/ui/clear-feature.js",
       "kind": "presentation",
       "layer": "ui",
       "signals": [
-        "rule",
         "progression",
-        "assist",
         "presentation"
       ],
       "mismatched": [
-        "rule",
         "progression"
       ],
       "status": "warning"
     },
     {
-      "file": "src/ui/progression-flow-contract.js",
+      "file": "src/ui/progression-clear-flow.js",
       "kind": "progression",
       "layer": "ui",
       "signals": [
+        "rule",
+        "progression",
         "presentation"
       ],
       "mismatched": [
+        "rule",
         "presentation"
       ],
       "status": "warning"
-    },
-    {
-      "file": "src/ui/clear-feature.js",
-      "kind": "presentation",
-      "layer": "ui",
-      "signals": [
-        "presentation"
-      ],
-      "mismatched": [],
-      "status": "passed"
     }
   ],
   "policy": {

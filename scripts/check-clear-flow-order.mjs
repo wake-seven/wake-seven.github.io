@@ -7,9 +7,10 @@ import { fileURLToPath } from 'node:url';
 // 完了判定→保存→演出→ダイアログ→次の経路、の順序が崩れたらゲートを止める。
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const read = name => readFile(join(root, name), 'utf8');
-const [board, clearFlow, speed, progression, runtime] = await Promise.all([
+const [board, clearFlow, speed, progression, runtime, clearFeature] = await Promise.all([
   read('src/ui/board-ui.js'), read('src/ui/progression-clear-flow.js'),
-  read('src/runtime/speed.js'), read('src/ui/progression-ui.js'), read('src/runtime/runtime.js')
+  read('src/runtime/speed.js'), read('src/ui/progression-ui.js'), read('src/runtime/runtime.js'),
+  read('src/ui/clear-feature.js')
 ]);
 const checks = [];
 const ordered = (text, tokens, id) => {
@@ -28,7 +29,7 @@ const ordered = (text, tokens, id) => {
 ordered(clearFlow, [
   'function startClearFlow(', 'beginClearFlow()', 'persistClearFlowCheckpoint()',
   'celebrateClear()', 'scheduleClearFlowDialog(', 'function finishClearFlow(',
-  "requestProgressionDialog('clear'"
+  'WakeSevenClearFeature.show(dialog.context,dialog.source)'
 ], 'campaign-clear');
 ordered(clearFlow, [
   'function dispatchClearFlowAction(', 'const route=resolveAfterClearRoute(context)',
@@ -82,6 +83,15 @@ assert.match(clearFlow, /function restoreClearFlowDialog\(context=\{\}\)\{[\s\S]
 assert.match(runtime, /clear:\(\)=>\{[\s\S]*createClearTransitionContext\(\)[\s\S]*WakeSevenClearFeature\.restoreClearDialog\(clearContext\)/,
   'reload clear handler must restore the clear-flow phase before rendering');
 checks.push({ id: 'reload-clear-phase', passed: true });
+assert.match(clearFeature, /start\(options=\{\}\)[\s\S]*startClearFlow\(options\)/,
+  'clear feature start must delegate to the clear-flow animation entry');
+assert.match(clearFeature, /restoreClearDialog:clearFeatureRestoreDialog[\s\S]*next\(\)[\s\S]*dispatchClearFlowAction\(CLEAR_FLOW_ACTION\.next\)[\s\S]*close\(\)[\s\S]*hideGameDialogs\(\)[\s\S]*renderStageNav\(\)/,
+  'clear feature restore/next/close entries must remain traceable from one API');
+assert.match(clearFeature, /renderClearFeatureDialog\(context=null,source='clear-feature'\)[\s\S]*requestProgressionDialog\('clear',resolved,source\)/,
+  'clear feature show must delegate to the shared dialog entry');
+assert.match(clearFlow, /function finishClearFlow\(\)[\s\S]*consumeClearFlowDialog\(cycle\)[\s\S]*WakeSevenClearFeature\.show\(dialog\.context,dialog\.source\)/,
+  'clear animation completion must enter dialog rendering through the clear feature API');
+checks.push({ id: 'clear-feature-entries', passed: true });
 
 const report = {
   schemaVersion: 1,

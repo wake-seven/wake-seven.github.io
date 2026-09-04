@@ -74,12 +74,16 @@ assert.match(clearFeature, /start\(options=\{\}\)\{traceClearFeature\('start'/, 
 assert.match(clearFeature, /next\(\)\{traceClearFeature\('next'/, 'clear feature next must use the orchestration entry');
 assert.match(clearFeature, /trace\(\)\{return clearFeatureTrace\.slice\(\);\}/, 'clear feature trace must be read-only');
 assert.match(clearFeature, /function resolveClearFeatureContext\(context=null\)/, 'clear feature must expose the clear context decision entry');
-assert.match(clearFeature, /function renderClearFeatureDialog\(context=null\)/, 'clear feature must expose the dialog rendering entry');
+assert.match(clearFeature, /function renderClearFeatureDialog\(context=null,source='clear-feature'\)/, 'clear feature must expose the dialog rendering entry');
 assert.match(clearFeature, /show:renderClearFeatureDialog/, 'clear feature dialog rendering must use the shared entry');
+assert.match(clearFeature, /renderClearFeatureDialog\(context=null,source='clear-feature'\)[\s\S]*requestProgressionDialog\('clear',resolved,source\)/,
+  'clear feature show must delegate to the shared progression dialog entry');
+assert.match(clearFlow, /const dialog=consumeClearFlowDialog\(cycle\)[\s\S]*WakeSevenClearFeature\.show\(dialog\.context,dialog\.source\)/,
+  'normal clear dialog rendering must pass through the clear feature show entry');
 assert.match(clearFlow, /function enqueueClearFlowDialog\(item,cycle=clearFlowCycle\)/, 'clear dialog queue entry point is missing');
 assert.match(clearFlow, /function consumeClearFlowDialog\(cycle=clearFlowCycle\)/, 'clear dialog queue consume entry point is missing');
 assert.match(clearFlow, /enqueueClearFlowDialog\(\{kind:'clear'/, 'clear dialog must be queued before rendering');
-assert.match(clearFlow, /const dialog=consumeClearFlowDialog\(cycle\)[\s\S]*if\(dialog\)requestProgressionDialog/, 'clear dialog must be consumed once per flow cycle');
+assert.match(clearFlow, /const dialog=consumeClearFlowDialog\(cycle\)[\s\S]*if\(dialog\)WakeSevenClearFeature\.show\(dialog\.context,dialog\.source\)/, 'clear dialog must be consumed once per flow cycle');
 assert.match(clearFlow, /dialogSequence:\[\],dialogIndex:0/, 'clear flow reset must discard pending dialog sequence');
 assert.match(clearFlow, /function startClearFlow\(\{animation=true,context=\{\},nextAction=null\}/, 'clear flow start options must be explicit');
 assert.match(clearFlow, /persistClearFlowCheckpoint\(\);[\s\S]*if\(flowContext\.mode==='speed'\)/, 'clear flow must checkpoint before mode-specific handling');
@@ -130,6 +134,8 @@ for (const id of ['clearClose', 'clearNext', 'clearTipLink', 'clearMessages',
 }
 assert.match(events, /WakeSevenEventBindings\.click\('clearClose',[\s\S]*WakeSevenClearFeature\.close\(\)/,
   'clear close must hide the dialog and return to the stage navigation');
+assert.match(clearFeature, /close\(\)\{[\s\S]*traceClearFeature\('close'\)[\s\S]*hideGameDialogs\(\)[\s\S]*updateDialogStateOwner\([\s\S]*renderStageNav\(\)/,
+  'clear feature close must hide, update dialog ownership, then render navigation');
 assert.match(events, /WakeSevenEventBindings\.click\('clearNext',[\s\S]*WakeSevenClearFeature\.next\(\)/,
   'clear next must use the unified clear-transition entry point');
 assert.match(clearFlow, /function dispatchClearFlowAction\(action\)[\s\S]*const route=resolveAfterClearRoute[\s\S]*hideGameDialogs\(\)/,

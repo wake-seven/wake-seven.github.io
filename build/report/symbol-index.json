@@ -1,5 +1,5 @@
 {
-  "generatedForVersion": "2026.09.04-19:08",
+  "generatedForVersion": "2026.09.04-19:21",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles",
   "definitions": {
     "attachWakeSevenState": {
@@ -423,7 +423,13 @@
       "file": "state/game-state.js",
       "line": 84,
       "kind": "constant",
-      "callers": []
+      "callers": [
+        {
+          "file": "ui/clear-feature.js",
+          "line": 44,
+          "caller": "renderClearFeatureDialog"
+        }
+      ]
     },
     "normalizeProgress": {
       "name": "normalizeProgress",
@@ -884,8 +890,8 @@
       "callers": [
         {
           "file": "ui/clear-feature.js",
-          "line": 13,
-          "caller": "clearFeatureRestoreDialog"
+          "line": 35,
+          "caller": "renderClearFeatureDialog"
         },
         {
           "file": "runtime/app-events.js",
@@ -4866,8 +4872,8 @@
         },
         {
           "file": "ui/clear-feature.js",
-          "line": 11,
-          "caller": "clearFeatureRestoreDialog"
+          "line": 31,
+          "caller": "renderClearFeatureDialog"
         },
         {
           "file": "runtime/app-events.js",
@@ -7956,8 +7962,8 @@
       "callers": [
         {
           "file": "ui/clear-feature.js",
-          "line": 16,
-          "caller": "clearFeatureRestoreDialog"
+          "line": 39,
+          "caller": "renderClearFeatureDialog"
         },
         {
           "file": "ui/progression-hud.js",
@@ -8290,6 +8296,11 @@
           "file": "ui/clear-flow.js",
           "line": 31,
           "caller": "stageClearArt"
+        },
+        {
+          "file": "ui/clear-feature.js",
+          "line": 21,
+          "caller": "resolveClearFeatureContext"
         },
         {
           "file": "ui/progression-ui.js",
@@ -9175,8 +9186,8 @@
         },
         {
           "file": "ui/clear-feature.js",
-          "line": 16,
-          "caller": "clearFeatureRestoreDialog"
+          "line": 39,
+          "caller": "renderClearFeatureDialog"
         },
         {
           "file": "ui/progression-ui.js",
@@ -12304,7 +12315,7 @@
         },
         {
           "file": "runtime/namespace.js",
-          "line": 32,
+          "line": 36,
           "caller": "attachWakeSevenNamespace"
         }
       ]
@@ -12567,7 +12578,7 @@
         },
         {
           "file": "runtime/namespace.js",
-          "line": 37,
+          "line": 41,
           "caller": "attachWakeSevenNamespace"
         }
       ]
@@ -12620,7 +12631,7 @@
         },
         {
           "file": "runtime/namespace.js",
-          "line": 38,
+          "line": 42,
           "caller": "attachWakeSevenNamespace"
         }
       ]
@@ -12784,7 +12795,7 @@
         },
         {
           "file": "runtime/namespace.js",
-          "line": 36,
+          "line": 40,
           "caller": "attachWakeSevenNamespace"
         }
       ]
@@ -23104,7 +23115,7 @@
         },
         {
           "file": "runtime/namespace.js",
-          "line": 30,
+          "line": 34,
           "caller": "attachWakeSevenNamespace"
         }
       ]
@@ -23200,7 +23211,7 @@
         },
         {
           "file": "runtime/namespace.js",
-          "line": 31,
+          "line": 35,
           "caller": "attachWakeSevenNamespace"
         }
       ]
@@ -23817,6 +23828,11 @@
           "caller": "openDialog"
         },
         {
+          "file": "ui/clear-feature.js",
+          "line": 28,
+          "caller": "renderClearFeatureDialog"
+        },
+        {
           "file": "ui/progression-ui.js",
           "line": 284,
           "caller": "showClearDialog"
@@ -23830,11 +23846,6 @@
           "file": "ui/progression-ui.js",
           "line": 294,
           "caller": "showClearDialog"
-        },
-        {
-          "file": "ui/progression-clear-flow.js",
-          "line": 237,
-          "caller": "finishClearFlow"
         },
         {
           "file": "ui/progression-clear-flow.js",
@@ -23976,17 +23987,105 @@
       "kind": "constant",
       "callers": []
     },
+    "clearFeatureTrace": {
+      "name": "clearFeatureTrace",
+      "file": "ui/clear-feature.js",
+      "line": 7,
+      "kind": "constant",
+      "callers": []
+    },
+    "traceClearFeature": {
+      "name": "traceClearFeature",
+      "file": "ui/clear-feature.js",
+      "line": 8,
+      "kind": "function",
+      "callers": [
+        {
+          "file": "ui/clear-feature.js",
+          "line": 8,
+          "caller": null
+        },
+        {
+          "file": "ui/clear-feature.js",
+          "line": 13,
+          "caller": "clearFeatureRestoreDialog"
+        },
+        {
+          "file": "ui/clear-feature.js",
+          "line": 27,
+          "caller": "renderClearFeatureDialog"
+        },
+        {
+          "file": "ui/clear-feature.js",
+          "line": 31,
+          "caller": "renderClearFeatureDialog"
+        },
+        {
+          "file": "ui/clear-feature.js",
+          "line": 35,
+          "caller": "renderClearFeatureDialog"
+        },
+        {
+          "file": "ui/clear-feature.js",
+          "line": 37,
+          "caller": "renderClearFeatureDialog"
+        }
+      ]
+    },
     "clearFeatureRestoreDialog": {
       "name": "clearFeatureRestoreDialog",
       "file": "ui/clear-feature.js",
-      "line": 5,
+      "line": 12,
+      "kind": "constant",
+      "callers": []
+    },
+    "resolveClearFeatureContext": {
+      "name": "resolveClearFeatureContext",
+      "file": "ui/clear-feature.js",
+      "line": 19,
+      "kind": "function",
+      "callers": [
+        {
+          "file": "ui/clear-feature.js",
+          "line": 19,
+          "caller": "clearFeatureRestoreDialog"
+        },
+        {
+          "file": "ui/clear-feature.js",
+          "line": 26,
+          "caller": "renderClearFeatureDialog"
+        }
+      ]
+    },
+    "renderClearFeatureDialog": {
+      "name": "renderClearFeatureDialog",
+      "file": "ui/clear-feature.js",
+      "line": 25,
+      "kind": "function",
+      "callers": [
+        {
+          "file": "ui/clear-feature.js",
+          "line": 15,
+          "caller": "clearFeatureRestoreDialog"
+        },
+        {
+          "file": "ui/clear-feature.js",
+          "line": 25,
+          "caller": "resolveClearFeatureContext"
+        }
+      ]
+    },
+    "resolved": {
+      "name": "resolved",
+      "file": "ui/clear-feature.js",
+      "line": 26,
       "kind": "constant",
       "callers": []
     },
     "WakeSevenClearFeature": {
       "name": "WakeSevenClearFeature",
       "file": "ui/clear-feature.js",
-      "line": 10,
+      "line": 30,
       "kind": "constant",
       "callers": []
     },
@@ -25602,11 +25701,6 @@
           "caller": "requestProgressionDialog"
         },
         {
-          "file": "ui/clear-feature.js",
-          "line": 7,
-          "caller": "clearFeatureRestoreDialog"
-        },
-        {
           "file": "ui/progression-ui.js",
           "line": 251,
           "caller": "showingExtra"
@@ -26229,8 +26323,8 @@
         },
         {
           "file": "ui/clear-feature.js",
-          "line": 15,
-          "caller": "clearFeatureRestoreDialog"
+          "line": 38,
+          "caller": "renderClearFeatureDialog"
         },
         {
           "file": "ui/progression-ui.js",
@@ -27239,8 +27333,8 @@
         },
         {
           "file": "ui/clear-feature.js",
-          "line": 17,
-          "caller": "clearFeatureRestoreDialog"
+          "line": 40,
+          "caller": "renderClearFeatureDialog"
         },
         {
           "file": "ui/progression-hud.js",
@@ -28037,13 +28131,23 @@
       "kind": "function",
       "callers": [
         {
+          "file": "ui/clear-feature.js",
+          "line": 9,
+          "caller": "traceClearFeature"
+        },
+        {
+          "file": "ui/clear-feature.js",
+          "line": 44,
+          "caller": "renderClearFeatureDialog"
+        },
+        {
           "file": "ui/progression-clear-flow.js",
           "line": 86,
           "caller": "consumeClearFlowDialog"
         },
         {
           "file": "runtime/namespace.js",
-          "line": 24,
+          "line": 25,
           "caller": "attachWakeSevenNamespace"
         }
       ]
@@ -28061,7 +28165,7 @@
         },
         {
           "file": "runtime/namespace.js",
-          "line": 24,
+          "line": 26,
           "caller": "attachWakeSevenNamespace"
         }
       ]
@@ -28184,8 +28288,8 @@
       "callers": [
         {
           "file": "ui/clear-feature.js",
-          "line": 11,
-          "caller": "clearFeatureRestoreDialog"
+          "line": 31,
+          "caller": "renderClearFeatureDialog"
         },
         {
           "file": "ui/progression-clear-flow.js",
@@ -28335,7 +28439,7 @@
       "callers": [
         {
           "file": "ui/clear-feature.js",
-          "line": 6,
+          "line": 14,
           "caller": "clearFeatureRestoreDialog"
         },
         {
@@ -28362,6 +28466,11 @@
           "file": "runtime/runtime.js",
           "line": 180,
           "caller": "clear"
+        },
+        {
+          "file": "ui/clear-feature.js",
+          "line": 22,
+          "caller": "resolveClearFeatureContext"
         },
         {
           "file": "ui/progression-ui.js",
@@ -28457,8 +28566,8 @@
       "callers": [
         {
           "file": "ui/clear-feature.js",
-          "line": 13,
-          "caller": "clearFeatureRestoreDialog"
+          "line": 35,
+          "caller": "renderClearFeatureDialog"
         },
         {
           "file": "ui/progression-clear-flow.js",
@@ -30999,14 +31108,14 @@
     "messagesApi": {
       "name": "messagesApi",
       "file": "runtime/namespace.js",
-      "line": 29,
+      "line": 33,
       "kind": "constant",
       "callers": []
     },
     "speedApi": {
       "name": "speedApi",
       "file": "runtime/namespace.js",
-      "line": 35,
+      "line": 39,
       "kind": "constant",
       "callers": []
     },
@@ -37749,6 +37858,6 @@
   "summary": {},
   "warnings": [],
   "errors": [],
-  "generatedAt": "2026-09-04T10:10:46.695Z",
+  "generatedAt": "2026-09-04T10:33:43.032Z",
   "sourceRevision": "working-tree"
 }
