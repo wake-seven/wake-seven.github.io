@@ -29,6 +29,7 @@ const checkCommand=name=>({
   build:'npm run build',
   'domain-classification':'node scripts/check-domain-classification.mjs',
   version:'node scripts/check-version.mjs',
+  'source-format':'node scripts/check-source-format.mjs',
   'board-domain':'npm run test:board-domain',
   'application-services':'npm run test:application-services',
   'application-targets':'node scripts/check-application-targets.mjs',

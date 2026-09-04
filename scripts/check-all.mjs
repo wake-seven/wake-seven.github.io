@@ -17,6 +17,7 @@ const steps = [
     args: process.platform === 'win32' ? ['/d', '/s', '/c', 'npm run build'] : ['run', 'build'] },
   { name: 'development-entrypoints', command: process.execPath, args: ['scripts/check-development-entrypoints.mjs'] },
   { name: 'version', command: process.execPath, args: ['scripts/check-version.mjs'] },
+  { name: 'source-format', command: process.execPath, args: ['scripts/check-source-format.mjs'] },
   { name: 'board-domain', command: process.execPath, args: ['scripts/test-board-domain.mjs'] },
   { name: 'application-services', command: process.execPath, args: ['scripts/test-application-services.mjs'] },
   { name: 'application-targets', command: process.execPath, args: ['scripts/check-application-targets.mjs'] },

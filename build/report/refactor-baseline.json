@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-03T23:31:38.253Z",
+  "generatedAt": "2026-09-03T23:43:53.479Z",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles",
   "purpose": "グローバル可変状態・progression責務・入口経路・ブラウザ検証の比較用ベースライン",
   "method": "依存を増やさない正規表現ベースの静的計測。判定ではなく比較材料として利用する。",
   "summary": {
     "publishedFileCount": 50,
     "mutableVariableCount": 202,
-    "mutableReferenceCount": 1207,
-    "mutableReadCount": 930,
+    "mutableReferenceCount": 1208,
+    "mutableReadCount": 931,
     "mutableWriteCount": 277,
     "progressionFunctionCount": 481,
     "progressionEntryCount": 5,
@@ -22,7 +22,7 @@
       "display-transition-mixed": 6,
       "orchestrator": 8
     },
-    "reportCount": 49
+    "reportCount": 50
   },
   "mutableVariables": [
     {
@@ -715,7 +715,7 @@
       "name": "boardAnimationSession",
       "declaration": "let",
       "file": "ui/board-interaction.js",
-      "line": 28,
+      "line": 31,
       "function": "isBoardPointerEventFor"
     },
     {
@@ -4636,35 +4636,42 @@
     {
       "name": "boardAnimationSession",
       "file": "ui/board-interaction.js",
-      "line": 32,
+      "line": 35,
       "access": "write",
       "function": "previous"
     },
     {
       "name": "boardAnimationSession",
       "file": "ui/board-interaction.js",
-      "line": 35,
+      "line": 38,
       "access": "write",
       "function": "isBoardAnimationSessionActive"
     },
     {
       "name": "boardAnimationSession",
       "file": "ui/board-interaction.js",
-      "line": 55,
+      "line": 40,
+      "access": "read",
+      "function": "getBoardAnimationSession"
+    },
+    {
+      "name": "boardAnimationSession",
+      "file": "ui/board-interaction.js",
+      "line": 62,
       "access": "write",
       "function": "finishBoardAnimationSession"
     },
     {
       "name": "boardAnimationSession",
       "file": "ui/board-interaction.js",
-      "line": 55,
+      "line": 62,
       "access": "read",
       "function": "finishBoardAnimationSession"
     },
     {
       "name": "boardAnimationSession",
       "file": "ui/board-interaction.js",
-      "line": 58,
+      "line": 65,
       "access": "read",
       "function": "cancelBoardAnimationSession"
     },
@@ -14411,6 +14418,11 @@
             "caller": null
           },
           {
+            "file": "ui/board-interaction.js",
+            "line": 39,
+            "caller": "setBoardAnimationPhase"
+          },
+          {
             "file": "ui/board-ui.js",
             "line": 488,
             "caller": "trainingLowerGoal"
@@ -17385,7 +17397,7 @@
     ]
   },
   "contract": {
-    "stateReferenceCount": 1207,
+    "stateReferenceCount": 1208,
     "stateAssignmentCount": 24,
     "responsibilityCandidateCount": 14,
     "responsibilityCandidates": {
@@ -17396,6 +17408,7 @@
     "progressionEntryCount": 5,
     "entryPointCount": 4,
     "reportInventory": [
+      "animation-trace.json",
       "browser-e2e-result.json",
       "change-check-map.json",
       "change-impact.json",
