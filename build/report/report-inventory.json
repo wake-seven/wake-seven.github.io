@@ -1,20 +1,22 @@
 {
   "schemaVersion": 1,
   "name": "wake7-report-inventory",
-  "generatedAt": "2026-09-04T05:08:21.200Z",
-  "sourceRevision": "df00cc8",
-  "status": "passed",
+  "generatedAt": "2026-09-04T05:29:50.173Z",
+  "sourceRevision": "924dc55",
+  "status": "failed",
   "summary": {
-    "discovered": 59,
+    "discovered": 60,
     "defined": 59,
     "required": 13,
     "supporting": 46,
     "classified": 59,
-    "unknown": 0,
+    "unknown": 1,
     "missing": 0
   },
   "warnings": [],
-  "errors": [],
+  "errors": [
+    "未知のレポートです: change-classification.json"
+  ],
   "policy": {
     "required": "ゲートの判定または主要導線の証跡に使うため、削除・改名時はこの定義を同時に更新する。",
     "supporting": "調査・追跡・比較を補助する成果物。不要化する場合も削除判定をレビューに残す。",
@@ -37,6 +39,10 @@
     {
       "file": "build/report/change-check-map.json",
       "classification": "supporting"
+    },
+    {
+      "file": "build/report/change-classification.json",
+      "classification": null
     },
     {
       "file": "build/report/change-impact.json",
@@ -259,7 +265,9 @@
       "classification": "supporting"
     }
   ],
-  "unknownReports": [],
+  "unknownReports": [
+    "build/report/change-classification.json"
+  ],
   "missingReports": [],
   "deletionCandidates": [
     {
