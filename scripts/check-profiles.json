@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "description": "改修規模に応じて選ぶ検査プロファイル。check:gate は従来どおり全検査を実行する。",
+  "description": "改修規模に応じて選ぶ検査プロファイル。device E2Eは通常開発から分離し、check:gateまたは専用安定性確認で直列実行する。",
   "changeCheckMap": "scripts/change-check-map.json",
   "profiles": {
     "fast": {
@@ -20,15 +20,23 @@
       }
     },
     "full": {
-      "description": "リリース前・大規模変更用。check:gate と同じ全検査を実行する。",
+      "description": "リリース前・大規模変更用。check:gate と同じ全検査を実行する。device E2Eは直列区分で実行する。",
       "budgetMs": 360000,
-      "steps": ["domain-classification", "architecture-guide", "development-entrypoints", "build", "version", "source-format", "board-domain", "application-services", "application-targets", "state", "state-classification", "state-mutations", "state-restore", "browser-flow", "dialog-chains", "ui-effects", "animation-contract", "progression-flows", "progression-flow-contract", "progression-orchestrators", "clear-flow-order", "esm", "source-boundaries", "compat-e2e", "browser-e2e", "reward-access", "device-e2e", "translations", "dialog-state-map", "global-state", "gate-evidence", "global-access", "state-access-policy", "temporary-exceptions", "state-access-final-audit", "navigation-classification", "navigation-final-audit", "change-check-map", "refactor-baseline-generate", "structure-contract-diff", "refactor-baseline", "refactor-budgets", "esm-dependencies", "public-esm", "metrics-update-policy", "refactor-policy", "trace", "progression-responsibility", "ui-data-map", "event-wiring", "refactor-report", "compat-boundaries", "unused-files", "manifest-dependencies", "public-symbols", "report-schema"]
+      "steps": ["domain-classification", "architecture-guide", "development-entrypoints", "build", "version", "source-format", "board-domain", "application-services", "application-targets", "state", "state-classification", "state-mutations", "state-restore", "browser-flow", "dialog-chains", "ui-effects", "animation-contract", "progression-flows", "progression-flow-contract", "progression-orchestrators", "clear-flow-order", "esm", "source-boundaries", "compat-e2e", "browser-e2e", "reward-access", "device-e2e", "e2e-speed-contract", "translations", "dialog-state-map", "global-state", "gate-evidence", "global-access", "state-access-policy", "temporary-exceptions", "state-access-final-audit", "navigation-classification", "navigation-final-audit", "change-check-map", "refactor-baseline-generate", "structure-contract-diff", "refactor-baseline", "refactor-budgets", "esm-dependencies", "public-esm", "metrics-update-policy", "refactor-policy", "trace", "progression-responsibility", "ui-data-map", "event-wiring", "refactor-report", "compat-boundaries", "unused-files", "manifest-dependencies", "public-symbols", "report-schema"]
     }
   },
   "policy": {
     "gateProfile": "full",
     "selection": "fast while editing, affected after a scoped change, full before commit or release",
     "unknownChangedFiles": "use affected, then full if the impact is unclear",
+    "deviceE2E": {
+      "executionProfile": "device-serial",
+      "automaticInProfiles": ["full"],
+      "manualCommand": "npm run check:device-e2e",
+      "stabilityCommand": "npm run check:device-e2e:stability",
+      "stabilityRuns": 3,
+      "comparison": "各runのcontext名・case名集合とconsoleErrorsを比較する"
+    },
     "fullGateRequired": {
       "paths": ["scripts/", "package.json", "package-lock.json", "src/state/", "src/runtime/", "src/commands/", "src/app/", "src/ui/progression", "src/index.template.html", "index.html"],
       "reason": "検査基盤・共有状態・主要導線・公開生成物を変更した場合は、3バッチ・公開版・最終報告を含むcheck:gateを完了するまで部分プロファイルを成功扱いにしない。"

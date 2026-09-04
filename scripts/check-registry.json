@@ -7,7 +7,7 @@
     "flows": { "label": "進行" },
     "browser": { "label": "ブラウザ" }
   },
-  "executionProfiles": ["build-required", "normal-check", "large-change-only"],
+  "executionProfiles": ["build-required", "normal-check", "device-serial", "large-change-only"],
   "steps": [
     { "name": "domain-classification", "command": "node scripts/check-domain-classification.mjs", "domain": "structure", "executionProfile": "build-required" },
     { "name": "architecture-guide", "command": "node scripts/check-architecture-guide.mjs", "domain": "structure", "executionProfile": "build-required" },
@@ -35,7 +35,8 @@
     { "name": "compat-e2e", "command": "node scripts/check-compat-e2e.mjs", "domain": "browser", "executionProfile": "normal-check" },
     { "name": "browser-e2e", "command": "node scripts/check-browser-e2e.mjs", "domain": "browser", "executionProfile": "normal-check" },
     { "name": "reward-access", "command": "node scripts/check-reward-access.mjs", "domain": "browser", "executionProfile": "normal-check" },
-    { "name": "device-e2e", "command": "node scripts/check-device-e2e.mjs", "domain": "browser", "executionProfile": "normal-check" },
+    { "name": "device-e2e", "command": "node scripts/check-device-e2e.mjs", "domain": "browser", "executionProfile": "device-serial" },
+    { "name": "e2e-speed-contract", "command": "node scripts/check-e2e-speed-contract.mjs", "domain": "browser", "executionProfile": "normal-check" },
     { "name": "translations", "command": "node scripts/check-translations.mjs", "domain": "structure", "executionProfile": "normal-check" },
     { "name": "dialog-state-map", "command": "node scripts/check-dialog-state-map.mjs", "domain": "state", "executionProfile": "normal-check" },
     { "name": "global-state", "command": "node scripts/check-global-state-classification.mjs", "domain": "state", "executionProfile": "normal-check" },

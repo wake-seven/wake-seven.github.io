@@ -10,6 +10,12 @@
       "description": "通常の改修で毎回確認する検査",
       "budgetMs": 180000
     },
+    "device-serial": {
+      "description": "公開前に個別・直列で実行する端末差分E2E",
+      "budgetMs": 360000,
+      "serial": true,
+      "automatic": false
+    },
     "large-change-only": {
       "description": "大規模な構造変更や監査更新時に個別実行する詳細検査",
       "budgetMs": 300000
@@ -42,7 +48,8 @@
     "compat-e2e": "normal-check",
     "browser-e2e": "normal-check",
     "reward-access": "normal-check",
-    "device-e2e": "normal-check",
+    "device-e2e": "device-serial",
+    "e2e-speed-contract": "normal-check",
     "gate-evidence": "normal-check",
     "global-access": "large-change-only",
     "state-access-policy": "large-change-only",
@@ -88,7 +95,7 @@
     },
     "browser": {
       "label": "ブラウザ",
-      "steps": ["browser-flow", "compat-e2e", "browser-e2e", "reward-access", "device-e2e", "gate-evidence"]
+      "steps": ["browser-flow", "compat-e2e", "browser-e2e", "reward-access", "device-e2e", "e2e-speed-contract", "gate-evidence"]
     }
   }
 }
