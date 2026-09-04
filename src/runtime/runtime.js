@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-21:11';
+const APP_VERSION='2026.09.04-21:28';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -171,7 +171,17 @@ function captureDialogState(){
 }
 const DIALOG_STATE_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.state;
 function persistDialogState(){
-  try{const state=captureDialogState();if(state)storage.setJson(DIALOG_STATE_STORAGE_KEY,{id:state.type,name:state.name,kind:state.kind,key:state.key});else storage.remove(DIALOG_STATE_STORAGE_KEY);}catch(_){ }
+  try{
+    const state=captureDialogState();
+    if(!state){storage.remove(DIALOG_STATE_STORAGE_KEY);return;}
+    // 復元に必要な追加情報はダイアログ種別ごとに異なるため、
+    // 対応表で使う値だけを明示的に保存する。
+    const persisted={id:state.type};
+    for(const key of ['name','kind','key','index','state','retry']){
+      if(Object.prototype.hasOwnProperty.call(state,key))persisted[key]=state[key];
+    }
+    storage.setJson(DIALOG_STATE_STORAGE_KEY,persisted);
+  }catch(_){ }
 }
 // dialog-state-map の rank/message/tip 系を、復元処理の対応表としてまとめる。
 // 各ハンドラは従来の呼び出し順と戻り先を維持し、保存状態の判定だけを担当する。

@@ -284,7 +284,7 @@ bindClearDialogEvents();
 function bindMenuEvents(){
   WakeSevenEventBindings.click('guideHub',()=>{closeAppMenu();openGuideHub();});
 WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();WakeSevenStagePickerFeature.open();});
-  WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();openDialog('rankDialog');});
+  WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();WakeSevenStagePickerFeature.openRank();});
   WakeSevenEventBindings.click('menuAbout',()=>{
     closeAppMenu();
     $('settingsDialog').hidden=true;
@@ -474,11 +474,11 @@ $('messageRankLink').addEventListener('click',()=>{
   GameDialogs.ranks({dialogId:'messageDialog',focusId:'messageRankLink'});
 });
 $('rankBadge').addEventListener('click',()=>WakeSevenStagePickerFeature.openRank());
-$('masterSeal').addEventListener('click',()=>openRankDialogFrom('masterDialog','masterSeal'));
-$('messageMasterSeal').addEventListener('click',()=>openRankDialogFrom('messageDialog','messageMasterSeal'));
+$('masterSeal').addEventListener('click',()=>WakeSevenStagePickerFeature.openRankFrom('masterDialog','masterSeal'));
+$('messageMasterSeal').addEventListener('click',()=>WakeSevenStagePickerFeature.openRankFrom('messageDialog','messageMasterSeal'));
 for(const [sealId,dialogId] of [['masterSeal','masterDialog'],['messageMasterSeal','messageDialog']]){
   $(sealId).addEventListener('keydown',event=>{
-    if(event.key==='Enter'||event.key===' '){event.preventDefault();openRankDialogFrom(dialogId,sealId);}
+    if(event.key==='Enter'||event.key===' '){event.preventDefault();WakeSevenStagePickerFeature.openRankFrom(dialogId,sealId);}
   });
 }
 $('closeRankDialog').addEventListener('click',()=>{

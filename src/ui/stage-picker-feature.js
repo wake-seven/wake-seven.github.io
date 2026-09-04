@@ -11,6 +11,7 @@ const WakeSevenStagePickerFeature=Object.freeze({
   open(options={}){return openDialog('stagePicker',options);},
   select(options={}){return openStagePickerAt(options);},
   openRank(returnTarget=null){return openDialog('rankDialog',{returnTarget});},
+  openRankFrom(dialogId,sealId){return typeof openRankDialogFrom==='function'&&openRankDialogFrom(dialogId,sealId);},
   close(){return closeStagePicker();},
   restore(options={}){return openDialog('stagePicker',options);}
 });

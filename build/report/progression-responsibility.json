@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T12:12:01.655Z",
+  "generatedAt": "2026-09-04T12:31:02.120Z",
   "source": "build/report/symbol-index.json",
   "target": "progression-related symbols",
   "summary": {
@@ -35,7 +35,7 @@
     "structuralFindings": {
       "clear-flow-direct-skip": 1,
       "decision-dom-mutation": 4,
-      "major-transition-outside-entry": 18
+      "major-transition-outside-entry": 17
     }
   },
   "pipeline": [
@@ -1989,13 +1989,12 @@
           "ui/progression-dialogs.js:19:createProgressionMessageContext",
           "ui/stage-picker-feature.js:11:readStagePickerContext",
           "ui/stage-picker-feature.js:13:readStagePickerContext",
-          "ui/stage-picker-feature.js:15:readStagePickerContext",
+          "ui/stage-picker-feature.js:16:readStagePickerContext",
           "ui/progression-ui.js:116:openSatoriPicker",
           "ui/progression-ui.js:206:openStagePicker",
           "ui/rank.js:146:volume",
           "ui/rank.js:147:volume",
-          "ui/rank.js:166:openRankDialogFrom",
-          "runtime/app-events.js:287:resume"
+          "ui/rank.js:166:openRankDialogFrom"
         ],
         "externallyCalled": true
       }
@@ -2042,7 +2041,7 @@
       "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
       "evidence": {
         "callers": [
-          "runtime/runtime.js:193:restoreDialogState",
+          "runtime/runtime.js:203:restoreDialogState",
           "ui/progression-dialogs.js:51:requestProgressionDialog",
           "ui/progression-insights.js:86:buttonTemplate",
           "ui/progression-insights.js:126:closeTwoMoveDetail",
@@ -2068,7 +2067,7 @@
       "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
       "evidence": {
         "callers": [
-          "runtime/runtime.js:196:restoreDialogState",
+          "runtime/runtime.js:206:restoreDialogState",
           "ui/progression-dialogs.js:52:requestProgressionDialog",
           "ui/progression-insights.js:112:renderTwoMoveDetail",
           "ui/progression-ui.js:724:from",
@@ -2122,7 +2121,7 @@
       "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
       "evidence": {
         "callers": [
-          "ui/stage-picker-feature.js:14:readStagePickerContext",
+          "ui/stage-picker-feature.js:15:readStagePickerContext",
           "ui/progression-ui.js:40:extraRoundLabel",
           "ui/progression-ui.js:103:index",
           "ui/progression-ui.js:189:canSeeTraining",
@@ -2242,24 +2241,6 @@
         ],
         "externallyCalled": true
       }
-    },
-    {
-      "kind": "major-transition-outside-entry",
-      "name": "openRankDialogFrom",
-      "file": "ui/rank.js",
-      "line": 162,
-      "priority": 2,
-      "allowed": true,
-      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
-      "evidence": {
-        "callers": [
-          "ui/rank.js:162:rankDialogReturn",
-          "runtime/app-events.js:477:dialogId",
-          "runtime/app-events.js:478:dialogId",
-          "runtime/app-events.js:481:dialogId"
-        ],
-        "externallyCalled": true
-      }
     }
   ],
   "unclassifiedSymbols": [],
@@ -2362,7 +2343,7 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": false,
       "callers": [
-        "runtime/runtime.js:434:trackGameStart"
+        "runtime/runtime.js:444:trackGameStart"
       ]
     },
     {
@@ -2767,7 +2748,7 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": false,
       "callers": [
-        "runtime/runtime.js:231:mappedRestore",
+        "runtime/runtime.js:241:mappedRestore",
         "ui/progression-ui.js:810:masterDialog"
       ]
     },
@@ -3620,7 +3601,7 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": false,
       "callers": [
-        "runtime/runtime.js:180:clear",
+        "runtime/runtime.js:190:clear",
         "ui/clear-feature.js:22:resolveClearFeatureContext",
         "ui/progression-ui.js:254:showClearDialog",
         "ui/progression-clear-flow.js:156:startClearFlow",
@@ -3846,13 +3827,12 @@
         "ui/progression-dialogs.js:19:createProgressionMessageContext",
         "ui/stage-picker-feature.js:11:readStagePickerContext",
         "ui/stage-picker-feature.js:13:readStagePickerContext",
-        "ui/stage-picker-feature.js:15:readStagePickerContext",
+        "ui/stage-picker-feature.js:16:readStagePickerContext",
         "ui/progression-ui.js:116:openSatoriPicker",
         "ui/progression-ui.js:206:openStagePicker",
         "ui/rank.js:146:volume",
         "ui/rank.js:147:volume",
-        "ui/rank.js:166:openRankDialogFrom",
-        "runtime/app-events.js:287:resume"
+        "ui/rank.js:166:openRankDialogFrom"
       ]
     },
     {
@@ -4310,7 +4290,7 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": true,
       "callers": [
-        "runtime/runtime.js:836:resetFourthDistance",
+        "runtime/runtime.js:846:resetFourthDistance",
         "runtime/speed.js:260:loadSpeedStage",
         "runtime/speed.js:272:loadSpeedStage",
         "ui/board-ui.js:968:completeBoard",
@@ -4840,7 +4820,7 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "runtime/runtime.js:193:restoreDialogState",
+        "runtime/runtime.js:203:restoreDialogState",
         "ui/progression-dialogs.js:51:requestProgressionDialog",
         "ui/progression-insights.js:86:buttonTemplate",
         "ui/progression-insights.js:126:closeTwoMoveDetail",
@@ -4901,7 +4881,7 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "runtime/runtime.js:196:restoreDialogState",
+        "runtime/runtime.js:206:restoreDialogState",
         "ui/progression-dialogs.js:52:requestProgressionDialog",
         "ui/progression-insights.js:112:renderTwoMoveDetail",
         "ui/progression-ui.js:724:from",
@@ -5208,7 +5188,7 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": true,
       "callers": [
-        "runtime/runtime.js:199:restoreDialogState",
+        "runtime/runtime.js:209:restoreDialogState",
         "ui/board-ui.js:956:completeBoard",
         "ui/board-ui.js:1017:paint",
         "ui/progression-dialogs.js:55:requestProgressionDialog",
@@ -5879,7 +5859,7 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "ui/stage-picker-feature.js:14:readStagePickerContext",
+        "ui/stage-picker-feature.js:15:readStagePickerContext",
         "ui/progression-ui.js:40:extraRoundLabel",
         "ui/progression-ui.js:103:index",
         "ui/progression-ui.js:189:canSeeTraining",
@@ -7775,7 +7755,7 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": true,
       "callers": [
-        "runtime/runtime.js:190:restoreDialogState",
+        "runtime/runtime.js:200:restoreDialogState",
         "runtime/speed.js:88:openSpeedPicker",
         "runtime/speed.js:314:finishSpeedRun",
         "runtime/speed.js:315:finishSpeedRun",
@@ -8830,7 +8810,7 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "runtime/runtime.js:182:rank",
+        "runtime/runtime.js:192:rank",
         "ui/progression-dialogs.js:27:openDialog",
         "ui/progression-dialogs.js:48:requestProgressionDialog",
         "ui/rank.js:152:volume"
@@ -8849,10 +8829,8 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "ui/rank.js:162:rankDialogReturn",
-        "runtime/app-events.js:477:dialogId",
-        "runtime/app-events.js:478:dialogId",
-        "runtime/app-events.js:481:dialogId"
+        "ui/stage-picker-feature.js:14:readStagePickerContext",
+        "ui/rank.js:162:rankDialogReturn"
       ]
     }
   ],
