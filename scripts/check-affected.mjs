@@ -13,6 +13,16 @@ const raw = execFileSync('git', ['status', '--porcelain=v1', '-z'], { cwd: root,
 const changedFiles = raw.split('\0').filter(Boolean).map(entry => entry.slice(3)).filter(Boolean);
 const ignoredFiles = changedFiles.filter(file => file.startsWith('build/report/'));
 const files = changedFiles.filter(file => !ignoredFiles.includes(file));
+// 改修開始時に、変更範囲と関連featureを必ず先に記録する。
+// 失敗時は影響調査なしで検査を進めず、安全側へ倒す。
+const investigation = spawn(process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : 'node',
+  process.platform === 'win32' ? ['/d', '/s', '/c', 'npm run investigate:changed'] : ['scripts/investigate-changed.mjs'],
+  { cwd: root, stdio: 'inherit' });
+const investigationExit = await new Promise(resolve => {
+  investigation.on('close', code => resolve(code ?? 1));
+  investigation.on('error', () => resolve(1));
+});
+if (investigationExit !== 0) throw new Error('影響調査に失敗したため、検査を中断します');
 // 検査基盤・共有状態・主要導線・公開生成物の変更は、部分検査を成功扱いにしない。
 const fullRules = (config.policy?.fullGateRequired?.paths || []).map(path =>
   new RegExp(`^${path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
