@@ -42,7 +42,13 @@ if (!selected) {
 } else reasons.push(`指定されたプロファイル: ${selected}`);
 if (!config.profiles[selected]) throw new Error(`不明な検査プロファイルです: ${selected}`);
 const fullGateRequired = selected !== 'full' && files.some(file => fullRules.some(rule => rule.test(file)));
-const requiredChecks = config.profiles[selected].steps;
+const featureChecks = investigationReport?.requiredChecks || [];
+const requiredChecks = [...new Set([...config.profiles[selected].steps, ...featureChecks])];
+if (investigationReport?.features?.length) {
+  reasons.push(`関連feature: ${investigationReport.features.map(item => item.name).join(', ')}`);
+  if (investigationReport.relatedE2E?.length) reasons.push(`関連E2E: ${investigationReport.relatedE2E.join(', ')}`);
+}
+if (fullGateRequired) reasons.push(config.policy?.fullGateRequired?.reason || '共有基盤の変更のためfull gateが必要');
 const commandFor = name => {
   const direct = {
     'domain-classification': ['node', ['scripts/check-domain-classification.mjs']],
