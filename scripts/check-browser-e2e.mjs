@@ -17,7 +17,7 @@ const result={name:'primary-browser-e2e',appVersion:version,gitSha:sha,startedAt
 const port=await new Promise((resolve,reject)=>{const s=createServer();s.listen(0,'127.0.0.1',()=>{const p=s.address().port;s.close(()=>resolve(p));});s.on('error',reject);});
 const wait=async(page,fn,label)=>{try{await page.waitForFunction(fn,undefined,{timeout:10000});}catch(e){e.message=label+': '+e.message;throw e;}};
 const vis=(page,id)=>page.locator('#'+id).isVisible();
-const snap=page=>page.evaluate(()=>{const text=id=>document.querySelector(id)?.textContent?.trim()||'';const shown=id=>{const el=document.querySelector(id);return !!el&&!el.hidden&&el.getClientRects().length>0;};let nav=null,context=null,flow=null;try{nav=window.WakeSeven?.state?.navigation||null;context=window.WakeSeven?.progression?.context||null;}catch(_){}try{flow=typeof getClearFlowState==='function'?getClearFlowState():null;}catch(_){}return {stage:text('#stageNumber'),clear:shown('#clearDialog'),chain:shown('#chainDialog'),master:shown('#masterDialog'),speedStart:shown('#speedStartOverlay'),speedPause:shown('#speedPauseDialog'),dialogues:[...document.querySelectorAll('.game-dialog-backdrop')].filter(el=>shown('#'+el.id)).map(el=>({id:el.id,title:el.querySelector('h2')?.textContent?.trim()||''})),activeMode:typeof activeMode==='undefined'?null:activeMode,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode,clearFlowPhase:flow?.phase||null,clearFlowAction:flow?.action||null,navigation:nav,progressionContext:context,stageTitle:text('#stageTitle'),moves:text('#moveCount'),par:text('#parCount'),lastCommand:window.__e2eLastCommand||null};});
+const snap=page=>page.evaluate(()=>{const text=id=>document.querySelector(id)?.textContent?.trim()||'';const shown=id=>{const el=document.querySelector(id);return !!el&&!el.hidden&&el.getClientRects().length>0;};let nav=null,context=null,flow=null;try{nav=window.WakeSeven?.state?.navigation||null;context=window.WakeSeven?.progression?.context||null;flow=window.WakeSeven?.progression?.clearFlow?.state||null;}catch(_){}return {stage:text('#stageNumber'),clear:shown('#clearDialog'),chain:shown('#chainDialog'),master:shown('#masterDialog'),speedStart:shown('#speedStartOverlay'),speedPause:shown('#speedPauseDialog'),dialogues:[...document.querySelectorAll('.game-dialog-backdrop')].filter(el=>shown('#'+el.id)).map(el=>({id:el.id,title:el.querySelector('h2')?.textContent?.trim()||''})),activeMode:typeof activeMode==='undefined'?null:activeMode,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode,clearFlowPhase:flow?.phase||null,clearFlowAction:flow?.action||null,navigation:nav,progressionContext:context,stageTitle:text('#stageTitle'),moves:text('#moveCount'),par:text('#parCount'),lastCommand:window.__e2eLastCommand||null};});
 const diff=(before,after)=>{const changed={};for(const key of new Set([...Object.keys(before||{}),...Object.keys(after||{})]))if(JSON.stringify(before?.[key])!==JSON.stringify(after?.[key]))changed[key]={before:before?.[key]??null,after:after?.[key]??null};return changed;};
 const track=async(name,action)=>{const before=await snap(page);try{const value=await action();const after=await snap(page);result.commands.push({name,before,after,stateDiff:diff(before,after)});return value;}catch(error){const after=await snap(page).catch(()=>null);result.commands.push({name,before,after,stateDiff:diff(before,after),error:error.message});throw error;}};
 const click=(page,id)=>track('click:'+id,()=>page.locator('#'+id).click({timeout:10000,force:true}));
@@ -27,6 +27,7 @@ const prepareAcademyDebugPage=async()=>{
   await page.evaluate(()=>localStorage.clear());
   await page.reload({waitUntil:'networkidle'});
   await page.waitForSelector('#debugReset');
+  await page.waitForTimeout(400);
   if(await vis(page,'introDialog')){
     await click(page,'introStart');
     await wait(page,()=>document.querySelector('#introDialog')?.hidden,'debug startup dialog');
@@ -50,6 +51,7 @@ const prepareTutorialDebugPage=async()=>{
   await page.evaluate(()=>localStorage.clear());
   await page.reload({waitUntil:'networkidle'});
   await page.waitForSelector('#debugReset');
+  await page.waitForTimeout(400);
   if(await vis(page,'introDialog')){
     await click(page,'introStart');
     await wait(page,()=>document.querySelector('#introDialog')?.hidden,'tutorial startup dialog');
@@ -168,7 +170,17 @@ try{
   await wait(page,()=>!document.querySelector('#clearDialog')?.hidden,'clear dialog after animation');
   const afterClear=await page.evaluate(()=>{clearInterval(window.__clearAnimationProbe.timer);return {samples:window.__clearAnimationProbe.samples.slice(),dialogs:[...document.querySelectorAll('.game-dialog-backdrop')].filter(el=>!el.hidden&&el.getClientRects().length>0).map(el=>el.id)};});
   assert.deepEqual(afterClear.dialogs,['clearDialog'],'exactly one clear dialog appears after animation');
-  result.cases.push({name:'clear-animation-before-dialog-and-single-display',state:await snap(page),duringClear,afterClear});
+  const clearTrace=await page.evaluate(()=>window.WakeSeven?.progression?.clearFlow?.trace||[]);
+  const requiredPhases=['clear-animation','clear-animation-pending','clear-dialog'];
+  let phaseCursor=0;
+  for(const entry of clearTrace)if(entry.to===requiredPhases[phaseCursor])phaseCursor++;
+  assert.equal(phaseCursor,requiredPhases.length,'clear flow phases must be ordered before dialog display');
+  assert.ok(clearTrace.every(entry=>entry.allowed!==false),'clear flow must not record an invalid transition');
+  await debugClick(page,'debugClear');
+  await page.waitForTimeout(120);
+  const duplicateDialogs=await visibleDialog(page);
+  assert.deepEqual(duplicateDialogs.map(dialog=>dialog.id),['clearDialog'],'repeating clear callback must not open a second dialog');
+  result.cases.push({name:'clear-animation-before-dialog-single-display-and-idempotent',state:await snap(page),duringClear,afterClear,clearTrace,duplicateDialogs});
 
   // ステージ選択はヘッダー・メニュー・称号一覧の3経路が同じダイアログを開くことを確認する。
   await page.evaluate(()=>localStorage.clear());await page.reload({waitUntil:'networkidle'});await page.waitForSelector('#debugReset');
@@ -231,7 +243,7 @@ try{
     const after=await snap(page);assert.ok(after.stage!==before.stage||after.chain||after.speedStart||after.speedPause,'clear next must advance or open the next route');
     result.cases.push({name:'primary-clear-next-action',before,after});
   }
-  await debugClick(page,'debugAcademy20');await page.waitForTimeout(120);await debugClick(page,'debugSpeedTraining8');await wait(page,()=>!document.querySelector('#speedStartOverlay')?.hidden||!document.querySelector('#speedPause')?.hidden,'speed entry');if(await vis(page,'speedBoardStart')){await click(page,'speedBoardStart');}await wait(page,()=>document.querySelector('#speedStartOverlay')?.hidden&&!document.querySelector('#speedPause')?.hidden,'speed start');assert.equal(await vis(page,'speedStartOverlay'),false);await page.evaluate(()=>{const a=[];const d=document.querySelector('#masterDialog');const o=new MutationObserver(()=>{if(!d.hidden)a.push(document.querySelector('#masterDialogTitle')?.textContent||'');});o.observe(d,{attributes:true,attributeFilter:['hidden']});window.__speedFlashObserver=o;window.__speedFlashLog=a;});await debugClick(page,'debugClear');await wait(page,()=> (document.querySelector('#stageNumber')?.textContent||'').includes('4 / 9'),'speed advances from question 3');await page.waitForTimeout(250);const flashLog=await page.evaluate(()=>{window.__speedFlashObserver?.disconnect();return window.__speedFlashLog||[];});assert.deepEqual(flashLog,[],'speed exam dialog must not flash between questions');result.cases.push({name:'speed-question-3-to-4-no-exam-dialog-flash',state:await snap(page),flashLog});
+  await debugClick(page,'debugAcademy20');await page.waitForTimeout(120);await debugClick(page,'debugSpeedTraining8');await wait(page,()=>!document.querySelector('#speedStartOverlay')?.hidden||!document.querySelector('#speedPause')?.hidden,'speed entry');if(await vis(page,'speedBoardStart')){await click(page,'speedBoardStart');}await wait(page,()=>document.querySelector('#speedStartOverlay')?.hidden&&!document.querySelector('#speedPause')?.hidden,'speed start');assert.equal(await vis(page,'speedStartOverlay'),false);await page.evaluate(()=>{const a=[];const o=new MutationObserver(()=>{const visible=[...document.querySelectorAll('.game-dialog-backdrop')].filter(dialog=>!dialog.hidden&&dialog.getClientRects().length>0).map(dialog=>dialog.id);if(visible.length)a.push(visible);});document.querySelectorAll('.game-dialog-backdrop').forEach(dialog=>o.observe(dialog,{attributes:true,attributeFilter:['hidden']}));window.__speedFlashObserver=o;window.__speedFlashLog=a;});await debugClick(page,'debugClear');await wait(page,()=> (document.querySelector('#stageNumber')?.textContent||'').includes('4 / 9'),'speed advances from question 3');await page.waitForTimeout(250);const flashLog=await page.evaluate(()=>{window.__speedFlashObserver?.disconnect();return window.__speedFlashLog||[];});assert.ok(flashLog.every(dialogs=>!dialogs.includes('speedStartOverlay')&&!dialogs.includes('masterDialog')),'speed question transition must not flash a start or mastery dialog');result.cases.push({name:'speed-question-3-to-4-no-exam-dialog-flash',state:await snap(page),flashLog});
   await page.reload({waitUntil:'networkidle'});await wait(page,()=>document.querySelector('#speedStartOverlay')?.hidden,'speed reload restore');
   assert.equal(await vis(page,'speedStartOverlay'),false);result.cases.push({name:'speed-reload-restoration',state:await snap(page)});
   await page.evaluate(()=>{document.querySelector('#clearDialog')?.setAttribute('hidden','');document.querySelector('#masterDialog')?.setAttribute('hidden','');});

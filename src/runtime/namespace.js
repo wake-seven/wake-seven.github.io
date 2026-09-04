@@ -17,7 +17,13 @@
   const progressionApi = Object.freeze({
     get definition() { return PROGRESSION; },
     get context() { return getGameContext(); },
-    get uiPolicy() { return PROGRESSION.uiPolicy; }
+    get uiPolicy() { return PROGRESSION.uiPolicy; },
+    // クリア後フローの状態と履歴は、実ブラウザ検証・障害調査の読み取り専用入口。
+    get clearFlow() {
+      return typeof getClearFlowState === 'function'
+        ? Object.freeze({ state: getClearFlowState(), trace: typeof getClearFlowTrace === 'function' ? getClearFlowTrace() : [] })
+        : null;
+    }
   });
 
   const messagesApi = Object.freeze({
