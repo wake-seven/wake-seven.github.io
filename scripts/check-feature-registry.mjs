@@ -42,13 +42,23 @@ const changedFromGit = () => {
 };
 const changedFiles = process.argv.slice(2).filter(arg => arg !== '--changed').concat(process.argv.includes('--changed') ? changedFromGit() : []);
 const matches = (file, path) => file === path || file.startsWith(path);
+const exactMatches = (file, path) => file === path;
 const matched = changedFiles.flatMap(file => (config.features || []).filter(feature => (feature.paths || []).some(path => matches(file, path))).map(feature => feature.name));
 const unknown = changedFiles.filter(file => !(config.features || []).some(feature => (feature.paths || []).some(path => matches(file, path))));
+// 既存ファイルはprefixで分類するが、保護領域の新規ファイルは完全なpath登録を要求する。
+const isProtected = file => (config.policy?.registrationRequiredPrefixes || []).some(prefix => file.startsWith(prefix));
+const statusEntries = process.argv.includes('--changed')
+  ? execFileSync('git', ['status', '--porcelain=v1'], { cwd: root, encoding: 'utf8' }).split(/\r?\n/).filter(Boolean)
+  : [];
+const newFiles = statusEntries.filter(line => line.startsWith('?? ')).map(line => line.slice(3).replaceAll('\\', '/'));
+const unregisteredNewFiles = newFiles.filter(file => isProtected(file)
+  && !(config.features || []).some(feature => (feature.paths || []).some(path => exactMatches(file, path))));
+for (const file of unregisteredNewFiles) errors.push(`新規入口がfeature registryに未登録です（完全pathを追加してください）: ${file}`);
 const featureByName = new Map((config.features || []).map(feature => [feature.name, feature]));
 const selectedFeatures = [...new Set(matched)].map(name => featureByName.get(name));
 const suggestedChecks = [...new Set(selectedFeatures.flatMap(feature => [...(feature.checks || []), ...(feature.relatedE2E || [])]))];
 const recommendation = unknown.length ? (selectedFeatures.length ? 'full' : 'affected') : selectedFeatures.length ? 'affected' : 'fast';
-const report = await createReport(root, { name: 'wake7-feature-registry', summary: { features: (config.features || []).length, matched: selectedFeatures.length, unknown: unknown.length, references: (config.features || []).reduce((count, feature) => count + referenceKinds.reduce((total, kind) => total + (Array.isArray(feature?.[kind]) ? feature[kind].length : 0), 0), 0) }, errors, features: config.features, changedFiles, matchedFeatures: selectedFeatures.map(feature => feature.name), unknownChangedFiles: unknown, recommendation, suggestedChecks, policy: config.policy });
+const report = await createReport(root, { name: 'wake7-feature-registry', summary: { features: (config.features || []).length, matched: selectedFeatures.length, unknown: unknown.length, unregisteredNewFiles: unregisteredNewFiles.length, references: (config.features || []).reduce((count, feature) => count + referenceKinds.reduce((total, kind) => total + (Array.isArray(feature?.[kind]) ? feature[kind].length : 0), 0), 0) }, errors, features: config.features, changedFiles, matchedFeatures: selectedFeatures.map(feature => feature.name), unknownChangedFiles: unknown, unregisteredNewFiles, recommendation, suggestedChecks, policy: config.policy });
 validateReport(report, 'feature-registry');
 const reportPath = join(root, 'build/report/feature-registry.json');
 await mkdir(dirname(reportPath), { recursive: true });

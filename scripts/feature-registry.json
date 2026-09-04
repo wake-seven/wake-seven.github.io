@@ -13,5 +13,12 @@
     { "name": "speed-session", "paths": ["src/runtime/speed.js"], "entry": ["src/runtime/speed.js"], "state": ["src/commands/speed-commands.js"], "storage": ["src/state/game-state.js"], "dom": ["src/index.template.html"], "next": ["src/commands/speed-record-commands.js"], "e2e": ["scripts/check-e2e-speed-contract.mjs", "scripts/check-browser-e2e.mjs"], "boundaries": ["scripts/check-compat-boundaries.mjs"], "checks": ["e2e-speed-contract"], "relatedE2E": ["browser-e2e"] },
     { "name": "state-restore", "paths": ["src/runtime/app-bootstrap.js"], "entry": ["src/runtime/app-bootstrap.js"], "state": ["src/state/game-state.js"], "storage": ["src/state/persistence.mjs"], "dom": ["src/runtime/runtime.js"], "next": ["src/runtime/application.mjs"], "e2e": ["scripts/check-state-restore.mjs", "scripts/check-browser-e2e.mjs"], "boundaries": ["scripts/check-state-access-policy.mjs"], "checks": ["state-restore"], "relatedE2E": ["browser-e2e"] }
   ],
-  "policy": { "unknownChangedFiles": "affected", "ambiguousChangedFiles": "full", "investigateCommand": "npm run investigate -- <file>..." }
+  "policy": {
+    "unknownChangedFiles": "affected",
+    "ambiguousChangedFiles": "full",
+    "investigateCommand": "npm run investigate -- <file>...",
+    "registrationRequiredPrefixes": ["src/ui/", "src/state/", "src/runtime/", "src/commands/"],
+    "newFileRegistration": "exact-path-required",
+    "newFileRegistrationReason": "新しいUI・状態・runtime・command入口は、機能registryへ明示登録してから検査を通す。"
+  }
 }
