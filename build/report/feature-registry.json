@@ -1,0 +1,271 @@
+{
+  "name": "wake7-feature-registry",
+  "status": "passed",
+  "summary": {
+    "features": 10,
+    "matched": 0,
+    "unknown": 2,
+    "references": 32
+  },
+  "warnings": [],
+  "errors": [],
+  "generatedAt": "2026-09-04T03:43:09.365Z",
+  "sourceRevision": "799f8e7",
+  "features": [
+    {
+      "name": "reward-pages",
+      "paths": [
+        "index_3D.html",
+        "all-patterns.html"
+      ],
+      "checks": [
+        "reward-access"
+      ],
+      "relatedE2E": [
+        "reward-access",
+        "browser-e2e"
+      ]
+    },
+    {
+      "name": "ui/progression",
+      "paths": [
+        "src/ui/progression-",
+        "src/ui/progression.js"
+      ],
+      "checks": [
+        "progression-flows",
+        "progression-flow-contract",
+        "dialog-chains"
+      ],
+      "relatedE2E": [
+        "browser-flow",
+        "browser-e2e",
+        "device-e2e"
+      ]
+    },
+    {
+      "name": "clear-flow",
+      "paths": [
+        "src/ui/clear-flow.js",
+        "src/ui/progression-clear-flow.js",
+        "src/ui/progression-flow-contract.js"
+      ],
+      "checks": [
+        "clear-flow-order",
+        "progression-flow-contract",
+        "dialog-chains"
+      ],
+      "relatedE2E": [
+        "browser-flow",
+        "browser-e2e",
+        "device-e2e"
+      ]
+    },
+    {
+      "name": "state",
+      "paths": [
+        "src/state/",
+        "src/commands/state-"
+      ],
+      "checks": [
+        "state",
+        "state-classification",
+        "state-mutations",
+        "state-restore"
+      ],
+      "relatedE2E": [
+        "state-restore",
+        "browser-e2e",
+        "device-e2e"
+      ]
+    },
+    {
+      "name": "runtime/speed",
+      "paths": [
+        "src/runtime/speed.js",
+        "src/runtime/app-events.js"
+      ],
+      "checks": [
+        "application-services",
+        "progression-flows"
+      ],
+      "relatedE2E": [
+        "browser-e2e",
+        "device-e2e",
+        "state-restore"
+      ]
+    },
+    {
+      "name": "scripts/manifest",
+      "paths": [
+        "scripts/application-manifest.mjs",
+        "scripts/check-pipeline.json",
+        "scripts/change-check-map.json",
+        "scripts/feature-registry.json",
+        "scripts/check-profiles.json"
+      ],
+      "checks": [
+        "development-entrypoints",
+        "esm",
+        "manifest-dependencies"
+      ],
+      "relatedE2E": [
+        "browser-e2e",
+        "device-e2e"
+      ]
+    },
+    {
+      "name": "clear-next",
+      "paths": [
+        "src/ui/progression-clear-flow.js"
+      ],
+      "entry": [
+        "src/ui/progression-clear-flow.js"
+      ],
+      "state": [
+        "src/state/game-state.js"
+      ],
+      "storage": [
+        "src/state/persistence.mjs"
+      ],
+      "dom": [
+        "src/index.template.html"
+      ],
+      "next": [
+        "src/ui/board-ui.js"
+      ],
+      "e2e": [
+        "scripts/check-clear-flow-order.mjs",
+        "scripts/check-browser-e2e.mjs"
+      ],
+      "boundaries": [
+        "scripts/check-source-boundaries.mjs"
+      ],
+      "checks": [
+        "clear-flow-order"
+      ],
+      "relatedE2E": [
+        "browser-e2e"
+      ]
+    },
+    {
+      "name": "dialog-restore",
+      "paths": [
+        "src/runtime/runtime.js"
+      ],
+      "entry": [
+        "src/runtime/runtime.js"
+      ],
+      "state": [
+        "src/state/game-state.js"
+      ],
+      "storage": [
+        "src/state/persistence.mjs"
+      ],
+      "dom": [
+        "src/index.template.html"
+      ],
+      "next": [
+        "src/ui/progression-dialogs.js"
+      ],
+      "e2e": [
+        "scripts/check-state-restore.mjs",
+        "scripts/check-dialog-state-map.mjs"
+      ],
+      "boundaries": [
+        "scripts/check-dialog-chains.mjs"
+      ],
+      "checks": [
+        "state-restore",
+        "dialog-state-map"
+      ],
+      "relatedE2E": [
+        "state-restore"
+      ]
+    },
+    {
+      "name": "speed-session",
+      "paths": [
+        "src/runtime/speed.js"
+      ],
+      "entry": [
+        "src/runtime/speed.js"
+      ],
+      "state": [
+        "src/commands/speed-commands.js"
+      ],
+      "storage": [
+        "src/state/game-state.js"
+      ],
+      "dom": [
+        "src/index.template.html"
+      ],
+      "next": [
+        "src/commands/speed-record-commands.js"
+      ],
+      "e2e": [
+        "scripts/check-e2e-speed-contract.mjs",
+        "scripts/check-browser-e2e.mjs"
+      ],
+      "boundaries": [
+        "scripts/check-compat-boundaries.mjs"
+      ],
+      "checks": [
+        "e2e-speed-contract"
+      ],
+      "relatedE2E": [
+        "browser-e2e"
+      ]
+    },
+    {
+      "name": "state-restore",
+      "paths": [
+        "src/runtime/app-bootstrap.js"
+      ],
+      "entry": [
+        "src/runtime/app-bootstrap.js"
+      ],
+      "state": [
+        "src/state/game-state.js"
+      ],
+      "storage": [
+        "src/state/persistence.mjs"
+      ],
+      "dom": [
+        "src/runtime/runtime.js"
+      ],
+      "next": [
+        "src/runtime/application.mjs"
+      ],
+      "e2e": [
+        "scripts/check-state-restore.mjs",
+        "scripts/check-browser-e2e.mjs"
+      ],
+      "boundaries": [
+        "scripts/check-state-access-policy.mjs"
+      ],
+      "checks": [
+        "state-restore"
+      ],
+      "relatedE2E": [
+        "browser-e2e"
+      ]
+    }
+  ],
+  "changedFiles": [
+    "scripts/investigate.mjs",
+    "scripts/report-inventory.json"
+  ],
+  "matchedFeatures": [],
+  "unknownChangedFiles": [
+    "scripts/investigate.mjs",
+    "scripts/report-inventory.json"
+  ],
+  "recommendation": "affected",
+  "suggestedChecks": [],
+  "policy": {
+    "unknownChangedFiles": "affected",
+    "ambiguousChangedFiles": "full",
+    "investigateCommand": "npm run investigate -- <file>..."
+  }
+}
