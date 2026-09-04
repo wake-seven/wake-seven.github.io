@@ -51,8 +51,9 @@ const steps = [
   { name: 'navigation-classification', command: process.execPath, args: ['scripts/check-navigation-classification.mjs'] },
   { name: 'navigation-final-audit', command: process.execPath, args: ['scripts/check-navigation-final-audit.mjs'] },
   { name: 'change-check-map', command: process.execPath, args: ['scripts/check-change-check-map.mjs'] },
-  { name: 'refactor-baseline-generate', command: process.execPath, args: ['scripts/generate-refactor-baseline.mjs'] },
+  // navigation-final-audit が参照する構造契約を、同じゲート内で先に確定する。
   { name: 'structure-contract-diff', command: process.execPath, args: ['scripts/check-structure-contract-diff.mjs'] },
+  { name: 'refactor-baseline-generate', command: process.execPath, args: ['scripts/generate-refactor-baseline.mjs'] },
   { name: 'refactor-baseline', command: process.execPath, args: ['scripts/check-refactor-baseline.mjs'] },
   { name: 'refactor-budgets', command: process.execPath, args: ['scripts/check-refactor-budgets.mjs'] },
   { name: 'esm-dependencies', command: process.execPath, args: ['scripts/check-esm-dependencies.mjs'] },
