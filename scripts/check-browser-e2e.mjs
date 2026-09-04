@@ -186,33 +186,50 @@ try{
   result.cases.push({name:'stage-picker-rank-entry',state:await snap(page)});await click(page,'closeStagePicker');await wait(page,()=>document.querySelector('#stagePicker')?.hidden,'rank stage picker close returns');
   // 各コースの入口を実ブラウザで開き、盤面と表示中の状態を確認する。
   // デバッグボタンは内部状態を直結するが、画面遷移・描画・ダイアログは実DOMを通る。
-  for(const checkpoint of stageCheckpoints){
-    await page.evaluate(()=>localStorage.clear());
-    await page.reload({waitUntil:'networkidle'});
-    await page.waitForSelector('#debugReset');
-    // 起動時の開始ダイアログが残ったまま次のデバッグ導線へ進まないよう、
-    // 通常の開始操作を一度通してから各コースの確認を始める。
-    if(await vis(page,'introDialog')){
-      await click(page,'introStart');
-      await wait(page,()=>document.querySelector('#introDialog')?.hidden,'startup dialog close');
-    }
-    await debugClick(page,checkpoint.id);
+  // 入口確認は各ケースが保存状態を共有しないため、サーバーとBrowserだけ共有し、
+  // Context/Page/localStorage/sessionStorageをケースごとに分離して同時実行する。
+  // clearNextだけは進行状態を引き継ぐ契約なので、既存のメインページで直列に行う。
+  const runIndependentCheckpoint=async checkpoint=>{
+    const isolated=await browser.newContext({viewport:{width:1280,height:900}});
+    const isolatedPage=await isolated.newPage();
+    // Playwrightのabout:blank初期化時にstorageへ触れるとSecurityErrorになるため、
+    // 監視は実アプリURLへ遷移するPageにだけ接続する（既存メインPageと同じ境界）。
+    isolatedPage.on('console',message=>{if(message.type()==='error')result.consoleErrors.push(message.text());});
+    isolatedPage.on('pageerror',error=>result.consoleErrors.push(String(error)));
+    try{
+      await isolatedPage.goto('http://127.0.0.1:'+port+'/index.html?debug=1&debugSpeedIndex=2',{waitUntil:'networkidle'});
+      await isolatedPage.waitForSelector('#debugReset');
+      if(await isolatedPage.locator('#introDialog').isVisible()){
+        await isolatedPage.locator('#introStart').click({timeout:10000,force:true});
+        await isolatedPage.waitForFunction(()=>document.querySelector('#introDialog')?.hidden,undefined,{timeout:10000});
+      }
+      await isolatedPage.locator('#debugTools').evaluate(el=>{el.hidden=false;});
+      await isolatedPage.locator('#'+checkpoint.id).dispatchEvent('click');
+      await isolatedPage.waitForTimeout(180);
+      const state=await snap(isolatedPage);
+      assert.equal(state.stage,checkpoint.stage,checkpoint.name+' stage');
+      assert.ok(await isolatedPage.locator('#board').boundingBox(),checkpoint.name+' board');
+      await isolatedPage.locator('#debugClear').dispatchEvent('click');
+      await isolatedPage.waitForTimeout(1300);
+      const dialogs=await visibleDialog(isolatedPage);
+      assert.ok(dialogs.length>0,checkpoint.name+' clear dialog');
+      return [{name:checkpoint.name,state},{name:checkpoint.name+'-clear-dialog',state:await snap(isolatedPage),dialogs}];
+    } finally { await isolated.close(); }
+  };
+  const independentCases=await Promise.all(stageCheckpoints.map(runIndependentCheckpoint));
+  for(const cases of independentCases) result.cases.push(...cases);
+  // 速解き継続と同様、クリア後の次導線は状態を共有する直列ケースとして実行する。
+  const upperCases=independentCases[stageCheckpoints.findIndex(checkpoint=>checkpoint.id==='debugTrainingUpper')];
+  if(upperCases?.[1]){
+    await prepareAcademyDebugPage();
+    await debugClick(page,'debugTrainingUpper');
     await page.waitForTimeout(180);
-    const state=await snap(page);
-    assert.equal(state.stage,checkpoint.stage,checkpoint.name+' stage');
-    assert.ok(await page.locator('#board').boundingBox(),checkpoint.name+' board');
-    result.cases.push({name:checkpoint.name,state});
     await debugClick(page,'debugClear');
     await page.waitForTimeout(1300);
-    const dialogs=await visibleDialog(page);
-    assert.ok(dialogs.length>0,checkpoint.name+' clear dialog');
-    result.cases.push({name:checkpoint.name+'-clear-dialog',state:await snap(page),dialogs});
-    if(checkpoint.id==='debugTrainingUpper'){
-      const before=await snap(page);await click(page,'clearNext');
-      await wait(page,()=>document.querySelector('#clearDialog')?.hidden,'clear next action');
-      const after=await snap(page);assert.ok(after.stage!==before.stage||after.chain||after.speedStart||after.speedPause,'clear next must advance or open the next route');
-      result.cases.push({name:'primary-clear-next-action',before,after});
-    }
+    const before=await snap(page);await click(page,'clearNext');
+    await wait(page,()=>document.querySelector('#clearDialog')?.hidden,'clear next action');
+    const after=await snap(page);assert.ok(after.stage!==before.stage||after.chain||after.speedStart||after.speedPause,'clear next must advance or open the next route');
+    result.cases.push({name:'primary-clear-next-action',before,after});
   }
   await debugClick(page,'debugAcademy20');await page.waitForTimeout(120);await debugClick(page,'debugSpeedTraining8');await wait(page,()=>!document.querySelector('#speedStartOverlay')?.hidden||!document.querySelector('#speedPause')?.hidden,'speed entry');if(await vis(page,'speedBoardStart')){await click(page,'speedBoardStart');}await wait(page,()=>document.querySelector('#speedStartOverlay')?.hidden&&!document.querySelector('#speedPause')?.hidden,'speed start');assert.equal(await vis(page,'speedStartOverlay'),false);await page.evaluate(()=>{const a=[];const d=document.querySelector('#masterDialog');const o=new MutationObserver(()=>{if(!d.hidden)a.push(document.querySelector('#masterDialogTitle')?.textContent||'');});o.observe(d,{attributes:true,attributeFilter:['hidden']});window.__speedFlashObserver=o;window.__speedFlashLog=a;});await debugClick(page,'debugClear');await wait(page,()=> (document.querySelector('#stageNumber')?.textContent||'').includes('4 / 9'),'speed advances from question 3');await page.waitForTimeout(250);const flashLog=await page.evaluate(()=>{window.__speedFlashObserver?.disconnect();return window.__speedFlashLog||[];});assert.deepEqual(flashLog,[],'speed exam dialog must not flash between questions');result.cases.push({name:'speed-question-3-to-4-no-exam-dialog-flash',state:await snap(page),flashLog});
   await page.reload({waitUntil:'networkidle'});await wait(page,()=>document.querySelector('#speedStartOverlay')?.hidden,'speed reload restore');
