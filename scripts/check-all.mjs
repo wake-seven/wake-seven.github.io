@@ -1,7 +1,9 @@
-import { access, mkdir, readFile } from 'node:fs/promises';
+import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { sourceRevision, writeReport } from './lib/report.mjs';
 import { normalizeTrackedReports } from './lib/report-noise.mjs';
 import { loadCheckRegistry, validateCheckRegistry, writeCheckRegistryReport } from './check-registry.mjs';
@@ -15,11 +17,18 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 await assertChangeSession(root);
 const reportPath = join(root, 'build', 'report', 'check-gate.json');
 const runtimeReportPath = join(root, 'build', 'report', 'check-runtime.json');
+const cachePath = join(root, 'tmp', 'check-gate-cache.json');
 const contextPath = join(root, 'build', 'report', 'check-context.json');
 const pipeline = JSON.parse(await readFile(join(root, 'scripts', 'check-pipeline.json'), 'utf8'));
 const registryValidation = await validateCheckRegistry(root);
 if (registryValidation.errors.length) throw new Error(`check-registry.json の整合性エラー:\n${registryValidation.errors.join('\n')}`);
 const registry = await loadCheckRegistry(root);
+const cacheKey = createHash('sha256').update([
+  execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }),
+  execFileSync('git', ['status', '--porcelain'], { cwd: root, encoding: 'utf8' }).split('\n').filter(line => !line.includes('build/report/')).join('\n'),
+  await readFile(join(root, 'index.html')).catch(() => '')
+].join('\n')).digest('hex');
+const cache = await (async () => { try { return JSON.parse(await readFile(cachePath, 'utf8')); } catch { return { schemaVersion: 1, entries: {} }; } })();
 // feature registry はゲート手順集合を増やさず、全手順の前提契約として毎回確認する。
 const featureCheck = await new Promise(resolve => {
   const child = spawn(process.execPath, ['scripts/check-feature-registry.mjs', '--changed'], { cwd: root, shell: false });
@@ -127,10 +136,14 @@ const attachExecutionEvidence = async () => {
 await mkdir(dirname(reportPath), { recursive: true });
 await writeCheckRegistryReport(root, registryValidation);
 for (const step of steps) {
-  const result = await run(step);
+  const cached = cache.entries?.[step.name];
+  const result = cached?.key === cacheKey && cached.passed === true
+    ? { ...cached, name: step.name, durationMs: 0, cached: true, exitCode: 0, passed: true }
+    : await run(step);
   result.reportLinks = await reportLinksFor(result);
   report.steps.push(result);
-  console.log(`[${result.exitCode === 0 ? 'ok' : 'FAIL'}] ${result.name} (${result.durationMs}ms)`);
+  console.log(`[${result.exitCode === 0 ? 'ok' : 'FAIL'}] ${result.name} (${result.durationMs}ms${result.cached ? ', cache' : ''})`);
+  if (!result.cached && result.exitCode === 0) cache.entries[step.name] = { key: cacheKey, passed: true, cachedAt: new Date().toISOString() };
   if (result.exitCode !== 0) {
     report.failedStep = result.name;
     report.failedGroup = { name: result.group, label: result.groupLabel };
@@ -145,6 +158,8 @@ for (const step of steps) {
     break;
   }
 }
+await mkdir(join(root, 'tmp'), { recursive: true });
+await writeFile(cachePath, JSON.stringify({ schemaVersion: 1, key: cacheKey, entries: cache.entries }, null, 2) + '\n');
 if (!report.failedStep) {
   report.passed = true;
   report.finishedAt = new Date().toISOString();
