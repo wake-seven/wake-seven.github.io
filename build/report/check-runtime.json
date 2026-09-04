@@ -1,24 +1,30 @@
 {
   "schemaVersion": 1,
   "name": "wake7-check-runtime",
-  "generatedAt": "2026-09-04T03:05:43.060Z",
-  "sourceRevision": "e39eb08",
+  "generatedAt": "2026-09-04T03:25:13.867Z",
+  "sourceRevision": "ca99634",
   "profiles": {
     "build-required": {
       "steps": 7,
-      "durationMs": 15012,
+      "durationMs": 12152,
       "budgetMs": 120000,
       "withinBudget": true
     },
     "normal-check": {
       "steps": 25,
-      "durationMs": 67942,
+      "durationMs": 26860,
       "budgetMs": 180000,
+      "withinBudget": true
+    },
+    "device-serial": {
+      "steps": 1,
+      "durationMs": 26468,
+      "budgetMs": 360000,
       "withinBudget": true
     },
     "large-change-only": {
       "steps": 24,
-      "durationMs": 23507,
+      "durationMs": 22789,
       "budgetMs": 300000,
       "withinBudget": true
     }
@@ -27,53 +33,53 @@
     "structure": {
       "label": "構造",
       "steps": 24,
-      "durationMs": 37284,
+      "durationMs": 33691,
       "passed": true
     },
     "state": {
       "label": "状態",
       "steps": 16,
-      "durationMs": 2007,
+      "durationMs": 2046,
       "passed": true
     },
     "flows": {
       "label": "進行",
       "steps": 10,
-      "durationMs": 738,
+      "durationMs": 729,
       "passed": true
     },
     "browser": {
       "label": "ブラウザ",
-      "steps": 6,
-      "durationMs": 66432,
+      "steps": 7,
+      "durationMs": 51803,
       "passed": true
     }
   },
   "slowest": [
     {
-      "name": "browser-e2e",
-      "profile": "normal-check",
-      "durationMs": 36542
+      "name": "device-e2e",
+      "profile": "device-serial",
+      "durationMs": 26468
     },
     {
-      "name": "device-e2e",
+      "name": "browser-e2e",
       "profile": "normal-check",
-      "durationMs": 26295
+      "durationMs": 21832
     },
     {
       "name": "build",
       "profile": "build-required",
-      "durationMs": 14064
-    },
-    {
-      "name": "trace",
-      "profile": "large-change-only",
-      "durationMs": 9441
+      "durationMs": 11227
     },
     {
       "name": "ui-data-map",
       "profile": "large-change-only",
-      "durationMs": 8948
+      "durationMs": 8837
+    },
+    {
+      "name": "trace",
+      "profile": "large-change-only",
+      "durationMs": 8829
     }
   ]
 }
