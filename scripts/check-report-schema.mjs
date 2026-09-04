@@ -2,6 +2,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateReport, writeReport } from './lib/report.mjs';
+import './check-report-inventory.mjs';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const reportDir = join(root, 'build', 'report');
