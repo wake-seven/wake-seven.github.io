@@ -4261,8 +4261,8 @@ const WakeSevenAppContext=Object.freeze({
       update(patch={}){if(patch.ori!==undefined)ori=patch.ori;if(patch.spin!==undefined)spin=patch.spin;if(patch.history!==undefined)history=patch.history;if(patch.moves!==undefined)moves=patch.moves;if(patch.best!==undefined)best=patch.best;if(patch.drag!==undefined)drag=patch.drag;if(patch.busy!==undefined)busy=patch.busy;if(patch.boardTouchActive!==undefined)boardTouchActive=patch.boardTouchActive;return this.read();}
     }),
     progress:Object.freeze({
-      read(){return Object.freeze({clearedStages,clearedExtraStages,clearedSatoriStages,lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages,lap2ClearedStages,lap2ClearedExtraStages,lap2ClearedSatoriStages});},
-      update(patch={}){if(patch.clearedStages!==undefined)clearedStages=patch.clearedStages;if(patch.clearedExtraStages!==undefined)clearedExtraStages=patch.clearedExtraStages;if(patch.clearedSatoriStages!==undefined)clearedSatoriStages=patch.clearedSatoriStages;if(patch.lap1ClearedStages!==undefined)lap1ClearedStages=patch.lap1ClearedStages;if(patch.lap1ClearedExtraStages!==undefined)lap1ClearedExtraStages=patch.lap1ClearedExtraStages;if(patch.lap1ClearedSatoriStages!==undefined)lap1ClearedSatoriStages=patch.lap1ClearedSatoriStages;if(patch.lap2ClearedStages!==undefined)lap2ClearedStages=patch.lap2ClearedStages;if(patch.lap2ClearedExtraStages!==undefined)lap2ClearedExtraStages=patch.lap2ClearedExtraStages;if(patch.lap2ClearedSatoriStages!==undefined)lap2ClearedSatoriStages=patch.lap2ClearedSatoriStages;return this.read();}
+      read(){return readProgressStateOwner();},
+      update(patch={}){return updateProgressStateOwner(patch);}
     }),
     dialog:Object.freeze({
       read(){return typeof readDialogStateOwner==='function'?readDialogStateOwner():Object.freeze({clearShown,nextStageAttention,masterDialogKind,rankDialogReturn,messageDialogReturn});},
@@ -4922,14 +4922,15 @@ function grantSpeedTrialCleared(variant){
 // デバッグの節目ボタン・Sボタンは、個別にフラグを立てるのではなくここを土台にすることで、
 // 「片方だけ更新してズレる」を構造的に防ぐ。
 function grantCampaignProgressThrough(checkpoint){
-  for(let i=0;i<ACADEMY_STAGE_COUNT;i++)clearedStages.add(i);
+  const primary=clearedStagesForLap(),extra=clearedExtraStagesForLap();
+  for(let i=0;i<ACADEMY_STAGE_COUNT;i++)primary.add(i);
   grantSpeedTrialCleared('training9');
   if(checkpoint==='training'||checkpoint==='mastery'){
-    STAGES.forEach((_,i)=>clearedStages.add(i));
+    STAGES.forEach((_,i)=>primary.add(i));
     grantSpeedTrialCleared('training18');
   }
   if(checkpoint==='mastery'){
-    EXTRA_STAGES.forEach((_,i)=>clearedExtraStages.add(i));
+    EXTRA_STAGES.forEach((_,i)=>extra.add(i));
     grantSpeedTrialCleared('mastery27');
   }
 }
@@ -4979,9 +4980,9 @@ let makerButtonBlockedUntil=0;
 let currentInitialState=0, currentInitialPar=0;
 let savedFreeSession=null;
 const initialProgress=WakeSevenState.sectionView(gameState,'progress');
-let clearedStages=new Set(initialProgress.lap1?.primary||[]);
-let clearedExtraStages=new Set(initialProgress.lap1?.mastery||[]);
-let clearedSatoriStages=new Set(initialProgress.lap1?.satori||[]);
+const legacyClearedStages=new Set(initialProgress.lap1?.primary||[]);
+const legacyClearedExtraStages=new Set(initialProgress.lap1?.mastery||[]);
+const legacyClearedSatoriStages=new Set(initialProgress.lap1?.satori||[]);
 function readLapProgress(lap,part){
   const statePart=part==='extra'?'mastery':part;
   const vNextProgress=gameState.progress?.['lap'+lap]?.[statePart];
@@ -5006,20 +5007,39 @@ if(!lap1ClearedStages||!lap1ClearedExtraStages||!lap1ClearedSatoriStages){
     lap1ClearedExtraStages=fullStageSet(EXTRA_STAGES);
     lap1ClearedSatoriStages=fullStageSet(SATORI_STAGES);
   }else{
-    lap1ClearedStages=new Set(clearedStages);
-    lap1ClearedExtraStages=new Set(clearedExtraStages);
-    lap1ClearedSatoriStages=new Set(clearedSatoriStages);
+    lap1ClearedStages=new Set(legacyClearedStages);
+    lap1ClearedExtraStages=new Set(legacyClearedExtraStages);
+    lap1ClearedSatoriStages=new Set(legacyClearedSatoriStages);
   }
 }
 if(!lap2ClearedStages||!lap2ClearedExtraStages||!lap2ClearedSatoriStages){
-  lap2ClearedStages=secondLapUnlocked?new Set(clearedStages):new Set();
-  lap2ClearedExtraStages=secondLapUnlocked?new Set(clearedExtraStages):new Set();
-  lap2ClearedSatoriStages=secondLapUnlocked?new Set(clearedSatoriStages):new Set();
+  lap2ClearedStages=secondLapUnlocked?new Set(legacyClearedStages):new Set();
+  lap2ClearedExtraStages=secondLapUnlocked?new Set(legacyClearedExtraStages):new Set();
+  lap2ClearedSatoriStages=secondLapUnlocked?new Set(legacyClearedSatoriStages):new Set();
 }
 if(activeLap===2&&!secondLapUnlocked)updateNavigationStateOwner({lap:1});
-clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;
-clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
-clearedSatoriStages=activeLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;
+function clearedStagesForLap(lap=activeLap){return lap===2?lap2ClearedStages:lap1ClearedStages;}
+function clearedExtraStagesForLap(lap=activeLap){return lap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;}
+function clearedSatoriStagesForLap(lap=activeLap){return lap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;}
+function readProgressStateOwner(){
+  return Object.freeze({
+    clearedStages:clearedStagesForLap(),clearedExtraStages:clearedExtraStagesForLap(),clearedSatoriStages:clearedSatoriStagesForLap(),
+    lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages,lap2ClearedStages,lap2ClearedExtraStages,lap2ClearedSatoriStages
+  });
+}
+function updateProgressStateOwner(patch={}){
+  patch=patch&&typeof patch==='object'&&!Array.isArray(patch)?patch:{};
+  if(patch.lap1ClearedStages!==undefined)lap1ClearedStages=patch.lap1ClearedStages;
+  if(patch.lap1ClearedExtraStages!==undefined)lap1ClearedExtraStages=patch.lap1ClearedExtraStages;
+  if(patch.lap1ClearedSatoriStages!==undefined)lap1ClearedSatoriStages=patch.lap1ClearedSatoriStages;
+  if(patch.lap2ClearedStages!==undefined)lap2ClearedStages=patch.lap2ClearedStages;
+  if(patch.lap2ClearedExtraStages!==undefined)lap2ClearedExtraStages=patch.lap2ClearedExtraStages;
+  if(patch.lap2ClearedSatoriStages!==undefined)lap2ClearedSatoriStages=patch.lap2ClearedSatoriStages;
+  if(patch.clearedStages!==undefined){if(activeLap===2)lap2ClearedStages=patch.clearedStages;else lap1ClearedStages=patch.clearedStages;}
+  if(patch.clearedExtraStages!==undefined){if(activeLap===2)lap2ClearedExtraStages=patch.clearedExtraStages;else lap1ClearedExtraStages=patch.clearedExtraStages;}
+  if(patch.clearedSatoriStages!==undefined){if(activeLap===2)lap2ClearedSatoriStages=patch.clearedSatoriStages;else lap1ClearedSatoriStages=patch.clearedSatoriStages;}
+  return readProgressStateOwner();
+}
 secondLapActive=activeLap===2;
 // STAGES(だるま学園・だるま修行)の構成を変えた際、既存プレイヤーの位置ベース進行データ
 // (clearedStages系・現在地・修了試験の合格フラグ)が新しい問題を指してしまわないよう、
@@ -5029,9 +5049,7 @@ secondLapActive=activeLap===2;
 const STAGES_LAYOUT_VERSION='2026-08-master-path-reshuffle';
 if(storage.get(STORAGE_KEY_GROUPS.progression.stagesLayoutVersion)!==STAGES_LAYOUT_VERSION){
   lap1ClearedStages=new Set();lap2ClearedStages=new Set();
-  clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;
   lap1ClearedExtraStages=new Set();lap2ClearedExtraStages=new Set();
-  clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
   speedTrainingTrialCleared=false;speedIntermediateTrialCleared=false;
   try{
     storage.remove(STORAGE_KEY_GROUPS.progression.cleared);
@@ -5052,9 +5070,9 @@ function persistLapProgress(){
     storage.setJson(STORAGE_KEY_GROUPS.progression.lapCleared(lap,'extra'),[...extra]);
     storage.setJson(STORAGE_KEY_GROUPS.progression.lapCleared(lap,'satori'),[...satori]);
   }
-  storage.setJson(STORAGE_KEY_GROUPS.progression.cleared,[...clearedStages]);
-  storage.setJson(STORAGE_KEY_GROUPS.progression.extraCleared,[...clearedExtraStages]);
-  storage.setJson(STORAGE_KEY_GROUPS.progression.satoriCleared,[...clearedSatoriStages]);
+  storage.setJson(STORAGE_KEY_GROUPS.progression.cleared,[...clearedStagesForLap()]);
+  storage.setJson(STORAGE_KEY_GROUPS.progression.extraCleared,[...clearedExtraStagesForLap()]);
+  storage.setJson(STORAGE_KEY_GROUPS.progression.satoriCleared,[...clearedSatoriStagesForLap()]);
   storage.set(STORAGE_KEY_GROUPS.progression.activeLap,String(activeLap));
   if(secondLapUnlocked)storage.set(STORAGE_KEY_GROUPS.progression.secondLapUnlocked,'1');
   else storage.remove(STORAGE_KEY_GROUPS.progression.secondLapUnlocked);
@@ -5066,9 +5084,6 @@ function activateCampaignLap(lap){
   updateNavigationStateOwner({lap});
   secondLapActive=lap===2;
   setUnlock('secondLap',secondLapUnlocked);
-  clearedStages=lap===2?lap2ClearedStages:lap1ClearedStages;
-  clearedExtraStages=lap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
-  clearedSatoriStages=lap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;
   persistLapProgress();
   return true;
 }
@@ -5093,11 +5108,9 @@ function beginSecondLap(){
   updateMasterTheme();
   loadStage(0);
 }
-if(activeLap===2)lap2ClearedSatoriStages=clearedSatoriStages;
-else lap1ClearedSatoriStages=clearedSatoriStages;
-const isMastered=()=>EXTRA_STAGES.every((_,i)=>clearedExtraStages.has(i));
-const isSatoriMastered=()=>SATORI_STAGES.every((_,i)=>clearedSatoriStages.has(i));
-const academyCleared=()=>Array.from({length:ACADEMY_STAGE_COUNT},(_,i)=>i).every(i=>clearedStages.has(i));
+const isMastered=()=>EXTRA_STAGES.every((_,i)=>clearedExtraStagesForLap().has(i));
+const isSatoriMastered=()=>SATORI_STAGES.every((_,i)=>clearedSatoriStagesForLap().has(i));
+const academyCleared=()=>Array.from({length:ACADEMY_STAGE_COUNT},(_,i)=>i).every(i=>clearedStagesForLap().has(i));
 const progressionTrials=()=>({training:speedTrainingTrialCleared,intermediate:speedIntermediateTrialCleared,mastery:speedMasteryTrialCleared});
 const canEnterTraining=()=>PROGRESSION.canEnter('training',{lap:activeLap,trials:progressionTrials()});
 const canEnterMastery=()=>PROGRESSION.canEnter('mastery',{lap:activeLap,trials:progressionTrials()});
@@ -7035,9 +7048,9 @@ function completeBoard({mode=activeMode,context={},animation=true,nextAction=nul
   }
   const analyticsStage=analyticsStageInfo();
   if(analyticsStage){
-    const firstClear=target==='satori'?!clearedSatoriStages.has(satoriIndex)
-      :target==='mastery'?!clearedExtraStages.has(extraIndex)
-      :!clearedStages.has(stageIndex);
+    const firstClear=target==='satori'?!clearedSatoriStagesForLap().has(satoriIndex)
+      :target==='mastery'?!clearedExtraStagesForLap().has(extraIndex)
+      :!clearedStagesForLap().has(stageIndex);
     trackAnalyticsEvent('stage_clear',Object.assign({},analyticsStage,{moves_used:moves,first_clear:firstClear}));
   }
   if(target==='satori'){
@@ -8790,9 +8803,9 @@ function grantMasterDialogRewardsCommand(kind){
 // クリア済み集合への反映と保存を一つの境界にまとめる。
 function recordProgressClearCommand(kind,index){
   if(!Number.isInteger(index)||index<0)return false;
-  if(kind==='satori')clearedSatoriStages.add(index);
-  else if(kind==='mastery')clearedExtraStages.add(index);
-  else if(kind==='primary')clearedStages.add(index);
+  if(kind==='satori')clearedSatoriStagesForLap().add(index);
+  else if(kind==='mastery')clearedExtraStagesForLap().add(index);
+  else if(kind==='primary')clearedStagesForLap().add(index);
   else return false;
   persistLapProgress();
   return true;
@@ -9138,7 +9151,7 @@ const VOLUME_NEXT_RULES=Object.freeze({
 });
 function messageReviewEntryKey(entry){const kind=entry.awakened?'master:awakening':entry.satori?'satori':entry.master?'master:'+entry.master:entry.boardQuiz?'board-quiz':entry.quiz!==undefined?'quiz':'text';return (entry.awakened||entry.satori?'satori':entry.extra?'extra':'primary')+':'+entry.index+':'+kind;}
 function finalizeMessageReviewEntries(entries){return entries.map(entry=>{const messageId=entry.master||clearContentKey(!!entry.extra,entry.index);const message=entry.master?milestoneMessageDescriptor(entry.master):clearMessageDescriptor(!!entry.extra,entry.index);return {...entry,messageId,message};});}
-function messageReviewProgressSets(){const {lap}=WakeSevenAppContext.state.navigation.read();return {primary:lap===2?lap1ClearedStages:clearedStages,extra:lap===2?lap1ClearedExtraStages:clearedExtraStages,satori:lap===2?lap1ClearedSatoriStages:clearedSatoriStages};}
+function messageReviewProgressSets(){const {lap}=WakeSevenAppContext.state.navigation.read();return {primary:lap===2?lap1ClearedStages:clearedStagesForLap(lap),extra:lap===2?lap1ClearedExtraStages:clearedExtraStagesForLap(lap),satori:lap===2?lap1ClearedSatoriStages:clearedSatoriStagesForLap(lap)};}
 function collectPrimaryMessageReviewEntries(reviewPrimary){const entries=[];for(let i=0;i<STAGES.length;i++){if(!reviewPrimary.has(i))continue;if(i===ACADEMY_STAGE_COUNT-1){if(speedTrainingTrialCleared){entries.push({master:'primary',extra:false,index:i});const before=clearContentBefore(false,TRAINING_STAGE_START);if(before?.dialog)entries.push({master:before.dialog,extra:false,index:i});}continue;}const text=stageClearTextAt(false,i);if(text)entries.push({extra:false,index:i,text,art:stageClearArtAt(false,i)});const primaryEntry=clearContentAt(false,i);if(primaryEntry&&primaryEntry.quiz)entries.push({extra:false,index:i,quiz:resolveLocaleText(primaryEntry.quiz),art:stageClearArtAt(false,i)});}return entries;}
 function collectExtraMessageReviewEntries(reviewExtra){const entries=[];for(let i=0;i<EXTRA_STAGES.length;i++){if(!reviewExtra.has(i))continue;if((i+1)%MASTER_VOLUME_SIZE===0){if(i===EXTRA_STAGES.length-1){if(speedMasteryTrialCleared)entries.push({master:'mastery',extra:true,index:i});}else if(i!==29||speedIntermediateTrialCleared)entries.push({master:'volume',extra:true,index:i});continue;}const text=stageClearTextAt(true,i);if(text)entries.push({extra:true,index:i,text,art:stageClearArtAt(true,i)});const extraEntry=clearContentAt(true,i);if(extraEntry&&extraEntry.boardQuiz)entries.push({extra:true,index:i,boardQuiz:true});if(extraEntry&&extraEntry.quiz)entries.push({extra:true,index:i,quiz:resolveLocaleText(extraEntry.quiz),art:stageClearArtAt(true,i)});}return entries;}
 function collectMessageReviewMilestones(reviewMastered,reviewSatoriMastered){const entries=[];if(reviewMastered&&speedMasteryTrialCleared)entries.push({master:'satoriIntro',extra:true,index:EXTRA_STAGES.length-1});if(reviewSatoriMastered||hasSatoriReward())entries.push({master:'satori',satori:true,index:SATORI_STAGES.length-1});if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});if(awakenedGranted)entries.push({master:'awakening',awakened:true,index:SATORI_STAGES.length-1});return entries;}
@@ -9278,7 +9291,8 @@ function renderMasterRoadmap(kind){
   roadmapNote.hidden=true;
   const rules=$('masterRules');rules.hidden=kind!=='intermediate'||intermediateNeedsTrial;
   if(roadmap.hidden)return;
-  const milestones=[speedTrainingTrialCleared,speedIntermediateTrialCleared,clearedExtraStages.has(14),clearedExtraStages.has(29),clearedExtraStages.has(44)];
+  const extraProgress=clearedExtraStagesForLap();
+  const milestones=[speedTrainingTrialCleared,speedIntermediateTrialCleared,extraProgress.has(14),extraProgress.has(29),extraProgress.has(44)];
   const current=Math.min(5,milestones.findIndex(done=>!done)+1||5);
   roadmap.replaceChildren(masterRoadmapFragment(current));
   if(kind==='intermediate')rules.textContent=masterCommonRules();
@@ -9805,9 +9819,9 @@ function satoriSealSvg(){
     +'</svg>';
 }
 const primaryStageUnlocked=index=>(index<TRAINING_STAGE_START||canEnterTraining())
-  &&(index===0||clearedStages.has(index)||clearedStages.has(index-1));
-const satoriStageUnlocked=index=>index===0||clearedSatoriStages.has(index)||clearedSatoriStages.has(index-1);
-const extraStageUnlocked=index=>index===0||clearedExtraStages.has(index)||clearedExtraStages.has(index-1);
+  &&(index===0||clearedStagesForLap().has(index)||clearedStagesForLap().has(index-1));
+const satoriStageUnlocked=index=>index===0||clearedSatoriStagesForLap().has(index)||clearedSatoriStagesForLap().has(index-1);
+const extraStageUnlocked=index=>index===0||clearedExtraStagesForLap().has(index)||clearedExtraStagesForLap().has(index-1);
 function extraRoundLabel(round){
   if(currentLang==='ja')return (['序','破','急'][round]||String(round+1))+'　'+masterSubtitle(round+1);
   return volumeLabel(round+1)+' · '+masterSubtitle(round+1);
@@ -10940,8 +10954,8 @@ function renderStageNav(){
     $('nextStage').setAttribute('aria-label',nextLabel);
     $('nextStage').hidden=isMode('speed')||(isMode('custom')&&!customPlaying);
     $('nextStage').disabled=customPlaying?false:isMode('custom')?true:isMode('free')?false:isMode('mastery')
-      ?(navigation.masteryIndex===EXTRA_STAGES.length-1?!canEnterSatori():!clearedExtraStages.has(navigation.masteryIndex))
-      :(navigation.stageIndex===STAGES.length-1?!allPrimaryCleared():!clearedStages.has(navigation.stageIndex));
+      ?(navigation.masteryIndex===EXTRA_STAGES.length-1?!canEnterSatori():!clearedExtraStagesForLap().has(navigation.masteryIndex))
+      :(navigation.stageIndex===STAGES.length-1?!allPrimaryCleared():!clearedStagesForLap().has(navigation.stageIndex));
     $('stageMode').classList.toggle('on',isCampaignMode());
     $('freeMode').classList.toggle('on',isMode('free'));
     $('menuSpeed').classList.toggle('on',isMode('speed'));
@@ -11020,7 +11034,7 @@ function renderStageNav(){
     const customPlaying=isMode('custom')&&!editingBoard;
     const speed=isMode('speed'),satori=isMode('satori');
     const nextDisabled=satori
-      ?(navigation.satoriIndex===SATORI_STAGES.length-1?!(navigation.lap===1&&secondLapUnlocked):!clearedSatoriStages.has(navigation.satoriIndex))
+      ?(navigation.satoriIndex===SATORI_STAGES.length-1?!(navigation.lap===1&&secondLapUnlocked):!clearedSatoriStagesForLap().has(navigation.satoriIndex))
       :speed?true:undefined;
     renderStageNavPager({
       nextHidden:!speed&&!satori&&isMode('custom')&&!customPlaying,
@@ -11706,9 +11720,10 @@ function debugUnlockStageCheckpoint(index,secondLap=false){
   else debugPrepareFirstLapCheckpoint();
   // 修行の問題へ飛ぶ場合は、学園の修了試験も通過済みとして扱う。
   if(index>=TRAINING_STAGE_START&&!secondLap)grantSpeedTrialCleared('training9');
-  for(let i=0;i<index;i++)clearedStages.add(i);
+  const primary=clearedStagesForLap();
+  for(let i=0;i<index;i++)primary.add(i);
   try{
-      storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...clearedStages]));
+      storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...primary]));
     if(secondLap){
       storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,'[]');
       storage.set(STORAGE_KEY_GROUPS.progression.satoriCleared,'[]');
@@ -11738,11 +11753,12 @@ function debugUnlockExtra(count,secondLap=false){
   else debugPrepareFirstLapCheckpoint();
   // 名人への道を直接検証するときも、学園・修行と修了試験の前提を揃える。
   if(!secondLap)grantCampaignProgressThrough('training');
-  else STAGES.forEach((_,i)=>clearedStages.add(i));
-  for(let i=0;i<count;i++)clearedExtraStages.add(i);
+  const primary=clearedStagesForLap(),extra=clearedExtraStagesForLap();
+  if(secondLap)STAGES.forEach((_,i)=>primary.add(i));
+  for(let i=0;i<count;i++)extra.add(i);
   try{
-    storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...clearedStages]));
-    storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,JSON.stringify([...clearedExtraStages]));
+    storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...primary]));
+    storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,JSON.stringify([...extra]));
     if(secondLap)storage.set(STORAGE_KEY_GROUPS.progression.satoriCleared,'[]');
   }catch(_){}
   persistLapProgress();updateMasterTheme();
@@ -11760,12 +11776,13 @@ function debugUnlockSatori(count,secondLap=false){
   if(secondLap)debugPrepareSecondLapCheckpoint();
   else debugPrepareFirstLapCheckpoint();
   if(!secondLap)grantCampaignProgressThrough('mastery');
-  else{STAGES.forEach((_,i)=>clearedStages.add(i));EXTRA_STAGES.forEach((_,i)=>clearedExtraStages.add(i));}
-  for(let i=0;i<count;i++)clearedSatoriStages.add(i);
+  const primary=clearedStagesForLap(),extra=clearedExtraStagesForLap(),satori=clearedSatoriStagesForLap();
+  if(secondLap){STAGES.forEach((_,i)=>primary.add(i));EXTRA_STAGES.forEach((_,i)=>extra.add(i));}
+  for(let i=0;i<count;i++)satori.add(i);
   try{
-    storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...clearedStages]));
-    storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,JSON.stringify([...clearedExtraStages]));
-    storage.set(STORAGE_KEY_GROUPS.progression.satoriCleared,JSON.stringify([...clearedSatoriStages]));
+    storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...primary]));
+    storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,JSON.stringify([...extra]));
+    storage.set(STORAGE_KEY_GROUPS.progression.satoriCleared,JSON.stringify([...satori]));
   }catch(_){}
   persistLapProgress();updateMasterTheme();
   if(secondLap){debugGrantRainbowDaruma();updateMasterTheme();}
@@ -11787,7 +11804,7 @@ function debugOpenSpeedExam(variant,index){
   debugPrepareFirstLapCheckpoint();
   // 試験だけを直接試す場合にも、その試験が現れる直前までの進行を再現する。
   if(variant==='training9'){
-    for(let i=0;i<ACADEMY_STAGE_COUNT;i++)clearedStages.add(i);
+    for(let i=0;i<ACADEMY_STAGE_COUNT;i++)clearedStagesForLap().add(i);
     unlockSpeedVariant('training9');
   }else if(variant==='training18'){
     grantCampaignProgressThrough('training');
@@ -11795,8 +11812,8 @@ function debugOpenSpeedExam(variant,index){
     grantCampaignProgressThrough('mastery');
   }
   try{
-    storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...clearedStages]));
-    storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,JSON.stringify([...clearedExtraStages]));
+    storage.set(STORAGE_KEY_GROUPS.progression.cleared,JSON.stringify([...clearedStagesForLap()]));
+    storage.set(STORAGE_KEY_GROUPS.progression.extraCleared,JSON.stringify([...clearedExtraStagesForLap()]));
   }catch(_){ }
   persistLapProgress();updateMasterTheme();
   setSpeedVariantCommand(variant);
@@ -12738,7 +12755,6 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   lap1ClearedStages=new Set();lap1ClearedExtraStages=new Set();lap1ClearedSatoriStages=new Set();
   lap2ClearedStages=new Set();lap2ClearedExtraStages=new Set();lap2ClearedSatoriStages=new Set();
   secondLapUnlocked=false;updateNavigationStateCommand({lap:1});
-  clearedStages=lap1ClearedStages;clearedExtraStages=lap1ClearedExtraStages;clearedSatoriStages=lap1ClearedSatoriStages;
   fourthCheckUsage={};
   try{
     storage.remove(STORAGE_KEY_GROUPS.progression.cleared);
