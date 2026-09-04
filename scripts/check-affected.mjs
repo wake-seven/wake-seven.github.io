@@ -55,6 +55,9 @@ const run = (name, command, args) => new Promise(resolve => {
   child.on('error', cause => resolve({ name, command: [command, ...args].join(' '), startedAt, finishedAt: new Date().toISOString(), durationMs: Date.now() - started, exitCode: 1, output: output.trim(), error: cause.message }));
 });
 const executed = []; const unexecuted = [];
+// 自動プロファイルでも、変更と関連検査の対応表を先に検証・提示する。
+const featureRegistry = await run('feature-registry', process.execPath, ['scripts/check-feature-registry.mjs', '--changed']);
+executed.push(featureRegistry);
 if (selected === 'full') {
   const gate = await run('check:gate', 'npm', ['run', 'check:gate']);
   let report = null; try { report = JSON.parse(await readFile(join(reportDir, 'check-gate.json'), 'utf8')); } catch { /* 結果がなければ未完了 */ }

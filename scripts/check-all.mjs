@@ -16,6 +16,15 @@ const pipeline = JSON.parse(await readFile(join(root, 'scripts', 'check-pipeline
 const registryValidation = await validateCheckRegistry(root);
 if (registryValidation.errors.length) throw new Error(`check-registry.json の整合性エラー:\n${registryValidation.errors.join('\n')}`);
 const registry = await loadCheckRegistry(root);
+// feature registry はゲート手順集合を増やさず、全手順の前提契約として毎回確認する。
+const featureCheck = await new Promise(resolve => {
+  const child = spawn(process.execPath, ['scripts/check-feature-registry.mjs', '--changed'], { cwd: root, shell: false });
+  let output = ''; let error = '';
+  child.stdout.on('data', chunk => { output += chunk; }); child.stderr.on('data', chunk => { error += chunk; });
+  child.on('close', code => resolve({ code: code ?? 1, output: output.trim(), error: error.trim() }));
+  child.on('error', cause => resolve({ code: 1, output, error: cause.message }));
+});
+if (featureCheck.code !== 0) throw new Error(`feature registry 検査に失敗しました:\n${featureCheck.error || featureCheck.output}`);
 const commandFor = command => {
   const [program, ...args] = command.split(' ');
   if (program === 'node') return { command: process.execPath, args };

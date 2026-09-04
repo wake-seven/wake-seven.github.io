@@ -106,6 +106,10 @@ export async function validateCheckRegistry(workspaceRoot = root) {
   }
   const excluded = new Set(domains.excluded || []);
   const packageScripts = packageJson.scripts || {};
+  if (packageScripts['check:feature-registry'] !== 'node scripts/check-feature-registry.mjs') {
+    errors.push('package.json の check:feature-registry 入口が正しくありません。');
+  }
+  try { await access(join(workspaceRoot, 'scripts', 'feature-registry.json')); } catch { errors.push('feature-registry.json がありません。'); }
   for (const [scriptName, command] of Object.entries(packageScripts)) {
     if (!scriptName.startsWith('check:') || excluded.has(scriptName) || !classified.has(scriptName)) continue;
     const matchingStep = byCommand.get(normalizeCommand(command));
