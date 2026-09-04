@@ -3,15 +3,15 @@
   "status": "passed",
   "summary": {
     "features": 15,
-    "matched": 4,
-    "unknown": 3,
+    "matched": 7,
+    "unknown": 10,
     "unregisteredNewFiles": 0,
     "references": 44
   },
   "warnings": [],
   "errors": [],
-  "generatedAt": "2026-09-04T14:06:49.979Z",
-  "sourceRevision": "3433ee5",
+  "generatedAt": "2026-09-04T14:20:14.986Z",
+  "sourceRevision": "f8c0f1d",
   "features": [
     {
       "name": "reward-pages",
@@ -65,7 +65,7 @@
     {
       "name": "clear-feature",
       "paths": [
-        "src/ui/clear-feature.js"
+        "src/feature/clear-feature.js"
       ],
       "checks": [
         "clear-flow-order",
@@ -82,7 +82,7 @@
     {
       "name": "dialog-chain-feature",
       "paths": [
-        "src/ui/dialog-chain-feature.js"
+        "src/feature/dialog-chain-feature.js"
       ],
       "checks": [
         "dialog-chains",
@@ -97,7 +97,7 @@
     {
       "name": "speed-feature",
       "paths": [
-        "src/ui/speed-feature.js"
+        "src/feature/speed-feature.js"
       ],
       "checks": [
         "e2e-speed-contract",
@@ -112,7 +112,7 @@
     {
       "name": "stage-picker-feature",
       "paths": [
-        "src/ui/stage-picker-feature.js"
+        "src/feature/stage-picker-feature.js"
       ],
       "checks": [
         "dialog-state-map",
@@ -127,7 +127,7 @@
     {
       "name": "settings-feature",
       "paths": [
-        "src/ui/settings-feature.js"
+        "src/feature/settings-feature.js"
       ],
       "checks": [
         "dialog-state-map",
@@ -362,23 +362,43 @@
   "changedFiles": [
     "index.html",
     "scripts/application-manifest.mjs",
-    "scripts/check-ui-effects.mjs",
+    "scripts/check-browser-flow.mjs",
+    "scripts/check-clear-flow-order.mjs",
+    "scripts/check-dialog-chains.mjs",
+    "scripts/check-global-state-classification.mjs",
     "scripts/feature-registry.json",
-    "scripts/public-symbols-budget.json",
-    "src/runtime/app-events.js",
-    "src/runtime/runtime.js",
-    "src/ui/settings-feature.js"
+    "src/feature/clear-feature.js",
+    "/ui/clear-feature.js",
+    "src/feature/dialog-chain-feature.js",
+    "/ui/dialog-chain-feature.js",
+    "src/feature/settings-feature.js",
+    "/ui/settings-feature.js",
+    "src/feature/speed-feature.js",
+    "/ui/speed-feature.js",
+    "src/feature/stage-picker-feature.js",
+    "/ui/stage-picker-feature.js",
+    "src/runtime/runtime.js"
   ],
   "matchedFeatures": [
     "scripts/manifest",
-    "runtime/speed",
-    "dialog-restore",
-    "settings-feature"
+    "clear-feature",
+    "dialog-chain-feature",
+    "settings-feature",
+    "speed-feature",
+    "stage-picker-feature",
+    "dialog-restore"
   ],
   "unknownChangedFiles": [
     "index.html",
-    "scripts/check-ui-effects.mjs",
-    "scripts/public-symbols-budget.json"
+    "scripts/check-browser-flow.mjs",
+    "scripts/check-clear-flow-order.mjs",
+    "scripts/check-dialog-chains.mjs",
+    "scripts/check-global-state-classification.mjs",
+    "/ui/clear-feature.js",
+    "/ui/dialog-chain-feature.js",
+    "/ui/settings-feature.js",
+    "/ui/speed-feature.js",
+    "/ui/stage-picker-feature.js"
   ],
   "unregisteredNewFiles": [],
   "recommendation": "full",
@@ -388,11 +408,14 @@
     "manifest-dependencies",
     "browser-e2e",
     "device-e2e",
-    "application-services",
-    "progression-flows",
-    "e2e-speed-contract",
+    "clear-flow-order",
+    "progression-flow-contract",
+    "dialog-chains",
     "state-restore",
-    "dialog-state-map"
+    "browser-flow",
+    "dialog-state-map",
+    "e2e-speed-contract",
+    "navigation-final-audit"
   ],
   "policy": {
     "unknownChangedFiles": "affected",

@@ -10,7 +10,7 @@ const read = name => readFile(join(root, name), 'utf8');
 const [board, clearFlow, speed, progression, runtime, clearFeature] = await Promise.all([
   read('src/ui/board-ui.js'), read('src/ui/progression-clear-flow.js'),
   read('src/runtime/speed.js'), read('src/ui/progression-ui.js'), read('src/runtime/runtime.js'),
-  read('src/ui/clear-feature.js')
+  read('src/feature/clear-feature.js')
 ]);
 const checks = [];
 const ordered = (text, tokens, id) => {

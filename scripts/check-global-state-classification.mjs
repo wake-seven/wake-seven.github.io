@@ -22,6 +22,10 @@ const classify = (name, file, source) => {
   if (/^runtime\//.test(file)) return 'navigation';
   if (/^app\//.test(file)) return 'session';
   if (/^commands\//.test(file)) return 'navigation';
+  if (/^feature\/clear-feature/.test(file) || /^feature\/dialog-chain-feature/.test(file)) return 'dialog';
+  if (/^feature\/speed-feature/.test(file)) return 'session';
+  if (/^feature\/(stage-picker-feature|settings-feature)/.test(file)) return 'navigation';
+  if (/^feature\//.test(file)) return 'navigation';
   if (/^ui\/progression/.test(file)) return 'navigation';
   if (/^ui\//.test(file)) return 'domain';
   return null;

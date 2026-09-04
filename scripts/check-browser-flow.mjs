@@ -68,7 +68,7 @@ for (const phase of ['clear-animation','clear-dialog','quiz/message','next-stage
 assert.match(clearFlow, /function setClearFlowPhase\(phase/, 'clear flow phase changes must use one transition helper');
 assert.match(clearFlow, /function persistClearFlowCheckpoint\(/, 'clear flow persistence must use a named checkpoint entry point');
 assert.match(clearFlow, /function cancelClearFlow\(reason/, 'clear flow cancellation must use a named entry point');
-const clearFeature = await readFile(join(root, 'src', 'ui', 'clear-feature.js'), 'utf8');
+const clearFeature = await readFile(join(root, 'src', 'feature', 'clear-feature.js'), 'utf8');
 assert.match(clearFeature, /const clearFeatureTrace=\[\]/, 'clear feature must expose an orchestration trace');
 assert.match(clearFeature, /start\(options=\{\}\)\{traceClearFeature\('start'/, 'clear feature start must use the orchestration entry');
 assert.match(clearFeature, /next\(\)\{traceClearFeature\('next'/, 'clear feature next must use the orchestration entry');

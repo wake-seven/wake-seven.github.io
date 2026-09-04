@@ -9,8 +9,8 @@ const events = await readFile(join(root, 'src', 'runtime', 'app-events.js'), 'ut
 const runtime = await readFile(join(root, 'src', 'runtime', 'runtime.js'), 'utf8');
 const progressionUi = await readFile(join(root, 'src', 'ui', 'progression-ui.js'), 'utf8');
 const progressionDialogs = await readFile(join(root, 'src', 'ui', 'progression-dialogs.js'), 'utf8');
-const dialogChainFeature = await readFile(join(root, 'src', 'ui', 'dialog-chain-feature.js'), 'utf8');
-const stagePickerFeature = await readFile(join(root, 'src', 'ui', 'stage-picker-feature.js'), 'utf8');
+const dialogChainFeature = await readFile(join(root, 'src', 'feature', 'dialog-chain-feature.js'), 'utf8');
+const stagePickerFeature = await readFile(join(root, 'src', 'feature', 'stage-picker-feature.js'), 'utf8');
 const rank = await readFile(join(root, 'src', 'ui', 'rank.js'), 'utf8');
 const template = await readFile(join(root, 'src', 'index.template.html'), 'utf8');
 

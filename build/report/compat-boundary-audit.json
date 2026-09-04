@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-04T14:08:14.883Z",
+  "generatedAt": "2026-09-04T14:21:38.911Z",
   "source": "build/report/refactor-candidates.json",
   "summary": {
     "candidates": 21,
@@ -80,11 +80,11 @@
       "reassessOn": "2026-12-03"
     },
     {
-      "file": "ui/speed-feature.js",
+      "file": "feature/speed-feature.js",
       "classification": "thin-wrapper-or-boundary",
       "disposition": "保持",
       "reason": "公開マニフェストに含まれる単体index.htmlの構成要素",
-      "purpose": "DOM描画・入力・ダイアログ",
+      "purpose": "現行ソースの補助モジュール",
       "referenceSources": [
         "scripts/application-manifest.mjs",
         "scripts/application-manifest.mjs:publishedSourceFiles",
@@ -94,11 +94,11 @@
       "reassessOn": "2026-12-03"
     },
     {
-      "file": "ui/stage-picker-feature.js",
+      "file": "feature/stage-picker-feature.js",
       "classification": "thin-wrapper-or-boundary",
       "disposition": "保持",
       "reason": "公開マニフェストに含まれる単体index.htmlの構成要素",
-      "purpose": "DOM描画・入力・ダイアログ",
+      "purpose": "現行ソースの補助モジュール",
       "referenceSources": [
         "scripts/application-manifest.mjs",
         "scripts/application-manifest.mjs:publishedSourceFiles",
@@ -157,11 +157,11 @@
       "reassessOn": "2026-12-03"
     },
     {
-      "file": "ui/dialog-chain-feature.js",
+      "file": "feature/dialog-chain-feature.js",
       "classification": "small-module",
       "disposition": "保持",
       "reason": "公開マニフェストに含まれる単体index.htmlの構成要素",
-      "purpose": "DOM描画・入力・ダイアログ",
+      "purpose": "現行ソースの補助モジュール",
       "referenceSources": [
         "scripts/application-manifest.mjs",
         "scripts/application-manifest.mjs:publishedSourceFiles",
@@ -244,6 +244,21 @@
       "reassessOn": "2026-12-03"
     },
     {
+      "file": "feature/clear-feature.js",
+      "classification": "small-module",
+      "disposition": "保持",
+      "reason": "公開マニフェストに含まれる単体index.htmlの構成要素",
+      "purpose": "現行ソースの補助モジュール",
+      "referenceSources": [
+        "scripts/application-manifest.mjs",
+        "scripts/application-manifest.mjs:publishedSourceFiles",
+        "scripts/check-clear-flow-order.mjs",
+        "scripts/feature-registry.json"
+      ],
+      "removalCondition": "公開マニフェスト・開発入口・公開API・検査・E2Eの参照がすべて0であることを確認し、npm run check:gate を通過すること",
+      "reassessOn": "2026-12-03"
+    },
+    {
       "file": "runtime/app-bootstrap.js",
       "classification": "small-module",
       "disposition": "保持",
@@ -263,15 +278,14 @@
       "reassessOn": "2026-12-03"
     },
     {
-      "file": "ui/clear-feature.js",
+      "file": "feature/settings-feature.js",
       "classification": "small-module",
       "disposition": "保持",
       "reason": "公開マニフェストに含まれる単体index.htmlの構成要素",
-      "purpose": "DOM描画・入力・ダイアログ",
+      "purpose": "現行ソースの補助モジュール",
       "referenceSources": [
         "scripts/application-manifest.mjs",
         "scripts/application-manifest.mjs:publishedSourceFiles",
-        "scripts/check-clear-flow-order.mjs",
         "scripts/feature-registry.json"
       ],
       "removalCondition": "公開マニフェスト・開発入口・公開API・検査・E2Eの参照がすべて0であることを確認し、npm run check:gate を通過すること",
@@ -306,20 +320,6 @@
         "scripts/check-state.mjs",
         "scripts/development-entrypoints.json",
         "scripts/state-access-exceptions.json"
-      ],
-      "removalCondition": "公開マニフェスト・開発入口・公開API・検査・E2Eの参照がすべて0であることを確認し、npm run check:gate を通過すること",
-      "reassessOn": "2026-12-03"
-    },
-    {
-      "file": "ui/settings-feature.js",
-      "classification": "small-module",
-      "disposition": "保持",
-      "reason": "公開マニフェストに含まれる単体index.htmlの構成要素",
-      "purpose": "DOM描画・入力・ダイアログ",
-      "referenceSources": [
-        "scripts/application-manifest.mjs",
-        "scripts/application-manifest.mjs:publishedSourceFiles",
-        "scripts/feature-registry.json"
       ],
       "removalCondition": "公開マニフェスト・開発入口・公開API・検査・E2Eの参照がすべて0であることを確認し、npm run check:gate を通過すること",
       "reassessOn": "2026-12-03"
