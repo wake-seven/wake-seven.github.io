@@ -4257,8 +4257,8 @@ const WakeSevenAppContext=Object.freeze({
       update(patch={}){return updateNavigationStateOwner(patch);}
     }),
     board:Object.freeze({
-      read(){return Object.freeze({ori,spin,history,moves,best,drag,busy,boardTouchActive});},
-      update(patch={}){if(patch.ori!==undefined)ori=patch.ori;if(patch.spin!==undefined)spin=patch.spin;if(patch.history!==undefined)history=patch.history;if(patch.moves!==undefined)moves=patch.moves;if(patch.best!==undefined)best=patch.best;if(patch.drag!==undefined)drag=patch.drag;if(patch.busy!==undefined)busy=patch.busy;if(patch.boardTouchActive!==undefined)boardTouchActive=patch.boardTouchActive;return this.read();}
+      read(){const {ori,spin,history,moves,best}=readBoardStateOwner();return Object.freeze({ori,spin,history,moves,best,drag,busy,boardTouchActive});},
+      update(patch={}){const boardPatch={};if(patch.ori!==undefined)boardPatch.ori=patch.ori;if(patch.spin!==undefined)boardPatch.spin=patch.spin;if(patch.history!==undefined)boardPatch.history=patch.history;if(patch.moves!==undefined)boardPatch.moves=patch.moves;if(patch.best!==undefined)boardPatch.best=patch.best;updateBoardStateOwner(boardPatch);if(patch.drag!==undefined)drag=patch.drag;if(patch.busy!==undefined)busy=patch.busy;if(patch.boardTouchActive!==undefined)boardTouchActive=patch.boardTouchActive;return this.read();}
     }),
     progress:Object.freeze({
       read(){return readProgressStateOwner();},
@@ -5004,6 +5004,30 @@ function focusReturnTarget(target){
 }
 let makerButtonBlockedUntil=0;
 let currentInitialState=0, currentInitialPar=0;
+// 実行中の盤面データはこの変数群だけが所有する。外箱だけをfreezeし、
+// TypedArray・DOM要素配列・履歴配列のidentityは既存処理のまま保持する。
+function readBoardStateOwner(){
+  return Object.freeze({ori,spin,tileEls,history,moves,best,currentInitialState,currentInitialPar});
+}
+function updateBoardStateOwner(patch={}){
+  patch=patch&&typeof patch==='object'&&!Array.isArray(patch)?patch:{};
+  if(patch.ori!==undefined)ori=patch.ori;
+  if(patch.spin!==undefined)spin=patch.spin;
+  if(patch.tileEls!==undefined)tileEls=patch.tileEls;
+  if(patch.moves!==undefined)moves=patch.moves;
+  if(patch.best!==undefined)best=patch.best;
+  if(patch.currentInitialState!==undefined)currentInitialState=patch.currentInitialState;
+  if(patch.currentInitialPar!==undefined)currentInitialPar=patch.currentInitialPar;
+  if(patch.history!==undefined)history=patch.history;
+  return readBoardStateOwner();
+}
+function editBoardCellStateOwner(cell,orientation){
+  ori[cell]=orientation;
+  spin[cell]=orientation;
+  return updateBoardStateOwner({moves:0,history:[]});
+}
+function appendBoardHistoryOwner(entry){history.push(entry);return entry;}
+function popBoardHistoryOwner(){return history.pop();}
 let savedFreeSession=null;
 const initialProgress=WakeSevenState.sectionView(gameState,'progress');
 const legacyClearedStages=new Set(initialProgress.lap1?.primary||[]);
@@ -6119,7 +6143,7 @@ function cancelActiveTutorialRewindSession(reason='cancelled'){
 function buildBoard(){
   svg.replaceChildren();
   const NS_='http://www.w3.org/2000/svg';
-  tileEls=[];
+  const nextTileEls=[];
   CELL.forEach((c,i)=>{
     const g=document.createElementNS(NS_,'g');
     g.setAttribute('class','tile');
@@ -6127,7 +6151,7 @@ function buildBoard(){
     g.innerHTML='<path class="hex" d="'+hexPath(R)+'"/>'
       +'<g class="daruma-shell"><use href="#daruma-body"/><g class="open"><use href="#face-open"/></g><g class="shut"><use href="#face-shut"/></g>'
       +'<g class="happy"><use href="#face-happy"/></g></g>';
-    svg.appendChild(g); tileEls.push(g);
+    svg.appendChild(g); nextTileEls.push(g);
   });
   TRI.forEach((t,ti)=>{
     const g=document.createElementNS(NS_,'g');
@@ -6147,7 +6171,8 @@ function buildBoard(){
     g.innerHTML='<rect x="-18" y="-4" width="36" height="8" rx="4"/>';
     svg.appendChild(g);
   });
-  baseTiles=tileEls.slice();
+  updateBoardStateOwner({tileEls:nextTileEls});
+  baseTiles=nextTileEls.slice();
 }
 let introRun=0;
 function buildIntroBoard(){
@@ -7491,11 +7516,12 @@ function restoreSavedBoard(data){
   if(!validSavedBoard(data))return false;
   cancelTileAnimations();clearHintVisuals();clearUiEffectTimers('clear-transition');
   replaceBoardState({ori:Uint8Array.from(data.o),spin:Int16Array.from(data.s),tiles:data.t.map(i=>baseTiles[i])});
-  moves=Number.isInteger(data.m)&&data.m>=0?data.m:0;
-  best=Number.isInteger(data.best)&&data.best>=0?data.best:SOLVER.dist[enc(ori)];
-  currentInitialState=Number.isInteger(data.initialState)?data.initialState:enc(ori);
-  currentInitialPar=Number.isInteger(data.initialPar)?data.initialPar:best;
-  history=(Array.isArray(data.history)?data.history:[]).filter(validSavedBoard).map(h=>({o:Uint8Array.from(h.o),s:Int16Array.from(h.s),t:h.t.map(i=>baseTiles[i]),m:h.m}));
+  const restoredMoves=Number.isInteger(data.m)&&data.m>=0?data.m:0;
+  const restoredBest=Number.isInteger(data.best)&&data.best>=0?data.best:SOLVER.dist[enc(ori)];
+  const restoredInitialState=Number.isInteger(data.initialState)?data.initialState:enc(ori);
+  const restoredInitialPar=Number.isInteger(data.initialPar)?data.initialPar:restoredBest;
+  const restoredHistory=(Array.isArray(data.history)?data.history:[]).filter(validSavedBoard).map(h=>({o:Uint8Array.from(h.o),s:Int16Array.from(h.s),t:h.t.map(i=>baseTiles[i]),m:h.m}));
+  updateBoardStateOwner({moves:restoredMoves,best:restoredBest,currentInitialState:restoredInitialState,currentInitialPar:restoredInitialPar,history:restoredHistory});
   setClearShownCommand(!!data.clearShown||isSolved());
   loadFourthChecks();
   fourthDistanceRevealed=!!data.fourthDistanceRevealed;
@@ -7881,9 +7907,8 @@ function handleBoardPointerDown(e){
       if(d<distance){distance=d;cell=i;}
     });
     if(distance>R*.92)return;
-    ori[cell]=mod3(ori[cell]+1);
-    spin[cell]=ori[cell];
-    moves=0;history=[];setClearShownCommand(true);
+    editBoardCellStateOwner(cell,mod3(ori[cell]+1));
+    setClearShownCommand(true);
     paint();
     showMakerMessage();
     return;
@@ -8293,7 +8318,7 @@ function undoLastMove(){
   resetClearFlow(); setClearShownCommand(false);
   $('clearNext').hidden=true;
   svg.classList.remove('clear-pending','celebrating');
-  const h=history.pop();
+  const h=popBoardHistoryOwner();
   if(isFourthVolume()&&!fourthChecksPersist())fourthChecksUsed=0;
   if(usesHiddenRemaining())resetFourthDistance();
   $('msg').classList.remove('show');
@@ -8722,7 +8747,7 @@ const WakeSevenBoardCommands=Object.freeze({
 // ori/spin/tiles/moves/history の更新順だけをここで保証する。
 function commitBoardMoveCommand(ti,dir,{save=true}={}){
   const oldSpin=Int16Array.from(spin),oldTiles=tileEls.slice(),cells=TRI[ti].cells;
-  if(save){history.push(snapshot());trackGameStart();}
+  if(save){appendBoardHistoryOwner(snapshot());trackGameStart();}
   const nextOri=rollOnce(ori,ti,dir),nextSpin=oldSpin.slice(),nextTiles=oldTiles.slice();
   for(let i=0;i<3;i++){
     const from=dir>0?cells[i]:cells[(i+1)%3],to=dir>0?cells[(i+1)%3]:cells[i];
@@ -8737,19 +8762,21 @@ function restoreBoardSnapshotCommand(snapshotValue,{paintNow=false}={}){
   return true;
 }
 function initializeBoardPositionCommand(state,par){
-  currentInitialState=state;currentInitialPar=par;
+  updateBoardStateOwner({currentInitialState:state,currentInitialPar:par});
   const nextOri=dec(state);
   replaceBoardState({ori:nextOri,spin:Int16Array.from(nextOri),tiles:baseTiles.slice(),best:par,moves:0,history:[]});
   WakeSevenAppContext.setClearShown(false);
   return nextOri;
 }
 function replaceBoardStateCommand(next,{paintNow=false}={}){
-  if(next.ori)ori=next.ori;
-  if(next.spin)spin=next.spin;
-  if(next.tiles)tileEls=next.tiles;
-  if(Number.isInteger(next.moves))moves=next.moves;
-  if(Number.isInteger(next.best))best=next.best;
-  if(next.history)history=next.history;
+  const patch={};
+  if(next.ori)patch.ori=next.ori;
+  if(next.spin)patch.spin=next.spin;
+  if(next.tiles)patch.tileEls=next.tiles;
+  if(Number.isInteger(next.moves))patch.moves=next.moves;
+  if(Number.isInteger(next.best))patch.best=next.best;
+  if(next.history)patch.history=next.history;
+  updateBoardStateOwner(patch);
   if(paintNow)paint();
 }
 function captureFreeSessionCommand(){
@@ -8758,17 +8785,18 @@ function captureFreeSessionCommand(){
 function restoreFreeSessionBoardCommand(session){
   if(!session)return false;
   replaceBoardStateCommand({ori:Uint8Array.from(session.ori),spin:Int16Array.from(session.spin),tiles:session.tileEls.slice(),moves:session.moves,best:session.best,history:session.history.map(cloneHistoryEntry)});
-  currentInitialState=session.initialState;currentInitialPar=session.initialPar;WakeSevenAppContext.setClearShown(session.clearShown);
+  updateBoardStateOwner({currentInitialState:session.initialState,currentInitialPar:session.initialPar});WakeSevenAppContext.setClearShown(session.clearShown);
   return true;
 }
 function applyBoardOrientationCommand(permutation,flip=false){
   const transformed=transformPosition(ori,spin,tileEls,permutation,flip);
   replaceBoardStateCommand({ori:transformed.o,spin:transformed.s,tiles:transformed.t});
-  history=history.map(h=>{
+  const transformedHistory=history.map(h=>{
     const next=transformPosition(h.o,h.s,h.t,permutation,flip);
     return {o:next.o,s:next.s,t:next.t,m:h.m};
   });
-  currentInitialState=transformStateCode(currentInitialState,permutation,flip);
+  updateBoardStateOwner({history:transformedHistory});
+  updateBoardStateOwner({currentInitialState:transformStateCode(currentInitialState,permutation,flip)});
   return transformed;
 }
 
@@ -11667,8 +11695,9 @@ function debugClearCurrent(extraMoves=0){
   cancelTutorialHint();
   cancelTileAnimations();
   clearHintVisuals();
-  ori=new Uint8Array(N);spin=new Int16Array(N);tileEls=baseTiles.slice();
-  history=[];moves=best+extraMoves;setClearShownCommand(false);
+  replaceBoardStateCommand({ori:new Uint8Array(N),spin:new Int16Array(N),tiles:baseTiles.slice(),history:[]});
+  updateBoardStateOwner({moves:best+extraMoves});
+  setClearShownCommand(false);
   svg.classList.remove('clear-pending','celebrating');
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   $('clearNext').hidden=true;
