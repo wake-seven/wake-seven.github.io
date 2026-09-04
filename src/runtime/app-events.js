@@ -287,19 +287,16 @@ WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();WakeSevenStag
   WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();WakeSevenStagePickerFeature.openRank();});
   WakeSevenEventBindings.click('menuAbout',()=>{
     closeAppMenu();
-    $('settingsDialog').hidden=true;
-    $('aboutDialog').hidden=false;
-    $('aboutDialogCloseBtn').focus();
+    WakeSevenSettingsFeature.openAbout();
   });
-  WakeSevenEventBindings.click('aboutDialogCloseBtn',()=>setDialogOpenState('aboutDialog',false));
-  $('aboutDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)setDialogOpenState('aboutDialog',false);});
+  WakeSevenEventBindings.click('aboutDialogCloseBtn',()=>WakeSevenSettingsFeature.close('aboutDialog'));
+  $('aboutDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)WakeSevenSettingsFeature.close('aboutDialog');});
   WakeSevenEventBindings.click('menuSettings',()=>{
     closeAppMenu();
-    $('settingsDialog').hidden=false;
-    $('settingsDialogClose').focus();
+    WakeSevenSettingsFeature.open();
   });
-  WakeSevenEventBindings.click('settingsDialogClose',()=>setDialogOpenState('settingsDialog',false));
-  $('settingsDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)setDialogOpenState('settingsDialog',false);});
+  WakeSevenEventBindings.click('settingsDialogClose',()=>WakeSevenSettingsFeature.close());
+  $('settingsDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)WakeSevenSettingsFeature.close();});
   WakeSevenEventBindings.click('menuAllPatterns',()=>{window.open('all-patterns.html','_blank','noopener');});
   WakeSevenEventBindings.click('menuOpen3D',()=>{window.open('index_3D.html','_blank','noopener');});
   WakeSevenEventBindings.click('menuSatori',()=>{closeAppMenu();openSatoriPicker();});
@@ -997,7 +994,7 @@ $('twoMovePatterns').addEventListener('click',()=>{
   openTwoMovePatterns();
 });
 $('menuBoardTheme').addEventListener('click',()=>{
-  $('settingsDialog').hidden=true;
+  WakeSevenSettingsFeature.close();
   closeAppMenu();
   openBoardThemeDialog();
 });
@@ -1209,23 +1206,14 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   if(showIntro)setUiEffectTimer('dialog-transition','deferred-intro',()=>{if(typeof canShowDeferredBootDialog==='function'&&canShowDeferredBootDialog())openIntroGuide();},80);
 }
 $('resetProgress').addEventListener('click',()=>{
-  $('settingsDialog').hidden=true;
-  const canKeepRewards=hasMasterReward();
-  $('resetDialogText').textContent=tr(canKeepRewards?'resetConfirmKeepRewards':'resetConfirmEarly');
-  $('resetDialogAll').hidden=!canKeepRewards;
-  $('resetDialogConfirm').textContent=tr('resetProgress');
-  $('resetDialogAll').textContent=tr('resetEverything');
-  $('resetDialog').hidden=false;
-  $('resetDialogClose').focus();
+  WakeSevenSettingsFeature.openReset();
 });
-$('resetDialogClose').addEventListener('click',()=>{$('resetDialog').hidden=true;});
+$('resetDialogClose').addEventListener('click',()=>WakeSevenSettingsFeature.close('resetDialog'));
 $('resetDialogConfirm').addEventListener('click',()=>{
-  $('resetDialog').hidden=true;
-  resetStoredProgress({resetIntro:true,showIntro:true,preserveRewards:true});
+  WakeSevenSettingsFeature.reset({resetIntro:true,showIntro:true,preserveRewards:true});
 });
 $('resetDialogAll').addEventListener('click',()=>{
-  $('resetDialog').hidden=true;
-  resetStoredProgress({resetIntro:true,showIntro:true});
+  WakeSevenSettingsFeature.reset({resetIntro:true,showIntro:true,preserveRewards:false});
 });
 
 // 公開ネイティブモジュールの構文境界。

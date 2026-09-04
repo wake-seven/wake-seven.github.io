@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "name": "wake7-navigation-classification",
-  "generatedAt": "2026-09-04T13:31:51.536Z",
+  "generatedAt": "2026-09-04T14:08:02.948Z",
   "status": "passed",
   "summary": {
     "references": 399,
@@ -321,79 +321,79 @@
       },
       {
         "file": "runtime/app-events.js",
-        "line": 308,
+        "line": 305,
         "source": "if(isMode('speed')){pauseSpeedRun();GameNavigation.speedPicker();return;}",
         "allowed": true
       },
       {
         "file": "runtime/app-events.js",
-        "line": 309,
+        "line": 306,
         "source": "GameNavigation.speedPicker();",
         "allowed": true
       },
       {
         "file": "runtime/app-events.js",
-        "line": 345,
+        "line": 342,
         "source": "pauseSpeedRun();GameNavigation.stageMenu();",
         "allowed": true
       },
       {
         "file": "runtime/app-events.js",
-        "line": 415,
+        "line": 412,
         "source": "setup:()=>{if(!secondLapUnlocked)beginSecondLap();else{activateCampaignLap(2);GameNavigation.stage(0);}},",
         "allowed": true
       },
       {
         "file": "runtime/app-events.js",
-        "line": 436,
+        "line": 433,
         "source": "if(restartTraining){activateCampaignLap(1);GameNavigation.stage(0);return;}",
         "allowed": true
       },
       {
         "file": "runtime/app-events.js",
-        "line": 437,
+        "line": 434,
         "source": "if(leaveSpeed){GameNavigation.stageMenu();return;}",
         "allowed": true
       },
       {
         "file": "runtime/app-events.js",
-        "line": 506,
+        "line": 503,
         "source": "GameNavigation.stage(TRAINING_STAGE_START);return;",
         "allowed": true
       },
       {
         "file": "runtime/app-events.js",
-        "line": 514,
+        "line": 511,
         "source": "if(dialogKind==='intermediate'){GameNavigation.mastery(0);return;}",
         "allowed": true
       },
       {
         "file": "runtime/app-events.js",
-        "line": 515,
+        "line": 512,
         "source": "if(dialogKind==='pathInfo')GameNavigation.mastery(0);",
         "allowed": true
       },
       {
         "file": "runtime/app-events.js",
-        "line": 516,
+        "line": 513,
         "source": "else if(dialogKind==='secondLapIntro')GameNavigation.stage(0);",
         "allowed": true
       },
       {
         "file": "runtime/app-events.js",
-        "line": 517,
+        "line": 514,
         "source": "else if(dialogKind==='satoriIntro')GameNavigation.satori(0);",
         "allowed": true
       },
       {
         "file": "runtime/app-events.js",
-        "line": 520,
+        "line": 517,
         "source": "else GameNavigation.mastery(navigation.masteryIndex+1);",
         "allowed": true
       },
       {
         "file": "runtime/app-events.js",
-        "line": 1208,
+        "line": 1205,
         "source": "GameNavigation.stage(0);",
         "allowed": true
       }
@@ -7924,7 +7924,7 @@
     {
       "name": "tutorialStep",
       "file": "runtime/app-events.js",
-      "line": 935,
+      "line": 932,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -7936,14 +7936,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/app-events.js",
-        "line": 935,
+        "line": 932,
         "source": "$('gripPromptText').textContent=navigation.mode==='tutorial'&&TUTORIAL_STEPS[navigation.tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/app-events.js",
-      "line": 957,
+      "line": 954,
       "access": "write",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -7955,14 +7955,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/app-events.js",
-        "line": 957,
+        "line": 954,
         "source": "else if(navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/app-events.js",
-      "line": 958,
+      "line": 955,
       "access": "write",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -7974,14 +7974,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/app-events.js",
-        "line": 958,
+        "line": 955,
         "source": "else if(navigation.stageIndex===STAGES.length-1)action.textContent=tr('toFree');"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/app-events.js",
-      "line": 1143,
+      "line": 1140,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -7993,7 +7993,7 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/app-events.js",
-        "line": 1143,
+        "line": 1140,
         "source": "storage.remove(STORAGE_KEY_GROUPS.progression.activeLap);"
       }
     }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-04T12:32:15.436Z",
+  "generatedAt": "2026-09-04T14:07:01.010Z",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles + index.html",
   "entries": [
     {
@@ -13,7 +13,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 395,
+              "line": 392,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -44,15 +44,16 @@
                 "closeAppMenu",
                 "open",
                 "openRank",
+                "openAbout",
+                "close",
                 "openSatoriPicker",
                 "resumeSpeedRun",
-                "startSpeedClock"
+                "startSpeedClock",
+                "enterSpeedMode"
               ],
               "displayTargets": [
-                "settingsDialog",
                 "aboutDialog",
-                "aboutDialogCloseBtn",
-                "settingsDialogClose",
+                "settingsDialog",
                 "speedPauseDialog",
                 "speedRestartDialog"
               ],
@@ -66,7 +67,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 402,
+              "line": 399,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -89,7 +90,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 396,
+              "line": 393,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -129,7 +130,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 476,
+              "line": 473,
               "registration": "addEventListener",
               "type": "click",
               "handlers": [
@@ -161,6 +162,8 @@
               "handlers": [
                 "closeAppMenu",
                 "openRank",
+                "openAbout",
+                "close",
                 "open",
                 "openSatoriPicker",
                 "resumeSpeedRun",
@@ -168,14 +171,12 @@
                 "enterSpeedMode"
               ],
               "displayTargets": [
-                "settingsDialog",
                 "aboutDialog",
-                "aboutDialogCloseBtn",
-                "settingsDialogClose",
+                "settingsDialog",
                 "speedPauseDialog",
                 "speedRestartDialog"
               ],
-              "sourceSnippet": "WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();WakeSevenStagePickerFeature.openRank();}); WakeSevenEventBindings.click('menuAbout',()=>{ closeAppMenu(); $('settingsDialog').hidden=true; $('aboutDialog').hid"
+              "sourceSnippet": "WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();WakeSevenStagePickerFeature.openRank();}); WakeSevenEventBindings.click('menuAbout',()=>{ closeAppMenu(); WakeSevenSettingsFeature.openAbout(); }); WakeSevenEvent"
             }
           ]
         },
@@ -185,7 +186,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 402,
+              "line": 399,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -208,7 +209,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 484,
+              "line": 481,
               "registration": "addEventListener",
               "type": "click",
               "handlers": [
@@ -247,12 +248,13 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 979,
+              "line": 976,
               "registration": "addEventListener",
               "type": "click",
               "handlers": [
                 "closeAppMenu",
                 "openTwoMovePatterns",
+                "close",
                 "openBoardThemeDialog",
                 "closest",
                 "closeTwoMovePatterns",
@@ -266,7 +268,6 @@
                 "soundToggle",
                 "twoMovePatterns",
                 "menuBoardTheme",
-                "settingsDialog",
                 "closeBoardTheme",
                 "boardThemeDialog",
                 "boardThemeOptions",
@@ -290,15 +291,16 @@
                 "closeAppMenu",
                 "open",
                 "openRank",
+                "openAbout",
+                "close",
                 "openSatoriPicker",
                 "resumeSpeedRun",
-                "startSpeedClock"
+                "startSpeedClock",
+                "enterSpeedMode"
               ],
               "displayTargets": [
-                "settingsDialog",
                 "aboutDialog",
-                "aboutDialogCloseBtn",
-                "settingsDialogClose",
+                "settingsDialog",
                 "speedPauseDialog",
                 "speedRestartDialog"
               ],
@@ -318,6 +320,8 @@
               "handlers": [
                 "closeAppMenu",
                 "openRank",
+                "openAbout",
+                "close",
                 "open",
                 "openSatoriPicker",
                 "resumeSpeedRun",
@@ -325,14 +329,12 @@
                 "enterSpeedMode"
               ],
               "displayTargets": [
-                "settingsDialog",
                 "aboutDialog",
-                "aboutDialogCloseBtn",
-                "settingsDialogClose",
+                "settingsDialog",
                 "speedPauseDialog",
                 "speedRestartDialog"
               ],
-              "sourceSnippet": "WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();WakeSevenStagePickerFeature.openRank();}); WakeSevenEventBindings.click('menuAbout',()=>{ closeAppMenu(); $('settingsDialog').hidden=true; $('aboutDialog').hid"
+              "sourceSnippet": "WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();WakeSevenStagePickerFeature.openRank();}); WakeSevenEventBindings.click('menuAbout',()=>{ closeAppMenu(); WakeSevenSettingsFeature.openAbout(); }); WakeSevenEvent"
             }
           ]
         },
@@ -342,12 +344,13 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 296,
+              "line": 294,
               "registration": "click",
               "type": "click",
               "handlers": [
                 "closeAppMenu",
                 "open",
+                "close",
                 "openSatoriPicker",
                 "resumeSpeedRun",
                 "startSpeedClock",
@@ -356,13 +359,12 @@
               ],
               "displayTargets": [
                 "settingsDialog",
-                "settingsDialogClose",
                 "speedPauseDialog",
                 "speedRestartDialog",
                 "speedResume",
                 "speedRestartCancel"
               ],
-              "sourceSnippet": "WakeSevenEventBindings.click('menuSettings',()=>{ closeAppMenu(); $('settingsDialog').hidden=false; $('settingsDialogClose').focus(); }); WakeSevenEventBindings.click('settingsDialogClose',()=>setDialogOpenState('settin"
+              "sourceSnippet": "WakeSevenEventBindings.click('menuSettings',()=>{ closeAppMenu(); WakeSevenSettingsFeature.open(); }); WakeSevenEventBindings.click('settingsDialogClose',()=>WakeSevenSettingsFeature.close()); $('settingsDialog').addEventListe"
             }
           ]
         },
@@ -372,7 +374,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 306,
+              "line": 303,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -435,14 +437,13 @@
                 "closeAppMenu",
                 "openGuideHub",
                 "open",
-                "openRank"
+                "openRank",
+                "openAbout"
               ],
               "displayTargets": [
                 "optimalFailDialog",
-                "settingsDialog",
                 "aboutDialog",
-                "aboutDialogCloseBtn",
-                "settingsDialogClose"
+                "settingsDialog"
               ],
               "sourceSnippet": "WakeSevenEventBindings.click('clearNext',()=>{ WakeSevenClearFeature.next(); }); WakeSevenEventBindings.click('clearClose',()=>WakeSevenClearFeature.close()); WakeSevenEventBindings.click('optimalRetry',()=>{ $('optimalFailDi"
             }
@@ -463,14 +464,14 @@
                 "closeAppMenu",
                 "openGuideHub",
                 "open",
-                "openRank"
+                "openRank",
+                "openAbout",
+                "openSatoriPicker"
               ],
               "displayTargets": [
                 "optimalFailDialog",
-                "settingsDialog",
                 "aboutDialog",
-                "aboutDialogCloseBtn",
-                "settingsDialogClose"
+                "settingsDialog"
               ],
               "sourceSnippet": "WakeSevenEventBindings.click('clearClose',()=>WakeSevenClearFeature.close()); WakeSevenEventBindings.click('optimalRetry',()=>{ $('optimalFailDialog').hidden=true; GameBoard.reset(currentInitialState,currentInitialPar); ren"
             }
@@ -494,7 +495,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 325,
+              "line": 322,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -520,7 +521,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 331,
+              "line": 328,
               "registration": "click",
               "type": "click",
               "handlers": [],
@@ -544,7 +545,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 489,
+              "line": 486,
               "registration": "addEventListener",
               "type": "click",
               "handlers": [

@@ -2,16 +2,16 @@
   "name": "wake7-feature-registry",
   "status": "passed",
   "summary": {
-    "features": 14,
-    "matched": 2,
-    "unknown": 9,
+    "features": 15,
+    "matched": 4,
+    "unknown": 3,
     "unregisteredNewFiles": 0,
     "references": 44
   },
   "warnings": [],
   "errors": [],
-  "generatedAt": "2026-09-04T13:30:39.024Z",
-  "sourceRevision": "3937b1f",
+  "generatedAt": "2026-09-04T14:06:49.979Z",
+  "sourceRevision": "3433ee5",
   "features": [
     {
       "name": "reward-pages",
@@ -117,6 +117,21 @@
       "checks": [
         "dialog-state-map",
         "navigation-final-audit",
+        "manifest-dependencies"
+      ],
+      "relatedE2E": [
+        "browser-e2e",
+        "device-e2e"
+      ]
+    },
+    {
+      "name": "settings-feature",
+      "paths": [
+        "src/ui/settings-feature.js"
+      ],
+      "checks": [
+        "dialog-state-map",
+        "state-restore",
         "manifest-dependencies"
       ],
       "relatedE2E": [
@@ -346,42 +361,38 @@
   ],
   "changedFiles": [
     "index.html",
-    "scripts/check-state-restore.mjs",
-    "scripts/generate-event-wiring-map.mjs",
-    "scripts/generate-progression-flow-report.mjs",
-    "scripts/generate-refactor-report.mjs",
-    "scripts/generate-trace-index.mjs",
-    "scripts/generate-ui-data-map.mjs",
-    "scripts/investigate-changed.mjs",
-    "scripts/lib/feature-investigation.mjs",
+    "scripts/application-manifest.mjs",
+    "scripts/check-ui-effects.mjs",
+    "scripts/feature-registry.json",
+    "scripts/public-symbols-budget.json",
+    "src/runtime/app-events.js",
     "src/runtime/runtime.js",
-    "src/state/game-state.js"
+    "src/ui/settings-feature.js"
   ],
   "matchedFeatures": [
+    "scripts/manifest",
+    "runtime/speed",
     "dialog-restore",
-    "state"
+    "settings-feature"
   ],
   "unknownChangedFiles": [
     "index.html",
-    "scripts/check-state-restore.mjs",
-    "scripts/generate-event-wiring-map.mjs",
-    "scripts/generate-progression-flow-report.mjs",
-    "scripts/generate-refactor-report.mjs",
-    "scripts/generate-trace-index.mjs",
-    "scripts/generate-ui-data-map.mjs",
-    "scripts/investigate-changed.mjs",
-    "scripts/lib/feature-investigation.mjs"
+    "scripts/check-ui-effects.mjs",
+    "scripts/public-symbols-budget.json"
   ],
   "unregisteredNewFiles": [],
   "recommendation": "full",
   "suggestedChecks": [
-    "state-restore",
-    "dialog-state-map",
-    "state",
-    "state-classification",
-    "state-mutations",
+    "development-entrypoints",
+    "esm",
+    "manifest-dependencies",
     "browser-e2e",
-    "device-e2e"
+    "device-e2e",
+    "application-services",
+    "progression-flows",
+    "e2e-speed-contract",
+    "state-restore",
+    "dialog-state-map"
   ],
   "policy": {
     "unknownChangedFiles": "affected",

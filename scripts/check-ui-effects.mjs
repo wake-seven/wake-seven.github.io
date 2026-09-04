@@ -39,8 +39,8 @@ assert.match(progressionRender,/function renderClearStageContextElement\(/,'Clea
 assert.match(progressionRender,/function renderClearTipHeader\(/,'Clear tip fixed DOM rendering must remain in the renderer boundary.');
 assert.match(progressionRender,/function renderClearShapeRuleContent\(/,'Clear shape rule rendering must remain in the renderer boundary.');
 assert.match(boardRender,/function renderAcademyRemainingCalloutElement\(/,'Academy callout rendering must remain in the renderer boundary.');
-assert.match(events,/aboutDialogCloseBtn',\(\)=>setDialogOpenState\('aboutDialog',false\)/,'About dialog close must use the dialog state boundary.');
-assert.match(events,/settingsDialogClose',\(\)=>setDialogOpenState\('settingsDialog',false\)/,'Settings dialog close must use the dialog state boundary.');
+assert.match(events,/(?:aboutDialogCloseBtn',\(\)=>setDialogOpenState\('aboutDialog',false\)|WakeSevenSettingsFeature\.close\('aboutDialog'\))/,'About dialog close must use the dialog state boundary.');
+assert.match(events,/(?:settingsDialogClose',\(\)=>setDialogOpenState\('settingsDialog',false\)|WakeSevenSettingsFeature\.close\((?:'settingsDialog')?\))/,'Settings dialog close must use the dialog state boundary.');
 assert.match(context,/function setBoardTransientClass\(/,'Board transient class API is missing.');
 assert.doesNotMatch(board,/classList\.toggle\('(grip-hover|selecting)'/,'Pointer UI classes must use the transient context API.');
 assert.match(board,/function replaceBoardState\(next,\{paintNow=false\}\=\{\}\)\{\s*replaceBoardStateCommand\(next,\{paintNow\}\);/,'Board state restoration must use the board command boundary.');
