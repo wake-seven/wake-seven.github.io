@@ -4415,7 +4415,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-14:04';
+const APP_VERSION='2026.09.04-14:37';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -8539,9 +8539,13 @@ function computeSpeedTrainingCandidateTis(){
   }
   if(!correctTis.length)return null;
   const primary=correctTis[Math.floor(Math.random()*correctTis.length)];
+  // 九番勝負は、1〜3問目を3本、4〜6問目を4本、7〜9問目を5本に段階化する。
+  // speedSession.indexは0始まりなので、問題番号の境界をここで一元管理する。
+  const questionIndex=Math.max(0,Number(speedSession?.index)||0);
+  const count=questionIndex<3?3:questionIndex<6?4:5;
   const pool=Array.from({length:TRI.length},(_,i)=>i).filter(i=>i!==primary);
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
-  return new Set([primary,...pool.slice(0,2)]);
+  return new Set([primary,...pool.slice(0,count-1)]);
 }
 
 // 学園補助UIの表示を担当する。候補計算とは分離し、盤面DOMへの反映だけを行う。

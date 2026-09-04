@@ -5,11 +5,12 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(fileURLToPath(new URL('..', import.meta.url)));
 const read = name => readFile(join(root, name), 'utf8');
-const [policy, state, events, template] = await Promise.all([
+const [policy, state, events, template, academy] = await Promise.all([
   read('src/state/progression-policy.js'),
   read('src/state/game-state.js'),
   read('src/runtime/app-events.js'),
-  read('src/index.template.html')
+  read('src/index.template.html'),
+  read('src/ui/progression-academy-support.js')
 ]);
 
 for (const id of ['training9', 'training18', 'mastery27', 'satori73']) {
@@ -19,6 +20,8 @@ assert.doesNotMatch(policy, /id\s*:\s*'(?:training18_old|mastery15|mastery24|sat
 assert.match(state, /activeVariant:[^\n]*'training9'/, 'Speed state default is missing.');
 assert.match(events, /speedPause|pauseSpeedRun/, 'Speed pause flow is not wired.');
 assert.match(events, /speedResume|resumeSpeedRun|startSpeedClock/, 'Speed resume/start flow is not wired.');
+assert.match(academy, /questionIndex=Math\.max\(0,Number\(speedSession\?\.index\)\|\|0\)/, '九番勝負の段階的な棒本数計算がありません。');
+assert.match(academy, /questionIndex<3\?3:questionIndex<6\?4:5/, '九番勝負の棒本数境界が不正です。');
 for (const id of ['settingsDialog', 'menuSettings', 'settingsDialogClose']) {
   assert.match(template, new RegExp(`id="${id}"`), `Settings UI contract is missing: ${id}`);
 }
