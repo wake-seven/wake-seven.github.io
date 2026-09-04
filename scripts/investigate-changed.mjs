@@ -71,7 +71,8 @@ export function buildReport(changedFiles, registry, generatedAt = new Date().toI
   const needsFull = unknownFiles.length > 0 && policy.unknownChangedFiles === 'affected'
     ? false
     : unknownFiles.length > 0 || ambiguousFiles.length > 0;
-  const status = needsFull ? 'full-required' : matched.length || unknownFiles.length ? 'affected' : 'no-change';
+  const activity = matched.length || unknownFiles.length ? 'affected' : 'no-change';
+  const status = needsFull ? 'warning' : 'passed';
   const checks = [...new Set(matched.flatMap(item => compactFeature(item).checks))];
   const e2e = [...new Set(matched.flatMap(item => compactFeature(item).e2e))];
   return {
@@ -79,13 +80,14 @@ export function buildReport(changedFiles, registry, generatedAt = new Date().toI
     name: 'wake7-feature-investigation-changed',
     generatedAt,
     status,
+    activity,
     changedFiles,
     unknownFiles,
     ambiguousFiles,
     features: matched.map(compactFeature),
     requiredChecks: checks,
     relatedE2E: e2e,
-    recommendedProfile: needsFull ? 'full' : status === 'affected' ? 'affected' : 'fast',
+    recommendedProfile: needsFull ? 'full' : activity === 'affected' ? 'affected' : 'fast',
     policy: {
       unknownChangedFiles: policy.unknownChangedFiles || 'affected',
       ambiguousChangedFiles: policy.ambiguousChangedFiles || 'full',
@@ -117,7 +119,7 @@ async function main() {
     console.log(JSON.stringify({ ...result, registry: relative(root, registryPath) }, null, 2));
     return;
   }
-  console.log(`影響調査: ${result.status} / 推奨プロファイル: ${result.recommendedProfile}`);
+  console.log(`影響調査: ${result.activity} / 推奨プロファイル: ${result.recommendedProfile}`);
   console.log(`変更 ${result.changedFiles.length}件、機能 ${result.features.length}件、未知 ${result.unknownFiles.length}件`);
   if (result.requiredChecks.length) console.log(`検査: ${result.requiredChecks.join(', ')}`);
   console.log(`Report: ${relative(root, reportPath)}`);
