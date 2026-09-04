@@ -1,22 +1,20 @@
 {
   "schemaVersion": 1,
   "name": "wake7-report-inventory",
-  "generatedAt": "2026-09-04T05:29:50.173Z",
-  "sourceRevision": "924dc55",
-  "status": "failed",
+  "generatedAt": "2026-09-04T05:30:56.240Z",
+  "sourceRevision": "4eb5168",
+  "status": "passed",
   "summary": {
     "discovered": 60,
-    "defined": 59,
+    "defined": 60,
     "required": 13,
-    "supporting": 46,
-    "classified": 59,
-    "unknown": 1,
+    "supporting": 47,
+    "classified": 60,
+    "unknown": 0,
     "missing": 0
   },
   "warnings": [],
-  "errors": [
-    "未知のレポートです: change-classification.json"
-  ],
+  "errors": [],
   "policy": {
     "required": "ゲートの判定または主要導線の証跡に使うため、削除・改名時はこの定義を同時に更新する。",
     "supporting": "調査・追跡・比較を補助する成果物。不要化する場合も削除判定をレビューに残す。",
@@ -42,7 +40,7 @@
     },
     {
       "file": "build/report/change-classification.json",
-      "classification": null
+      "classification": "supporting"
     },
     {
       "file": "build/report/change-impact.json",
@@ -265,9 +263,7 @@
       "classification": "supporting"
     }
   ],
-  "unknownReports": [
-    "build/report/change-classification.json"
-  ],
+  "unknownReports": [],
   "missingReports": [],
   "deletionCandidates": [
     {
@@ -282,6 +278,11 @@
     },
     {
       "file": "build/report/change-check-map.json",
+      "decision": "retain",
+      "reason": "補助成果物として追跡・監査の参照先になり得るため、削除は個別レビュー後に行う。"
+    },
+    {
+      "file": "build/report/change-classification.json",
       "decision": "retain",
       "reason": "補助成果物として追跡・監査の参照先になり得るため、削除は個別レビュー後に行う。"
     },
