@@ -16,11 +16,18 @@ const scope = contract.policy.precedence.find(name => name !== 'clean' && contra
 const execution = contract.scopes[scope];
 assert.ok(execution, `実行契約のscopeがありません: ${scope}`);
 const known = new Set(Object.keys(pipeline.steps || {}));
-const knownCommands = new Set(['check:gate', 'check:fast', 'check:affected']);
+const knownCommands = new Set(['check:gate', 'check:fast', 'check:affected', 'check:auto', 'check:milestone', 'check:release']);
 for (const step of [...execution.mustRun, ...execution.mustNotRun]) assert.ok(known.has(step) || knownCommands.has(step), `実行契約に未知の検査があります: ${step}`);
 assert.ok(profiles.profiles[execution.profile], `実行契約に未知のprofileがあります: ${execution.profile}`);
+for(const [stage,workflow] of Object.entries(contract.workflow||{})){
+  assert.ok(knownCommands.has(workflow.command),`${stage}の実行コマンドが不正です: ${workflow.command}`);
+  assert.ok(workflow.profile==='auto'||profiles.profiles[workflow.profile],`${stage}のprofileが不正です: ${workflow.profile}`);
+  for(const step of workflow.requiredChecks||[])assert.ok(known.has(step)||knownCommands.has(step),`${stage}に未知の必須検査があります: ${step}`);
+}
+const conditionalMilestoneChecks=(contract.conditionalMilestoneChecks||[]).filter(rule=>matches(rule));
+for(const rule of conditionalMilestoneChecks)assert.ok(known.has(rule.check),`milestone条件に未知の検査があります: ${rule.check}`);
 const sourceRevision = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim() || 'working-tree';
-const result = { schemaVersion: 1, name: 'wake7-execution-contract', generatedAt: new Date().toISOString(), sourceRevision, status: 'passed', warnings: [], errors: [], scope, profile: execution.profile, mustRun: execution.mustRun, mustNotRun: execution.mustNotRun, fullGateRequired: execution.fullGateRequired, changedFiles, policy: contract.policy, command: `npm run check:${execution.profile}` };
+const result = { schemaVersion: 1, name: 'wake7-execution-contract', generatedAt: new Date().toISOString(), sourceRevision, status: 'passed', warnings: [], errors: [], scope, profile: execution.profile, mustRun: execution.mustRun, mustNotRun: execution.mustNotRun, fullGateRequired: execution.fullGateRequired, changedFiles, policy: contract.policy, command: `npm run check:${execution.profile}`, workflow: contract.workflow, milestone: { command: 'npm run check:milestone', requiredChecks: [...new Set([...(contract.workflow?.milestone?.requiredChecks||[]),...conditionalMilestoneChecks.map(rule=>rule.check)])], conditionalChecks: conditionalMilestoneChecks.map(rule=>rule.check), reasons: conditionalMilestoneChecks.map(rule=>rule.reason) }, release: { command: 'npm run check:release', requiredChecks: contract.workflow?.release?.requiredChecks||[] } };
 await mkdir(join(root, 'build', 'report'), { recursive: true });
 await writeFile(join(root, 'build/report/check-execution-contract.json'), JSON.stringify(result, null, 2) + '\n');
-console.log(`Execution contract: scope=${scope}, profile=${execution.profile}, mustRun=${execution.mustRun.join(',')}. Report: build/report/check-execution-contract.json`);
+console.log(`Execution contract: scope=${scope}, editing=${execution.profile}, milestone=${result.milestone.requiredChecks.join(',')}, release=full. Report: build/report/check-execution-contract.json`);

@@ -39,9 +39,12 @@ const affectedRules = [/^src\//, /^(?:styles?|public)\//, /\.(?:css|html|svg)$/i
 const reasons = [];
 let selected = requested;
 if (!selected) {
-  selected = investigationReport?.recommendedProfile || 'fast';
+  // check:autoは編集中の入口なので、最終fullが必要な変更でもaffectedまでに留める。
+  // full gateはcheck:releaseへ集約し、必要性だけをreleasePendingとして保持する。
+  const recommended = investigationReport?.recommendedProfile || 'fast';
+  selected = recommended === 'full' ? 'affected' : recommended;
   for (const file of files) {
-    if (fullRules.some(rule => rule.test(file))) selected = 'full';
+    if (fullRules.some(rule => rule.test(file))) selected = 'affected';
     else if (selected === 'fast' && affectedRules.some(rule => rule.test(file))) selected = 'affected';
     else if (selected === 'fast') selected = 'affected';
   }
@@ -63,8 +66,9 @@ const commandFor = name => {
     build: ['npm', ['run', 'build']], version: ['node', ['scripts/check-version.mjs']],
     'board-domain': ['node', ['scripts/test-board-domain.mjs']],
     'application-services': ['node', ['scripts/test-application-services.mjs']],
-    'application-targets': ['node', ['scripts/check-application-targets.mjs']], state: ['node', ['scripts/check-state.mjs']]
-    , 'reward-access': ['node', ['scripts/check-reward-access.mjs']]
+    'application-targets': ['node', ['scripts/check-application-targets.mjs']], state: ['node', ['scripts/check-state.mjs']],
+    'reward-access': ['node', ['scripts/check-reward-access.mjs']],
+    'manifest-dependencies': ['node', ['scripts/check-manifest-dependencies.mjs']]
   };
   return direct[name] || ['npm', ['run', `check:${name}`]];
 };
@@ -98,7 +102,7 @@ const failed = executed.filter(item => item.exitCode !== 0 && item.passed !== tr
 // milestoneは途中確認なので、将来のfull gate要件をreleasePendingとして残しつつ成功にできる。
 // 通常のcheck:affectedは従来どおり、full必須変更を成功扱いにしない。
 const releasePending = fullGateRequired && selected !== 'full';
-const allowPendingRelease = requestedPhase === CHANGE_SESSION_PHASES.milestone;
+const allowPendingRelease = [CHANGE_SESSION_PHASES.editing, CHANGE_SESSION_PHASES.milestone].includes(requestedPhase);
 const status = failed.length ? 'failed'
   : unexecuted.length || (releasePending && !allowPendingRelease) ? 'incomplete'
     : 'passed';

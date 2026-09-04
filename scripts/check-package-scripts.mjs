@@ -24,5 +24,5 @@ const body = source.slice(objectStart + 1, objectEnd);
 const names = [...body.matchAll(/^\s*"([^"\r\n]+)"\s*:/gm)].map(match => match[1]);
 const duplicates = [...new Set(names.filter((name, index) => names.indexOf(name) !== index))];
 assert.deepEqual(duplicates, [], `package.jsonのscriptsに重複キーがあります: ${duplicates.join(', ')}`);
-for (const name of ['check:affected', 'check:fast', 'check:full']) assert.equal(names.filter(candidate => candidate === name).length, 1, `${name}は1つだけ定義してください`);
+for (const name of ['check:affected', 'check:fast', 'check:full', 'check:milestone', 'check:release']) assert.equal(names.filter(candidate => candidate === name).length, 1, `${name}は1つだけ定義してください`);
 console.log(`Package scripts OK: ${names.length} unique entries`);

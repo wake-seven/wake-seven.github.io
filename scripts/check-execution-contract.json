@@ -1,16 +1,31 @@
 {
   "schemaVersion": 1,
-  "description": "開発者・サブエージェントが変更範囲に応じて守る検査実行契約。",
+  "description": "変更範囲と作業段階に応じて、途中確認と最終確認を使い分ける検査実行契約。",
   "scopes": {
     "clean": { "profile": "fast", "mustRun": ["build", "version", "architecture-guide", "browser-flow"], "mustNotRun": ["device-e2e"], "fullGateRequired": false },
     "documentation": { "profile": "fast", "mustRun": ["build", "version", "architecture-guide"], "mustNotRun": ["device-e2e"], "fullGateRequired": false },
     "source": { "profile": "affected", "mustRun": ["build", "browser-flow", "browser-e2e"], "mustNotRun": ["device-e2e"], "fullGateRequired": false },
-    "sensitive": { "profile": "full", "mustRun": ["check:gate", "browser-e2e", "device-e2e"], "mustNotRun": ["check:fast", "check:affected"], "fullGateRequired": true }
+    "sensitive": { "profile": "affected", "mustRun": ["build", "browser-flow", "browser-e2e"], "mustNotRun": [], "fullGateRequired": true },
+    "infrastructure": { "profile": "affected", "mustRun": ["build", "package-scripts", "browser-e2e"], "mustNotRun": [], "fullGateRequired": true }
   },
   "rules": [
-    { "scope": "sensitive", "paths": ["scripts/", "package.json", "package-lock.json", "src/state/", "src/runtime/", "src/commands/", "src/app/", "src/ui/progression", "src/index.template.html", "index.html"] },
+    { "scope": "infrastructure", "paths": ["scripts/", "package.json", "package-lock.json"] },
+    { "scope": "sensitive", "paths": ["src/state/", "src/runtime/", "src/commands/", "src/app/", "src/ui/progression", "src/index.template.html", "index.html"] },
     { "scope": "source", "paths": ["src/", "styles/", "public/"] },
     { "scope": "documentation", "paths": ["docs/", "README.md", ".md"] }
   ],
-  "policy": { "precedence": ["sensitive", "source", "documentation", "clean"], "unknownChanges": "source", "incompleteIsSuccess": false }
+  "workflow": {
+    "editing": { "command": "check:auto", "profile": "auto", "requiredChecks": [], "description": "編集中の短い反復。" },
+    "milestone": { "command": "check:milestone", "profile": "affected", "requiredChecks": ["browser-e2e"], "description": "導線単位の途中確認。" },
+    "release": { "command": "check:release", "profile": "full", "requiredChecks": ["check:gate", "browser-e2e", "device-e2e"], "description": "コミットまたは公開前の最終確認。" }
+  },
+  "conditionalMilestoneChecks": [
+    {
+      "name": "touch-or-responsive",
+      "check": "device-e2e",
+      "paths": ["src/ui/board-interaction.js", "src/ui/board-ui.js", "src/ui/board-animation.js", "src/ui/tutorial-animation.js", "src/index.template.html"],
+      "reason": "pointer・タッチ・レスポンシブ表示の変更は、途中でも端末差分を確認する。"
+    }
+  ],
+  "policy": { "precedence": ["infrastructure", "sensitive", "source", "documentation", "clean"], "unknownChanges": "source", "incompleteIsSuccess": false, "releaseRequiredFor": ["sensitive", "infrastructure"] }
 }

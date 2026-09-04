@@ -28,11 +28,29 @@
   },
   "policy": {
     "gateProfile": "full",
-    "selection": "fast while editing, affected after a scoped change, full before commit or release",
+    "selection": "editingではfast/auto、最初の縦切り完了時はmilestone、コミットまたは公開前はreleaseを使う",
     "unknownChangedFiles": "use affected, then full if the impact is unclear",
+    "workflow": {
+      "editing": {
+        "command": "npm run check:auto",
+        "profile": "auto",
+        "description": "編集中は変更範囲だけを短く確認する。"
+      },
+      "milestone": {
+        "command": "npm run check:milestone",
+        "profile": "affected",
+        "description": "一連の導線が動いた時点で、影響範囲とブラウザE2Eを確認する。端末E2Eは入力・レスポンシブ変更時だけ追加する。"
+      },
+      "release": {
+        "command": "npm run check:release",
+        "profile": "full",
+        "description": "変更完了時に、全契約・ブラウザE2E・端末E2Eを一度だけ確認する。"
+      }
+    },
     "deviceE2E": {
       "executionProfile": "device-serial",
       "automaticInProfiles": ["full"],
+      "automaticAtMilestoneFor": ["touch-or-responsive"],
       "manualCommand": "npm run check:device-e2e",
       "stabilityCommand": "npm run check:device-e2e:stability",
       "stabilityRuns": 3,
