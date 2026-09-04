@@ -72,6 +72,11 @@ for (const phase of ['clear-animation','clear-dialog','quiz/message','next-stage
 assert.match(clearFlow, /function setClearFlowPhase\(phase/, 'clear flow phase changes must use one transition helper');
 assert.match(clearFlow, /function persistClearFlowCheckpoint\(/, 'clear flow persistence must use a named checkpoint entry point');
 assert.match(clearFlow, /function cancelClearFlow\(reason/, 'clear flow cancellation must use a named entry point');
+assert.match(clearFlow, /function enqueueClearFlowDialog\(item,cycle=clearFlowCycle\)/, 'clear dialog queue entry point is missing');
+assert.match(clearFlow, /function consumeClearFlowDialog\(cycle=clearFlowCycle\)/, 'clear dialog queue consume entry point is missing');
+assert.match(clearFlow, /enqueueClearFlowDialog\(\{kind:'clear'/, 'clear dialog must be queued before rendering');
+assert.match(clearFlow, /const dialog=consumeClearFlowDialog\(cycle\)[\s\S]*if\(dialog\)requestProgressionDialog/, 'clear dialog must be consumed once per flow cycle');
+assert.match(clearFlow, /dialogSequence:\[\],dialogIndex:0/, 'clear flow reset must discard pending dialog sequence');
 assert.match(clearFlow, /function startClearFlow\(\{animation=true,context=\{\},nextAction=null\}/, 'clear flow start options must be explicit');
 assert.match(clearFlow, /persistClearFlowCheckpoint\(\);[\s\S]*if\(flowContext\.mode==='speed'\)/, 'clear flow must checkpoint before mode-specific handling');
 assert.match(clearFlow, /cancelClearFlow\('reset'\)/, 'clear flow reset must invalidate pending work');

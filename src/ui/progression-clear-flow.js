@@ -26,7 +26,7 @@ const CLEAR_FLOW_TRANSITIONS=Object.freeze({
   [CLEAR_FLOW_PHASE.nextDialog]:Object.freeze([CLEAR_FLOW_PHASE.playing]),
   [CLEAR_FLOW_PHASE.playing]:Object.freeze([CLEAR_FLOW_PHASE.idle])
 });
-let clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.idle,action:null,context:null,route:null,content:null,cycle:1,persisted:false,cancelReason:null,celebration:null});
+let clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.idle,action:null,context:null,route:null,content:null,cycle:1,persisted:false,cancelReason:null,celebration:null,dialogSequence:[],dialogIndex:0});
 let clearFlowPhase=CLEAR_FLOW_PHASE.idle;
 const clearFlowTrace=[];
 function isClearFlowTransitionAllowed(from,to){
@@ -64,8 +64,23 @@ function cancelClearFlow(reason='cancelled'){
     for(const animation of celebration.animations||[])try{animation.cancel();}catch(_){/* 終了済みアニメーションはそのまま続行する */}
     celebration.burst?.remove();
   }
-  setClearFlowPhase(CLEAR_FLOW_PHASE.idle,CLEAR_FLOW_ACTION.cancel,{cycle:clearFlowCycle,context:null,route:null,content:null,persisted:false,cancelReason:reason});
+  setClearFlowPhase(CLEAR_FLOW_PHASE.idle,CLEAR_FLOW_ACTION.cancel,{cycle:clearFlowCycle,context:null,route:null,content:null,persisted:false,cancelReason:reason,dialogSequence:[],dialogIndex:0});
   return clearFlowState;
+}
+// クリア後に表示するものを周期ごとのキューとして確定する。表示要求を
+// 複数のcallbackから直接発行せず、同じ周期では一度だけ取り出す。
+function enqueueClearFlowDialog(item,cycle=clearFlowCycle){
+  if(cycle!==clearFlowCycle||!item||clearFlowState.dialogSequence.length)return false;
+  clearFlowState=Object.freeze({...clearFlowState,dialogSequence:[Object.freeze({...item})],dialogIndex:0});
+  return true;
+}
+function consumeClearFlowDialog(cycle=clearFlowCycle){
+  if(cycle!==clearFlowCycle)return null;
+  const {dialogSequence,dialogIndex}=clearFlowState;
+  const item=dialogSequence[dialogIndex];
+  if(!item)return null;
+  clearFlowState=Object.freeze({...clearFlowState,dialogIndex:dialogIndex+1});
+  return item;
 }
 // E2Eとデバッグが現在の段階を読み取るための副作用のない入口。
 function getClearFlowState(){return clearFlowState;}
@@ -158,7 +173,7 @@ function resetClearFlow(){
 }
 function beginClearFlow(){
   if(clearFlowPhase!==CLEAR_FLOW_PHASE.idle)return false;
-  setClearFlowPhase(CLEAR_FLOW_PHASE.animation,CLEAR_FLOW_ACTION.start,{context:null,route:null,content:null,cycle:clearFlowCycle});
+  setClearFlowPhase(CLEAR_FLOW_PHASE.animation,CLEAR_FLOW_ACTION.start,{context:null,route:null,content:null,cycle:clearFlowCycle,dialogSequence:[],dialogIndex:0});
   return clearFlowCycle;
 }
 function scheduleClearFlowDialog(callback,delay,cycle=clearFlowCycle){
@@ -205,7 +220,10 @@ function createClearTransitionContext(nextStageIndex){
 function finishClearFlow(){
   if(clearFlowPhase!==CLEAR_FLOW_PHASE.animationPending)return false;
   finishClearFlowDialog();
-  requestProgressionDialog('clear',clearFlowState.context||{},'clear');
+  const cycle=clearFlowState.cycle;
+  enqueueClearFlowDialog({kind:'clear',context:clearFlowState.context||{},source:'clear'},cycle);
+  const dialog=consumeClearFlowDialog(cycle);
+  if(dialog)requestProgressionDialog('clear',dialog.context,dialog.source);
   requestAnimationFrame(()=>{
     if(WakeSevenAppContext.isClearShown()&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
   });
@@ -244,7 +262,7 @@ function dispatchClearFlowAction(action){
   const context=clearFlowState.context||createClearTransitionContext(navigation.stageIndex+1);
   const nextStageIndex=context.nextStageIndex;
   const route=resolveAfterClearRoute(context);
-  clearFlowState=Object.freeze({...clearFlowState,action,context,route});
+  clearFlowState=Object.freeze({...clearFlowState,action,context,route,dialogSequence:[],dialogIndex:0});
   // 進行先を確定した時点で保存する。ダイアログを閉じる副作用や
   // 次画面の初期化より先に、今回のクリア周期の判断を記録する。
   persistClearFlowCheckpoint();
