@@ -6026,7 +6026,7 @@ function setTutorialRewindTimer(session,callback,delay){
 }
 function bindTutorialRewindAnimation(session,animation){
   session.animation=animation;
-  animation.onfinish=()=>finishTutorialRewindSession(session);
+  animation.onfinish=()=>cleanupTutorialRewindSession(session);
   animation.oncancel=()=>{
     if(!session.cancelling)cancelTutorialRewindSession(session);
   };
@@ -6042,9 +6042,6 @@ function cleanupTutorialRewindSession(session){
   if(activeTutorialRewindSession===session)activeTutorialRewindSession=null;
   session.onCleanup({cancelled:session.cancelled});
   return true;
-}
-function finishTutorialRewindSession(session){
-  return cleanupTutorialRewindSession(session);
 }
 function cancelTutorialRewindSession(session){
   if(session.cleaned)return false;
@@ -7886,7 +7883,7 @@ function handleBoardPointerDown(e){
   renderApplicationTargetCells();
   // タイルを直接動かすスワイプ中は、静止位置に残る重ね枠を表示しない。
   // 回転追従する枠はタイル内の枠線だけにし、終了時の paint() で再生成する。
-  removeApplicationTargetOverlay();
+  clearApplicationTargetLayer(svg);
   // 目標枠の再描画がタイル順を整列し直すため、最後に回転対象を前面へ戻す。
   // SVGではDOM後方が前面になるので、棒・軸の直前へ挿入する。
   placeSwipeTilesOnTop(svg,items);
@@ -8415,8 +8412,7 @@ function setUiContextTimer(key, callback, delay) {
   uiContextTimers.set(key, id);
   return id;
 }
-function clearUiContextInterval(key){clearUiContextTimer(key);}
-function setUiContextInterval(key,callback,delay){clearUiContextInterval(key);const id=setInterval(callback,delay);uiContextTimers.set(key,id);return id;}
+function setUiContextInterval(key,callback,delay){clearUiContextTimer(key);const id=setInterval(callback,delay);uiContextTimers.set(key,id);return id;}
 const uiEffects=new Map();
 // 演出を取り消した直後に、すでにキューへ入ったcallbackが実行されても
 // 現在の画面へ作用しないよう、演出ごとに世代を持たせる。
@@ -8603,9 +8599,6 @@ function renderApplicationTargetPreview(){
       +'</g>';
   }).join('');
 }
-
-// スワイプ中はタイル自身が動くため、静止用の重ね枠を一時的に外す。
-function removeApplicationTargetOverlay(){ clearApplicationTargetLayer(svg); }
 
 // 候補棒とグレーアウト状態を盤面へ反映する。
 let guidedBasicCandidateTis=null,guidedBasicCandidateSignature=null;
@@ -10371,9 +10364,6 @@ function hideGameDialogs(){
 }
 // ===== クリア後クイズ =====
 // クイズの出題と回答表示を担当する。問題データは data/board-quiz.js を正とする。
-function renderClearQuiz(){
-  renderClearQuizForEntry(clearEntryForCurrent());
-}
 let twoMoveDisplayStates=[],twoMoveDisplayPatterns=[];
 const twoMoveGuard=createAnimGuard();
 let twoMoveDetailState=null,twoMoveDetailIndex=-1,detailDrag=null;
@@ -12633,7 +12623,7 @@ function applyLanguage(lang){
     $('clearDialogMessage').textContent=clearDialogHeading();
     renderClearStageContext();
     renderClearTip();
-    renderClearQuiz();
+    renderClearQuizForEntry(clearEntryForCurrent());
     showProgressionQuiz({rootId:'boardQuiz',boardQuizConfig:boardQuizConfigForCurrent(),requireAnswer:true});
     const action=$('clearNext');
     const navigation=readNavigationContext();
