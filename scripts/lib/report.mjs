@@ -29,6 +29,20 @@ export async function createReport(root, { name, summary = {}, warnings = [], er
 
 export async function writeReport(path, report) {
   await mkdir(dirname(path), { recursive: true });
+  // 内容が同じで実行時刻だけが変わった監査レポートは書き換えない。
+  // 実質的な差分を残しつつ、毎回のゲート実行による時刻ノイズを抑える。
+  try {
+    const previous = JSON.parse(await readFile(path, 'utf8'));
+    const volatile = new Set(['generatedAt', 'startedAt', 'finishedAt', 'durationMs', 'wallTimeMs', 'elapsedMs', 'runtime']);
+    const comparable = value => {
+      if (Array.isArray(value)) return value.map(comparable);
+      if (!value || typeof value !== 'object') return value;
+      return Object.fromEntries(Object.entries(value)
+        .filter(([key]) => !volatile.has(key))
+        .map(([key, item]) => [key, comparable(item)]));
+    };
+    if (JSON.stringify(comparable(previous)) === JSON.stringify(comparable(report))) return;
+  } catch { /* 初回生成または旧形式は通常どおり書き込む */ }
   await writeFile(path, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
 }
 

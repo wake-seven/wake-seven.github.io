@@ -3,6 +3,7 @@ import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { constants } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { sourceRevision } from './lib/report.mjs';
 
 // アーキテクチャ案内が、実在する入口と責務境界だけを参照しているか確認する。
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -33,7 +34,12 @@ const report = {
   guide: 'docs/architecture-guide.md',
   references: [...new Set(references)],
   missing,
-  passed: true
+  passed: true,
+  status: 'passed',
+  summary: { references: [...new Set(references)].length },
+  warnings: [],
+  errors: [],
+  sourceRevision: await sourceRevision(root)
 };
 await mkdir(dirname(reportPath), { recursive: true });
 await writeFile(reportPath, JSON.stringify(report, null, 2) + '\n');
