@@ -49,11 +49,10 @@ const steps = [
   { name: 'temporary-exceptions', command: process.execPath, args: ['scripts/check-temporary-exception-audit.mjs'] },
   { name: 'state-access-final-audit', command: process.execPath, args: ['scripts/check-state-access-final-audit.mjs'] },
   { name: 'navigation-classification', command: process.execPath, args: ['scripts/check-navigation-classification.mjs'] },
-  { name: 'navigation-final-audit', command: process.execPath, args: ['scripts/check-navigation-final-audit.mjs'] },
   { name: 'change-check-map', command: process.execPath, args: ['scripts/check-change-check-map.mjs'] },
-  // navigation-final-audit が参照する構造契約を、同じゲート内で先に確定する。
-  { name: 'structure-contract-diff', command: process.execPath, args: ['scripts/check-structure-contract-diff.mjs'] },
+  // 構造比較の入力を更新してから、navigation最終監査へ渡す。
   { name: 'refactor-baseline-generate', command: process.execPath, args: ['scripts/generate-refactor-baseline.mjs'] },
+  { name: 'structure-contract-diff', command: process.execPath, args: ['scripts/check-structure-contract-diff.mjs'] },
   { name: 'refactor-baseline', command: process.execPath, args: ['scripts/check-refactor-baseline.mjs'] },
   { name: 'refactor-budgets', command: process.execPath, args: ['scripts/check-refactor-budgets.mjs'] },
   { name: 'esm-dependencies', command: process.execPath, args: ['scripts/check-esm-dependencies.mjs'] },
@@ -62,6 +61,7 @@ const steps = [
   { name: 'refactor-policy', command: process.execPath, args: ['scripts/check-refactor-policy.mjs'] },
   { name: 'trace', command: process.execPath, args: ['scripts/check-trace-index.mjs'] },
   { name: 'progression-responsibility', command: process.execPath, args: ['scripts/check-progression-responsibility.mjs'] },
+  { name: 'navigation-final-audit', command: process.execPath, args: ['scripts/check-navigation-final-audit.mjs'] },
   { name: 'ui-data-map', command: process.execPath, args: ['scripts/check-ui-data-map.mjs'] },
   { name: 'event-wiring', command: process.execPath, args: ['scripts/check-event-wiring.mjs'] },
   { name: 'refactor-report', command: process.execPath, args: ['scripts/check-refactor-report.mjs'] },
