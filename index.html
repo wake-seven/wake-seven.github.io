@@ -4697,7 +4697,6 @@ const PICKER_ACADEMY_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='developmen
 const PICKER_TRAINING_FIRST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingUpper')-PRIMARY_PICKER_SECTION_COUNT;
 const PICKER_TRAINING_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingLower')-PRIMARY_PICKER_SECTION_COUNT;
 // 現在のモード・コース・問題位置を、画面や計測から共通して参照する実行コンテキスト。
-// 既存の runtimeContext() は互換入口として残し、段階的にこちらへ寄せる。
 function getGameContext(){
   const navigation=runtimeNavigation();
   if(isMode('tutorial'))return {mode:'tutorial',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'tutorial'),position:tutorialStep+1,total:TUTORIAL_STEPS.length,lap:1};
@@ -4710,7 +4709,6 @@ function getGameContext(){
   if(isMode('mastery'))return {mode:'mastery',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'mastery'),position:extraIndex+1,total:EXTRA_STAGES.length,lap:activeLap};
   return {mode:'primary',course:courseDefinitionForMode('stage'),index:WakeSevenState.navigationIndex(navigation,'stage'),position:stageIndex+1,total:STAGES.length,lap:activeLap};
 }
-function runtimeContext(){return getGameContext();}
 // UI/補助モジュールから実行状態を読むための薄い境界。
 // 個別のランタイム変数を直接参照する箇所を増やさず、読み取り専用のスナップショットを渡す。
 function runtimeSnapshot(){const navigation=WakeSevenAppContext.state.navigation.read(),settings=WakeSevenAppContext.state.settings.read(),session=WakeSevenAppContext.state.session.read();return Object.freeze({...navigation,language:settings.currentLang,speedVariant:session.speedVariant});}
