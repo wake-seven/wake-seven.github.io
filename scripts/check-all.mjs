@@ -3,6 +3,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 import { sourceRevision, writeReport } from './lib/report.mjs';
+import { loadCheckRegistry, validateCheckRegistry, writeCheckRegistryReport } from './check-registry.mjs';
 
 // 公開版を作り直してから、検査を定義順に一度ずつ実行する最終ゲート。
 // 個別スクリプトは単独でも使えるが、通常の入口はこのファイルに集約する。
@@ -11,68 +12,18 @@ const reportPath = join(root, 'build', 'report', 'check-gate.json');
 const runtimeReportPath = join(root, 'build', 'report', 'check-runtime.json');
 const contextPath = join(root, 'build', 'report', 'check-context.json');
 const pipeline = JSON.parse(await readFile(join(root, 'scripts', 'check-pipeline.json'), 'utf8'));
-const steps = [
-  { name: 'domain-classification', command: process.execPath, args: ['scripts/check-domain-classification.mjs'] },
-  { name: 'architecture-guide', command: process.execPath, args: ['scripts/check-architecture-guide.mjs'] },
-  { name: 'build', command: process.platform === 'win32' ? (process.env.ComSpec || 'cmd.exe') : 'npm',
-    args: process.platform === 'win32' ? ['/d', '/s', '/c', 'npm run build'] : ['run', 'build'] },
-  { name: 'development-entrypoints', command: process.execPath, args: ['scripts/check-development-entrypoints.mjs'] },
-  { name: 'version', command: process.execPath, args: ['scripts/check-version.mjs'] },
-  { name: 'source-format', command: process.execPath, args: ['scripts/check-source-format.mjs'] },
-  { name: 'board-domain', command: process.execPath, args: ['scripts/test-board-domain.mjs'] },
-  { name: 'application-services', command: process.execPath, args: ['scripts/test-application-services.mjs'] },
-  { name: 'application-targets', command: process.execPath, args: ['scripts/check-application-targets.mjs'] },
-  { name: 'state', command: process.execPath, args: ['scripts/check-state.mjs'] },
-  { name: 'state-classification', command: process.execPath, args: ['scripts/check-state-classification.mjs'] },
-  { name: 'state-mutations', command: process.execPath, args: ['scripts/check-state-mutations.mjs'] },
-  { name: 'state-restore', command: process.execPath, args: ['scripts/check-state-restore.mjs'] },
-  { name: 'browser-flow', command: process.execPath, args: ['scripts/check-browser-flow.mjs'] },
-  { name: 'dialog-chains', command: process.execPath, args: ['scripts/check-dialog-chains.mjs'] },
-  { name: 'ui-effects', command: process.execPath, args: ['scripts/check-ui-effects.mjs'] },
-  { name: 'animation-contract', command: process.execPath, args: ['scripts/check-animation-contract.mjs'] },
-  { name: 'progression-flows', command: process.execPath, args: ['scripts/check-progression-flows.mjs'] },
-  { name: 'progression-flow-contract', command: process.execPath, args: ['scripts/check-progression-flow-contract.mjs'] },
-  { name: 'progression-orchestrators', command: process.execPath, args: ['scripts/check-progression-orchestrators.mjs'] },
-  { name: 'clear-flow-order', command: process.execPath, args: ['scripts/check-clear-flow-order.mjs'] },
-  { name: 'esm', command: process.execPath, args: ['scripts/check-esm.mjs'] },
-  { name: 'source-boundaries', command: process.execPath, args: ['scripts/check-source-boundaries.mjs'] },
-  { name: 'compat-e2e', command: process.execPath, args: ['scripts/check-compat-e2e.mjs'] },
-  { name: 'browser-e2e', command: process.execPath, args: ['scripts/check-browser-e2e.mjs'] },
-  { name: 'reward-access', command: process.execPath, args: ['scripts/check-reward-access.mjs'] },
-  { name: 'device-e2e', command: process.execPath, args: ['scripts/check-device-e2e.mjs'] },
-  { name: 'translations', command: process.execPath, args: ['scripts/check-translations.mjs'] },
-  { name: 'dialog-state-map', command: process.execPath, args: ['scripts/check-dialog-state-map.mjs'] },
-  { name: 'global-state', command: process.execPath, args: ['scripts/check-global-state-classification.mjs'] },
-  { name: 'gate-evidence', command: process.execPath, args: ['scripts/check-gate-evidence.mjs'] },
-  // 構造予算より先に、最新の状態参照レポートを生成する。
-  { name: 'global-access', command: process.execPath, args: ['scripts/check-global-access-contract.mjs'] },
-  { name: 'state-access-policy', command: process.execPath, args: ['scripts/check-state-access-policy.mjs'] },
-  { name: 'temporary-exceptions', command: process.execPath, args: ['scripts/check-temporary-exception-audit.mjs'] },
-  { name: 'state-access-final-audit', command: process.execPath, args: ['scripts/check-state-access-final-audit.mjs'] },
-  { name: 'navigation-classification', command: process.execPath, args: ['scripts/check-navigation-classification.mjs'] },
-  { name: 'change-check-map', command: process.execPath, args: ['scripts/check-change-check-map.mjs'] },
-  // 構造比較の入力を更新してから、navigation最終監査へ渡す。
-  { name: 'refactor-baseline-generate', command: process.execPath, args: ['scripts/generate-refactor-baseline.mjs'] },
-  { name: 'structure-contract-diff', command: process.execPath, args: ['scripts/check-structure-contract-diff.mjs'] },
-  { name: 'refactor-baseline', command: process.execPath, args: ['scripts/check-refactor-baseline.mjs'] },
-  { name: 'refactor-budgets', command: process.execPath, args: ['scripts/check-refactor-budgets.mjs'] },
-  { name: 'esm-dependencies', command: process.execPath, args: ['scripts/check-esm-dependencies.mjs'] },
-  { name: 'public-esm', command: process.execPath, args: ['scripts/check-public-esm.mjs'] },
-  { name: 'metrics-update-policy', command: process.execPath, args: ['scripts/check-metrics-update.mjs'] },
-  { name: 'refactor-policy', command: process.execPath, args: ['scripts/check-refactor-policy.mjs'] },
-  { name: 'trace', command: process.execPath, args: ['scripts/check-trace-index.mjs'] },
-  { name: 'progression-responsibility', command: process.execPath, args: ['scripts/check-progression-responsibility.mjs'] },
-  { name: 'navigation-final-audit', command: process.execPath, args: ['scripts/check-navigation-final-audit.mjs'] },
-  { name: 'ui-data-map', command: process.execPath, args: ['scripts/check-ui-data-map.mjs'] },
-  { name: 'event-wiring', command: process.execPath, args: ['scripts/check-event-wiring.mjs'] },
-  { name: 'refactor-report', command: process.execPath, args: ['scripts/check-refactor-report.mjs'] },
-  // 互換監査を先に生成し、unused-filesのレビュー一覧へ同じ判断情報を渡す。
-  { name: 'compat-boundaries', command: process.execPath, args: ['scripts/check-compat-boundaries.mjs'] },
-  { name: 'unused-files', command: process.execPath, args: ['scripts/check-unused-files.mjs'] },
-  { name: 'manifest-dependencies', command: process.execPath, args: ['scripts/check-manifest-dependencies.mjs'] },
-  { name: 'public-symbols', command: process.execPath, args: ['scripts/check-public-symbols.mjs'] },
-  { name: 'report-schema', command: process.execPath, args: ['scripts/check-report-schema.mjs'] }
-];
+const registryValidation = await validateCheckRegistry(root);
+if (registryValidation.errors.length) throw new Error(`check-registry.json の整合性エラー:\n${registryValidation.errors.join('\n')}`);
+const registry = await loadCheckRegistry(root);
+const commandFor = command => {
+  const [program, ...args] = command.split(' ');
+  if (program === 'node') return { command: process.execPath, args };
+  if (program === 'npm') return process.platform === 'win32'
+    ? { command: process.env.ComSpec || 'cmd.exe', args: ['/d', '/s', '/c', command] }
+    : { command: 'npm', args };
+  throw new Error(`check-registry.json に未対応のコマンドがあります: ${command}`);
+};
+const steps = registry.steps.map(step => ({ name: step.name, ...commandFor(step.command) }));
 
 const groups = pipeline.groups || {};
 const groupByStep = new Map(Object.entries(groups).flatMap(([name, group]) =>
@@ -160,6 +111,7 @@ const attachExecutionEvidence = async () => {
   };
 };
 await mkdir(dirname(reportPath), { recursive: true });
+await writeCheckRegistryReport(root, registryValidation);
 for (const step of steps) {
   const result = await run(step);
   result.reportLinks = await reportLinksFor(result);

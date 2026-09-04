@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateCheckRegistry } from './check-registry.mjs';
 
 // 検査プロファイルは実行入口とは分離し、名前・範囲・予算だけを検証する。
 // check:gate の手順はここから変更せず、full が同じ手順集合であることだけを保証する。
@@ -9,9 +10,12 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const readJson = async file => JSON.parse(await readFile(join(root, 'scripts', file), 'utf8'));
 const profiles = await readJson('check-profiles.json');
 const pipeline = await readJson('check-pipeline.json');
-const gateSteps = Object.keys(pipeline.steps || {});
+const registryValidation = await validateCheckRegistry(root);
+assert.deepEqual(registryValidation.errors, [], `check-registry.json の整合性エラー:\n${registryValidation.errors.join('\n')}`);
+const gateSteps = registryValidation.registry.steps.map(step => step.name);
 const names = ['fast', 'affected', 'full'];
 assert.equal(profiles.schemaVersion, 1, 'check-profiles.json のschemaVersionが不正です');
+assert.deepEqual(Object.keys(pipeline.steps || {}).sort(), [...gateSteps].sort(), 'check-pipeline.json は正本の手順集合と一致させてください');
 assert.deepEqual(Object.keys(profiles.profiles || {}).sort(), [...names].sort(), 'fast/affected/full の3プロファイルが必要です');
 const known = new Set(gateSteps);
 for (const name of names) {

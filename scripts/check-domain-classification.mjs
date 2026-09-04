@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateCheckRegistry } from './check-registry.mjs';
 
 // 検査スクリプトを、利用者向けの4領域へ分類する監査。
 // 既存の検査は実行せず、分類の漏れ・重複・未知の領域だけを検出する。
@@ -13,11 +14,13 @@ const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
 const allowedDomains = new Set(['structure', 'state', 'flows', 'browser']);
 const excluded = new Set(manifest.excluded || []);
 const entries = manifest.checks || [];
+const registryValidation = await validateCheckRegistry(root);
 const expected = Object.keys(packageJson.scripts || {})
   .filter(name => name.startsWith('check:') && !excluded.has(name));
 const errors = [];
 const warnings = [];
 const byName = new Map();
+errors.push(...registryValidation.errors.map(error => `check-registry.json: ${error}`));
 
 for (const entry of entries) {
   if (!entry || typeof entry.name !== 'string') {
