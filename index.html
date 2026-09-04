@@ -11072,7 +11072,7 @@ function renderStageNav(){
     $('menuAllPatterns').hidden=!featureUnlocked('genome');
     $('menuBoardTheme').hidden=!featureUnlocked('boardTheme');
     $('menuSatori').hidden=true;
-    $('menuSpeed').hidden=!DEBUG_MODE&&!featureUnlocked('speedRun');
+    $('menuSpeed').hidden=!featureUnlocked('speedRun');
     $('menuOpen3D').hidden=!featureUnlocked('threeD');
     $('customMode').textContent=tr('makeBoard');
     $('customMode').classList.remove('ready');
@@ -11975,7 +11975,7 @@ function debugSkipTutorial(){
 }
 $('debugSkipTutorial').addEventListener('click',debugSkipTutorial);
 $('tutorialDebugSkip').addEventListener('click',debugSkipTutorial);
-$('debugReset').addEventListener('click',()=>resetStoredProgress({resetIntro:true,showIntro:true}));
+$('debugReset').addEventListener('click',()=>resetStoredProgress({resetIntro:true,showIntro:true,preserveRewards:false}));
 // ===== イベントリスナー群A =====
 function handleClearTipLink(){
   const navigation=readNavigationContext();
