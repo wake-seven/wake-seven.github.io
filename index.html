@@ -5474,7 +5474,7 @@ function readSpeedHistory(){
 function readSpeedSession(variant=speedVariant){
   const data=storage.json(speedSessionStorageKey(variant),null);
   if(!validSpeedSession(data))return null;
-  if(!SPEED_MODE_DEFINITIONS[data.variant])data.variant='standard';
+  if(!SPEED_MODE_DEFINITIONS[data.variant])updateSpeedSessionFieldsCommand({variant:'standard'},data);
   return data;
 }
 function readActiveSpeedSession(){
@@ -5540,9 +5540,7 @@ function rotateSpeedSnapshot(data){
 }
 function ensureSpeedBoardView(session){
   if(session.view==='left60')return session;
-  session.board=rotateSpeedSnapshot(session.board);
-  session.view='left60';
-  return session;
+  return updateSpeedSessionFieldsCommand({board:rotateSpeedSnapshot(session.board),view:'left60'},session);
 }
 function randomTrainingSpeedView(){
   // 九番勝負は同じ9パターンでも、出題ごとに6方向×表裏を変える。
@@ -5588,7 +5586,7 @@ function loadSpeedStage(restoreBoard=false,arriving=false){
   const sessionContext=WakeSevenAppContext.state.session.read();
   // 問題プール・表示ルールは、実行中セッションのvariantに固定する。
   const currentVariant=SPEED_MODE_DEFINITIONS[speedSession.variant]?speedSession.variant:(sessionContext.speedVariant||speedVariant);
-  if(speedSession.index>0)speedSession.started=true;
+  if(speedSession.index>0)updateSpeedSessionFieldsCommand({started:true});
   setSpeedManualPauseCommand(false);
   setCampaignModeCommand('speed');editingBoard=false;
   const pool=speedStagePool(SPEED_MODE_DEFINITIONS[currentVariant]||activeSpeedDefinition());
@@ -7203,7 +7201,7 @@ function applySwipe(ti,dir,save=true,playEffects=true){
   if(!isMode('speed')&&isTrainingRangeStage()&&SOLVER.dist[enc(ori)]===2)showTrainingShapeCallout();
   if(!isMode('speed')&&isAssistedLearningStage()&&!isSolved())showAcademyRemainingCallout();
   if(isMode('speed')&&speedSession){
-    if(save)speedSession.movedCurrent=true;
+    if(save)updateSpeedSessionFieldsCommand({movedCurrent:true});
     persistSpeedSession();
   }
   if(playEffects){
@@ -7768,7 +7766,7 @@ function animateUndoSwipe(target){
 function restartWithAnimation(){
   const beforeOri=Uint8Array.from(ori),beforeSpin=Int16Array.from(spin);
   // 速解きでは、一度動かしてからのやり直しは最短クリアとして数えない。
-  if(isMode('speed')&&speedSession&&speedSession.movedCurrent)speedSession.restartedCurrent=true;
+  if(isMode('speed')&&speedSession&&speedSession.movedCurrent)updateSpeedSessionFieldsCommand({restartedCurrent:true});
   // 極1〜9はやり直しで回復、極10〜12は使用回数を維持する。
   if(!fourthChecksSurviveRestart())renewFourthChecks();
   setPosition(currentInitialState,currentInitialPar);
@@ -8801,26 +8799,27 @@ function recordProgressClearCommand(kind,index){
 }
 // ===== 速解きセッションコマンド =====
 // 速解き固有のセッション状態を書き込む操作命令。時計・表示・遷移は実行側に残す。
+function updateSpeedSessionFieldsCommand(patch={},session=speedSession){
+  if(!session||!patch||typeof patch!=='object'||Array.isArray(patch))return session;
+  Object.assign(session,patch);
+  return session;
+}
 function startSpeedSessionCommand(){
   if(!speedSession||speedSession.started)return false;
-  speedSession.started=true;
+  updateSpeedSessionFieldsCommand({started:true});
   return true;
 }
 function advanceSpeedSessionCommand(){
   if(!speedSession||speedSession.index>=speedSession.total-1)return false;
   // 2問目以降へ進む時点で開始待ちは終了している。開始フラグを
   // 明示的に維持し、次問題の描画で開始オーバーレイが一瞬戻らないようにする。
-  speedSession.started=true;
-  speedSession.index++;
-  speedSession.board=null;
-  speedSession.movedCurrent=false;
-  speedSession.restartedCurrent=false;
+  updateSpeedSessionFieldsCommand({started:true,index:speedSession.index+1,board:null,movedCurrent:false,restartedCurrent:false});
   return true;
 }
 function setSpeedManualPauseCommand(value){speedManuallyPaused=value===true;return speedManuallyPaused;}
 function startSpeedClockStateCommand(startedAt){speedClockStarted=startedAt;return speedClockStarted;}
 function pauseSpeedClockStateCommand(now=commandNow()){
-  if(speedClockStarted){if(speedSession)speedSession.elapsedMs+=now-speedClockStarted;speedClockStarted=0;}
+  if(speedClockStarted){if(speedSession)updateSpeedSessionFieldsCommand({elapsedMs:speedSession.elapsedMs+now-speedClockStarted});speedClockStarted=0;}
   return speedSession?.elapsedMs||0;
 }
 function persistSpeedSessionCommand(){
@@ -8844,7 +8843,7 @@ function completeSpeedSessionCommand(result){
 // 速解きの記録データを書き込む操作命令。表示用の集計・描画は実行側に残す。
 function updateSpeedOptimalClearsCommand(){
   if(!speedSession)return false;
-  speedSession.optimalClears=speedOptimalClears()+1;
+  updateSpeedSessionFieldsCommand({optimalClears:speedOptimalClears()+1});
   return true;
 }
 function recordSpeedCompletionCommand(elapsed,optimalClears){
@@ -11777,11 +11776,9 @@ $('debugSatori72').addEventListener('click',()=>debugUnlockSatori(72));
 // 現在アクティブな速解きセッション（メニューから選んだもの）を、そのまま最終問題まで進める。
 function debugJumpSpeedFinish(){
   if(!DEBUG_MODE||!isMode('speed')||!speedSession)return;
-  speedSession.started=true;
   const total=speedSession.total||activeSpeedDefinition().total;
-  speedSession.index=Math.max(0,total-1);
-  speedSession.optimalClears=speedSession.index;
-  speedSession.movedCurrent=false;speedSession.restartedCurrent=false;speedSession.board=null;
+  const finalIndex=Math.max(0,total-1);
+  updateSpeedSessionFieldsCommand({started:true,index:finalIndex,optimalClears:finalIndex,movedCurrent:false,restartedCurrent:false,board:null});
   loadSpeedStage(false,true);
 }
 $('debugSpeedJumpFinish').addEventListener('click',debugJumpSpeedFinish);
@@ -11816,10 +11813,9 @@ function debugOpenSpeedExam(variant,index){
     storage.remove(STORAGE_KEY_GROUPS.speed.masteryTrialCleared);
   }
   setSpeedSessionCommand(newSpeedSession());
-  speedSession.index=Math.max(0,Math.min(speedSession.total-1,index));
-  speedSession.optimalClears=speedSession.index;
-  speedSession.requiredTrial=variant;
-    setSpeedManualPauseCommand(false);
+  const targetIndex=Math.max(0,Math.min(speedSession.total-1,index));
+  updateSpeedSessionFieldsCommand({index:targetIndex,optimalClears:targetIndex,requiredTrial:variant});
+  setSpeedManualPauseCommand(false);
   try{
     if(variant==='training9')storage.set(STORAGE_KEY_GROUPS.speed.trainingUnlocked,'1');
     if(variant==='training18')storage.set(STORAGE_KEY_GROUPS.speed.intermediateUnlocked,'1');
