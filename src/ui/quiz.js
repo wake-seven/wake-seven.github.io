@@ -1,33 +1,70 @@
 // ===== 共通クイズUI =====
-function shuffledIndices(length){const order=Array.from({length},(_,index)=>index);for(let index=order.length-1;index>0;index--){const swap=Math.floor(Math.random()*(index+1));[order[index],order[swap]]=[order[swap],order[index]];}return order;}
-function quizPresentation(quiz){const order=shuffledIndices(quiz.a.length);return {answers:order.map(index=>quiz.a[index]),correct:order.indexOf(quiz.correct)};}
-function celebrateQuiz(root){root.classList.remove('quiz-success');void root.offsetWidth;root.classList.add('quiz-success');playTone(784,.09,.024);playTone(1047,.13,.026,.07);haptic([10,32,16]);}
+function shuffledIndices(length) {
+  const order = Array.from({ length }, (_, index) => index);
+  for (let index = order.length - 1; index > 0; index -= 1) {
+    const swap = Math.floor(Math.random() * (index + 1));
+    [order[index], order[swap]] = [order[swap], order[index]];
+  }
+  return order;
+}
+function quizPresentation(quiz) {
+  const order = shuffledIndices(quiz.a.length);
+  return {
+    answers: order.map(index => quiz.a[index]),
+    correct: order.indexOf(quiz.correct)
+  };
+}
+function celebrateQuiz(root) {
+  root.classList.remove('quiz-success');
+  void root.offsetWidth;
+  root.classList.add('quiz-success');
+  playTone(784, .09, .024);
+  playTone(1047, .13, .026, .07);
+  haptic([10, 32, 16]);
+}
 function renderQuizInto(ids,quiz){
-  const root=$(ids.root),options=$(ids.options),note=$(ids.note),wasHidden=root.hidden;
-  const quizKey=JSON.stringify([quiz.q,quiz.a]);
+  const root = $(ids.root);
+  const options = $(ids.options);
+  const note = $(ids.note);
+  const wasHidden = root.hidden;
+  const quizKey = JSON.stringify([quiz.q, quiz.a]);
   // 再描画（リサイズ・言語反映・状態更新など）では同じ問題を再シャッフルしない。
   // 毎回順番を作り直すと、表示中の4択が別順へ入れ替わって見えるため。
-  if(root.dataset.quizKey===quizKey&&options.childElementCount===quiz.a.length){
-    root.hidden=wasHidden;
+  if (root.dataset.quizKey === quizKey && options.childElementCount === quiz.a.length) {
+    root.hidden = wasHidden;
     return;
   }
-  root.dataset.quizKey=quizKey;
+  root.dataset.quizKey = quizKey;
   // 選択肢を差し替える間は一時的に隠す。表示中の古い4択が一瞬見えてから
   // 新しいシャッフル順へ入れ替わる、というちらつきを防ぐ。
-  root.hidden=true;
+  root.hidden = true;
   root.classList.remove('quiz-success');
-  const {answers,correct}=quizPresentation(quiz);
-  $(ids.title).textContent=tr('quizTitle');$(ids.question).textContent=quiz.q;note.textContent='';
-  const fragment=document.createDocumentFragment();
-  answers.forEach((answer,index)=>{
-    const button=document.createElement('button');
-    button.className='quiz-option';button.type='button';button.textContent=answer;
-    button.addEventListener('click',()=>{[...options.children].forEach(item=>item.disabled=true);options.children[correct].classList.add('correct');if(index===correct){note.textContent=tr('quizCorrect')+'　'+quiz.note;celebrateQuiz(root);}else{button.classList.add('wrong');note.textContent=tr('quizWrong')+'　'+quiz.note;}});
+  const { answers, correct } = quizPresentation(quiz);
+  $(ids.title).textContent = tr('quizTitle');
+  $(ids.question).textContent = quiz.q;
+  note.textContent = '';
+  const fragment = document.createDocumentFragment();
+  answers.forEach((answer, index) => {
+    const button = document.createElement('button');
+    button.className = 'quiz-option';
+    button.type = 'button';
+    button.textContent = answer;
+    button.addEventListener('click', () => {
+      [...options.children].forEach(item => item.disabled = true);
+      options.children[correct].classList.add('correct');
+      if (index === correct) {
+        note.textContent = tr('quizCorrect') + '　' + quiz.note;
+        celebrateQuiz(root);
+      } else {
+        button.classList.add('wrong');
+        note.textContent = tr('quizWrong') + '　' + quiz.note;
+      }
+    });
     fragment.appendChild(button);
   });
   // 4択を1件ずつ表示領域へ追加せず、完成した順番を一度に差し替える。
   options.replaceChildren(fragment);
-  root.hidden=wasHidden;
+  root.hidden = wasHidden;
 }
 // クイズ領域を安全に空に戻す。クリア後フロー側で個別にDOMを触らないための入口。
 function resetBoardQuiz(rootId,{requireAnswer=false}={}){
