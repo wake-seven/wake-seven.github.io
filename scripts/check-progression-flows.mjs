@@ -13,9 +13,9 @@ const [policy, state, events, template] = await Promise.all([
 ]);
 
 for (const id of ['training9', 'training18', 'mastery27', 'satori73']) {
-  assert.match(policy, new RegExp(`id:'${id}'`), `Canonical speed id is missing: ${id}`);
+  assert.match(policy, new RegExp(`id\\s*:\\s*'${id}'`), `Canonical speed id is missing: ${id}`);
 }
-assert.doesNotMatch(policy, /id:'(?:training18_old|mastery15|mastery24|satori_old)'/, 'Legacy speed id remains in progression policy.');
+assert.doesNotMatch(policy, /id\s*:\s*'(?:training18_old|mastery15|mastery24|satori_old)'/, 'Legacy speed id remains in progression policy.');
 assert.match(state, /activeVariant:[^\n]*'training9'/, 'Speed state default is missing.');
 assert.match(events, /speedPause|pauseSpeedRun/, 'Speed pause flow is not wired.');
 assert.match(events, /speedResume|resumeSpeedRun|startSpeedClock/, 'Speed resume/start flow is not wired.');
