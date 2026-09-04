@@ -1664,7 +1664,7 @@
     const next = { ...current, ...(patch && typeof patch === 'object' ? patch : {}) };
     state.navigation = {
       mode: MODES.includes(next.mode) ? next.mode : current.mode,
-      lastStageMode: MODES.includes(next.lastStageMode) ? next.lastStageMode : current.lastStageMode,
+      lastStageMode: next.lastStageMode === null ? null : MODES.includes(next.lastStageMode) ? next.lastStageMode : current.lastStageMode,
       lap: asLap(next.lap),
       stageIndex: asIndex(next.stageIndex),
       masteryIndex: asIndex(next.masteryIndex),
@@ -4253,8 +4253,8 @@ const WakeSevenAppContext=Object.freeze({
     read(){return gameState;},
     snapshot(){return WakeSevenAppContext.snapshot();},
     navigation:Object.freeze({
-      read(){return typeof readNavigationStateOwner==='function'?readNavigationStateOwner():Object.freeze({mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});},
-      update(patch={}){return typeof updateNavigationStateOwner==='function'?updateNavigationStateOwner(patch):(patch.mode!==undefined&&setActiveMode(patch.mode),this.read());}
+      read(){return readNavigationStateOwner();},
+      update(patch={}){return updateNavigationStateOwner(patch);}
     }),
     board:Object.freeze({
       read(){return Object.freeze({ori,spin,history,moves,best,drag,busy,boardTouchActive});},
@@ -4291,7 +4291,7 @@ const WakeSevenAppContext=Object.freeze({
   isClearShown(){return WakeSevenAppContext.state.dialog.read().clearShown===true;},
   // clearShown の変更はここを通す。保存は既存の syncGameState の責務とする。
   setClearShown(value){return WakeSevenAppContext.state.dialog.update({clearShown:value}).clearShown;},
-  setMode(mode){return WakeSevenAppContext.state.navigation.update({mode}).mode;}
+  setMode(mode){return setActiveMode(mode);}
 });
 // 個別の共有状態を書き換える場合も、呼び出し側が所有変数へ直接代入しないようにする。
 function setNavigationIndexCommand(kind,value){
@@ -4498,38 +4498,36 @@ const gameState=window.WakeSevenState.read()||window.WakeSevenState.create();
 // 旧バージョンのフラットな保存キーは現行状態へ持ち込まず破棄する。
 WakeSevenState.purgeExternalStorage();
 const initialNavigation=WakeSevenState.navigationView(gameState);
-// ナビゲーション状態の所有者。既存のローカル変数は段階移行中の読み取り互換として残し、
-// 変更は updateNavigationStateOwner 経由でここへ反映する。
-const navigationState={mode:initialNavigation.mode,lastStageMode:initialNavigation.lastStageMode||null,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};
-let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,lastStageMode=navigationState.lastStageMode,clearShown=false,nextStageAttention=false;
+// 実行中のナビゲーション状態はこの変数群だけが所有する。
+// 読み書きは readNavigationStateOwner / updateNavigationStateOwner に集約し、
+// gameState.navigation は同じ更新入口から保存用スナップショットとして同期する。
+let stageIndex=initialNavigation.stageIndex,extraIndex=initialNavigation.masteryIndex,satoriIndex=initialNavigation.satoriIndex,tutorialStep=initialNavigation.tutorialStep;
+let activeMode=initialNavigation.mode,lastStageMode=initialNavigation.lastStageMode||null,activeLap=initialNavigation.lap===2?2:1;
+let clearShown=false,nextStageAttention=false;
 let pendingMasterThemeRefresh=false;
 let lastAnalyticsStageKey='';
 
 /* モードの実体は activeMode のみ。 */
 const ACTIVE_MODES=Object.freeze(['tutorial','stage','mastery','satori','speed','free','custom']);
 function setActiveMode(mode){
-  const navigation=WakeSevenState.updateNavigation(gameState,{mode:ACTIVE_MODES.includes(mode)?mode:'stage'});
-  updateNavigationStateOwner({mode:navigation.mode});
+  return updateNavigationStateOwner({mode:ACTIVE_MODES.includes(mode)?mode:'stage'}).mode;
 }
 function readNavigationStateOwner(){
-  // 旧経路の読み書きが残る移行期間は、公開ビュー生成時に値を同期する。
-  navigationState.mode=activeMode;navigationState.lap=activeLap;navigationState.stageIndex=stageIndex;
-  navigationState.masteryIndex=extraIndex;navigationState.satoriIndex=satoriIndex;navigationState.tutorialStep=tutorialStep;
-  navigationState.lastStageMode=lastStageMode;
-  return Object.freeze({...navigationState});
+  return Object.freeze({mode:activeMode,lastStageMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});
 }
 function updateNavigationStateOwner(patch={}){
-  if(patch.mode!==undefined)navigationState.mode=ACTIVE_MODES.includes(patch.mode)?patch.mode:'stage';
-  if(patch.lap!==undefined)navigationState.lap=patch.lap===2?2:1;
-  if(patch.stageIndex!==undefined)navigationState.stageIndex=Math.max(0,Number(patch.stageIndex)||0);
-  if(patch.masteryIndex!==undefined)navigationState.masteryIndex=Math.max(0,Number(patch.masteryIndex)||0);
-  if(patch.satoriIndex!==undefined)navigationState.satoriIndex=Math.max(0,Number(patch.satoriIndex)||0);
-  if(patch.tutorialStep!==undefined)navigationState.tutorialStep=Math.max(0,Number(patch.tutorialStep)||0);
-  activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;
-  satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;
-  if(patch.lastStageMode!==undefined)lastStageMode=ACTIVE_MODES.includes(patch.lastStageMode)?patch.lastStageMode:null;
-  navigationState.lastStageMode=lastStageMode;
-  return readNavigationStateOwner();
+  const next=patch&&typeof patch==='object'?patch:{};
+  const asIndex=value=>Number.isInteger(value)&&value>=0?value:0;
+  if(next.mode!==undefined)activeMode=ACTIVE_MODES.includes(next.mode)?next.mode:activeMode;
+  if(next.lap!==undefined)activeLap=next.lap===2?2:1;
+  if(next.stageIndex!==undefined)stageIndex=asIndex(next.stageIndex);
+  if(next.masteryIndex!==undefined)extraIndex=asIndex(next.masteryIndex);
+  if(next.satoriIndex!==undefined)satoriIndex=asIndex(next.satoriIndex);
+  if(next.tutorialStep!==undefined)tutorialStep=asIndex(next.tutorialStep);
+  if(next.lastStageMode!==undefined)lastStageMode=next.lastStageMode===null?null:ACTIVE_MODES.includes(next.lastStageMode)?next.lastStageMode:lastStageMode;
+  const navigation=readNavigationStateOwner();
+  WakeSevenState.updateNavigation(gameState,navigation);
+  return navigation;
 }
 const isMode=mode=>activeMode===mode;
 function setUnlock(key,value){
@@ -4616,7 +4614,7 @@ function restoreDialogState(state){
   return false;
 }
 function syncGameState(){
-  WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});
+  WakeSevenState.updateNavigation(gameState,readNavigationStateOwner());
   WakeSevenState.updateProgress(gameState,{
     lap1:{primary:[...lap1ClearedStages],mastery:[...lap1ClearedExtraStages],satori:[...lap1ClearedSatoriStages]},
     lap2:{primary:[...lap2ClearedStages],mastery:[...lap2ClearedExtraStages],satori:[...lap2ClearedSatoriStages]}
@@ -4651,9 +4649,6 @@ const COURSE_MODE_ALIASES=Object.freeze({stage:'primary'});
 function courseDefinitionForMode(mode=activeMode){
   return COURSE_DEFINITIONS[COURSE_MODE_ALIASES[mode]||mode]||COURSE_DEFINITIONS.primary;
 }
-function runtimeNavigation(){
-  return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};
-}
 const isSideCourseMode=()=>isMode('free')||isMode('custom');
 // 複数の画面で共通する「通常の進行中」判定。サイドコースと速解きは除外する。
 const isCampaignMode=()=>!isSideCourseMode()&&!isMode('speed');
@@ -4686,7 +4681,7 @@ const PICKER_TRAINING_FIRST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='training
 const PICKER_TRAINING_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingLower')-PRIMARY_PICKER_SECTION_COUNT;
 // 現在のモード・コース・問題位置を、画面や計測から共通して参照する実行コンテキスト。
 function getGameContext(){
-  const navigation=runtimeNavigation();
+  const navigation=readNavigationContext();
   if(isMode('tutorial'))return {mode:'tutorial',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'tutorial'),position:tutorialStep+1,total:TUTORIAL_STEPS.length,lap:1};
   if(isSideCourseMode())return {mode:activeMode,course:courseDefinitionForMode(),index:null,position:null,total:null,lap:activeLap};
   if(isMode('speed')){
@@ -4910,8 +4905,6 @@ try{rainbowDarumaGranted=rainbowDarumaGranted||storage.get(STORAGE_KEY_GROUPS.re
 if(rainbowDarumaGranted)try{storage.set(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');}catch(_){ }
 let secondLapUnlocked=initialUnlocks.secondLap===true;
 try{secondLapUnlocked=secondLapUnlocked||storage.get(STORAGE_KEY_GROUPS.progression.secondLapUnlocked)==='1'||secondLapActive||awakenedGranted;}catch(_){secondLapUnlocked=secondLapActive||awakenedGranted;}
-const initialNavigationState=WakeSevenState.sectionView(gameState,'navigation');
-let activeLap=initialNavigationState.lap===2?2:1;
 // activeModeが現在画面の正となる。最後にいたキャンペーン位置は明示的な名前で保持し、
 // 2つ目のモード状態と誤認しないようにする。
 let returnStageContext={extra:false,satori:false,index:0};
@@ -4994,7 +4987,7 @@ if(!lap2ClearedStages||!lap2ClearedExtraStages||!lap2ClearedSatoriStages){
   lap2ClearedExtraStages=secondLapUnlocked?new Set(clearedExtraStages):new Set();
   lap2ClearedSatoriStages=secondLapUnlocked?new Set(clearedSatoriStages):new Set();
 }
-if(activeLap===2&&!secondLapUnlocked)activeLap=1;
+if(activeLap===2&&!secondLapUnlocked)updateNavigationStateOwner({lap:1});
 clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;
 clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;
 clearedSatoriStages=activeLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;
@@ -5041,7 +5034,7 @@ function persistLapProgress(){
 }
 function activateCampaignLap(lap){
   if(lap===2&&!secondLapUnlocked)return false;
-  activeLap=lap;
+  updateNavigationStateOwner({lap});
   secondLapActive=lap===2;
   setUnlock('secondLap',secondLapUnlocked);
   clearedStages=lap===2?lap2ClearedStages:lap1ClearedStages;
@@ -8856,8 +8849,7 @@ function recordSpeedCompletionCommand(elapsed,optimalClears){
 // ===== チュートリアルコマンド =====
 // チュートリアル状態の書き込みcommand。演出・誤操作判定はUI側に残す。
 function setTutorialStepCommand(index){
-  tutorialStep=Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index));
-  WakeSevenState.setNavigationIndex(gameState,'tutorial',tutorialStep);
+  updateNavigationStateCommand({tutorialStep:Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index))});
   commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialStep,String(tutorialStep));
   return tutorialStep;
 }
@@ -8867,7 +8859,7 @@ function completeTutorialCommand(){
   return true;
 }
 function resetTutorialCommand(){
-  tutorialStep=0;
+  updateNavigationStateCommand({tutorialStep:0});
   commandStorageRemove(STORAGE_KEY_GROUPS.progression.tutorialStep);
   commandStorageRemove(STORAGE_KEY_GROUPS.progression.introSeen);
   return true;
@@ -12928,11 +12920,11 @@ if(document.documentElement.classList.contains('embed')&&window.parent!==window)
 
   const stateApi = Object.freeze({
     get current() { return gameState; },
-    get navigation() { return WakeSevenState.navigationView(gameState); },
+    get navigation() { return readNavigationStateOwner(); },
     get settings() { return gameState.settings; },
     get progress() { return gameState.progress; },
     persist() { return persistActiveSession(); },
-    updateNavigation(patch) { return WakeSevenState.updateNavigation(gameState, patch); },
+    updateNavigation(patch) { return updateNavigationStateOwner(patch); },
     updateSettings(patch) { return WakeSevenState.updateSettings(gameState, patch); }
   });
 
