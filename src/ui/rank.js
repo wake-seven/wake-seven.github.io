@@ -1,5 +1,63 @@
 // 称号表示と称号一覧ダイアログ。
 // 盤面選択画面やクリア後演出からも利用するため、描画の共通部をここに集約する。
+// 称号の定義・判定・色は、ステージ選択や進行UIから参照される共通の称号領域。
+// ステージ選択そのものは progression-ui.js に残し、ここでは称号の意味だけを扱う。
+const MASTER_PATH={
+  ja:{subtitles:['七転八起','面壁九年','不立文字'],ranks:['卒業生','一人前','不屈','熟練','名人','無心','覚者'],earned:'称号「{rank}」を獲得しました。'},
+  en:{subtitles:['Seven Falls, Eight Rises','Nine Years Facing the Wall','Beyond Words'],roadSubtitles:['Seven Falls','Nine Years','Beyond Words'],ranks:['Graduate','Adept','Unyielding','Seasoned','Master','No Mind','Awakened'],earned:'You earned the title “{rank}”.'},
+  zh:{subtitles:['七转八起','面壁九年','不立文字'],ranks:['毕业生','独当一面','不屈','熟练','名人','无心','觉者'],earned:'获得称号“{rank}”。'},
+  ko:{subtitles:['칠전팔기','면벽구년','불립문자'],ranks:['졸업생','일인분','불굴','숙련','명인','무심','깨달은 자'],earned:'칭호 “{rank}”을(를) 획득했습니다.'}
+};
+const masterPath=()=>MASTER_PATH[currentLang]||MASTER_PATH.ja;
+const masterSubtitle=volume=>masterPath().subtitles[volume-1]||'';
+const rankForVolume=volume=>masterPath().ranks[volume+1]||'';
+function highestRankIndex(){
+  if(awakenedGranted)return 6;
+  return rankIndexForProgress(lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages,false);
+}
+function rankIndexForProgress(primary,extra,satori,second=false){
+  if(SATORI_STAGES.every((_,i)=>satori.has(i)))return second?(awakenedGranted?6:4):5;
+  if(extra.has(44)&&(second||speedMasteryTrialCleared))return 4;
+  if(extra.has(29))return 3;
+  if(extra.has(14))return 2;
+  if(STAGES.every((_,i)=>primary.has(i))&&(second||speedIntermediateTrialCleared))return 1;
+  const academyDone=Array.from({length:ACADEMY_STAGE_COUNT},(_,i)=>i).every(i=>primary.has(i));
+  return academyDone&&(second||speedTrainingTrialCleared)?0:-1;
+}
+const firstLapRankIndex=()=>rankIndexForProgress(lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages,false);
+const secondLapRankIndex=()=>rankIndexForProgress(lap2ClearedStages,lap2ClearedExtraStages,lap2ClearedSatoriStages,true);
+function rankEarnedText(rank){return masterPath().earned.replace('{rank}',rank);}
+const RANK_FRAME_COLORS=[
+  {stroke:'#E2CFA8',ink:'#F0E3C8'},
+  {stroke:'#D9827A',ink:'#D9827A'},
+  {stroke:'#9A86D6',ink:'#9A86D6'},
+  {stroke:'#62B8D2',ink:'#62B8D2'},
+  {stroke:'#C9A54E',ink:'#C9A54E'},
+  {stroke:'#BCC9CD',ink:'#E6EEF0'},
+  {stroke:'#24282B',ink:'#454B4F'}
+];
+function setSealColor(seal,index){
+  const stroke=(RANK_FRAME_COLORS[index]||RANK_FRAME_COLORS[0]).stroke;
+  seal.style.setProperty('--seal-color',stroke);
+  seal.style.setProperty('--spark-color',index===6?'#C9A54E':stroke);
+}
+function speedExamBadgeSvg(){
+  return '<svg viewBox="0 0 34 34" aria-hidden="true"><g transform="rotate(-15 17 17)"><rect x="5" y="4" width="24" height="21" rx="2.5" fill="#7C9463" stroke="#2B2118" stroke-width="1.6" stroke-linejoin="round"/><rect x="8.5" y="7.5" width="17" height="14" rx="1" fill="#F1E6C8" stroke="#8A8478" stroke-width="1.3"/><path d="M13.4 10.5q1.6 2 0 4t0 4" fill="none" stroke="#6B5A44" stroke-width="1.1" stroke-linecap="round" opacity=".75"/><path d="M17 10q1.6 2 0 4t0 4.4" fill="none" stroke="#6B5A44" stroke-width="1.1" stroke-linecap="round" opacity=".75"/><path d="M20.6 10.5q1.6 2 0 4t0 4" fill="none" stroke="#6B5A44" stroke-width="1.1" stroke-linecap="round" opacity=".75"/></g></svg>';
+}
+function speedExamBadgeLabel(index){
+  if(index===0)return tr('speedExamBadgePrimary');
+  if(index===1)return tr('speedExamBadgeIntermediate');
+  if(index===4)return tr('speedExamBadgeMastery');
+  if(index===5)return tr('speedExamBadgeSatori');
+  return '';
+}
+function speedExamClearedForRank(index){
+  if(index===0)return speedTrainingTrialCleared;
+  if(index===1)return speedIntermediateTrialCleared;
+  if(index===4)return speedMasteryTrialCleared;
+  if(index===5)return Number(storage.get(speedBestStorageKey('satori73'),'0'))>0;
+  return false;
+}
 function rankFrameSvg(text,locked=false,index=0,doubleFrame=false,dimmed=false){
   const colors=RANK_FRAME_COLORS[index]||RANK_FRAME_COLORS[0];
   const noMind=index===5&&!locked;

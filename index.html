@@ -4415,7 +4415,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-13:10';
+const APP_VERSION='2026.09.04-14:04';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -9721,51 +9721,10 @@ function tipDaruma(x,y,scale=.55){
 // ステージ選択、進行表示、クリア後表示をまとめる。前後移動イベントは
 // progression-navigation.js、共通の小さな表示処理は progression-render.js が担当する。
 
-// en.roadSubtitlesは現状どこからも読まれていない下書きの短縮版タイトル。
-// 未使用だからと削除しないこと(後で使う予定)。
-const MASTER_PATH={
-  ja:{subtitles:['七転八起','面壁九年','不立文字'],ranks:['卒業生','一人前','不屈','熟練','名人','無心','覚者'],earned:'称号「{rank}」を獲得しました。'},
-  en:{subtitles:['Seven Falls, Eight Rises','Nine Years Facing the Wall','Beyond Words'],roadSubtitles:['Seven Falls','Nine Years','Beyond Words'],ranks:['Graduate','Adept','Unyielding','Seasoned','Master','No Mind','Awakened'],earned:'You earned the title “{rank}”.'},
-  zh:{subtitles:['七转八起','面壁九年','不立文字'],ranks:['毕业生','独当一面','不屈','熟练','名人','无心','觉者'],earned:'获得称号“{rank}”。'},
-  ko:{subtitles:['칠전팔기','면벽구년','불립문자'],ranks:['졸업생','일인분','불굴','숙련','명인','무심','깨달은 자'],earned:'칭호 “{rank}”을(를) 획득했습니다.'}
-};
 // 公開進行で使う「本編をすべてクリア済みか」の判定は、各UIから同じ入口を参照する。
 // 分割時にこの小さな共有判定を失うと、クリア後の「次の問題へ」が
 // ダイアログを閉じるだけになるため、ここで明示的に保持する。
 const allPrimaryCleared=()=>{const progress=WakeSevenAppContext.state.progress.read();return STAGES.every((_,i)=>progress.clearedStages.has(i));};
-const masterPath=()=>MASTER_PATH[currentLang]||MASTER_PATH.ja;
-const masterSubtitle=volume=>masterPath().subtitles[volume-1]||'';
-const rankForVolume=volume=>masterPath().ranks[volume+1]||'';
-function highestRankIndex(){
-  if(awakenedGranted)return 6;
-  return rankIndexForProgress(lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages,false);
-}
-function rankIndexForProgress(primary,extra,satori,second=false){
-  if(SATORI_STAGES.every((_,i)=>satori.has(i)))return second?(awakenedGranted?6:4):5;
-  if(extra.has(44)&&(second||speedMasteryTrialCleared))return 4;
-  if(extra.has(29))return 3;
-  if(extra.has(14))return 2;
-  if(STAGES.every((_,i)=>primary.has(i))&&(second||speedIntermediateTrialCleared))return 1;
-  const academyDone=Array.from({length:ACADEMY_STAGE_COUNT},(_,i)=>i).every(i=>primary.has(i));
-  return academyDone&&(second||speedTrainingTrialCleared)?0:-1;
-}
-const firstLapRankIndex=()=>rankIndexForProgress(lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages,false);
-const secondLapRankIndex=()=>rankIndexForProgress(lap2ClearedStages,lap2ClearedExtraStages,lap2ClearedSatoriStages,true);
-function rankEarnedText(rank){return masterPath().earned.replace('{rank}',rank);}
-const RANK_FRAME_COLORS=[
-  {stroke:'#E2CFA8',ink:'#F0E3C8'},
-  {stroke:'#D9827A',ink:'#D9827A'},
-  {stroke:'#9A86D6',ink:'#9A86D6'},
-  {stroke:'#62B8D2',ink:'#62B8D2'},
-  {stroke:'#C9A54E',ink:'#C9A54E'},
-  {stroke:'#BCC9CD',ink:'#E6EEF0'},
-  {stroke:'#24282B',ink:'#454B4F'}
-];
-function setSealColor(seal,index){
-  const stroke=(RANK_FRAME_COLORS[index]||RANK_FRAME_COLORS[0]).stroke;
-  seal.style.setProperty('--seal-color',stroke);
-  seal.style.setProperty('--spark-color',index===6?'#C9A54E':stroke);
-}
 // 速解きモード完走の印。時計の文字盤とスピード線で「速さ」を表す。
 function speedSealSvg(){
   return '<svg viewBox="0 0 64 64" aria-hidden="true">'
@@ -9786,35 +9745,6 @@ function satoriSealSvg(){
     +'<circle cx="32" cy="32" r="21" fill="none" stroke="#F2D77A" stroke-width="2.5"/>'
     +'<text x="32" y="34" text-anchor="middle" dominant-baseline="central" font-family="Hiragino Mincho ProN,Yu Mincho,YuMincho,serif" font-size="30" font-weight="700" fill="#F2D77A">悟</text>'
     +'</svg>';
-}
-// 称号一覧・ロードマップに添える、卒業試験（修・破・極）を速解きで突破した印のバッジ。
-// 巻物ではなく、斜めに傾いた賞状（緑の縁取り＋中の用紙）としてシンプルにまとめる。
-function speedExamBadgeSvg(){
-  return '<svg viewBox="0 0 34 34" aria-hidden="true">'
-    +'<g transform="rotate(-15 17 17)">'
-    +'<rect x="5" y="4" width="24" height="21" rx="2.5" fill="#7C9463" stroke="#2B2118" stroke-width="1.6" stroke-linejoin="round"/>'
-    +'<rect x="8.5" y="7.5" width="17" height="14" rx="1" fill="#F1E6C8" stroke="#8A8478" stroke-width="1.3"/>'
-    +'<path d="M13.4 10.5q1.6 2 0 4t0 4" fill="none" stroke="#6B5A44" stroke-width="1.1" stroke-linecap="round" opacity=".75"/>'
-    +'<path d="M17 10q1.6 2 0 4t0 4.4" fill="none" stroke="#6B5A44" stroke-width="1.1" stroke-linecap="round" opacity=".75"/>'
-    +'<path d="M20.6 10.5q1.6 2 0 4t0 4" fill="none" stroke="#6B5A44" stroke-width="1.1" stroke-linecap="round" opacity=".75"/>'
-    +'</g>'
-    +'</svg>';
-}
-// バッジをクリックした時に見せる、どの卒業試験を速解きで突破したかの説明文。
-function speedExamBadgeLabel(index){
-  if(index===0)return tr('speedExamBadgePrimary');
-  if(index===1)return tr('speedExamBadgeIntermediate');
-  if(index===4)return tr('speedExamBadgeMastery');
-  if(index===5)return tr('speedExamBadgeSatori');
-  return '';
-}
-// 学園・修行の卒業試験、名人への道の皆伝試験、および悟り後の任意の速解き七十三番勝負が対象の称号indexだけ、クリア済みかを返す。それ以外はfalse。
-function speedExamClearedForRank(index){
-  if(index===0)return speedTrainingTrialCleared;
-  if(index===1)return speedIntermediateTrialCleared;
-  if(index===4)return speedMasteryTrialCleared;
-  if(index===5)return Number(storage.get(speedBestStorageKey('satori73'),'0'))>0;
-  return false;
 }
 const primaryStageUnlocked=index=>(index<TRAINING_STAGE_START||canEnterTraining())
   &&(index===0||clearedStages.has(index)||clearedStages.has(index-1));
@@ -11439,6 +11369,64 @@ export {};
 // ===== ui/rank.js =====
 // 称号表示と称号一覧ダイアログ。
 // 盤面選択画面やクリア後演出からも利用するため、描画の共通部をここに集約する。
+// 称号の定義・判定・色は、ステージ選択や進行UIから参照される共通の称号領域。
+// ステージ選択そのものは progression-ui.js に残し、ここでは称号の意味だけを扱う。
+const MASTER_PATH={
+  ja:{subtitles:['七転八起','面壁九年','不立文字'],ranks:['卒業生','一人前','不屈','熟練','名人','無心','覚者'],earned:'称号「{rank}」を獲得しました。'},
+  en:{subtitles:['Seven Falls, Eight Rises','Nine Years Facing the Wall','Beyond Words'],roadSubtitles:['Seven Falls','Nine Years','Beyond Words'],ranks:['Graduate','Adept','Unyielding','Seasoned','Master','No Mind','Awakened'],earned:'You earned the title “{rank}”.'},
+  zh:{subtitles:['七转八起','面壁九年','不立文字'],ranks:['毕业生','独当一面','不屈','熟练','名人','无心','觉者'],earned:'获得称号“{rank}”。'},
+  ko:{subtitles:['칠전팔기','면벽구년','불립문자'],ranks:['졸업생','일인분','불굴','숙련','명인','무심','깨달은 자'],earned:'칭호 “{rank}”을(를) 획득했습니다.'}
+};
+const masterPath=()=>MASTER_PATH[currentLang]||MASTER_PATH.ja;
+const masterSubtitle=volume=>masterPath().subtitles[volume-1]||'';
+const rankForVolume=volume=>masterPath().ranks[volume+1]||'';
+function highestRankIndex(){
+  if(awakenedGranted)return 6;
+  return rankIndexForProgress(lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages,false);
+}
+function rankIndexForProgress(primary,extra,satori,second=false){
+  if(SATORI_STAGES.every((_,i)=>satori.has(i)))return second?(awakenedGranted?6:4):5;
+  if(extra.has(44)&&(second||speedMasteryTrialCleared))return 4;
+  if(extra.has(29))return 3;
+  if(extra.has(14))return 2;
+  if(STAGES.every((_,i)=>primary.has(i))&&(second||speedIntermediateTrialCleared))return 1;
+  const academyDone=Array.from({length:ACADEMY_STAGE_COUNT},(_,i)=>i).every(i=>primary.has(i));
+  return academyDone&&(second||speedTrainingTrialCleared)?0:-1;
+}
+const firstLapRankIndex=()=>rankIndexForProgress(lap1ClearedStages,lap1ClearedExtraStages,lap1ClearedSatoriStages,false);
+const secondLapRankIndex=()=>rankIndexForProgress(lap2ClearedStages,lap2ClearedExtraStages,lap2ClearedSatoriStages,true);
+function rankEarnedText(rank){return masterPath().earned.replace('{rank}',rank);}
+const RANK_FRAME_COLORS=[
+  {stroke:'#E2CFA8',ink:'#F0E3C8'},
+  {stroke:'#D9827A',ink:'#D9827A'},
+  {stroke:'#9A86D6',ink:'#9A86D6'},
+  {stroke:'#62B8D2',ink:'#62B8D2'},
+  {stroke:'#C9A54E',ink:'#C9A54E'},
+  {stroke:'#BCC9CD',ink:'#E6EEF0'},
+  {stroke:'#24282B',ink:'#454B4F'}
+];
+function setSealColor(seal,index){
+  const stroke=(RANK_FRAME_COLORS[index]||RANK_FRAME_COLORS[0]).stroke;
+  seal.style.setProperty('--seal-color',stroke);
+  seal.style.setProperty('--spark-color',index===6?'#C9A54E':stroke);
+}
+function speedExamBadgeSvg(){
+  return '<svg viewBox="0 0 34 34" aria-hidden="true"><g transform="rotate(-15 17 17)"><rect x="5" y="4" width="24" height="21" rx="2.5" fill="#7C9463" stroke="#2B2118" stroke-width="1.6" stroke-linejoin="round"/><rect x="8.5" y="7.5" width="17" height="14" rx="1" fill="#F1E6C8" stroke="#8A8478" stroke-width="1.3"/><path d="M13.4 10.5q1.6 2 0 4t0 4" fill="none" stroke="#6B5A44" stroke-width="1.1" stroke-linecap="round" opacity=".75"/><path d="M17 10q1.6 2 0 4t0 4.4" fill="none" stroke="#6B5A44" stroke-width="1.1" stroke-linecap="round" opacity=".75"/><path d="M20.6 10.5q1.6 2 0 4t0 4" fill="none" stroke="#6B5A44" stroke-width="1.1" stroke-linecap="round" opacity=".75"/></g></svg>';
+}
+function speedExamBadgeLabel(index){
+  if(index===0)return tr('speedExamBadgePrimary');
+  if(index===1)return tr('speedExamBadgeIntermediate');
+  if(index===4)return tr('speedExamBadgeMastery');
+  if(index===5)return tr('speedExamBadgeSatori');
+  return '';
+}
+function speedExamClearedForRank(index){
+  if(index===0)return speedTrainingTrialCleared;
+  if(index===1)return speedIntermediateTrialCleared;
+  if(index===4)return speedMasteryTrialCleared;
+  if(index===5)return Number(storage.get(speedBestStorageKey('satori73'),'0'))>0;
+  return false;
+}
 function rankFrameSvg(text,locked=false,index=0,doubleFrame=false,dimmed=false){
   const colors=RANK_FRAME_COLORS[index]||RANK_FRAME_COLORS[0];
   const noMind=index===5&&!locked;

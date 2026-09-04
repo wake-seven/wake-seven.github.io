@@ -10,7 +10,10 @@ const [report, index] = await Promise.all([
   readJson('build/report/progression-responsibility.json'),
   readJson('build/report/symbol-index.json')
 ]);
-const rankSource = await readFile(join(root, 'src/ui/rank.js'), 'utf8');
+const [rankSource, progressionUiSource] = await Promise.all([
+  readFile(join(root, 'src/ui/rank.js'), 'utf8'),
+  readFile(join(root, 'src/ui/progression-ui.js'), 'utf8')
+]);
 const definitions = Object.values(index.definitions || {});
 const expected = definitions.filter(symbol => /(?:^|\/)(?:progression[^/]*|clear-flow|master-dialog|rank)\.(?:js|mjs)$/i.test(symbol.file || ''));
 assert.equal(report.source, 'build/report/symbol-index.json');
@@ -19,6 +22,11 @@ assert.equal(report.entries.length, expected.length, 'progression責務レポー
 assert.deepEqual(report.pipeline, ['entry', 'state-decision', 'transition', 'render'], '進行処理の追跡順が不正です');
 assert.ok(report.summary.flowRoles && Number.isInteger(report.summary.mixedSymbols), '進行処理の流れ分類がありません');
 assert.match(rankSource, /function openRankDialog\([\s\S]*renderRankList\(\)/, '称号ダイアログの入口から既存の描画入口へ接続されていません');
+assert.match(rankSource, /const MASTER_PATH=/, '称号定義の所有者が rank.js ではありません');
+assert.match(rankSource, /function rankIndexForProgress\(/, '称号判定の所有者が rank.js ではありません');
+for (const symbol of ['MASTER_PATH', 'RANK_FRAME_COLORS', 'rankIndexForProgress', 'speedExamClearedForRank']) {
+  assert.doesNotMatch(progressionUiSource, new RegExp(`(?:const|function) ${symbol}(?:[=(])`), `称号責務が progression-ui.js に残っています: ${symbol}`);
+}
 assert.deepEqual(Object.keys(report.summary.flowClassifications).sort(), ['orchestration', 'render', 'state-decision', 'transition'], '4分類の定義が不正です');
 assert.ok(Array.isArray(report.fileSummary) && report.fileSummary.length > 0, 'ファイル責務サマリーがありません');
 assert.ok(Array.isArray(report.mixedResponsibilitySymbols) && Array.isArray(report.unclassifiedSymbols), '複数責務・未分類一覧がありません');
