@@ -1,19 +1,62 @@
 {
   "schemaVersion": 1,
   "name": "wake7-feature-investigation-changed",
-  "generatedAt": "2026-09-04T04:50:27.313Z",
+  "generatedAt": "2026-09-04T07:20:30.734Z",
   "status": "passed",
   "activity": "affected",
   "changedFiles": [
-    "scripts/investigate-changed.mjs"
+    "index.html",
+    "src/runtime/runtime.js"
   ],
   "unknownFiles": [
-    "scripts/investigate-changed.mjs"
+    "index.html"
   ],
   "ambiguousFiles": [],
-  "features": [],
-  "requiredChecks": [],
-  "relatedE2E": [],
+  "features": [
+    {
+      "name": "dialog-restore",
+      "changedFiles": [
+        "src/runtime/runtime.js"
+      ],
+      "entry": [
+        "src/runtime/runtime.js"
+      ],
+      "state": [
+        "src/state/game-state.js"
+      ],
+      "storage": [
+        "src/state/persistence.mjs"
+      ],
+      "dom": [
+        "src/index.template.html"
+      ],
+      "transitions": [
+        "src/ui/progression-dialogs.js"
+      ],
+      "checks": [
+        "state-restore",
+        "dialog-state-map"
+      ],
+      "e2e": [
+        "scripts/check-state-restore.mjs",
+        "scripts/check-dialog-state-map.mjs",
+        "state-restore"
+      ],
+      "boundaries": [
+        "scripts/check-dialog-chains.mjs"
+      ],
+      "relatedFiles": []
+    }
+  ],
+  "requiredChecks": [
+    "state-restore",
+    "dialog-state-map"
+  ],
+  "relatedE2E": [
+    "scripts/check-state-restore.mjs",
+    "scripts/check-dialog-state-map.mjs",
+    "state-restore"
+  ],
   "recommendedProfile": "affected",
   "policy": {
     "unknownChangedFiles": "affected",
@@ -22,19 +65,25 @@
   },
   "ignoredFiles": [
     "build/report/architecture-guide.json",
+    "build/report/change-classification.json",
     "build/report/check-context.json",
     "build/report/check-domain-classification.json",
+    "build/report/check-execution-contract.json",
     "build/report/check-gate.json",
+    "build/report/check-profile-result.json",
     "build/report/check-runtime.json",
-    "build/report/dialog-state-map.json",
-    "build/report/feature-investigation.json",
+    "build/report/event-wiring-map.json",
+    "build/report/feature-investigation-changed.json",
     "build/report/feature-registry.json",
+    "build/report/flow-map.json",
+    "build/report/progression-flow-map.json",
     "build/report/progression-orchestrators.json",
+    "build/report/progression-responsibility.json",
+    "build/report/refactor-candidates.json",
     "build/report/report-inventory.json",
-    "build/report/reward-access-result.json",
-    "build/report/source-format-baseline.json",
-    "build/report/state-access-diff.json",
-    "build/report/structure-contract-diff.json"
+    "build/report/structure-contract-diff.json",
+    "build/report/symbol-index.json",
+    "build/report/ui-data-map.json"
   ],
   "registry": "scripts\\feature-registry.json",
   "summary": {},

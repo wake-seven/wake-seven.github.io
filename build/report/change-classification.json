@@ -2,25 +2,43 @@
   "name": "wake7-change-classification",
   "status": "passed",
   "summary": {
-    "changedFiles": 1,
-    "classified": 0,
+    "changedFiles": 2,
+    "classified": 1,
     "unknown": 1,
-    "mismatches": 0,
+    "mismatches": 1,
     "missingFeatureKinds": 0
   },
   "warnings": [
-    "分類ルールがありません: scripts/check-affected.mjs"
+    "分類ルールがありません: index.html",
+    "src/runtime/runtime.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です"
   ],
   "errors": [],
-  "generatedAt": "2026-09-04T05:26:53.880Z",
-  "sourceRevision": "0e1a2ab",
+  "generatedAt": "2026-09-04T07:20:31.098Z",
+  "sourceRevision": "05eda03",
   "entries": [
     {
-      "file": "scripts/check-affected.mjs",
+      "file": "index.html",
       "kind": null,
       "layer": null,
       "signals": [],
       "status": "unknown"
+    },
+    {
+      "file": "src/runtime/runtime.js",
+      "kind": "progression",
+      "layer": "runtime",
+      "signals": [
+        "rule",
+        "progression",
+        "assist",
+        "presentation"
+      ],
+      "mismatched": [
+        "rule",
+        "assist",
+        "presentation"
+      ],
+      "status": "warning"
     }
   ],
   "policy": {
