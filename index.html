@@ -4257,8 +4257,8 @@ const WakeSevenAppContext=Object.freeze({
       update(patch={}){return updateNavigationStateOwner(patch);}
     }),
     board:Object.freeze({
-      read(){const {ori,spin,history,moves,best}=readBoardStateOwner();return Object.freeze({ori,spin,history,moves,best,drag,busy,boardTouchActive});},
-      update(patch={}){const boardPatch={};if(patch.ori!==undefined)boardPatch.ori=patch.ori;if(patch.spin!==undefined)boardPatch.spin=patch.spin;if(patch.history!==undefined)boardPatch.history=patch.history;if(patch.moves!==undefined)boardPatch.moves=patch.moves;if(patch.best!==undefined)boardPatch.best=patch.best;updateBoardStateOwner(boardPatch);if(patch.drag!==undefined)drag=patch.drag;if(patch.busy!==undefined)busy=patch.busy;if(patch.boardTouchActive!==undefined)boardTouchActive=patch.boardTouchActive;return this.read();}
+      read(){const {ori,spin,history,moves,best}=readBoardStateOwner(),{drag,busy,boardTouchActive}=readInteractionStateOwner();return Object.freeze({ori,spin,history,moves,best,drag,busy,boardTouchActive});},
+      update(patch={}){const boardPatch={},interactionPatch={};if(patch.ori!==undefined)boardPatch.ori=patch.ori;if(patch.spin!==undefined)boardPatch.spin=patch.spin;if(patch.history!==undefined)boardPatch.history=patch.history;if(patch.moves!==undefined)boardPatch.moves=patch.moves;if(patch.best!==undefined)boardPatch.best=patch.best;if(patch.drag!==undefined)interactionPatch.drag=patch.drag;if(patch.busy!==undefined)interactionPatch.busy=patch.busy;if(patch.boardTouchActive!==undefined)interactionPatch.boardTouchActive=patch.boardTouchActive;updateBoardStateOwner(boardPatch);updateInteractionStateOwner(interactionPatch);return this.read();}
     }),
     progress:Object.freeze({
       read(){return readProgressStateOwner();},
@@ -4269,8 +4269,8 @@ const WakeSevenAppContext=Object.freeze({
       update(patch={}){return typeof updateDialogStateOwner==='function'?updateDialogStateOwner(patch):(patch.clearShown!==undefined&&setClearShownCommand(patch.clearShown),this.read());}
     }),
     animation:Object.freeze({
-      read(){return Object.freeze({busy,drag,clearFlowState:typeof clearFlowState!=='undefined'?clearFlowState:null});},
-      update(patch={}){if(patch.busy!==undefined)busy=patch.busy;if(patch.drag!==undefined)drag=patch.drag;return this.read();}
+      read(){const {busy,drag}=readInteractionStateOwner();return Object.freeze({busy,drag,clearFlowState:typeof clearFlowState!=='undefined'?clearFlowState:null});},
+      update(patch={}){const interactionPatch={};if(patch.busy!==undefined)interactionPatch.busy=patch.busy;if(patch.drag!==undefined)interactionPatch.drag=patch.drag;updateInteractionStateOwner(interactionPatch);return this.read();}
     }),
     session:Object.freeze({
       read(){return readSessionStateOwner();},
@@ -7694,6 +7694,15 @@ function resetMakerBoard(){
 /* ---- ドラッグに追従して自転・公転 ---- */
 const MINR=18;
 let invalidGrabPointerId=null;
+function readInteractionStateOwner(){return Object.freeze({busy,drag,boardTouchActive,invalidGrabPointerId});}
+function updateInteractionStateOwner(patch={}){
+  patch=patch&&typeof patch==='object'&&!Array.isArray(patch)?patch:{};
+  if(patch.busy!==undefined)busy=patch.busy;
+  if(patch.drag!==undefined)drag=patch.drag;
+  if(patch.boardTouchActive!==undefined)boardTouchActive=patch.boardTouchActive;
+  if(patch.invalidGrabPointerId!==undefined)invalidGrabPointerId=patch.invalidGrabPointerId;
+  return readInteractionStateOwner();
+}
 function toView(e){
   const p=svg.createSVGPoint();
   p.x=e.clientX; p.y=e.clientY;
@@ -7718,7 +7727,7 @@ function gripAt(p){
   return hit;
 }
 function rejectBoardGrab(event){
-  invalidGrabPointerId=event.pointerId;
+  updateInteractionStateOwner({invalidGrabPointerId:event.pointerId});
   renderBoardInteractionFeedback({classes:{'grip-hover':false,'invalid-grab':true}});
   const tutorialCue=isMode('tutorial')?TUTORIAL_STEPS[tutorialStep]?.cue:'';
   const tutorialFindGrip=isMode('tutorial')&&(tutorialCue==='find'||tutorialCue==='chain-direction'||(tutorialCue==='chain'&&moves>0));
@@ -7730,7 +7739,7 @@ function rejectBoardGrab(event){
 function clearInvalidGrab(event){
   if(invalidGrabPointerId===null||event.pointerId!==invalidGrabPointerId)return false;
   releaseBoardPointer(svg,event.pointerId);
-  invalidGrabPointerId=null;
+  updateInteractionStateOwner({invalidGrabPointerId:null});
   renderBoardInteractionFeedback({classes:{'invalid-grab':false}});
   $('gripPrompt').hidden=true;
   if(isMode('tutorial'))setTimeout(showTutorialCue,80);
@@ -8473,14 +8482,14 @@ function renderAxisGuide(root,triangle,cellPositions=[],ratio=.57){
 // ===== 一時UI状態・タイマー =====
 // 画面だけに存在する一時状態の境界。永続gameStateやlocalStorageには書き込まない。
 function resetBoardUiContext(){
-  busy=false;drag=null;boardTouchActive=false;invalidGrabPointerId=null;
+  updateInteractionStateOwner({busy:false,drag:null,boardTouchActive:false,invalidGrabPointerId:null});
   svg.classList.remove('spinning','selecting','rotation-started','clear-pending','celebrating','arriving');
   baseTiles.forEach(el=>el.classList.remove('selected'));
   svg.querySelectorAll('.pivot.active').forEach(el=>el.classList.remove('active'));
 }
-function setBoardTouchActive(value){boardTouchActive=value===true;return boardTouchActive;}
-function setBoardDrag(value){drag=value||null;return drag;}
-function setBoardBusy(value){busy=value===true;return busy;}
+function setBoardTouchActive(value){return updateInteractionStateOwner({boardTouchActive:value===true}).boardTouchActive;}
+function setBoardDrag(value){return updateInteractionStateOwner({drag:value||null}).drag;}
+function setBoardBusy(value){return updateInteractionStateOwner({busy:value===true}).busy;}
 function setBoardTileSelected(tile,selected){tile?.classList.toggle('selected',selected===true);}
 function setBoardPivotActive(pivot,active){pivot?.classList.toggle('active',active===true);}
 function setBoardTransientClass(className,active){if(svg)svg.classList.toggle(className,active===true);}
