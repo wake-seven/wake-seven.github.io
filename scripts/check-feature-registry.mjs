@@ -17,7 +17,8 @@ const names = new Set();
 for (const feature of config.features || []) {
   if (!feature?.name || names.has(feature.name)) errors.push(`機能名が空または重複しています: ${feature?.name || 'unknown'}`);
   names.add(feature.name);
-  if (!Array.isArray(feature.paths) || !feature.paths.length) errors.push(`機能のpathsがありません: ${feature.name}`);
+  if ((!Array.isArray(feature.paths) || !feature.paths.length) && feature.status !== 'draft') errors.push(`機能のpathsがありません: ${feature.name}`);
+  if (feature.status && !['active', 'draft'].includes(feature.status)) errors.push(`機能のstatusが不正です: ${feature.name}`);
   for (const check of [...(feature.checks || []), ...(feature.relatedE2E || [])]) if (!known.has(check)) errors.push(`未知の関連検査です: ${feature.name} -> ${check}`);
   const references = new Set();
   for (const kind of referenceKinds) {
