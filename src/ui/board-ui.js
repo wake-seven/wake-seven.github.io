@@ -835,13 +835,16 @@ function buildClearGuideBoard(id){
   play();setUiEffectInterval('clear-guide:'+id,'cycle',play,5000);
 }
 function lessonBestMove(state){
-  const board=dec(state),distance=SOLVER.dist[enc(board)];
-  let fallback=null;
-  for(let ti=0;ti<TRI.length;ti++)for(const dir of[-1,1]){
-    if(SOLVER.dist[enc(rollOnce(board,ti,dir))]!==distance-1)continue;
+  const board = dec(state);
+  const distance = SOLVER.dist[enc(board)];
+  let fallback = null;
+  for (let ti = 0; ti < TRI.length; ti += 1) {
+    for (const dir of [-1, 1]) {
+      if (SOLVER.dist[enc(rollOnce(board, ti, dir))] !== distance - 1) continue;
     // 「寝ている3体をまわす」定石に沿う候補があれば、それを優先する。
-    if(TRI[ti].cells.every(c=>board[c]!==0))return {ti,dir};
-    if(!fallback)fallback={ti,dir};
+      if (TRI[ti].cells.every(c => board[c] !== 0)) return { ti, dir };
+      if (!fallback) fallback = { ti, dir };
+    }
   }
   return fallback;
 }
@@ -1358,8 +1361,14 @@ function validSavedTiles(tiles){
   return Array.isArray(tiles)&&tiles.length===N&&tiles.every(i=>Number.isInteger(i)&&i>=0&&i<N)&&new Set(tiles).size===N;
 }
 function validSavedBoard(data){
-  return data&&Array.isArray(data.o)&&data.o.length===N&&data.o.every(v=>Number.isInteger(v)&&v>=0&&v<3)
-    &&Array.isArray(data.s)&&data.s.length===N&&data.s.every(Number.isInteger)&&validSavedTiles(data.t);
+  return data
+    && Array.isArray(data.o)
+    && data.o.length === N
+    && data.o.every(v => Number.isInteger(v) && v >= 0 && v < 3)
+    && Array.isArray(data.s)
+    && data.s.length === N
+    && data.s.every(Number.isInteger)
+    && validSavedTiles(data.t);
 }
 function restoreSavedBoard(data){
   if(!validSavedBoard(data))return false;
