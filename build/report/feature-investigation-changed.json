@@ -1,18 +1,23 @@
 {
   "schemaVersion": 1,
   "name": "wake7-feature-investigation-changed",
-  "generatedAt": "2026-09-04T11:42:07.306Z",
+  "generatedAt": "2026-09-04T11:54:06.048Z",
   "status": "passed",
   "activity": "affected",
   "changedFiles": [
     "index.html",
-    "scripts/application-manifest.mjs",
-    "scripts/feature-registry.json",
+    "scripts/check-public-symbols.mjs",
+    "src/commands/progression-commands.js",
+    "src/runtime/app-events.js",
     "src/runtime/runtime.js",
+    "src/ui/board-ui.js",
     "src/ui/speed-feature.js"
   ],
   "unknownFiles": [
-    "index.html"
+    "index.html",
+    "scripts/check-public-symbols.mjs",
+    "src/commands/progression-commands.js",
+    "src/ui/board-ui.js"
   ],
   "ambiguousFiles": [],
   "features": [
@@ -39,26 +44,44 @@
       "relatedFiles": []
     },
     {
-      "name": "scripts/manifest",
+      "name": "runtime/speed",
       "changedFiles": [
-        "scripts/application-manifest.mjs",
-        "scripts/feature-registry.json"
+        "src/runtime/app-events.js"
       ],
-      "entry": [],
-      "state": [],
-      "storage": [],
-      "dom": [],
-      "transitions": [],
+      "entry": [
+        "src/runtime/speed.js",
+        "src/runtime/app-events.js"
+      ],
+      "state": [
+        "src/state/game-state.js",
+        "src/app/app-context.js"
+      ],
+      "storage": [
+        "src/state/game-state.js"
+      ],
+      "dom": [
+        "src/index.template.html"
+      ],
+      "transitions": [
+        "src/commands/speed-commands.js",
+        "src/runtime/speed.js"
+      ],
       "checks": [
-        "development-entrypoints",
-        "esm",
-        "manifest-dependencies"
+        "application-services",
+        "progression-flows",
+        "e2e-speed-contract"
       ],
       "e2e": [
+        "scripts/check-e2e-speed-contract.mjs",
+        "scripts/check-browser-e2e.mjs",
         "browser-e2e",
-        "device-e2e"
+        "device-e2e",
+        "state-restore"
       ],
-      "boundaries": [],
+      "boundaries": [
+        "scripts/check-source-boundaries.mjs",
+        "scripts/check-state-restore.mjs"
+      ],
       "relatedFiles": []
     },
     {
@@ -100,16 +123,18 @@
     "e2e-speed-contract",
     "state-restore",
     "manifest-dependencies",
-    "development-entrypoints",
-    "esm",
+    "application-services",
+    "progression-flows",
     "dialog-state-map"
   ],
   "relatedE2E": [
     "browser-e2e",
     "device-e2e",
+    "scripts/check-e2e-speed-contract.mjs",
+    "scripts/check-browser-e2e.mjs",
+    "state-restore",
     "scripts/check-state-restore.mjs",
-    "scripts/check-dialog-state-map.mjs",
-    "state-restore"
+    "scripts/check-dialog-state-map.mjs"
   ],
   "recommendedProfile": "affected",
   "policy": {
@@ -119,6 +144,7 @@
   },
   "ignoredFiles": [
     "build/report/architecture-guide.json",
+    "build/report/change-check-map.json",
     "build/report/change-classification.json",
     "build/report/check-context.json",
     "build/report/check-domain-classification.json",
@@ -126,34 +152,37 @@
     "build/report/check-gate.json",
     "build/report/check-profile-result.json",
     "build/report/check-registry.json",
+    "build/report/compat-boundary-audit.json",
     "build/report/device-e2e-result.json",
     "build/report/dialog-state-access-audit.json",
     "build/report/dialog-state-map.json",
-    "build/report/e2e-speed-contract-audit.json",
     "build/report/event-wiring-map.json",
     "build/report/feature-investigation-changed.json",
     "build/report/feature-registry.json",
     "build/report/flow-map.json",
     "build/report/gate-evidence.json",
     "build/report/global-access.json",
-    "build/report/global-state-classification.json",
     "build/report/manifest-dependencies.json",
+    "build/report/navigation-classification.json",
+    "build/report/navigation-final-audit.json",
     "build/report/progression-flow-map.json",
     "build/report/progression-orchestrators.json",
     "build/report/progression-responsibility.json",
     "build/report/public-symbols.json",
-    "build/report/refactor-baseline.json",
     "build/report/refactor-candidates.json",
     "build/report/reward-access-result.json",
     "build/report/source-format-baseline.json",
     "build/report/state-access-baseline.json",
     "build/report/state-access-diff.json",
+    "build/report/state-access-final-audit.json",
     "build/report/state-access-policy.json",
     "build/report/state-classification.json",
     "build/report/state-mutation-audit.json",
     "build/report/structure-contract-diff.json",
     "build/report/symbol-index.json",
-    "build/report/ui-data-map.json"
+    "build/report/temporary-exception-audit.json",
+    "build/report/ui-data-map.json",
+    "build/report/unused-file-audit.json"
   ],
   "registry": "scripts\\feature-registry.json",
   "summary": {},

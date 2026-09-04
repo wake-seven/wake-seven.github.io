@@ -43,7 +43,7 @@ const GameDialogs=Object.freeze({
   mastery:kind=>ProgressionEntryPoints.showProgressionDialog('mastery',{kind},'progression')
 });
 const WakeSevenProgressionCommands=Object.freeze({
-  startSpeedRun:()=>beginSpeedRun(), advanceSpeedRun:()=>advanceSpeedRun(),
+  startSpeedRun:()=>WakeSevenSpeedFeature.begin(), advanceSpeedRun:()=>WakeSevenSpeedFeature.advance(),
   loadStage:index=>ProgressionEntryPoints.startStage(index), loadMasteryStage:index=>loadExtraStage(index),
   loadSatoriStage:index=>loadSatoriStage(index), startFree:()=>startFree(),
   advanceAfterClear:()=>ProgressionEntryPoints.advanceAfterClear()

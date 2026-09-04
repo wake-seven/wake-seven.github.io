@@ -947,7 +947,7 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
 // 現在の盤面を完了させる唯一の入口。盤面イベントはモード別の詳細を
 // ここへ渡し、演出・進行記録・次のアクションが別経路で競合しないようにする。
 function completeBoard({mode=activeMode,context={},animation=true,nextAction=null}={}){
-  if(mode==='speed'){completeSpeedStage();return true;}
+  if(mode==='speed'){WakeSevenSpeedFeature.complete();return true;}
   const target=mode||activeMode;
   resetClearFlow();
   setClearShownCommand(true);

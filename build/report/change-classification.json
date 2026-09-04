@@ -2,21 +2,23 @@
   "name": "wake7-change-classification",
   "status": "passed",
   "summary": {
-    "changedFiles": 5,
-    "classified": 2,
-    "unknown": 3,
-    "mismatches": 1,
+    "changedFiles": 7,
+    "classified": 5,
+    "unknown": 2,
+    "mismatches": 4,
     "missingFeatureKinds": 0
   },
   "warnings": [
     "分類ルールがありません: index.html",
-    "分類ルールがありません: scripts/application-manifest.mjs",
-    "分類ルールがありません: scripts/feature-registry.json",
-    "src/runtime/runtime.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です"
+    "分類ルールがありません: scripts/check-public-symbols.mjs",
+    "src/commands/progression-commands.js: 宣言分類 progression と差分シグナル assist, presentation が不一致です",
+    "src/runtime/app-events.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です",
+    "src/runtime/runtime.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です",
+    "src/ui/board-ui.js: 宣言分類 presentation と差分シグナル rule, progression が不一致です"
   ],
   "errors": [],
-  "generatedAt": "2026-09-04T11:42:07.692Z",
-  "sourceRevision": "196d568",
+  "generatedAt": "2026-09-04T11:54:06.408Z",
+  "sourceRevision": "43daf9a",
   "entries": [
     {
       "file": "index.html",
@@ -26,18 +28,43 @@
       "status": "unknown"
     },
     {
-      "file": "scripts/application-manifest.mjs",
+      "file": "scripts/check-public-symbols.mjs",
       "kind": null,
       "layer": null,
       "signals": [],
       "status": "unknown"
     },
     {
-      "file": "scripts/feature-registry.json",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
+      "file": "src/commands/progression-commands.js",
+      "kind": "progression",
+      "layer": "commands",
+      "signals": [
+        "progression",
+        "assist",
+        "presentation"
+      ],
+      "mismatched": [
+        "assist",
+        "presentation"
+      ],
+      "status": "warning"
+    },
+    {
+      "file": "src/runtime/app-events.js",
+      "kind": "progression",
+      "layer": "runtime",
+      "signals": [
+        "rule",
+        "progression",
+        "assist",
+        "presentation"
+      ],
+      "mismatched": [
+        "rule",
+        "assist",
+        "presentation"
+      ],
+      "status": "warning"
     },
     {
       "file": "src/runtime/runtime.js",
@@ -53,6 +80,22 @@
         "rule",
         "assist",
         "presentation"
+      ],
+      "status": "warning"
+    },
+    {
+      "file": "src/ui/board-ui.js",
+      "kind": "presentation",
+      "layer": "ui",
+      "signals": [
+        "rule",
+        "progression",
+        "assist",
+        "presentation"
+      ],
+      "mismatched": [
+        "rule",
+        "progression"
       ],
       "status": "warning"
     },

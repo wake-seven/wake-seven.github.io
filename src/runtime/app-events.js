@@ -328,7 +328,7 @@ function bindSpeedEvents(){
     openSpeedPauseDialog();
     $('speedResume').focus();
   });
-  WakeSevenEventBindings.click('speedResume',resumeSpeedRun);
+  WakeSevenEventBindings.click('speedResume',WakeSevenSpeedFeature.resume);
   WakeSevenEventBindings.click('speedRestart',()=>{
     $('speedPauseDialog').hidden=true;
     $('speedRestartDialog').hidden=false;

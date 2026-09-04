@@ -11,6 +11,9 @@ const WakeSevenSpeedFeature=Object.freeze({
   context:readSpeedFeatureContext,
   openPicker(){return openSpeedPicker();},
   start(forceNew=false){return enterSpeedMode(forceNew);},
+  begin(){return beginSpeedRun();},
+  advance(){return advanceSpeedRun();},
+  complete(){return completeSpeedStage();},
   pause(){return pauseSpeedRun();},
   resume(){return resumeSpeedRun();},
   restore(){return enterSpeedMode(false);}

@@ -4423,7 +4423,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-20:41';
+const APP_VERSION='2026.09.04-20:53';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -5691,6 +5691,9 @@ const WakeSevenSpeedFeature=Object.freeze({
   context:readSpeedFeatureContext,
   openPicker(){return openSpeedPicker();},
   start(forceNew=false){return enterSpeedMode(forceNew);},
+  begin(){return beginSpeedRun();},
+  advance(){return advanceSpeedRun();},
+  complete(){return completeSpeedStage();},
   pause(){return pauseSpeedRun();},
   resume(){return resumeSpeedRun();},
   restore(){return enterSpeedMode(false);}
@@ -7013,7 +7016,7 @@ function buildTwoMoveLessonBoard(id,variant='joinOne',overrideState=null){
 // 現在の盤面を完了させる唯一の入口。盤面イベントはモード別の詳細を
 // ここへ渡し、演出・進行記録・次のアクションが別経路で競合しないようにする。
 function completeBoard({mode=activeMode,context={},animation=true,nextAction=null}={}){
-  if(mode==='speed'){completeSpeedStage();return true;}
+  if(mode==='speed'){WakeSevenSpeedFeature.complete();return true;}
   const target=mode||activeMode;
   resetClearFlow();
   setClearShownCommand(true);
@@ -8820,7 +8823,7 @@ const GameDialogs=Object.freeze({
   mastery:kind=>ProgressionEntryPoints.showProgressionDialog('mastery',{kind},'progression')
 });
 const WakeSevenProgressionCommands=Object.freeze({
-  startSpeedRun:()=>beginSpeedRun(), advanceSpeedRun:()=>advanceSpeedRun(),
+  startSpeedRun:()=>WakeSevenSpeedFeature.begin(), advanceSpeedRun:()=>WakeSevenSpeedFeature.advance(),
   loadStage:index=>ProgressionEntryPoints.startStage(index), loadMasteryStage:index=>loadExtraStage(index),
   loadSatoriStage:index=>loadSatoriStage(index), startFree:()=>startFree(),
   advanceAfterClear:()=>ProgressionEntryPoints.advanceAfterClear()
@@ -11981,7 +11984,7 @@ function bindSpeedEvents(){
     openSpeedPauseDialog();
     $('speedResume').focus();
   });
-  WakeSevenEventBindings.click('speedResume',resumeSpeedRun);
+  WakeSevenEventBindings.click('speedResume',WakeSevenSpeedFeature.resume);
   WakeSevenEventBindings.click('speedRestart',()=>{
     $('speedPauseDialog').hidden=true;
     $('speedRestartDialog').hidden=false;
