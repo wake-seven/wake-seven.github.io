@@ -621,13 +621,15 @@
   .mode-row.application-mode{padding-right:8rem}
   .application-target-preview{position:absolute;right:-.25rem;top:50%;z-index:2;display:flex;align-items:center;gap:.2rem;transform:translateY(-50%);color:#D8BE78;font-size:.6875rem;font-weight:700;line-height:1;white-space:nowrap;pointer-events:none}
   .application-target-preview[hidden]{display:none!important}
-  .application-target-preview{opacity:1;transition:opacity .28s ease}
+  .application-target-preview{opacity:1;transition:opacity .28s ease;animation:application-target-breathe 2.6s ease-in-out 3 both}
   .application-target-preview.is-fading{opacity:0}
+  @keyframes application-target-breathe{0%,100%{opacity:.82}50%{opacity:1}}
   /* 目標見本は「あと1くるり」の到達形を読める大きさで示す。 */
   .application-target-preview svg{display:block;width:8.1rem;height:5.175rem;overflow:visible;flex:none;transform:translate(1.35rem,.7rem)}
   .application-target-preview span{align-self:flex-end;transform:translateY(-.1875rem)}
   .application-target-preview .mini-tile path:first-child{stroke:#8B35F0;stroke-width:4;stroke-linejoin:round}
   @media (max-width:560px){.mode-row.application-mode{padding-right:8.6rem}.application-target-preview{gap:.1rem;font-size:.6875rem}.application-target-preview svg{width:7.2rem;height:4.5rem;transform:translate(1.1rem,.65rem)}}
+  @media (prefers-reduced-motion:reduce){.application-target-preview{animation:none}}
   .mode-row.speed-mode:not(.speed-with-remaining) .status-metric.remaining,.mode-row.speed-mode:not(.speed-with-remaining) .status-separator{display:none}
   .status-metric{display:flex;align-items:baseline;gap:0.3125rem;color:#9FB0C4;font-size:0.6875rem;letter-spacing:.06em}
   /* display:flex がブラウザ標準の [hidden] より優先されるため、学習区間では明示的に隠す。 */
@@ -4415,7 +4417,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-16:18';
+const APP_VERSION='2026.09.04-16:24';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)

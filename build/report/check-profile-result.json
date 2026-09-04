@@ -1,60 +1,40 @@
 {
   "schemaVersion": 1,
   "name": "wake7-check-profile-result",
-  "generatedAt": "2026-09-04T07:22:03.859Z",
-  "sourceRevision": "05eda03",
+  "generatedAt": "2026-09-04T07:30:16.690Z",
+  "sourceRevision": "621d560",
   "status": "passed",
-  "warnings": [],
+  "warnings": [
+    "milestone成功。release前にfull gateが必要"
+  ],
   "errors": [],
-  "profile": "full",
-  "sessionPhase": "release",
+  "profile": "affected",
+  "sessionPhase": "milestone",
   "changedFiles": [
-    "index.html",
+    "src/index.template.html",
     "src/runtime/runtime.js"
   ],
   "ignoredFiles": [
-    "build/report/architecture-guide.json",
-    "build/report/change-classification.json",
-    "build/report/check-context.json",
-    "build/report/check-domain-classification.json",
-    "build/report/check-execution-contract.json",
-    "build/report/check-gate.json",
-    "build/report/check-profile-result.json",
-    "build/report/check-runtime.json",
-    "build/report/event-wiring-map.json",
-    "build/report/feature-investigation-changed.json",
-    "build/report/feature-registry.json",
-    "build/report/flow-map.json",
-    "build/report/progression-flow-map.json",
-    "build/report/progression-orchestrators.json",
-    "build/report/progression-responsibility.json",
-    "build/report/refactor-candidates.json",
-    "build/report/report-inventory.json",
-    "build/report/structure-contract-diff.json",
-    "build/report/symbol-index.json",
-    "build/report/ui-data-map.json"
+    "build/report/check-execution-contract.json"
   ],
-  "fullGateRequired": false,
-  "releasePending": false,
+  "fullGateRequired": true,
+  "releasePending": true,
   "selectionReasons": [
-    "指定されたプロファイル: full",
+    "指定されたプロファイル: affected",
     "関連feature: dialog-restore",
-    "関連E2E: scripts/check-state-restore.mjs, scripts/check-dialog-state-map.mjs, state-restore"
+    "関連E2E: scripts/check-state-restore.mjs, scripts/check-dialog-state-map.mjs, state-restore",
+    "検査基盤・共有状態・主要導線・公開生成物を変更した場合は、3バッチ・公開版・最終報告を含むcheck:gateを完了するまで部分プロファイルを成功扱いにしない。"
   ],
   "requiredChecks": [
     "domain-classification",
     "architecture-guide",
-    "development-entrypoints",
     "build",
     "version",
     "source-format",
-    "package-scripts",
     "board-domain",
     "application-services",
     "application-targets",
     "state",
-    "state-classification",
-    "state-mutations",
     "state-restore",
     "browser-flow",
     "dialog-chains",
@@ -62,596 +42,255 @@
     "animation-contract",
     "progression-flows",
     "progression-flow-contract",
-    "progression-orchestrators",
     "clear-flow-order",
     "esm",
     "source-boundaries",
     "compat-e2e",
     "browser-e2e",
     "reward-access",
-    "device-e2e",
-    "e2e-speed-contract",
-    "translations",
-    "dialog-state-map",
-    "global-state",
-    "gate-evidence",
-    "global-access",
-    "state-access-policy",
-    "temporary-exceptions",
-    "state-access-final-audit",
-    "navigation-classification",
-    "navigation-final-audit",
-    "change-check-map",
-    "refactor-baseline-generate",
-    "structure-contract-diff",
-    "refactor-baseline",
-    "refactor-budgets",
-    "esm-dependencies",
-    "public-esm",
-    "metrics-update-policy",
-    "refactor-policy",
-    "trace",
-    "progression-responsibility",
-    "ui-data-map",
-    "event-wiring",
-    "refactor-report",
-    "compat-boundaries",
-    "unused-files",
-    "manifest-dependencies",
-    "public-symbols",
-    "report-schema"
+    "dialog-state-map"
   ],
   "executed": [
     {
       "name": "feature-registry",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-feature-registry.mjs --changed",
-      "startedAt": "2026-09-04T07:20:30.763Z",
-      "finishedAt": "2026-09-04T07:20:30.985Z",
-      "durationMs": 221,
+      "startedAt": "2026-09-04T07:29:26.014Z",
+      "finishedAt": "2026-09-04T07:29:26.229Z",
+      "durationMs": 215,
       "exitCode": 0,
       "passed": true
     },
     {
       "name": "change-classification",
       "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-change-classification.mjs",
-      "startedAt": "2026-09-04T07:20:30.985Z",
-      "finishedAt": "2026-09-04T07:20:31.145Z",
-      "durationMs": 160,
+      "startedAt": "2026-09-04T07:29:26.229Z",
+      "finishedAt": "2026-09-04T07:29:26.377Z",
+      "durationMs": 148,
       "exitCode": 0,
       "passed": true
     },
     {
       "name": "domain-classification",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-domain-classification.mjs",
-      "startedAt": "2026-09-04T07:20:33.126Z",
-      "finishedAt": "2026-09-04T07:20:33.191Z",
-      "durationMs": 65,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "architecture-guide",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-architecture-guide.mjs",
-      "startedAt": "2026-09-04T07:20:33.192Z",
-      "finishedAt": "2026-09-04T07:20:33.296Z",
-      "durationMs": 104,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "development-entrypoints",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-development-entrypoints.mjs",
-      "startedAt": "2026-09-04T07:20:44.102Z",
-      "finishedAt": "2026-09-04T07:20:44.163Z",
-      "durationMs": 61,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "build",
-      "command": "C:\\WINDOWS\\system32\\cmd.exe /d /s /c npm run build",
-      "startedAt": "2026-09-04T07:20:33.297Z",
-      "finishedAt": "2026-09-04T07:20:44.038Z",
-      "durationMs": 10741,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "version",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-version.mjs",
-      "startedAt": "2026-09-04T07:20:44.164Z",
-      "finishedAt": "2026-09-04T07:20:44.350Z",
-      "durationMs": 186,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "source-format",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-source-format.mjs",
-      "startedAt": "2026-09-04T07:20:44.351Z",
-      "finishedAt": "2026-09-04T07:20:44.447Z",
-      "durationMs": 96,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "package-scripts",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-package-scripts.mjs",
-      "startedAt": "2026-09-04T07:20:44.039Z",
-      "finishedAt": "2026-09-04T07:20:44.101Z",
-      "durationMs": 62,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "board-domain",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/test-board-domain.mjs",
-      "startedAt": "2026-09-04T07:20:44.448Z",
-      "finishedAt": "2026-09-04T07:20:44.525Z",
-      "durationMs": 77,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "application-services",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/test-application-services.mjs",
-      "startedAt": "2026-09-04T07:20:44.526Z",
-      "finishedAt": "2026-09-04T07:20:44.587Z",
-      "durationMs": 61,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "application-targets",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-application-targets.mjs",
-      "startedAt": "2026-09-04T07:20:44.587Z",
-      "finishedAt": "2026-09-04T07:20:44.648Z",
-      "durationMs": 61,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "state",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-state.mjs",
-      "startedAt": "2026-09-04T07:20:44.649Z",
-      "finishedAt": "2026-09-04T07:20:44.735Z",
-      "durationMs": 86,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "state-classification",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-state-classification.mjs",
-      "startedAt": "2026-09-04T07:20:44.736Z",
-      "finishedAt": "2026-09-04T07:20:44.857Z",
-      "durationMs": 122,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "state-mutations",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-state-mutations.mjs",
-      "startedAt": "2026-09-04T07:20:44.858Z",
-      "finishedAt": "2026-09-04T07:20:44.933Z",
-      "durationMs": 75,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "state-restore",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-state-restore.mjs",
-      "startedAt": "2026-09-04T07:20:44.934Z",
-      "finishedAt": "2026-09-04T07:20:45.013Z",
-      "durationMs": 79,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "browser-flow",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-browser-flow.mjs",
-      "startedAt": "2026-09-04T07:20:45.014Z",
-      "finishedAt": "2026-09-04T07:20:45.084Z",
-      "durationMs": 70,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "dialog-chains",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-dialog-chains.mjs",
-      "startedAt": "2026-09-04T07:20:45.085Z",
-      "finishedAt": "2026-09-04T07:20:45.147Z",
-      "durationMs": 62,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "ui-effects",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-ui-effects.mjs",
-      "startedAt": "2026-09-04T07:20:45.147Z",
-      "finishedAt": "2026-09-04T07:20:45.225Z",
-      "durationMs": 78,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "animation-contract",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-animation-contract.mjs",
-      "startedAt": "2026-09-04T07:20:45.226Z",
-      "finishedAt": "2026-09-04T07:20:45.290Z",
-      "durationMs": 64,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "progression-flows",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-progression-flows.mjs",
-      "startedAt": "2026-09-04T07:20:45.291Z",
-      "finishedAt": "2026-09-04T07:20:45.350Z",
-      "durationMs": 59,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "progression-flow-contract",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-progression-flow-contract.mjs",
-      "startedAt": "2026-09-04T07:20:45.351Z",
-      "finishedAt": "2026-09-04T07:20:45.415Z",
-      "durationMs": 64,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "progression-orchestrators",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-progression-orchestrators.mjs",
-      "startedAt": "2026-09-04T07:20:45.415Z",
-      "finishedAt": "2026-09-04T07:20:45.533Z",
-      "durationMs": 118,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "clear-flow-order",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-clear-flow-order.mjs",
-      "startedAt": "2026-09-04T07:20:45.534Z",
-      "finishedAt": "2026-09-04T07:20:45.599Z",
-      "durationMs": 65,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "esm",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-esm.mjs",
-      "startedAt": "2026-09-04T07:20:45.599Z",
-      "finishedAt": "2026-09-04T07:20:45.669Z",
-      "durationMs": 70,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "source-boundaries",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-source-boundaries.mjs",
-      "startedAt": "2026-09-04T07:20:45.670Z",
-      "finishedAt": "2026-09-04T07:20:45.743Z",
-      "durationMs": 73,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "compat-e2e",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-compat-e2e.mjs",
-      "startedAt": "2026-09-04T07:20:45.744Z",
-      "finishedAt": "2026-09-04T07:20:46.087Z",
-      "durationMs": 343,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "browser-e2e",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-browser-e2e.mjs",
-      "startedAt": "2026-09-04T07:20:46.088Z",
-      "finishedAt": "2026-09-04T07:21:09.738Z",
-      "durationMs": 23650,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "reward-access",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-reward-access.mjs",
-      "startedAt": "2026-09-04T07:21:09.738Z",
-      "finishedAt": "2026-09-04T07:21:12.104Z",
-      "durationMs": 2366,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "device-e2e",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-device-e2e.mjs",
-      "startedAt": "2026-09-04T07:21:12.105Z",
-      "finishedAt": "2026-09-04T07:21:38.243Z",
-      "durationMs": 26138,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "e2e-speed-contract",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-e2e-speed-contract.mjs",
-      "startedAt": "2026-09-04T07:21:38.243Z",
-      "finishedAt": "2026-09-04T07:21:38.309Z",
-      "durationMs": 66,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "translations",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-translations.mjs",
-      "startedAt": "2026-09-04T07:21:38.309Z",
-      "finishedAt": "2026-09-04T07:21:38.378Z",
-      "durationMs": 69,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "dialog-state-map",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-dialog-state-map.mjs",
-      "startedAt": "2026-09-04T07:21:38.378Z",
-      "finishedAt": "2026-09-04T07:21:38.441Z",
-      "durationMs": 63,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "global-state",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-global-state-classification.mjs",
-      "startedAt": "2026-09-04T07:21:38.442Z",
-      "finishedAt": "2026-09-04T07:21:38.552Z",
-      "durationMs": 110,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "gate-evidence",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-gate-evidence.mjs",
-      "startedAt": "2026-09-04T07:21:38.553Z",
-      "finishedAt": "2026-09-04T07:21:38.624Z",
-      "durationMs": 71,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "global-access",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-global-access-contract.mjs",
-      "startedAt": "2026-09-04T07:21:38.624Z",
-      "finishedAt": "2026-09-04T07:21:38.841Z",
-      "durationMs": 217,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "state-access-policy",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-state-access-policy.mjs",
-      "startedAt": "2026-09-04T07:21:38.842Z",
-      "finishedAt": "2026-09-04T07:21:39.030Z",
-      "durationMs": 188,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "temporary-exceptions",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-temporary-exception-audit.mjs",
-      "startedAt": "2026-09-04T07:21:39.031Z",
-      "finishedAt": "2026-09-04T07:21:39.105Z",
-      "durationMs": 74,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "state-access-final-audit",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-state-access-final-audit.mjs",
-      "startedAt": "2026-09-04T07:21:39.106Z",
-      "finishedAt": "2026-09-04T07:21:39.167Z",
-      "durationMs": 61,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "navigation-classification",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-navigation-classification.mjs",
-      "startedAt": "2026-09-04T07:21:39.168Z",
-      "finishedAt": "2026-09-04T07:21:39.274Z",
-      "durationMs": 106,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "navigation-final-audit",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-navigation-final-audit.mjs",
-      "startedAt": "2026-09-04T07:21:50.280Z",
-      "finishedAt": "2026-09-04T07:21:50.353Z",
-      "durationMs": 73,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "change-check-map",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-change-check-map.mjs",
-      "startedAt": "2026-09-04T07:21:39.274Z",
-      "finishedAt": "2026-09-04T07:21:39.331Z",
-      "durationMs": 57,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "refactor-baseline-generate",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/generate-refactor-baseline.mjs",
-      "startedAt": "2026-09-04T07:21:39.331Z",
-      "finishedAt": "2026-09-04T07:21:39.864Z",
-      "durationMs": 533,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "structure-contract-diff",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-structure-contract-diff.mjs",
-      "startedAt": "2026-09-04T07:21:39.864Z",
-      "finishedAt": "2026-09-04T07:21:39.992Z",
-      "durationMs": 128,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "refactor-baseline",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-refactor-baseline.mjs",
-      "startedAt": "2026-09-04T07:21:39.992Z",
-      "finishedAt": "2026-09-04T07:21:40.053Z",
-      "durationMs": 61,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "refactor-budgets",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-refactor-budgets.mjs",
-      "startedAt": "2026-09-04T07:21:40.054Z",
-      "finishedAt": "2026-09-04T07:21:40.117Z",
-      "durationMs": 63,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "esm-dependencies",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-esm-dependencies.mjs",
-      "startedAt": "2026-09-04T07:21:40.118Z",
-      "finishedAt": "2026-09-04T07:21:40.190Z",
-      "durationMs": 72,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "public-esm",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-public-esm.mjs",
-      "startedAt": "2026-09-04T07:21:40.190Z",
-      "finishedAt": "2026-09-04T07:21:41.380Z",
-      "durationMs": 1190,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "metrics-update-policy",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-metrics-update.mjs",
-      "startedAt": "2026-09-04T07:21:41.381Z",
-      "finishedAt": "2026-09-04T07:21:41.546Z",
-      "durationMs": 165,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "refactor-policy",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-refactor-policy.mjs",
-      "startedAt": "2026-09-04T07:21:41.547Z",
-      "finishedAt": "2026-09-04T07:21:41.609Z",
-      "durationMs": 62,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "trace",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-trace-index.mjs",
-      "startedAt": "2026-09-04T07:21:41.610Z",
-      "finishedAt": "2026-09-04T07:21:50.202Z",
-      "durationMs": 8592,
-      "exitCode": 0,
-      "passed": true
-    },
-    {
-      "name": "progression-responsibility",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-progression-responsibility.mjs",
-      "startedAt": "2026-09-04T07:21:50.203Z",
-      "finishedAt": "2026-09-04T07:21:50.279Z",
+      "command": "node scripts/check-domain-classification.mjs",
+      "startedAt": "2026-09-04T07:29:26.377Z",
+      "finishedAt": "2026-09-04T07:29:26.453Z",
       "durationMs": 76,
       "exitCode": 0,
       "passed": true
     },
     {
-      "name": "ui-data-map",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-ui-data-map.mjs",
-      "startedAt": "2026-09-04T07:21:50.353Z",
-      "finishedAt": "2026-09-04T07:21:59.024Z",
-      "durationMs": 8671,
+      "name": "architecture-guide",
+      "command": "npm run check:architecture-guide",
+      "startedAt": "2026-09-04T07:29:26.453Z",
+      "finishedAt": "2026-09-04T07:29:26.969Z",
+      "durationMs": 516,
       "exitCode": 0,
       "passed": true
     },
     {
-      "name": "event-wiring",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-event-wiring.mjs",
-      "startedAt": "2026-09-04T07:21:59.024Z",
-      "finishedAt": "2026-09-04T07:21:59.250Z",
-      "durationMs": 226,
+      "name": "build",
+      "command": "npm run build",
+      "startedAt": "2026-09-04T07:29:26.969Z",
+      "finishedAt": "2026-09-04T07:29:39.586Z",
+      "durationMs": 12617,
       "exitCode": 0,
       "passed": true
     },
     {
-      "name": "refactor-report",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-refactor-report.mjs",
-      "startedAt": "2026-09-04T07:21:59.250Z",
-      "finishedAt": "2026-09-04T07:21:59.313Z",
-      "durationMs": 63,
+      "name": "version",
+      "command": "node scripts/check-version.mjs",
+      "startedAt": "2026-09-04T07:29:39.586Z",
+      "finishedAt": "2026-09-04T07:29:39.774Z",
+      "durationMs": 188,
       "exitCode": 0,
       "passed": true
     },
     {
-      "name": "compat-boundaries",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-compat-boundaries.mjs",
-      "startedAt": "2026-09-04T07:21:59.314Z",
-      "finishedAt": "2026-09-04T07:21:59.428Z",
-      "durationMs": 114,
+      "name": "source-format",
+      "command": "npm run check:source-format",
+      "startedAt": "2026-09-04T07:29:39.774Z",
+      "finishedAt": "2026-09-04T07:29:40.356Z",
+      "durationMs": 582,
       "exitCode": 0,
       "passed": true
     },
     {
-      "name": "unused-files",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-unused-files.mjs",
-      "startedAt": "2026-09-04T07:21:59.428Z",
-      "finishedAt": "2026-09-04T07:21:59.486Z",
-      "durationMs": 58,
+      "name": "board-domain",
+      "command": "node scripts/test-board-domain.mjs",
+      "startedAt": "2026-09-04T07:29:40.356Z",
+      "finishedAt": "2026-09-04T07:29:40.445Z",
+      "durationMs": 89,
       "exitCode": 0,
       "passed": true
     },
     {
-      "name": "manifest-dependencies",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-manifest-dependencies.mjs",
-      "startedAt": "2026-09-04T07:21:59.487Z",
-      "finishedAt": "2026-09-04T07:22:00.432Z",
-      "durationMs": 945,
+      "name": "application-services",
+      "command": "node scripts/test-application-services.mjs",
+      "startedAt": "2026-09-04T07:29:40.445Z",
+      "finishedAt": "2026-09-04T07:29:40.517Z",
+      "durationMs": 72,
       "exitCode": 0,
       "passed": true
     },
     {
-      "name": "public-symbols",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-public-symbols.mjs",
-      "startedAt": "2026-09-04T07:22:00.432Z",
-      "finishedAt": "2026-09-04T07:22:00.795Z",
-      "durationMs": 363,
+      "name": "application-targets",
+      "command": "node scripts/check-application-targets.mjs",
+      "startedAt": "2026-09-04T07:29:40.517Z",
+      "finishedAt": "2026-09-04T07:29:40.589Z",
+      "durationMs": 72,
       "exitCode": 0,
       "passed": true
     },
     {
-      "name": "report-schema",
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/check-report-schema.mjs",
-      "startedAt": "2026-09-04T07:22:00.795Z",
-      "finishedAt": "2026-09-04T07:22:01.174Z",
-      "durationMs": 379,
+      "name": "state",
+      "command": "node scripts/check-state.mjs",
+      "startedAt": "2026-09-04T07:29:40.589Z",
+      "finishedAt": "2026-09-04T07:29:40.680Z",
+      "durationMs": 91,
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "name": "state-restore",
+      "command": "npm run check:state-restore",
+      "startedAt": "2026-09-04T07:29:40.680Z",
+      "finishedAt": "2026-09-04T07:29:41.173Z",
+      "durationMs": 493,
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "name": "browser-flow",
+      "command": "npm run check:browser-flow",
+      "startedAt": "2026-09-04T07:29:41.173Z",
+      "finishedAt": "2026-09-04T07:29:41.681Z",
+      "durationMs": 508,
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "name": "dialog-chains",
+      "command": "npm run check:dialog-chains",
+      "startedAt": "2026-09-04T07:29:41.681Z",
+      "finishedAt": "2026-09-04T07:29:42.170Z",
+      "durationMs": 489,
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "name": "ui-effects",
+      "command": "npm run check:ui-effects",
+      "startedAt": "2026-09-04T07:29:42.170Z",
+      "finishedAt": "2026-09-04T07:29:42.853Z",
+      "durationMs": 683,
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "name": "animation-contract",
+      "command": "npm run check:animation-contract",
+      "startedAt": "2026-09-04T07:29:42.853Z",
+      "finishedAt": "2026-09-04T07:29:43.383Z",
+      "durationMs": 530,
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "name": "progression-flows",
+      "command": "npm run check:progression-flows",
+      "startedAt": "2026-09-04T07:29:43.383Z",
+      "finishedAt": "2026-09-04T07:29:43.940Z",
+      "durationMs": 557,
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "name": "progression-flow-contract",
+      "command": "npm run check:progression-flow-contract",
+      "startedAt": "2026-09-04T07:29:43.940Z",
+      "finishedAt": "2026-09-04T07:29:44.472Z",
+      "durationMs": 532,
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "name": "clear-flow-order",
+      "command": "npm run check:clear-flow-order",
+      "startedAt": "2026-09-04T07:29:44.472Z",
+      "finishedAt": "2026-09-04T07:29:45.124Z",
+      "durationMs": 652,
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "name": "esm",
+      "command": "npm run check:esm",
+      "startedAt": "2026-09-04T07:29:45.124Z",
+      "finishedAt": "2026-09-04T07:29:45.632Z",
+      "durationMs": 508,
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "name": "source-boundaries",
+      "command": "npm run check:source-boundaries",
+      "startedAt": "2026-09-04T07:29:45.632Z",
+      "finishedAt": "2026-09-04T07:29:46.140Z",
+      "durationMs": 508,
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "name": "compat-e2e",
+      "command": "npm run check:compat-e2e",
+      "startedAt": "2026-09-04T07:29:46.140Z",
+      "finishedAt": "2026-09-04T07:29:46.892Z",
+      "durationMs": 752,
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "name": "browser-e2e",
+      "command": "npm run check:browser-e2e",
+      "startedAt": "2026-09-04T07:29:46.892Z",
+      "finishedAt": "2026-09-04T07:30:13.655Z",
+      "durationMs": 26763,
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "name": "reward-access",
+      "command": "node scripts/check-reward-access.mjs",
+      "startedAt": "2026-09-04T07:30:13.655Z",
+      "finishedAt": "2026-09-04T07:30:16.168Z",
+      "durationMs": 2513,
+      "exitCode": 0,
+      "passed": true
+    },
+    {
+      "name": "dialog-state-map",
+      "command": "npm run check:dialog-state-map",
+      "startedAt": "2026-09-04T07:30:16.168Z",
+      "finishedAt": "2026-09-04T07:30:16.655Z",
+      "durationMs": 487,
       "exitCode": 0,
       "passed": true
     }
   ],
   "unexecuted": [],
-  "skippedChecks": [],
+  "skippedChecks": [
+    {
+      "name": "device-e2e",
+      "reason": "デバイス差分は公開前のcheck:gateで実行"
+    }
+  ],
   "summary": {
-    "required": 58,
-    "executed": 60,
+    "required": 23,
+    "executed": 25,
     "unexecuted": 0,
-    "skipped": 0,
+    "skipped": 1,
     "failed": 0,
-    "durationMs": 88393
+    "durationMs": 50641
   },
   "policy": {
     "passed": "必須検査をすべて実行し、全件成功",

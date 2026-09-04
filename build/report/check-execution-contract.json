@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "name": "wake7-execution-contract",
-  "generatedAt": "2026-09-04T07:20:30.018Z",
-  "sourceRevision": "05eda03",
+  "generatedAt": "2026-09-04T07:29:25.208Z",
+  "sourceRevision": "621d560",
   "status": "passed",
   "warnings": [],
   "errors": [],
@@ -16,7 +16,7 @@
   "mustNotRun": [],
   "fullGateRequired": true,
   "changedFiles": [
-    "index.html",
+    "src/index.template.html",
     "src/runtime/runtime.js"
   ],
   "policy": {
@@ -64,10 +64,15 @@
   "milestone": {
     "command": "npm run check:milestone",
     "requiredChecks": [
-      "browser-e2e"
+      "browser-e2e",
+      "device-e2e"
     ],
-    "conditionalChecks": [],
-    "reasons": []
+    "conditionalChecks": [
+      "device-e2e"
+    ],
+    "reasons": [
+      "pointer・タッチ・レスポンシブ表示の変更は、途中でも端末差分を確認する。"
+    ]
   },
   "release": {
     "command": "npm run check:release",
@@ -76,6 +81,5 @@
       "browser-e2e",
       "device-e2e"
     ]
-  },
-  "summary": {}
+  }
 }
