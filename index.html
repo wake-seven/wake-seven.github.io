@@ -1759,7 +1759,6 @@
   });
 })(window);
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // <!-- WAKE7:PROGRESSION-POLICY:START -->
 /* コース進行と速解きの宣言ポリシー。公開版では単体HTMLへ埋め込む。 */
@@ -1822,7 +1821,6 @@ export {};
   global.WakeSevenProgression = Object.freeze({create});
 })(window);
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== 盤面ドメイン =====
 /*
@@ -1912,7 +1910,6 @@ const WakeSevenBoardDomain=(()=>{
   return Object.freeze({create});
 })();
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== クリア後メッセージデータ =====
 // ===== クリア後・開始前メッセージデータ =====
@@ -1994,7 +1991,6 @@ const CLEAR_CONTENT={
 // 次の節・クラスへ進む節目ダイアログを同じ入口で監査できるようにする。
 Object.values(CLEAR_CONTENT).forEach(entry=>{entry.kind=entry.dialog?'milestone':'clear';});
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== 基礎データ =====
 // ===== 盤面ジオメトリ定数 =====
@@ -2435,7 +2431,6 @@ EXTRA_STAGES.push(
 // 悟りへの道の出題データは src/data/satori.js で構築する。
 let currentLang='ja';
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== 悟り出題データ =====
 // 悟りへの道の最終出題順。直前の構築処理は基礎データ側に残す。
@@ -2537,7 +2532,6 @@ const SATORI_STAGES=[...SATORI_MIXED_STAGES];
 const SATORI_ORDER_VERSION='mixed-depths-final-swap-10';
 const satoriStageIndexByState=new Map(SATORI_STAGES.map((stage,index)=>[stage.state,index]));
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== 多言語UIテキスト =====
 // ===== UI_TEXT(多言語辞書) =====
@@ -4135,7 +4129,6 @@ const UI_TEXT={
   }
 };
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== 盤面クイズデータ =====
 // ===== 盤面クイズデータ =====
@@ -4152,7 +4145,6 @@ Object.assign(BOARD_QUIZ_COPY.en,{chooseThree:'Which board takes 3 moves?',large
 Object.assign(BOARD_QUIZ_COPY.zh,{chooseThree:'哪一个最少需要3步？',largeTriangle:'倒下的大三角形会因方向不同而需要3步或4步。'});
 Object.assign(BOARD_QUIZ_COPY.ko,{chooseThree:'어느 보드가 최단 3수일까요?',largeTriangle:'누운 다루마의 큰 삼각형은 방향에 따라 최단 3수 또는 4수가 됩니다.'});
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== 固定挿絵・SVGデータ =====
 // ===== 固定挿絵・SVGデータ =====
@@ -4241,7 +4233,6 @@ const TRAINING_WELCOME_ART_SVG=`<svg id="trainingWelcomeArt" viewBox="0 0 320 22
 </svg>`;
 
 // 公開バンドルではネイティブモジュールへ連結されることを明示する境界。
-export {};
 
 // ===== 実行設定 =====
 // ===== アプリケーション共有状態の入口 =====
@@ -4346,7 +4337,6 @@ function initializeRuntimeSettings(){
 }
 
 // 公開バンドルではネイティブモジュールへ連結されることを明示する境界。
-export {};
 
 // ===== 速解き解放状態 =====
 // ===== サウンド =====
@@ -4406,7 +4396,6 @@ function updateSoundToggle(){
     :'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="m4 4 16 16"/></svg>';
 }
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== 実行状態 =====
 // 速解き解放状態の読み込み。
@@ -4424,7 +4413,6 @@ function initializeSpeedUnlockState({initialUnlocks={},awakenedGranted=false}={}
   });
 }
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== コマンド実行境界 =====
 // ===== 共通ユーティリティ =====
@@ -5318,7 +5306,6 @@ function hexPath(r){
   return p+'Z';
 }
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== アプリケーション共有状態 =====
 // commandからブラウザAPIと保存形式を隔離する実行境界。
@@ -5695,7 +5682,6 @@ function completeSpeedStage(){
   setUiEffectTimer('clear-transition','advance-speed',WakeSevenProgressionCommands.advanceSpeedRun,delay+120);
 }
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== 盤面アニメーション補助 =====
 // ===== 速解きセッションの入口 =====
@@ -5718,7 +5704,6 @@ const WakeSevenSpeedFeature=Object.freeze({
   resume(){return resumeSpeedRun();},
   restore(){return enterSpeedMode(false);}
 });
-export {};
 
 // ===== 盤面座標変換 =====
 // ===== 盤面アニメーション補助 =====
@@ -5832,7 +5817,6 @@ function updateAutoSwipePreview(clones,progress,turnDelta){
   }
 }
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== 盤面UI =====
 // 盤面の座標変換表示だけを担当する小さな境界。
@@ -5843,7 +5827,6 @@ const WakeSevenBoardGeometry=Object.freeze({
   nearestRotationDeg:(fromDeg,toDeg)=>{const delta=((toDeg-fromDeg+180)%360+360)%360-180;return fromDeg+delta;}
 });
 
-export {};
 
 // ===== 盤面renderer =====
 // ポインタイベントを盤面操作で使う最小の入力モデルへ正規化する。
@@ -6000,7 +5983,6 @@ function finishBoardAnimationSession(session){
 }
 function cancelBoardAnimationSession(session=boardAnimationSession){if(!session||session.cleaned)return false;session.cancelled=true;setBoardAnimationPhase(session,BOARD_ANIMATION_PHASE.cancelled);return finishBoardAnimationSession(session);}
 function cancelBoardAnimation(reason='cancelled'){cancelActiveTutorialRewindSession(reason);return cancelBoardAnimationSession();}
-export {};
 
 // ===== UIコンテキスト =====
 // チュートリアル巻き戻し演出へ渡す表示モデル。副作用を持たない。
@@ -6084,7 +6066,6 @@ function cancelTutorialRewindSession(session){
 function cancelActiveTutorialRewindSession(reason='cancelled'){
   return activeTutorialRewindSession?cancelTutorialRewindSession(activeTutorialRewindSession):false;
 }
-export {};
 
 // ===== 盤面コマンド =====
 // ===== 盤面SVG構築・入門/学園ダイアログ・最短2手レッスン =====
@@ -8304,7 +8285,6 @@ const GameBoard=Object.freeze({
   reset:(state,par)=>setPosition(state,par)
 });
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== 進行コマンド =====
 // 盤面上の補助表示だけを担当するrenderer。盤面状態の変更・保存・操作判定は行わない。
@@ -8418,7 +8398,6 @@ function renderAxisGuide(root,triangle,cellPositions=[],ratio=.57){
   ring.setAttribute('cx',triangle.x);ring.setAttribute('cy',triangle.y);ring.setAttribute('r',7);
   g.appendChild(ring);root.appendChild(g);return g;
 }
-export {};
 
 // ===== 設定コマンド =====
 // 画面だけに存在する一時状態の境界。永続gameStateやlocalStorageには書き込まない。
@@ -8515,7 +8494,6 @@ function createNamedAnimationGuard(name='ui-animation'){
   };
 }
 function setDialogOpenState(id,open){const dialog=$(id);if(dialog)dialog.hidden=!open;return !!open;}
-export {};
 
 // ===== 進行command =====
 // 学園・応用・速解きで使う候補棒の計算。
@@ -8689,7 +8667,6 @@ function restoreNavigationStateCommand(navigation={}){
     lastStageMode:navigation.lastStageMode
   });
 }
-export {};
 
 // ===== 速解き記録command =====
 // 盤面操作のコマンド入口。実装本体は当面 board-ui.js に残し、入力経路だけを統一する。
@@ -8755,7 +8732,6 @@ function applyBoardOrientationCommand(permutation,flip=false){
   return transformed;
 }
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== チュートリアルcommand =====
 // 設定変更の書き込み境界。UIイベントはこのcommandを呼び、保存形式を直接扱わない。
@@ -8795,7 +8771,6 @@ function setLanguageCommand(lang){
   try{commandStorageSet(STORAGE_KEY_GROUPS.settings.language,lang);}catch(_){ }
   return true;
 }
-export {};
 
 // ===== クイズUI =====
 // 進行報酬を書き込む操作命令。節目ダイアログの表示処理から状態更新を分離する。
@@ -8848,7 +8823,6 @@ const WakeSevenProgressionCommands=Object.freeze({
   loadSatoriStage:index=>loadSatoriStage(index), startFree:()=>startFree(),
   advanceAfterClear:()=>ProgressionEntryPoints.advanceAfterClear()
 });
-export {};
 
 // ===== クリアフロー =====
 // 速解き固有のセッション状態を書き込む操作命令。時計・表示・遷移は実行側に残す。
@@ -8890,7 +8864,6 @@ function completeSpeedSessionCommand(result){
   setSpeedSessionCommand({...speedSession,...result,completed:true});
   return true;
 }
-export {};
 
 // ===== メッセージUI =====
 // 速解きの記録データを書き込む操作命令。表示用の集計・描画は実行側に残す。
@@ -8913,7 +8886,6 @@ function recordSpeedCompletionCommand(elapsed,optimalClears){
   completeSpeedSessionCommand({elapsedMs:time,bestMs:bestTime,optimalClears,runNumber:history.length});
   return {bestTime,history,runNumber:history.length};
 }
-export {};
 
 // ===== 進行表示 =====
 // チュートリアル状態の書き込みcommand。演出・誤操作判定はUI側に残す。
@@ -8940,7 +8912,6 @@ function persistTutorialSessionCommand(step=tutorialStep){
   commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialStep,String(step));
   return true;
 }
-export {};
 
 // ===== 節目ダイアログ =====
 // ===== 共通クイズUI =====
@@ -9142,7 +9113,6 @@ function bindBoardQuizAnswerEvents(root,{config,correct,states,copy,note,noteKey
   }));
 }
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== 進行UI =====
 // ===== クリア内容の選択 =====
@@ -9177,7 +9147,6 @@ function stageClearArtAt(mode,index){
 }
 function stageClearArt(){const navigation=readNavigationContext(),{mode}=navigation;return mode==='satori'?'':stageClearArtAt(mode==='mastery',mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);}
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== ロードマップ表示 =====
 // ===== メッセージUIの宣言データ =====
@@ -9246,7 +9215,6 @@ function renderIntroMilestone(entry,{seal,masterText}){const data=INTRO_MILESTON
 function renderVolumeMilestone(entry,volume,{seal,rankText,masterText}){const {currentLang:language}=WakeSevenAppContext.state.settings.read();const nextRules=VOLUME_NEXT_RULES[language]||[];const clearName=language==='ja'?'名人への道・'+volumeLabel(volume)+'　'+masterSubtitle(volume):volumeLabel(volume)+'　'+masterSubtitle(volume);$('messageMasterSealLabel').textContent=rankForVolume(volume);setSealColor(seal,volume+1);configureMilestoneHeader(entry,tr('volumeClearTitle',{n:clearName}));rankText.hidden=false;rankText.textContent=rankEarnedText(rankForVolume(volume));masterText.hidden=false;masterText.textContent=nextRules[volume-1]||tr('volumeClearText');}
 const MILESTONE_RENDERERS=Object.freeze({primary:(entry,view)=>renderPrimaryMilestone(entry,view),mastery:(entry,view)=>renderMasteryMilestone(entry,view),satori:(entry,view)=>renderSatoriMilestone(entry,view),awakening:(entry,view)=>renderAwakeningMilestone(entry,view),satoriIntro:(entry,view)=>renderIntroMilestone(entry,view),secondLapIntro:(entry,view)=>renderIntroMilestone(entry,view),trainingWelcome:(entry,view)=>renderIntroMilestone(entry,view),volume:(entry,view,volume)=>renderVolumeMilestone(entry,volume,view)});
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== ヒント表示 =====
 // ステージ進行に関する表示補助。状態更新は行わず、現在の状態を画面へ反映する。
@@ -9334,7 +9302,6 @@ function renderStageNavAccent(context={}){
   renderRankBadge();
 }
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // 名人ロードマップの描画。進行表示の責務に隣接するためここへ統合する。
 function renderMasterRoadmap(kind){
@@ -9503,7 +9470,6 @@ const WakeSevenClearFeature=Object.freeze({
   trace(){return clearFeatureTrace.slice();},
   state(){return typeof getClearFlowState==='function'?getClearFlowState():null;}
 });
-export {};
 
 // ===== SVG表示境界 =====
 // ===== ダイアログ連鎖機能の入口 =====
@@ -9525,7 +9491,6 @@ const WakeSevenDialogChainFeature=Object.freeze({
   restore(name){return showDialogChainStep(name);},
   context:readDialogChainContext
 });
-export {};
 
 // ===== 画面描画境界 =====
 // 節目ダイアログの表示条件をまとめる。報酬付与や遷移は progression-ui.js 側が担当する。
@@ -9560,7 +9525,6 @@ function masterDialogVisibility(kind,needsMasteryTrial){
   };
 }
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== イベントと起動 =====
 // 進行画面の補助的な鑑賞・解説UI。盤面本体の進行状態は変更しない。
@@ -9832,7 +9796,6 @@ const WakeSevenStagePickerFeature=Object.freeze({
   close(){return closeStagePicker();},
   restore(options={}){return openDialog('stagePicker',options);}
 });
-export {};
 
 // ===== 公開API名前空間 =====
 // ===== 設定・About・リセットの機能入口 =====
@@ -9886,7 +9849,6 @@ const WakeSevenSettingsFeature=Object.freeze({
   close:closeSettingsFeature,
   restore:openSettingsFeature
 });
-export {};
 
 // ===== ui/progression-ui.js =====
 // ===== 進行UI（このファイルの責務） =====
@@ -10926,7 +10888,6 @@ $('stageModeReturn').addEventListener('click',()=>{returnToStageMode();});
 $('freeMode').addEventListener('click',()=>{if(busy||isMode('free'))return;restoreFreeSession();});
 
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== ui/progression-hud.js =====
 // 進行画面のHUDとステージナビを描画する。状態遷移は行わず、表示更新だけを担当する。
@@ -11202,7 +11163,6 @@ function clearScheduledHint(){cancelTutorialHint();}
 $('hint').addEventListener('click',()=>{cancelTutorialHint();if(isFourthVolume())revealFourthDistance();else showBestMoveHint();});
 
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
-export {};
 
 // ===== ui/progression-flow-contract.js =====
 // ===== 進行フローの遷移契約 =====
@@ -11231,7 +11191,6 @@ const PROGRESSION_ORCHESTRATORS=Object.freeze([
   {id:'dialog-restore',name:'ダイアログ復元オーケストレーター',entry:'restoreDialogState',source:'src/runtime/runtime.js',order:{decision:['clear:()=>'],transition:['createClearTransitionContext'],render:['WakeSevenClearFeature.restoreClearDialog']}},
   {id:'stage-advance',name:'ステージ進行オーケストレーター',entry:'dispatchClearFlowAction',source:'src/ui/progression-clear-flow.js',order:{decision:['resolveAfterClearRoute'],transition:['setClearFlowPhase'],render:['loadStage']}}
 ]);
-export {};
 
 // ===== ui/progression-clear-flow.js =====
 // ===== クリア後の状態遷移 =====
@@ -11541,7 +11500,6 @@ function returnToClearDialog(){
 }
 
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
-export {};
 
 // ===== ui/rank.js =====
 // 称号表示と称号一覧ダイアログ。
@@ -11712,7 +11670,6 @@ function openRankDialogFrom(dialogId,sealId){
   WakeSevenStagePickerFeature.openRank({dialogId,focusId:sealId});
 }
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== ui/render.js =====
 /* ---- 画面描画の境界 ----
@@ -11745,7 +11702,6 @@ function renderCurrentView(model={},context={}){
 // 動的コンテナ更新の共通境界。既存rendererのmarkup生成は維持する。
 function replaceRenderedContent(root,markup=''){return svgMount(root,markup);}
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== runtime/app-events.js =====
 // ===== アプリケーションイベント =====
@@ -12969,7 +12925,6 @@ $('resetDialogAll').addEventListener('click',()=>{
 });
 
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== runtime/app-bootstrap.js =====
 // 起動・復元・ページライフサイクル。画面イベントの定義とは分離する。
@@ -13031,7 +12986,6 @@ if(document.documentElement.classList.contains('embed')&&window.parent!==window)
   reportEmbedHeight();
 }
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== runtime/namespace.js =====
 /* 公開APIの境界。既存のグローバル関数は互換のため残し、外部からはこの名前空間を入口にする。 */
@@ -13082,7 +13036,6 @@ export {};
   global.WakeSeven = Object.freeze({state: stateApi, progression: progressionApi, messages: messagesApi, speed: speedApi});
 })(window);
 // 公開ネイティブモジュールの構文境界。
-export {};
 
 // ===== ui/dom.js =====
 // ===== 共通DOM更新API =====
@@ -13124,12 +13077,10 @@ function clear(elementOrId) {
 function createRefs(ids,documentRef=document){return Object.freeze(Object.fromEntries(ids.map(id=>[id,documentRef?.getElementById(id)||null])));}
 
 // 公開バンドルへ連結する断片でもESM境界を明示する。
-export {};
 
 // ===== ui/template.js =====
 // ===== テンプレート取り付けAPI =====
 // 公開バンドルへ連結する断片でもESM境界を明示する。
-export {};
 </script>
 <!-- WAKE7:APPLICATION-MODULES:END -->
 </body>
