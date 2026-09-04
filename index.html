@@ -4567,6 +4567,8 @@ function updateNavigationStateOwner(patch={}){
 }
 const isMode=mode=>activeMode===mode;
 function setUnlock(key,value){
+  const rewardKey=key==='awakened'?'awakenedGranted':['masterGoldGranted','satoriDesignGranted','rainbowDarumaGranted'].includes(key)?key:null;
+  if(rewardKey)return updateRewardStateOwner({[rewardKey]:value===true})[rewardKey];
   const unlocks=WakeSevenState.updateUnlocks(gameState,{[key]:value===true});
   return unlocks[key];
 }
@@ -4863,14 +4865,12 @@ function trackGameStart(){
 }
 initializeRuntimeSettings();
 const initialUnlocks=WakeSevenState.sectionView(gameState,'unlocks');
-let masterGoldGranted=initialUnlocks.masterGoldGranted===true;
-if(!masterGoldGranted)try{masterGoldGranted=storage.get(STORAGE_KEY_GROUPS.rewards.masterGoldGranted)==='1';}catch(_){ }
-let satoriDesignGranted=initialUnlocks.satoriDesignGranted===true;
-if(!satoriDesignGranted)try{satoriDesignGranted=storage.get(STORAGE_KEY_GROUPS.rewards.satoriDesignGranted)==='1';}catch(_){ }
+function storedUnlockFlag(key){try{return storage.get(key)==='1';}catch(_){return false;}}
+let masterGoldGranted=initialUnlocks.masterGoldGranted===true||storedUnlockFlag(STORAGE_KEY_GROUPS.rewards.masterGoldGranted);
+let satoriDesignGranted=initialUnlocks.satoriDesignGranted===true||storedUnlockFlag(STORAGE_KEY_GROUPS.rewards.satoriDesignGranted);
 let secondLapActive=false;
 try{secondLapActive=storage.get(STORAGE_KEY_GROUPS.progression.secondLapActive)==='1';}catch(_){ }
-let awakenedGranted=initialUnlocks.awakened===true;
-if(!awakenedGranted)try{awakenedGranted=storage.get(STORAGE_KEY_GROUPS.rewards.awakenedGranted)==='1';}catch(_){ }
+let awakenedGranted=initialUnlocks.awakened===true||storedUnlockFlag(STORAGE_KEY_GROUPS.rewards.awakenedGranted);
 // 速解きモードの解放・記録は通常の進行状況リセットでは保持し、
 // 「すべてリセット」のときだけ初期化する。
 const speedUnlockState=initializeSpeedUnlockState({initialUnlocks});
@@ -4929,13 +4929,22 @@ function grantCampaignProgressThrough(checkpoint){
     grantSpeedTrialCleared('mastery27');
   }
 }
-function storedUnlockFlag(key){try{return storage.get(key)==='1';}catch(_){return false;}}
 // 3Dページは速解きモード初回クリアの報酬。速解きの解放同様、進行状況リセットでは残す。
 let threeDUnlocked=initialUnlocks.threeD===true||storedUnlockFlag(STORAGE_KEY_GROUPS.rewards.threeDUnlocked);
 // 七色だるまは二周目の名人達成報酬。覚者報酬が保存済みなら解放状態として保持する。
-let rainbowDarumaGranted=initialUnlocks.rainbowDarumaGranted===true;
-try{rainbowDarumaGranted=rainbowDarumaGranted||storage.get(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted)==='1'||awakenedGranted;}catch(_){rainbowDarumaGranted=awakenedGranted;}
+let rainbowDarumaGranted=initialUnlocks.rainbowDarumaGranted===true||storedUnlockFlag(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted)||awakenedGranted;
 if(rainbowDarumaGranted)try{storage.set(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');}catch(_){ }
+function readRewardStateOwner(){return Object.freeze({masterGoldGranted,satoriDesignGranted,rainbowDarumaGranted,awakenedGranted});}
+function updateRewardStateOwner(patch={}){
+  patch=patch&&typeof patch==='object'&&!Array.isArray(patch)?patch:{};
+  if(typeof patch.masterGoldGranted==='boolean')masterGoldGranted=patch.masterGoldGranted;
+  if(typeof patch.satoriDesignGranted==='boolean')satoriDesignGranted=patch.satoriDesignGranted;
+  if(typeof patch.rainbowDarumaGranted==='boolean')rainbowDarumaGranted=patch.rainbowDarumaGranted;
+  if(typeof patch.awakenedGranted==='boolean')awakenedGranted=patch.awakenedGranted;
+  WakeSevenState.updateUnlocks(gameState,{masterGoldGranted,satoriDesignGranted,rainbowDarumaGranted,awakened:awakenedGranted});
+  return readRewardStateOwner();
+}
+updateRewardStateOwner({});
 let secondLapUnlocked=initialUnlocks.secondLap===true||storedUnlockFlag(STORAGE_KEY_GROUPS.progression.secondLapUnlocked)||secondLapActive||awakenedGranted;
 function readUnlockStateOwner(){
   return Object.freeze({secondLapUnlocked,threeDUnlocked,speedTrainingUnlocked,speedIntermediateUnlocked,speedMasteryUnlocked,speedSatoriUnlocked,speedTrainingTrialCleared,speedIntermediateTrialCleared,speedMasteryTrialCleared});
@@ -5136,7 +5145,7 @@ const hasMasterReward=()=>masterGoldGranted;
 const hasSatoriReward=()=>isSatoriMastered()||satoriDesignGranted;
 function grantMasterReward(){
   if(masterGoldGranted)return;
-  masterGoldGranted=setUnlock('masterGoldGranted',true);
+  setUnlock('masterGoldGranted',true);
   grantMasterRewardSettingsCommand();
   try{storage.set(STORAGE_KEY_GROUPS.rewards.masterGoldGranted,'1');}catch(_){ }
   // 全パターン一覧が参照する vnext 状態ストアにも即時反映する。
@@ -5148,7 +5157,7 @@ function updateMasterTheme(){
   let nextBoardTheme=boardTheme,nextBoardLayout=boardLayout,nextDarumaColor=darumaColor;
   // 悟り制覇の瞬間は、白黒と縦配置をセットで新しい褒美として見せる。
   if(isSatoriMastered()&&!satoriDesignGranted){
-    nextBoardTheme='satori';nextBoardLayout='tilted';satoriDesignGranted=setUnlock('satoriDesignGranted',true);
+    nextBoardTheme='satori';nextBoardLayout='tilted';setUnlock('satoriDesignGranted',true);
     try{storage.set(STORAGE_KEY_GROUPS.rewards.satoriDesignGranted,'1');}catch(_){ }
   }
   if(hasMasterReward()&&!boardThemeChosen)nextBoardTheme=hasSatoriReward()?'satori':'gold';
@@ -8807,12 +8816,12 @@ function setLanguageCommand(lang){
 function grantMasterDialogRewardsCommand(kind){
   if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
   if(kind==='mastery'&&secondLapActive&&!rainbowDarumaGranted){
-    rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);updateSettingsStateOwner({darumaColor:'rainbow',darumaColorChosen:false});
+    setUnlock('rainbowDarumaGranted',true);updateSettingsStateOwner({darumaColor:'rainbow',darumaColorChosen:false});
     try{commandStorageSet(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');commandStorageRemove(STORAGE_KEY_GROUPS.settings.darumaColorChosen);}catch(_){ }
     updateMasterTheme();renderStageNav();syncGameState();
   }
   if(kind==='awakening'&&!awakenedGranted){
-    awakenedGranted=setUnlock('awakened',true);updateUnlockStateOwner({threeDUnlocked:true});
+    setUnlock('awakened',true);updateUnlockStateOwner({threeDUnlocked:true});
     try{commandStorageSet(STORAGE_KEY_GROUPS.rewards.awakenedGranted,'1');commandStorageSet(STORAGE_KEY_GROUPS.rewards.threeDUnlocked,'1');}catch(_){ }
     persistLapProgress();updateMasterTheme();renderStageNav();rememberSpecialMessage('awakening');syncGameState();
   }
@@ -11677,7 +11686,7 @@ function debugClearCurrent(extraMoves=0){
 }
 $('debugClear').addEventListener('click',()=>debugClearCurrent(0));
 function debugGrantRainbowDaruma(){
-  rainbowDarumaGranted=setUnlock('rainbowDarumaGranted',true);
+  setUnlock('rainbowDarumaGranted',true);
   updateSettingsStateOwner({darumaColor:'rainbow',darumaColorChosen:false});
   try{
     storage.set(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');
@@ -11696,9 +11705,9 @@ function debugPrepareSecondLapCheckpoint(){
   lap2ClearedExtraStages.clear();
   lap2ClearedSatoriStages.clear();
   updateUnlockStateOwner({secondLapUnlocked:true});
-  awakenedGranted=setUnlock('awakened',false);
-  masterGoldGranted=setUnlock('masterGoldGranted',true);
-  satoriDesignGranted=setUnlock('satoriDesignGranted',true);
+  setUnlock('awakened',false);
+  setUnlock('masterGoldGranted',true);
+  setUnlock('satoriDesignGranted',true);
   try{
     storage.set(STORAGE_KEY_GROUPS.progression.secondLapUnlocked,'1');
     storage.remove(STORAGE_KEY_GROUPS.rewards.awakenedGranted);
@@ -11716,7 +11725,7 @@ function debugPrepareFirstLapCheckpoint(){
   lap2ClearedExtraStages.clear();
   lap2ClearedSatoriStages.clear();
   updateUnlockStateOwner({secondLapUnlocked:false});
-  awakenedGranted=setUnlock('awakened',false);
+  setUnlock('awakened',false);
   // 一周目の節目を検証するデバッグでは、卒業試験も未合格から始める。
   updateUnlockStateOwner({speedTrainingTrialCleared:false,speedIntermediateTrialCleared:false,speedMasteryTrialCleared:false});
   try{
@@ -12832,14 +12841,12 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   }
   if(!preserveRewards){
     resetSettingsCommand();
-    masterGoldGranted=false;
-    satoriDesignGranted=false;
-    rainbowDarumaGranted=false;
+    updateRewardStateOwner({masterGoldGranted:false,satoriDesignGranted:false,rainbowDarumaGranted:false});
     updateUnlockStateOwner({threeDUnlocked:false});
   }
   if(!preserveRewards)syncSpeedUnlockFlag();
   secondLapActive=false;
-  awakenedGranted=false;
+  updateRewardStateOwner({awakenedGranted:false});
   setActiveMode('stage');setSpeedSessionCommand(null);pauseSpeedClock();
   updateMasterTheme();
   loadStage(0);
