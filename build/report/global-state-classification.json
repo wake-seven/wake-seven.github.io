@@ -1,24 +1,24 @@
 {
   "schemaVersion": 1,
   "name": "wake7-global-state-classification",
-  "generatedAt": "2026-09-04T02:56:29.942Z",
+  "generatedAt": "2026-09-04T04:05:58.465Z",
   "sourceRevision": "working-tree",
   "status": "passed",
   "warnings": [],
   "errors": [],
   "summary": {
-    "declarations": 369,
+    "declarations": 371,
     "unclassified": 0,
     "counts": {
       "domain": 160,
       "navigation": 83,
-      "dialog": 53,
+      "dialog": 54,
       "session": 31,
       "settings": 12,
       "event-local": 17,
-      "animation": 13
+      "animation": 14
     },
-    "outOfScope": 30
+    "outOfScope": 31
   },
   "policy": {
     "categories": [
@@ -2509,6 +2509,13 @@
       "migration": "review"
     },
     {
+      "name": "CLEAR_FLOW_TRANSITIONS",
+      "declaration": "const",
+      "file": "ui/progression-clear-flow.js",
+      "category": "animation",
+      "migration": "out-of-scope"
+    },
+    {
       "name": "clearFlowState",
       "declaration": "let",
       "file": "ui/progression-clear-flow.js",
@@ -2518,6 +2525,13 @@
     {
       "name": "clearFlowPhase",
       "declaration": "let",
+      "file": "ui/progression-clear-flow.js",
+      "category": "dialog",
+      "migration": "review"
+    },
+    {
+      "name": "clearFlowTrace",
+      "declaration": "const",
       "file": "ui/progression-clear-flow.js",
       "category": "dialog",
       "migration": "review"
