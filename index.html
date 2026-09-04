@@ -4423,7 +4423,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-19:21';
+const APP_VERSION='2026.09.04-20:23';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -6434,7 +6434,7 @@ const CHAIN_STEPS={
       body.querySelector('[data-academy-enroll-art]')?.setAttribute('id','academyEnrollArt');
       $('academyEnrollArt').innerHTML=academyEnrollArtSvg();
     },
-    onAction(){openChainedDialog('academyWelcome');}
+    onAction(){WakeSevenDialogChainFeature.show('academyWelcome');}
   },
   academyWelcome:{...academyBoardStep('enroll','academyWelcomeTitle','academyWelcomeText','academyWelcomeStart',()=>{}),noFrame:true},
   basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(readNavigationContext().stageIndex+1)),
@@ -6484,7 +6484,7 @@ const CHAIN_STEPS={
       if(art)art.innerHTML=TRAINING_WELCOME_ART_SVG;
       $('chainDialogText').textContent=tr('trainingWelcomeText');
     },
-    onAction(){openChainedDialog('trainingUpperGoal');}
+    onAction(){WakeSevenDialogChainFeature.show('trainingUpperGoal');}
   },
   trainingUpperPractice:{
     kindKey:'trainingUpperPracticeKind', titleKey:'trainingUpperPracticeText', actionKey:'trainingUpperGoalStart',
@@ -6499,7 +6499,7 @@ const CHAIN_STEPS={
   trainingUpperGoal:{
     kindKey:'trainingUpperGoalKind', titleKey:'trainingUpperGoalText', actionKey:'trainingWelcomeNext',
     render:shapeGridRenderer(TRAINING_UPPER_GOAL_STATES,TRAINING_UPPER_GOAL_SHAPES,s=>'twoMoveTip3'+s+'Name',null,'trainingUpperGoalTitle'),
-    onAction(){openChainedDialog('trainingUpperPractice');}
+    onAction(){WakeSevenDialogChainFeature.show('trainingUpperPractice');}
   },
   trainingMiddleSpin:{
     kindKey:'trainingMiddleGoalKind', titleKey:'trainingMiddleSpinTitle', actionKey:'trainingWelcomeNext',
@@ -6522,7 +6522,7 @@ const CHAIN_STEPS={
   trainingMiddleGoal:{
     kindKey:'trainingMiddleGoalKind', titleKey:'trainingMiddleGoalTitle', actionKey:'trainingMiddleGoalStart',
     render:shapeGridRenderer(TRAINING_MIDDLE_GOAL_STATES,TRAINING_MIDDLE_GOAL_SHAPES,s=>'shapeName'+s),
-    onAction(){openChainedDialog('trainingMiddleSpin');}
+    onAction(){WakeSevenDialogChainFeature.show('trainingMiddleSpin');}
   },
   trainingLowerGoal:{
     kindKey:'trainingLowerGoalKind', titleKey:'trainingLowerGoalTitle', actionKey:'trainingLowerGoalStart',
@@ -7316,7 +7316,7 @@ function advanceTutorial(){
   if(navigation.tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(navigation.tutorialStep+1);return;}
   completeTutorialCommand();
   loadStage(0);
-  setTimeout(()=>openChainedDialog('academyEnroll'),260);
+  setTimeout(()=>WakeSevenDialogChainFeature.start('academyEnroll'),260);
 }
 // ===== チュートリアル・ステージ読込・セッション復元・フリーモード =====
 function loadStage(index){
@@ -9353,7 +9353,7 @@ function openDialog(dialogId, options={}){
   }
   if(dialogId==='rankDialog')return typeof openRankDialog==='function'&&openRankDialog(context.returnTarget||null);
   if(dialogId==='messageDialog')return typeof openMessageReview==='function'&&openMessageReview(context);
-  if(dialogId==='chainDialog')return typeof openChainedDialog==='function'&&openChainedDialog(context.name);
+  if(dialogId==='chainDialog')return WakeSevenDialogChainFeature.start(context.name);
   const dialog=$(dialogId);
   if(!dialog)return false;
   dialog.hidden=false;
@@ -9368,7 +9368,7 @@ function requestProgressionDialog(kind,context={},source='unknown'){
   if(kind&&typeof kind==='object'){const request=kind;kind=request.kind;source=request.source||source;context=request.options||{};}
   const options={...(context||{}),source,...createProgressionMessageContext({...context,dialogId:context?.dialogId??kind})};
   const name=options.name||options.dialogName||kind;
-  if(kind==='chain'||CHAIN_STEPS[name])return openChainedDialog(name);
+  if(kind==='chain'||CHAIN_STEPS[name])return WakeSevenDialogChainFeature.start(name);
   if(kind==='clear')return showClearDialog(options);
   if(kind==='message'||kind==='messages')return openMessageReview({resume:!!options.resume,returnTarget:options.returnTarget||null});
   if(kind==='master'||kind==='mastery')return showMasterDialog(options.kind||'primary');
@@ -9463,6 +9463,28 @@ const WakeSevenClearFeature=Object.freeze({
 export {};
 
 // ===== 進行ナビゲーション =====
+// ===== ダイアログ連鎖機能の入口 =====
+// 連鎖の状態と操作入口を近くに置き、描画本体は既存の共通処理へ委譲する。
+function readDialogChainContext(){return Object.freeze({
+  name:typeof chainActiveName==='string'?chainActiveName:null,
+  step:typeof chainActiveStep==='object'&&chainActiveStep?chainActiveStep:null,
+  history:Object.freeze(chainHistory.slice()),
+  open:typeof $('chainDialog')!=='undefined'&&!$('chainDialog').hidden
+});}
+function showDialogChainStep(name){return openChainedDialog(name);}
+function startDialogChain(name){chainHistory=[];return showDialogChainStep(name);}
+const WakeSevenDialogChainFeature=Object.freeze({
+  start(name){return startDialogChain(name);},
+  show(name){return showDialogChainStep(name);},
+  next(){return $('chainDialogAction')?.click();},
+  back(){return $('chainDialogPrev')?.click();},
+  close(){return closeChainDialog();},
+  restore(name){return showDialogChainStep(name);},
+  context:readDialogChainContext
+});
+export {};
+
+// ===== SVG表示境界 =====
 // 節目ダイアログの表示条件をまとめる。報酬付与や遷移は progression-ui.js 側が担当する。
 function masterDialogTrialState(kind){
   const {lap}=runtimeSnapshot();
@@ -9497,7 +9519,7 @@ function masterDialogVisibility(kind,needsMasteryTrial){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== SVG表示境界 =====
+// ===== 画面描画境界 =====
 // 進行画面の補助的な鑑賞・解説UI。盤面本体の進行状態は変更しない。
 // 名人の盤面、最短2手の見本、クリア後の形ルールをここで描画する。
 function masteryBoardSvg(tilted=false,forceStandardColor=false){
@@ -9749,7 +9771,7 @@ function tipDaruma(x,y,scale=.55){
   return '<g transform="translate('+x+' '+y+') scale('+scale+')"><use href="#daruma-body"/><use href="#face-open"/></g>';
 }
 
-// ===== 画面描画境界 =====
+// ===== イベントと起動 =====
 // ===== 進行UI（このファイルの責務） =====
 // ステージ選択、進行表示、クリア後表示をまとめる。前後移動イベントは
 // progression-navigation.js、共通の小さな表示処理は progression-render.js が担当する。
@@ -10789,7 +10811,7 @@ $('freeMode').addEventListener('click',()=>{if(busy||isMode('free'))return;resto
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== イベントと起動 =====
+// ===== 起動・ライフサイクル =====
 // 進行画面のHUDとステージナビを描画する。状態遷移は行わず、表示更新だけを担当する。
 function createProgressionViewContext({
   mode,
@@ -11022,7 +11044,7 @@ function renderStageNav(){
   renderStageNavGuidance();
 }
 
-// ===== 起動・ライフサイクル =====
+// ===== 公開API名前空間 =====
 // ===== ヒント表示・チュートリアル補助 =====
 function clearHintVisuals(preserveSelection=false){
   clearAxisGuide();
@@ -11065,7 +11087,7 @@ $('hint').addEventListener('click',()=>{cancelTutorialHint();if(isFourthVolume()
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};
 
-// ===== 公開API名前空間 =====
+// ===== ui/progression-flow-contract.js =====
 // ===== 進行フローの遷移契約 =====
 // 画面ごとの条件分岐を再実装するためのものではなく、既存の入口が
 // どの状態を経由するかを読み取るための監査用の宣言データ。
@@ -11832,7 +11854,7 @@ function debugSkipTutorial(){
   storage.set(STORAGE_KEY_GROUPS.progression.introSeen,'1');
   completeTutorialCommand();
   GameNavigation.stage(0);
-  setUiEffectTimer('dialog-transition','academy-enroll',()=>openChainedDialog('academyEnroll'),260);
+  setUiEffectTimer('dialog-transition','academy-enroll',()=>WakeSevenDialogChainFeature.start('academyEnroll'),260);
 }
 $('debugSkipTutorial').addEventListener('click',debugSkipTutorial);
 $('tutorialDebugSkip').addEventListener('click',debugSkipTutorial);
@@ -12113,7 +12135,7 @@ $('masterStart').addEventListener('click',()=>{
   if(dialogKind==='primary'){
     if(!secondLapActive&&!speedTrainingTrialCleared){setSpeedVariantCommand('training9');setSpeedSessionCommand(null);enterSpeedMode(true);return;}
     const before=clearContentBefore(false,TRAINING_STAGE_START);
-    if(before?.dialog){rememberSpecialMessage(before.dialog);openChainedDialog(before.dialog);return;}
+    if(before?.dialog){rememberSpecialMessage(before.dialog);WakeSevenDialogChainFeature.start(before.dialog);return;}
     GameNavigation.stage(TRAINING_STAGE_START);return;
   }
   if(dialogKind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared){
@@ -12541,7 +12563,7 @@ function applyLanguage(lang){
     svgSetIcon($(id),transformIcon(icon));
     $(id).setAttribute('aria-label',tr(label));
   });
-  if(!$('chainDialog').hidden&&chainActiveName)openChainedDialog(chainActiveName);
+  if(!$('chainDialog').hidden&&chainActiveName)WakeSevenDialogChainFeature.show(chainActiveName);
   $('tutorialReset').textContent='↻ '+tr('tutorialReset');
   $('gripPromptText').textContent=navigation.mode==='tutorial'&&TUTORIAL_STEPS[navigation.tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');
   if(!$('rankDialog').hidden)renderRankList();

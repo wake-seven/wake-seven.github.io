@@ -26,7 +26,7 @@ function openDialog(dialogId, options={}){
   }
   if(dialogId==='rankDialog')return typeof openRankDialog==='function'&&openRankDialog(context.returnTarget||null);
   if(dialogId==='messageDialog')return typeof openMessageReview==='function'&&openMessageReview(context);
-  if(dialogId==='chainDialog')return typeof openChainedDialog==='function'&&openChainedDialog(context.name);
+  if(dialogId==='chainDialog')return WakeSevenDialogChainFeature.start(context.name);
   const dialog=$(dialogId);
   if(!dialog)return false;
   dialog.hidden=false;
@@ -41,7 +41,7 @@ function requestProgressionDialog(kind,context={},source='unknown'){
   if(kind&&typeof kind==='object'){const request=kind;kind=request.kind;source=request.source||source;context=request.options||{};}
   const options={...(context||{}),source,...createProgressionMessageContext({...context,dialogId:context?.dialogId??kind})};
   const name=options.name||options.dialogName||kind;
-  if(kind==='chain'||CHAIN_STEPS[name])return openChainedDialog(name);
+  if(kind==='chain'||CHAIN_STEPS[name])return WakeSevenDialogChainFeature.start(name);
   if(kind==='clear')return showClearDialog(options);
   if(kind==='message'||kind==='messages')return openMessageReview({resume:!!options.resume,returnTarget:options.returnTarget||null});
   if(kind==='master'||kind==='mastery')return showMasterDialog(options.kind||'primary');

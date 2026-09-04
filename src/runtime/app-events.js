@@ -221,7 +221,7 @@ function debugSkipTutorial(){
   storage.set(STORAGE_KEY_GROUPS.progression.introSeen,'1');
   completeTutorialCommand();
   GameNavigation.stage(0);
-  setUiEffectTimer('dialog-transition','academy-enroll',()=>openChainedDialog('academyEnroll'),260);
+  setUiEffectTimer('dialog-transition','academy-enroll',()=>WakeSevenDialogChainFeature.start('academyEnroll'),260);
 }
 $('debugSkipTutorial').addEventListener('click',debugSkipTutorial);
 $('tutorialDebugSkip').addEventListener('click',debugSkipTutorial);
@@ -502,7 +502,7 @@ $('masterStart').addEventListener('click',()=>{
   if(dialogKind==='primary'){
     if(!secondLapActive&&!speedTrainingTrialCleared){setSpeedVariantCommand('training9');setSpeedSessionCommand(null);enterSpeedMode(true);return;}
     const before=clearContentBefore(false,TRAINING_STAGE_START);
-    if(before?.dialog){rememberSpecialMessage(before.dialog);openChainedDialog(before.dialog);return;}
+    if(before?.dialog){rememberSpecialMessage(before.dialog);WakeSevenDialogChainFeature.start(before.dialog);return;}
     GameNavigation.stage(TRAINING_STAGE_START);return;
   }
   if(dialogKind==='intermediate'&&!secondLapActive&&!speedIntermediateTrialCleared){
@@ -930,7 +930,7 @@ function applyLanguage(lang){
     svgSetIcon($(id),transformIcon(icon));
     $(id).setAttribute('aria-label',tr(label));
   });
-  if(!$('chainDialog').hidden&&chainActiveName)openChainedDialog(chainActiveName);
+  if(!$('chainDialog').hidden&&chainActiveName)WakeSevenDialogChainFeature.show(chainActiveName);
   $('tutorialReset').textContent='↻ '+tr('tutorialReset');
   $('gripPromptText').textContent=navigation.mode==='tutorial'&&TUTORIAL_STEPS[navigation.tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');
   if(!$('rankDialog').hidden)renderRankList();

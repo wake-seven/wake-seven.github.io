@@ -9,8 +9,18 @@ const events = await readFile(join(root, 'src', 'runtime', 'app-events.js'), 'ut
 const runtime = await readFile(join(root, 'src', 'runtime', 'runtime.js'), 'utf8');
 const progressionUi = await readFile(join(root, 'src', 'ui', 'progression-ui.js'), 'utf8');
 const progressionDialogs = await readFile(join(root, 'src', 'ui', 'progression-dialogs.js'), 'utf8');
+const dialogChainFeature = await readFile(join(root, 'src', 'ui', 'dialog-chain-feature.js'), 'utf8');
 const rank = await readFile(join(root, 'src', 'ui', 'rank.js'), 'utf8');
 const template = await readFile(join(root, 'src', 'index.template.html'), 'utf8');
+
+// 連鎖の外部入口と読み取り文脈は機能APIへ集約し、既存の共有描画へ委譲する。
+required(/function readDialogChainContext\(\)/, '連鎖状態の読み取り入口がありません。', dialogChainFeature);
+required(/history:Object\.freeze\(chainHistory\.slice\(\)\)/, '連鎖履歴は読み取り専用コピーで公開してください。', dialogChainFeature);
+required(/function showDialogChainStep\(name\)[\s\S]{0,180}openChainedDialog\(name\)/, 'show は既存の共有描画へ委譲してください。', dialogChainFeature);
+required(/function startDialogChain\(name\)[\s\S]{0,220}chainHistory=\[\][\s\S]{0,160}showDialogChainStep\(name\)/, 'start は古い履歴を消して show へ委譲してください。', dialogChainFeature);
+for (const method of ['context','start','show','next','back','close','restore']) {
+  required(new RegExp(`(?:${method}:|${method}\\()`), `連鎖機能APIに ${method} がありません。`, dialogChainFeature);
+}
 
 // ステージ選択・称号一覧・ヘッダーの入口は、個別描画関数を直接呼ばず
 // 共通の openDialog に集約する。ここで経路の接続を静的に固定する。
@@ -59,7 +69,7 @@ for (const [from, to] of [
   ['trainingUpperGoal', 'trainingUpperPractice'],
   ['trainingMiddleGoal', 'trainingMiddleSpin']
 ]) {
-  required(new RegExp(from + "[\\s\\S]{0,700}(?:openChainedDialog\\('" + to + "'\\)|requestProgressionDialog\\('chain',\\{name:'" + to + "'\\})"), `${from} must lead to ${to}.`);
+  required(new RegExp(from + "[\\s\\S]{0,700}(?:WakeSevenDialogChainFeature\\.show\\('" + to + "'\\)|requestProgressionDialog\\('chain',\\{name:'" + to + "'\\})"), `${from} must lead to ${to}.`);
 }
 // 上巻・中巻の実演から本編へ戻ることも、連鎖を閉じたままにしない重要契約。
 required(/trainingUpperPractice[\s\S]{0,1800}loadStage\(TRAINING_STAGE_START\)/, 'Upper-volume practice must enter the first stage.');
@@ -67,8 +77,9 @@ required(/trainingMiddleSpin[\s\S]{0,1800}loadStage\(TRAINING_STAGE_START\+TRAIN
 
 // 連鎖開始地点が登録表を経由していることを確認する。
 for (const name of ['academyEnroll', 'basicWelcome', 'applicationWelcome', 'developmentWelcome']) {
-  assert.match(events + source + progressionUi, new RegExp(`(?:openChainedDialog\\('${name}'\\)|requestProgressionDialog\\('chain',\\{name:'${name}'\\})`), `Chain entry is not connected: ${name}`);
+  assert.match(events + source + progressionUi, new RegExp(`(?:WakeSevenDialogChainFeature\\.start\\('${name}'\\)|requestProgressionDialog\\('chain',\\{name:'${name}'\\})`), `Chain entry is not connected: ${name}`);
 }
+required(/kind==='chain'\|\|CHAIN_STEPS\[name\][\s\S]{0,120}WakeSevenDialogChainFeature\.start\(name\)/, '共通ダイアログ要求は連鎖機能の start を使ってください。', progressionDialogs);
 required(/(?:state\.id==='chain'&&CHAIN_STEPS\[state\.name\][\s\S]{0,120}openChainedDialog\(state\.name\)|chain:state=>\{if\(!CHAIN_STEPS\[state\.name\]\)return false;openChainedDialog\(state\.name\);return true;\})/, 'Saved chain dialog must restore through CHAIN_STEPS.', runtime);
 
 // 前へは履歴がある時だけ表示し、次へで履歴を積む。cleanup は次の描画・閉じるの

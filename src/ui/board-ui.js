@@ -388,7 +388,7 @@ const CHAIN_STEPS={
       body.querySelector('[data-academy-enroll-art]')?.setAttribute('id','academyEnrollArt');
       $('academyEnrollArt').innerHTML=academyEnrollArtSvg();
     },
-    onAction(){openChainedDialog('academyWelcome');}
+    onAction(){WakeSevenDialogChainFeature.show('academyWelcome');}
   },
   academyWelcome:{...academyBoardStep('enroll','academyWelcomeTitle','academyWelcomeText','academyWelcomeStart',()=>{}),noFrame:true},
   basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(readNavigationContext().stageIndex+1)),
@@ -438,7 +438,7 @@ const CHAIN_STEPS={
       if(art)art.innerHTML=TRAINING_WELCOME_ART_SVG;
       $('chainDialogText').textContent=tr('trainingWelcomeText');
     },
-    onAction(){openChainedDialog('trainingUpperGoal');}
+    onAction(){WakeSevenDialogChainFeature.show('trainingUpperGoal');}
   },
   trainingUpperPractice:{
     kindKey:'trainingUpperPracticeKind', titleKey:'trainingUpperPracticeText', actionKey:'trainingUpperGoalStart',
@@ -453,7 +453,7 @@ const CHAIN_STEPS={
   trainingUpperGoal:{
     kindKey:'trainingUpperGoalKind', titleKey:'trainingUpperGoalText', actionKey:'trainingWelcomeNext',
     render:shapeGridRenderer(TRAINING_UPPER_GOAL_STATES,TRAINING_UPPER_GOAL_SHAPES,s=>'twoMoveTip3'+s+'Name',null,'trainingUpperGoalTitle'),
-    onAction(){openChainedDialog('trainingUpperPractice');}
+    onAction(){WakeSevenDialogChainFeature.show('trainingUpperPractice');}
   },
   trainingMiddleSpin:{
     kindKey:'trainingMiddleGoalKind', titleKey:'trainingMiddleSpinTitle', actionKey:'trainingWelcomeNext',
@@ -476,7 +476,7 @@ const CHAIN_STEPS={
   trainingMiddleGoal:{
     kindKey:'trainingMiddleGoalKind', titleKey:'trainingMiddleGoalTitle', actionKey:'trainingMiddleGoalStart',
     render:shapeGridRenderer(TRAINING_MIDDLE_GOAL_STATES,TRAINING_MIDDLE_GOAL_SHAPES,s=>'shapeName'+s),
-    onAction(){openChainedDialog('trainingMiddleSpin');}
+    onAction(){WakeSevenDialogChainFeature.show('trainingMiddleSpin');}
   },
   trainingLowerGoal:{
     kindKey:'trainingLowerGoalKind', titleKey:'trainingLowerGoalTitle', actionKey:'trainingLowerGoalStart',
@@ -1270,7 +1270,7 @@ function advanceTutorial(){
   if(navigation.tutorialStep<TUTORIAL_STEPS.length-1){loadTutorialStep(navigation.tutorialStep+1);return;}
   completeTutorialCommand();
   loadStage(0);
-  setTimeout(()=>openChainedDialog('academyEnroll'),260);
+  setTimeout(()=>WakeSevenDialogChainFeature.start('academyEnroll'),260);
 }
 // ===== チュートリアル・ステージ読込・セッション復元・フリーモード =====
 function loadStage(index){

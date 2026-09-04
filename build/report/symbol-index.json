@@ -1,5 +1,5 @@
 {
-  "generatedForVersion": "2026.09.04-19:21",
+  "generatedForVersion": "2026.09.04-20:23",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles",
   "definitions": {
     "attachWakeSevenState": {
@@ -894,6 +894,11 @@
           "caller": "renderClearFeatureDialog"
         },
         {
+          "file": "ui/dialog-chain-feature.js",
+          "line": 14,
+          "caller": "startDialogChain"
+        },
+        {
           "file": "runtime/app-events.js",
           "line": 272,
           "caller": "resetIntro"
@@ -1512,6 +1517,16 @@
           "file": "ui/progression-dialogs.js",
           "line": 87,
           "caller": "resolveProgressionQuiz"
+        },
+        {
+          "file": "ui/dialog-chain-feature.js",
+          "line": 14,
+          "caller": "startDialogChain"
+        },
+        {
+          "file": "ui/dialog-chain-feature.js",
+          "line": 15,
+          "caller": "startDialogChain"
         },
         {
           "file": "runtime/app-events.js",
@@ -4871,14 +4886,44 @@
           "caller": "completeBoard"
         },
         {
+          "file": "ui/board-ui.js",
+          "line": 1273,
+          "caller": "step"
+        },
+        {
+          "file": "ui/progression-dialogs.js",
+          "line": 29,
+          "caller": "openDialog"
+        },
+        {
+          "file": "ui/progression-dialogs.js",
+          "line": 44,
+          "caller": "requestProgressionDialog"
+        },
+        {
           "file": "ui/clear-feature.js",
           "line": 31,
           "caller": "renderClearFeatureDialog"
         },
         {
+          "file": "ui/dialog-chain-feature.js",
+          "line": 12,
+          "caller": "startDialogChain"
+        },
+        {
           "file": "runtime/app-events.js",
           "line": 26,
           "caller": "WakeSevenEventBindings"
+        },
+        {
+          "file": "runtime/app-events.js",
+          "line": 224,
+          "caller": "debugSkipTutorial"
+        },
+        {
+          "file": "runtime/app-events.js",
+          "line": 505,
+          "caller": "returnTarget"
         }
       ]
     },
@@ -15270,48 +15315,13 @@
         },
         {
           "file": "ui/board-ui.js",
-          "line": 391,
-          "caller": "academyBoardStep"
-        },
-        {
-          "file": "ui/board-ui.js",
-          "line": 441,
-          "caller": "applicationWelcome"
-        },
-        {
-          "file": "ui/board-ui.js",
-          "line": 456,
-          "caller": "trainingUpperGoal"
-        },
-        {
-          "file": "ui/board-ui.js",
-          "line": 479,
-          "caller": "trainingMiddleGoal"
-        },
-        {
-          "file": "ui/board-ui.js",
           "line": 493,
           "caller": "trainingLowerGoal"
         },
         {
-          "file": "ui/board-ui.js",
-          "line": 1273,
-          "caller": "step"
-        },
-        {
-          "file": "ui/progression-dialogs.js",
-          "line": 29,
-          "caller": "openDialog"
-        },
-        {
-          "file": "ui/progression-dialogs.js",
-          "line": 44,
-          "caller": "requestProgressionDialog"
-        },
-        {
-          "file": "runtime/app-events.js",
-          "line": 224,
-          "caller": "debugSkipTutorial"
+          "file": "ui/dialog-chain-feature.js",
+          "line": 9,
+          "caller": "showDialogChainStep"
         },
         {
           "file": "runtime/app-events.js",
@@ -15320,18 +15330,8 @@
         },
         {
           "file": "runtime/app-events.js",
-          "line": 505,
-          "caller": "returnTarget"
-        },
-        {
-          "file": "runtime/app-events.js",
           "line": 548,
           "caller": "step"
-        },
-        {
-          "file": "runtime/app-events.js",
-          "line": 933,
-          "caller": "button"
         }
       ]
     },
@@ -15352,6 +15352,11 @@
           "file": "ui/board-ui.js",
           "line": 514,
           "caller": "openChainedDialog"
+        },
+        {
+          "file": "ui/dialog-chain-feature.js",
+          "line": 16,
+          "caller": "startDialogChain"
         },
         {
           "file": "ui/progression-ui.js",
@@ -24089,6 +24094,72 @@
       "kind": "constant",
       "callers": []
     },
+    "readDialogChainContext": {
+      "name": "readDialogChainContext",
+      "file": "ui/dialog-chain-feature.js",
+      "line": 3,
+      "kind": "function",
+      "callers": [
+        {
+          "file": "ui/dialog-chain-feature.js",
+          "line": 3,
+          "caller": null
+        }
+      ]
+    },
+    "showDialogChainStep": {
+      "name": "showDialogChainStep",
+      "file": "ui/dialog-chain-feature.js",
+      "line": 9,
+      "kind": "function",
+      "callers": [
+        {
+          "file": "ui/dialog-chain-feature.js",
+          "line": 9,
+          "caller": "readDialogChainContext"
+        },
+        {
+          "file": "ui/dialog-chain-feature.js",
+          "line": 10,
+          "caller": "startDialogChain"
+        },
+        {
+          "file": "ui/dialog-chain-feature.js",
+          "line": 13,
+          "caller": "startDialogChain"
+        },
+        {
+          "file": "ui/dialog-chain-feature.js",
+          "line": 17,
+          "caller": "startDialogChain"
+        }
+      ]
+    },
+    "startDialogChain": {
+      "name": "startDialogChain",
+      "file": "ui/dialog-chain-feature.js",
+      "line": 10,
+      "kind": "function",
+      "callers": [
+        {
+          "file": "ui/dialog-chain-feature.js",
+          "line": 10,
+          "caller": "showDialogChainStep"
+        },
+        {
+          "file": "ui/dialog-chain-feature.js",
+          "line": 12,
+          "caller": "startDialogChain"
+        }
+      ]
+    },
+    "WakeSevenDialogChainFeature": {
+      "name": "WakeSevenDialogChainFeature",
+      "file": "ui/dialog-chain-feature.js",
+      "line": 11,
+      "kind": "constant",
+      "callers": []
+    },
     "masterDialogTrialState": {
       "name": "masterDialogTrialState",
       "file": "ui/master-dialog.js",
@@ -32599,6 +32670,18 @@
       },
       {
         "id": "chainDialog",
+        "file": "ui/dialog-chain-feature.js",
+        "line": 7,
+        "updater": "readDialogChainContext"
+      },
+      {
+        "id": "chainDialog",
+        "file": "ui/dialog-chain-feature.js",
+        "line": 7,
+        "updater": "readDialogChainContext"
+      },
+      {
+        "id": "chainDialog",
         "file": "runtime/app-events.js",
         "line": 544,
         "updater": "dialogKind"
@@ -32616,6 +32699,12 @@
         "file": "ui/board-ui.js",
         "line": 504,
         "updater": "openChainedDialog"
+      },
+      {
+        "id": "chainDialogAction",
+        "file": "ui/dialog-chain-feature.js",
+        "line": 14,
+        "updater": "startDialogChain"
       },
       {
         "id": "chainDialogAction",
@@ -32672,6 +32761,12 @@
         "file": "ui/board-ui.js",
         "line": 505,
         "updater": "openChainedDialog"
+      },
+      {
+        "id": "chainDialogPrev",
+        "file": "ui/dialog-chain-feature.js",
+        "line": 15,
+        "updater": "startDialogChain"
       },
       {
         "id": "chainDialogPrev",
@@ -37858,6 +37953,6 @@
   "summary": {},
   "warnings": [],
   "errors": [],
-  "generatedAt": "2026-09-04T10:33:43.032Z",
+  "generatedAt": "2026-09-04T11:28:31.496Z",
   "sourceRevision": "working-tree"
 }
