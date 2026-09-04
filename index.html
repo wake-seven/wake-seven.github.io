@@ -8748,12 +8748,6 @@ function recordProgressClearCommand(kind,index){
   persistLapProgress();
   return true;
 }
-// ダイアログ要求の実装はui/progression-dialogs.jsの単一入口へ集約する。
-const GameDialogs=Object.freeze({
-  messages:options=>requestProgressionDialog('messages',options,options?.source||'menu'),
-  ranks:options=>requestProgressionDialog('ranks',options,options?.source||'menu'),
-  mastery:kind=>requestProgressionDialog('mastery',{kind},'progression')
-});
 // ===== 速解きセッションコマンド =====
 // 速解き固有のセッション状態を書き込む操作命令。時計・表示・遷移は実行側に残す。
 function startSpeedSessionCommand(){
@@ -11836,12 +11830,12 @@ function handleClearTipLink(){
   const navigation=readNavigationContext();
   if($('clearTipLink').dataset.target==='rank'){
     $('clearDialog').hidden=true;
-    GameDialogs.ranks({dialogId:'clearDialog',focusId:'clearTipLink'});
+    requestProgressionDialog('ranks',{dialogId:'clearDialog',focusId:'clearTipLink'},'menu');
     return;
   }
   if($('clearTipLink').dataset.target==='messages'){
     $('clearDialog').hidden=true;
-    GameDialogs.messages({resume:true,returnTarget:{dialogId:'clearDialog',focusId:'clearTipLink'}});
+    requestProgressionDialog('messages',{resume:true,returnTarget:{dialogId:'clearDialog',focusId:'clearTipLink'}},'menu');
     return;
   }
   if($('clearTipLink').dataset.target==='tips'){
@@ -11882,7 +11876,7 @@ function bindClearDialogEvents(){
     GameBoard.reset(currentInitialState,currentInitialPar);
     renderStageNav();
   });
-  WakeSevenEventBindings.click('clearMessages',()=>GameDialogs.messages({resume:true}));
+  WakeSevenEventBindings.click('clearMessages',()=>requestProgressionDialog('messages',{resume:true},'menu'));
   WakeSevenEventBindings.click('clearTipLink',handleClearTipLink);
 }
 bindClearDialogEvents();
@@ -11983,7 +11977,7 @@ function bindMessageReviewEvents(){
     if(!dialogOpen&&buildMessageReviewEntries().length){
       event.preventDefault();
       closeAppMenu();
-      GameDialogs.messages({resume:true});
+      requestProgressionDialog('messages',{resume:true},'menu');
       return;
     }
   }
@@ -12073,7 +12067,7 @@ $('messageRankLink').addEventListener('click',()=>{
     return;
   }
   $('messageDialog').hidden=true;
-  GameDialogs.ranks({dialogId:'messageDialog',focusId:'messageRankLink'});
+  requestProgressionDialog('ranks',{dialogId:'messageDialog',focusId:'messageRankLink'},'menu');
 });
 $('rankBadge').addEventListener('click',()=>WakeSevenStagePickerFeature.openRank());
 $('masterSeal').addEventListener('click',()=>WakeSevenStagePickerFeature.openRankFrom('masterDialog','masterSeal'));
@@ -12536,7 +12530,7 @@ function applyLanguage(lang){
   $('tutorialReset').textContent='↻ '+tr('tutorialReset');
   $('gripPromptText').textContent=navigation.mode==='tutorial'&&TUTORIAL_STEPS[navigation.tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');
   if(!$('rankDialog').hidden)renderRankList();
-  if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);
+  if(!$('masterDialog').hidden)requestProgressionDialog('mastery',{kind:masterDialogKind},'progression');
   renderCurrentView();
   if(!$('twoMoveDialog').hidden)renderTwoMovePatterns();
   if(!$('twoMoveDetailDialog').hidden)renderTwoMoveDetail();
