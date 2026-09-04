@@ -163,7 +163,18 @@ function renderSatoriStagePicker(){
   grid.replaceChildren();
   SATORI_STAGES.slice(start,end).forEach((stage,offset)=>{
     const index=start+offset;
-    appendStagePickerButton(grid,{label:index+1,ariaLabel:tr('satori')+' '+(index+1),cleared:pickerSatori.has(index),current:pickerLap===currentContext.lap&&isMode('satori')&&currentContext.satoriIndex===index,disabled:!(index===0||pickerSatori.has(index)||pickerSatori.has(index-1)),onClick:()=>{closeStagePicker();activateCampaignLap(pickerLap);loadSatoriStage(index);}});
+    appendStagePickerButton(grid,{
+      label: index+1,
+      ariaLabel: tr('satori')+' '+(index+1),
+      cleared: pickerSatori.has(index),
+      current: pickerLap===currentContext.lap&&isMode('satori')&&currentContext.satoriIndex===index,
+      disabled: !(index===0||pickerSatori.has(index)||pickerSatori.has(index-1)),
+      onClick: ()=>{
+        closeStagePicker();
+        activateCampaignLap(pickerLap);
+        loadSatoriStage(index);
+      }
+    });
   });
 }
 function openSatoriPicker(){

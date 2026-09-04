@@ -910,16 +910,28 @@ function applyLanguage(lang){
   $('prevStage').textContent='← '+tr('prev');
   $('nextStage').textContent=tr('next')+' →';
   if(!$('speedModeOptions').hidden)renderSpeedModeOptions();
-  const updateExternalMenuLabel=(id,key)=>{const button=$(id),label=button.firstChild;if(label?.nodeType===3)label.nodeValue=tr(key);else button.prepend(document.createTextNode(tr(key)));};
+  const updateExternalMenuLabel=(id,key)=>{
+    const button=$(id);
+    const label=button.firstChild;
+    if(label?.nodeType===3)label.nodeValue=tr(key);
+    else button.prepend(document.createTextNode(tr(key)));
+  };
   updateExternalMenuLabel('menuAllPatterns','allPatternsMenu');
   updateExternalMenuLabel('menuOpen3D','threeDMenu');
   updateSoundToggle();
   if(!$('twoMoveLessonDialog').hidden)openTwoMoveLessonDialog();
   if(!$('speedPauseDialog').hidden)renderSpeedPauseStats();
-  [['mirrorBoard','mirror','mirror'],['flipBoardVertical','vertical','flipVertical'],['rotateBoardBack','rotateBack','rotateCcw'],['rotateBoard','rotate','rotateCw']].forEach(([id,icon,label])=>{const button=$(id);svgSetIcon(button.querySelector('[data-transform-icon]'),transformIcon(icon));button.querySelector('[data-transform-label]').textContent=tr(label);});
+  [['mirrorBoard','mirror','mirror'],['flipBoardVertical','vertical','flipVertical'],['rotateBoardBack','rotateBack','rotateCcw'],['rotateBoard','rotate','rotateCw']].forEach(([id,icon,label])=>{
+    const button=$(id);
+    svgSetIcon(button.querySelector('[data-transform-icon]'),transformIcon(icon));
+    button.querySelector('[data-transform-label]').textContent=tr(label);
+  });
   [
     ['twoMoveDetailRotateBack','rotateBack','rotateCcw'],['twoMoveDetailRotate','rotate','rotateCw'],['twoMoveDetailMirror','mirror','mirror'],['twoMoveDetailFlipVertical','vertical','flipVertical']
-  ].forEach(([id,icon,label])=>{svgSetIcon($(id),transformIcon(icon));$(id).setAttribute('aria-label',tr(label));});
+  ].forEach(([id,icon,label])=>{
+    svgSetIcon($(id),transformIcon(icon));
+    $(id).setAttribute('aria-label',tr(label));
+  });
   if(!$('chainDialog').hidden&&chainActiveName)openChainedDialog(chainActiveName);
   $('tutorialReset').textContent='↻ '+tr('tutorialReset');
   $('gripPromptText').textContent=navigation.mode==='tutorial'&&TUTORIAL_STEPS[navigation.tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');

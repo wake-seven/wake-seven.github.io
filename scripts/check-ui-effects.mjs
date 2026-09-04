@@ -60,7 +60,11 @@ assert.match(boardRender,/function renderAxisGuide\(/,'Axis guide SVG generation
 assert.match(tutorialAnimation,/function createTutorialRewindModel\(/,'Tutorial rewind display model is missing.');
 for(const name of ['captureTutorialRewindDomSnapshot','restoreTutorialRewindDomSnapshot'])assert.match(tutorialAnimation,new RegExp(`function ${name}\\(`),`${name} API is missing.`);
 for(const name of ['startTutorialRewindSession','setTutorialRewindTimer','bindTutorialRewindAnimation','finishTutorialRewindSession','cancelTutorialRewindSession','cancelActiveTutorialRewindSession'])assert.match(tutorialAnimation,new RegExp(`function ${name}\\(`),`${name} session API is missing.`);
-assert.match(board,/createTutorialRewindModel\(\{startAngle:dg\.deg,endAngle:target,direction:dir,pivot:dg\.kc,items:dg\.items\.map/,'Tutorial rewind must receive a normalized operation model.');
+assert.match(
+  board,
+  /createTutorialRewindModel\(\{\s*startAngle:\s*dg\.deg,\s*endAngle:\s*target,\s*direction:\s*dir,\s*pivot:\s*dg\.kc,\s*items:\s*dg\.items\.map/s,
+  'Tutorial rewind must receive a normalized operation model.'
+);
 assert.match(board,/function animateTutorialRewind\(model,visualItems\)/,'Tutorial rewind animation must receive an operation model separate from visual items.');
 assert.match(board,/captureTutorialRewindDomSnapshot\(visualItems\)/,'Tutorial rewind must snapshot DOM order before grouping.');
 assert.match(board,/startTutorialRewindSession\(\{snapshot:domSnapshot,group/,'Tutorial rewind must start a dedicated session.');

@@ -4415,7 +4415,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-10:31';
+const APP_VERSION='2026.09.04-10:54';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -9882,7 +9882,18 @@ function renderSatoriStagePicker(){
   grid.replaceChildren();
   SATORI_STAGES.slice(start,end).forEach((stage,offset)=>{
     const index=start+offset;
-    appendStagePickerButton(grid,{label:index+1,ariaLabel:tr('satori')+' '+(index+1),cleared:pickerSatori.has(index),current:pickerLap===currentContext.lap&&isMode('satori')&&currentContext.satoriIndex===index,disabled:!(index===0||pickerSatori.has(index)||pickerSatori.has(index-1)),onClick:()=>{closeStagePicker();activateCampaignLap(pickerLap);loadSatoriStage(index);}});
+    appendStagePickerButton(grid,{
+      label: index+1,
+      ariaLabel: tr('satori')+' '+(index+1),
+      cleared: pickerSatori.has(index),
+      current: pickerLap===currentContext.lap&&isMode('satori')&&currentContext.satoriIndex===index,
+      disabled: !(index===0||pickerSatori.has(index)||pickerSatori.has(index-1)),
+      onClick: ()=>{
+        closeStagePicker();
+        activateCampaignLap(pickerLap);
+        loadSatoriStage(index);
+      }
+    });
   });
 }
 function openSatoriPicker(){
@@ -12440,16 +12451,28 @@ function applyLanguage(lang){
   $('prevStage').textContent='← '+tr('prev');
   $('nextStage').textContent=tr('next')+' →';
   if(!$('speedModeOptions').hidden)renderSpeedModeOptions();
-  const updateExternalMenuLabel=(id,key)=>{const button=$(id),label=button.firstChild;if(label?.nodeType===3)label.nodeValue=tr(key);else button.prepend(document.createTextNode(tr(key)));};
+  const updateExternalMenuLabel=(id,key)=>{
+    const button=$(id);
+    const label=button.firstChild;
+    if(label?.nodeType===3)label.nodeValue=tr(key);
+    else button.prepend(document.createTextNode(tr(key)));
+  };
   updateExternalMenuLabel('menuAllPatterns','allPatternsMenu');
   updateExternalMenuLabel('menuOpen3D','threeDMenu');
   updateSoundToggle();
   if(!$('twoMoveLessonDialog').hidden)openTwoMoveLessonDialog();
   if(!$('speedPauseDialog').hidden)renderSpeedPauseStats();
-  [['mirrorBoard','mirror','mirror'],['flipBoardVertical','vertical','flipVertical'],['rotateBoardBack','rotateBack','rotateCcw'],['rotateBoard','rotate','rotateCw']].forEach(([id,icon,label])=>{const button=$(id);svgSetIcon(button.querySelector('[data-transform-icon]'),transformIcon(icon));button.querySelector('[data-transform-label]').textContent=tr(label);});
+  [['mirrorBoard','mirror','mirror'],['flipBoardVertical','vertical','flipVertical'],['rotateBoardBack','rotateBack','rotateCcw'],['rotateBoard','rotate','rotateCw']].forEach(([id,icon,label])=>{
+    const button=$(id);
+    svgSetIcon(button.querySelector('[data-transform-icon]'),transformIcon(icon));
+    button.querySelector('[data-transform-label]').textContent=tr(label);
+  });
   [
     ['twoMoveDetailRotateBack','rotateBack','rotateCcw'],['twoMoveDetailRotate','rotate','rotateCw'],['twoMoveDetailMirror','mirror','mirror'],['twoMoveDetailFlipVertical','vertical','flipVertical']
-  ].forEach(([id,icon,label])=>{svgSetIcon($(id),transformIcon(icon));$(id).setAttribute('aria-label',tr(label));});
+  ].forEach(([id,icon,label])=>{
+    svgSetIcon($(id),transformIcon(icon));
+    $(id).setAttribute('aria-label',tr(label));
+  });
   if(!$('chainDialog').hidden&&chainActiveName)openChainedDialog(chainActiveName);
   $('tutorialReset').textContent='↻ '+tr('tutorialReset');
   $('gripPromptText').textContent=navigation.mode==='tutorial'&&TUTORIAL_STEPS[navigation.tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');
