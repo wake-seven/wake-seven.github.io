@@ -80,8 +80,6 @@
     "ui/board-ui.js:tutorialStep:const turnPrompt=tutorialStep===1?tr('tutorialSecondArrowPrompt')",
     "ui/board-ui.js:tutorialStep::tutorialStep===3?tr('tutorialChainTurnPrompt'):tutorialPrompt('turn');",
     "ui/board-ui.js:tutorialStep:renderTutorialFeedback({text:tr(TUTORIAL_STEPS[tutorialStep]?.cue==='chain-direction'?'tutorialWrongPlacePrompt':'tutorialWrongPrompt')});",
-    "ui/board-ui.js:tutorialStep:animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:target,direction:dir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue",
-    "ui/board-ui.js:tutorialStep:animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:rewindDir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cu",
     "ui/board-ui.js:stageIndex:if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&stageIndex===0&&!hasMasterReward())",
     "ui/progression-academy-support.js:stageIndex:const forceTopRight=stageIndex===BASIC_STAGE_START+5&&correctTis.includes(TOP_RIGHT_TI);",
     "ui/progression-academy-support.js:stageIndex:const count=academyGripDisplayCount(undefined,stageIndex-BASIC_STAGE_START+1);",
@@ -1024,32 +1022,6 @@
     },
     {
       "fingerprint": "ui/board-ui.js:tutorialStep:renderTutorialFeedback({text:tr(TUTORIAL_STEPS[tutorialStep]?.cue==='chain-direction'?'tutorialWrongPlacePrompt':'tutorialWrongPrompt')});",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:tutorialStep:animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:target,direction:dir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue",
-      "expiresOn": "2026-12-02",
-      "owner": "ui/board-ui.js",
-      "migrationTarget": "gateway:navigation",
-      "priority": 1,
-      "relatedTests": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ],
-      "reason": "navigation状態の移行完了まで保持する既存参照"
-    },
-    {
-      "fingerprint": "ui/board-ui.js:tutorialStep:animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:rewindDir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cu",
       "expiresOn": "2026-12-02",
       "owner": "ui/board-ui.js",
       "migrationTarget": "gateway:navigation",

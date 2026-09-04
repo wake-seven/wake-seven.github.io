@@ -53,12 +53,8 @@ for (const source of [events, published]) {
   assert.match(source, /resetStoredProgress\(/, 'reset flow must have a single named entry point');
   assert.match(source, /(?:cancelBoardAnimation|cancelTileAnimations)\(/, 'reset/transition flow must cancel board animation');
 }
-assert.match(board, /startTutorialRewindSession\(/, 'tutorial rewind must use its session boundary');
-assert.match(tutorial, /cancelTutorialRewindSession\(/, 'tutorial rewind must have a cancellation path');
-assert.match(tutorial, /captureTutorialRewindDomSnapshot|restoreTutorialRewindDomSnapshot/,
-  'tutorial rewind must snapshot and restore DOM order');
-assert.match(tutorial, /session\.timers\.push\(timer\)/, 'tutorial rewind timers must belong to the rewind session');
-assert.match(tutorial, /session\.animation\?\.cancel\(\)/, 'tutorial rewind cancellation must cancel its animation');
+assert.match(board, /animateGuidedBasicRewind\(dg,\{tutorial:true\}\)/,
+  'tutorial rewind must use the shared guided rewind animation path');
 assert.match(clearFlow, /if\(svg\.classList\.contains\('celebrating'\)\)return (?:0|reduced\?0:820);/,
   'clear celebration must be idempotent');
 assert.match(clearFlow, /function startClearFlow\(/, 'clear transition must have a named start entry point');

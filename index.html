@@ -4423,7 +4423,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-17:48';
+const APP_VERSION='2026.09.04-18:08';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -7980,7 +7980,7 @@ function finishDrag(e,cancel=false,forcedTurns=null){
   if(isMode('tutorial')&&dir&&!tutorialMoveAllowed(dg.ti,dir)){
     cancelTutorialHint(true);
     renderTutorialFeedback({text:tr(TUTORIAL_STEPS[tutorialStep]?.cue==='chain-direction'?'tutorialWrongPlacePrompt':'tutorialWrongPrompt')});
-    animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:target,direction:dir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue||''}),dg.items);
+    animateGuidedBasicRewind(dg,{tutorial:true});
     return;
   }
   // いったん120°以上回してから元の角度(0°)へ戻した場合も、
@@ -7993,7 +7993,7 @@ function finishDrag(e,cancel=false,forcedTurns=null){
       renderTutorialFeedback({text:tr('tutorialWrongPlacePrompt')});
       svg.querySelector('.grip-marker[data-tri="'+dg.ti+'"]').classList.add('narrow-hidden');
       const rewindDir=dg.rawDeg>=0?1:-1;
-      animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:rewindDir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue||''}),dg.items);
+      animateGuidedBasicRewind(dg,{start:dg.deg,end:0,tutorial:true});
       return;
     }
   }
@@ -8125,42 +8125,6 @@ function finishDrag(e,cancel=false,forcedTurns=null){
     a.onfinish=()=>{ if(!isBoardAnimationSessionActive(session))return; if(++done===3){finishBoardAnimationSession(session);paint();wakeFeedback(waking);resumeTutorialCue();} };
   }
 }
-function animateTutorialRewind(model,visualItems){
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches){paint();setUiEffectTimer('tutorial-rewind','cue',showTutorialCue,520);return;}
-  setBoardBusy(true);
-  const duration=model.duration;
-  // 3枚を個別にanimate()すると僅かなずれでばらばらに見えるため、1つのgroupへ一時的に
-  // まとめて入れ、group側の回転を1つだけ再生することで常に揃って動くようにする。
-  const NS_='http://www.w3.org/2000/svg';
-  const group=document.createElementNS(NS_,'g');
-  group.setAttribute('class','auto-swipe-group');
-  placeSwipeGroupOnTop(group);
-  // 元のDOM位置(水色の棒より前)を覚えておき、終了後に同じ位置へ戻す。末尾に付け直すと
-  // 棒(grip-marker)より後ろになってしまい、棒が裏に隠れて見えなくなるため。
-  const domSnapshot=captureTutorialRewindDomSnapshot(visualItems);
-  const session=startTutorialRewindSession({snapshot:domSnapshot,group,onCleanup:()=>{
-    setBoardBusy(false);paint();setUiEffectTimer('tutorial-rewind','cue',showTutorialCue,150);
-  }});
-  for(const item of visualItems){
-    item.el.style.transform=orbitTransform(item,0,model.pivot);
-    group.appendChild(item.el);
-  }
-  setTutorialRewindTimer(session,()=>{
-    if(!isMode('tutorial'))return;
-    renderTutorialRewindAppearance(visualItems,model.direction);haptic(6);
-  },245);
-  setTutorialRewindTimer(session,()=>{
-    if(!isMode('tutorial'))return;
-    renderTutorialRewindAppearance(visualItems,0);
-  },440);
-  group.style.transformOrigin=model.pivot.x+'px '+model.pivot.y+'px';
-  // 中間の120°位置へ寄せず、指を離した現在角度からそのまま元の位置へ戻す。
-  const animation=group.animate([
-    {transform:'rotate('+model.startAngle+'deg)',offset:0},
-    {transform:'rotate('+model.endAngle+'deg)',offset:1}
-  ],{duration,easing:'cubic-bezier(.2,.72,.24,1)'});
-  bindTutorialRewindAnimation(session,animation);
-}
 function guidedRewindPath(rawDeg){
   const remainder=rawDeg%360;
   if(Math.abs(rawDeg)>=360)return {start:remainder,end:0};
@@ -8173,11 +8137,13 @@ function guidedRewindPath(rawDeg){
     ?{start:rawDeg,end:sign*360}
     :{start:rawDeg,end:0};
 }
-function animateGuidedBasicRewind(dg){
+function animateGuidedBasicRewind(dg,rewindOverride=null){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
     paint();haptic(8);return;
   }
-  const {start:rewindStart,end:rewindEnd}=guidedRewindPath(dg.deg);
+  const rewindPath=rewindOverride?.start!==undefined?rewindOverride:guidedRewindPath(dg.deg);
+  const rewindStart=rewindPath.start,rewindEnd=rewindPath.end;
+  const tutorialRewind=rewindOverride?.tutorial===true;
   // 360°ちょうどなど、見かけ上すでに初期角度に戻っている場合だけ省略する。
   if(Math.abs(rewindEnd-rewindStart)<0.5){paint();haptic(8);return;}
   setBoardBusy(true);
@@ -8228,9 +8194,13 @@ function animateGuidedBasicRewind(dg){
     }
     if(progress<1){requestBoardAnimationFrame(session,frame);return;}
     finishBoardAnimationSession(session);
-    setUiEffectTimer('guided-rewind','hide-prompt',()=>{
-      if(isAssistedLearningStage()||isFallingRodStage())$('gripPrompt').hidden=true;
-    },450);
+    if(tutorialRewind){
+      setUiEffectTimer('tutorial-rewind','cue',showTutorialCue,150);
+    }else{
+      setUiEffectTimer('guided-rewind','hide-prompt',()=>{
+        if(isAssistedLearningStage()||isFallingRodStage())$('gripPrompt').hidden=true;
+      },450);
+    }
   };
   requestBoardAnimationFrame(session,frame);
 }

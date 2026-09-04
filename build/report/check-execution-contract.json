@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "name": "wake7-execution-contract",
-  "generatedAt": "2026-09-04T08:49:11.840Z",
-  "sourceRevision": "2d18b02",
+  "generatedAt": "2026-09-04T09:11:13.720Z",
+  "sourceRevision": "1ba66a6",
   "status": "passed",
   "warnings": [],
   "errors": [],
@@ -17,9 +17,12 @@
   "fullGateRequired": true,
   "changedFiles": [
     "index.html",
-    "scripts/check-affected.mjs",
+    "scripts/check-browser-flow.mjs",
+    "scripts/check-ui-effects.mjs",
+    "scripts/public-symbols-budget.json",
+    "scripts/state-access-exceptions.json",
     "src/runtime/runtime.js",
-    "scripts/check-micro-ui.mjs"
+    "src/ui/board-ui.js"
   ],
   "policy": {
     "precedence": [
@@ -66,10 +69,15 @@
   "milestone": {
     "command": "npm run check:milestone",
     "requiredChecks": [
-      "browser-e2e"
+      "browser-e2e",
+      "device-e2e"
     ],
-    "conditionalChecks": [],
-    "reasons": []
+    "conditionalChecks": [
+      "device-e2e"
+    ],
+    "reasons": [
+      "pointer・タッチ・レスポンシブ表示の変更は、途中でも端末差分を確認する。"
+    ]
   },
   "release": {
     "command": "npm run check:release",

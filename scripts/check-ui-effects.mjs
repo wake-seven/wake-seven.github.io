@@ -62,16 +62,10 @@ for(const name of ['captureTutorialRewindDomSnapshot','restoreTutorialRewindDomS
 for(const name of ['startTutorialRewindSession','setTutorialRewindTimer','bindTutorialRewindAnimation','finishTutorialRewindSession','cancelTutorialRewindSession','cancelActiveTutorialRewindSession'])assert.match(tutorialAnimation,new RegExp(`function ${name}\\(`),`${name} session API is missing.`);
 assert.match(
   board,
-  /createTutorialRewindModel\(\{\s*startAngle:\s*dg\.deg,\s*endAngle:\s*target,\s*direction:\s*dir,\s*pivot:\s*dg\.kc,\s*items:\s*dg\.items\.map/s,
-  'Tutorial rewind must receive a normalized operation model.'
+  /animateGuidedBasicRewind\(dg,\{tutorial:true\}\)/,
+  'Tutorial rewind must use the shared guided rewind operation model.'
 );
-assert.match(board,/function animateTutorialRewind\(model,visualItems\)/,'Tutorial rewind animation must receive an operation model separate from visual items.');
-assert.match(board,/captureTutorialRewindDomSnapshot\(visualItems\)/,'Tutorial rewind must snapshot DOM order before grouping.');
-assert.match(board,/startTutorialRewindSession\(\{snapshot:domSnapshot,group/,'Tutorial rewind must start a dedicated session.');
-assert.match(board,/setTutorialRewindTimer\(session,/,'Tutorial rewind timers must use the dedicated session.');
-assert.match(board,/renderTutorialRewindAppearance\(visualItems,model\.direction\)/,'Tutorial rewind appearance updates must use the renderer boundary.');
 assert.match(board,/renderAxisGuide\(svg,t,CELL\)/,'Axis guide SVG generation must use the renderer boundary.');
-assert.match(board,/bindTutorialRewindAnimation\(session,animation\)/,'Tutorial rewind animation must use the dedicated session.');
 assert.match(board,/setUiEffectTimer\('tutorial-rewind','cue',showTutorialCue,150\)/,'Tutorial rewind completion cue must use the UI effect timer boundary.');
 assert.match(tutorialAnimation,/if\(session\.cleaned\)return false/,'Tutorial rewind cleanup must be idempotent.');
 assert.match(tutorialAnimation,/session\.animation\?\.cancel\(\)/,'Tutorial rewind cancellation must cancel the WAAPI animation.');
@@ -135,11 +129,6 @@ assert.match(board,/startBoardAnimationSession\('restart-tiles'/,'Restart animat
 assert.match(board,/setUiEffectTimer\('board-restart','settle'/,'Restart animation settle timer must use an effect boundary.');
 assert.match(board,/function guidedRewindPath\(rawDeg\)\{[\s\S]{0,420}fullTurnApproach=240\+60/,'Guided rewind must use the 240-to-360 operation boundary.');
 assert.match(board,/function animateGuidedBasicRewind\([\s\S]{0,700}Math\.abs\(rewindEnd-rewindStart\)<0\.5/,'Guided rewind must skip only exact full-turn angles.');
-const tutorialStart=board.indexOf('function animateTutorialRewind');
-const tutorialEnd=board.indexOf('function animateGuidedBasicRewind',tutorialStart);
-const tutorialRewind=tutorialStart>=0&&tutorialEnd>tutorialStart?board.slice(tutorialStart,tutorialEnd):'';
-assert.doesNotMatch(tutorialRewind,/const domOrder=/,'Tutorial rewind animation must not calculate DOM ordering at the call site.');
-assert.match(tutorialRewind,/rotate\('\+model\.startAngle\+'deg\)',offset:0/,'Tutorial rewind must start from the released angle model.');
-assert.match(tutorialRewind,/rotate\('\+model\.endAngle\+'deg\)',offset:1/,'Tutorial rewind must return directly to the initial angle model.');
-assert.doesNotMatch(tutorialRewind,/offset:\.36|offset:\.56/,'Tutorial rewind must not pass through an intermediate 120-degree waypoint.');
+assert.match(board,/animateGuidedBasicRewind\(dg,\{tutorial:true\}\)/,
+  'Tutorial rewind must use the same released-angle path as academy rewind.');
 console.log('Validated UI effect timer cancellation boundaries.');

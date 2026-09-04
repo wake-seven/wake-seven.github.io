@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "name": "state-access-baseline",
-  "generatedAt": "2026-09-04T08:17:01.735Z",
+  "generatedAt": "2026-09-04T09:12:23.251Z",
   "source": "scripts/state-access-exceptions.json",
   "counts": {
-    "temporary": 135,
+    "temporary": 133,
     "byPurpose": {
-      "navigation": 123,
+      "navigation": 121,
       "dialog": 18,
       "progress": 0,
       "session": 0,
@@ -19,10 +19,10 @@
       "data": 1,
       "other": 7,
       "runtime": 3,
-      "ui": 123
+      "ui": 121
     },
     "byAccess": {
-      "read": 123,
+      "read": 121,
       "write": 18
     }
   },
@@ -2044,67 +2044,11 @@
       ]
     },
     {
-      "fingerprint": "ui/board-ui.js:tutorialStep:animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:target,direction:dir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue",
-      "classification": "executable",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1937,
-        "excerpt": "animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:target,direction:dir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cue"
-      },
-      "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
-      "fingerprint": "ui/board-ui.js:tutorialStep:animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:rewindDir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cu",
-      "classification": "executable",
-      "source": {
-        "file": "ui/board-ui.js",
-        "line": 1950,
-        "excerpt": "animateTutorialRewind(createTutorialRewindModel({startAngle:dg.deg,endAngle:0,direction:rewindDir,pivot:dg.kc,items:dg.items.map(({from,turn,dx,dy})=>({from,turn,dx,dy})),duration:720,cue:TUTORIAL_STEPS[tutorialStep]?.cu"
-      },
-      "symbol": "tutorialStep",
-      "entrypoint": "ui",
-      "access": "read",
-      "purpose": "navigation",
-      "dialogRole": null,
-      "dialogReason": null,
-      "exceptionClass": "temporary",
-      "ownerOnly": false,
-      "temporary": true,
-      "migrationTarget": "gateway:navigation",
-      "migrationUnit": "navigation context gateway（進行先判定）",
-      "expiresOn": "2026-12-02",
-      "priority": 1,
-      "reason": "既存のnavigation処理。対応する入口とE2Eを確認してから移行する",
-      "relatedE2E": [
-        "browser-e2e",
-        "progression-flows",
-        "clear-flow-order"
-      ]
-    },
-    {
       "fingerprint": "ui/board-ui.js:stageIndex:if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&stageIndex===0&&!hasMasterReward())",
       "classification": "executable",
       "source": {
         "file": "ui/board-ui.js",
-        "line": 2227,
+        "line": 2197,
         "excerpt": "if(!isMode('free')&&!isMode('custom')&&!isMode('mastery')&&stageIndex===0&&!hasMasterReward())"
       },
       "symbol": "stageIndex",
