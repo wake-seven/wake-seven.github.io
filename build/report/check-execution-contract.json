@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "name": "wake7-execution-contract",
-  "generatedAt": "2026-09-04T09:46:13.694Z",
-  "sourceRevision": "aba0935",
+  "generatedAt": "2026-09-04T10:08:54.355Z",
+  "sourceRevision": "02c2319",
   "status": "passed",
   "warnings": [],
   "errors": [],
@@ -17,14 +17,18 @@
   "fullGateRequired": true,
   "changedFiles": [
     "index.html",
-    "scripts/check-browser-e2e.mjs",
+    "scripts/application-manifest.mjs",
+    "scripts/check-browser-flow.mjs",
     "scripts/check-clear-flow-order.mjs",
     "scripts/check-progression-flow-contract.mjs",
     "scripts/check-state-restore.mjs",
-    "scripts/e2e-speed-contract.json",
+    "scripts/feature-registry.json",
+    "scripts/public-symbols-budget.json",
+    "src/runtime/app-events.js",
     "src/runtime/runtime.js",
-    "src/ui/progression-clear-flow.js",
-    "src/ui/progression-flow-contract.js"
+    "src/ui/board-ui.js",
+    "src/ui/progression-flow-contract.js",
+    "src/ui/clear-feature.js"
   ],
   "policy": {
     "precedence": [
@@ -71,10 +75,15 @@
   "milestone": {
     "command": "npm run check:milestone",
     "requiredChecks": [
-      "browser-e2e"
+      "browser-e2e",
+      "device-e2e"
     ],
-    "conditionalChecks": [],
-    "reasons": []
+    "conditionalChecks": [
+      "device-e2e"
+    ],
+    "reasons": [
+      "pointer・タッチ・レスポンシブ表示の変更は、途中でも端末差分を確認する。"
+    ]
   },
   "release": {
     "command": "npm run check:release",

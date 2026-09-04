@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T09:43:09.259Z",
+  "generatedAt": "2026-09-04T10:09:16.182Z",
   "source": "build/report/symbol-index.json",
   "target": "progression-related symbols",
   "summary": {
@@ -35,7 +35,7 @@
     "structuralFindings": {
       "clear-flow-direct-skip": 1,
       "decision-dom-mutation": 4,
-      "major-transition-outside-entry": 19
+      "major-transition-outside-entry": 18
     }
   },
   "pipeline": [
@@ -1873,23 +1873,6 @@
     },
     {
       "kind": "major-transition-outside-entry",
-      "name": "startClearFlow",
-      "file": "ui/progression-clear-flow.js",
-      "line": 152,
-      "priority": 2,
-      "allowed": true,
-      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
-      "evidence": {
-        "callers": [
-          "ui/board-ui.js:975:completeBoard",
-          "ui/progression-clear-flow.js:152:celebrateClear",
-          "runtime/app-events.js:26:WakeSevenEventBindings"
-        ],
-        "externallyCalled": true
-      }
-    },
-    {
-      "kind": "major-transition-outside-entry",
       "name": "resetClearFlow",
       "file": "ui/progression-clear-flow.js",
       "line": 170,
@@ -1955,8 +1938,7 @@
         "callers": [
           "commands/progression-commands.js:29:advanceAfterClear",
           "commands/progression-commands.js:49:advanceAfterClear",
-          "ui/progression-clear-flow.js:298:kind",
-          "runtime/app-events.js:272:resetIntro"
+          "ui/progression-clear-flow.js:298:kind"
         ],
         "externallyCalled": true
       }
@@ -1972,9 +1954,9 @@
       "evidence": {
         "callers": [
           "ui/progression-clear-flow.js:300:advanceAfterClear",
-          "runtime/app-events.js:775:closeTipGuide",
-          "runtime/app-events.js:1019:closeTwoMovePatterns",
-          "runtime/app-events.js:1053:card"
+          "runtime/app-events.js:771:closeTipGuide",
+          "runtime/app-events.js:1015:closeTwoMovePatterns",
+          "runtime/app-events.js:1049:card"
         ],
         "externallyCalled": true
       }
@@ -1995,11 +1977,11 @@
           "ui/rank.js:146:volume",
           "ui/rank.js:147:volume",
           "ui/rank.js:166:openRankDialogFrom",
-          "runtime/app-events.js:290:resume",
-          "runtime/app-events.js:291:resume",
-          "runtime/app-events.js:399:resume",
-          "runtime/app-events.js:408:resume",
-          "runtime/app-events.js:480:dialogId"
+          "runtime/app-events.js:286:resume",
+          "runtime/app-events.js:287:resume",
+          "runtime/app-events.js:395:resume",
+          "runtime/app-events.js:404:resume",
+          "runtime/app-events.js:476:dialogId"
         ],
         "externallyCalled": true
       }
@@ -2053,11 +2035,11 @@
           "ui/progression-ui.js:721:from",
           "ui/progression-ui.js:727:from",
           "runtime/app-events.js:251:handleClearTipLink",
-          "runtime/app-events.js:376:target",
-          "runtime/app-events.js:456:dialogContext",
-          "runtime/app-events.js:472:dialogContext",
-          "runtime/app-events.js:786:target",
-          "runtime/app-events.js:1001:menu"
+          "runtime/app-events.js:372:target",
+          "runtime/app-events.js:452:dialogContext",
+          "runtime/app-events.js:468:dialogContext",
+          "runtime/app-events.js:782:target",
+          "runtime/app-events.js:997:menu"
         ],
         "externallyCalled": true
       }
@@ -2078,8 +2060,8 @@
           "ui/progression-ui.js:724:from",
           "ui/progression-ui.js:730:from",
           "runtime/app-events.js:260:handleClearTipLink",
-          "runtime/app-events.js:474:dialogContext",
-          "runtime/app-events.js:1046:button"
+          "runtime/app-events.js:470:dialogContext",
+          "runtime/app-events.js:1042:button"
         ],
         "externallyCalled": true
       }
@@ -2095,7 +2077,7 @@
       "evidence": {
         "callers": [
           "ui/progression-insights.js:122:openTwoMoveDetail",
-          "runtime/app-events.js:1074:target"
+          "runtime/app-events.js:1070:target"
         ],
         "externallyCalled": true
       }
@@ -2111,7 +2093,7 @@
       "evidence": {
         "callers": [
           "ui/progression-insights.js:202:moveDetailDrag",
-          "runtime/app-events.js:1072:target"
+          "runtime/app-events.js:1068:target"
         ],
         "externallyCalled": true
       }
@@ -2129,7 +2111,7 @@
           "ui/progression-ui.js:40:extraRoundLabel",
           "ui/progression-ui.js:103:index",
           "ui/progression-ui.js:189:canSeeTraining",
-          "runtime/app-events.js:401:resume"
+          "runtime/app-events.js:397:resume"
         ],
         "externallyCalled": true
       }
@@ -2171,9 +2153,9 @@
           "ui/progression-ui.js:110:index",
           "ui/progression-ui.js:200:openStagePicker",
           "ui/progression-clear-flow.js:292:kind",
-          "runtime/app-events.js:309:resume",
-          "runtime/app-events.js:522:returnTarget",
-          "runtime/app-events.js:523:returnTarget"
+          "runtime/app-events.js:305:resume",
+          "runtime/app-events.js:518:returnTarget",
+          "runtime/app-events.js:519:returnTarget"
         ],
         "externallyCalled": true
       }
@@ -2256,9 +2238,9 @@
       "evidence": {
         "callers": [
           "ui/rank.js:162:rankDialogReturn",
-          "runtime/app-events.js:481:dialogId",
-          "runtime/app-events.js:482:dialogId",
-          "runtime/app-events.js:485:dialogId"
+          "runtime/app-events.js:477:dialogId",
+          "runtime/app-events.js:478:dialogId",
+          "runtime/app-events.js:481:dialogId"
         ],
         "externallyCalled": true
       }
@@ -3458,9 +3440,8 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "ui/board-ui.js:975:completeBoard",
-        "ui/progression-clear-flow.js:152:celebrateClear",
-        "runtime/app-events.js:26:WakeSevenEventBindings"
+        "ui/clear-feature.js:11:clearFeatureRestoreDialog",
+        "ui/progression-clear-flow.js:152:celebrateClear"
       ]
     },
     {
@@ -3592,7 +3573,7 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
-        "runtime/runtime.js:180:clear",
+        "ui/clear-feature.js:6:clearFeatureRestoreDialog",
         "ui/progression-clear-flow.js:198:finishClearFlowDialog"
       ]
     },
@@ -3727,6 +3708,7 @@
       "flowClassification": "orchestration",
       "mixedResponsibility": true,
       "callers": [
+        "ui/clear-feature.js:13:clearFeatureRestoreDialog",
         "ui/progression-clear-flow.js:265:resolveAfterClearRoute",
         "ui/progression-clear-flow.js:298:advanceAfterClear"
       ]
@@ -3760,8 +3742,7 @@
       "callers": [
         "commands/progression-commands.js:29:advanceAfterClear",
         "commands/progression-commands.js:49:advanceAfterClear",
-        "ui/progression-clear-flow.js:298:kind",
-        "runtime/app-events.js:272:resetIntro"
+        "ui/progression-clear-flow.js:298:kind"
       ]
     },
     {
@@ -3793,9 +3774,9 @@
       "mixedResponsibility": true,
       "callers": [
         "ui/progression-clear-flow.js:300:advanceAfterClear",
-        "runtime/app-events.js:775:closeTipGuide",
-        "runtime/app-events.js:1019:closeTwoMovePatterns",
-        "runtime/app-events.js:1053:card"
+        "runtime/app-events.js:771:closeTipGuide",
+        "runtime/app-events.js:1015:closeTwoMovePatterns",
+        "runtime/app-events.js:1049:card"
       ]
     },
     {
@@ -3849,11 +3830,11 @@
         "ui/rank.js:146:volume",
         "ui/rank.js:147:volume",
         "ui/rank.js:166:openRankDialogFrom",
-        "runtime/app-events.js:290:resume",
-        "runtime/app-events.js:291:resume",
-        "runtime/app-events.js:399:resume",
-        "runtime/app-events.js:408:resume",
-        "runtime/app-events.js:480:dialogId"
+        "runtime/app-events.js:286:resume",
+        "runtime/app-events.js:287:resume",
+        "runtime/app-events.js:395:resume",
+        "runtime/app-events.js:404:resume",
+        "runtime/app-events.js:476:dialogId"
       ]
     },
     {
@@ -3960,7 +3941,7 @@
         "ui/progression-ui.js:325:showClearDialog",
         "ui/progression-clear-flow.js:301:returnToClearDialog",
         "ui/progression-clear-flow.js:303:returnToClearDialog",
-        "runtime/app-events.js:955:button"
+        "runtime/app-events.js:951:button"
       ]
     },
     {
@@ -4327,13 +4308,13 @@
         "commands/progression-commands.js:3:grantMasterDialogRewardsCommand",
         "commands/progression-commands.js:7:grantMasterDialogRewardsCommand",
         "commands/progression-commands.js:12:grantMasterDialogRewardsCommand",
+        "ui/clear-feature.js:17:clearFeatureRestoreDialog",
         "ui/progression-hud.js:33:createProgressionViewContext",
         "ui/progression-clear-flow.js:271:kind",
         "ui/progression-clear-flow.js:290:kind",
         "ui/render.js:21:navigation",
-        "runtime/app-events.js:277:resetIntro",
-        "runtime/app-events.js:282:nextStageAttention",
-        "runtime/app-events.js:442:open"
+        "runtime/app-events.js:278:resetIntro",
+        "runtime/app-events.js:438:open"
       ]
     },
     {
@@ -4760,7 +4741,7 @@
         "ui/progression-insights.js:51:board",
         "ui/progression-insights.js:94:button",
         "ui/progression-insights.js:212:transformTwoMovePattern",
-        "runtime/app-events.js:943:button"
+        "runtime/app-events.js:939:button"
       ]
     },
     {
@@ -4848,11 +4829,11 @@
         "ui/progression-ui.js:721:from",
         "ui/progression-ui.js:727:from",
         "runtime/app-events.js:251:handleClearTipLink",
-        "runtime/app-events.js:376:target",
-        "runtime/app-events.js:456:dialogContext",
-        "runtime/app-events.js:472:dialogContext",
-        "runtime/app-events.js:786:target",
-        "runtime/app-events.js:1001:menu"
+        "runtime/app-events.js:372:target",
+        "runtime/app-events.js:452:dialogContext",
+        "runtime/app-events.js:468:dialogContext",
+        "runtime/app-events.js:782:target",
+        "runtime/app-events.js:997:menu"
       ]
     },
     {
@@ -4873,7 +4854,7 @@
         "ui/progression-insights.js:152:animateTwoMoveDetail",
         "ui/progression-insights.js:159:from",
         "ui/progression-ui.js:997:moveTwoMoveDetail",
-        "runtime/app-events.js:944:button"
+        "runtime/app-events.js:940:button"
       ]
     },
     {
@@ -4908,8 +4889,8 @@
         "ui/progression-ui.js:724:from",
         "ui/progression-ui.js:730:from",
         "runtime/app-events.js:260:handleClearTipLink",
-        "runtime/app-events.js:474:dialogContext",
-        "runtime/app-events.js:1046:button"
+        "runtime/app-events.js:470:dialogContext",
+        "runtime/app-events.js:1042:button"
       ]
     },
     {
@@ -4926,7 +4907,7 @@
       "mixedResponsibility": true,
       "callers": [
         "ui/progression-insights.js:122:openTwoMoveDetail",
-        "runtime/app-events.js:1074:target"
+        "runtime/app-events.js:1070:target"
       ]
     },
     {
@@ -4959,7 +4940,7 @@
         "ui/progression-insights.js:156:animateTwoMoveDetail",
         "ui/progression-insights.js:183:transformClearShapeRule",
         "ui/progression-insights.js:223:animateTwoMovePattern",
-        "runtime/app-events.js:769:animateTipGuide"
+        "runtime/app-events.js:765:animateTipGuide"
       ]
     },
     {
@@ -5001,10 +4982,10 @@
       "mixedResponsibility": false,
       "callers": [
         "ui/progression-insights.js:148:tips",
-        "runtime/app-events.js:1065:target",
-        "runtime/app-events.js:1066:target",
-        "runtime/app-events.js:1067:target",
-        "runtime/app-events.js:1068:target"
+        "runtime/app-events.js:1061:target",
+        "runtime/app-events.js:1062:target",
+        "runtime/app-events.js:1063:target",
+        "runtime/app-events.js:1064:target"
       ]
     },
     {
@@ -5035,7 +5016,7 @@
         "ui/progression-insights.js:170:createAnimGuard",
         "ui/progression-ui.js:535:renderClearQuiz",
         "ui/progression-ui.js:537:renderClearQuiz",
-        "runtime/app-events.js:637:previous"
+        "runtime/app-events.js:633:previous"
       ]
     },
     {
@@ -5096,10 +5077,10 @@
       "mixedResponsibility": false,
       "callers": [
         "ui/progression-insights.js:174:renderClearShapeRule",
-        "runtime/app-events.js:1082:target",
-        "runtime/app-events.js:1083:target",
-        "runtime/app-events.js:1084:target",
-        "runtime/app-events.js:1085:target"
+        "runtime/app-events.js:1078:target",
+        "runtime/app-events.js:1079:target",
+        "runtime/app-events.js:1080:target",
+        "runtime/app-events.js:1081:target"
       ]
     },
     {
@@ -5147,7 +5128,7 @@
       "mixedResponsibility": true,
       "callers": [
         "ui/progression-insights.js:202:moveDetailDrag",
-        "runtime/app-events.js:1072:target"
+        "runtime/app-events.js:1068:target"
       ]
     },
     {
@@ -5193,7 +5174,7 @@
       "mixedResponsibility": false,
       "callers": [
         "ui/progression-insights.js:214:transformTwoMovePattern",
-        "runtime/app-events.js:1041:button"
+        "runtime/app-events.js:1037:button"
       ]
     },
     {
@@ -5214,7 +5195,7 @@
         "ui/board-ui.js:1017:paint",
         "ui/progression-dialogs.js:55:requestProgressionDialog",
         "ui/progression-insights.js:227:board",
-        "runtime/app-events.js:947:button"
+        "runtime/app-events.js:943:button"
       ]
     },
     {
@@ -5767,7 +5748,7 @@
         "ui/progression-ui.js:1020:failedVariant",
         "ui/progression-hud.js:133:renderStageNavModeButtons",
         "ui/progression-clear-flow.js:223:createClearTransitionContext",
-        "runtime/app-events.js:961:button"
+        "runtime/app-events.js:957:button"
       ]
     },
     {
@@ -5883,7 +5864,7 @@
         "ui/progression-ui.js:40:extraRoundLabel",
         "ui/progression-ui.js:103:index",
         "ui/progression-ui.js:189:canSeeTraining",
-        "runtime/app-events.js:401:resume"
+        "runtime/app-events.js:397:resume"
       ]
     },
     {
@@ -5899,8 +5880,8 @@
       "mixedResponsibility": false,
       "callers": [
         "ui/progression-ui.js:43:closeStagePicker",
-        "runtime/app-events.js:404:resume",
-        "runtime/app-events.js:405:resume"
+        "runtime/app-events.js:400:resume",
+        "runtime/app-events.js:401:resume"
       ]
     },
     {
@@ -6037,9 +6018,9 @@
         "ui/progression-ui.js:110:index",
         "ui/progression-ui.js:200:openStagePicker",
         "ui/progression-clear-flow.js:292:kind",
-        "runtime/app-events.js:309:resume",
-        "runtime/app-events.js:522:returnTarget",
-        "runtime/app-events.js:523:returnTarget"
+        "runtime/app-events.js:305:resume",
+        "runtime/app-events.js:518:returnTarget",
+        "runtime/app-events.js:519:returnTarget"
       ]
     },
     {
@@ -6471,7 +6452,7 @@
         "ui/progression-ui.js:224:openStagePickerForRank",
         "ui/progression-ui.js:318:showClearDialog",
         "ui/progression-clear-flow.js:301:returnToClearDialog",
-        "runtime/app-events.js:952:button"
+        "runtime/app-events.js:948:button"
       ]
     },
     {
@@ -6542,7 +6523,7 @@
         "ui/progression-ui.js:243:clearDialogUsesStageProgression",
         "ui/progression-ui.js:317:showClearDialog",
         "ui/progression-clear-flow.js:301:returnToClearDialog",
-        "runtime/app-events.js:951:button"
+        "runtime/app-events.js:947:button"
       ]
     },
     {
@@ -6576,8 +6557,8 @@
       "flowClassification": "state-decision",
       "mixedResponsibility": true,
       "callers": [
-        "runtime/runtime.js:180:clear",
         "ui/progression-dialogs.js:45:requestProgressionDialog",
+        "ui/clear-feature.js:7:clearFeatureRestoreDialog",
         "ui/progression-ui.js:251:showingExtra"
       ]
     },
@@ -6872,7 +6853,7 @@
         "ui/progression-ui.js:319:showClearDialog",
         "ui/progression-ui.js:425:clearBoardSvg",
         "ui/progression-clear-flow.js:301:returnToClearDialog",
-        "runtime/app-events.js:953:button"
+        "runtime/app-events.js:949:button"
       ]
     },
     {
@@ -7185,17 +7166,17 @@
         "ui/board-ui.js:1016:paint",
         "ui/board-ui.js:1169:setPosition",
         "ui/progression-dialogs.js:63:closeProgressionDialog",
+        "ui/clear-feature.js:15:clearFeatureRestoreDialog",
         "ui/progression-ui.js:501:volumeLabel",
         "ui/progression-clear-flow.js:282:kind",
         "runtime/app-events.js:244:handleClearTipLink",
         "runtime/app-events.js:250:handleClearTipLink",
         "runtime/app-events.js:259:handleClearTipLink",
         "runtime/app-events.js:263:handleClearTipLink",
-        "runtime/app-events.js:275:resetIntro",
-        "runtime/app-events.js:432:open",
-        "runtime/app-events.js:497:returnTarget",
-        "runtime/app-events.js:527:dialogKind",
-        "runtime/app-events.js:791:openGuideHub"
+        "runtime/app-events.js:428:open",
+        "runtime/app-events.js:493:returnTarget",
+        "runtime/app-events.js:523:dialogKind",
+        "runtime/app-events.js:787:openGuideHub"
       ]
     },
     {
@@ -7212,7 +7193,7 @@
       "mixedResponsibility": true,
       "callers": [
         "ui/progression-ui.js:531:hideGameDialogs",
-        "runtime/app-events.js:954:button"
+        "runtime/app-events.js:950:button"
       ]
     },
     {
@@ -7311,7 +7292,7 @@
         "ui/progression-ui.js:556:miniTargetAngle",
         "ui/progression-ui.js:595:board",
         "ui/progression-ui.js:696:transform",
-        "runtime/app-events.js:642:tipGuideBoard"
+        "runtime/app-events.js:638:tipGuideBoard"
       ]
     },
     {
@@ -7509,9 +7490,9 @@
         "ui/progression-insights.js:57:buttons",
         "ui/progression-insights.js:78:buttonTemplate",
         "ui/progression-ui.js:601:board",
-        "runtime/app-events.js:667:buttons",
-        "runtime/app-events.js:928:button",
-        "runtime/app-events.js:934:button"
+        "runtime/app-events.js:663:buttons",
+        "runtime/app-events.js:924:button",
+        "runtime/app-events.js:930:button"
       ]
     },
     {
@@ -8188,8 +8169,8 @@
       "mixedResponsibility": false,
       "callers": [
         "ui/progression-ui.js:991:returnToStageMode",
-        "runtime/app-events.js:1063:target",
-        "runtime/app-events.js:1064:target"
+        "runtime/app-events.js:1059:target",
+        "runtime/app-events.js:1060:target"
       ]
     },
     {
@@ -8476,7 +8457,7 @@
       "mixedResponsibility": false,
       "callers": [
         "ui/rank.js:47:speedExamBadgeSvg",
-        "runtime/app-events.js:1111:position"
+        "runtime/app-events.js:1107:position"
       ]
     },
     {
@@ -8722,7 +8703,7 @@
         "ui/rank.js:156:openRankDialog",
         "ui/rank.js:160:rankDialogReturn",
         "ui/rank.js:161:rankDialogReturn",
-        "runtime/app-events.js:940:button"
+        "runtime/app-events.js:936:button"
       ]
     },
     {
@@ -8850,9 +8831,9 @@
       "mixedResponsibility": true,
       "callers": [
         "ui/rank.js:162:rankDialogReturn",
-        "runtime/app-events.js:481:dialogId",
-        "runtime/app-events.js:482:dialogId",
-        "runtime/app-events.js:485:dialogId"
+        "runtime/app-events.js:477:dialogId",
+        "runtime/app-events.js:478:dialogId",
+        "runtime/app-events.js:481:dialogId"
       ]
     }
   ],

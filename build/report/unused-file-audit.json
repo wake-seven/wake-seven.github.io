@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T08:50:40.062Z",
+  "generatedAt": "2026-09-04T10:10:44.798Z",
   "safeToDelete": [],
   "reviewOnly": [
     {
@@ -64,6 +64,19 @@
       "referenceSources": [
         "scripts/application-manifest.mjs",
         "scripts/application-manifest.mjs:publishedSourceFiles"
+      ],
+      "removalCondition": "公開マニフェスト・開発入口・公開API・検査・E2Eの参照がすべて0であることを確認し、npm run check:gate を通過すること",
+      "reassessOn": "2026-12-03"
+    },
+    {
+      "file": "ui/clear-feature.js",
+      "classification": "thin-wrapper-or-boundary",
+      "action": "verify-manifest-before-removal",
+      "purpose": "DOM描画・入力・ダイアログ",
+      "referenceSources": [
+        "scripts/application-manifest.mjs",
+        "scripts/application-manifest.mjs:publishedSourceFiles",
+        "scripts/feature-registry.json"
       ],
       "removalCondition": "公開マニフェスト・開発入口・公開API・検査・E2Eの参照がすべて0であることを確認し、npm run check:gate を通過すること",
       "reassessOn": "2026-12-03"

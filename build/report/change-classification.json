@@ -2,26 +2,29 @@
   "name": "wake7-change-classification",
   "status": "passed",
   "summary": {
-    "changedFiles": 9,
-    "classified": 3,
-    "unknown": 6,
-    "mismatches": 3,
+    "changedFiles": 13,
+    "classified": 5,
+    "unknown": 8,
+    "mismatches": 4,
     "missingFeatureKinds": 0
   },
   "warnings": [
     "分類ルールがありません: index.html",
-    "分類ルールがありません: scripts/check-browser-e2e.mjs",
+    "分類ルールがありません: scripts/application-manifest.mjs",
+    "分類ルールがありません: scripts/check-browser-flow.mjs",
     "分類ルールがありません: scripts/check-clear-flow-order.mjs",
     "分類ルールがありません: scripts/check-progression-flow-contract.mjs",
     "分類ルールがありません: scripts/check-state-restore.mjs",
-    "分類ルールがありません: scripts/e2e-speed-contract.json",
+    "分類ルールがありません: scripts/feature-registry.json",
+    "分類ルールがありません: scripts/public-symbols-budget.json",
+    "src/runtime/app-events.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です",
     "src/runtime/runtime.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です",
-    "src/ui/progression-clear-flow.js: 宣言分類 progression と差分シグナル rule, presentation が不一致です",
+    "src/ui/board-ui.js: 宣言分類 presentation と差分シグナル rule, progression が不一致です",
     "src/ui/progression-flow-contract.js: 宣言分類 progression と差分シグナル presentation が不一致です"
   ],
   "errors": [],
-  "generatedAt": "2026-09-04T09:46:14.893Z",
-  "sourceRevision": "aba0935",
+  "generatedAt": "2026-09-04T10:08:56.330Z",
+  "sourceRevision": "02c2319",
   "entries": [
     {
       "file": "index.html",
@@ -31,7 +34,14 @@
       "status": "unknown"
     },
     {
-      "file": "scripts/check-browser-e2e.mjs",
+      "file": "scripts/application-manifest.mjs",
+      "kind": null,
+      "layer": null,
+      "signals": [],
+      "status": "unknown"
+    },
+    {
+      "file": "scripts/check-browser-flow.mjs",
       "kind": null,
       "layer": null,
       "signals": [],
@@ -59,11 +69,35 @@
       "status": "unknown"
     },
     {
-      "file": "scripts/e2e-speed-contract.json",
+      "file": "scripts/feature-registry.json",
       "kind": null,
       "layer": null,
       "signals": [],
       "status": "unknown"
+    },
+    {
+      "file": "scripts/public-symbols-budget.json",
+      "kind": null,
+      "layer": null,
+      "signals": [],
+      "status": "unknown"
+    },
+    {
+      "file": "src/runtime/app-events.js",
+      "kind": "progression",
+      "layer": "runtime",
+      "signals": [
+        "rule",
+        "progression",
+        "assist",
+        "presentation"
+      ],
+      "mismatched": [
+        "rule",
+        "assist",
+        "presentation"
+      ],
+      "status": "warning"
     },
     {
       "file": "src/runtime/runtime.js",
@@ -83,17 +117,18 @@
       "status": "warning"
     },
     {
-      "file": "src/ui/progression-clear-flow.js",
-      "kind": "progression",
+      "file": "src/ui/board-ui.js",
+      "kind": "presentation",
       "layer": "ui",
       "signals": [
         "rule",
         "progression",
+        "assist",
         "presentation"
       ],
       "mismatched": [
         "rule",
-        "presentation"
+        "progression"
       ],
       "status": "warning"
     },
@@ -102,13 +137,22 @@
       "kind": "progression",
       "layer": "ui",
       "signals": [
-        "progression",
         "presentation"
       ],
       "mismatched": [
         "presentation"
       ],
       "status": "warning"
+    },
+    {
+      "file": "src/ui/clear-feature.js",
+      "kind": "presentation",
+      "layer": "ui",
+      "signals": [
+        "presentation"
+      ],
+      "mismatched": [],
+      "status": "passed"
     }
   ],
   "policy": {

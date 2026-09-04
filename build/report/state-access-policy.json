@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-04T09:44:07.276Z",
+  "generatedAt": "2026-09-04T10:10:18.845Z",
   "names": [
     "activeMode",
     "activeLap",
@@ -1258,6 +1258,14 @@
       "exclusionReason": "オブジェクトのプロパティ名"
     },
     {
+      "file": "ui/clear-feature.js",
+      "name": "nextStageAttention",
+      "line": 16,
+      "source": "updateDialogStateOwner({nextStageAttention:isCampaignMode()&&!editingBoard});",
+      "kind": "object-key",
+      "exclusionReason": "オブジェクトリテラルのキー"
+    },
+    {
       "file": "ui/progression-ui.js",
       "name": "satoriIndex",
       "line": 100,
@@ -1565,7 +1573,7 @@
       "file": "ui/progression-flow-contract.js",
       "name": "clearShown",
       "line": 6,
-      "source": "{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation',guard:'clearFlowCycle + phase idle',owner:'progression-clear-flow'},",
+      "source": "{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'WakeSevenClearFeature.start',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation',guard:'clearFlowCycle + phase idle',owner:'progression-clear-flow'},",
       "kind": "string",
       "exclusionReason": "文字列リテラル内の名前"
     },
@@ -1667,16 +1675,8 @@
     },
     {
       "file": "runtime/app-events.js",
-      "name": "nextStageAttention",
-      "line": 276,
-      "source": "updateDialogStateOwner({nextStageAttention:isCampaignMode()&&!editingBoard});",
-      "kind": "object-key",
-      "exclusionReason": "オブジェクトリテラルのキー"
-    },
-    {
-      "file": "runtime/app-events.js",
       "name": "messageDialogReturn",
-      "line": 362,
+      "line": 358,
       "source": "const returnTarget=readDialogContext().messageDialogReturn;",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1684,7 +1684,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "messageDialogReturn",
-      "line": 363,
+      "line": 359,
       "source": "updateDialogStateOwner({messageDialogReturn:null});",
       "kind": "object-key",
       "exclusionReason": "オブジェクトリテラルのキー"
@@ -1692,7 +1692,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "masterDialogKind",
-      "line": 426,
+      "line": 422,
       "source": "const dialogKind=dialogContext.masterDialogKind;",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1700,7 +1700,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "rankDialogReturn",
-      "line": 489,
+      "line": 485,
       "source": "const returnTarget=readDialogContext().rankDialogReturn;updateDialogStateOwner({rankDialogReturn:null});",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1708,7 +1708,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "rankDialogReturn",
-      "line": 489,
+      "line": 485,
       "source": "const returnTarget=readDialogContext().rankDialogReturn;updateDialogStateOwner({rankDialogReturn:null});",
       "kind": "object-key",
       "exclusionReason": "オブジェクトリテラルのキー"
@@ -1716,7 +1716,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "masterDialogKind",
-      "line": 494,
+      "line": 490,
       "source": "const dialogKind=readDialogContext().masterDialogKind;",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1724,7 +1724,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "tutorialStep",
-      "line": 939,
+      "line": 935,
       "source": "$('gripPromptText').textContent=navigation.mode==='tutorial'&&TUTORIAL_STEPS[navigation.tutorialStep]?.cue==='grab'?tutorialPrompt('grab'):tr('gripPrompt');",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1732,7 +1732,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "stageIndex",
-      "line": 961,
+      "line": 957,
       "source": "else if(navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())action.textContent=tr('allPatternsNext');",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1740,7 +1740,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "stageIndex",
-      "line": 962,
+      "line": 958,
       "source": "else if(navigation.stageIndex===STAGES.length-1)action.textContent=tr('toFree');",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1748,7 +1748,7 @@
     {
       "file": "runtime/app-events.js",
       "name": "activeLap",
-      "line": 1147,
+      "line": 1143,
       "source": "storage.remove(STORAGE_KEY_GROUPS.progression.activeLap);",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -8459,7 +8459,7 @@
       "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 941,
+        "line": 937,
         "excerpt": "if(!$('masterDialog').hidden)GameDialogs.mastery(masterDialogKind);"
       },
       "symbol": "masterDialogKind",
@@ -8487,7 +8487,7 @@
       "classification": "executable",
       "source": {
         "file": "runtime/app-events.js",
-        "line": 950,
+        "line": 946,
         "excerpt": "else if(clearShown){"
       },
       "symbol": "clearShown",

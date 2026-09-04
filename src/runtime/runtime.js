@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-18:40';
+const APP_VERSION='2026.09.04-19:08';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -177,7 +177,7 @@ function persistDialogState(){
 // 各ハンドラは従来の呼び出し順と戻り先を維持し、保存状態の判定だけを担当する。
 const DIALOG_RESTORE_HANDLERS=Object.freeze({
   chain:state=>{if(!CHAIN_STEPS[state.name])return false;openChainedDialog(state.name);return true;},
-  clear:()=>{if(!(clearShown&&isSolved()))return false;const clearContext=createClearTransitionContext();if(!restoreClearFlowDialog(clearContext))return false;showClearDialog(clearContext);return true;},
+  clear:()=>{if(!(clearShown&&isSolved()))return false;const clearContext=createClearTransitionContext();return WakeSevenClearFeature.restoreClearDialog(clearContext);},
   message:state=>{openMessageReview({resume:true});if(state.key){const index=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===state.key);if(index>=0){messageReviewIndex=index;renderMessageReview();}}return true;},
   rank:()=>{openRankDialog();return true;},
   tipGuide:()=>{openTipGuide();return true;},

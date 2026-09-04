@@ -1,10 +1,10 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-04T08:50:39.999Z",
+  "generatedAt": "2026-09-04T10:10:44.729Z",
   "source": "build/report/refactor-candidates.json",
   "summary": {
-    "candidates": 16,
-    "retained": 16,
+    "candidates": 17,
+    "retained": 17,
     "safeToDelete": 0
   },
   "entries": [
@@ -75,6 +75,20 @@
       "referenceSources": [
         "scripts/application-manifest.mjs",
         "scripts/application-manifest.mjs:publishedSourceFiles"
+      ],
+      "removalCondition": "公開マニフェスト・開発入口・公開API・検査・E2Eの参照がすべて0であることを確認し、npm run check:gate を通過すること",
+      "reassessOn": "2026-12-03"
+    },
+    {
+      "file": "ui/clear-feature.js",
+      "classification": "thin-wrapper-or-boundary",
+      "disposition": "保持",
+      "reason": "公開マニフェストに含まれる単体index.htmlの構成要素",
+      "purpose": "DOM描画・入力・ダイアログ",
+      "referenceSources": [
+        "scripts/application-manifest.mjs",
+        "scripts/application-manifest.mjs:publishedSourceFiles",
+        "scripts/feature-registry.json"
       ],
       "removalCondition": "公開マニフェスト・開発入口・公開API・検査・E2Eの参照がすべて0であることを確認し、npm run check:gate を通過すること",
       "reassessOn": "2026-12-03"

@@ -68,6 +68,11 @@ for (const phase of ['clear-animation','clear-dialog','quiz/message','next-stage
 assert.match(clearFlow, /function setClearFlowPhase\(phase/, 'clear flow phase changes must use one transition helper');
 assert.match(clearFlow, /function persistClearFlowCheckpoint\(/, 'clear flow persistence must use a named checkpoint entry point');
 assert.match(clearFlow, /function cancelClearFlow\(reason/, 'clear flow cancellation must use a named entry point');
+const clearFeature = await readFile(join(root, 'src', 'ui', 'clear-feature.js'), 'utf8');
+assert.match(clearFeature, /const clearFeatureTrace=\[\]/, 'clear feature must expose an orchestration trace');
+assert.match(clearFeature, /start\(options=\{\}\)\{traceClearFeature\('start'/, 'clear feature start must use the orchestration entry');
+assert.match(clearFeature, /next\(\)\{traceClearFeature\('next'/, 'clear feature next must use the orchestration entry');
+assert.match(clearFeature, /trace\(\)\{return clearFeatureTrace\.slice\(\);\}/, 'clear feature trace must be read-only');
 assert.match(clearFlow, /function enqueueClearFlowDialog\(item,cycle=clearFlowCycle\)/, 'clear dialog queue entry point is missing');
 assert.match(clearFlow, /function consumeClearFlowDialog\(cycle=clearFlowCycle\)/, 'clear dialog queue consume entry point is missing');
 assert.match(clearFlow, /enqueueClearFlowDialog\(\{kind:'clear'/, 'clear dialog must be queued before rendering');
@@ -120,9 +125,9 @@ for (const id of ['clearClose', 'clearNext', 'clearTipLink', 'clearMessages',
   'messageDialog', 'messagePrev', 'messageNext', 'closeMessages', 'messageRankLink']) {
   assert.match(template, new RegExp(`id=["']${id}["']`), `dialog navigation DOM contract is missing: ${id}`);
 }
-assert.match(events, /WakeSevenEventBindings\.click\('clearClose',[\s\S]*hideGameDialogs\(\)[\s\S]*renderStageNav\(\)/,
+assert.match(events, /WakeSevenEventBindings\.click\('clearClose',[\s\S]*WakeSevenClearFeature\.close\(\)/,
   'clear close must hide the dialog and return to the stage navigation');
-assert.match(events, /WakeSevenEventBindings\.click\('clearNext',[\s\S]*advanceAfterClear\(\)/,
+assert.match(events, /WakeSevenEventBindings\.click\('clearNext',[\s\S]*WakeSevenClearFeature\.next\(\)/,
   'clear next must use the unified clear-transition entry point');
 assert.match(clearFlow, /function dispatchClearFlowAction\(action\)[\s\S]*const route=resolveAfterClearRoute[\s\S]*hideGameDialogs\(\)/,
   'clear transition must resolve its route before hiding the current dialog');
@@ -152,7 +157,7 @@ assert.match(runtime, /if\(visible\('clearDialog'\)\)return \{type:'clear'\}/,
   'clear dialog visibility must be captured for reload restoration');
 assert.match(runtime, /if\(visible\('messageDialog'\)[\s\S]*return \{type:'message'/,
   'message dialog and its review position must be captured for reload restoration');
-assert.match(runtime, /(?:state\.id==='clear'[\s\S]*clearShown&&isSolved\(\)[\s\S]*showClearDialog\([^)]*\)|clear:\(\)=>\{if\(!\(clearShown&&isSolved\(\)\)\)[\s\S]*showClearDialog\([^)]*\))/,
+assert.match(runtime, /(?:state\.id==='clear'[\s\S]*clearShown&&isSolved\(\)[\s\S]*WakeSevenClearFeature\.restoreClearDialog\([^)]*\)|clear:\(\)=>\{if\(!\(clearShown&&isSolved\(\)\)\)[\s\S]*WakeSevenClearFeature\.restoreClearDialog\([^)]*\))/,
   'restoring a clear dialog must require the solved board and clear state');
 assert.match(runtime, /(?:state\.id==='message'[\s\S]*openMessageReview\(\{resume:true\}\)|message:state=>[\s\S]*openMessageReview\(\{resume:true\}\))/,
   'restoring message review must rebuild it through the normal resume route');

@@ -4423,7 +4423,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-18:40';
+const APP_VERSION='2026.09.04-19:08';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -4599,7 +4599,7 @@ function persistDialogState(){
 // 各ハンドラは従来の呼び出し順と戻り先を維持し、保存状態の判定だけを担当する。
 const DIALOG_RESTORE_HANDLERS=Object.freeze({
   chain:state=>{if(!CHAIN_STEPS[state.name])return false;openChainedDialog(state.name);return true;},
-  clear:()=>{if(!(clearShown&&isSolved()))return false;const clearContext=createClearTransitionContext();if(!restoreClearFlowDialog(clearContext))return false;showClearDialog(clearContext);return true;},
+  clear:()=>{if(!(clearShown&&isSolved()))return false;const clearContext=createClearTransitionContext();return WakeSevenClearFeature.restoreClearDialog(clearContext);},
   message:state=>{openMessageReview({resume:true});if(state.key){const index=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===state.key);if(index>=0){messageReviewIndex=index;renderMessageReview();}}return true;},
   rank:()=>{openRankDialog();return true;},
   tipGuide:()=>{openTipGuide();return true;},
@@ -7018,7 +7018,7 @@ function completeBoard({mode=activeMode,context={},animation=true,nextAction=nul
     recordProgressClearCommand('primary',stageIndex);rememberClearedMessage(false,stageIndex);
   }
   const message=$('msg');message.textContent='';message.classList.remove('show','tip','long-tip');clearUiEffectTimers('clear-transition');
-  startClearFlow({animation,context,nextAction});
+  WakeSevenClearFeature.start({animation,context,nextAction});
   return true;
 }
 function paint(){
@@ -9415,6 +9415,29 @@ function resolveProgressionQuiz(answer){const value=answer&&typeof answer==='obj
 function closeProgressionQuiz(){const rootIds=new Set([progressionQuizContext?.rootId,'clearQuiz','boardQuiz','messageQuiz','messageBoardQuiz'].filter(Boolean));rootIds.forEach(rootId=>{const root=$(rootId);if(!root)return;root.hidden=true;root.classList.remove('quiz-success');if(rootId==='boardQuiz'||rootId==='messageBoardQuiz')resetBoardQuiz(rootId);});progressionQuizContext=null;}
 
 // ===== クリア後遷移 =====
+// ===== クリア機能の入口 =====
+// クリア完了から次の問題までの「状態判断・表示・操作」を、
+// ひとつの機能入口から追跡できるようにする。
+// 盤面ルール・保存・共通ダイアログの実装は既存の所有モジュールへ委譲する。
+const clearFeatureRestoreDialog=context=>{
+    if(!restoreClearFlowDialog(context))return false;
+    showClearDialog(context);
+    return true;
+};
+const WakeSevenClearFeature=Object.freeze({
+  start(options={}){return startClearFlow(options);},
+  restoreClearDialog:clearFeatureRestoreDialog,
+  next(){return dispatchClearFlowAction(CLEAR_FLOW_ACTION.next);},
+  close(){
+    hideGameDialogs();
+    updateDialogStateOwner({nextStageAttention:isCampaignMode()&&!editingBoard});
+    renderStageNav();
+    return true;
+  }
+});
+export {};
+
+// ===== 進行ナビゲーション =====
 // 節目ダイアログの表示条件をまとめる。報酬付与や遷移は progression-ui.js 側が担当する。
 function masterDialogTrialState(kind){
   const {lap}=runtimeSnapshot();
@@ -9449,7 +9472,7 @@ function masterDialogVisibility(kind,needsMasteryTrial){
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 進行ナビゲーション =====
+// ===== SVG表示境界 =====
 // 進行画面の補助的な鑑賞・解説UI。盤面本体の進行状態は変更しない。
 // 名人の盤面、最短2手の見本、クリア後の形ルールをここで描画する。
 function masteryBoardSvg(tilted=false,forceStandardColor=false){
@@ -9701,7 +9724,7 @@ function tipDaruma(x,y,scale=.55){
   return '<g transform="translate('+x+' '+y+') scale('+scale+')"><use href="#daruma-body"/><use href="#face-open"/></g>';
 }
 
-// ===== SVG表示境界 =====
+// ===== 画面描画境界 =====
 // ===== 進行UI（このファイルの責務） =====
 // ステージ選択、進行表示、クリア後表示をまとめる。前後移動イベントは
 // progression-navigation.js、共通の小さな表示処理は progression-render.js が担当する。
@@ -10741,7 +10764,7 @@ $('freeMode').addEventListener('click',()=>{if(busy||isMode('free'))return;resto
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 画面描画境界 =====
+// ===== イベントと起動 =====
 // 進行画面のHUDとステージナビを描画する。状態遷移は行わず、表示更新だけを担当する。
 function createProgressionViewContext({
   mode,
@@ -10974,7 +10997,7 @@ function renderStageNav(){
   renderStageNavGuidance();
 }
 
-// ===== イベントと起動 =====
+// ===== 起動・ライフサイクル =====
 // ===== ヒント表示・チュートリアル補助 =====
 function clearHintVisuals(preserveSelection=false){
   clearAxisGuide();
@@ -11017,15 +11040,15 @@ $('hint').addEventListener('click',()=>{cancelTutorialHint();if(isFourthVolume()
 // この抽出断片は、公開ネイティブモジュールスクリプトへ連結される間もソース監査で明示的に扱う。
 export {};
 
-// ===== 起動・ライフサイクル =====
+// ===== 公開API名前空間 =====
 // ===== 進行フローの遷移契約 =====
 // 画面ごとの条件分岐を再実装するためのものではなく、既存の入口が
 // どの状態を経由するかを読み取るための監査用の宣言データ。
 // 実際の副作用は progression-clear-flow.js / speed.js / runtime.js が担当する。
 const PROGRESSION_FLOW_CONTRACT=Object.freeze([
-  {id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation',guard:'clearFlowCycle + phase idle',owner:'progression-clear-flow'},
+  {id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'WakeSevenClearFeature.start',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation',guard:'clearFlowCycle + phase idle',owner:'progression-clear-flow'},
   {id:'campaign-clear-dialog',mode:'campaign',from:'clear-animation',event:'演出完了',entry:'finishClearFlow',persist:'clearDialog状態',cancel:'clear-transitionタイマー取消',to:'clear-dialog',guard:'animationPending + dialogSequence consume once',owner:'progression-clear-flow'},
-  {id:'campaign-next',mode:'campaign',from:'clear-dialog|quiz/message',event:'次へ',entry:'advanceAfterClear→dispatchClearFlowAction',persist:'次の問題・周回・解放状態',cancel:'hideGameDialogs・遷移世代無効化',to:'next-stage-dialog|next-playing',guard:'dialog/content phase + route resolved once',owner:'progression-clear-flow'},
+  {id:'campaign-next',mode:'campaign',from:'clear-dialog|quiz/message',event:'次へ',entry:'WakeSevenClearFeature.next→dispatchClearFlowAction',persist:'次の問題・周回・解放状態',cancel:'hideGameDialogs・遷移世代無効化',to:'next-stage-dialog|next-playing',guard:'dialog/content phase + route resolved once',owner:'progression-clear-flow'},
   {id:'speed-start',mode:'speed',from:'speed-start-dialog',event:'開始/再開',entry:'startSpeedRun|resumeSpeedRun',persist:'speed session・開始時刻',cancel:'pauseSpeedRun・speed transition timer取消',to:'playing'},
   {id:'speed-clear',mode:'speed',from:'playing',event:'速解き問題が解けた',entry:'finishStage→advanceSpeedRun',persist:'問題記録・speed session',cancel:'pauseSpeedRun・旧セッション退役',to:'playing|speed-finished'},
   {id:'rank-reward',mode:'campaign|speed',from:'clear-dialog|speed-finished',event:'称号条件達成',entry:'openRankDialog',persist:'称号・報酬・解放状態',cancel:'closeRankDialog',to:'rank-dialog|next-stage-dialog'},
@@ -11041,12 +11064,12 @@ function getProgressionFlowContract(){return PROGRESSION_FLOW_CONTRACT;}
 const PROGRESSION_ORCHESTRATORS=Object.freeze([
   {id:'clear-start',name:'クリア開始オーケストレーター',entry:'startClearFlow',source:'src/ui/progression-clear-flow.js',order:{decision:['beginClearFlow','createClearTransitionContext'],transition:['persistClearFlowCheckpoint'],render:['scheduleClearFlowDialog']}},
   {id:'clear-advance',name:'クリア後進行オーケストレーター',entry:'dispatchClearFlowAction',source:'src/ui/progression-clear-flow.js',order:{decision:['resolveAfterClearRoute'],transition:['persistClearFlowCheckpoint','setClearFlowPhase'],render:['showMasterDialog']}},
-  {id:'dialog-restore',name:'ダイアログ復元オーケストレーター',entry:'restoreDialogState',source:'src/runtime/runtime.js',order:{decision:['clear:()=>'],transition:['createClearTransitionContext'],render:['showClearDialog']}},
+  {id:'dialog-restore',name:'ダイアログ復元オーケストレーター',entry:'restoreDialogState',source:'src/runtime/runtime.js',order:{decision:['clear:()=>'],transition:['createClearTransitionContext'],render:['WakeSevenClearFeature.restoreClearDialog']}},
   {id:'stage-advance',name:'ステージ進行オーケストレーター',entry:'dispatchClearFlowAction',source:'src/ui/progression-clear-flow.js',order:{decision:['resolveAfterClearRoute'],transition:['setClearFlowPhase'],render:['loadStage']}}
 ]);
 export {};
 
-// ===== 公開API名前空間 =====
+// ===== ui/progression-clear-flow.js =====
 // ===== クリア後の状態遷移 =====
 // クリア演出の表示と、次の問題/コースへの遷移を進行UI本体から分離する。
 // clearShown は保存・進行用の状態なので、表示予約の重複防止には使わない。
@@ -11586,7 +11609,7 @@ function debugClearCurrent(extraMoves=0){
   if(navigation.mode==='speed'){ProgressionEntryPoints.finishStage({mode:'speed'});return;}
   // デバッグ即クリアでも、通常操作と同じクリア演出・ダイアログ遷移を直ちに予約する。
   // 再描画側の予約と重なっても、同じタイマーキーで冪等に置き換わる。
-  startClearFlow();
+  WakeSevenClearFeature.start();
   // 即クリアでも、通常操作と同じくメッセージ一覧の開始位置を更新する。
   if(extraMoves===0&&!['satori','free','custom'].includes(navigation.mode)){
     rememberClearedMessage(navigation.mode==='mastery',navigation.mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);
@@ -11832,13 +11855,9 @@ function handleClearTipLink(){
 }
 function bindClearDialogEvents(){
   WakeSevenEventBindings.click('clearNext',()=>{
-    WakeSevenProgressionCommands.advanceAfterClear();
+  WakeSevenClearFeature.next();
   });
-  WakeSevenEventBindings.click('clearClose',()=>{
-    hideGameDialogs();
-    updateDialogStateOwner({nextStageAttention:isCampaignMode()&&!editingBoard});
-    renderStageNav();
-  });
+  WakeSevenEventBindings.click('clearClose',()=>WakeSevenClearFeature.close());
   WakeSevenEventBindings.click('optimalRetry',()=>{
     $('optimalFailDialog').hidden=true;
     GameBoard.reset(currentInitialState,currentInitialPar);

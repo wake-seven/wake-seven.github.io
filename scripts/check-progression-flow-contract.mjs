@@ -25,6 +25,7 @@ const implementationSources=await Promise.all([
   readFile(join(root,'src/ui/board-ui.js'),'utf8'),
   readFile(join(root,'src/runtime/speed.js'),'utf8'),
   readFile(join(root,'src/runtime/app-bootstrap.js'),'utf8'),
+  readFile(join(root,'src/runtime/app-events.js'),'utf8'),
   readFile(join(root,'src/commands/progression-commands.js'),'utf8')
 ]);
 const implementation=implementationSources.join('\n');

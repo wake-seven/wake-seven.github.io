@@ -3,9 +3,9 @@
 // どの状態を経由するかを読み取るための監査用の宣言データ。
 // 実際の副作用は progression-clear-flow.js / speed.js / runtime.js が担当する。
 const PROGRESSION_FLOW_CONTRACT=Object.freeze([
-  {id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation',guard:'clearFlowCycle + phase idle',owner:'progression-clear-flow'},
+  {id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'WakeSevenClearFeature.start',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation',guard:'clearFlowCycle + phase idle',owner:'progression-clear-flow'},
   {id:'campaign-clear-dialog',mode:'campaign',from:'clear-animation',event:'演出完了',entry:'finishClearFlow',persist:'clearDialog状態',cancel:'clear-transitionタイマー取消',to:'clear-dialog',guard:'animationPending + dialogSequence consume once',owner:'progression-clear-flow'},
-  {id:'campaign-next',mode:'campaign',from:'clear-dialog|quiz/message',event:'次へ',entry:'advanceAfterClear→dispatchClearFlowAction',persist:'次の問題・周回・解放状態',cancel:'hideGameDialogs・遷移世代無効化',to:'next-stage-dialog|next-playing',guard:'dialog/content phase + route resolved once',owner:'progression-clear-flow'},
+  {id:'campaign-next',mode:'campaign',from:'clear-dialog|quiz/message',event:'次へ',entry:'WakeSevenClearFeature.next→dispatchClearFlowAction',persist:'次の問題・周回・解放状態',cancel:'hideGameDialogs・遷移世代無効化',to:'next-stage-dialog|next-playing',guard:'dialog/content phase + route resolved once',owner:'progression-clear-flow'},
   {id:'speed-start',mode:'speed',from:'speed-start-dialog',event:'開始/再開',entry:'startSpeedRun|resumeSpeedRun',persist:'speed session・開始時刻',cancel:'pauseSpeedRun・speed transition timer取消',to:'playing'},
   {id:'speed-clear',mode:'speed',from:'playing',event:'速解き問題が解けた',entry:'finishStage→advanceSpeedRun',persist:'問題記録・speed session',cancel:'pauseSpeedRun・旧セッション退役',to:'playing|speed-finished'},
   {id:'rank-reward',mode:'campaign|speed',from:'clear-dialog|speed-finished',event:'称号条件達成',entry:'openRankDialog',persist:'称号・報酬・解放状態',cancel:'closeRankDialog',to:'rank-dialog|next-stage-dialog'},
@@ -21,7 +21,7 @@ function getProgressionFlowContract(){return PROGRESSION_FLOW_CONTRACT;}
 const PROGRESSION_ORCHESTRATORS=Object.freeze([
   {id:'clear-start',name:'クリア開始オーケストレーター',entry:'startClearFlow',source:'src/ui/progression-clear-flow.js',order:{decision:['beginClearFlow','createClearTransitionContext'],transition:['persistClearFlowCheckpoint'],render:['scheduleClearFlowDialog']}},
   {id:'clear-advance',name:'クリア後進行オーケストレーター',entry:'dispatchClearFlowAction',source:'src/ui/progression-clear-flow.js',order:{decision:['resolveAfterClearRoute'],transition:['persistClearFlowCheckpoint','setClearFlowPhase'],render:['showMasterDialog']}},
-  {id:'dialog-restore',name:'ダイアログ復元オーケストレーター',entry:'restoreDialogState',source:'src/runtime/runtime.js',order:{decision:['clear:()=>'],transition:['createClearTransitionContext'],render:['showClearDialog']}},
+  {id:'dialog-restore',name:'ダイアログ復元オーケストレーター',entry:'restoreDialogState',source:'src/runtime/runtime.js',order:{decision:['clear:()=>'],transition:['createClearTransitionContext'],render:['WakeSevenClearFeature.restoreClearDialog']}},
   {id:'stage-advance',name:'ステージ進行オーケストレーター',entry:'dispatchClearFlowAction',source:'src/ui/progression-clear-flow.js',order:{decision:['resolveAfterClearRoute'],transition:['setClearFlowPhase'],render:['loadStage']}}
 ]);
 export {};

@@ -89,7 +89,7 @@ for (const source of [runtimeSource, published]) {
 }
 assert.match(bootstrapSource, /restoreActiveSession\(\);[\s\S]*(?:restoreDialogState|restoreProgressionDialog)\(storage\.json\(DIALOG_STATE_STORAGE_KEY,null\)\);/,
   'startup must restore the active session before the dialog');
-assert.match(runtimeSource, /clear:\(\)=>\{[\s\S]*restoreClearFlowDialog\(clearContext\)[\s\S]*showClearDialog\(clearContext\)/,
+assert.match(runtimeSource, /clear:\(\)=>\{[\s\S]*WakeSevenClearFeature\.restoreClearDialog\(clearContext\)/,
   'restored clear dialog must restore its flow phase before rendering');
 assert.match(clearFlowSource, /function restoreClearFlowDialog\(context=\{\}\)\{[\s\S]*CLEAR_FLOW_PHASE\.animationPending[\s\S]*finishClearFlowDialog\(\)/,
   'restored clear dialog must reach the dialog phase without replaying its timer');

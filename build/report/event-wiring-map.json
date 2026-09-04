@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-04T08:17:24.060Z",
+  "generatedAt": "2026-09-04T10:10:44.501Z",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles + index.html",
   "entries": [
     {
@@ -13,7 +13,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 399,
+              "line": 395,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -36,7 +36,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 290,
+              "line": 286,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -65,7 +65,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 406,
+              "line": 402,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -88,7 +88,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 400,
+              "line": 396,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -128,7 +128,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 480,
+              "line": 476,
               "registration": "addEventListener",
               "type": "click",
               "handlers": [
@@ -154,7 +154,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 291,
+              "line": 287,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -184,7 +184,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 406,
+              "line": 402,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -207,7 +207,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 488,
+              "line": 484,
               "registration": "addEventListener",
               "type": "click",
               "handlers": [
@@ -246,7 +246,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 983,
+              "line": 979,
               "registration": "addEventListener",
               "type": "click",
               "handlers": [
@@ -282,7 +282,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 290,
+              "line": 286,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -311,7 +311,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 291,
+              "line": 287,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -341,7 +341,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 300,
+              "line": 296,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -371,7 +371,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 310,
+              "line": 306,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -429,33 +429,7 @@
               "registration": "click",
               "type": "click",
               "handlers": [
-                "advanceAfterClear",
-                "messages",
-                "closeAppMenu",
-                "openGuideHub",
-                "openDialog"
-              ],
-              "displayTargets": [
-                "optimalFailDialog",
-                "settingsDialog",
-                "aboutDialog",
-                "aboutDialogCloseBtn",
-                "settingsDialogClose"
-              ],
-              "sourceSnippet": "WakeSevenEventBindings.click('clearNext',()=>{ WakeSevenProgressionCommands.advanceAfterClear(); }); WakeSevenEventBindings.click('clearClose',()=>{ hideGameDialogs(); updateDialogStateOwner({nextStageAttention:isCampai"
-            }
-          ]
-        },
-        {
-          "id": "clearClose",
-          "existsInPublishedHtml": true,
-          "events": [
-            {
-              "file": "runtime/app-events.js",
-              "line": 274,
-              "registration": "click",
-              "type": "click",
-              "handlers": [
+                "close",
                 "messages",
                 "closeAppMenu",
                 "openGuideHub",
@@ -469,7 +443,35 @@
                 "aboutDialogCloseBtn",
                 "settingsDialogClose"
               ],
-              "sourceSnippet": "WakeSevenEventBindings.click('clearClose',()=>{ hideGameDialogs(); updateDialogStateOwner({nextStageAttention:isCampaignMode()&&!editingBoard}); renderStageNav(); }); WakeSevenEventBindings.click('optimalRetry',()=>{"
+              "sourceSnippet": "WakeSevenEventBindings.click('clearNext',()=>{ WakeSevenClearFeature.next(); }); WakeSevenEventBindings.click('clearClose',()=>WakeSevenClearFeature.close()); WakeSevenEventBindings.click('optimalRetry',()=>{ $('optimalFailDi"
+            }
+          ]
+        },
+        {
+          "id": "clearClose",
+          "existsInPublishedHtml": true,
+          "events": [
+            {
+              "file": "runtime/app-events.js",
+              "line": 274,
+              "registration": "click",
+              "type": "click",
+              "handlers": [
+                "close",
+                "messages",
+                "closeAppMenu",
+                "openGuideHub",
+                "openDialog",
+                "open"
+              ],
+              "displayTargets": [
+                "optimalFailDialog",
+                "settingsDialog",
+                "aboutDialog",
+                "aboutDialogCloseBtn",
+                "settingsDialogClose"
+              ],
+              "sourceSnippet": "WakeSevenEventBindings.click('clearClose',()=>WakeSevenClearFeature.close()); WakeSevenEventBindings.click('optimalRetry',()=>{ $('optimalFailDialog').hidden=true; GameBoard.reset(currentInitialState,currentInitialPar); ren"
             }
           ]
         }
@@ -491,7 +493,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 329,
+              "line": 325,
               "registration": "click",
               "type": "click",
               "handlers": [
@@ -517,7 +519,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 335,
+              "line": 331,
               "registration": "click",
               "type": "click",
               "handlers": [],
@@ -541,7 +543,7 @@
           "events": [
             {
               "file": "runtime/app-events.js",
-              "line": 493,
+              "line": 489,
               "registration": "addEventListener",
               "type": "click",
               "handlers": [

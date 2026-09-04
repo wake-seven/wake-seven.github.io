@@ -2,16 +2,16 @@
   "name": "wake7-feature-registry",
   "status": "passed",
   "summary": {
-    "features": 10,
-    "matched": 4,
-    "unknown": 6,
+    "features": 11,
+    "matched": 6,
+    "unknown": 7,
     "unregisteredNewFiles": 0,
     "references": 44
   },
   "warnings": [],
   "errors": [],
-  "generatedAt": "2026-09-04T09:46:15.787Z",
-  "sourceRevision": "aba0935",
+  "generatedAt": "2026-09-04T10:08:57.478Z",
+  "sourceRevision": "02c2319",
   "features": [
     {
       "name": "reward-pages",
@@ -55,6 +55,23 @@
         "clear-flow-order",
         "progression-flow-contract",
         "dialog-chains"
+      ],
+      "relatedE2E": [
+        "browser-flow",
+        "browser-e2e",
+        "device-e2e"
+      ]
+    },
+    {
+      "name": "clear-feature",
+      "paths": [
+        "src/ui/clear-feature.js"
+      ],
+      "checks": [
+        "clear-flow-order",
+        "progression-flow-contract",
+        "dialog-chains",
+        "state-restore"
       ],
       "relatedE2E": [
         "browser-flow",
@@ -284,40 +301,52 @@
   ],
   "changedFiles": [
     "index.html",
-    "scripts/check-browser-e2e.mjs",
+    "scripts/application-manifest.mjs",
+    "scripts/check-browser-flow.mjs",
     "scripts/check-clear-flow-order.mjs",
     "scripts/check-progression-flow-contract.mjs",
     "scripts/check-state-restore.mjs",
-    "scripts/e2e-speed-contract.json",
+    "scripts/feature-registry.json",
+    "scripts/public-symbols-budget.json",
+    "src/runtime/app-events.js",
     "src/runtime/runtime.js",
-    "src/ui/progression-clear-flow.js",
-    "src/ui/progression-flow-contract.js"
+    "src/ui/board-ui.js",
+    "src/ui/progression-flow-contract.js",
+    "src/ui/clear-feature.js"
   ],
   "matchedFeatures": [
+    "scripts/manifest",
+    "runtime/speed",
     "dialog-restore",
     "ui/progression",
     "clear-flow",
-    "clear-next"
+    "clear-feature"
   ],
   "unknownChangedFiles": [
     "index.html",
-    "scripts/check-browser-e2e.mjs",
+    "scripts/check-browser-flow.mjs",
     "scripts/check-clear-flow-order.mjs",
     "scripts/check-progression-flow-contract.mjs",
     "scripts/check-state-restore.mjs",
-    "scripts/e2e-speed-contract.json"
+    "scripts/public-symbols-budget.json",
+    "src/ui/board-ui.js"
   ],
   "unregisteredNewFiles": [],
   "recommendation": "full",
   "suggestedChecks": [
+    "development-entrypoints",
+    "esm",
+    "manifest-dependencies",
+    "browser-e2e",
+    "device-e2e",
+    "application-services",
+    "progression-flows",
+    "e2e-speed-contract",
     "state-restore",
     "dialog-state-map",
-    "progression-flows",
     "progression-flow-contract",
     "dialog-chains",
     "browser-flow",
-    "browser-e2e",
-    "device-e2e",
     "clear-flow-order"
   ],
   "policy": {

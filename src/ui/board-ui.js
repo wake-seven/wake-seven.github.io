@@ -972,7 +972,7 @@ function completeBoard({mode=activeMode,context={},animation=true,nextAction=nul
     recordProgressClearCommand('primary',stageIndex);rememberClearedMessage(false,stageIndex);
   }
   const message=$('msg');message.textContent='';message.classList.remove('show','tip','long-tip');clearUiEffectTimers('clear-transition');
-  startClearFlow({animation,context,nextAction});
+  WakeSevenClearFeature.start({animation,context,nextAction});
   return true;
 }
 function paint(){

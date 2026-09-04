@@ -1,37 +1,40 @@
 {
   "schemaVersion": 1,
   "name": "wake7-feature-investigation-changed",
-  "generatedAt": "2026-09-04T09:46:14.469Z",
+  "generatedAt": "2026-09-04T10:08:55.846Z",
   "status": "passed",
   "activity": "affected",
   "changedFiles": [
     "index.html",
-    "scripts/check-browser-e2e.mjs",
+    "scripts/application-manifest.mjs",
+    "scripts/check-browser-flow.mjs",
     "scripts/check-clear-flow-order.mjs",
     "scripts/check-progression-flow-contract.mjs",
     "scripts/check-state-restore.mjs",
-    "scripts/e2e-speed-contract.json",
+    "scripts/feature-registry.json",
+    "scripts/public-symbols-budget.json",
+    "src/runtime/app-events.js",
     "src/runtime/runtime.js",
-    "src/ui/progression-clear-flow.js",
-    "src/ui/progression-flow-contract.js"
+    "src/ui/board-ui.js",
+    "src/ui/progression-flow-contract.js",
+    "src/ui/clear-feature.js"
   ],
   "unknownFiles": [
     "index.html",
-    "scripts/check-browser-e2e.mjs",
+    "scripts/check-browser-flow.mjs",
     "scripts/check-clear-flow-order.mjs",
     "scripts/check-progression-flow-contract.mjs",
     "scripts/check-state-restore.mjs",
-    "scripts/e2e-speed-contract.json"
+    "scripts/public-symbols-budget.json",
+    "src/ui/board-ui.js"
   ],
   "ambiguousFiles": [
-    "src/ui/progression-clear-flow.js",
     "src/ui/progression-flow-contract.js"
   ],
   "features": [
     {
       "name": "ui/progression",
       "changedFiles": [
-        "src/ui/progression-clear-flow.js",
         "src/ui/progression-flow-contract.js"
       ],
       "entry": [],
@@ -55,7 +58,6 @@
     {
       "name": "clear-flow",
       "changedFiles": [
-        "src/ui/progression-clear-flow.js",
         "src/ui/progression-flow-contract.js"
       ],
       "entry": [],
@@ -77,36 +79,91 @@
       "relatedFiles": []
     },
     {
-      "name": "clear-next",
+      "name": "clear-feature",
       "changedFiles": [
-        "src/ui/progression-clear-flow.js"
+        "src/ui/clear-feature.js"
+      ],
+      "entry": [],
+      "state": [],
+      "storage": [],
+      "dom": [],
+      "transitions": [],
+      "checks": [
+        "clear-flow-order",
+        "progression-flow-contract",
+        "dialog-chains",
+        "state-restore"
+      ],
+      "e2e": [
+        "browser-flow",
+        "browser-e2e",
+        "device-e2e"
+      ],
+      "boundaries": [],
+      "relatedFiles": []
+    },
+    {
+      "name": "runtime/speed",
+      "changedFiles": [
+        "src/runtime/app-events.js"
       ],
       "entry": [
-        "src/ui/progression-clear-flow.js"
+        "src/runtime/speed.js",
+        "src/runtime/app-events.js"
       ],
       "state": [
-        "src/state/game-state.js"
+        "src/state/game-state.js",
+        "src/app/app-context.js"
       ],
       "storage": [
-        "src/state/persistence.mjs"
+        "src/state/game-state.js"
       ],
       "dom": [
         "src/index.template.html"
       ],
       "transitions": [
-        "src/ui/board-ui.js"
+        "src/commands/speed-commands.js",
+        "src/runtime/speed.js"
       ],
       "checks": [
-        "clear-flow-order"
+        "application-services",
+        "progression-flows",
+        "e2e-speed-contract"
       ],
       "e2e": [
-        "scripts/check-clear-flow-order.mjs",
+        "scripts/check-e2e-speed-contract.mjs",
         "scripts/check-browser-e2e.mjs",
-        "browser-e2e"
+        "browser-e2e",
+        "device-e2e",
+        "state-restore"
       ],
       "boundaries": [
-        "scripts/check-source-boundaries.mjs"
+        "scripts/check-source-boundaries.mjs",
+        "scripts/check-state-restore.mjs"
       ],
+      "relatedFiles": []
+    },
+    {
+      "name": "scripts/manifest",
+      "changedFiles": [
+        "scripts/application-manifest.mjs",
+        "scripts/feature-registry.json"
+      ],
+      "entry": [],
+      "state": [],
+      "storage": [],
+      "dom": [],
+      "transitions": [],
+      "checks": [
+        "development-entrypoints",
+        "esm",
+        "manifest-dependencies"
+      ],
+      "e2e": [
+        "browser-e2e",
+        "device-e2e"
+      ],
+      "boundaries": [],
       "relatedFiles": []
     },
     {
@@ -150,17 +207,22 @@
     "dialog-chains",
     "clear-flow-order",
     "state-restore",
+    "application-services",
+    "e2e-speed-contract",
+    "development-entrypoints",
+    "esm",
+    "manifest-dependencies",
     "dialog-state-map"
   ],
   "relatedE2E": [
     "browser-flow",
     "browser-e2e",
     "device-e2e",
-    "scripts/check-clear-flow-order.mjs",
+    "scripts/check-e2e-speed-contract.mjs",
     "scripts/check-browser-e2e.mjs",
+    "state-restore",
     "scripts/check-state-restore.mjs",
-    "scripts/check-dialog-state-map.mjs",
-    "state-restore"
+    "scripts/check-dialog-state-map.mjs"
   ],
   "recommendedProfile": "affected",
   "policy": {
@@ -191,6 +253,7 @@
     "build/report/flow-map.json",
     "build/report/gate-evidence.json",
     "build/report/global-access.json",
+    "build/report/global-state-classification.json",
     "build/report/manifest-dependencies.json",
     "build/report/navigation-classification.json",
     "build/report/navigation-final-audit.json",
@@ -212,6 +275,7 @@
     "build/report/structure-contract-diff.json",
     "build/report/symbol-index.json",
     "build/report/temporary-exception-audit.json",
+    "build/report/translation-audit.json",
     "build/report/ui-data-map.json",
     "build/report/unused-file-audit.json"
   ],

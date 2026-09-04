@@ -65,7 +65,7 @@ assert.match(clearFlow, /function scheduleClearFlowDialog\(callback,delay,cycle=
   'clear dialog timer must verify both its flow generation and pending phase');
 assert.match(clearFlow, /function cancelClearFlow\(reason='cancelled'\)\{[\s\S]*clearFlowCycle\+\+;[\s\S]*clearUiEffectTimers\('clear-transition'\)/,
   'clear flow cancellation must retire the generation before clearing its timer');
-assert.match(runtime, /(?:state\.id==='clear'[\s\S]*createClearTransitionContext\(\)[\s\S]*showClearDialog\(|clear:\(\)=>\{if\(!\(clearShown&&isSolved\(\)\)\)[\s\S]*createClearTransitionContext\(\)[\s\S]*showClearDialog\()/,
+assert.match(runtime, /(?:state\.id==='clear'[\s\S]*createClearTransitionContext\(\)[\s\S]*WakeSevenClearFeature\.restoreClearDialog\(|clear:\(\)=>\{if\(!\(clearShown&&isSolved\(\)\)\)[\s\S]*createClearTransitionContext\(\)[\s\S]*WakeSevenClearFeature\.restoreClearDialog\()/,
   'reload clear dialog must restore through an explicit clear context');
 checks.push({ id: 'clear-phase-guard', passed: true });
 assert.match(clearFlow, /function createClearTransitionContext\(nextStageIndex\)\{[\s\S]*const (?:navigation=readNavigationContext\(\)|\{navigation\}=readProgressionContext\(\))/,
@@ -74,12 +74,12 @@ assert.match(clearFlow, /const mode=navigation\.mode[\s\S]*const lap=navigation\
   'clear transition context must derive route fields from the captured navigation context');
 assert.match(clearFlow, /function dispatchClearFlowAction\(action\)[\s\S]*const (?:navigation=readNavigationContext\(\)|\{navigation\}=readProgressionContext\(\))[\s\S]*createClearTransitionContext\(navigation\.stageIndex\+1\)/,
   'clear next route fallback must use the entry navigation context');
-assert.match(runtime, /(?:state\.id==='clear'[\s\S]*clearShown&&isSolved\(\)[\s\S]*showClearDialog\([^)]*\)|clear:\(\)=>\{if\(!\(clearShown&&isSolved\(\)\)\)[\s\S]*showClearDialog\([^)]*\))/,
+assert.match(runtime, /(?:state\.id==='clear'[\s\S]*clearShown&&isSolved\(\)[\s\S]*WakeSevenClearFeature\.restoreClearDialog\([^)]*\)|clear:\(\)=>\{if\(!\(clearShown&&isSolved\(\)\)\)[\s\S]*WakeSevenClearFeature\.restoreClearDialog\([^)]*\))/,
   'reload clear dialog must require a solved board and clearShown');
 checks.push({ id: 'reload-clear-guard', passed: true });
 assert.match(clearFlow, /function restoreClearFlowDialog\(context=\{\}\)\{[\s\S]*cancelClearFlow\('restore-clear-dialog'\)[\s\S]*beginClearFlow\(\)[\s\S]*CLEAR_FLOW_PHASE\.animationPending[\s\S]*finishClearFlowDialog\(\)/,
   'reload clear dialog must enter the normal dialog phase without replaying the animation timer');
-assert.match(runtime, /clear:\(\)=>\{[\s\S]*createClearTransitionContext\(\)[\s\S]*restoreClearFlowDialog\(clearContext\)[\s\S]*showClearDialog\(clearContext\)/,
+assert.match(runtime, /clear:\(\)=>\{[\s\S]*createClearTransitionContext\(\)[\s\S]*WakeSevenClearFeature\.restoreClearDialog\(clearContext\)/,
   'reload clear handler must restore the clear-flow phase before rendering');
 checks.push({ id: 'reload-clear-phase', passed: true });
 

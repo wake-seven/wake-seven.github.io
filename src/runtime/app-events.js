@@ -23,7 +23,7 @@ function debugClearCurrent(extraMoves=0){
   if(navigation.mode==='speed'){ProgressionEntryPoints.finishStage({mode:'speed'});return;}
   // デバッグ即クリアでも、通常操作と同じクリア演出・ダイアログ遷移を直ちに予約する。
   // 再描画側の予約と重なっても、同じタイマーキーで冪等に置き換わる。
-  startClearFlow();
+  WakeSevenClearFeature.start();
   // 即クリアでも、通常操作と同じくメッセージ一覧の開始位置を更新する。
   if(extraMoves===0&&!['satori','free','custom'].includes(navigation.mode)){
     rememberClearedMessage(navigation.mode==='mastery',navigation.mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);
@@ -269,13 +269,9 @@ function handleClearTipLink(){
 }
 function bindClearDialogEvents(){
   WakeSevenEventBindings.click('clearNext',()=>{
-    WakeSevenProgressionCommands.advanceAfterClear();
+  WakeSevenClearFeature.next();
   });
-  WakeSevenEventBindings.click('clearClose',()=>{
-    hideGameDialogs();
-    updateDialogStateOwner({nextStageAttention:isCampaignMode()&&!editingBoard});
-    renderStageNav();
-  });
+  WakeSevenEventBindings.click('clearClose',()=>WakeSevenClearFeature.close());
   WakeSevenEventBindings.click('optimalRetry',()=>{
     $('optimalFailDialog').hidden=true;
     GameBoard.reset(currentInitialState,currentInitialPar);

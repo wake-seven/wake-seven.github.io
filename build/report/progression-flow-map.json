@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T09:43:09.328Z",
+  "generatedAt": "2026-09-04T10:09:16.270Z",
   "source": "src/ui/progression-flow-contract.js",
   "entries": [
     {
@@ -7,7 +7,7 @@
       "mode": "campaign",
       "from": "playing",
       "event": "盤面が解けた",
-      "entry": "startClearFlow",
+      "entry": "WakeSevenClearFeature.start",
       "persist": "clearShown→progress記録",
       "cancel": "resetClearFlow・別盤面への遷移",
       "to": "clear-animation",
@@ -31,7 +31,7 @@
       "mode": "campaign",
       "from": "clear-dialog|quiz/message",
       "event": "次へ",
-      "entry": "advanceAfterClear→dispatchClearFlowAction",
+      "entry": "WakeSevenClearFeature.next→dispatchClearFlowAction",
       "persist": "次の問題・周回・解放状態",
       "cancel": "hideGameDialogs・遷移世代無効化",
       "to": "next-stage-dialog|next-playing",
