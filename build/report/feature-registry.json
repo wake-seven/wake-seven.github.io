@@ -4,14 +4,14 @@
   "summary": {
     "features": 14,
     "matched": 3,
-    "unknown": 3,
+    "unknown": 7,
     "unregisteredNewFiles": 0,
     "references": 44
   },
   "warnings": [],
   "errors": [],
-  "generatedAt": "2026-09-04T12:30:50.756Z",
-  "sourceRevision": "1c55b20",
+  "generatedAt": "2026-09-04T13:04:41.503Z",
+  "sourceRevision": "08a1166",
   "features": [
     {
       "name": "reward-pages",
@@ -346,34 +346,44 @@
   ],
   "changedFiles": [
     "index.html",
-    "scripts/check-public-symbols.mjs",
-    "scripts/check-ui-data-map.mjs",
-    "src/runtime/app-events.js",
+    "scripts/check-affected.mjs",
+    "scripts/check-dialog-chains.mjs",
+    "scripts/check-state-restore.mjs",
+    "scripts/investigate-changed.mjs",
     "src/runtime/runtime.js",
-    "src/ui/stage-picker-feature.js"
+    "src/state/game-state.js",
+    "src/ui/progression-ui.js",
+    "src/ui/rank.js",
+    "scripts/lib/git-status-paths.mjs"
   ],
   "matchedFeatures": [
-    "runtime/speed",
     "dialog-restore",
-    "stage-picker-feature"
+    "state",
+    "ui/progression"
   ],
   "unknownChangedFiles": [
     "index.html",
-    "scripts/check-public-symbols.mjs",
-    "scripts/check-ui-data-map.mjs"
+    "scripts/check-affected.mjs",
+    "scripts/check-dialog-chains.mjs",
+    "scripts/check-state-restore.mjs",
+    "scripts/investigate-changed.mjs",
+    "src/ui/rank.js",
+    "scripts/lib/git-status-paths.mjs"
   ],
   "unregisteredNewFiles": [],
   "recommendation": "full",
   "suggestedChecks": [
-    "application-services",
-    "progression-flows",
-    "e2e-speed-contract",
-    "browser-e2e",
-    "device-e2e",
     "state-restore",
     "dialog-state-map",
-    "navigation-final-audit",
-    "manifest-dependencies"
+    "state",
+    "state-classification",
+    "state-mutations",
+    "browser-e2e",
+    "device-e2e",
+    "progression-flows",
+    "progression-flow-contract",
+    "dialog-chains",
+    "browser-flow"
   ],
   "policy": {
     "unknownChangedFiles": "affected",

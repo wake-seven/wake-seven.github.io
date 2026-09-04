@@ -143,8 +143,8 @@ function renderRankList(){
     if(linkable)path.addEventListener('click',()=>{
       activateCampaignLap(second?2:1);
       updateDialogStateOwner({rankDialogReturn:null});$('rankDialog').hidden=true;
-      if(index===6||index===5)openDialog('stagePicker',{lap:second?2:1,round:'satori'});
-      else openDialog('stagePicker',{lap:second?2:1,round:index===0?-PRIMARY_PICKER_SECTION_COUNT:index===1?PICKER_TRAINING_FIRST_ROUND:index-2});
+      const pickerOptions={lap:second?2:1,round:index===6||index===5?'satori':index===0?-PRIMARY_PICKER_SECTION_COUNT:index===1?PICKER_TRAINING_FIRST_ROUND:index-2};
+      WakeSevenStagePickerFeature.open(pickerOptions);
     });
     condition.append(path,count);list.appendChild(row);
   });
@@ -163,7 +163,7 @@ function openRankDialogFrom(dialogId,sealId){
   const seal=$(sealId);
   if(!seal.classList.contains('rank-seal'))return;
   $(dialogId).hidden=true;
-  openDialog('rankDialog',{returnTarget:{dialogId,focusId:sealId}});
+  WakeSevenStagePickerFeature.openRank({dialogId,focusId:sealId});
 }
 // 公開ネイティブモジュールの構文境界。
 export {};

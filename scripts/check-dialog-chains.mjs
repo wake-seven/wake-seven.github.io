@@ -34,7 +34,7 @@ required(new RegExp(`stagePickerTrigger[\\s\\S]{0,100}(?:openDialog\\('stagePick
 required(new RegExp(`stagePickerRankBadge[\\s\\S]{0,220}(?:openDialog\\('rankDialog'\\)|${stagePickerEntry.source})`), 'ステージ選択内の称号一覧が共通入口を使っていません。', events);
 required(new RegExp(`rankBadge[\\s\\S]{0,100}(?:openDialog\\('rankDialog'\\)|${stagePickerEntry.source})`), 'ヘッダーの称号一覧が共通入口を使っていません。', events);
 required(/const WakeSevenStagePickerFeature=Object\.freeze\(/, 'ステージ選択機能入口がありません。', stagePickerFeature);
-required(/openDialog\('stagePicker',\{lap:/, '称号一覧からステージ選択への経路が共通入口を使っていません。', rank);
+required(/(?:openDialog\('stagePicker',\{lap:|WakeSevenStagePickerFeature\.open\(pickerOptions\))/, '称号一覧からステージ選択への経路が共通入口を使っていません。', rank);
 
 function required(pattern, message, text = source) {
   assert.match(text, pattern, message);

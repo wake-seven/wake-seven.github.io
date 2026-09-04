@@ -1601,13 +1601,17 @@
   function read(storage = global.localStorage) {
     try {
       const raw = storage.getItem(STORAGE_KEY);
-      if (!raw) return null;
+      // 読み込みに失敗したとき、前回の状態をactiveStateとして残さない。
+      // 同じページ内で再試行する呼び出しが、壊れた保存値の代わりに
+      // 古い状態を書き戻してしまうのを防ぐ。
+      if (!raw) { activeState = null; return null; }
       const parsed = JSON.parse(raw);
-      if (parsed?.version !== VERSION) return null;
+      if (parsed?.version !== VERSION) { activeState = null; return null; }
       const state = create(parsed, false);
       activeState = state;
       return state;
     } catch (_) {
+      activeState = null;
       return null;
     }
   }
@@ -4423,7 +4427,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-21:28';
+const APP_VERSION='2026.09.04-22:04';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -9940,7 +9944,7 @@ function openSatoriPicker(){
     if(navigation.lap===1&&isMastered())showMasterDialog('mastery');
     return;
   }
-  openDialog('stagePicker',{lap:navigation.lap,round:'satori',satoriPage:isMode('satori')?Math.floor(navigation.satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0});
+  WakeSevenStagePickerFeature.open({lap:navigation.lap,round:'satori',satoriPage:isMode('satori')?Math.floor(navigation.satoriIndex/Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES)):0});
 }
 // ステージ選択を開く共通入口。呼び出し側は「どの周・巻を選ぶか」だけを渡し、
 // 状態の反映・表示更新・ダイアログ公開の順序はここで固定する。
@@ -10030,7 +10034,7 @@ function openStagePicker(){
   const showingExtra=isMode('mastery')||(isSideCourseMode()&&returnStageContext.extra);
   const showingIndex=isMode('mastery')?extraIndex:returnStageContext.index;
   const round=showingExtra?Math.floor(showingIndex/MASTER_VOLUME_SIZE):PRIMARY_SECTIONS.indexOf(primarySection(showingIndex))-PRIMARY_PICKER_SECTION_COUNT;
-  openDialog('stagePicker',{lap:navigation.lap,round});
+  WakeSevenStagePickerFeature.open({lap:navigation.lap,round});
 }
 function openStagePickerForRank(rankIndex){
   const {navigation}=readProgressionContext();
@@ -11625,8 +11629,8 @@ function renderRankList(){
     if(linkable)path.addEventListener('click',()=>{
       activateCampaignLap(second?2:1);
       updateDialogStateOwner({rankDialogReturn:null});$('rankDialog').hidden=true;
-      if(index===6||index===5)openDialog('stagePicker',{lap:second?2:1,round:'satori'});
-      else openDialog('stagePicker',{lap:second?2:1,round:index===0?-PRIMARY_PICKER_SECTION_COUNT:index===1?PICKER_TRAINING_FIRST_ROUND:index-2});
+      const pickerOptions={lap:second?2:1,round:index===6||index===5?'satori':index===0?-PRIMARY_PICKER_SECTION_COUNT:index===1?PICKER_TRAINING_FIRST_ROUND:index-2};
+      WakeSevenStagePickerFeature.open(pickerOptions);
     });
     condition.append(path,count);list.appendChild(row);
   });
@@ -11645,7 +11649,7 @@ function openRankDialogFrom(dialogId,sealId){
   const seal=$(sealId);
   if(!seal.classList.contains('rank-seal'))return;
   $(dialogId).hidden=true;
-  openDialog('rankDialog',{returnTarget:{dialogId,focusId:sealId}});
+  WakeSevenStagePickerFeature.openRank({dialogId,focusId:sealId});
 }
 // 公開ネイティブモジュールの構文境界。
 export {};

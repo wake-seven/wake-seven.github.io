@@ -76,6 +76,8 @@ assert.deepEqual(JSON.parse(storage.getItem('wake7-dialog-state')), { id: 'chain
 // 無効なバージョンは、互換性のないデータを黙って復元せず拒否する。
 storage.setItem('wake7-state-vnext', JSON.stringify({ version: 999, navigation: { mode: 'satori' } }));
 assert.equal(secondLoad.api.read(storage), null, 'unknown state versions must not be restored');
+assert.equal(secondLoad.api.storage.get('wake7-current-stage', 'fallback'), 'fallback',
+  'failed state reads must not leave the previous active state available');
 
 // 静的な統合チェックで、ブラウザ入口が上記と同じ復元順序（ダイアログと初回描画を含む）
 // を実際に実行していることを確認する。

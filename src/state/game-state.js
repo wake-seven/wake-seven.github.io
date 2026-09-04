@@ -120,13 +120,17 @@
   function read(storage = global.localStorage) {
     try {
       const raw = storage.getItem(STORAGE_KEY);
-      if (!raw) return null;
+      // 読み込みに失敗したとき、前回の状態をactiveStateとして残さない。
+      // 同じページ内で再試行する呼び出しが、壊れた保存値の代わりに
+      // 古い状態を書き戻してしまうのを防ぐ。
+      if (!raw) { activeState = null; return null; }
       const parsed = JSON.parse(raw);
-      if (parsed?.version !== VERSION) return null;
+      if (parsed?.version !== VERSION) { activeState = null; return null; }
       const state = create(parsed, false);
       activeState = state;
       return state;
     } catch (_) {
+      activeState = null;
       return null;
     }
   }

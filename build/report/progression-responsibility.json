@@ -1,29 +1,29 @@
 {
-  "generatedAt": "2026-09-04T12:31:02.120Z",
+  "generatedAt": "2026-09-04T13:04:53.784Z",
   "source": "build/report/symbol-index.json",
   "target": "progression-related symbols",
   "summary": {
-    "symbols": 428,
+    "symbols": 429,
     "files": 15,
     "responsibilities": {
       "clear-flow": 76,
       "dialog": 41,
       "navigation": 10,
-      "rank": 51,
+      "rank": 52,
       "render": 87,
       "stage-picker": 27,
       "state": 136
     },
     "flowRoles": {
       "entry": 4,
-      "render": 166,
+      "render": 167,
       "state-decision": 383,
       "transition": 34
     },
     "flowClassifications": {
       "state-decision": 351,
       "transition": 0,
-      "render": 43,
+      "render": 44,
       "orchestration": 34
     },
     "mixedSymbols": 150,
@@ -35,7 +35,7 @@
     "structuralFindings": {
       "clear-flow-direct-skip": 1,
       "decision-dom-mutation": 4,
-      "major-transition-outside-entry": 17
+      "major-transition-outside-entry": 16
     }
   },
   "pipeline": [
@@ -232,7 +232,7 @@
     },
     {
       "file": "ui/rank.js",
-      "symbols": 40,
+      "symbols": 41,
       "responsibilities": [
         "rank"
       ],
@@ -1972,29 +1972,6 @@
           "runtime/app-events.js:771:closeTipGuide",
           "runtime/app-events.js:1015:closeTwoMovePatterns",
           "runtime/app-events.js:1049:card"
-        ],
-        "externallyCalled": true
-      }
-    },
-    {
-      "kind": "major-transition-outside-entry",
-      "name": "openDialog",
-      "file": "ui/progression-dialogs.js",
-      "line": 19,
-      "priority": 2,
-      "allowed": true,
-      "reason": "公開入口・共通ダイアログ入口、またはクリアフローのオーケストレーターとして複数経路から呼ばれるため許可。",
-      "evidence": {
-        "callers": [
-          "ui/progression-dialogs.js:19:createProgressionMessageContext",
-          "ui/stage-picker-feature.js:11:readStagePickerContext",
-          "ui/stage-picker-feature.js:13:readStagePickerContext",
-          "ui/stage-picker-feature.js:16:readStagePickerContext",
-          "ui/progression-ui.js:116:openSatoriPicker",
-          "ui/progression-ui.js:206:openStagePicker",
-          "ui/rank.js:146:volume",
-          "ui/rank.js:147:volume",
-          "ui/rank.js:166:openRankDialogFrom"
         ],
         "externallyCalled": true
       }
@@ -3827,12 +3804,7 @@
         "ui/progression-dialogs.js:19:createProgressionMessageContext",
         "ui/stage-picker-feature.js:11:readStagePickerContext",
         "ui/stage-picker-feature.js:13:readStagePickerContext",
-        "ui/stage-picker-feature.js:16:readStagePickerContext",
-        "ui/progression-ui.js:116:openSatoriPicker",
-        "ui/progression-ui.js:206:openStagePicker",
-        "ui/rank.js:146:volume",
-        "ui/rank.js:147:volume",
-        "ui/rank.js:166:openRankDialogFrom"
+        "ui/stage-picker-feature.js:16:readStagePickerContext"
       ]
     },
     {
@@ -8788,6 +8760,19 @@
       "name": "condition",
       "file": "ui/rank.js",
       "line": 135,
+      "kind": "constant",
+      "responsibility": "rank",
+      "flowRoles": [
+        "render"
+      ],
+      "flowClassification": "render",
+      "mixedResponsibility": false,
+      "callers": []
+    },
+    {
+      "name": "pickerOptions",
+      "file": "ui/rank.js",
+      "line": 146,
       "kind": "constant",
       "responsibility": "rank",
       "flowRoles": [

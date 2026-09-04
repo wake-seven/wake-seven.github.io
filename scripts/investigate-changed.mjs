@@ -3,6 +3,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { changedPathsFromStatus } from './lib/git-status-paths.mjs';
 
 // 変更ファイルから機能領域を特定し、修正前に読むべき影響範囲を機械的に出力する。
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -19,16 +20,7 @@ const pathMatches = (pattern, file) => {
   return actual === expected;
 };
 
-export function changedPathsFromStatus(status) {
-  const paths = [];
-  for (const entry of status.split('\0').filter(Boolean)) {
-    const value = entry.slice(3);
-    if (!value) continue;
-    // rename/copy は「新しいパス」を影響対象にする。
-    paths.push(value.includes(' -> ') ? value.slice(value.lastIndexOf(' -> ') + 4) : value);
-  }
-  return [...new Set(paths.map(normalizePath))];
-}
+export { changedPathsFromStatus } from './lib/git-status-paths.mjs';
 
 export function matchFeatures(changedFiles, registry) {
   const entries = Array.isArray(registry.features) ? registry.features : [];

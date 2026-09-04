@@ -1,8 +1,10 @@
+import assert from 'node:assert/strict';
 import { execFileSync, spawn } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertChangeSession, CHANGE_SESSION_PHASES, recordChangeSessionCheck } from './lib/change-session.mjs';
+import { changedPathFromStatusEntry, changedPathsFromStatus } from './lib/git-status-paths.mjs';
 
 // 変更範囲を選び、選んだプロファイルを実行して結果を一つの証跡へ残す。
 // 未実行を成功扱いにしないため、失敗と未完了を明示的に分ける。
@@ -15,7 +17,14 @@ if (requestedPhase && !Object.values(CHANGE_SESSION_PHASES).includes(requestedPh
   throw new Error(`不明な改修フェーズです: ${requestedPhase}`);
 }
 const raw = execFileSync('git', ['status', '--porcelain=v1', '-z'], { cwd: root, encoding: 'utf8' });
-const changedFiles = raw.split('\0').filter(Boolean).map(entry => entry.slice(3)).filter(Boolean);
+if (process.argv.includes('--self-test')) {
+  assert.equal(changedPathFromStatusEntry('R  src/old.js -> src/new.js'), 'src/new.js');
+  assert.equal(changedPathFromStatusEntry(' M src/file.js'), 'src/file.js');
+  assert.equal(changedPathFromStatusEntry('?? scripts/new.mjs'), 'scripts/new.mjs');
+  console.log('check-affected self-test OK');
+  process.exit(0);
+}
+const changedFiles = changedPathsFromStatus(raw);
 const ignoredFiles = changedFiles.filter(file => file.startsWith('build/report/'));
 const files = changedFiles.filter(file => !ignoredFiles.includes(file));
 // affected/fast は改修セッションの開始を必須にする。
