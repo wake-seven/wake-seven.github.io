@@ -1,28 +1,114 @@
 {
   "schemaVersion": 1,
   "name": "wake7-feature-investigation-changed",
-  "generatedAt": "2026-09-04T09:11:14.405Z",
+  "generatedAt": "2026-09-04T09:46:14.469Z",
   "status": "passed",
   "activity": "affected",
   "changedFiles": [
     "index.html",
-    "scripts/check-browser-flow.mjs",
-    "scripts/check-ui-effects.mjs",
-    "scripts/public-symbols-budget.json",
-    "scripts/state-access-exceptions.json",
+    "scripts/check-browser-e2e.mjs",
+    "scripts/check-clear-flow-order.mjs",
+    "scripts/check-progression-flow-contract.mjs",
+    "scripts/check-state-restore.mjs",
+    "scripts/e2e-speed-contract.json",
     "src/runtime/runtime.js",
-    "src/ui/board-ui.js"
+    "src/ui/progression-clear-flow.js",
+    "src/ui/progression-flow-contract.js"
   ],
   "unknownFiles": [
     "index.html",
-    "scripts/check-browser-flow.mjs",
-    "scripts/check-ui-effects.mjs",
-    "scripts/public-symbols-budget.json",
-    "scripts/state-access-exceptions.json",
-    "src/ui/board-ui.js"
+    "scripts/check-browser-e2e.mjs",
+    "scripts/check-clear-flow-order.mjs",
+    "scripts/check-progression-flow-contract.mjs",
+    "scripts/check-state-restore.mjs",
+    "scripts/e2e-speed-contract.json"
   ],
-  "ambiguousFiles": [],
+  "ambiguousFiles": [
+    "src/ui/progression-clear-flow.js",
+    "src/ui/progression-flow-contract.js"
+  ],
   "features": [
+    {
+      "name": "ui/progression",
+      "changedFiles": [
+        "src/ui/progression-clear-flow.js",
+        "src/ui/progression-flow-contract.js"
+      ],
+      "entry": [],
+      "state": [],
+      "storage": [],
+      "dom": [],
+      "transitions": [],
+      "checks": [
+        "progression-flows",
+        "progression-flow-contract",
+        "dialog-chains"
+      ],
+      "e2e": [
+        "browser-flow",
+        "browser-e2e",
+        "device-e2e"
+      ],
+      "boundaries": [],
+      "relatedFiles": []
+    },
+    {
+      "name": "clear-flow",
+      "changedFiles": [
+        "src/ui/progression-clear-flow.js",
+        "src/ui/progression-flow-contract.js"
+      ],
+      "entry": [],
+      "state": [],
+      "storage": [],
+      "dom": [],
+      "transitions": [],
+      "checks": [
+        "clear-flow-order",
+        "progression-flow-contract",
+        "dialog-chains"
+      ],
+      "e2e": [
+        "browser-flow",
+        "browser-e2e",
+        "device-e2e"
+      ],
+      "boundaries": [],
+      "relatedFiles": []
+    },
+    {
+      "name": "clear-next",
+      "changedFiles": [
+        "src/ui/progression-clear-flow.js"
+      ],
+      "entry": [
+        "src/ui/progression-clear-flow.js"
+      ],
+      "state": [
+        "src/state/game-state.js"
+      ],
+      "storage": [
+        "src/state/persistence.mjs"
+      ],
+      "dom": [
+        "src/index.template.html"
+      ],
+      "transitions": [
+        "src/ui/board-ui.js"
+      ],
+      "checks": [
+        "clear-flow-order"
+      ],
+      "e2e": [
+        "scripts/check-clear-flow-order.mjs",
+        "scripts/check-browser-e2e.mjs",
+        "browser-e2e"
+      ],
+      "boundaries": [
+        "scripts/check-source-boundaries.mjs"
+      ],
+      "relatedFiles": []
+    },
     {
       "name": "dialog-restore",
       "changedFiles": [
@@ -59,10 +145,19 @@
     }
   ],
   "requiredChecks": [
+    "progression-flows",
+    "progression-flow-contract",
+    "dialog-chains",
+    "clear-flow-order",
     "state-restore",
     "dialog-state-map"
   ],
   "relatedE2E": [
+    "browser-flow",
+    "browser-e2e",
+    "device-e2e",
+    "scripts/check-clear-flow-order.mjs",
+    "scripts/check-browser-e2e.mjs",
     "scripts/check-state-restore.mjs",
     "scripts/check-dialog-state-map.mjs",
     "state-restore"
@@ -83,6 +178,8 @@
     "build/report/check-gate.json",
     "build/report/check-profile-result.json",
     "build/report/check-registry.json",
+    "build/report/check-runtime.json",
+    "build/report/clear-flow-order.json",
     "build/report/compat-boundary-audit.json",
     "build/report/device-e2e-result.json",
     "build/report/dialog-state-access-audit.json",
@@ -101,7 +198,9 @@
     "build/report/progression-orchestrators.json",
     "build/report/progression-responsibility.json",
     "build/report/public-symbols.json",
+    "build/report/refactor-baseline.json",
     "build/report/refactor-candidates.json",
+    "build/report/report-inventory.json",
     "build/report/reward-access-result.json",
     "build/report/source-format-baseline.json",
     "build/report/state-access-baseline.json",

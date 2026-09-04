@@ -193,6 +193,17 @@ function finishClearFlowDialog(){
   return clearFlowPhase===CLEAR_FLOW_PHASE.dialog||clearFlowPhase===CLEAR_FLOW_PHASE.content;
 }
 
+// リロードで保存済みクリアダイアログを戻すときも、通常表示と同じdialog段階へそろえる。
+// 古いタイマーを無効化してから演出段階だけを副作用なしで通し、「次へ」が同じ入口を使えるようにする。
+function restoreClearFlowDialog(context={}){
+  cancelClearFlow('restore-clear-dialog');
+  const cycle=beginClearFlow();
+  if(!cycle)return false;
+  clearFlowState=Object.freeze({...clearFlowState,context:Object.freeze({...context}),cycle,persisted:true});
+  setClearFlowPhase(CLEAR_FLOW_PHASE.animationPending,CLEAR_FLOW_ACTION.show,{cycle});
+  return finishClearFlowDialog();
+}
+
 // クリア後の画面が参照する進行状態を、ひとつの読み取り専用文脈に固定する。
 // 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを
 // 閉じる副作用や連続表示の切り替えで判定がずれるため、同じクリア周期の

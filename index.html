@@ -4423,7 +4423,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-18:22';
+const APP_VERSION='2026.09.04-18:40';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -4599,7 +4599,7 @@ function persistDialogState(){
 // 各ハンドラは従来の呼び出し順と戻り先を維持し、保存状態の判定だけを担当する。
 const DIALOG_RESTORE_HANDLERS=Object.freeze({
   chain:state=>{if(!CHAIN_STEPS[state.name])return false;openChainedDialog(state.name);return true;},
-  clear:()=>{if(!(clearShown&&isSolved()))return false;const clearContext=createClearTransitionContext();showClearDialog(clearContext);return true;},
+  clear:()=>{if(!(clearShown&&isSolved()))return false;const clearContext=createClearTransitionContext();if(!restoreClearFlowDialog(clearContext))return false;showClearDialog(clearContext);return true;},
   message:state=>{openMessageReview({resume:true});if(state.key){const index=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===state.key);if(index>=0){messageReviewIndex=index;renderMessageReview();}}return true;},
   rank:()=>{openRankDialog();return true;},
   tipGuide:()=>{openTipGuide();return true;},
@@ -11023,9 +11023,9 @@ export {};
 // どの状態を経由するかを読み取るための監査用の宣言データ。
 // 実際の副作用は progression-clear-flow.js / speed.js / runtime.js が担当する。
 const PROGRESSION_FLOW_CONTRACT=Object.freeze([
-  {id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation'},
-  {id:'campaign-clear-dialog',mode:'campaign',from:'clear-animation',event:'演出完了',entry:'finishClearFlow',persist:'clearDialog状態',cancel:'clear-transitionタイマー取消',to:'clear-dialog'},
-  {id:'campaign-next',mode:'campaign',from:'clear-dialog|quiz/message',event:'次へ',entry:'advanceAfterClear→dispatchClearFlowAction',persist:'次の問題・周回・解放状態',cancel:'hideGameDialogs・遷移世代無効化',to:'next-stage-dialog|next-playing'},
+  {id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation',guard:'clearFlowCycle + phase idle',owner:'progression-clear-flow'},
+  {id:'campaign-clear-dialog',mode:'campaign',from:'clear-animation',event:'演出完了',entry:'finishClearFlow',persist:'clearDialog状態',cancel:'clear-transitionタイマー取消',to:'clear-dialog',guard:'animationPending + dialogSequence consume once',owner:'progression-clear-flow'},
+  {id:'campaign-next',mode:'campaign',from:'clear-dialog|quiz/message',event:'次へ',entry:'advanceAfterClear→dispatchClearFlowAction',persist:'次の問題・周回・解放状態',cancel:'hideGameDialogs・遷移世代無効化',to:'next-stage-dialog|next-playing',guard:'dialog/content phase + route resolved once',owner:'progression-clear-flow'},
   {id:'speed-start',mode:'speed',from:'speed-start-dialog',event:'開始/再開',entry:'startSpeedRun|resumeSpeedRun',persist:'speed session・開始時刻',cancel:'pauseSpeedRun・speed transition timer取消',to:'playing'},
   {id:'speed-clear',mode:'speed',from:'playing',event:'速解き問題が解けた',entry:'finishStage→advanceSpeedRun',persist:'問題記録・speed session',cancel:'pauseSpeedRun・旧セッション退役',to:'playing|speed-finished'},
   {id:'rank-reward',mode:'campaign|speed',from:'clear-dialog|speed-finished',event:'称号条件達成',entry:'openRankDialog',persist:'称号・報酬・解放状態',cancel:'closeRankDialog',to:'rank-dialog|next-stage-dialog'},
@@ -11240,6 +11240,17 @@ function finishClearFlowDialog(){
     return true;
   }
   return clearFlowPhase===CLEAR_FLOW_PHASE.dialog||clearFlowPhase===CLEAR_FLOW_PHASE.content;
+}
+
+// リロードで保存済みクリアダイアログを戻すときも、通常表示と同じdialog段階へそろえる。
+// 古いタイマーを無効化してから演出段階だけを副作用なしで通し、「次へ」が同じ入口を使えるようにする。
+function restoreClearFlowDialog(context={}){
+  cancelClearFlow('restore-clear-dialog');
+  const cycle=beginClearFlow();
+  if(!cycle)return false;
+  clearFlowState=Object.freeze({...clearFlowState,context:Object.freeze({...context}),cycle,persisted:true});
+  setClearFlowPhase(CLEAR_FLOW_PHASE.animationPending,CLEAR_FLOW_ACTION.show,{cycle});
+  return finishClearFlowDialog();
 }
 
 // クリア後の画面が参照する進行状態を、ひとつの読み取り専用文脈に固定する。

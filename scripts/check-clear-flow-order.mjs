@@ -61,6 +61,10 @@ assert.match(clearFlow, /function getClearFlowTrace\(\)\{return clearFlowTrace\.
   'clear flow transitions must expose a read-only diagnostic trace');
 assert.match(clearFlow, /if\(!allowed\)\{[\s\S]*不正な段階遷移/,
   'invalid clear flow transitions must be observable');
+assert.match(clearFlow, /function scheduleClearFlowDialog\(callback,delay,cycle=clearFlowCycle\)\{[\s\S]*clearFlowPhase!==CLEAR_FLOW_PHASE\.animation[\s\S]*setClearFlowPhase\(CLEAR_FLOW_PHASE\.animationPending[\s\S]*setUiEffectTimer\('clear-transition','show-dialog',[\s\S]*cycle!==clearFlowCycle\|\|clearFlowPhase!==CLEAR_FLOW_PHASE\.animationPending/,
+  'clear dialog timer must verify both its flow generation and pending phase');
+assert.match(clearFlow, /function cancelClearFlow\(reason='cancelled'\)\{[\s\S]*clearFlowCycle\+\+;[\s\S]*clearUiEffectTimers\('clear-transition'\)/,
+  'clear flow cancellation must retire the generation before clearing its timer');
 assert.match(runtime, /(?:state\.id==='clear'[\s\S]*createClearTransitionContext\(\)[\s\S]*showClearDialog\(|clear:\(\)=>\{if\(!\(clearShown&&isSolved\(\)\)\)[\s\S]*createClearTransitionContext\(\)[\s\S]*showClearDialog\()/,
   'reload clear dialog must restore through an explicit clear context');
 checks.push({ id: 'clear-phase-guard', passed: true });
@@ -73,6 +77,11 @@ assert.match(clearFlow, /function dispatchClearFlowAction\(action\)[\s\S]*const 
 assert.match(runtime, /(?:state\.id==='clear'[\s\S]*clearShown&&isSolved\(\)[\s\S]*showClearDialog\([^)]*\)|clear:\(\)=>\{if\(!\(clearShown&&isSolved\(\)\)\)[\s\S]*showClearDialog\([^)]*\))/,
   'reload clear dialog must require a solved board and clearShown');
 checks.push({ id: 'reload-clear-guard', passed: true });
+assert.match(clearFlow, /function restoreClearFlowDialog\(context=\{\}\)\{[\s\S]*cancelClearFlow\('restore-clear-dialog'\)[\s\S]*beginClearFlow\(\)[\s\S]*CLEAR_FLOW_PHASE\.animationPending[\s\S]*finishClearFlowDialog\(\)/,
+  'reload clear dialog must enter the normal dialog phase without replaying the animation timer');
+assert.match(runtime, /clear:\(\)=>\{[\s\S]*createClearTransitionContext\(\)[\s\S]*restoreClearFlowDialog\(clearContext\)[\s\S]*showClearDialog\(clearContext\)/,
+  'reload clear handler must restore the clear-flow phase before rendering');
+checks.push({ id: 'reload-clear-phase', passed: true });
 
 const report = {
   schemaVersion: 1,

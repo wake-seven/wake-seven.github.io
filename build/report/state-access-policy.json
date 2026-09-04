@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-04T09:12:23.251Z",
+  "generatedAt": "2026-09-04T09:44:07.276Z",
   "names": [
     "activeMode",
     "activeLap",
@@ -1565,7 +1565,7 @@
       "file": "ui/progression-flow-contract.js",
       "name": "clearShown",
       "line": 6,
-      "source": "{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation'},",
+      "source": "{id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'startClearFlow',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation',guard:'clearFlowCycle + phase idle',owner:'progression-clear-flow'},",
       "kind": "string",
       "exclusionReason": "文字列リテラル内の名前"
     },
@@ -1580,7 +1580,7 @@
     {
       "file": "ui/progression-clear-flow.js",
       "name": "stageIndex",
-      "line": 204,
+      "line": 215,
       "source": "const currentStageIndex=navigation.stageIndex;",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1588,7 +1588,7 @@
     {
       "file": "ui/progression-clear-flow.js",
       "name": "activeLap",
-      "line": 208,
+      "line": 219,
       "source": "mode,stageIndex:currentStageIndex,extraIndex:navigation.masteryIndex,satoriIndex:navigation.satoriIndex,activeLap:lap,",
       "kind": "object-key",
       "exclusionReason": "オブジェクトリテラルのキー"
@@ -1596,7 +1596,7 @@
     {
       "file": "ui/progression-clear-flow.js",
       "name": "stageIndex",
-      "line": 208,
+      "line": 219,
       "source": "mode,stageIndex:currentStageIndex,extraIndex:navigation.masteryIndex,satoriIndex:navigation.satoriIndex,activeLap:lap,",
       "kind": "object-key",
       "exclusionReason": "オブジェクトリテラルのキー"
@@ -1604,7 +1604,7 @@
     {
       "file": "ui/progression-clear-flow.js",
       "name": "extraIndex",
-      "line": 208,
+      "line": 219,
       "source": "mode,stageIndex:currentStageIndex,extraIndex:navigation.masteryIndex,satoriIndex:navigation.satoriIndex,activeLap:lap,",
       "kind": "object-key",
       "exclusionReason": "オブジェクトリテラルのキー"
@@ -1612,7 +1612,7 @@
     {
       "file": "ui/progression-clear-flow.js",
       "name": "satoriIndex",
-      "line": 208,
+      "line": 219,
       "source": "mode,stageIndex:currentStageIndex,extraIndex:navigation.masteryIndex,satoriIndex:navigation.satoriIndex,activeLap:lap,",
       "kind": "object-key",
       "exclusionReason": "オブジェクトリテラルのキー"
@@ -1620,7 +1620,7 @@
     {
       "file": "ui/progression-clear-flow.js",
       "name": "satoriIndex",
-      "line": 208,
+      "line": 219,
       "source": "mode,stageIndex:currentStageIndex,extraIndex:navigation.masteryIndex,satoriIndex:navigation.satoriIndex,activeLap:lap,",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -1628,7 +1628,7 @@
     {
       "file": "ui/progression-clear-flow.js",
       "name": "clearShown",
-      "line": 210,
+      "line": 221,
       "source": "solved:isSolved(),clearShown:WakeSevenAppContext.isClearShown(),",
       "kind": "object-key",
       "exclusionReason": "オブジェクトリテラルのキー"
@@ -1636,7 +1636,7 @@
     {
       "file": "ui/progression-clear-flow.js",
       "name": "stageIndex",
-      "line": 262,
+      "line": 273,
       "source": "const context=clearFlowState.context||createClearTransitionContext(navigation.stageIndex+1);",
       "kind": "property",
       "exclusionReason": "オブジェクトのプロパティ名"
@@ -8151,7 +8151,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 236,
+        "line": 247,
         "excerpt": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
       },
       "symbol": "stageIndex",
@@ -8179,7 +8179,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 236,
+        "line": 247,
         "excerpt": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
       },
       "symbol": "extraIndex",
@@ -8207,7 +8207,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 236,
+        "line": 247,
         "excerpt": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
       },
       "symbol": "satoriIndex",
@@ -8235,7 +8235,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 239,
+        "line": 250,
         "excerpt": "if(mode==='satori')return satoriIndex<SATORI_STAGES.length-1"
       },
       "symbol": "satoriIndex",
@@ -8263,7 +8263,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 240,
+        "line": 251,
         "excerpt": "? {kind:'satori-stage',index:satoriIndex+1}"
       },
       "symbol": "satoriIndex",
@@ -8291,7 +8291,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 242,
+        "line": 253,
         "excerpt": "if(mode==='mastery')return extraIndex===EXTRA_STAGES.length-1"
       },
       "symbol": "extraIndex",
@@ -8319,7 +8319,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 244,
+        "line": 255,
         "excerpt": ": {kind:'mastery-stage',index:extraIndex+1};"
       },
       "symbol": "extraIndex",
@@ -8347,7 +8347,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 245,
+        "line": 256,
         "excerpt": "if(stageIndex===ACADEMY_STAGE_COUNT-1&&academyIsCleared)return {kind:'master-dialog',section:'primary'};"
       },
       "symbol": "stageIndex",
@@ -8375,7 +8375,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 246,
+        "line": 257,
         "excerpt": "if(stageIndex===STAGES.length-1&&allPrimaryIsCleared)return {kind:'master-dialog',section:'intermediate'};"
       },
       "symbol": "stageIndex",
@@ -8403,7 +8403,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 247,
+        "line": 258,
         "excerpt": "if(stageIndex===STAGES.length-1)return {kind:'restore-free'};"
       },
       "symbol": "stageIndex",
@@ -8431,7 +8431,7 @@
       "classification": "executable",
       "source": {
         "file": "ui/progression-clear-flow.js",
-        "line": 249,
+        "line": 260,
         "excerpt": "return {kind:'stage',index:stageIndex+1};"
       },
       "symbol": "stageIndex",

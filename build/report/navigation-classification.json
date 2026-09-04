@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "name": "wake7-navigation-classification",
-  "generatedAt": "2026-09-04T09:12:23.526Z",
+  "generatedAt": "2026-09-04T09:44:07.521Z",
   "status": "passed",
   "summary": {
     "references": 380,
@@ -279,19 +279,19 @@
       },
       {
         "file": "ui/progression-clear-flow.js",
-        "line": 280,
+        "line": 291,
         "source": "if(route.kind==='satori-stage')return loadSatoriStage(route.index);",
         "allowed": true
       },
       {
         "file": "ui/progression-clear-flow.js",
-        "line": 282,
+        "line": 293,
         "source": "if(route.kind==='mastery-stage')return loadExtraStage(route.index);",
         "allowed": true
       },
       {
         "file": "ui/progression-clear-flow.js",
-        "line": 284,
+        "line": 295,
         "source": "return loadStage(route.index);",
         "allowed": true
       },
@@ -7164,7 +7164,7 @@
     {
       "name": "activeMode",
       "file": "ui/progression-clear-flow.js",
-      "line": 197,
+      "line": 208,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -7176,14 +7176,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-clear-flow.js",
-        "line": 197,
+        "line": 208,
         "source": "// 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-clear-flow.js",
-      "line": 197,
+      "line": 208,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -7195,14 +7195,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-clear-flow.js",
-        "line": 197,
+        "line": 208,
         "source": "// 各表示処理が activeMode や stageIndex を個別に読み直すと、ダイアログを"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-clear-flow.js",
-      "line": 204,
+      "line": 215,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -7214,14 +7214,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-clear-flow.js",
-        "line": 204,
+        "line": 215,
         "source": "const currentStageIndex=navigation.stageIndex;"
       }
     },
     {
       "name": "activeLap",
       "file": "ui/progression-clear-flow.js",
-      "line": 208,
+      "line": 219,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -7233,14 +7233,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-clear-flow.js",
-        "line": 208,
+        "line": 219,
         "source": "mode,stageIndex:currentStageIndex,extraIndex:navigation.masteryIndex,satoriIndex:navigation.satoriIndex,activeLap:lap,"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-clear-flow.js",
-      "line": 208,
+      "line": 219,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -7252,14 +7252,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-clear-flow.js",
-        "line": 208,
+        "line": 219,
         "source": "mode,stageIndex:currentStageIndex,extraIndex:navigation.masteryIndex,satoriIndex:navigation.satoriIndex,activeLap:lap,"
       }
     },
     {
       "name": "extraIndex",
       "file": "ui/progression-clear-flow.js",
-      "line": 208,
+      "line": 219,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -7271,14 +7271,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-clear-flow.js",
-        "line": 208,
+        "line": 219,
         "source": "mode,stageIndex:currentStageIndex,extraIndex:navigation.masteryIndex,satoriIndex:navigation.satoriIndex,activeLap:lap,"
       }
     },
     {
       "name": "satoriIndex",
       "file": "ui/progression-clear-flow.js",
-      "line": 208,
+      "line": 219,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -7290,14 +7290,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-clear-flow.js",
-        "line": 208,
+        "line": 219,
         "source": "mode,stageIndex:currentStageIndex,extraIndex:navigation.masteryIndex,satoriIndex:navigation.satoriIndex,activeLap:lap,"
       }
     },
     {
       "name": "satoriIndex",
       "file": "ui/progression-clear-flow.js",
-      "line": 208,
+      "line": 219,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -7309,186 +7309,15 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-clear-flow.js",
-        "line": 208,
+        "line": 219,
         "source": "mode,stageIndex:currentStageIndex,extraIndex:navigation.masteryIndex,satoriIndex:navigation.satoriIndex,activeLap:lap,"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "ui/progression-clear-flow.js",
-      "line": 236,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "ui/progression-clear-flow.js",
-        "line": 236,
-        "source": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
-      }
-    },
-    {
-      "name": "extraIndex",
-      "file": "ui/progression-clear-flow.js",
-      "line": 236,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "ui/progression-clear-flow.js",
-        "line": 236,
-        "source": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
-      }
-    },
-    {
-      "name": "satoriIndex",
-      "file": "ui/progression-clear-flow.js",
-      "line": 236,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "ui/progression-clear-flow.js",
-        "line": 236,
-        "source": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
-      }
-    },
-    {
-      "name": "satoriIndex",
-      "file": "ui/progression-clear-flow.js",
-      "line": 239,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "ui/progression-clear-flow.js",
-        "line": 239,
-        "source": "if(mode==='satori')return satoriIndex<SATORI_STAGES.length-1"
-      }
-    },
-    {
-      "name": "satoriIndex",
-      "file": "ui/progression-clear-flow.js",
-      "line": 240,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "ui/progression-clear-flow.js",
-        "line": 240,
-        "source": "? {kind:'satori-stage',index:satoriIndex+1}"
-      }
-    },
-    {
-      "name": "extraIndex",
-      "file": "ui/progression-clear-flow.js",
-      "line": 242,
-      "access": "write",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "ui/progression-clear-flow.js",
-        "line": 242,
-        "source": "if(mode==='mastery')return extraIndex===EXTRA_STAGES.length-1"
-      }
-    },
-    {
-      "name": "extraIndex",
-      "file": "ui/progression-clear-flow.js",
-      "line": 244,
-      "access": "read",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "ui/progression-clear-flow.js",
-        "line": 244,
-        "source": ": {kind:'mastery-stage',index:extraIndex+1};"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "ui/progression-clear-flow.js",
-      "line": 245,
-      "access": "write",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "ui/progression-clear-flow.js",
-        "line": 245,
-        "source": "if(stageIndex===ACADEMY_STAGE_COUNT-1&&academyIsCleared)return {kind:'master-dialog',section:'primary'};"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "ui/progression-clear-flow.js",
-      "line": 246,
-      "access": "write",
-      "classification": "needs-migration",
-      "category": "derived-value",
-      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "ui/progression-clear-flow.js",
-        "line": 246,
-        "source": "if(stageIndex===STAGES.length-1&&allPrimaryIsCleared)return {kind:'master-dialog',section:'intermediate'};"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-clear-flow.js",
       "line": 247,
-      "access": "write",
+      "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
       "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
@@ -7500,13 +7329,184 @@
       "codeEvidence": {
         "file": "ui/progression-clear-flow.js",
         "line": 247,
+        "source": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 247,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 247,
+        "source": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 247,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 247,
+        "source": "const {mode,stageIndex,extraIndex,satoriIndex,academyIsCleared,allPrimaryIsCleared,hasBeforeDialog}=context;"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 250,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 250,
+        "source": "if(mode==='satori')return satoriIndex<SATORI_STAGES.length-1"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 251,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 251,
+        "source": "? {kind:'satori-stage',index:satoriIndex+1}"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 253,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 253,
+        "source": "if(mode==='mastery')return extraIndex===EXTRA_STAGES.length-1"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 255,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 255,
+        "source": ": {kind:'mastery-stage',index:extraIndex+1};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 256,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 256,
+        "source": "if(stageIndex===ACADEMY_STAGE_COUNT-1&&academyIsCleared)return {kind:'master-dialog',section:'primary'};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 257,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 257,
+        "source": "if(stageIndex===STAGES.length-1&&allPrimaryIsCleared)return {kind:'master-dialog',section:'intermediate'};"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/progression-clear-flow.js",
+      "line": 258,
+      "access": "write",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "createClearTransitionContextで固定したクリア後navigation contextのローカル値",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/progression-clear-flow.js",
+        "line": 258,
         "source": "if(stageIndex===STAGES.length-1)return {kind:'restore-free'};"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-clear-flow.js",
-      "line": 249,
+      "line": 260,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -7518,14 +7518,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-clear-flow.js",
-        "line": 249,
+        "line": 260,
         "source": "return {kind:'stage',index:stageIndex+1};"
       }
     },
     {
       "name": "stageIndex",
       "file": "ui/progression-clear-flow.js",
-      "line": 262,
+      "line": 273,
       "access": "read",
       "classification": "needs-migration",
       "category": "derived-value",
@@ -7537,7 +7537,7 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "ui/progression-clear-flow.js",
-        "line": 262,
+        "line": 273,
         "source": "const context=clearFlowState.context||createClearTransitionContext(navigation.stageIndex+1);"
       }
     },

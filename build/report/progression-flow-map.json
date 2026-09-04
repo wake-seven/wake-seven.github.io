@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T07:55:40.075Z",
+  "generatedAt": "2026-09-04T09:43:09.328Z",
   "source": "src/ui/progression-flow-contract.js",
   "entries": [
     {
@@ -10,7 +10,9 @@
       "entry": "startClearFlow",
       "persist": "clearShown→progress記録",
       "cancel": "resetClearFlow・別盤面への遷移",
-      "to": "clear-animation"
+      "to": "clear-animation",
+      "guard": "clearFlowCycle + phase idle",
+      "owner": "progression-clear-flow"
     },
     {
       "id": "campaign-clear-dialog",
@@ -20,7 +22,9 @@
       "entry": "finishClearFlow",
       "persist": "clearDialog状態",
       "cancel": "clear-transitionタイマー取消",
-      "to": "clear-dialog"
+      "to": "clear-dialog",
+      "guard": "animationPending + dialogSequence consume once",
+      "owner": "progression-clear-flow"
     },
     {
       "id": "campaign-next",
@@ -30,7 +34,9 @@
       "entry": "advanceAfterClear→dispatchClearFlowAction",
       "persist": "次の問題・周回・解放状態",
       "cancel": "hideGameDialogs・遷移世代無効化",
-      "to": "next-stage-dialog|next-playing"
+      "to": "next-stage-dialog|next-playing",
+      "guard": "dialog/content phase + route resolved once",
+      "owner": "progression-clear-flow"
     },
     {
       "id": "speed-start",

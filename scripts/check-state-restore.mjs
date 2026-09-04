@@ -11,6 +11,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const read = name => readFile(join(root, name), 'utf8');
 const stateSource = (await read('src/state/game-state.js')).replace(/^\s*export\s*\{\s*\};?\s*$/gm, '');
 const runtimeSource = await read('src/runtime/runtime.js');
+const clearFlowSource = await read('src/ui/progression-clear-flow.js');
 const bootstrapSource = await read('src/runtime/app-bootstrap.js');
 const template = await read('src/index.template.html');
 const published = await read('index.html');
@@ -88,6 +89,10 @@ for (const source of [runtimeSource, published]) {
 }
 assert.match(bootstrapSource, /restoreActiveSession\(\);[\s\S]*(?:restoreDialogState|restoreProgressionDialog)\(storage\.json\(DIALOG_STATE_STORAGE_KEY,null\)\);/,
   'startup must restore the active session before the dialog');
+assert.match(runtimeSource, /clear:\(\)=>\{[\s\S]*restoreClearFlowDialog\(clearContext\)[\s\S]*showClearDialog\(clearContext\)/,
+  'restored clear dialog must restore its flow phase before rendering');
+assert.match(clearFlowSource, /function restoreClearFlowDialog\(context=\{\}\)\{[\s\S]*CLEAR_FLOW_PHASE\.animationPending[\s\S]*finishClearFlowDialog\(\)/,
+  'restored clear dialog must reach the dialog phase without replaying its timer');
 assert.match(bootstrapSource, /document\.body\.classList\.remove\('app-booting'\);/,
   'initial placeholder must remain hidden until restored state is applied');
 assert.match(template, /id="(?:introDialog|chainDialog|messageDialog|guideHubDialog)"/, 'dialog templates must be present');

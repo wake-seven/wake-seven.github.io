@@ -244,6 +244,35 @@ try{
     const after=await snap(page);assert.ok(after.stage!==before.stage||after.chain||after.speedStart||after.speedPause,'clear next must advance or open the next route');
     result.cases.push({name:'primary-clear-next-action',before,after});
   }
+  // リロード復元ケースだけは、起動ごとにstorageを消す通常E2E contextから分離する。
+  // 同じlocalStorageを保った実際の再読み込みで、表示後の「次へ」まで確認する。
+  const reloadContext=await browser.newContext({viewport:{width:1280,height:900}});
+  try{
+    const reloadPage=await reloadContext.newPage();
+    reloadPage.on('console',message=>{if(message.type()==='error')result.consoleErrors.push(message.text());});
+    reloadPage.on('pageerror',error=>result.consoleErrors.push(String(error)));
+    await reloadPage.goto('http://127.0.0.1:'+port+'/index.html?debug=1',{waitUntil:'networkidle'});
+    await reloadPage.waitForSelector('#debugReset');
+    if(await vis(reloadPage,'introDialog'))await reloadPage.locator('#introStart').click({force:true});
+    await reloadPage.evaluate(()=>{document.querySelector('#debugTools').hidden=false;});
+    await reloadPage.locator('#debugSkipTutorial').dispatchEvent('click');
+    await wait(reloadPage,()=>!document.querySelector('#chainDialog')?.hidden,'reload case academy chain');
+    await reloadPage.evaluate(()=>{document.querySelector('#chainDialog').hidden=true;});
+    await reloadPage.locator('#debugTrainingUpper').dispatchEvent('click');
+    await reloadPage.waitForTimeout(180);
+    await reloadPage.locator('#debugClear').dispatchEvent('click');
+    await wait(reloadPage,()=>!document.querySelector('#clearDialog')?.hidden,'clear dialog before reload');
+    const beforeReload=await snap(reloadPage);
+    await reloadPage.reload({waitUntil:'networkidle'});
+    await wait(reloadPage,()=>!document.querySelector('#clearDialog')?.hidden,'restored clear dialog');
+    const restored=await snap(reloadPage);
+    assert.ok(['clear-dialog','quiz/message'].includes(restored.clearFlowPhase),'restored clear dialog must restore an actionable clear-flow phase');
+    await reloadPage.locator('#clearNext').click({force:true});
+    await wait(reloadPage,()=>document.querySelector('#clearDialog')?.hidden,'restored clear next action');
+    const afterReloadNext=await snap(reloadPage);
+    assert.ok(afterReloadNext.stage!==beforeReload.stage||afterReloadNext.chain||afterReloadNext.speedStart||afterReloadNext.speedPause,'restored clear next must advance or open the next route');
+    result.cases.push({name:'primary-clear-reload-next-action',beforeReload,restored,after:afterReloadNext});
+  }finally{await reloadContext.close();}
   await debugClick(page,'debugAcademy20');await page.waitForTimeout(120);await debugClick(page,'debugSpeedTraining8');await wait(page,()=>!document.querySelector('#speedStartOverlay')?.hidden||!document.querySelector('#speedPause')?.hidden,'speed entry');if(await vis(page,'speedBoardStart')){await click(page,'speedBoardStart');}await wait(page,()=>document.querySelector('#speedStartOverlay')?.hidden&&!document.querySelector('#speedPause')?.hidden,'speed start');assert.equal(await vis(page,'speedStartOverlay'),false);await page.evaluate(()=>{const a=[];const o=new MutationObserver(()=>{const visible=[...document.querySelectorAll('.game-dialog-backdrop')].filter(dialog=>!dialog.hidden&&dialog.getClientRects().length>0).map(dialog=>dialog.id);if(visible.length)a.push(visible);});document.querySelectorAll('.game-dialog-backdrop').forEach(dialog=>o.observe(dialog,{attributes:true,attributeFilter:['hidden']}));window.__speedFlashObserver=o;window.__speedFlashLog=a;});await debugClick(page,'debugClear');await wait(page,()=> (document.querySelector('#stageNumber')?.textContent||'').includes('4 / 9'),'speed advances from question 3');await page.waitForTimeout(250);const flashLog=await page.evaluate(()=>{window.__speedFlashObserver?.disconnect();return window.__speedFlashLog||[];});assert.ok(flashLog.every(dialogs=>!dialogs.includes('speedStartOverlay')&&!dialogs.includes('masterDialog')),'speed question transition must not flash a start or mastery dialog');result.cases.push({name:'speed-question-3-to-4-no-exam-dialog-flash',state:await snap(page),flashLog});
   await page.reload({waitUntil:'networkidle'});await wait(page,()=>document.querySelector('#speedStartOverlay')?.hidden,'speed reload restore');
   assert.equal(await vis(page,'speedStartOverlay'),false);result.cases.push({name:'speed-reload-restoration',state:await snap(page)});
