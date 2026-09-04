@@ -53,6 +53,14 @@ assert.match(progression, /function clearDialogUsesStageProgression\(\)/,
 checks.push({ id: 'clear-route-predicate', passed: true });
 assert.match(clearFlow, /function finishClearFlowDialog\(\)\{[\s\S]*animationPending[\s\S]*return true[\s\S]*return clearFlowPhase===CLEAR_FLOW_PHASE\.dialog/,
   'clear dialog phase must not be entered from an unrelated flow phase');
+assert.match(clearFlow, /const CLEAR_FLOW_TRANSITIONS=Object\.freeze\(/,
+  'clear flow phases must have an explicit transition map');
+assert.match(clearFlow, /function isClearFlowTransitionAllowed\(from,to\)/,
+  'clear flow phase changes must validate the transition map');
+assert.match(clearFlow, /function getClearFlowTrace\(\)\{return clearFlowTrace\.slice\(\);\}/,
+  'clear flow transitions must expose a read-only diagnostic trace');
+assert.match(clearFlow, /if\(!allowed\)\{[\s\S]*不正な段階遷移/,
+  'invalid clear flow transitions must be observable');
 assert.match(runtime, /(?:state\.id==='clear'[\s\S]*createClearTransitionContext\(\)[\s\S]*showClearDialog\(|clear:\(\)=>\{if\(!\(clearShown&&isSolved\(\)\)\)[\s\S]*createClearTransitionContext\(\)[\s\S]*showClearDialog\()/,
   'reload clear dialog must restore through an explicit clear context');
 checks.push({ id: 'clear-phase-guard', passed: true });

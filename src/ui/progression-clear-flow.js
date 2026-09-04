@@ -15,9 +15,34 @@ const CLEAR_FLOW_PHASE=Object.freeze({
   playing:'next-playing'
 });
 const CLEAR_FLOW_ACTION=Object.freeze({start:'start',show:'show',next:'next',reset:'reset',cancel:'cancel'});
+// クリア後フローで許可する段階の接続。表示中DOMではなく、ここを
+// 状態機械の地図として参照することで、途中段階の飛び越しを発見しやすくする。
+const CLEAR_FLOW_TRANSITIONS=Object.freeze({
+  [CLEAR_FLOW_PHASE.idle]:Object.freeze([CLEAR_FLOW_PHASE.animation]),
+  [CLEAR_FLOW_PHASE.animation]:Object.freeze([CLEAR_FLOW_PHASE.animationPending]),
+  [CLEAR_FLOW_PHASE.animationPending]:Object.freeze([CLEAR_FLOW_PHASE.dialog]),
+  [CLEAR_FLOW_PHASE.dialog]:Object.freeze([CLEAR_FLOW_PHASE.content,CLEAR_FLOW_PHASE.nextDialog,CLEAR_FLOW_PHASE.playing]),
+  [CLEAR_FLOW_PHASE.content]:Object.freeze([CLEAR_FLOW_PHASE.content,CLEAR_FLOW_PHASE.nextDialog,CLEAR_FLOW_PHASE.playing]),
+  [CLEAR_FLOW_PHASE.nextDialog]:Object.freeze([CLEAR_FLOW_PHASE.playing]),
+  [CLEAR_FLOW_PHASE.playing]:Object.freeze([CLEAR_FLOW_PHASE.idle])
+});
 let clearFlowState=Object.freeze({phase:CLEAR_FLOW_PHASE.idle,action:null,context:null,route:null,content:null,cycle:1,persisted:false,cancelReason:null,celebration:null});
 let clearFlowPhase=CLEAR_FLOW_PHASE.idle;
+const clearFlowTrace=[];
+function isClearFlowTransitionAllowed(from,to){
+  if(from===to)return true;
+  if(to===CLEAR_FLOW_PHASE.idle)return true;
+  return (CLEAR_FLOW_TRANSITIONS[from]||[]).includes(to);
+}
 function setClearFlowPhase(phase,action=null,patch={}){
+  const from=clearFlowState.phase;
+  const allowed=isClearFlowTransitionAllowed(from,phase);
+  clearFlowTrace.push(Object.freeze({from,to:phase,action:action||null,cycle:clearFlowCycle,allowed,at:Date.now()}));
+  if(clearFlowTrace.length>32)clearFlowTrace.shift();
+  if(!allowed){
+    console.warn(`[clear-flow] 不正な段階遷移: ${from} → ${phase}`);
+    return clearFlowState;
+  }
   clearFlowPhase=phase;
   clearFlowState=Object.freeze({...clearFlowState,...patch,phase,action});
   return clearFlowState;
@@ -39,12 +64,13 @@ function cancelClearFlow(reason='cancelled'){
     for(const animation of celebration.animations||[])try{animation.cancel();}catch(_){/* 終了済みアニメーションはそのまま続行する */}
     celebration.burst?.remove();
   }
-  clearFlowState=Object.freeze({...clearFlowState,phase:CLEAR_FLOW_PHASE.idle,action:CLEAR_FLOW_ACTION.cancel,cycle:clearFlowCycle,context:null,route:null,content:null,persisted:false,cancelReason:reason});
-  clearFlowPhase=CLEAR_FLOW_PHASE.idle;
+  setClearFlowPhase(CLEAR_FLOW_PHASE.idle,CLEAR_FLOW_ACTION.cancel,{cycle:clearFlowCycle,context:null,route:null,content:null,persisted:false,cancelReason:reason});
   return clearFlowState;
 }
 // E2Eとデバッグが現在の段階を読み取るための副作用のない入口。
 function getClearFlowState(){return clearFlowState;}
+// E2Eとデバッグが時間順の段階遷移を確認するための読み取り専用スナップショット。
+function getClearFlowTrace(){return clearFlowTrace.slice();}
 function markClearFlowContent(kind='quiz/message'){
   if(clearFlowPhase===CLEAR_FLOW_PHASE.dialog||clearFlowPhase===CLEAR_FLOW_PHASE.content){
     setClearFlowPhase(CLEAR_FLOW_PHASE.content,'show-content',{content:kind});
