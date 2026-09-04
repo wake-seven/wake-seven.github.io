@@ -73,6 +73,9 @@ assert.match(clearFeature, /const clearFeatureTrace=\[\]/, 'clear feature must e
 assert.match(clearFeature, /start\(options=\{\}\)\{traceClearFeature\('start'/, 'clear feature start must use the orchestration entry');
 assert.match(clearFeature, /next\(\)\{traceClearFeature\('next'/, 'clear feature next must use the orchestration entry');
 assert.match(clearFeature, /trace\(\)\{return clearFeatureTrace\.slice\(\);\}/, 'clear feature trace must be read-only');
+assert.match(clearFeature, /function resolveClearFeatureContext\(context=null\)/, 'clear feature must expose the clear context decision entry');
+assert.match(clearFeature, /function renderClearFeatureDialog\(context=null\)/, 'clear feature must expose the dialog rendering entry');
+assert.match(clearFeature, /show:renderClearFeatureDialog/, 'clear feature dialog rendering must use the shared entry');
 assert.match(clearFlow, /function enqueueClearFlowDialog\(item,cycle=clearFlowCycle\)/, 'clear dialog queue entry point is missing');
 assert.match(clearFlow, /function consumeClearFlowDialog\(cycle=clearFlowCycle\)/, 'clear dialog queue consume entry point is missing');
 assert.match(clearFlow, /enqueueClearFlowDialog\(\{kind:'clear'/, 'clear dialog must be queued before rendering');
