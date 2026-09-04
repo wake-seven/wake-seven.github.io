@@ -2,42 +2,24 @@
   "name": "wake7-change-classification",
   "status": "passed",
   "summary": {
-    "changedFiles": 18,
-    "classified": 6,
-    "unknown": 12,
-    "mismatches": 3,
+    "changedFiles": 4,
+    "classified": 2,
+    "unknown": 2,
+    "mismatches": 2,
     "missingFeatureKinds": 0
   },
   "warnings": [
     "分類ルールがありません: index.html",
-    "分類ルールがありません: scripts/application-manifest.mjs",
     "分類ルールがありません: scripts/check-browser-flow.mjs",
-    "分類ルールがありません: scripts/check-clear-flow-order.mjs",
-    "分類ルールがありません: scripts/check-dialog-chains.mjs",
-    "分類ルールがありません: scripts/check-global-state-classification.mjs",
-    "分類ルールがありません: scripts/feature-registry.json",
-    "src/feature/clear-feature.js: 宣言分類 presentation と差分シグナル progression が不一致です",
-    "分類ルールがありません: /ui/clear-feature.js",
-    "分類ルールがありません: /ui/dialog-chain-feature.js",
-    "分類ルールがありません: /ui/settings-feature.js",
-    "分類ルールがありません: /ui/speed-feature.js",
-    "src/feature/stage-picker-feature.js: 宣言分類 presentation と差分シグナル progression が不一致です",
-    "分類ルールがありません: /ui/stage-picker-feature.js",
+    "src/runtime/app-events.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です",
     "src/runtime/runtime.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です"
   ],
   "errors": [],
-  "generatedAt": "2026-09-04T14:20:14.140Z",
-  "sourceRevision": "f8c0f1d",
+  "generatedAt": "2026-09-04T14:55:21.070Z",
+  "sourceRevision": "7939809",
   "entries": [
     {
       "file": "index.html",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
-    },
-    {
-      "file": "scripts/application-manifest.mjs",
       "kind": null,
       "layer": null,
       "signals": [],
@@ -51,118 +33,20 @@
       "status": "unknown"
     },
     {
-      "file": "scripts/check-clear-flow-order.mjs",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
-    },
-    {
-      "file": "scripts/check-dialog-chains.mjs",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
-    },
-    {
-      "file": "scripts/check-global-state-classification.mjs",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
-    },
-    {
-      "file": "scripts/feature-registry.json",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
-    },
-    {
-      "file": "src/feature/clear-feature.js",
-      "kind": "presentation",
-      "layer": "source",
+      "file": "src/runtime/app-events.js",
+      "kind": "progression",
+      "layer": "runtime",
       "signals": [
-        "progression",
+        "rule",
+        "assist",
         "presentation"
       ],
       "mismatched": [
-        "progression"
-      ],
-      "status": "warning"
-    },
-    {
-      "file": "/ui/clear-feature.js",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
-    },
-    {
-      "file": "src/feature/dialog-chain-feature.js",
-      "kind": "presentation",
-      "layer": "source",
-      "signals": [],
-      "mismatched": [],
-      "status": "passed"
-    },
-    {
-      "file": "/ui/dialog-chain-feature.js",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
-    },
-    {
-      "file": "src/feature/settings-feature.js",
-      "kind": "presentation",
-      "layer": "source",
-      "signals": [
+        "rule",
+        "assist",
         "presentation"
       ],
-      "mismatched": [],
-      "status": "passed"
-    },
-    {
-      "file": "/ui/settings-feature.js",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
-    },
-    {
-      "file": "src/feature/speed-feature.js",
-      "kind": "presentation",
-      "layer": "source",
-      "signals": [],
-      "mismatched": [],
-      "status": "passed"
-    },
-    {
-      "file": "/ui/speed-feature.js",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
-    },
-    {
-      "file": "src/feature/stage-picker-feature.js",
-      "kind": "presentation",
-      "layer": "source",
-      "signals": [
-        "progression"
-      ],
-      "mismatched": [
-        "progression"
-      ],
       "status": "warning"
-    },
-    {
-      "file": "/ui/stage-picker-feature.js",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
     },
     {
       "file": "src/runtime/runtime.js",

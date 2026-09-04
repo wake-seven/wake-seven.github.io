@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "name": "wake7-navigation-classification",
-  "generatedAt": "2026-09-04T14:21:26.925Z",
+  "generatedAt": "2026-09-04T14:56:43.004Z",
   "status": "passed",
   "summary": {
     "references": 399,
@@ -57,7 +57,7 @@
     "transitionCalls": [
       {
         "file": "runtime/runtime.js",
-        "line": 673,
+        "line": 674,
         "source": "loadStage(0);",
         "allowed": true
       },
@@ -393,7 +393,7 @@
       },
       {
         "file": "runtime/app-events.js",
-        "line": 1205,
+        "line": 1207,
         "source": "GameNavigation.stage(0);",
         "allowed": true
       }
@@ -3440,7 +3440,7 @@
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 515,
+      "line": 516,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -3452,14 +3452,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 515,
+        "line": 516,
         "source": "let activeLap=initialNavigationState.lap===2?2:1;"
       }
     },
     {
       "name": "activeMode",
       "file": "runtime/runtime.js",
-      "line": 516,
+      "line": 517,
       "access": "read",
       "classification": "owner",
       "category": "derived-value",
@@ -3471,14 +3471,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 516,
+        "line": 517,
         "source": "// activeModeが現在画面の正となる。最後にいたキャンペーン位置は明示的な名前で保持し、"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 524,
+      "line": 525,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3490,14 +3490,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 524,
+        "line": 525,
         "source": "let rankListLap=activeLap;"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 526,
+      "line": 527,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3509,14 +3509,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 526,
+        "line": 527,
         "source": "let pickerLap=activeLap;"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 598,
+      "line": 599,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -3528,26 +3528,7 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 598,
-        "source": "if(activeLap===2&&!secondLapUnlocked)activeLap=1;"
-      }
-    },
-    {
-      "name": "activeLap",
-      "file": "runtime/runtime.js",
-      "line": 598,
-      "access": "write",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "runtime/runtime.js",
-        "line": 598,
+        "line": 599,
         "source": "if(activeLap===2&&!secondLapUnlocked)activeLap=1;"
       }
     },
@@ -3567,7 +3548,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 599,
-        "source": "clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;"
+        "source": "if(activeLap===2&&!secondLapUnlocked)activeLap=1;"
       }
     },
     {
@@ -3586,7 +3567,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 600,
-        "source": "clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;"
+        "source": "clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;"
       }
     },
     {
@@ -3605,7 +3586,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 601,
-        "source": "clearedSatoriStages=activeLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;"
+        "source": "clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;"
       }
     },
     {
@@ -3624,13 +3605,32 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 602,
+        "source": "clearedSatoriStages=activeLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 603,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 603,
         "source": "secondLapActive=activeLap===2;"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 611,
+      "line": 612,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -3642,14 +3642,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 611,
+        "line": 612,
         "source": "clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 613,
+      "line": 614,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -3661,14 +3661,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 613,
+        "line": 614,
         "source": "clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 637,
+      "line": 638,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3680,14 +3680,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 637,
+        "line": 638,
         "source": "storage.set(STORAGE_KEY_GROUPS.progression.activeLap,String(activeLap));"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 637,
+      "line": 638,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3699,14 +3699,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 637,
+        "line": 638,
         "source": "storage.set(STORAGE_KEY_GROUPS.progression.activeLap,String(activeLap));"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 640,
+      "line": 641,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -3718,14 +3718,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 640,
+        "line": 641,
         "source": "if(activeLap===2)storage.set(STORAGE_KEY_GROUPS.progression.secondLapActive,'1');"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 645,
+      "line": 646,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -3737,14 +3737,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 645,
+        "line": 646,
         "source": "activeLap=lap;"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 675,
+      "line": 676,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -3756,27 +3756,8 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 675,
+        "line": 676,
         "source": "if(activeLap===2)lap2ClearedSatoriStages=clearedSatoriStages;"
-      }
-    },
-    {
-      "name": "activeLap",
-      "file": "runtime/runtime.js",
-      "line": 681,
-      "access": "read",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "runtime/runtime.js",
-        "line": 681,
-        "source": "const canEnterTraining=()=>PROGRESSION.canEnter('training',{lap:activeLap,trials:progressionTrials()});"
       }
     },
     {
@@ -3795,7 +3776,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 682,
-        "source": "const canEnterMastery=()=>PROGRESSION.canEnter('mastery',{lap:activeLap,trials:progressionTrials()});"
+        "source": "const canEnterTraining=()=>PROGRESSION.canEnter('training',{lap:activeLap,trials:progressionTrials()});"
       }
     },
     {
@@ -3814,13 +3795,13 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 683,
-        "source": "const canEnterSatori=()=>PROGRESSION.canEnter('satori',{lap:activeLap,mastered:isMastered(),trials:progressionTrials()});"
+        "source": "const canEnterMastery=()=>PROGRESSION.canEnter('mastery',{lap:activeLap,trials:progressionTrials()});"
       }
     },
     {
-      "name": "extraIndex",
+      "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 776,
+      "line": 684,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3832,15 +3813,15 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 776,
-        "source": "const masterVolume=()=>isMode('mastery')?Math.floor(extraIndex/MASTER_VOLUME_SIZE)+1:0;"
+        "line": 684,
+        "source": "const canEnterSatori=()=>PROGRESSION.canEnter('satori',{lap:activeLap,mastered:isMastered(),trials:progressionTrials()});"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
       "line": 777,
-      "access": "write",
+      "access": "read",
       "classification": "owner",
       "category": "owner-only",
       "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
@@ -3852,13 +3833,32 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 777,
+        "source": "const masterVolume=()=>isMode('mastery')?Math.floor(extraIndex/MASTER_VOLUME_SIZE)+1:0;"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 778,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 778,
         "source": "const isFinalMasterPuzzle=()=>isMode('mastery')&&extraIndex===EXTRA_STAGES.length-1;"
       }
     },
     {
       "name": "activeMode",
       "file": "runtime/runtime.js",
-      "line": 790,
+      "line": 791,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3870,14 +3870,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 790,
+        "line": 791,
         "source": "const currentUiPolicy=()=>PROGRESSION.uiPolicy({mode:activeMode,lap:activeLap,stageIndex,speedVariant:isMode('speed')?speedVariant:null});"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 790,
+      "line": 791,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3889,14 +3889,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 790,
+        "line": 791,
         "source": "const currentUiPolicy=()=>PROGRESSION.uiPolicy({mode:activeMode,lap:activeLap,stageIndex,speedVariant:isMode('speed')?speedVariant:null});"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/runtime.js",
-      "line": 790,
+      "line": 791,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3908,14 +3908,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 790,
+        "line": 791,
         "source": "const currentUiPolicy=()=>PROGRESSION.uiPolicy({mode:activeMode,lap:activeLap,stageIndex,speedVariant:isMode('speed')?speedVariant:null});"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 813,
+      "line": 814,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3927,14 +3927,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 813,
+        "line": 814,
         "source": "const isThirdVolume=()=>isMode('mastery')&&extraIndex>=30&&extraIndex<45;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 813,
+      "line": 814,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3946,14 +3946,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 813,
+        "line": 814,
         "source": "const isThirdVolume=()=>isMode('mastery')&&extraIndex>=30&&extraIndex<45;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 824,
+      "line": 825,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3965,14 +3965,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 824,
+        "line": 825,
         "source": "const fourthCheckLimit=()=>!isFourthVolume()?0:(extraIndex%MASTER_VOLUME_SIZE<6?2:extraIndex%MASTER_VOLUME_SIZE<12?1:0);"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 824,
+      "line": 825,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3984,14 +3984,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 824,
+        "line": 825,
         "source": "const fourthCheckLimit=()=>!isFourthVolume()?0:(extraIndex%MASTER_VOLUME_SIZE<6?2:extraIndex%MASTER_VOLUME_SIZE<12?1:0);"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 827,
+      "line": 828,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -4003,14 +4003,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 827,
+        "line": 828,
         "source": "const fourthChecksPersist=()=>isFourthVolume()&&extraIndex%MASTER_VOLUME_SIZE<12;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 829,
+      "line": 830,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -4022,14 +4022,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 829,
+        "line": 830,
         "source": "const fourthChecksSurviveRestart=()=>isFourthVolume()&&extraIndex%MASTER_VOLUME_SIZE>=9&&extraIndex%MASTER_VOLUME_SIZE<12;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 829,
+      "line": 830,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -4041,14 +4041,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 829,
+        "line": 830,
         "source": "const fourthChecksSurviveRestart=()=>isFourthVolume()&&extraIndex%MASTER_VOLUME_SIZE>=9&&extraIndex%MASTER_VOLUME_SIZE<12;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 834,
+      "line": 835,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -4060,14 +4060,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 834,
+        "line": 835,
         "source": "fourthCheckUsage[extraIndex]=fourthChecksUsed;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 838,
+      "line": 839,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -4079,14 +4079,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 838,
+        "line": 839,
         "source": "fourthChecksUsed=fourthChecksPersist()&&Number.isInteger(fourthCheckUsage[extraIndex])?fourthCheckUsage[extraIndex]:0;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 838,
+      "line": 839,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -4098,14 +4098,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 838,
+        "line": 839,
         "source": "fourthChecksUsed=fourthChecksPersist()&&Number.isInteger(fourthCheckUsage[extraIndex])?fourthCheckUsage[extraIndex]:0;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 843,
+      "line": 844,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -4117,7 +4117,7 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 843,
+        "line": 844,
         "source": "delete fourthCheckUsage[extraIndex];"
       }
     },

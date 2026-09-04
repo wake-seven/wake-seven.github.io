@@ -1153,11 +1153,6 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
       storage.remove(STORAGE_KEY_GROUPS.rewards.masterGoldGranted);
       storage.remove(STORAGE_KEY_GROUPS.rewards.satoriDesignGranted);
       storage.remove(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted);
-      storage.remove(STORAGE_KEY_GROUPS.speed.unlocked);
-      storage.remove(STORAGE_KEY_GROUPS.speed.trainingUnlocked);
-      storage.remove(STORAGE_KEY_GROUPS.speed.intermediateUnlocked);
-      storage.remove(STORAGE_KEY_GROUPS.speed.masteryUnlocked);
-      storage.remove(STORAGE_KEY_GROUPS.speed.satoriUnlocked);
       storage.remove(STORAGE_KEY_GROUPS.speed.trainingTrialCleared);
       storage.remove(STORAGE_KEY_GROUPS.speed.intermediateTrialCleared);
       storage.remove(STORAGE_KEY_GROUPS.speed.masteryTrialCleared);
@@ -1168,6 +1163,11 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
         storage.remove(speedHistoryStorageKey(variant));
       }
       storage.remove(STORAGE_KEY_GROUPS.speed.activeVariant);
+      storage.remove(STORAGE_KEY_GROUPS.speed.unlocked);
+      storage.remove(STORAGE_KEY_GROUPS.speed.trainingUnlocked);
+      storage.remove(STORAGE_KEY_GROUPS.speed.intermediateUnlocked);
+      storage.remove(STORAGE_KEY_GROUPS.speed.masteryUnlocked);
+      storage.remove(STORAGE_KEY_GROUPS.speed.satoriUnlocked);
     }
     storage.remove(FOURTH_CHECKS_STORAGE_KEY);
     storage.remove(MESSAGE_REVIEW_STORAGE_KEY);
@@ -1178,26 +1178,28 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
       resetTutorialCommand();
     }
   }catch(_){}
-  // 盤面デザインや速解きの解放を残すリセットでも、卒業試験はコース進行
-  // に属するため新しい周回では未合格に戻す。
-  speedTrainingTrialCleared=false;
-  speedIntermediateTrialCleared=false;
-  speedMasteryTrialCleared=false;
-  storage.remove(STORAGE_KEY_GROUPS.speed.trainingTrialCleared);
-  storage.remove(STORAGE_KEY_GROUPS.speed.intermediateTrialCleared);
-  storage.remove(STORAGE_KEY_GROUPS.speed.masteryTrialCleared);
+  // 「すべてリセット」のときだけ速解きの解放・記録も初期化する。
   if(!preserveRewards){
-    resetSettingsCommand();
-    masterGoldGranted=false;
-    satoriDesignGranted=false;
-    rainbowDarumaGranted=false;
+    speedTrainingTrialCleared=false;
+    speedIntermediateTrialCleared=false;
+    speedMasteryTrialCleared=false;
     speedModeUnlocked=false;
     speedTrainingUnlocked=false;
     speedIntermediateUnlocked=false;
     speedMasteryUnlocked=false;
     speedSatoriUnlocked=false;
+    storage.remove(STORAGE_KEY_GROUPS.speed.trainingTrialCleared);
+    storage.remove(STORAGE_KEY_GROUPS.speed.intermediateTrialCleared);
+    storage.remove(STORAGE_KEY_GROUPS.speed.masteryTrialCleared);
+  }
+  if(!preserveRewards){
+    resetSettingsCommand();
+    masterGoldGranted=false;
+    satoriDesignGranted=false;
+    rainbowDarumaGranted=false;
     threeDUnlocked=false;
   }
+  if(!preserveRewards)syncSpeedUnlockFlag();
   secondLapActive=false;
   awakenedGranted=false;
   setActiveMode('stage');setSpeedSessionCommand(null);pauseSpeedClock();

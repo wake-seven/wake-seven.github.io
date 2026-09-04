@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-23:20';
+const APP_VERSION='2026.09.04-23:54';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -442,7 +442,8 @@ let secondLapActive=false;
 try{secondLapActive=storage.get(STORAGE_KEY_GROUPS.progression.secondLapActive)==='1';}catch(_){ }
 let awakenedGranted=initialUnlocks.awakened===true;
 if(!awakenedGranted)try{awakenedGranted=storage.get(STORAGE_KEY_GROUPS.rewards.awakenedGranted)==='1';}catch(_){ }
-// 速解きモードは、進行状況をリセットしても残す独立した解放要素。
+// 速解きモードの解放・記録は通常の進行状況リセットでは保持し、
+// 「すべてリセット」のときだけ初期化する。
 const speedUnlockState=initializeSpeedUnlockState({initialUnlocks,storage,awakenedGranted});
 let speedModeUnlocked=speedUnlockState.modeUnlocked;
 // 速解きは解放された範囲ごとに選択できる。解放状態は現行の統合状態ストアから復元する。

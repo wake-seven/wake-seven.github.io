@@ -6,10 +6,10 @@ import vm from 'node:vm';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const read = name => readFile(join(root, name), 'utf8');
-const [template, bootstrap, events, board, interaction, tutorial, published, clearFlow, academySupport] = await Promise.all([
+const [template, bootstrap, events, board, interaction, tutorial, published, clearFlow, academySupport, hud] = await Promise.all([
   read('src/index.template.html'), read('src/runtime/app-bootstrap.js'), read('src/runtime/app-events.js'),
   read('src/ui/board-ui.js'), read('src/ui/board-interaction.js'), read('src/ui/tutorial-animation.js'), read('index.html'),
-  read('src/ui/progression-clear-flow.js'), read('src/ui/progression-academy-support.js')
+  read('src/ui/progression-clear-flow.js'), read('src/ui/progression-academy-support.js'), read('src/ui/progression-hud.js')
 ]);
 const progression = await read('src/ui/progression-ui.js');
 const speed = await read('src/runtime/speed.js');
@@ -114,6 +114,16 @@ assert.match(speed, /pauseSpeedClock\(\);persistSpeedSession\(\);[\s\S]*advanceS
   'speed clear must persist before advancing to the next problem');
 assert.match(events, /menuSpeed[\s\S]*GameNavigation\.speedPicker\(\)/,
   'speed menu must open the speed picker while a run is active');
+assert.match(events, /speedModeUnlocked=false;[\s\S]*speedTrainingUnlocked=false;[\s\S]*speedIntermediateUnlocked=false;[\s\S]*speedMasteryUnlocked=false;[\s\S]*speedSatoriUnlocked=false/,
+  'reset must clear every speed unlock flag');
+assert.match(events, /if\(!preserveRewards\)\{[\s\S]*speedModeUnlocked=false;[\s\S]*speedSatoriUnlocked=false;/,
+  'speed unlock reset must be limited to full reset');
+assert.match(events, /if\(!preserveRewards\)\{[\s\S]*STORAGE_KEY_GROUPS\.speed\.unlocked/,
+  'speed unlock storage keys must be removed only by full reset');
+assert.match(events, /syncSpeedUnlockFlag\(\);[\s\S]*GameNavigation\.stage\(0\)/,
+  'reset must resync speed visibility before returning to the stage');
+assert.match(hud, /menuSpeed'\)\.hidden=!DEBUG_MODE&&!featureUnlocked\('speedRun'\)/,
+  'speed menu visibility must be derived from the unified speed unlock condition');
 assert.doesNotMatch(speed, /isMode\('speed'\)\&\&\(speedSession\?\.started\|\|Number\(speedSession\?\.index\)>0\)\)return/,
   'speed picker must not reject the explicit menu entry during an active run');
 assert.doesNotMatch(progression, /kind==='speedIntro'\&\&isMode\('speed'\)\&\&\(speedSession\?\.started\|\|Number\(speedSession\?\.index\)>0\)/,
