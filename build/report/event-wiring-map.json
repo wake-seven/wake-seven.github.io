@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-04T11:55:44.730Z",
+  "generatedAt": "2026-09-04T12:13:22.910Z",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles + index.html",
   "entries": [
     {
@@ -17,8 +17,9 @@
               "registration": "click",
               "type": "click",
               "handlers": [
-                "openDialog",
+                "open",
                 "closeStagePicker",
+                "openRank",
                 "startSpeedClock"
               ],
               "displayTargets": [
@@ -26,7 +27,7 @@
                 "stagePicker",
                 "masterClose"
               ],
-              "sourceSnippet": "WakeSevenEventBindings.click('stagePickerTrigger',()=>openDialog('stagePicker')); WakeSevenEventBindings.click('closeStagePicker',()=>{ closeStagePicker(); $('stagePickerTrigger').focus(); }); WakeSevenEventBindings.click('pickerPr"
+              "sourceSnippet": "WakeSevenEventBindings.click('stagePickerTrigger',()=>WakeSevenStagePickerFeature.open()); WakeSevenEventBindings.click('closeStagePicker',()=>{ closeStagePicker(); $('stagePickerTrigger').focus(); }); WakeSevenEventBindings.click('"
             }
           ]
         },
@@ -41,8 +42,8 @@
               "type": "click",
               "handlers": [
                 "closeAppMenu",
-                "openDialog",
                 "open",
+                "openDialog",
                 "openSatoriPicker",
                 "resumeSpeedRun",
                 "startSpeedClock"
@@ -55,7 +56,7 @@
                 "speedPauseDialog",
                 "speedRestartDialog"
               ],
-              "sourceSnippet": "WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();openDialog('stagePicker');}); WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();openDialog('rankDialog');}); WakeSevenEventBindings.click('menuAbout',()="
+              "sourceSnippet": "WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();WakeSevenStagePickerFeature.open();}); WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();openDialog('rankDialog');}); WakeSevenEventBindings.click('menuAb"
             }
           ]
         },
@@ -69,7 +70,7 @@
               "registration": "click",
               "type": "click",
               "handlers": [
-                "openDialog",
+                "openRank",
                 "startSpeedClock",
                 "openChainedDialog"
               ],
@@ -78,7 +79,7 @@
                 "masterClose",
                 "shareGame"
               ],
-              "sourceSnippet": "WakeSevenEventBindings.click('stagePickerRankBadge',()=>{ $('stagePicker').hidden=true; openDialog('rankDialog',{returnTarget:{dialogId:'stagePicker',focusId:'stagePickerRankBadge'}}); }); bindSpeedEvents(); bindMessageReviewEvents"
+              "sourceSnippet": "WakeSevenEventBindings.click('stagePickerRankBadge',()=>{ $('stagePicker').hidden=true; WakeSevenStagePickerFeature.openRank({dialogId:'stagePicker',focusId:'stagePickerRankBadge'}); }); bindSpeedEvents(); bindMessageReviewEvents();"
             }
           ]
         },
@@ -93,7 +94,7 @@
               "type": "click",
               "handlers": [
                 "closeStagePicker",
-                "openDialog",
+                "openRank",
                 "startSpeedClock",
                 "openChainedDialog"
               ],
@@ -132,7 +133,7 @@
               "registration": "addEventListener",
               "type": "click",
               "handlers": [
-                "openDialog",
+                "openRank",
                 "openRankDialogFrom",
                 "enterSpeedMode"
               ],
@@ -144,7 +145,7 @@
                 "rankDialog",
                 "masterStart"
               ],
-              "sourceSnippet": "$('rankBadge').addEventListener('click',()=>openDialog('rankDialog')); $('masterSeal').addEventListener('click',()=>openRankDialogFrom('masterDialog','masterSeal')); $('messageMasterSeal').addEventListener('click',()=>openRankDialogFrom('"
+              "sourceSnippet": "$('rankBadge').addEventListener('click',()=>WakeSevenStagePickerFeature.openRank()); $('masterSeal').addEventListener('click',()=>openRankDialogFrom('masterDialog','masterSeal')); $('messageMasterSeal').addEventListener('click',()=>openRan"
             }
           ]
         },
@@ -188,7 +189,7 @@
               "registration": "click",
               "type": "click",
               "handlers": [
-                "openDialog",
+                "openRank",
                 "startSpeedClock",
                 "openChainedDialog"
               ],
@@ -197,7 +198,7 @@
                 "masterClose",
                 "shareGame"
               ],
-              "sourceSnippet": "WakeSevenEventBindings.click('stagePickerRankBadge',()=>{ $('stagePicker').hidden=true; openDialog('rankDialog',{returnTarget:{dialogId:'stagePicker',focusId:'stagePickerRankBadge'}}); }); bindSpeedEvents(); bindMessageReviewEvents"
+              "sourceSnippet": "WakeSevenEventBindings.click('stagePickerRankBadge',()=>{ $('stagePicker').hidden=true; WakeSevenStagePickerFeature.openRank({dialogId:'stagePicker',focusId:'stagePickerRankBadge'}); }); bindSpeedEvents(); bindMessageReviewEvents();"
             }
           ]
         },
@@ -287,8 +288,8 @@
               "type": "click",
               "handlers": [
                 "closeAppMenu",
-                "openDialog",
                 "open",
+                "openDialog",
                 "openSatoriPicker",
                 "resumeSpeedRun",
                 "startSpeedClock"
@@ -301,7 +302,7 @@
                 "speedPauseDialog",
                 "speedRestartDialog"
               ],
-              "sourceSnippet": "WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();openDialog('stagePicker');}); WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();openDialog('rankDialog');}); WakeSevenEventBindings.click('menuAbout',()="
+              "sourceSnippet": "WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();WakeSevenStagePickerFeature.open();}); WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();openDialog('rankDialog');}); WakeSevenEventBindings.click('menuAb"
             }
           ]
         },
@@ -433,8 +434,8 @@
                 "messages",
                 "closeAppMenu",
                 "openGuideHub",
-                "openDialog",
-                "open"
+                "open",
+                "openDialog"
               ],
               "displayTargets": [
                 "optimalFailDialog",
@@ -461,8 +462,8 @@
                 "messages",
                 "closeAppMenu",
                 "openGuideHub",
-                "openDialog",
-                "open"
+                "open",
+                "openDialog"
               ],
               "displayTargets": [
                 "optimalFailDialog",

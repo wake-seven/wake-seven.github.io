@@ -2,16 +2,16 @@
   "name": "wake7-feature-registry",
   "status": "passed",
   "summary": {
-    "features": 13,
-    "matched": 3,
+    "features": 14,
+    "matched": 4,
     "unknown": 4,
     "unregisteredNewFiles": 0,
     "references": 44
   },
   "warnings": [],
   "errors": [],
-  "generatedAt": "2026-09-04T11:54:07.322Z",
-  "sourceRevision": "43daf9a",
+  "generatedAt": "2026-09-04T12:11:51.107Z",
+  "sourceRevision": "ddae0b7",
   "features": [
     {
       "name": "reward-pages",
@@ -102,6 +102,21 @@
       "checks": [
         "e2e-speed-contract",
         "state-restore",
+        "manifest-dependencies"
+      ],
+      "relatedE2E": [
+        "browser-e2e",
+        "device-e2e"
+      ]
+    },
+    {
+      "name": "stage-picker-feature",
+      "paths": [
+        "src/ui/stage-picker-feature.js"
+      ],
+      "checks": [
+        "dialog-state-map",
+        "navigation-final-audit",
         "manifest-dependencies"
       ],
       "relatedE2E": [
@@ -331,35 +346,41 @@
   ],
   "changedFiles": [
     "index.html",
+    "scripts/application-manifest.mjs",
+    "scripts/check-dialog-chains.mjs",
     "scripts/check-public-symbols.mjs",
-    "src/commands/progression-commands.js",
+    "scripts/feature-registry.json",
+    "scripts/public-symbols-budget.json",
     "src/runtime/app-events.js",
     "src/runtime/runtime.js",
-    "src/ui/board-ui.js",
-    "src/ui/speed-feature.js"
+    "src/ui/stage-picker-feature.js"
   ],
   "matchedFeatures": [
+    "scripts/manifest",
     "runtime/speed",
     "dialog-restore",
-    "speed-feature"
+    "stage-picker-feature"
   ],
   "unknownChangedFiles": [
     "index.html",
+    "scripts/check-dialog-chains.mjs",
     "scripts/check-public-symbols.mjs",
-    "src/commands/progression-commands.js",
-    "src/ui/board-ui.js"
+    "scripts/public-symbols-budget.json"
   ],
   "unregisteredNewFiles": [],
   "recommendation": "full",
   "suggestedChecks": [
+    "development-entrypoints",
+    "esm",
+    "manifest-dependencies",
+    "browser-e2e",
+    "device-e2e",
     "application-services",
     "progression-flows",
     "e2e-speed-contract",
-    "browser-e2e",
-    "device-e2e",
     "state-restore",
     "dialog-state-map",
-    "manifest-dependencies"
+    "navigation-final-audit"
   ],
   "policy": {
     "unknownChangedFiles": "affected",

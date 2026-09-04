@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T11:43:43.961Z",
+  "generatedAt": "2026-09-04T12:13:23.168Z",
   "safeToDelete": [],
   "reviewOnly": [
     {
@@ -70,6 +70,19 @@
     },
     {
       "file": "ui/speed-feature.js",
+      "classification": "thin-wrapper-or-boundary",
+      "action": "review-for-integration",
+      "purpose": "DOM描画・入力・ダイアログ",
+      "referenceSources": [
+        "scripts/application-manifest.mjs",
+        "scripts/application-manifest.mjs:publishedSourceFiles",
+        "scripts/feature-registry.json"
+      ],
+      "removalCondition": "公開マニフェスト・開発入口・公開API・検査・E2Eの参照がすべて0であることを確認し、npm run check:gate を通過すること",
+      "reassessOn": "2026-12-03"
+    },
+    {
+      "file": "ui/stage-picker-feature.js",
       "classification": "thin-wrapper-or-boundary",
       "action": "review-for-integration",
       "purpose": "DOM描画・入力・ダイアログ",

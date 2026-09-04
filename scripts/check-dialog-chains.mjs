@@ -10,6 +10,7 @@ const runtime = await readFile(join(root, 'src', 'runtime', 'runtime.js'), 'utf8
 const progressionUi = await readFile(join(root, 'src', 'ui', 'progression-ui.js'), 'utf8');
 const progressionDialogs = await readFile(join(root, 'src', 'ui', 'progression-dialogs.js'), 'utf8');
 const dialogChainFeature = await readFile(join(root, 'src', 'ui', 'dialog-chain-feature.js'), 'utf8');
+const stagePickerFeature = await readFile(join(root, 'src', 'ui', 'stage-picker-feature.js'), 'utf8');
 const rank = await readFile(join(root, 'src', 'ui', 'rank.js'), 'utf8');
 const template = await readFile(join(root, 'src', 'index.template.html'), 'utf8');
 
@@ -27,10 +28,12 @@ for (const method of ['context','start','show','next','back','close','restore'])
 required(/function openDialog\(dialogId, options=\{\}\)/, '共通 openDialog 入口がありません。', progressionDialogs);
 required(/dialogId==='stagePicker'[\s\S]{0,500}openStagePickerAt[\s\S]{0,300}openStagePicker/, 'openDialog のステージ選択経路が不正です。', progressionDialogs);
 required(/dialogId==='rankDialog'[\s\S]{0,180}openRankDialog/, 'openDialog の称号一覧経路が不正です。', progressionDialogs);
-required(/menuStagePicker[\s\S]{0,120}openDialog\('stagePicker'\)/, 'メニューのステージ選択が共通入口を使っていません。', events);
-required(/stagePickerTrigger[\s\S]{0,100}openDialog\('stagePicker'\)/, 'ヘッダーのステージ選択が共通入口を使っていません。', events);
-required(/stagePickerRankBadge[\s\S]{0,220}openDialog\('rankDialog'/, 'ステージ選択内の称号一覧が共通入口を使っていません。', events);
-required(/rankBadge[\s\S]{0,100}openDialog\('rankDialog'\)/, 'ヘッダーの称号一覧が共通入口を使っていません。', events);
+const stagePickerEntry = /WakeSevenStagePickerFeature\.(?:open|openRank)\(/;
+required(new RegExp(`menuStagePicker[\\s\\S]{0,120}(?:openDialog\\('stagePicker'\\)|${stagePickerEntry.source})`), 'メニューのステージ選択が共通入口を使っていません。', events);
+required(new RegExp(`stagePickerTrigger[\\s\\S]{0,100}(?:openDialog\\('stagePicker'\\)|${stagePickerEntry.source})`), 'ヘッダーのステージ選択が共通入口を使っていません。', events);
+required(new RegExp(`stagePickerRankBadge[\\s\\S]{0,220}(?:openDialog\\('rankDialog'\\)|${stagePickerEntry.source})`), 'ステージ選択内の称号一覧が共通入口を使っていません。', events);
+required(new RegExp(`rankBadge[\\s\\S]{0,100}(?:openDialog\\('rankDialog'\\)|${stagePickerEntry.source})`), 'ヘッダーの称号一覧が共通入口を使っていません。', events);
+required(/const WakeSevenStagePickerFeature=Object\.freeze\(/, 'ステージ選択機能入口がありません。', stagePickerFeature);
 required(/openDialog\('stagePicker',\{lap:/, '称号一覧からステージ選択への経路が共通入口を使っていません。', rank);
 
 function required(pattern, message, text = source) {

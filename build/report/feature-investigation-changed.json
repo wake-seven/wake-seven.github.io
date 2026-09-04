@@ -1,30 +1,32 @@
 {
   "schemaVersion": 1,
   "name": "wake7-feature-investigation-changed",
-  "generatedAt": "2026-09-04T11:54:06.048Z",
+  "generatedAt": "2026-09-04T12:11:49.963Z",
   "status": "passed",
   "activity": "affected",
   "changedFiles": [
     "index.html",
+    "scripts/application-manifest.mjs",
+    "scripts/check-dialog-chains.mjs",
     "scripts/check-public-symbols.mjs",
-    "src/commands/progression-commands.js",
+    "scripts/feature-registry.json",
+    "scripts/public-symbols-budget.json",
     "src/runtime/app-events.js",
     "src/runtime/runtime.js",
-    "src/ui/board-ui.js",
-    "src/ui/speed-feature.js"
+    "src/ui/stage-picker-feature.js"
   ],
   "unknownFiles": [
     "index.html",
+    "scripts/check-dialog-chains.mjs",
     "scripts/check-public-symbols.mjs",
-    "src/commands/progression-commands.js",
-    "src/ui/board-ui.js"
+    "scripts/public-symbols-budget.json"
   ],
   "ambiguousFiles": [],
   "features": [
     {
-      "name": "speed-feature",
+      "name": "stage-picker-feature",
       "changedFiles": [
-        "src/ui/speed-feature.js"
+        "src/ui/stage-picker-feature.js"
       ],
       "entry": [],
       "state": [],
@@ -32,8 +34,8 @@
       "dom": [],
       "transitions": [],
       "checks": [
-        "e2e-speed-contract",
-        "state-restore",
+        "dialog-state-map",
+        "navigation-final-audit",
         "manifest-dependencies"
       ],
       "e2e": [
@@ -85,6 +87,29 @@
       "relatedFiles": []
     },
     {
+      "name": "scripts/manifest",
+      "changedFiles": [
+        "scripts/application-manifest.mjs",
+        "scripts/feature-registry.json"
+      ],
+      "entry": [],
+      "state": [],
+      "storage": [],
+      "dom": [],
+      "transitions": [],
+      "checks": [
+        "development-entrypoints",
+        "esm",
+        "manifest-dependencies"
+      ],
+      "e2e": [
+        "browser-e2e",
+        "device-e2e"
+      ],
+      "boundaries": [],
+      "relatedFiles": []
+    },
+    {
       "name": "dialog-restore",
       "changedFiles": [
         "src/runtime/runtime.js"
@@ -120,12 +145,15 @@
     }
   ],
   "requiredChecks": [
-    "e2e-speed-contract",
-    "state-restore",
+    "dialog-state-map",
+    "navigation-final-audit",
     "manifest-dependencies",
     "application-services",
     "progression-flows",
-    "dialog-state-map"
+    "e2e-speed-contract",
+    "development-entrypoints",
+    "esm",
+    "state-restore"
   ],
   "relatedE2E": [
     "browser-e2e",
@@ -152,23 +180,24 @@
     "build/report/check-gate.json",
     "build/report/check-profile-result.json",
     "build/report/check-registry.json",
-    "build/report/compat-boundary-audit.json",
     "build/report/device-e2e-result.json",
     "build/report/dialog-state-access-audit.json",
     "build/report/dialog-state-map.json",
+    "build/report/e2e-speed-contract-audit.json",
     "build/report/event-wiring-map.json",
     "build/report/feature-investigation-changed.json",
     "build/report/feature-registry.json",
     "build/report/flow-map.json",
     "build/report/gate-evidence.json",
     "build/report/global-access.json",
-    "build/report/manifest-dependencies.json",
+    "build/report/global-state-classification.json",
     "build/report/navigation-classification.json",
     "build/report/navigation-final-audit.json",
     "build/report/progression-flow-map.json",
     "build/report/progression-orchestrators.json",
     "build/report/progression-responsibility.json",
     "build/report/public-symbols.json",
+    "build/report/refactor-baseline.json",
     "build/report/refactor-candidates.json",
     "build/report/reward-access-result.json",
     "build/report/source-format-baseline.json",
@@ -181,8 +210,7 @@
     "build/report/structure-contract-diff.json",
     "build/report/symbol-index.json",
     "build/report/temporary-exception-audit.json",
-    "build/report/ui-data-map.json",
-    "build/report/unused-file-audit.json"
+    "build/report/ui-data-map.json"
   ],
   "registry": "scripts\\feature-registry.json",
   "summary": {},

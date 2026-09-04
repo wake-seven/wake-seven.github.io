@@ -1,14 +1,14 @@
 {
   "schemaVersion": 2,
   "name": "wake7-navigation-classification",
-  "generatedAt": "2026-09-04T10:33:19.903Z",
+  "generatedAt": "2026-09-04T12:13:03.090Z",
   "status": "passed",
   "summary": {
-    "references": 382,
+    "references": 384,
     "byCategory": {
       "gateway-candidate": 0,
       "owner-only": 173,
-      "derived-value": 127,
+      "derived-value": 129,
       "event-local": 24,
       "intentional-exception": 58
     },
@@ -17,7 +17,7 @@
     "byName": {
       "activeMode": 20,
       "activeLap": 47,
-      "stageIndex": 135,
+      "stageIndex": 137,
       "extraIndex": 48,
       "satoriIndex": 61,
       "tutorialStep": 58,
@@ -6057,6 +6057,44 @@
         "file": "ui/clear-feature.js",
         "line": 22,
         "source": "return createClearTransitionContext(navigation.stageIndex+1);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/stage-picker-feature.js",
+      "line": 5,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigation contextから取得済みの値、または保存キーのプロパティ名",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/stage-picker-feature.js",
+        "line": 5,
+        "source": "mode:navigation.mode,lap:navigation.lap,stageIndex:navigation.stageIndex,"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "ui/stage-picker-feature.js",
+      "line": 5,
+      "access": "read",
+      "classification": "needs-migration",
+      "category": "derived-value",
+      "reason": "navigation contextから取得済みの値、または保存キーのプロパティ名",
+      "temporary": false,
+      "owner": "runtime/runtime.js / app/app-context.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "ui/stage-picker-feature.js",
+        "line": 5,
+        "source": "mode:navigation.mode,lap:navigation.lap,stageIndex:navigation.stageIndex,"
       }
     },
     {

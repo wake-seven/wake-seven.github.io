@@ -283,7 +283,7 @@ function bindClearDialogEvents(){
 bindClearDialogEvents();
 function bindMenuEvents(){
   WakeSevenEventBindings.click('guideHub',()=>{closeAppMenu();openGuideHub();});
-  WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();openDialog('stagePicker');});
+WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();WakeSevenStagePickerFeature.open();});
   WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();openDialog('rankDialog');});
   WakeSevenEventBindings.click('menuAbout',()=>{
     closeAppMenu();
@@ -392,7 +392,7 @@ function bindMessageReviewEvents(){
 }
 bindMenuEvents();
 // ステージ選択はヘッダー、メニュー、称号一覧の3経路から同じ描画入口を使う。
-WakeSevenEventBindings.click('stagePickerTrigger',()=>openDialog('stagePicker'));
+WakeSevenEventBindings.click('stagePickerTrigger',()=>WakeSevenStagePickerFeature.open());
 WakeSevenEventBindings.click('closeStagePicker',()=>{
   closeStagePicker();
   $('stagePickerTrigger').focus();
@@ -401,7 +401,7 @@ WakeSevenEventBindings.click('pickerPrevRound',()=>moveStagePickerRound(-1));
 WakeSevenEventBindings.click('pickerNextRound',()=>moveStagePickerRound(1));
 WakeSevenEventBindings.click('stagePickerRankBadge',()=>{
   $('stagePicker').hidden=true;
-  openDialog('rankDialog',{returnTarget:{dialogId:'stagePicker',focusId:'stagePickerRankBadge'}});
+  WakeSevenStagePickerFeature.openRank({dialogId:'stagePicker',focusId:'stagePickerRankBadge'});
 });
 bindSpeedEvents();
 bindMessageReviewEvents();
@@ -473,7 +473,7 @@ $('messageRankLink').addEventListener('click',()=>{
   $('messageDialog').hidden=true;
   GameDialogs.ranks({dialogId:'messageDialog',focusId:'messageRankLink'});
 });
-$('rankBadge').addEventListener('click',()=>openDialog('rankDialog'));
+$('rankBadge').addEventListener('click',()=>WakeSevenStagePickerFeature.openRank());
 $('masterSeal').addEventListener('click',()=>openRankDialogFrom('masterDialog','masterSeal'));
 $('messageMasterSeal').addEventListener('click',()=>openRankDialogFrom('messageDialog','messageMasterSeal'));
 for(const [sealId,dialogId] of [['masterSeal','masterDialog'],['messageMasterSeal','messageDialog']]){

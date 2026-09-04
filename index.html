@@ -4423,7 +4423,7 @@ export {};
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-20:53';
+const APP_VERSION='2026.09.04-21:11';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -9795,6 +9795,25 @@ function tipDaruma(x,y,scale=.55){
 }
 
 // ===== 起動・ライフサイクル =====
+// ===== ステージ選択・称号一覧の入口 =====
+// 選択画面と称号一覧の相互遷移を一つの機能入口から追跡する。
+// 解放判定、一覧描画、ステージ読込は既存の所有モジュールへ委譲する。
+function readStagePickerContext(){const navigation=readNavigationContext();return Object.freeze({
+  mode:navigation.mode,lap:navigation.lap,stageIndex:navigation.stageIndex,
+  pickerOpen:!$('stagePicker').hidden,rankOpen:!$('rankDialog').hidden,
+  rankReturn:readDialogContext().rankDialogReturn
+});}
+const WakeSevenStagePickerFeature=Object.freeze({
+  context:readStagePickerContext,
+  open(options={}){return openDialog('stagePicker',options);},
+  select(options={}){return openStagePickerAt(options);},
+  openRank(returnTarget=null){return openDialog('rankDialog',{returnTarget});},
+  close(){return closeStagePicker();},
+  restore(options={}){return openDialog('stagePicker',options);}
+});
+export {};
+
+// ===== 公開API名前空間 =====
 // ===== 進行UI（このファイルの責務） =====
 // ステージ選択、進行表示、クリア後表示をまとめる。前後移動イベントは
 // progression-navigation.js、共通の小さな表示処理は progression-render.js が担当する。
@@ -10834,7 +10853,7 @@ $('freeMode').addEventListener('click',()=>{if(busy||isMode('free'))return;resto
 // 公開ネイティブモジュールの構文境界。
 export {};
 
-// ===== 公開API名前空間 =====
+// ===== ui/progression-hud.js =====
 // 進行画面のHUDとステージナビを描画する。状態遷移は行わず、表示更新だけを担当する。
 function createProgressionViewContext({
   mode,
@@ -11939,7 +11958,7 @@ function bindClearDialogEvents(){
 bindClearDialogEvents();
 function bindMenuEvents(){
   WakeSevenEventBindings.click('guideHub',()=>{closeAppMenu();openGuideHub();});
-  WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();openDialog('stagePicker');});
+WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();WakeSevenStagePickerFeature.open();});
   WakeSevenEventBindings.click('menuRankList',()=>{closeAppMenu();openDialog('rankDialog');});
   WakeSevenEventBindings.click('menuAbout',()=>{
     closeAppMenu();
@@ -12048,7 +12067,7 @@ function bindMessageReviewEvents(){
 }
 bindMenuEvents();
 // ステージ選択はヘッダー、メニュー、称号一覧の3経路から同じ描画入口を使う。
-WakeSevenEventBindings.click('stagePickerTrigger',()=>openDialog('stagePicker'));
+WakeSevenEventBindings.click('stagePickerTrigger',()=>WakeSevenStagePickerFeature.open());
 WakeSevenEventBindings.click('closeStagePicker',()=>{
   closeStagePicker();
   $('stagePickerTrigger').focus();
@@ -12057,7 +12076,7 @@ WakeSevenEventBindings.click('pickerPrevRound',()=>moveStagePickerRound(-1));
 WakeSevenEventBindings.click('pickerNextRound',()=>moveStagePickerRound(1));
 WakeSevenEventBindings.click('stagePickerRankBadge',()=>{
   $('stagePicker').hidden=true;
-  openDialog('rankDialog',{returnTarget:{dialogId:'stagePicker',focusId:'stagePickerRankBadge'}});
+  WakeSevenStagePickerFeature.openRank({dialogId:'stagePicker',focusId:'stagePickerRankBadge'});
 });
 bindSpeedEvents();
 bindMessageReviewEvents();
@@ -12129,7 +12148,7 @@ $('messageRankLink').addEventListener('click',()=>{
   $('messageDialog').hidden=true;
   GameDialogs.ranks({dialogId:'messageDialog',focusId:'messageRankLink'});
 });
-$('rankBadge').addEventListener('click',()=>openDialog('rankDialog'));
+$('rankBadge').addEventListener('click',()=>WakeSevenStagePickerFeature.openRank());
 $('masterSeal').addEventListener('click',()=>openRankDialogFrom('masterDialog','masterSeal'));
 $('messageMasterSeal').addEventListener('click',()=>openRankDialogFrom('messageDialog','messageMasterSeal'));
 for(const [sealId,dialogId] of [['masterSeal','masterDialog'],['messageMasterSeal','messageDialog']]){

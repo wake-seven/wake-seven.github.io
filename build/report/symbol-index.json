@@ -1,5 +1,5 @@
 {
-  "generatedForVersion": "2026.09.04-20:53",
+  "generatedForVersion": "2026.09.04-21:11",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles",
   "definitions": {
     "attachWakeSevenState": {
@@ -4006,7 +4006,7 @@
         {
           "file": "runtime/app-events.js",
           "line": 415,
-          "caller": "returnTarget"
+          "caller": "dialogId"
         },
         {
           "file": "runtime/app-events.js",
@@ -8363,6 +8363,11 @@
           "caller": "resolveClearFeatureContext"
         },
         {
+          "file": "ui/stage-picker-feature.js",
+          "line": 4,
+          "caller": "readStagePickerContext"
+        },
+        {
           "file": "ui/progression-ui.js",
           "line": 137,
           "caller": "renderStagePicker"
@@ -8409,6 +8414,11 @@
           "file": "runtime/runtime.js",
           "line": 299,
           "caller": "readProgressionContext"
+        },
+        {
+          "file": "ui/stage-picker-feature.js",
+          "line": 7,
+          "caller": "readStagePickerContext"
         },
         {
           "file": "runtime/app-events.js",
@@ -9639,7 +9649,7 @@
         {
           "file": "runtime/app-events.js",
           "line": 415,
-          "caller": "returnTarget"
+          "caller": "dialogId"
         },
         {
           "file": "runtime/app-events.js",
@@ -9662,7 +9672,7 @@
         {
           "file": "runtime/app-events.js",
           "line": 415,
-          "caller": "returnTarget"
+          "caller": "dialogId"
         }
       ]
     },
@@ -23820,6 +23830,21 @@
           "caller": "createProgressionMessageContext"
         },
         {
+          "file": "ui/stage-picker-feature.js",
+          "line": 11,
+          "caller": "readStagePickerContext"
+        },
+        {
+          "file": "ui/stage-picker-feature.js",
+          "line": 13,
+          "caller": "readStagePickerContext"
+        },
+        {
+          "file": "ui/stage-picker-feature.js",
+          "line": 15,
+          "caller": "readStagePickerContext"
+        },
+        {
           "file": "ui/progression-ui.js",
           "line": 116,
           "caller": "openSatoriPicker"
@@ -23846,28 +23871,8 @@
         },
         {
           "file": "runtime/app-events.js",
-          "line": 286,
-          "caller": "resume"
-        },
-        {
-          "file": "runtime/app-events.js",
           "line": 287,
           "caller": "resume"
-        },
-        {
-          "file": "runtime/app-events.js",
-          "line": 395,
-          "caller": "resume"
-        },
-        {
-          "file": "runtime/app-events.js",
-          "line": 404,
-          "caller": "resume"
-        },
-        {
-          "file": "runtime/app-events.js",
-          "line": 476,
-          "caller": "dialogId"
         }
       ]
     },
@@ -25010,6 +25015,26 @@
         }
       ]
     },
+    "readStagePickerContext": {
+      "name": "readStagePickerContext",
+      "file": "ui/stage-picker-feature.js",
+      "line": 4,
+      "kind": "function",
+      "callers": [
+        {
+          "file": "ui/stage-picker-feature.js",
+          "line": 4,
+          "caller": null
+        }
+      ]
+    },
+    "WakeSevenStagePickerFeature": {
+      "name": "WakeSevenStagePickerFeature",
+      "file": "ui/stage-picker-feature.js",
+      "line": 9,
+      "kind": "constant",
+      "callers": []
+    },
     "allPrimaryCleared": {
       "name": "allPrimaryCleared",
       "file": "ui/progression-ui.js",
@@ -25172,6 +25197,11 @@
       "line": 40,
       "kind": "function",
       "callers": [
+        {
+          "file": "ui/stage-picker-feature.js",
+          "line": 14,
+          "caller": "readStagePickerContext"
+        },
         {
           "file": "ui/progression-ui.js",
           "line": 40,
@@ -25374,6 +25404,11 @@
           "file": "ui/progression-dialogs.js",
           "line": 23,
           "caller": "openDialog"
+        },
+        {
+          "file": "ui/stage-picker-feature.js",
+          "line": 12,
+          "caller": "readStagePickerContext"
         },
         {
           "file": "ui/progression-ui.js",
@@ -35550,6 +35585,12 @@
     "rankDialog": [
       {
         "id": "rankDialog",
+        "file": "ui/stage-picker-feature.js",
+        "line": 6,
+        "updater": "readStagePickerContext"
+      },
+      {
+        "id": "rankDialog",
         "file": "ui/progression-ui.js",
         "line": 211,
         "updater": "openStagePickerForRank"
@@ -36328,6 +36369,12 @@
       }
     ],
     "stagePicker": [
+      {
+        "id": "stagePicker",
+        "file": "ui/stage-picker-feature.js",
+        "line": 6,
+        "updater": "readStagePickerContext"
+      },
       {
         "id": "stagePicker",
         "file": "ui/progression-ui.js",
@@ -38013,6 +38060,6 @@
   "summary": {},
   "warnings": [],
   "errors": [],
-  "generatedAt": "2026-09-04T11:55:46.879Z",
+  "generatedAt": "2026-09-04T12:13:24.801Z",
   "sourceRevision": "working-tree"
 }

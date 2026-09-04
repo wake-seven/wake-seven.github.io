@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-04T11:28:09.413Z",
+  "generatedAt": "2026-09-04T12:10:18.273Z",
   "source": "scripts/application-manifest.mjs:publishedSourceFiles",
   "purpose": "グローバル可変状態・progression責務・入口経路・ブラウザ検証の比較用ベースライン",
   "method": "依存を増やさない正規表現ベースの静的計測。判定ではなく比較材料として利用する。",
   "summary": {
-    "publishedFileCount": 52,
+    "publishedFileCount": 54,
     "mutableVariableCount": 202,
     "mutableReferenceCount": 1220,
     "mutableReadCount": 945,
@@ -15,7 +15,7 @@
     "e2eCaseCount": 41,
     "e2ePassed": true,
     "e2eConsoleErrorCount": 0,
-    "needsMigrationGlobalAccessCount": 255,
+    "needsMigrationGlobalAccessCount": 257,
     "directStateAssignmentCount": 24,
     "responsibilityCandidateCount": 16,
     "responsibilityCandidates": {
@@ -11996,6 +11996,21 @@
             "caller": "createProgressionMessageContext"
           },
           {
+            "file": "ui/stage-picker-feature.js",
+            "line": 11,
+            "caller": "readStagePickerContext"
+          },
+          {
+            "file": "ui/stage-picker-feature.js",
+            "line": 13,
+            "caller": "readStagePickerContext"
+          },
+          {
+            "file": "ui/stage-picker-feature.js",
+            "line": 15,
+            "caller": "readStagePickerContext"
+          },
+          {
             "file": "ui/progression-ui.js",
             "line": 116,
             "caller": "openSatoriPicker"
@@ -12022,28 +12037,8 @@
           },
           {
             "file": "runtime/app-events.js",
-            "line": 286,
-            "caller": "resume"
-          },
-          {
-            "file": "runtime/app-events.js",
             "line": 287,
             "caller": "resume"
-          },
-          {
-            "file": "runtime/app-events.js",
-            "line": 395,
-            "caller": "resume"
-          },
-          {
-            "file": "runtime/app-events.js",
-            "line": 404,
-            "caller": "resume"
-          },
-          {
-            "file": "runtime/app-events.js",
-            "line": 476,
-            "caller": "dialogId"
           }
         ]
       },
@@ -13118,6 +13113,11 @@
         "line": 40,
         "callers": [
           {
+            "file": "ui/stage-picker-feature.js",
+            "line": 14,
+            "caller": "readStagePickerContext"
+          },
+          {
             "file": "ui/progression-ui.js",
             "line": 40,
             "caller": "extraRoundLabel"
@@ -13308,6 +13308,11 @@
             "file": "ui/progression-dialogs.js",
             "line": 23,
             "caller": "openDialog"
+          },
+          {
+            "file": "ui/stage-picker-feature.js",
+            "line": 12,
+            "caller": "readStagePickerContext"
           },
           {
             "file": "ui/progression-ui.js",
@@ -17580,8 +17585,8 @@
   },
   "e2e": {
     "name": "primary-browser-e2e",
-    "appVersion": "2026.09.04-20:23",
-    "gitSha": "a394edd7f6ae312f4db134ea5c5efb5e63821325",
+    "appVersion": "2026.09.04-21:08",
+    "gitSha": "ddae0b707cb40fe3e6d8ee7b9dcb95e7d317b07a",
     "passed": true,
     "caseCount": 41,
     "consoleErrorCount": 0,
@@ -17703,7 +17708,7 @@
       "unused-file-audit.json"
     ]
   },
-  "name": "current-refactor-baseline",
+  "name": "refactor-baseline",
   "status": "passed",
   "warnings": [],
   "errors": [],
