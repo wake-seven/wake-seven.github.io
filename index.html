@@ -8653,8 +8653,7 @@ function restoreNavigationStateCommand(navigation={}){
 }
 
 // ===== 速解き記録コマンド =====
-// 盤面操作のコマンド入口。実装本体は当面 board-ui.js に残し、入力経路だけを統一する。
-// options をオブジェクト化しておくことで、将来の状態ストア移行時に呼び出し側を変えずに済む。
+// 盤面操作のコマンド入口。イベント側で盤面状態を直接変更しない。
 const WakeSevenBoardCommands=Object.freeze({
   applySwipe:(ti,dir,options={})=>applySwipe(ti,dir,options.save??true,options.playEffects??true),
   undo:()=>undoLastMove(),
@@ -9358,8 +9357,6 @@ function openDialog(dialogId, options={}){
 // 進行に関わるダイアログの唯一の要求入口。
 // kind/context/sourceを固定し、既存の描画関数へ委譲する。
 function requestProgressionDialog(kind,context={},source='unknown'){
-  // 旧オブジェクト形式も内部呼び出しの移行期間だけ受け付ける。
-  if(kind&&typeof kind==='object'){const request=kind;kind=request.kind;source=request.source||source;context=request.options||{};}
   const options={...(context||{}),source,...createProgressionMessageContext({...context,dialogId:context?.dialogId??kind})};
   const name=options.name||options.dialogName||kind;
   if(kind==='chain'||CHAIN_STEPS[name])return WakeSevenDialogChainFeature.start(name);
