@@ -77,7 +77,8 @@ const dispatchBoardPointer=(type,point,pointerId)=>page.evaluate(({type,point,po
 },{type,point,pointerId});
 const stageCheckpoints=[
   {id:'debugIntro2',name:'academy-intro-checkpoint',stage:'入門クラス'},
-  {id:'debugBasic11',name:'academy-basic-checkpoint',stage:'応用クラス'},
+  {id:'debugBasic11',name:'academy-basic-checkpoint',stage:'基本クラス'},
+  {id:'debugApplication20',name:'academy-application-checkpoint',stage:'応用クラス'},
   {id:'debugAcademy20',name:'academy-development-checkpoint',stage:'発展クラス'},
   {id:'debugTrainingUpper',name:'training-upper-checkpoint',stage:'9 / 9'},
   {id:'debugTrainingMiddle',name:'training-middle-checkpoint',stage:'9 / 9'},

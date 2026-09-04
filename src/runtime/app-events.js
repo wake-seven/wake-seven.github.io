@@ -105,13 +105,15 @@ function debugUnlockStageCheckpoint(index,secondLap=false){
   GameNavigation.stage(index);
 }
 $('debugIntro2').addEventListener('click',()=>debugUnlockStageCheckpoint(INTRO_STAGE_COUNT-1));
-$('debugBasic11').addEventListener('click',()=>debugUnlockStageCheckpoint(DEVELOPMENT_STAGE_START-1));
+$('debugBasic11').addEventListener('click',()=>debugUnlockStageCheckpoint(BASIC_STAGE_START+BASIC_STAGE_COUNT-1));
+$('debugApplication20').addEventListener('click',()=>debugUnlockStageCheckpoint(DEVELOPMENT_STAGE_START-1));
 $('debugAcademy20').addEventListener('click',()=>debugUnlockStageCheckpoint(ACADEMY_STAGE_COUNT-1));
 $('debugTrainingUpper').addEventListener('click',()=>debugUnlockStageCheckpoint(TRAINING_STAGE_START+TRAINING_UPPER_COUNT-1));
 $('debugTrainingMiddle').addEventListener('click',()=>debugUnlockStageCheckpoint(TRAINING_STAGE_START+TRAINING_UPPER_COUNT+TRAINING_MIDDLE_COUNT-1));
 $('debugTrainingLower').addEventListener('click',()=>debugUnlockStageCheckpoint(STAGES.length-1));
 $('debugSecondIntro2').addEventListener('click',()=>debugUnlockStageCheckpoint(INTRO_STAGE_COUNT-1,true));
-$('debugSecondBasic11').addEventListener('click',()=>debugUnlockStageCheckpoint(DEVELOPMENT_STAGE_START-1,true));
+$('debugSecondBasic11').addEventListener('click',()=>debugUnlockStageCheckpoint(BASIC_STAGE_START+BASIC_STAGE_COUNT-1,true));
+$('debugSecondApplication20').addEventListener('click',()=>debugUnlockStageCheckpoint(DEVELOPMENT_STAGE_START-1,true));
 $('debugSecondAcademy20').addEventListener('click',()=>debugUnlockStageCheckpoint(ACADEMY_STAGE_COUNT-1,true));
 $('debugSecondTrainingUpper').addEventListener('click',()=>debugUnlockStageCheckpoint(TRAINING_STAGE_START+TRAINING_UPPER_COUNT-1,true));
 $('debugSecondTrainingMiddle').addEventListener('click',()=>debugUnlockStageCheckpoint(TRAINING_STAGE_START+TRAINING_UPPER_COUNT+TRAINING_MIDDLE_COUNT-1,true));
@@ -874,11 +876,11 @@ const LANGUAGE_TEXT_TARGETS=[
   ['speedRestartCancel','speedRestartCancel'],['speedRestartConfirm','speedRestartConfirm'],
   ['debugReset','debugReset'],['debugClear','debugClear'],['debugSpeedJumpFinish','debugSpeedJumpFinish'],
   ['debugAlmost','debugAlmost'],['debugMore','debugMore'],['debugFar','debugFar'],['debugSkipTutorial','debugSkipTutorial'],
-  ['debugIntro2','debugIntro2'],['debugBasic11','debugBasic11'],['debugAcademy20','debugAcademy20'],
+  ['debugIntro2','debugIntro2'],['debugBasic11','debugBasic11'],['debugApplication20','debugApplication20'],['debugAcademy20','debugAcademy20'],
   ['debugTrainingUpper','debugTrainingUpper'],['debugTrainingMiddle','debugTrainingMiddle'],['debugTrainingLower','debugTrainingLower'],
   ['debugExtra14','debugExtra14'],['debugExtra29','debugExtra29'],['debugExtra44','debugExtra44'],['debugSatori72','debugSatori72'],
   ['debugSpeedTraining8','debugSpeedTraining8'],['debugSpeedIntermediate17','debugSpeedIntermediate17'],['debugSpeedMastery26','debugSpeedMastery26'],
-  ['debugSecondIntro2','debugIntro2'],['debugSecondBasic11','debugBasic11'],['debugSecondAcademy20','debugAcademy20'],
+  ['debugSecondIntro2','debugIntro2'],['debugSecondBasic11','debugBasic11'],['debugSecondApplication20','debugApplication20'],['debugSecondAcademy20','debugAcademy20'],
   ['debugSecondTrainingUpper','debugTrainingUpper'],['debugSecondTrainingMiddle','debugTrainingMiddle'],['debugSecondTrainingLower','debugTrainingLower'],
   ['debugSecondExtra14','debugExtra14'],['debugSecondExtra29','debugExtra29'],['debugSecondExtra44','debugExtra44'],['debugSecondSatori72','debugSatori72'],
   ['board','boardLabel','aria-label'],['showTip','tips'],

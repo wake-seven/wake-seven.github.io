@@ -101,7 +101,7 @@ function renderStageNav(){
       $('hint').disabled=masterHintsDisabled();
     }
     $('debugTools').hidden=!DEBUG_MODE;
-    for(const id of ['debugReset','debugClear','debugSpeedJumpFinish','debugAlmost','debugMore','debugFar','debugSkipTutorial','debugIntro2','debugBasic11','debugAcademy20','debugSpeedTraining8','debugTrainingUpper','debugTrainingMiddle','debugTrainingLower','debugSpeedIntermediate17','debugExtra14','debugExtra29','debugExtra44','debugSpeedMastery26','debugSatori72','debugSecondIntro2','debugSecondBasic11','debugSecondAcademy20','debugSecondTrainingUpper','debugSecondTrainingMiddle','debugSecondTrainingLower','debugSecondExtra14','debugSecondExtra29','debugSecondExtra44','debugSecondSatori72'])$(id).hidden=!DEBUG_MODE;
+    for(const id of ['debugReset','debugClear','debugSpeedJumpFinish','debugAlmost','debugMore','debugFar','debugSkipTutorial','debugIntro2','debugBasic11','debugApplication20','debugAcademy20','debugSpeedTraining8','debugTrainingUpper','debugTrainingMiddle','debugTrainingLower','debugSpeedIntermediate17','debugExtra14','debugExtra29','debugExtra44','debugSpeedMastery26','debugSatori72','debugSecondIntro2','debugSecondBasic11','debugSecondApplication20','debugSecondAcademy20','debugSecondTrainingUpper','debugSecondTrainingMiddle','debugSecondTrainingLower','debugSecondExtra14','debugSecondExtra29','debugSecondExtra44','debugSecondSatori72'])$(id).hidden=!DEBUG_MODE;
     const pauseButton=$('speedPause'),pauseInline=$('speedPauseInline'),playActions=document.querySelector('.play-actions');
     const awaitingSpeedStart=isMode('speed')&&speedAwaitingStart();
     if(isMode('speed')&&!speedShowsRemaining())pauseInline.appendChild(pauseButton);

@@ -2,22 +2,24 @@
   "name": "wake7-change-classification",
   "status": "passed",
   "summary": {
-    "changedFiles": 5,
-    "classified": 1,
-    "unknown": 4,
-    "mismatches": 1,
+    "changedFiles": 8,
+    "classified": 5,
+    "unknown": 3,
+    "mismatches": 4,
     "missingFeatureKinds": 0
   },
   "warnings": [
     "分類ルールがありません: index.html",
-    "分類ルールがありません: package.json",
-    "分類ルールがありません: scripts/run-check-workflow.mjs",
+    "分類ルールがありません: scripts/check-browser-e2e.mjs",
+    "分類ルールがありません: scripts/e2e-speed-contract.json",
+    "src/data/ui-text.js: 宣言分類 rule と差分シグナル assist が不一致です",
+    "src/runtime/app-events.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です",
     "src/runtime/runtime.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です",
-    "分類ルールがありません: scripts/release-prepare.mjs"
+    "src/ui/progression-hud.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です"
   ],
   "errors": [],
-  "generatedAt": "2026-09-04T07:55:27.815Z",
-  "sourceRevision": "d2efd8a",
+  "generatedAt": "2026-09-04T08:15:54.753Z",
+  "sourceRevision": "8a74a9f",
   "entries": [
     {
       "file": "index.html",
@@ -27,18 +29,59 @@
       "status": "unknown"
     },
     {
-      "file": "package.json",
+      "file": "scripts/check-browser-e2e.mjs",
       "kind": null,
       "layer": null,
       "signals": [],
       "status": "unknown"
     },
     {
-      "file": "scripts/run-check-workflow.mjs",
+      "file": "scripts/e2e-speed-contract.json",
       "kind": null,
       "layer": null,
       "signals": [],
       "status": "unknown"
+    },
+    {
+      "file": "src/data/ui-text.js",
+      "kind": "rule",
+      "layer": "data",
+      "signals": [
+        "rule",
+        "assist"
+      ],
+      "mismatched": [
+        "assist"
+      ],
+      "status": "warning"
+    },
+    {
+      "file": "src/index.template.html",
+      "kind": "presentation",
+      "layer": "source",
+      "signals": [
+        "assist",
+        "presentation"
+      ],
+      "mismatched": [],
+      "status": "passed"
+    },
+    {
+      "file": "src/runtime/app-events.js",
+      "kind": "progression",
+      "layer": "runtime",
+      "signals": [
+        "rule",
+        "progression",
+        "assist",
+        "presentation"
+      ],
+      "mismatched": [
+        "rule",
+        "assist",
+        "presentation"
+      ],
+      "status": "warning"
     },
     {
       "file": "src/runtime/runtime.js",
@@ -58,11 +101,20 @@
       "status": "warning"
     },
     {
-      "file": "scripts/release-prepare.mjs",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
+      "file": "src/ui/progression-hud.js",
+      "kind": "progression",
+      "layer": "ui",
+      "signals": [
+        "rule",
+        "assist",
+        "presentation"
+      ],
+      "mismatched": [
+        "rule",
+        "assist",
+        "presentation"
+      ],
+      "status": "warning"
     }
   ],
   "policy": {
