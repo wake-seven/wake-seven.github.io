@@ -1,92 +1,22 @@
 {
   "schemaVersion": 1,
   "name": "wake7-feature-investigation-changed",
-  "generatedAt": "2026-09-04T08:15:54.417Z",
+  "generatedAt": "2026-09-04T08:49:12.544Z",
   "status": "passed",
   "activity": "affected",
   "changedFiles": [
     "index.html",
-    "scripts/check-browser-e2e.mjs",
-    "scripts/e2e-speed-contract.json",
-    "src/data/ui-text.js",
-    "src/index.template.html",
-    "src/runtime/app-events.js",
+    "scripts/check-affected.mjs",
     "src/runtime/runtime.js",
-    "src/ui/progression-hud.js"
+    "scripts/check-micro-ui.mjs"
   ],
   "unknownFiles": [
     "index.html",
-    "scripts/check-browser-e2e.mjs",
-    "scripts/e2e-speed-contract.json",
-    "src/data/ui-text.js",
-    "src/index.template.html"
+    "scripts/check-affected.mjs",
+    "scripts/check-micro-ui.mjs"
   ],
   "ambiguousFiles": [],
   "features": [
-    {
-      "name": "ui/progression",
-      "changedFiles": [
-        "src/ui/progression-hud.js"
-      ],
-      "entry": [],
-      "state": [],
-      "storage": [],
-      "dom": [],
-      "transitions": [],
-      "checks": [
-        "progression-flows",
-        "progression-flow-contract",
-        "dialog-chains"
-      ],
-      "e2e": [
-        "browser-flow",
-        "browser-e2e",
-        "device-e2e"
-      ],
-      "boundaries": [],
-      "relatedFiles": []
-    },
-    {
-      "name": "runtime/speed",
-      "changedFiles": [
-        "src/runtime/app-events.js"
-      ],
-      "entry": [
-        "src/runtime/speed.js",
-        "src/runtime/app-events.js"
-      ],
-      "state": [
-        "src/state/game-state.js",
-        "src/app/app-context.js"
-      ],
-      "storage": [
-        "src/state/game-state.js"
-      ],
-      "dom": [
-        "src/index.template.html"
-      ],
-      "transitions": [
-        "src/commands/speed-commands.js",
-        "src/runtime/speed.js"
-      ],
-      "checks": [
-        "application-services",
-        "progression-flows",
-        "e2e-speed-contract"
-      ],
-      "e2e": [
-        "scripts/check-e2e-speed-contract.mjs",
-        "scripts/check-browser-e2e.mjs",
-        "browser-e2e",
-        "device-e2e",
-        "state-restore"
-      ],
-      "boundaries": [
-        "scripts/check-source-boundaries.mjs",
-        "scripts/check-state-restore.mjs"
-      ],
-      "relatedFiles": []
-    },
     {
       "name": "dialog-restore",
       "changedFiles": [
@@ -123,23 +53,13 @@
     }
   ],
   "requiredChecks": [
-    "progression-flows",
-    "progression-flow-contract",
-    "dialog-chains",
-    "application-services",
-    "e2e-speed-contract",
     "state-restore",
     "dialog-state-map"
   ],
   "relatedE2E": [
-    "browser-flow",
-    "browser-e2e",
-    "device-e2e",
-    "scripts/check-e2e-speed-contract.mjs",
-    "scripts/check-browser-e2e.mjs",
-    "state-restore",
     "scripts/check-state-restore.mjs",
-    "scripts/check-dialog-state-map.mjs"
+    "scripts/check-dialog-state-map.mjs",
+    "state-restore"
   ],
   "recommendedProfile": "affected",
   "policy": {
@@ -155,7 +75,6 @@
     "build/report/check-profile-result.json",
     "build/report/clear-flow-order.json",
     "build/report/dialog-state-map.json",
-    "build/report/e2e-speed-contract-audit.json",
     "build/report/event-wiring-map.json",
     "build/report/feature-investigation-changed.json",
     "build/report/feature-registry.json",

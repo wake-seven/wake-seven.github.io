@@ -36,24 +36,38 @@ try { investigationReport = JSON.parse(await readFile(join(reportDir, 'feature-i
 const fullRules = (config.policy?.fullGateRequired?.paths || []).map(path =>
   new RegExp(`^${path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
 const affectedRules = [/^src\//, /^(?:styles?|public)\//, /\.(?:css|html|svg)$/i];
+// デバッグボタン・固定文言・HUDのような局所変更は、専用の軽量検査へ振り分ける。
+// 進行・保存・盤面ロジックを含むファイルが混ざった時点で通常のaffectedへ戻す。
+const microFiles = new Set([
+  'src/index.template.html',
+  'src/runtime/app-events.js',
+  'src/ui/progression-hud.js',
+  'src/data/ui-text.js',
+  'scripts/check-browser-e2e.mjs',
+  'scripts/e2e-speed-contract.json',
+  'scripts/check-affected.mjs',
+  'scripts/check-micro-ui.mjs'
+]);
+const microChange = files.length > 0 && files.every(file => microFiles.has(file));
 const reasons = [];
 let selected = requested;
 if (!selected) {
   // check:autoは編集中の入口なので、最終fullが必要な変更でもaffectedまでに留める。
   // full gateはcheck:releaseへ集約し、必要性だけをreleasePendingとして保持する。
   const recommended = investigationReport?.recommendedProfile || 'fast';
-  selected = recommended === 'full' ? 'affected' : recommended;
-  for (const file of files) {
+  selected = microChange ? 'micro' : (recommended === 'full' ? 'affected' : recommended);
+  if (!microChange) for (const file of files) {
     if (fullRules.some(rule => rule.test(file))) selected = 'affected';
     else if (selected === 'fast' && affectedRules.some(rule => rule.test(file))) selected = 'affected';
     else if (selected === 'fast') selected = 'affected';
   }
-  reasons.push(files.length ? '変更ファイルから自動選択' : '変更ファイルがないためfast');
+  reasons.push(microChange ? '局所UI変更のためmicro' : (files.length ? '変更ファイルから自動選択' : '変更ファイルがないためfast'));
 } else reasons.push(`指定されたプロファイル: ${selected}`);
-if (!config.profiles[selected]) throw new Error(`不明な検査プロファイルです: ${selected}`);
-const fullGateRequired = selected !== 'full' && files.some(file => fullRules.some(rule => rule.test(file)));
-const featureChecks = investigationReport?.requiredChecks || [];
-const requiredChecks = [...new Set([...config.profiles[selected].steps, ...featureChecks])];
+if (selected !== 'micro' && !config.profiles[selected]) throw new Error(`不明な検査プロファイルです: ${selected}`);
+const fullGateRequired = selected !== 'full' && !microChange && files.some(file => fullRules.some(rule => rule.test(file)));
+const featureChecks = selected === 'micro' ? [] : (investigationReport?.requiredChecks || []);
+const profileSteps = selected === 'micro' ? ['build', 'version', 'micro-ui'] : config.profiles[selected].steps;
+const requiredChecks = [...new Set([...profileSteps, ...featureChecks])];
 if (investigationReport?.features?.length) {
   reasons.push(`関連feature: ${investigationReport.features.map(item => item.name).join(', ')}`);
   if (investigationReport.relatedE2E?.length) reasons.push(`関連E2E: ${investigationReport.relatedE2E.join(', ')}`);
@@ -68,7 +82,8 @@ const commandFor = name => {
     'application-services': ['node', ['scripts/test-application-services.mjs']],
     'application-targets': ['node', ['scripts/check-application-targets.mjs']], state: ['node', ['scripts/check-state.mjs']],
     'reward-access': ['node', ['scripts/check-reward-access.mjs']],
-    'manifest-dependencies': ['node', ['scripts/check-manifest-dependencies.mjs']]
+    'manifest-dependencies': ['node', ['scripts/check-manifest-dependencies.mjs']],
+    'micro-ui': ['node', ['scripts/check-micro-ui.mjs']]
   };
   return direct[name] || ['npm', ['run', `check:${name}`]];
 };

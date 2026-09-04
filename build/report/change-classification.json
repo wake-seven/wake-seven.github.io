@@ -2,24 +2,21 @@
   "name": "wake7-change-classification",
   "status": "passed",
   "summary": {
-    "changedFiles": 8,
-    "classified": 5,
+    "changedFiles": 4,
+    "classified": 1,
     "unknown": 3,
-    "mismatches": 4,
+    "mismatches": 1,
     "missingFeatureKinds": 0
   },
   "warnings": [
     "分類ルールがありません: index.html",
-    "分類ルールがありません: scripts/check-browser-e2e.mjs",
-    "分類ルールがありません: scripts/e2e-speed-contract.json",
-    "src/data/ui-text.js: 宣言分類 rule と差分シグナル assist が不一致です",
-    "src/runtime/app-events.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です",
+    "分類ルールがありません: scripts/check-affected.mjs",
     "src/runtime/runtime.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です",
-    "src/ui/progression-hud.js: 宣言分類 progression と差分シグナル rule, assist, presentation が不一致です"
+    "分類ルールがありません: scripts/check-micro-ui.mjs"
   ],
   "errors": [],
-  "generatedAt": "2026-09-04T08:15:54.753Z",
-  "sourceRevision": "8a74a9f",
+  "generatedAt": "2026-09-04T08:49:12.900Z",
+  "sourceRevision": "2d18b02",
   "entries": [
     {
       "file": "index.html",
@@ -29,59 +26,11 @@
       "status": "unknown"
     },
     {
-      "file": "scripts/check-browser-e2e.mjs",
+      "file": "scripts/check-affected.mjs",
       "kind": null,
       "layer": null,
       "signals": [],
       "status": "unknown"
-    },
-    {
-      "file": "scripts/e2e-speed-contract.json",
-      "kind": null,
-      "layer": null,
-      "signals": [],
-      "status": "unknown"
-    },
-    {
-      "file": "src/data/ui-text.js",
-      "kind": "rule",
-      "layer": "data",
-      "signals": [
-        "rule",
-        "assist"
-      ],
-      "mismatched": [
-        "assist"
-      ],
-      "status": "warning"
-    },
-    {
-      "file": "src/index.template.html",
-      "kind": "presentation",
-      "layer": "source",
-      "signals": [
-        "assist",
-        "presentation"
-      ],
-      "mismatched": [],
-      "status": "passed"
-    },
-    {
-      "file": "src/runtime/app-events.js",
-      "kind": "progression",
-      "layer": "runtime",
-      "signals": [
-        "rule",
-        "progression",
-        "assist",
-        "presentation"
-      ],
-      "mismatched": [
-        "rule",
-        "assist",
-        "presentation"
-      ],
-      "status": "warning"
     },
     {
       "file": "src/runtime/runtime.js",
@@ -101,20 +50,11 @@
       "status": "warning"
     },
     {
-      "file": "src/ui/progression-hud.js",
-      "kind": "progression",
-      "layer": "ui",
-      "signals": [
-        "rule",
-        "assist",
-        "presentation"
-      ],
-      "mismatched": [
-        "rule",
-        "assist",
-        "presentation"
-      ],
-      "status": "warning"
+      "file": "scripts/check-micro-ui.mjs",
+      "kind": null,
+      "layer": null,
+      "signals": [],
+      "status": "unknown"
     }
   ],
   "policy": {
