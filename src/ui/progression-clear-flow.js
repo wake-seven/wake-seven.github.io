@@ -58,14 +58,42 @@ function playWakeCelebrationEffect(targetSvg,tilesArr){
   const animations=[];
   tilesArr.forEach((el,i)=>{
     const base=el.style.transform;
-    animations.push(el.animate([{transform:base},{transform:base+' scale(1.13,.78) skewX(-7deg)',offset:.2},{transform:base+' scale(.86,1.18) skewX(6deg)',offset:.42},{transform:base+' scale(1.08,.91) skewX(-3deg)',offset:.64},{transform:base}],{duration:820,delay:i*65,easing:'cubic-bezier(.2,.8,.25,1)'}));
+    animations.push(el.animate([
+      {transform:base},
+      {transform:base+' scale(1.13,.78) skewX(-7deg)',offset:.2},
+      {transform:base+' scale(.86,1.18) skewX(6deg)',offset:.42},
+      {transform:base+' scale(1.08,.91) skewX(-3deg)',offset:.64},
+      {transform:base}
+    ],{
+      duration:820,
+      delay:i*65,
+      easing:'cubic-bezier(.2,.8,.25,1)'
+    }));
   });
-  const NS_='http://www.w3.org/2000/svg',burst=document.createElementNS(NS_,'g');
+  const NS_='http://www.w3.org/2000/svg';
+  const burst=document.createElementNS(NS_,'g');
   burst.setAttribute('class','clear-burst');burst.setAttribute('pointer-events','none');
-  const addBurstRing=(radius,stroke,width,opacity)=>{const ring=document.createElementNS(NS_,'circle');ring.setAttribute('cx',CELL[3].x);ring.setAttribute('cy',CELL[3].y);ring.setAttribute('r',radius);ring.setAttribute('fill','none');ring.setAttribute('stroke',stroke);ring.setAttribute('stroke-width',width);if(opacity)ring.setAttribute('opacity',opacity);burst.appendChild(ring);};
+  const addBurstRing=(radius,stroke,width,opacity)=>{
+    const ring=document.createElementNS(NS_,'circle');
+    ring.setAttribute('cx',CELL[3].x);
+    ring.setAttribute('cy',CELL[3].y);
+    ring.setAttribute('r',radius);
+    ring.setAttribute('fill','none');
+    ring.setAttribute('stroke',stroke);
+    ring.setAttribute('stroke-width',width);
+    if(opacity)ring.setAttribute('opacity',opacity);
+    burst.appendChild(ring);
+  };
   addBurstRing(47,'#C9A54E',4);addBurstRing(58,'#F3E8D5',1.5,'.7');
   burst.style.transformOrigin=CELL[3].x+'px '+CELL[3].y+'px';burst.style.transformBox='view-box';targetSvg.appendChild(burst);
-  const burstAnimation=burst.animate([{transform:'scale(.55)',opacity:0},{transform:'scale(.8)',opacity:1,offset:.2},{transform:'scale(2.45)',opacity:0}],{duration:820,easing:'cubic-bezier(.15,.7,.2,1)'});
+  const burstAnimation=burst.animate([
+    {transform:'scale(.55)',opacity:0},
+    {transform:'scale(.8)',opacity:1,offset:.2},
+    {transform:'scale(2.45)',opacity:0}
+  ],{
+    duration:820,
+    easing:'cubic-bezier(.15,.7,.2,1)'
+  });
   animations.push(burstAnimation);
   const effect={animations,burst};
   const onCelebrationEnd=()=>{burst.remove();if(clearFlowState.celebration===effect)clearFlowState=Object.freeze({...clearFlowState,celebration:null});};
