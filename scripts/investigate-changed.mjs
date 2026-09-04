@@ -4,21 +4,12 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { changedPathsFromStatus } from './lib/git-status-paths.mjs';
+import { matchesRegisteredPath } from './lib/feature-investigation.mjs';
 
 // 変更ファイルから機能領域を特定し、修正前に読むべき影響範囲を機械的に出力する。
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const registryPath = join(root, 'scripts/feature-registry.json');
 const reportPath = join(root, 'build/report/feature-investigation-changed.json');
-
-const normalizePath = value => String(value ?? '').replaceAll('\\', '/').replace(/^\.\//, '').toLowerCase();
-const pathMatches = (pattern, file) => {
-  const expected = normalizePath(pattern);
-  const actual = normalizePath(file);
-  if (!expected) return false;
-  if (expected.endsWith('/')) return actual.startsWith(expected);
-  if (expected.endsWith('-')) return actual.startsWith(expected);
-  return actual === expected;
-};
 
 export { changedPathsFromStatus } from './lib/git-status-paths.mjs';
 
@@ -26,7 +17,7 @@ export function matchFeatures(changedFiles, registry) {
   const entries = Array.isArray(registry.features) ? registry.features : [];
   return entries.map(feature => ({
     feature,
-    matchedFiles: changedFiles.filter(file => (feature.paths || []).some(path => pathMatches(path, file)))
+    matchedFiles: changedFiles.filter(file => (feature.paths || []).some(path => matchesRegisteredPath(path, file)))
   })).filter(item => item.matchedFiles.length);
 }
 

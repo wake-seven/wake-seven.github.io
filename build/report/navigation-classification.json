@@ -1,13 +1,13 @@
 {
   "schemaVersion": 2,
   "name": "wake7-navigation-classification",
-  "generatedAt": "2026-09-04T13:05:54.807Z",
+  "generatedAt": "2026-09-04T13:31:51.536Z",
   "status": "passed",
   "summary": {
-    "references": 384,
+    "references": 399,
     "byCategory": {
       "gateway-candidate": 0,
-      "owner-only": 173,
+      "owner-only": 188,
       "derived-value": 129,
       "event-local": 24,
       "intentional-exception": 58
@@ -21,7 +21,7 @@
       "extraIndex": 48,
       "satoriIndex": 61,
       "tutorialStep": 58,
-      "lastStageMode": 13
+      "lastStageMode": 28
     },
     "stateAccessNavigationReferences": 121,
     "priorityOrder": [
@@ -45,8 +45,8 @@
     "entries": []
   },
   "tutorialAudit": {
-    "references": 71,
-    "contextReady": 12,
+    "references": 86,
+    "contextReady": 18,
     "eventLocal": 16,
     "remainingGatewayCandidates": 0,
     "policy": "段階遷移・復帰・言語切替はcontext経由。pointer・スワイプ・アニメーション中の値はイベント側に残す"
@@ -57,7 +57,7 @@
     "transitionCalls": [
       {
         "file": "runtime/runtime.js",
-        "line": 671,
+        "line": 673,
         "source": "loadStage(0);",
         "allowed": true
       },
@@ -531,9 +531,9 @@
       }
     },
     {
-      "name": "stageIndex",
+      "name": "lastStageMode",
       "file": "state/game-state.js",
-      "line": 89,
+      "line": 88,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -545,14 +545,71 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "state/game-state.js",
-        "line": 89,
+        "line": 88,
+        "source": "lastStageMode: MODES.includes(seed.navigation?.lastStageMode) ? seed.navigation.lastStageMode : null,"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "state/game-state.js",
+      "line": 88,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 88,
+        "source": "lastStageMode: MODES.includes(seed.navigation?.lastStageMode) ? seed.navigation.lastStageMode : null,"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "state/game-state.js",
+      "line": 88,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 88,
+        "source": "lastStageMode: MODES.includes(seed.navigation?.lastStageMode) ? seed.navigation.lastStageMode : null,"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/game-state.js",
+      "line": 90,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 90,
         "source": "stageIndex: asIndex(seed.navigation?.stageIndex),"
       }
     },
     {
       "name": "stageIndex",
       "file": "state/game-state.js",
-      "line": 89,
+      "line": 90,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -564,50 +621,12 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "state/game-state.js",
-        "line": 89,
+        "line": 90,
         "source": "stageIndex: asIndex(seed.navigation?.stageIndex),"
       }
     },
     {
       "name": "satoriIndex",
-      "file": "state/game-state.js",
-      "line": 91,
-      "access": "read",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "state/game-state.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "state/game-state.js",
-        "line": 91,
-        "source": "satoriIndex: asIndex(seed.navigation?.satoriIndex),"
-      }
-    },
-    {
-      "name": "satoriIndex",
-      "file": "state/game-state.js",
-      "line": 91,
-      "access": "read",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "state/game-state.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "state/game-state.js",
-        "line": 91,
-        "source": "satoriIndex: asIndex(seed.navigation?.satoriIndex),"
-      }
-    },
-    {
-      "name": "tutorialStep",
       "file": "state/game-state.js",
       "line": 92,
       "access": "read",
@@ -622,11 +641,11 @@
       "codeEvidence": {
         "file": "state/game-state.js",
         "line": 92,
-        "source": "tutorialStep: asIndex(seed.navigation?.tutorialStep)"
+        "source": "satoriIndex: asIndex(seed.navigation?.satoriIndex),"
       }
     },
     {
-      "name": "tutorialStep",
+      "name": "satoriIndex",
       "file": "state/game-state.js",
       "line": 92,
       "access": "read",
@@ -641,11 +660,49 @@
       "codeEvidence": {
         "file": "state/game-state.js",
         "line": 92,
+        "source": "satoriIndex: asIndex(seed.navigation?.satoriIndex),"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "state/game-state.js",
+      "line": 93,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 93,
         "source": "tutorialStep: asIndex(seed.navigation?.tutorialStep)"
       }
     },
     {
-      "name": "stageIndex",
+      "name": "tutorialStep",
+      "file": "state/game-state.js",
+      "line": 93,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 93,
+        "source": "tutorialStep: asIndex(seed.navigation?.tutorialStep)"
+      }
+    },
+    {
+      "name": "lastStageMode",
       "file": "state/game-state.js",
       "line": 158,
       "access": "read",
@@ -660,11 +717,11 @@
       "codeEvidence": {
         "file": "state/game-state.js",
         "line": 158,
-        "source": "stageIndex: asIndex(navigation.stageIndex),"
+        "source": "lastStageMode: MODES.includes(navigation.lastStageMode) ? navigation.lastStageMode : null,"
       }
     },
     {
-      "name": "stageIndex",
+      "name": "lastStageMode",
       "file": "state/game-state.js",
       "line": 158,
       "access": "read",
@@ -679,13 +736,70 @@
       "codeEvidence": {
         "file": "state/game-state.js",
         "line": 158,
+        "source": "lastStageMode: MODES.includes(navigation.lastStageMode) ? navigation.lastStageMode : null,"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "state/game-state.js",
+      "line": 158,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 158,
+        "source": "lastStageMode: MODES.includes(navigation.lastStageMode) ? navigation.lastStageMode : null,"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/game-state.js",
+      "line": 160,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 160,
+        "source": "stageIndex: asIndex(navigation.stageIndex),"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "state/game-state.js",
+      "line": 160,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 160,
         "source": "stageIndex: asIndex(navigation.stageIndex),"
       }
     },
     {
       "name": "satoriIndex",
       "file": "state/game-state.js",
-      "line": 160,
+      "line": 162,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -697,14 +811,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "state/game-state.js",
-        "line": 160,
+        "line": 162,
         "source": "satoriIndex: asIndex(navigation.satoriIndex),"
       }
     },
     {
       "name": "satoriIndex",
       "file": "state/game-state.js",
-      "line": 160,
+      "line": 162,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -716,14 +830,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "state/game-state.js",
-        "line": 160,
+        "line": 162,
         "source": "satoriIndex: asIndex(navigation.satoriIndex),"
       }
     },
     {
       "name": "tutorialStep",
       "file": "state/game-state.js",
-      "line": 161,
+      "line": 163,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -735,14 +849,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "state/game-state.js",
-        "line": 161,
+        "line": 163,
         "source": "tutorialStep: asIndex(navigation.tutorialStep)"
       }
     },
     {
       "name": "tutorialStep",
       "file": "state/game-state.js",
-      "line": 161,
+      "line": 163,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -754,31 +868,12 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "state/game-state.js",
-        "line": 161,
+        "line": 163,
         "source": "tutorialStep: asIndex(navigation.tutorialStep)"
       }
     },
     {
       "name": "tutorialStep",
-      "file": "state/game-state.js",
-      "line": 168,
-      "access": "read",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "state/game-state.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "state/game-state.js",
-        "line": 168,
-        "source": "case 'tutorial': return view.tutorialStep;"
-      }
-    },
-    {
-      "name": "satoriIndex",
       "file": "state/game-state.js",
       "line": 170,
       "access": "read",
@@ -793,13 +888,32 @@
       "codeEvidence": {
         "file": "state/game-state.js",
         "line": 170,
+        "source": "case 'tutorial': return view.tutorialStep;"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "state/game-state.js",
+      "line": 172,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 172,
         "source": "case 'satori': return view.satoriIndex;"
       }
     },
     {
       "name": "stageIndex",
       "file": "state/game-state.js",
-      "line": 171,
+      "line": 173,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -811,14 +925,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "state/game-state.js",
-        "line": 171,
+        "line": 173,
         "source": "case 'stage': return view.stageIndex;"
       }
     },
     {
-      "name": "stageIndex",
+      "name": "lastStageMode",
       "file": "state/game-state.js",
-      "line": 185,
+      "line": 186,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -830,69 +944,69 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "state/game-state.js",
-        "line": 185,
-        "source": "stageIndex: asIndex(next.stageIndex),"
+        "line": 186,
+        "source": "lastStageMode: MODES.includes(next.lastStageMode) ? next.lastStageMode : current.lastStageMode,"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "state/game-state.js",
+      "line": 186,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 186,
+        "source": "lastStageMode: MODES.includes(next.lastStageMode) ? next.lastStageMode : current.lastStageMode,"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "state/game-state.js",
+      "line": 186,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 186,
+        "source": "lastStageMode: MODES.includes(next.lastStageMode) ? next.lastStageMode : current.lastStageMode,"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "state/game-state.js",
+      "line": 186,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 186,
+        "source": "lastStageMode: MODES.includes(next.lastStageMode) ? next.lastStageMode : current.lastStageMode,"
       }
     },
     {
       "name": "stageIndex",
-      "file": "state/game-state.js",
-      "line": 185,
-      "access": "read",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "state/game-state.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "state/game-state.js",
-        "line": 185,
-        "source": "stageIndex: asIndex(next.stageIndex),"
-      }
-    },
-    {
-      "name": "satoriIndex",
-      "file": "state/game-state.js",
-      "line": 187,
-      "access": "read",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "state/game-state.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "state/game-state.js",
-        "line": 187,
-        "source": "satoriIndex: asIndex(next.satoriIndex),"
-      }
-    },
-    {
-      "name": "satoriIndex",
-      "file": "state/game-state.js",
-      "line": 187,
-      "access": "read",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "state/game-state.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "state/game-state.js",
-        "line": 187,
-        "source": "satoriIndex: asIndex(next.satoriIndex),"
-      }
-    },
-    {
-      "name": "tutorialStep",
       "file": "state/game-state.js",
       "line": 188,
       "access": "read",
@@ -907,11 +1021,11 @@
       "codeEvidence": {
         "file": "state/game-state.js",
         "line": 188,
-        "source": "tutorialStep: asIndex(next.tutorialStep)"
+        "source": "stageIndex: asIndex(next.stageIndex),"
       }
     },
     {
-      "name": "tutorialStep",
+      "name": "stageIndex",
       "file": "state/game-state.js",
       "line": 188,
       "access": "read",
@@ -926,13 +1040,89 @@
       "codeEvidence": {
         "file": "state/game-state.js",
         "line": 188,
+        "source": "stageIndex: asIndex(next.stageIndex),"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "state/game-state.js",
+      "line": 190,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 190,
+        "source": "satoriIndex: asIndex(next.satoriIndex),"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "state/game-state.js",
+      "line": 190,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 190,
+        "source": "satoriIndex: asIndex(next.satoriIndex),"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "state/game-state.js",
+      "line": 191,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 191,
+        "source": "tutorialStep: asIndex(next.tutorialStep)"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "state/game-state.js",
+      "line": 191,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 191,
         "source": "tutorialStep: asIndex(next.tutorialStep)"
       }
     },
     {
       "name": "stageIndex",
       "file": "state/game-state.js",
-      "line": 205,
+      "line": 208,
       "access": "read",
       "classification": "owner",
       "category": "derived-value",
@@ -944,26 +1134,7 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "state/game-state.js",
-        "line": 205,
-        "source": "// stageIndex/masteryIndex/satoriIndex の扱いを一箇所に保てる。"
-      }
-    },
-    {
-      "name": "satoriIndex",
-      "file": "state/game-state.js",
-      "line": 205,
-      "access": "read",
-      "classification": "owner",
-      "category": "derived-value",
-      "reason": "監査用コメント内の名前で、実行時の状態参照ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js / app/app-context.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "state/game-state.js",
-        "line": 205,
+        "line": 208,
         "source": "// stageIndex/masteryIndex/satoriIndex の扱いを一箇所に保てる。"
       }
     },
@@ -973,23 +1144,42 @@
       "line": 208,
       "access": "read",
       "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "category": "derived-value",
+      "reason": "監査用コメント内の名前で、実行時の状態参照ではない",
       "temporary": false,
-      "owner": "state/game-state.js",
+      "owner": "runtime/runtime.js / app/app-context.js",
       "nextMigrationUnit": null,
       "expiresOn": null,
       "relatedE2E": [],
       "codeEvidence": {
         "file": "state/game-state.js",
         "line": 208,
+        "source": "// stageIndex/masteryIndex/satoriIndex の扱いを一箇所に保てる。"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "state/game-state.js",
+      "line": 211,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "state/game-state.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "state/game-state.js",
+        "line": 211,
         "source": ": mode === 'satori' ? 'satoriIndex'"
       }
     },
     {
       "name": "stageIndex",
       "file": "state/game-state.js",
-      "line": 209,
+      "line": 212,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -1001,14 +1191,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "state/game-state.js",
-        "line": 209,
+        "line": 212,
         "source": ": mode === 'tutorial' ? 'tutorialStep' : 'stageIndex';"
       }
     },
     {
       "name": "tutorialStep",
       "file": "state/game-state.js",
-      "line": 209,
+      "line": 212,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -1020,7 +1210,7 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "state/game-state.js",
-        "line": 209,
+        "line": 212,
         "source": ": mode === 'tutorial' ? 'tutorialStep' : 'stageIndex';"
       }
     },
@@ -1572,7 +1762,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 103,
-        "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
+        "source": "const navigationState={mode:initialNavigation.mode,lastStageMode:initialNavigation.lastStageMode||null,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
       }
     },
     {
@@ -1591,7 +1781,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 103,
-        "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
+        "source": "const navigationState={mode:initialNavigation.mode,lastStageMode:initialNavigation.lastStageMode||null,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
       }
     },
     {
@@ -1610,7 +1800,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 103,
-        "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
+        "source": "const navigationState={mode:initialNavigation.mode,lastStageMode:initialNavigation.lastStageMode||null,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
       }
     },
     {
@@ -1629,7 +1819,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 103,
-        "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
+        "source": "const navigationState={mode:initialNavigation.mode,lastStageMode:initialNavigation.lastStageMode||null,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
       }
     },
     {
@@ -1648,7 +1838,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 103,
-        "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
+        "source": "const navigationState={mode:initialNavigation.mode,lastStageMode:initialNavigation.lastStageMode||null,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
       }
     },
     {
@@ -1667,7 +1857,45 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 103,
-        "source": "const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
+        "source": "const navigationState={mode:initialNavigation.mode,lastStageMode:initialNavigation.lastStageMode||null,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "runtime/runtime.js",
+      "line": 103,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 103,
+        "source": "const navigationState={mode:initialNavigation.mode,lastStageMode:initialNavigation.lastStageMode||null,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "runtime/runtime.js",
+      "line": 103,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 103,
+        "source": "const navigationState={mode:initialNavigation.mode,lastStageMode:initialNavigation.lastStageMode||null,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};"
       }
     },
     {
@@ -1686,7 +1914,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 104,
-        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;"
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,lastStageMode=navigationState.lastStageMode,clearShown=false,nextStageAttention=false;"
       }
     },
     {
@@ -1705,7 +1933,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 104,
-        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;"
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,lastStageMode=navigationState.lastStageMode,clearShown=false,nextStageAttention=false;"
       }
     },
     {
@@ -1724,7 +1952,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 104,
-        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;"
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,lastStageMode=navigationState.lastStageMode,clearShown=false,nextStageAttention=false;"
       }
     },
     {
@@ -1743,7 +1971,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 104,
-        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;"
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,lastStageMode=navigationState.lastStageMode,clearShown=false,nextStageAttention=false;"
       }
     },
     {
@@ -1762,7 +1990,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 104,
-        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;"
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,lastStageMode=navigationState.lastStageMode,clearShown=false,nextStageAttention=false;"
       }
     },
     {
@@ -1781,7 +2009,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 104,
-        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;"
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,lastStageMode=navigationState.lastStageMode,clearShown=false,nextStageAttention=false;"
       }
     },
     {
@@ -1800,7 +2028,45 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 104,
-        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;"
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,lastStageMode=navigationState.lastStageMode,clearShown=false,nextStageAttention=false;"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "runtime/runtime.js",
+      "line": 104,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 104,
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,lastStageMode=navigationState.lastStageMode,clearShown=false,nextStageAttention=false;"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "runtime/runtime.js",
+      "line": 104,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 104,
+        "source": "let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,lastStageMode=navigationState.lastStageMode,clearShown=false,nextStageAttention=false;"
       }
     },
     {
@@ -2009,14 +2275,14 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 118,
-        "source": "return Object.freeze({...navigationState,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});"
+        "source": "navigationState.lastStageMode=lastStageMode;"
       }
     },
     {
       "name": "lastStageMode",
       "file": "runtime/runtime.js",
       "line": 118,
-      "access": "write",
+      "access": "read",
       "classification": "owner",
       "category": "owner-only",
       "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
@@ -2028,13 +2294,32 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 118,
-        "source": "return Object.freeze({...navigationState,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});"
+        "source": "navigationState.lastStageMode=lastStageMode;"
       }
     },
     {
-      "name": "lastStageMode",
+      "name": "stageIndex",
       "file": "runtime/runtime.js",
-      "line": 118,
+      "line": 124,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 124,
+        "source": "if(patch.stageIndex!==undefined)navigationState.stageIndex=Math.max(0,Number(patch.stageIndex)||0);"
+      }
+    },
+    {
+      "name": "stageIndex",
+      "file": "runtime/runtime.js",
+      "line": 124,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -2046,52 +2331,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 118,
-        "source": "return Object.freeze({...navigationState,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "runtime/runtime.js",
-      "line": 123,
-      "access": "read",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "runtime/runtime.js",
-        "line": 123,
+        "line": 124,
         "source": "if(patch.stageIndex!==undefined)navigationState.stageIndex=Math.max(0,Number(patch.stageIndex)||0);"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/runtime.js",
-      "line": 123,
-      "access": "write",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "runtime/runtime.js",
-        "line": 123,
-        "source": "if(patch.stageIndex!==undefined)navigationState.stageIndex=Math.max(0,Number(patch.stageIndex)||0);"
-      }
-    },
-    {
-      "name": "stageIndex",
-      "file": "runtime/runtime.js",
-      "line": 123,
+      "line": 124,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2103,69 +2350,12 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 123,
+        "line": 124,
         "source": "if(patch.stageIndex!==undefined)navigationState.stageIndex=Math.max(0,Number(patch.stageIndex)||0);"
       }
     },
     {
       "name": "satoriIndex",
-      "file": "runtime/runtime.js",
-      "line": 125,
-      "access": "read",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "runtime/runtime.js",
-        "line": 125,
-        "source": "if(patch.satoriIndex!==undefined)navigationState.satoriIndex=Math.max(0,Number(patch.satoriIndex)||0);"
-      }
-    },
-    {
-      "name": "satoriIndex",
-      "file": "runtime/runtime.js",
-      "line": 125,
-      "access": "write",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "runtime/runtime.js",
-        "line": 125,
-        "source": "if(patch.satoriIndex!==undefined)navigationState.satoriIndex=Math.max(0,Number(patch.satoriIndex)||0);"
-      }
-    },
-    {
-      "name": "satoriIndex",
-      "file": "runtime/runtime.js",
-      "line": 125,
-      "access": "read",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "runtime/runtime.js",
-        "line": 125,
-        "source": "if(patch.satoriIndex!==undefined)navigationState.satoriIndex=Math.max(0,Number(patch.satoriIndex)||0);"
-      }
-    },
-    {
-      "name": "tutorialStep",
       "file": "runtime/runtime.js",
       "line": 126,
       "access": "read",
@@ -2180,13 +2370,70 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 126,
+        "source": "if(patch.satoriIndex!==undefined)navigationState.satoriIndex=Math.max(0,Number(patch.satoriIndex)||0);"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 126,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 126,
+        "source": "if(patch.satoriIndex!==undefined)navigationState.satoriIndex=Math.max(0,Number(patch.satoriIndex)||0);"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 126,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 126,
+        "source": "if(patch.satoriIndex!==undefined)navigationState.satoriIndex=Math.max(0,Number(patch.satoriIndex)||0);"
+      }
+    },
+    {
+      "name": "tutorialStep",
+      "file": "runtime/runtime.js",
+      "line": 127,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 127,
         "source": "if(patch.tutorialStep!==undefined)navigationState.tutorialStep=Math.max(0,Number(patch.tutorialStep)||0);"
       }
     },
     {
       "name": "tutorialStep",
       "file": "runtime/runtime.js",
-      "line": 126,
+      "line": 127,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -2198,14 +2445,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 126,
+        "line": 127,
         "source": "if(patch.tutorialStep!==undefined)navigationState.tutorialStep=Math.max(0,Number(patch.tutorialStep)||0);"
       }
     },
     {
       "name": "tutorialStep",
       "file": "runtime/runtime.js",
-      "line": 126,
+      "line": 127,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2217,14 +2464,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 126,
+        "line": 127,
         "source": "if(patch.tutorialStep!==undefined)navigationState.tutorialStep=Math.max(0,Number(patch.tutorialStep)||0);"
       }
     },
     {
       "name": "activeMode",
       "file": "runtime/runtime.js",
-      "line": 127,
+      "line": 128,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -2236,14 +2483,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 127,
+        "line": 128,
         "source": "activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/runtime.js",
-      "line": 127,
+      "line": 128,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -2255,14 +2502,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 127,
+        "line": 128,
         "source": "activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/runtime.js",
-      "line": 127,
+      "line": 128,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -2274,14 +2521,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 127,
+        "line": 128,
         "source": "activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 127,
+      "line": 128,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -2293,14 +2540,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 127,
+        "line": 128,
         "source": "activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 128,
+      "line": 129,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -2312,14 +2559,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 128,
+        "line": 129,
         "source": "satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;"
       }
     },
     {
       "name": "satoriIndex",
       "file": "runtime/runtime.js",
-      "line": 128,
+      "line": 129,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -2331,14 +2578,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 128,
+        "line": 129,
         "source": "satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;"
       }
     },
     {
       "name": "satoriIndex",
       "file": "runtime/runtime.js",
-      "line": 128,
+      "line": 129,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -2350,14 +2597,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 128,
+        "line": 129,
         "source": "satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;"
       }
     },
     {
       "name": "tutorialStep",
       "file": "runtime/runtime.js",
-      "line": 128,
+      "line": 129,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -2369,14 +2616,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 128,
+        "line": 129,
         "source": "satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;"
       }
     },
     {
       "name": "tutorialStep",
       "file": "runtime/runtime.js",
-      "line": 128,
+      "line": 129,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -2388,14 +2635,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 128,
+        "line": 129,
         "source": "satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;"
       }
     },
     {
       "name": "lastStageMode",
       "file": "runtime/runtime.js",
-      "line": 129,
+      "line": 130,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2407,33 +2654,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 129,
-        "source": "if(patch.lastStageMode!==undefined&&typeof lastStageMode!=='undefined')lastStageMode=patch.lastStageMode;"
+        "line": 130,
+        "source": "if(patch.lastStageMode!==undefined)lastStageMode=ACTIVE_MODES.includes(patch.lastStageMode)?patch.lastStageMode:null;"
       }
     },
     {
       "name": "lastStageMode",
       "file": "runtime/runtime.js",
-      "line": 129,
-      "access": "read",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "runtime/runtime.js",
-        "line": 129,
-        "source": "if(patch.lastStageMode!==undefined&&typeof lastStageMode!=='undefined')lastStageMode=patch.lastStageMode;"
-      }
-    },
-    {
-      "name": "lastStageMode",
-      "file": "runtime/runtime.js",
-      "line": 129,
+      "line": 130,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -2445,14 +2673,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 129,
-        "source": "if(patch.lastStageMode!==undefined&&typeof lastStageMode!=='undefined')lastStageMode=patch.lastStageMode;"
+        "line": 130,
+        "source": "if(patch.lastStageMode!==undefined)lastStageMode=ACTIVE_MODES.includes(patch.lastStageMode)?patch.lastStageMode:null;"
       }
     },
     {
       "name": "lastStageMode",
       "file": "runtime/runtime.js",
-      "line": 129,
+      "line": 130,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2464,14 +2692,71 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 129,
-        "source": "if(patch.lastStageMode!==undefined&&typeof lastStageMode!=='undefined')lastStageMode=patch.lastStageMode;"
+        "line": 130,
+        "source": "if(patch.lastStageMode!==undefined)lastStageMode=ACTIVE_MODES.includes(patch.lastStageMode)?patch.lastStageMode:null;"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "runtime/runtime.js",
+      "line": 130,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 130,
+        "source": "if(patch.lastStageMode!==undefined)lastStageMode=ACTIVE_MODES.includes(patch.lastStageMode)?patch.lastStageMode:null;"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "runtime/runtime.js",
+      "line": 131,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 131,
+        "source": "navigationState.lastStageMode=lastStageMode;"
+      }
+    },
+    {
+      "name": "lastStageMode",
+      "file": "runtime/runtime.js",
+      "line": 131,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 131,
+        "source": "navigationState.lastStageMode=lastStageMode;"
       }
     },
     {
       "name": "activeMode",
       "file": "runtime/runtime.js",
-      "line": 132,
+      "line": 134,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -2483,14 +2768,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 132,
+        "line": 134,
         "source": "const isMode=mode=>activeMode===mode;"
       }
     },
     {
       "name": "activeMode",
       "file": "runtime/runtime.js",
-      "line": 217,
+      "line": 219,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2502,14 +2787,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 217,
+        "line": 219,
         "source": "WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 217,
+      "line": 219,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2521,14 +2806,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 217,
+        "line": 219,
         "source": "WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/runtime.js",
-      "line": 217,
+      "line": 219,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2540,14 +2825,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 217,
+        "line": 219,
         "source": "WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 217,
+      "line": 219,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2559,14 +2844,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 217,
+        "line": 219,
         "source": "WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});"
       }
     },
     {
       "name": "satoriIndex",
       "file": "runtime/runtime.js",
-      "line": 217,
+      "line": 219,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2578,14 +2863,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 217,
+        "line": 219,
         "source": "WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});"
       }
     },
     {
       "name": "tutorialStep",
       "file": "runtime/runtime.js",
-      "line": 217,
+      "line": 219,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2597,14 +2882,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 217,
+        "line": 219,
         "source": "WakeSevenState.updateNavigation(gameState,{mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep});"
       }
     },
     {
       "name": "activeMode",
       "file": "runtime/runtime.js",
-      "line": 231,
+      "line": 233,
       "access": "read",
       "classification": "owner",
       "category": "derived-value",
@@ -2616,14 +2901,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 231,
+        "line": 233,
         "source": "// activeModeが現在モードの正。ここはfree/custom/speed画面から"
       }
     },
     {
       "name": "tutorialStep",
       "file": "runtime/runtime.js",
-      "line": 240,
+      "line": 242,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2635,31 +2920,12 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 240,
+        "line": 242,
         "source": "tutorial:{id:'tutorial',total:WakeSevenAppContext.courses.tutorial().length,label:'tutorial',indexKey:'tutorialStep'},"
       }
     },
     {
       "name": "stageIndex",
-      "file": "runtime/runtime.js",
-      "line": 241,
-      "access": "read",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "runtime/runtime.js",
-        "line": 241,
-        "source": "primary:{id:'primary',total:WakeSevenAppContext.courses.primary().length,label:'training',indexKey:'stageIndex'},"
-      }
-    },
-    {
-      "name": "satoriIndex",
       "file": "runtime/runtime.js",
       "line": 243,
       "access": "read",
@@ -2674,13 +2940,32 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 243,
+        "source": "primary:{id:'primary',total:WakeSevenAppContext.courses.primary().length,label:'training',indexKey:'stageIndex'},"
+      }
+    },
+    {
+      "name": "satoriIndex",
+      "file": "runtime/runtime.js",
+      "line": 245,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 245,
         "source": "satori:{id:'satori',total:WakeSevenAppContext.courses.satori().length,label:'satori',indexKey:'satoriIndex'},"
       }
     },
     {
       "name": "activeMode",
       "file": "runtime/runtime.js",
-      "line": 249,
+      "line": 251,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2692,14 +2977,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 249,
+        "line": 251,
         "source": "function courseDefinitionForMode(mode=activeMode){"
       }
     },
     {
       "name": "activeMode",
       "file": "runtime/runtime.js",
-      "line": 253,
+      "line": 255,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2711,14 +2996,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 253,
+        "line": 255,
         "source": "return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 253,
+      "line": 255,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2730,14 +3015,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 253,
+        "line": 255,
         "source": "return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/runtime.js",
-      "line": 253,
+      "line": 255,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2749,14 +3034,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 253,
+        "line": 255,
         "source": "return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 253,
+      "line": 255,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2768,14 +3053,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 253,
+        "line": 255,
         "source": "return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};"
       }
     },
     {
       "name": "satoriIndex",
       "file": "runtime/runtime.js",
-      "line": 253,
+      "line": 255,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2787,14 +3072,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 253,
+        "line": 255,
         "source": "return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};"
       }
     },
     {
       "name": "tutorialStep",
       "file": "runtime/runtime.js",
-      "line": 253,
+      "line": 255,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2806,14 +3091,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 253,
+        "line": 255,
         "source": "return {mode:activeMode,lap:activeLap,stageIndex,masteryIndex:extraIndex,satoriIndex,tutorialStep};"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/runtime.js",
-      "line": 267,
+      "line": 269,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2825,14 +3110,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 267,
+        "line": 269,
         "source": "function primarySection(index=stageIndex){"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/runtime.js",
-      "line": 270,
+      "line": 272,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2844,14 +3129,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 270,
+        "line": 272,
         "source": "function primarySectionPosition(index=stageIndex){"
       }
     },
     {
       "name": "tutorialStep",
       "file": "runtime/runtime.js",
-      "line": 289,
+      "line": 291,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2863,14 +3148,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 289,
+        "line": 291,
         "source": "if(isMode('tutorial'))return {mode:'tutorial',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'tutorial'),position:tutorialStep+1,total:TUTORIAL_STEPS.length,lap:1};"
       }
     },
     {
       "name": "activeMode",
       "file": "runtime/runtime.js",
-      "line": 290,
+      "line": 292,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2882,14 +3167,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 290,
+        "line": 292,
         "source": "if(isSideCourseMode())return {mode:activeMode,course:courseDefinitionForMode(),index:null,position:null,total:null,lap:activeLap};"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 290,
+      "line": 292,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2901,14 +3186,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 290,
+        "line": 292,
         "source": "if(isSideCourseMode())return {mode:activeMode,course:courseDefinitionForMode(),index:null,position:null,total:null,lap:activeLap};"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 293,
+      "line": 295,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2920,14 +3205,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 293,
+        "line": 295,
         "source": "return {mode:'speed',course:courseDefinitionForMode(),index,position:index+1,total:SATORI_STAGES.length,lap:activeLap};"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 295,
+      "line": 297,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2939,14 +3224,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 295,
+        "line": 297,
         "source": "if(isMode('satori'))return {mode:'satori',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'satori'),position:satoriIndex+1,total:SATORI_STAGES.length,lap:activeLap};"
       }
     },
     {
       "name": "satoriIndex",
       "file": "runtime/runtime.js",
-      "line": 295,
+      "line": 297,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2958,14 +3243,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 295,
+        "line": 297,
         "source": "if(isMode('satori'))return {mode:'satori',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'satori'),position:satoriIndex+1,total:SATORI_STAGES.length,lap:activeLap};"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 296,
+      "line": 298,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2977,14 +3262,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 296,
+        "line": 298,
         "source": "if(isMode('mastery'))return {mode:'mastery',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'mastery'),position:extraIndex+1,total:EXTRA_STAGES.length,lap:activeLap};"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 296,
+      "line": 298,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -2996,14 +3281,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 296,
+        "line": 298,
         "source": "if(isMode('mastery'))return {mode:'mastery',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'mastery'),position:extraIndex+1,total:EXTRA_STAGES.length,lap:activeLap};"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 297,
+      "line": 299,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3015,14 +3300,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 297,
+        "line": 299,
         "source": "return {mode:'primary',course:courseDefinitionForMode('stage'),index:WakeSevenState.navigationIndex(navigation,'stage'),position:stageIndex+1,total:STAGES.length,lap:activeLap};"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/runtime.js",
-      "line": 297,
+      "line": 299,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3034,14 +3319,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 297,
+        "line": 299,
         "source": "return {mode:'primary',course:courseDefinitionForMode('stage'),index:WakeSevenState.navigationIndex(navigation,'stage'),position:stageIndex+1,total:STAGES.length,lap:activeLap};"
       }
     },
     {
       "name": "satoriIndex",
       "file": "runtime/runtime.js",
-      "line": 376,
+      "line": 378,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3053,14 +3338,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 376,
+        "line": 378,
         "source": "const position=satoriIndex+1;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 384,
+      "line": 386,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3072,14 +3357,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 384,
+        "line": 386,
         "source": "const volume=Math.floor(extraIndex/MASTER_VOLUME_SIZE)+1;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 385,
+      "line": 387,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3091,14 +3376,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 385,
+        "line": 387,
         "source": "const position=extraIndex%MASTER_VOLUME_SIZE+1;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 389,
+      "line": 391,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3110,14 +3395,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 389,
+        "line": 391,
         "source": "stage_number:position,stage_order:STAGES.length+extraIndex+1,stage_total:MASTER_VOLUME_SIZE,"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/runtime.js",
-      "line": 393,
+      "line": 395,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3129,14 +3414,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 393,
+        "line": 395,
         "source": "const {section,position}=primarySectionPosition(stageIndex);"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/runtime.js",
-      "line": 398,
+      "line": 400,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3148,14 +3433,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 398,
+        "line": 400,
         "source": "stage_number:position,stage_order:stageIndex+1,stage_total:total,"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 513,
+      "line": 515,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -3167,14 +3452,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 513,
+        "line": 515,
         "source": "let activeLap=initialNavigationState.lap===2?2:1;"
       }
     },
     {
       "name": "activeMode",
       "file": "runtime/runtime.js",
-      "line": 514,
+      "line": 516,
       "access": "read",
       "classification": "owner",
       "category": "derived-value",
@@ -3186,27 +3471,8 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 514,
+        "line": 516,
         "source": "// activeModeが現在画面の正となる。最後にいたキャンペーン位置は明示的な名前で保持し、"
-      }
-    },
-    {
-      "name": "activeLap",
-      "file": "runtime/runtime.js",
-      "line": 522,
-      "access": "read",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "runtime/runtime.js",
-        "line": 522,
-        "source": "let rankListLap=activeLap;"
       }
     },
     {
@@ -3225,64 +3491,26 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 524,
+        "source": "let rankListLap=activeLap;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 526,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 526,
         "source": "let pickerLap=activeLap;"
-      }
-    },
-    {
-      "name": "activeLap",
-      "file": "runtime/runtime.js",
-      "line": 596,
-      "access": "write",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "runtime/runtime.js",
-        "line": 596,
-        "source": "if(activeLap===2&&!secondLapUnlocked)activeLap=1;"
-      }
-    },
-    {
-      "name": "activeLap",
-      "file": "runtime/runtime.js",
-      "line": 596,
-      "access": "write",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "runtime/runtime.js",
-        "line": 596,
-        "source": "if(activeLap===2&&!secondLapUnlocked)activeLap=1;"
-      }
-    },
-    {
-      "name": "activeLap",
-      "file": "runtime/runtime.js",
-      "line": 597,
-      "access": "write",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "runtime/runtime.js",
-        "line": 597,
-        "source": "clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;"
       }
     },
     {
@@ -3301,7 +3529,26 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 598,
-        "source": "clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;"
+        "source": "if(activeLap===2&&!secondLapUnlocked)activeLap=1;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 598,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 598,
+        "source": "if(activeLap===2&&!secondLapUnlocked)activeLap=1;"
       }
     },
     {
@@ -3320,7 +3567,7 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 599,
-        "source": "clearedSatoriStages=activeLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;"
+        "source": "clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;"
       }
     },
     {
@@ -3339,13 +3586,13 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 600,
-        "source": "secondLapActive=activeLap===2;"
+        "source": "clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 609,
+      "line": 601,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -3357,8 +3604,27 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 609,
-        "source": "clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;"
+        "line": 601,
+        "source": "clearedSatoriStages=activeLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 602,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 602,
+        "source": "secondLapActive=activeLap===2;"
       }
     },
     {
@@ -3377,13 +3643,32 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 611,
+        "source": "clearedStages=activeLap===2?lap2ClearedStages:lap1ClearedStages;"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 613,
+      "access": "write",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 613,
         "source": "clearedExtraStages=activeLap===2?lap2ClearedExtraStages:lap1ClearedExtraStages;"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 635,
+      "line": 637,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3395,14 +3680,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 635,
+        "line": 637,
         "source": "storage.set(STORAGE_KEY_GROUPS.progression.activeLap,String(activeLap));"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 635,
+      "line": 637,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3414,14 +3699,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 635,
+        "line": 637,
         "source": "storage.set(STORAGE_KEY_GROUPS.progression.activeLap,String(activeLap));"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 638,
+      "line": 640,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -3433,14 +3718,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 638,
+        "line": 640,
         "source": "if(activeLap===2)storage.set(STORAGE_KEY_GROUPS.progression.secondLapActive,'1');"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 643,
+      "line": 645,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -3452,14 +3737,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 643,
+        "line": 645,
         "source": "activeLap=lap;"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 673,
+      "line": 675,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -3471,46 +3756,8 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 673,
+        "line": 675,
         "source": "if(activeLap===2)lap2ClearedSatoriStages=clearedSatoriStages;"
-      }
-    },
-    {
-      "name": "activeLap",
-      "file": "runtime/runtime.js",
-      "line": 679,
-      "access": "read",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "runtime/runtime.js",
-        "line": 679,
-        "source": "const canEnterTraining=()=>PROGRESSION.canEnter('training',{lap:activeLap,trials:progressionTrials()});"
-      }
-    },
-    {
-      "name": "activeLap",
-      "file": "runtime/runtime.js",
-      "line": 680,
-      "access": "read",
-      "classification": "owner",
-      "category": "owner-only",
-      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
-      "temporary": false,
-      "owner": "runtime/runtime.js",
-      "nextMigrationUnit": null,
-      "expiresOn": null,
-      "relatedE2E": [],
-      "codeEvidence": {
-        "file": "runtime/runtime.js",
-        "line": 680,
-        "source": "const canEnterMastery=()=>PROGRESSION.canEnter('mastery',{lap:activeLap,trials:progressionTrials()});"
       }
     },
     {
@@ -3529,13 +3776,13 @@
       "codeEvidence": {
         "file": "runtime/runtime.js",
         "line": 681,
-        "source": "const canEnterSatori=()=>PROGRESSION.canEnter('satori',{lap:activeLap,mastered:isMastered(),trials:progressionTrials()});"
+        "source": "const canEnterTraining=()=>PROGRESSION.canEnter('training',{lap:activeLap,trials:progressionTrials()});"
       }
     },
     {
-      "name": "extraIndex",
+      "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 774,
+      "line": 682,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3547,14 +3794,52 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 774,
+        "line": 682,
+        "source": "const canEnterMastery=()=>PROGRESSION.canEnter('mastery',{lap:activeLap,trials:progressionTrials()});"
+      }
+    },
+    {
+      "name": "activeLap",
+      "file": "runtime/runtime.js",
+      "line": 683,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 683,
+        "source": "const canEnterSatori=()=>PROGRESSION.canEnter('satori',{lap:activeLap,mastered:isMastered(),trials:progressionTrials()});"
+      }
+    },
+    {
+      "name": "extraIndex",
+      "file": "runtime/runtime.js",
+      "line": 776,
+      "access": "read",
+      "classification": "owner",
+      "category": "owner-only",
+      "reason": "状態所有者の内部処理。公開gatewayへ移す対象ではない",
+      "temporary": false,
+      "owner": "runtime/runtime.js",
+      "nextMigrationUnit": null,
+      "expiresOn": null,
+      "relatedE2E": [],
+      "codeEvidence": {
+        "file": "runtime/runtime.js",
+        "line": 776,
         "source": "const masterVolume=()=>isMode('mastery')?Math.floor(extraIndex/MASTER_VOLUME_SIZE)+1:0;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 775,
+      "line": 777,
       "access": "write",
       "classification": "owner",
       "category": "owner-only",
@@ -3566,14 +3851,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 775,
+        "line": 777,
         "source": "const isFinalMasterPuzzle=()=>isMode('mastery')&&extraIndex===EXTRA_STAGES.length-1;"
       }
     },
     {
       "name": "activeMode",
       "file": "runtime/runtime.js",
-      "line": 788,
+      "line": 790,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3585,14 +3870,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 788,
+        "line": 790,
         "source": "const currentUiPolicy=()=>PROGRESSION.uiPolicy({mode:activeMode,lap:activeLap,stageIndex,speedVariant:isMode('speed')?speedVariant:null});"
       }
     },
     {
       "name": "activeLap",
       "file": "runtime/runtime.js",
-      "line": 788,
+      "line": 790,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3604,14 +3889,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 788,
+        "line": 790,
         "source": "const currentUiPolicy=()=>PROGRESSION.uiPolicy({mode:activeMode,lap:activeLap,stageIndex,speedVariant:isMode('speed')?speedVariant:null});"
       }
     },
     {
       "name": "stageIndex",
       "file": "runtime/runtime.js",
-      "line": 788,
+      "line": 790,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3623,14 +3908,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 788,
+        "line": 790,
         "source": "const currentUiPolicy=()=>PROGRESSION.uiPolicy({mode:activeMode,lap:activeLap,stageIndex,speedVariant:isMode('speed')?speedVariant:null});"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 811,
+      "line": 813,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3642,14 +3927,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 811,
+        "line": 813,
         "source": "const isThirdVolume=()=>isMode('mastery')&&extraIndex>=30&&extraIndex<45;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 811,
+      "line": 813,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3661,14 +3946,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 811,
+        "line": 813,
         "source": "const isThirdVolume=()=>isMode('mastery')&&extraIndex>=30&&extraIndex<45;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 822,
+      "line": 824,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3680,14 +3965,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 822,
+        "line": 824,
         "source": "const fourthCheckLimit=()=>!isFourthVolume()?0:(extraIndex%MASTER_VOLUME_SIZE<6?2:extraIndex%MASTER_VOLUME_SIZE<12?1:0);"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 822,
+      "line": 824,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3699,14 +3984,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 822,
+        "line": 824,
         "source": "const fourthCheckLimit=()=>!isFourthVolume()?0:(extraIndex%MASTER_VOLUME_SIZE<6?2:extraIndex%MASTER_VOLUME_SIZE<12?1:0);"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 825,
+      "line": 827,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3718,14 +4003,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 825,
+        "line": 827,
         "source": "const fourthChecksPersist=()=>isFourthVolume()&&extraIndex%MASTER_VOLUME_SIZE<12;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 827,
+      "line": 829,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3737,14 +4022,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 827,
+        "line": 829,
         "source": "const fourthChecksSurviveRestart=()=>isFourthVolume()&&extraIndex%MASTER_VOLUME_SIZE>=9&&extraIndex%MASTER_VOLUME_SIZE<12;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 827,
+      "line": 829,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3756,14 +4041,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 827,
+        "line": 829,
         "source": "const fourthChecksSurviveRestart=()=>isFourthVolume()&&extraIndex%MASTER_VOLUME_SIZE>=9&&extraIndex%MASTER_VOLUME_SIZE<12;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 832,
+      "line": 834,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3775,14 +4060,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 832,
+        "line": 834,
         "source": "fourthCheckUsage[extraIndex]=fourthChecksUsed;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 836,
+      "line": 838,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3794,14 +4079,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 836,
+        "line": 838,
         "source": "fourthChecksUsed=fourthChecksPersist()&&Number.isInteger(fourthCheckUsage[extraIndex])?fourthCheckUsage[extraIndex]:0;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 836,
+      "line": 838,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3813,14 +4098,14 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 836,
+        "line": 838,
         "source": "fourthChecksUsed=fourthChecksPersist()&&Number.isInteger(fourthCheckUsage[extraIndex])?fourthCheckUsage[extraIndex]:0;"
       }
     },
     {
       "name": "extraIndex",
       "file": "runtime/runtime.js",
-      "line": 841,
+      "line": 843,
       "access": "read",
       "classification": "owner",
       "category": "owner-only",
@@ -3832,7 +4117,7 @@
       "relatedE2E": [],
       "codeEvidence": {
         "file": "runtime/runtime.js",
-        "line": 841,
+        "line": 843,
         "source": "delete fourthCheckUsage[extraIndex];"
       }
     },

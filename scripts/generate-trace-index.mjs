@@ -1,5 +1,6 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { writeReport } from './lib/report.mjs';
 import { dirname, join, relative } from 'node:path';
 import { publishedSourceFiles } from './application-manifest.mjs';
 import { progressionEntryPoints } from './progression-entry-points.mjs';
@@ -115,6 +116,6 @@ const flowMap = {
   entryPoints: ['DOMContentLoaded', 'pointerdown', 'click', 'touchstart'].map(type => ({ type, files: sources.filter(({ text }) => text.includes(type)).map(({ file }) => file) }))
 };
 await mkdir(reportDir, { recursive: true });
-await writeFile(join(reportDir, 'symbol-index.json'), JSON.stringify(symbolIndex, null, 2) + '\n');
-await writeFile(join(reportDir, 'flow-map.json'), JSON.stringify(flowMap, null, 2) + '\n');
+await writeReport(join(reportDir, 'symbol-index.json'), symbolIndex);
+await writeReport(join(reportDir, 'flow-map.json'), flowMap);
 console.log(`Generated trace reports: ${relative(root, join(reportDir, 'symbol-index.json'))}, ${relative(root, join(reportDir, 'flow-map.json'))}`);

@@ -85,6 +85,7 @@
       version: VERSION,
       navigation: {
         mode: MODES.includes(seed.navigation?.mode) ? seed.navigation.mode : 'stage',
+        lastStageMode: MODES.includes(seed.navigation?.lastStageMode) ? seed.navigation.lastStageMode : null,
         lap: asLap(seed.navigation?.lap),
         stageIndex: asIndex(seed.navigation?.stageIndex),
         masteryIndex: asIndex(seed.navigation?.masteryIndex),
@@ -154,6 +155,7 @@
     const navigation = state?.navigation || {};
     return {
       mode: MODES.includes(navigation.mode) ? navigation.mode : 'stage',
+      lastStageMode: MODES.includes(navigation.lastStageMode) ? navigation.lastStageMode : null,
       lap: asLap(navigation.lap),
       stageIndex: asIndex(navigation.stageIndex),
       masteryIndex: asIndex(navigation.masteryIndex),
@@ -181,6 +183,7 @@
     const next = { ...current, ...(patch && typeof patch === 'object' ? patch : {}) };
     state.navigation = {
       mode: MODES.includes(next.mode) ? next.mode : current.mode,
+      lastStageMode: MODES.includes(next.lastStageMode) ? next.lastStageMode : current.lastStageMode,
       lap: asLap(next.lap),
       stageIndex: asIndex(next.stageIndex),
       masteryIndex: asIndex(next.masteryIndex),

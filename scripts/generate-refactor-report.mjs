@@ -1,8 +1,9 @@
 // 参照グラフを使って、統合候補を機械的に可視化する。
 // 判定は自動化せず、構造変更の前に人間が確認できる材料だけを生成する。
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { writeReport } from './lib/report.mjs';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const reportDir = join(root, 'build', 'report');
@@ -48,5 +49,5 @@ const report = {
   note: '候補は計測結果であり、自動削除・自動統合の指示ではない。'
 };
 await mkdir(reportDir, { recursive: true });
-await writeFile(join(reportDir, 'refactor-candidates.json'), JSON.stringify(report, null, 2) + '\n');
+await writeReport(join(reportDir, 'refactor-candidates.json'), report);
 console.log(`Generated refactor candidate report: ${candidates.length} candidates.`);

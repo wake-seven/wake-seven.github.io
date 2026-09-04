@@ -1,7 +1,8 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { publishedSourceFiles } from './application-manifest.mjs';
+import { writeReport } from './lib/report.mjs';
 
 // 主要操作要素のイベント配線を、現行ソースから機械的に索引化する。
 // 固定の対応表を手書きせず、公開ソースと生成済みHTMLのIDを材料にする。
@@ -54,5 +55,5 @@ const missingEvents = entries.flatMap(entry => entry.elements.filter(element => 
 const unknownDisplayTargets = entries.flatMap(entry => entry.elements.flatMap(element => element.events.flatMap(event => event.displayTargets.filter(id => !idsInHtml.has(id)).map(id => ({ key: entry.key, sourceId: element.id, id })))));
 const report = { schemaVersion: 1, generatedAt: new Date().toISOString(), source: 'scripts/application-manifest.mjs:publishedSourceFiles + index.html', entries, missingEvents, unknownDisplayTargets, passed: missingEvents.length === 0 && unknownDisplayTargets.length === 0 };
 await mkdir(reportDir, { recursive: true });
-await writeFile(join(reportDir, 'event-wiring-map.json'), JSON.stringify(report, null, 2) + '\n');
+await writeReport(join(reportDir, 'event-wiring-map.json'), report);
 console.log(`Generated event wiring map: ${relative(root, join(reportDir, 'event-wiring-map.json'))}`);

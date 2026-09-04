@@ -27,7 +27,8 @@ function pathValue(value) {
     .replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/$/, '').toLowerCase();
 }
 
-function matchesRegisteredPath(registered, changed) {
+// 影響調査と変更範囲監査が同じ登録パターン規則を使うための共有入口。
+export function matchesRegisteredPath(registered, changed) {
   const pattern = pathValue(registered);
   const path = pathValue(changed);
   if (!pattern || !path) return false;

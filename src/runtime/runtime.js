@@ -1,7 +1,7 @@
 // ===== 共通ユーティリティ =====
 // 公開版を識別するための単一のアプリケーションバージョン。
 // Aboutダイアログと生成済みindex.htmlは、この値を通じて同じ版を表示する。
-const APP_VERSION='2026.09.04-22:04';
+const APP_VERSION='2026.09.04-22:30';
 function tr(key,vars){
   const locale=UI_TEXT[currentLang]||{},fallback=UI_TEXT.ja||{};
   let value=Object.prototype.hasOwnProperty.call(locale,key)
@@ -100,8 +100,8 @@ WakeSevenState.purgeExternalStorage();
 const initialNavigation=WakeSevenState.navigationView(gameState);
 // ナビゲーション状態の所有者。既存のローカル変数は段階移行中の読み取り互換として残し、
 // 変更は updateNavigationStateOwner 経由でここへ反映する。
-const navigationState={mode:initialNavigation.mode,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};
-let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,clearShown=false,nextStageAttention=false;
+const navigationState={mode:initialNavigation.mode,lastStageMode:initialNavigation.lastStageMode||null,lap:initialNavigation.lap,stageIndex:initialNavigation.stageIndex,masteryIndex:initialNavigation.masteryIndex,satoriIndex:initialNavigation.satoriIndex,tutorialStep:initialNavigation.tutorialStep};
+let stageIndex=navigationState.stageIndex,extraIndex=navigationState.masteryIndex,satoriIndex=navigationState.satoriIndex,tutorialStep=navigationState.tutorialStep,activeMode=navigationState.mode,lastStageMode=navigationState.lastStageMode,clearShown=false,nextStageAttention=false;
 let pendingMasterThemeRefresh=false;
 let lastAnalyticsStageKey='';
 
@@ -115,7 +115,8 @@ function readNavigationStateOwner(){
   // 旧経路の読み書きが残る移行期間は、公開ビュー生成時に値を同期する。
   navigationState.mode=activeMode;navigationState.lap=activeLap;navigationState.stageIndex=stageIndex;
   navigationState.masteryIndex=extraIndex;navigationState.satoriIndex=satoriIndex;navigationState.tutorialStep=tutorialStep;
-  return Object.freeze({...navigationState,lastStageMode:typeof lastStageMode==='undefined'?null:lastStageMode});
+  navigationState.lastStageMode=lastStageMode;
+  return Object.freeze({...navigationState});
 }
 function updateNavigationStateOwner(patch={}){
   if(patch.mode!==undefined)navigationState.mode=ACTIVE_MODES.includes(patch.mode)?patch.mode:'stage';
@@ -126,7 +127,8 @@ function updateNavigationStateOwner(patch={}){
   if(patch.tutorialStep!==undefined)navigationState.tutorialStep=Math.max(0,Number(patch.tutorialStep)||0);
   activeMode=navigationState.mode;stageIndex=navigationState.stageIndex;extraIndex=navigationState.masteryIndex;
   satoriIndex=navigationState.satoriIndex;tutorialStep=navigationState.tutorialStep;activeLap=navigationState.lap;
-  if(patch.lastStageMode!==undefined&&typeof lastStageMode!=='undefined')lastStageMode=patch.lastStageMode;
+  if(patch.lastStageMode!==undefined)lastStageMode=ACTIVE_MODES.includes(patch.lastStageMode)?patch.lastStageMode:null;
+  navigationState.lastStageMode=lastStageMode;
   return readNavigationStateOwner();
 }
 const isMode=mode=>activeMode===mode;

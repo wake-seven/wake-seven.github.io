@@ -1,5 +1,6 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+import { writeReport } from './lib/report.mjs';
 import { dirname, join, relative } from 'node:path';
 import { publishedSourceFiles } from './application-manifest.mjs';
 
@@ -73,5 +74,5 @@ const report = {
   notes: ['要素の位置と参照は公開版マニフェストに含まれるソースから生成しています。', 'not-found は対応表の候補名が索引にないことを示し、手書きの推測ではありません。']
 };
 await mkdir(reportDir, { recursive: true });
-await writeFile(join(reportDir, 'ui-data-map.json'), JSON.stringify(report, null, 2) + '\n');
+await writeReport(join(reportDir, 'ui-data-map.json'), report);
 console.log(`Generated UI/data map: ${relative(root, join(reportDir, 'ui-data-map.json'))}`);

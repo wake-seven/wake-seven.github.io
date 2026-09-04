@@ -40,7 +40,7 @@ function loadState(storage) {
 const storage = createStorage();
 const firstLoad = loadState(storage);
 const firstState = firstLoad.api.create({
-  navigation: { mode: 'mastery', lap: 2, stageIndex: 19, masteryIndex: 7, satoriIndex: 3, tutorialStep: 4 },
+  navigation: { mode: 'mastery', lastStageMode: 'stage', lap: 2, stageIndex: 19, masteryIndex: 7, satoriIndex: 3, tutorialStep: 4 },
   board: { o: [2, 0, 1, 2, 1, 0, 2], t: [1, 2, 0], moves: 2, initial: [0, 1, 2, 0, 1, 2, 0] },
   progress: {
     lap1: { primary: [0, 1, 2], mastery: [0, 1], satori: [0] },
