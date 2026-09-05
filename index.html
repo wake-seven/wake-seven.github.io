@@ -1803,7 +1803,7 @@
       },
       uiPolicy({mode,lap,stageIndex,speedVariant}) {
         if(mode === 'tutorial') return {id:'tutorial',assisted:true};
-        if(mode === 'speed' && speedVariant === 'training9') return {id:'speed-training9',eliminateWrongRods:true,speedFalling:true};
+        if(mode === 'speed' && speedVariant === 'training9') return {id:'speed-training9',assisted:true,eliminateWrongRods:true,speedFalling:true};
         if(mode !== 'stage') return {id:'standard'};
         if(stageIndex < academyTotal) {
           if(stageIndex >= developmentStart) return {id:'development',assisted:true,development:lap === 1,eliminateWrongRods:lap === 1};
@@ -6900,6 +6900,12 @@ function completeBoard({mode=activeMode,context={},animation=true,nextAction=nul
     recordProgressClearCommand('mastery',extraIndex);rememberClearedMessage(true,extraIndex);updateMasterTheme();
   }else if(target!=='free'&&target!=='custom'){
     recordProgressClearCommand('primary',stageIndex);rememberClearedMessage(false,stageIndex);
+    // だるま学園を修了した時点で、最初の速解き（九番勝負）を選べるようにする。
+    // 卒業試験の合格フラグは立てず、九番勝負そのものは初回の試験として残す。
+    if(stageIndex===ACADEMY_STAGE_COUNT-1&&academyCleared()){
+      unlockSpeedVariant('training9');
+      renderStageNav();
+    }
   }
   const message=$('msg');message.textContent='';message.classList.remove('show','tip','long-tip');clearUiEffectTimers('clear-transition');
   WakeSevenClearFeature.start({animation,context,nextAction});
@@ -7360,7 +7366,7 @@ function restoreActiveSession(){
   // セッションを途中保存しているだけでは、通常ステージ／フリー／自作の復元を上書きしない。
   if(saved?.mode==='speed'){
     const savedSpeed=readActiveSpeedSession();
-    if(savedSpeed&&speedVariantUnlocked(savedSpeed.variant)){
+    if(savedSpeed){
       WakeSevenSpeedFeature.restore(savedSpeed);return;
     }
     try{storage.remove(STORAGE_KEY_GROUPS.progression.activeSession);}catch(_){ }
