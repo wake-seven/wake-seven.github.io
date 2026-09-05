@@ -266,6 +266,7 @@
   .mode-row.speed-mode:not(.speed-training) .status-metric.remaining b{color:var(--kin)}
   /* 速解きではタイムを先頭に置く。残り手数／手数とは既存の区切りだけで十分。 */
   .speed-clock-inline{display:flex;order:-1;align-items:baseline;gap:0.25rem;margin-left:0;margin-right:0.75rem;white-space:nowrap;color:#9FB0C4;font-size:0.6875rem;letter-spacing:.04em}
+  .mode-row.speed-training .speed-clock-inline{order:0;align-self:center;margin-left:0.375rem;transform:translateY(0.1875rem)}
   .speed-clock-inline[hidden]{display:none!important}
   .speed-clock-inline b{color:var(--kin);font-size:2.125rem;line-height:1;font-variant-numeric:tabular-nums}
   .speed-clock-inline #speedClockLabel:empty{display:none}
@@ -615,6 +616,7 @@
   .two-move-lesson-open{margin-left:auto;padding:0.4375rem 0.75rem!important;white-space:nowrap;font-size:0.75rem!important}
   .speed-pause-inline{display:flex;margin-left:auto}
   .speed-pause-inline #speedPause{min-width:7.375rem;padding:0.625rem 0.75rem;font-size:0.8125rem;white-space:nowrap}
+  .mode-row.speed-training .speed-pause-inline #speedPause{min-width:0;padding:0.4375rem 0.75rem;font-size:0.75rem}
   .mode-row.speed-mode .status-metric.remaining{flex-shrink:0;white-space:nowrap}
   /* 応用編では、目標3枚を「あと○くるり」の右側へ同じ行で表示する。 */
   /* 見本はHUDの右端に固定し、残り手数の文字幅をレイアウトから奪わない。 */
@@ -1048,11 +1050,11 @@
 </div>
 <div class="stage-accent" id="stageAccent" aria-hidden="true"><div class="stage-accent-fill" id="stageAccentFill"></div></div>
 <div class="mode-row">
-  <div class="speed-clock-inline" id="speedClockInline" hidden><span id="speedClockLabel">タイム</span><b id="speedClockValue">00:00</b></div>
   <div class="status-metric remaining"><span id="shortestLabel">あと</span><b id="stagePar">1</b><span id="moveUnit">くるり</span><span class="academy-clear-suffix" id="academyClearSuffix"></span></div>
   <div class="application-target-preview" id="applicationTargetPreview" hidden aria-label="応用クラスの目標"><svg id="applicationTargetPreviewBoard" viewBox="14 0 293 310" aria-hidden="true"></svg><span id="applicationTargetPreviewLabel">を作る</span></div>
   <span class="status-separator">/</span>
   <div class="status-metric moves"><span id="movesLabel">いま</span><b id="moves">0</b><span id="movesUnit">くるり</span></div>
+  <div class="speed-clock-inline" id="speedClockInline" hidden><span id="speedClockLabel">タイム</span><b id="speedClockValue">00:00</b></div>
   <div class="speed-pause-inline" id="speedPauseInline"></div>
   <button class="chip on two-move-lesson-open" id="twoMoveLessonOpen" type="button" hidden>コツを見る</button>
   <button class="chip stage-return" id="stageModeReturn" hidden>ステージモードへ</button>
