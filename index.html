@@ -5763,14 +5763,7 @@ function completeSpeedStage(){
 // ===== 速解きセッションの入口 =====
 // 開始・一時停止・再開・復元の呼び出しを一つの機能入口から追跡する。
 // タイマー計算、問題データ、保存の実装は既存の所有モジュールへ委譲する。
-function readSpeedFeatureContext(){const navigation=readNavigationContext();return Object.freeze({
-  variant:speedVariant,
-  mode:navigation.mode,
-  session:typeof readActiveSpeedSession==='function'?readActiveSpeedSession():null,
-  running:typeof isMode==='function'&&isMode('speed')
-});}
 const WakeSevenSpeedFeature=Object.freeze({
-  context:readSpeedFeatureContext,
   openPicker(){return openSpeedPicker();},
   start(options={}){
     const request=typeof options==='boolean'?{forceNew:options}:(options&&typeof options==='object'?options:{});
@@ -9489,8 +9482,7 @@ const WakeSevenClearFeature=Object.freeze({
     renderStageNav();
     return true;
   },
-  trace(){return clearFeatureTrace.slice();},
-  state(){return typeof getClearFlowState==='function'?getClearFlowState():null;}
+  trace(){return clearFeatureTrace.slice();}
 });
 
 // ===== ダイアログ連鎖機能の入口 =====
@@ -9509,7 +9501,6 @@ const WakeSevenDialogChainFeature=Object.freeze({
   next(){return $('chainDialogAction')?.click();},
   back(){return $('chainDialogPrev')?.click();},
   close(){return closeChainDialog();},
-  restore(name){return showDialogChainStep(name);},
   context:readDialogChainContext
 });
 
@@ -9813,7 +9804,6 @@ const WakeSevenStagePickerFeature=Object.freeze({
     if(options.round!==undefined||options.satoriPage!==undefined||options.lap!==undefined)return openStagePickerAt(options);
     return openStagePicker();
   },
-  select(options={}){return openStagePickerAt(options);},
   openSatori(){return openSatoriPicker();},
   openRank(returnTarget=null){return openRankDialog(returnTarget);},
   openRankFrom(dialogId,sealId){return typeof openRankDialogFrom==='function'&&openRankDialogFrom(dialogId,sealId);},
@@ -9844,11 +9834,6 @@ const WakeSevenStagePickerFeature=Object.freeze({
     updateDialogStateOwner({rankDialogReturn:null});
     $('rankDialog').hidden=true;
     return openStagePickerAt({lap,round,satoriPage});
-  },
-  restore(options={}){
-    options=options&&typeof options==='object'?options:{};
-    if(options.round!==undefined||options.satoriPage!==undefined||options.lap!==undefined)return openStagePickerAt(options);
-    return openStagePicker();
   }
 });
 
@@ -9936,8 +9921,7 @@ const WakeSevenSettingsFeature=Object.freeze({
   toggleSound:toggleSoundFeature,
   setLanguage:setLanguageFeature,
   reset:resetSettingsFeature,
-  close:closeSettingsFeature,
-  restore:openSettingsFeature
+  close:closeSettingsFeature
 });
 
 // ===== 進行UI（このファイルの責務） =====
