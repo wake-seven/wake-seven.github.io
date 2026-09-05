@@ -372,6 +372,13 @@
   .two-move-lesson-copy{display:grid;gap:0.375rem;margin:0.5625rem 0 0}
   .two-move-lesson-copy p{box-sizing:border-box;margin:0;padding:0.4375rem 0.5625rem;border:1px solid rgba(98,184,210,.28);border-radius:0.375rem;background:rgba(98,184,210,.075);color:#F7F1E5;font-size:0.75rem;font-weight:650;line-height:1.5;text-align:left}
   .two-move-lesson-copy strong{color:#62D7F4;font-weight:900}
+  .application-clear-lesson{margin:0.5625rem 0 0;padding:0.5625rem;border:1px solid rgba(98,184,210,.4);border-radius:0.5rem;background:rgba(98,184,210,.075)}
+  .application-clear-lesson[hidden]{display:none}
+  .application-clear-lesson .two-move-lesson-copy{margin:0}
+  .application-clear-lesson .two-move-lesson-copy p{padding:0;border:0;background:none;text-align:center}
+  .application-clear-lesson .application-clear-lesson-title{color:#62D7F4;font-size:1.125rem;font-weight:900}
+  .application-clear-lesson .application-clear-lesson-hint{margin-top:0.25rem;color:var(--kin);font-size:1rem;font-weight:800}
+  .application-clear-lesson .clear-tip-illustration{margin:0.25rem 0 0}
   .two-move-lesson-tabs{display:flex;justify-content:center;gap:0.375rem;margin:0.625rem 0 0}
   .two-move-lesson-tabs .chip{padding:0.375rem 0.75rem;font-size:0.75rem}
   #twoMoveLessonShape p,#twoMoveLessonText p{font-size:0.9375rem;line-height:1.6}
@@ -523,6 +530,12 @@
   .training-departure-goal-card svg{display:block;width:100%;height:auto}
   .training-departure-goal-card p{margin:0;color:#D9E4EC;font-size:1rem;font-weight:700;text-align:center}
   .mini-shape-outline,.training-shape-callout-outline{fill:none;stroke:#29A8CE;stroke-width:8;stroke-linejoin:round;filter:drop-shadow(0 0 2px rgba(10,30,45,.45))}
+  .application-intro-demo,.application-intro-message{opacity:0;transition:opacity .24s ease}
+  .application-intro-demo.show,.application-intro-message.show{opacity:1}
+  .application-intro-demo.fade-out,.application-intro-message.fade-out{opacity:0}
+  .application-intro-message-badge{fill:rgba(15,35,52,.9);stroke:#62B8D2;stroke-width:2}
+  .application-intro-message-text{fill:#F7F1E5;font:800 20px sans-serif;text-anchor:middle}
+  .application-intro-message-subtext{fill:#8BCDE0;font:700 13px sans-serif;text-anchor:middle}
   .training-shape-callout{opacity:0;transition:opacity .22s ease;pointer-events:none}
   .training-shape-callout.show{opacity:1}
   .training-shape-callout-badge{fill:rgba(15,35,52,.85);stroke:#29A8CE;stroke-width:2}
@@ -625,6 +638,8 @@
   .application-target-preview[hidden]{display:none!important}
   .application-target-preview{opacity:1;transition:opacity .28s ease;animation:application-target-breathe 2s ease-in-out 3 both}
   .application-target-preview.is-fading{opacity:0}
+  .application-target-preview.application-target-preview-enter{animation:application-target-preview-enter .62s cubic-bezier(.18,.82,.24,1) both}
+  @keyframes application-target-preview-enter{from{opacity:0;transform:translate(-5rem,3.25rem) scale(1.85)}to{opacity:1;transform:translateY(-50%) scale(1)}}
   @keyframes application-target-breathe{0%,100%{opacity:1}50%{opacity:.48}}
   /* 目標見本は「あと1くるり」の到達形を読める大きさで示す。 */
   .application-target-preview svg{display:block;width:8.1rem;height:5.175rem;overflow:visible;flex:none;transform:translate(1.35rem,.7rem)}
@@ -1215,8 +1230,7 @@
 <div class="game-dialog-backdrop" id="clearDialog" hidden>
   <div class="game-dialog">
     <div class="clear-dialog-heading"><h2 id="clearDialogMessage"></h2><span class="clear-stage-context" id="clearStageContext"></span></div>
-    <div class="two-move-lesson-copy" id="clearTwoMoveLessonRule" hidden></div>
-    <div class="clear-tip-illustration" id="clearTipIllustration" hidden></div>
+    <div class="application-clear-lesson" id="clearApplicationLesson" hidden><div class="two-move-lesson-copy" id="clearTwoMoveLessonRule" hidden></div><div class="clear-tip-illustration" id="clearTipIllustration" hidden></div><div class="two-move-lesson-copy" id="clearApplicationLessonHint" hidden></div></div>
     <div id="clearDialogText"><span id="clearDialogTextBody"></span><button class="clear-tip-link" id="clearTipLink" type="button" hidden></button></div>
     <div id="clearShapeRuleWrap" hidden>
       <p class="training-shape-rule-intro" id="clearShapeRuleIntro"></p>
@@ -2674,6 +2688,7 @@ const UI_TEXT={
     twoMoveTip3DescTemplate:'「{name}」は、{text}形だよ',
     twoMoveLessonTab1:'選び方のコツ',
     twoMoveLessonTab2:'回し方のコツ',
+    twoMoveLessonTurnTitle:'「{name}」の回し方',
     twoMoveLessonPractice:'外側の寝た2枚に、1枚を合わせにいこう',
     twoMoveLessonSecond:'外側の寝た1枚に、2枚を合わせにいこう',
     twoMoveLessonClose:'OK',
@@ -3082,6 +3097,7 @@ const UI_TEXT={
     twoMoveTip3DescTemplate:'"{name}": {text}',
     twoMoveLessonTab1:'How to Choose',
     twoMoveLessonTab2:'How to Turn',
+    twoMoveLessonTurnTitle:'How to Turn the “{name}”',
     twoMoveLessonPractice:'Match the one to the two fallen tiles on the outside.',
     twoMoveLessonSecond:'Match the two to the one fallen tile on the outside.',
     twoMoveLessonClose:'Got it',
@@ -3478,6 +3494,7 @@ const UI_TEXT={
     twoMoveTip3DescTemplate:'“{name}”是{text}的形状',
     twoMoveLessonTab1:'选择的诀窍',
     twoMoveLessonTab2:'转动的诀窍',
+    twoMoveLessonTurnTitle:'「{name}」的转法',
     twoMoveLessonPractice:'让1个不倒翁去对齐外圈倒下的2个',
     twoMoveLessonSecond:'让2个不倒翁去对齐外圈倒下的1个',
     twoMoveLessonClose:'明白了',
@@ -3871,6 +3888,7 @@ const UI_TEXT={
     twoMoveTip3DescTemplate:'"{name}"은 {text} 모양이에요',
     twoMoveLessonTab1:'고르는 요령',
     twoMoveLessonTab2:'돌리는 요령',
+    twoMoveLessonTurnTitle:'「{name}」 돌리는 법',
     twoMoveLessonPractice:'바깥쪽에 누운 2개에 1개를 맞추러 가자',
     twoMoveLessonSecond:'바깥쪽에 누운 1개에 2개를 맞추러 가자',
     twoMoveLessonClose:'알겠어요',
@@ -5496,12 +5514,26 @@ function speedAwaitingStart(){
 }
 // 問題が切り替わった時に、盤面が中央から広がって現れる演出。速解きモード専用だったが、
 // 通常モード（次へ・ステージ選択・フリー等）の問題開始時にも共通で使う。
+let boardArrivalHiddenControls=[];
+function restoreBoardArrivalControls(){
+  boardArrivalHiddenControls.forEach(({el,visibility})=>el.style.visibility=visibility);
+  boardArrivalHiddenControls=[];
+}
 function animateBoardArrival(){
   clearUiEffectTimers('board-arrival');
+  restoreBoardArrivalControls();
+  // 応用クラスの導入だけは、完成形のフェードインを最初の表示にする。
+  // 通常の「中央から広がる」盤面到着演出を重ねると、見本の前に別のアニメが見えてしまう。
+  if(isApplicationTargetStage()&&applicationTargetRevealPending&&!applicationTargetActualBoardArrival)return;
   svg.classList.add('arriving');
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){
     svg.classList.remove('arriving');
     return;
+  }
+  const hideControls=isApplicationTargetStage()&&applicationTargetActualBoardArrival;
+  if(hideControls){
+    boardArrivalHiddenControls=[...svg.querySelectorAll('.grip-marker,.pivot')].map(el=>({el,visibility:el.style.visibility}));
+    boardArrivalHiddenControls.forEach(({el})=>el.style.visibility='hidden');
   }
   const center=CELL[3];
   tileEls.forEach((tile,index)=>{
@@ -5513,7 +5545,10 @@ function animateBoardArrival(){
       {transform:end,opacity:1}
     ],{duration:430,delay:index*32,easing:'cubic-bezier(.18,.8,.2,1)',fill:'backwards'});
   });
-  setUiEffectTimer('board-arrival','remove',()=>svg.classList.remove('arriving'),560);
+  setUiEffectTimer('board-arrival','remove',()=>{
+    svg.classList.remove('arriving');
+    restoreBoardArrivalControls();
+  },560);
 }
 function loadSpeedStage(restoreBoard=false,arriving=false){
   if(!speedSession)return;
@@ -6654,6 +6689,34 @@ const isTwoMoveLessonStage=()=>isMode('stage')&&((stageIndex>=BASIC_STAGE_START&
 // 盤面の向きに関係なく型を判定できるよう、9パターンの正規化済み状態から出題順(1〜9)を逆引きする。
 const TWO_MOVE_CANONICAL_POSITION=new Map(TWO_MOVE_STAGES.map((stage,patternIndex)=>[canonicalState(stage.state),BASIC_LESSON_PATTERN_ORDER.indexOf(patternIndex)+1]));
 const isTwoMoveLessonSpeedStage=()=>isMode('speed')&&speedVariant==='training9';
+const isApplicationTwoMoveLessonStage=()=>isMode('stage')&&stageIndex>=APPLICATION_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START;
+function applicationClearLessonContext(){
+  if(!isApplicationTwoMoveLessonStage())return null;
+  const state=campaignStageState(STAGES[stageIndex].state);
+  const position=TWO_MOVE_CANONICAL_POSITION.get(canonicalState(state));
+  if(!position)return null;
+  return {state,position,shape:TWO_MOVE_TIP3_SHAPES[position],group:position<=5?'joinOne':'joinTwo'};
+}
+function applicationClearTurnHint(shape){
+  const hint=tr('twoMoveTip3'+shape+'Hint');
+  if(currentLang==='ja')return hint.replace(/選ぼう/g,'回そう');
+  if(currentLang==='en')return hint.replace(/^Choose /,'Turn ');
+  if(currentLang==='zh')return hint.replace(/^选择/,'转动');
+  if(currentLang==='ko')return hint.replace(/고르자/g,'돌리자');
+  return hint;
+}
+function renderApplicationClearLessonRule(context){
+  const root=$('clearTwoMoveLessonRule'),hintRoot=$('clearApplicationLessonHint');
+  root.replaceChildren();hintRoot.replaceChildren();
+  if(!context){root.hidden=true;hintRoot.hidden=true;return;}
+  const title=document.createElement('p'),hint=document.createElement('p');
+  title.className='application-clear-lesson-title';
+  title.textContent=tr('twoMoveLessonTurnTitle',{name:tr('twoMoveTip3'+context.shape+'Name')});
+  hint.className='application-clear-lesson-hint';
+  hint.textContent=applicationClearTurnHint(context.shape);
+  root.append(title);hintRoot.append(hint);
+  root.hidden=false;hintRoot.hidden=false;
+}
 function currentTwoMoveLessonContext(){
   if(isTwoMoveLessonStage()){
     const base=stageIndex<BASIC_STAGE_START+BASIC_STAGE_COUNT?BASIC_STAGE_START:TRAINING_STAGE_START;
@@ -7114,13 +7177,20 @@ function setPosition(state,par){
   resetFourthDistance();
   cancelTutorialHint();
   cancelTileAnimations();
+  restoreBoardArrivalControls();
   clearHintVisuals();
   svg.querySelectorAll('.clear-burst').forEach(el=>el.remove());
   resetClearFlow();
   svg.querySelectorAll('.training-shape-callout').forEach(el=>el.remove());
   clearUiContextTimer('training-shape-callout');
+  stopApplicationTargetIntro();
+  clearUiEffectTimers('application-intro');
   initializeBoardPositionCommand(state,par);
-  bindApplicationTargetTiles();
+  const applicationIntro=isApplicationTargetStage();
+  applicationTargetRevealPending=applicationIntro;
+  applicationTargetPreviewEarlyVisible=false;
+  applicationTargetActualBoardArrival=false;
+  bindApplicationTargetTiles({reveal:!applicationIntro});
   clearUiEffectTimers('board-arrival');
   resetBoardUiContext();
   svg.classList.remove('tutorial-grab-step','tutorial-clear-step','invalid-grab');
@@ -7131,6 +7201,10 @@ function setPosition(state,par){
   $('msg').classList.remove('show','tip','long-tip');
   hideGameDialogs();
   paint();
+  if(applicationIntro){
+    // ブラウザへ描画を渡す前に実盤面を隠し、完成形のフェードインを最初の表示にする。
+    startApplicationTargetIntro();
+  }
 }
 function tutorialSolvingMoves(state=enc(ori)){
   const board=dec(state),moves=[],distance=SOLVER.dist[state];
@@ -8454,10 +8528,102 @@ function computeSpeedTrainingCandidateTis(){
 }
 
 // 学園補助UIの表示を担当する。候補計算とは分離し、盤面DOMへの反映だけを行う。
-let applicationTargetTiles=new Set();
-function bindApplicationTargetTiles(){
+let applicationTargetTiles=new Set(),applicationTargetRevealPending=false,applicationTargetPreviewEarlyVisible=false,applicationTargetActualBoardArrival=false;
+let applicationTargetIntroRun=0,applicationTargetIntroCleanup=null;
+function stopApplicationTargetIntro(){
+  applicationTargetIntroRun++;
+  applicationTargetIntroCleanup?.();
+  applicationTargetIntroCleanup=null;
+}
+// 応用クラスの導入見本は問題別に変えず、上2枚＋中央が同じ向きで寝た
+// 「あと1くるり」の共通完成形を使う。
+const APPLICATION_INTRO_TARGET_CELLS=Object.freeze([0,1,3]);
+const APPLICATION_INTRO_STATE=Object.freeze([1,1,0,1,0,0,0]);
+function startApplicationTargetIntro(){
+  if(!applicationTargetRevealPending||!isApplicationTargetStage())return;
+  const token=++applicationTargetIntroRun,NS_='http://www.w3.org/2000/svg';
+  const alive=()=>token===applicationTargetIntroRun&&applicationTargetRevealPending&&isApplicationTargetStage();
+  const demo=document.createElementNS(NS_,'g');demo.setAttribute('class','application-intro-demo');
+  const message=document.createElementNS(NS_,'g');message.setAttribute('class','application-intro-message');
+  const clones=tileEls.map(tile=>tile.cloneNode(true));
+  const hiddenTiles=tileEls.map(tile=>({tile,visibility:tile.style.visibility}));
+  const hiddenControls=[...svg.querySelectorAll('.grip-marker,.pivot')].map(el=>({el,visibility:el.style.visibility}));
+  hiddenTiles.forEach(({tile})=>tile.style.visibility='hidden');
+  hiddenControls.forEach(({el})=>el.style.visibility='hidden');
+  clones.forEach((clone,index)=>{
+    const value=APPLICATION_INTRO_STATE[index];
+    clone.setAttribute('class','tile '+(value?'fallen':'stand'));
+    clone.style.transform=tileTransform(CELL[index].x,CELL[index].y,value);
+    clone.querySelectorAll('.application-target-inline-frame').forEach(frame=>frame.remove());
+    demo.appendChild(clone);
+  });
+  // 盤面中央の三角を隠さないよう、下の2枚のパネルに重ねる位置へ下げる。
+  const messageY=CELL[5].y+4;
+  const text=document.createElementNS(NS_,'text');text.setAttribute('class','application-intro-message-text');text.setAttribute('x',CELL[3].x);text.setAttribute('y',messageY);text.textContent='1回まわして';
+  const subtext=document.createElementNS(NS_,'text');subtext.setAttribute('class','application-intro-message-subtext');subtext.setAttribute('x',CELL[3].x);subtext.setAttribute('y',messageY+20);subtext.textContent='この形をめざそう';
+  message.append(text,subtext);svg.append(demo,message);
+  const box=message.getBBox(),badge=document.createElementNS(NS_,'rect');
+  badge.setAttribute('class','application-intro-message-badge');badge.setAttribute('x',box.x-14);badge.setAttribute('y',box.y-9);badge.setAttribute('width',box.width+28);badge.setAttribute('height',box.height+18);badge.setAttribute('rx','18');message.insertBefore(badge,text);
+  const cleanup=()=>{
+    demo.remove();message.remove();
+    hiddenTiles.forEach(({tile,visibility})=>tile.style.visibility=visibility);
+    hiddenControls.forEach(({el,visibility})=>el.style.visibility=visibility);
+  };
+  applicationTargetIntroCleanup=cleanup;
+  // 指定された上2枚＋中央の三角だけを紫で示す。
+  for(const cell of APPLICATION_INTRO_TARGET_CELLS){
+    const clone=clones[cell];
+    clone.classList.add('application-target');
+    renderApplicationTargetInlineFrame(clone,true);
+  }
+  // 7枚の完成形と紫枠をすべて組み立て終えてから、同じフレームでフェードインする。
+  requestAnimationFrame(()=>{
+    if(!alive())return;
+    demo.classList.add('show');
+    message.classList.add('show');
+  });
+  const hold=matchMedia('(prefers-reduced-motion: reduce)').matches?240:1800;
+  setUiEffectTimer('application-intro','fade-demo',()=>{
+    if(!alive())return;
+    // 7枚の見本が消え始める瞬間に、完成形の3枚を右上の常設見本へ受け渡す。
+    showApplicationTargetPreview({enter:true});
+    demo.classList.add('fade-out');message.classList.add('fade-out');
+    setUiEffectTimer('application-intro','show-shape',()=>{
+      if(!alive())return;
+      cleanup();applicationTargetIntroCleanup=null;
+      // 見本の後は、実際の初期盤面を中央から広げて表示する。
+      applicationTargetActualBoardArrival=true;
+      animateBoardArrival();
+      const arrivalDuration=matchMedia('(prefers-reduced-motion: reduce)').matches?0:600;
+      setUiEffectTimer('application-intro','show-shape-after-arrival',()=>{
+        if(!alive())return;
+        // 実盤面がそろってから「あと2くるり」の型を確認する。
+        showTrainingShapeCallout();
+        // 水色ガイドが消え始める瞬間に、待ち時間なく紫枠へ切り替える。
+        setUiEffectTimer('application-intro','reveal-targets',()=>revealApplicationTargetsAfterIntro(),1000);
+      },arrivalDuration);
+    },360);
+  },hold);
+}
+function revealApplicationTargetsAfterIntro(){
+  if(!applicationTargetRevealPending||!isApplicationTargetStage())return;
+  applicationTargetRevealPending=false;
+  bindApplicationTargetTiles();
+  if(!applicationTargetPreviewEarlyVisible)showApplicationTargetPreview({enter:true});
+}
+function showApplicationTargetPreview({enter=false}={}){
+  applicationTargetPreviewEarlyVisible=true;
+  renderApplicationTargetPreview();
+  const preview=$('applicationTargetPreview');
+  if(enter&&preview&&!preview.hidden){
+    preview.classList.remove('application-target-preview-enter');
+    void preview.getBoundingClientRect();
+    preview.classList.add('application-target-preview-enter');
+  }
+}
+function bindApplicationTargetTiles({reveal=true}={}){
   applicationTargetTiles=new Set();
-  if(isApplicationTargetStage()){
+  if(reveal&&isApplicationTargetStage()){
     for(const index of STAGES[stageIndex]?.targetCells||[]){
       if(tileEls[index])applicationTargetTiles.add(tileEls[index]);
     }
@@ -8483,7 +8649,7 @@ function renderApplicationTargetPreview(){
   const remaining=SOLVER.dist[enc(ori)];
   const stage=isApplicationTargetStage()?STAGES[stageIndex]:null;
   const targets=stage?.targetCells||[];
-  if(!stage||targets.length!==3){
+  if((applicationTargetRevealPending&&!applicationTargetPreviewEarlyVisible)||!stage||targets.length!==3){
     clearUiEffectTimer('application-preview','hide');preview.classList.remove('is-fading');preview.hidden=true;board.replaceChildren();return;
   }
   if(remaining<=1){
@@ -10040,6 +10206,8 @@ function clearBoardSvg(state){return miniBoardSvg(state).replace('viewBox="14 0 
 function renderClearTip(){
   const text=stageClearText(),art=stageClearArt(),illustration=$('clearTipIllustration');
   const twoMoveLesson=lessonVariantFromArt(art);
+  const applicationLesson=applicationClearLessonContext();
+  const applicationLessonWrap=$('clearApplicationLesson');
   const lessonCopy=$('clearTwoMoveLessonCopy');
   const lessonRule=$('clearTwoMoveLessonRule');
   const clearEntry=isMode('mastery')?clearEntryForCurrent():null;
@@ -10076,20 +10244,22 @@ function renderClearTip(){
   illustration.classList.toggle('unwritten-art',art==='unwritten');
   illustration.classList.toggle('cheer-art',art==='cheer');
   illustration.classList.toggle('intro-guide-art',art==='introGuide');
-  illustration.classList.toggle('two-move-lesson-art',!!twoMoveLesson);
+  illustration.classList.toggle('two-move-lesson-art',!!twoMoveLesson||!!applicationLesson);
   stopClearGuideBoard('clearGuideBoard');
   stopClearGuideBoard('clearTwoMoveLessonBoard');
   svgMount(illustration,art==='introGuide'?'<svg id="clearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
-    :twoMoveLesson?'<svg id="clearTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
+    :(twoMoveLesson||applicationLesson)?'<svg id="clearTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
     :art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'');
   if(art==='introGuide')buildClearGuideBoard('clearGuideBoard');
   if(twoMoveLesson)buildTwoMoveLessonBoard('clearTwoMoveLessonBoard',twoMoveLesson);
-  illustration.hidden=!art;
+  if(applicationLesson)buildTwoMoveLessonBoard('clearTwoMoveLessonBoard',applicationLesson.group,applicationLesson.state);
+  illustration.hidden=!art&&!applicationLesson;
   // 上巻5問目は案内文を本文へ統合したため、旧ルール行と重複する実演コピーは出さない。
   const showLessonCopy=!!twoMoveLesson&&art!=='twoMoveLessonTwo';
   lessonCopy.hidden=!showLessonCopy;
-  lessonRule.hidden=true;
+  renderApplicationClearLessonRule(applicationLesson);
   if(twoMoveLesson){
+    applicationLessonWrap.hidden=true;
     if(showLessonCopy)renderTwoMoveLessonCopy('clearTwoMoveLessonCopy',twoMoveLesson);
     else lessonCopy.replaceChildren();
     // 本文の案内 → 実演 → 具体策、の順で読めるようにする。
@@ -10097,9 +10267,17 @@ function renderClearTip(){
     if(showLessonCopy)illustration.after(lessonCopy);
   }else{
     // 節目以外のクリアでは、前回の最短2手レッスンを残さない。
-    lessonRule.replaceChildren();
+    if(!applicationLesson)lessonRule.replaceChildren();
     lessonCopy.replaceChildren();
-    document.querySelector('#clearDialog .clear-dialog-heading').after(illustration);
+    const heading=document.querySelector('#clearDialog .clear-dialog-heading');
+    if(applicationLesson){
+      heading.after(applicationLessonWrap);
+      applicationLessonWrap.append(lessonRule,illustration,$('clearApplicationLessonHint'));
+      applicationLessonWrap.hidden=false;
+    }else{
+      applicationLessonWrap.hidden=true;
+      heading.after(illustration);
+    }
   }
 }
 // メッセージ見直しUIは src/ui/message.js に分離済み。
