@@ -522,7 +522,7 @@
   .training-departure-goal-card{display:flex;flex-direction:column;align-items:center;gap:0.3125rem}
   .training-departure-goal-card svg{display:block;width:100%;height:auto}
   .training-departure-goal-card p{margin:0;color:#D9E4EC;font-size:1rem;font-weight:700;text-align:center}
-  .mini-shape-outline{fill:none;stroke:#29A8CE;stroke-width:8;stroke-linejoin:round;filter:drop-shadow(0 0 2px rgba(10,30,45,.45))}
+  .mini-shape-outline,.training-shape-callout-outline{fill:none;stroke:#29A8CE;stroke-width:8;stroke-linejoin:round;filter:drop-shadow(0 0 2px rgba(10,30,45,.45))}
   .training-shape-callout{opacity:0;transition:opacity .22s ease;pointer-events:none}
   .training-shape-callout.show{opacity:1}
   .training-shape-callout-badge{fill:rgba(15,35,52,.85);stroke:#29A8CE;stroke-width:2}
@@ -5162,6 +5162,9 @@ const isAssistedLearningStage=()=>currentUiPolicy().assisted===true;
 const isNarrowedBasicStage=()=>currentUiPolicy().narrowRods===true;
 // だるま学園・発展クラス: 初期候補本数(stage.initialRodCount)だけ棒を絞り込み、間違えた棒はその都度落ちる。
 const isDevelopmentStage=()=>currentUiPolicy().development===true;
+// 発展クラスの前半5問だけは3くるり問題。1手進めて残り2くるりになった時に、
+// 修行と同じ「2くるり形」の中央ガイドを見せる対象にする。
+const isDevelopmentThreeMoveStage=()=>isMode('stage')&&stageIndex>=DEVELOPMENT_STAGE_START&&stageIndex<DEVELOPMENT_STAGE_START+DEVELOPMENT_THREE_COUNT;
 // 速解き九番勝負: 正解候補を1本含む3本だけを固定表示し、間違えた棒はその都度落ちる。
 const isSpeedFallingRodStage=()=>currentUiPolicy().speedFalling===true;
 // 発展クラス・速解き九番勝負のどちらでも、間違えた棒を落として二度と選べなくする対象区間。
@@ -7042,14 +7045,6 @@ function cancelTileAnimations(){
   cancelBoardAnimationSession();
   for(const el of baseTiles) for(const a of el.getAnimations()) a.cancel();
 }
-function wakeFeedback(elements){
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  elements.forEach((el,i)=>el.animate([
-    {filter:'brightness(1) drop-shadow(0 0 0 rgba(201,165,78,0))'},
-    {filter:'brightness(1.3) drop-shadow(0 0 10px rgba(201,165,78,.85))',offset:.42},
-    {filter:'brightness(1.04) drop-shadow(0 0 0 rgba(201,165,78,0))'}
-  ],{duration:480,delay:i*45,easing:'cubic-bezier(.2,.8,.25,1)'}));
-}
 function applySwipe(ti,dir,save=true,playEffects=true){
   if(usesHiddenRemaining())resetFourthDistance();
   const {oldSpin,oldTiles,nextOri,nextSpin,nextTiles}=commitBoardMoveCommand(ti,dir,{save});
@@ -7059,8 +7054,11 @@ function applySwipe(ti,dir,save=true,playEffects=true){
         openTwoMoveLessonDialog(true);
     },520);
   }
-  if(!isMode('speed')&&isTrainingRangeStage()&&SOLVER.dist[enc(ori)]===2)showTrainingShapeCallout();
-  if(!isMode('speed')&&isAssistedLearningStage()&&!isSolved())showAcademyRemainingCallout();
+  // 修行に加え、発展クラス前半の3くるり問題でも、最初の一手で到達する
+  // 「あと2くるり」の形を盤面中央に出して見比べられるようにする。
+  const shapeCalloutShown=!isMode('speed')&&(isTrainingRangeStage()||isDevelopmentThreeMoveStage())&&SOLVER.dist[enc(ori)]===2&&showTrainingShapeCallout();
+  // 形ガイドが出る場面では、数だけの「あと2くるり」は重ねない。
+  if(!isMode('speed')&&isAssistedLearningStage()&&!isSolved()&&!shapeCalloutShown)showAcademyRemainingCallout();
   if(isMode('speed')&&speedSession){
     if(save)updateSpeedSessionFieldsCommand({movedCurrent:true});
     persistSpeedSession();
@@ -7560,16 +7558,15 @@ function orbitTransform(item,deg,kc){
   const x=kc.x+item.dx*co-item.dy*si, y=kc.y+item.dx*si+item.dy*co;
   return tileTransformDeg(x,y,item.turn*120+deg);
 }
-function completeGroupedSwipeAnimation(session,dg,dir,waking){
+function completeGroupedSwipeAnimation(session,dg,dir){
   if(!isBoardAnimationSessionActive(session))return;
   applySwipe(dg.ti,dir,true,false);
   finishBoardAnimationSession(session);
   paint();
   haptic(SOLVER.dist[enc(ori)]===0?[20,32,42]:10);
   playRotateSound(dir);
-  wakeFeedback(waking);
 }
-function animateGroupedSwipe(dg,target,dir,waking){
+function animateGroupedSwipe(dg,target,dir){
   const {group,clones}=createSwipeGroup(dg.items,dg.kc);
   setBoardBusy(true);
   const session=startBoardAnimationSession('grouped-swipe',dg.id,()=>{for(const item of dg.items)item.el.style.visibility='';setBoardBusy(false);});
@@ -7591,7 +7588,7 @@ function animateGroupedSwipe(dg,target,dir,waking){
     renderSwipeFrame({group,pivot:dg.kc,deg,progress:turnProgress,preview:{kind:'grouped',clones,dir}});
     if(progress<1){requestBoardAnimationFrame(session,frame);return;}
     // 効果音や振動より先に、盤面の見た目を確定する。
-    completeGroupedSwipeAnimation(session,dg,dir,waking);
+    completeGroupedSwipeAnimation(session,dg,dir);
   };
   requestBoardAnimationFrame(session,frame);
 }
@@ -7883,7 +7880,6 @@ function finishDrag(e,cancel=false,forcedTurns=null){
     turns=dg.deg>0?1:-1;
   const target=turns*120;
   const dir=effectiveTurn(turns);
-  const waking=dir?dg.items.filter(item=>mod3(item.turn)!==0&&mod3(item.turn+dir)===0).map(item=>item.el):[];
   if(isMode('tutorial')&&dir&&!tutorialMoveAllowed(dg.ti,dir)){
     cancelTutorialHint(true);
     renderTutorialFeedback({text:tr(TUTORIAL_STEPS[tutorialStep]?.cue==='chain-direction'?'tutorialWrongPlacePrompt':'tutorialWrongPrompt')});
@@ -8007,14 +8003,14 @@ function finishDrag(e,cancel=false,forcedTurns=null){
     }
   }
   if(forcedTurns!==null&&dir&&!matchMedia('(prefers-reduced-motion: reduce)').matches){
-    animateGroupedSwipe(dg,target,dir,waking);
+    animateGroupedSwipe(dg,target,dir);
     return;
   }
   if(dir) applySwipe(dg.ti,dir,!isMode('tutorial'),true);
   paint();
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches){wakeFeedback(waking);resumeTutorialCue();return;}
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){resumeTutorialCue();return;}
   const delta=Math.abs(target-dg.deg);
-  if(delta<.1){wakeFeedback(waking);resumeTutorialCue();return;}
+  if(delta<.1){resumeTutorialCue();return;}
   setBoardBusy(true); let done=0;
   const animations=[];
   // 通常スワイプも、クローン経路・巻き戻し経路と同じセッション境界で管理する。
@@ -8029,7 +8025,7 @@ function finishDrag(e,cancel=false,forcedTurns=null){
     ],{duration:Math.max(190,Math.min(620,delta*4.65)),easing:'cubic-bezier(.2,.75,.25,1)'});
     animations.push(a);
     registerBoardAnimationResource(session,a,animation=>animation.cancel());
-    a.onfinish=()=>{ if(!isBoardAnimationSessionActive(session))return; if(++done===3){finishBoardAnimationSession(session);paint();wakeFeedback(waking);resumeTutorialCue();} };
+    a.onfinish=()=>{ if(!isBoardAnimationSessionActive(session))return; if(++done===3){finishBoardAnimationSession(session);paint();resumeTutorialCue();} };
   }
 }
 function guidedRewindPath(rawDeg){
@@ -8173,13 +8169,20 @@ const GameBoard=Object.freeze({
 function showTrainingShapeCallout(){
   const position=TWO_MOVE_CANONICAL_POSITION.get(canonicalState(enc(ori)));
   const shape=position?TWO_MOVE_TIP3_SHAPES[position]:null;
-  if(!shape)return;
+  if(!shape)return false;
+  // 発展クラスでは直前の「あと○くるり」表示が残ることがあるため、形ガイドを優先する。
+  clearUiEffectTimers('academy');
+  const academyCallout=$('academyRemainingCallout');
+  academyCallout.classList.remove('show');
+  academyCallout.hidden=true;
   svg.querySelectorAll('.training-shape-callout').forEach(el=>el.remove());
   clearUiContextTimer('training-shape-callout');
   const NS_='http://www.w3.org/2000/svg';
   const g=document.createElementNS(NS_,'g');
   g.setAttribute('class','training-shape-callout');
-  g.innerHTML=shapeOutlinePath(ori);
+  // 寝ているだるまだけを連結した外周枠も、形名と同じグループへ載せる。
+  // これにより発展クラスでも、修行と同じ「寝ている台形」をその場で見比べられる。
+  g.innerHTML=shapeOutlinePath(ori,'training-shape-callout-outline');
   const text=document.createElementNS(NS_,'text');
   text.setAttribute('class','training-shape-callout-text');
   const line1=document.createElementNS(NS_,'tspan');
@@ -8206,6 +8209,7 @@ function showTrainingShapeCallout(){
     g.classList.remove('show');
     setTimeout(()=>g.remove(),260);
   },1000);
+  return true;
 }
 // 学園の残り手数コールアウトに固定されたDOM欄だけを描画する。
 function renderAcademyRemainingCalloutElement(element,{label='',number='',unit=''}={}){
@@ -10138,7 +10142,7 @@ function hexVertices(cx,cy){
   return pts;
 }
 // 寝ている軸の六角形をつなげ、内側で接する辺(隣同士で共有する辺)を取り除いて外周だけ残す。
-function shapeOutlinePath(board){
+function shapeOutlinePath(board,className='mini-shape-outline'){
   const cells=CELL.map((c,i)=>i).filter(i=>board[i]!==0);
   if(!cells.length)return '';
   const key=p=>p.x.toFixed(1)+','+p.y.toFixed(1);
@@ -10161,7 +10165,7 @@ function shapeOutlinePath(board){
     }
     d+=loop.map((p,i)=>(i===0?'M':'L')+p.x.toFixed(2)+' '+p.y.toFixed(2)).join('')+'Z';
   }
-  return d?'<path class="mini-shape-outline" d="'+d+'"/>':'';
+  return d?'<path class="'+className+'" d="'+d+'"/>':'';
 }
 function miniBoardSvg(state,{outline=false}={}){
   const board=dec(state);
