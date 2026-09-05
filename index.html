@@ -4183,85 +4183,11 @@ const TRAINING_WELCOME_ART_SVG=`<svg id="trainingWelcomeArt" viewBox="0 0 320 22
 </svg>`;
 
 
-// ===== 実行設定・共有状態API =====
-// 画面やコマンドから runtime.js の変数を直接読み書きする箇所を
-// 少しずつ減らすための、小さな共有状態ゲートウェイ。
-// ここでは状態の所有権を奪わず、既存ランタイムの値へ安全に委譲する。
-// 共有状態・コース定義・DOM・イベントの提供場所をここに集約する。
-// 各機能は必要な時に遅延評価するため、runtime.jsで初期化される値も安全に参照できる。
-const WakeSevenAppContext=Object.freeze({
-  dom:Object.freeze({
-    get(id){return document.getElementById(id);},
-    query(selector,root=document){return root.querySelector(selector);},
-    queryAll(selector,root=document){return [...root.querySelectorAll(selector)];},
-    refs(ids,documentRef=document){return Object.freeze(Object.fromEntries(ids.map(id=>[id,documentRef?.getElementById(id)||null])));}
-  }),
-  events:Object.freeze({
-    click(id,handler){const element=WakeSevenAppContext.dom.get(id);if(!element)return null;element.addEventListener('click',handler);return element;},
-    on(id,type,handler,options){const element=WakeSevenAppContext.dom.get(id);if(!element)return null;element.addEventListener(type,handler,options);return element;}
-  }),
-  // コース定義の源泉はデータ配列そのもの。画面ごとに配列名を再定義しない。
-  courses:Object.freeze({
-    primary:()=>STAGES,
-    mastery:()=>EXTRA_STAGES,
-    satori:()=>SATORI_STAGES,
-    tutorial:()=>TUTORIAL_STEPS
-  }),
-  // 共有状態は用途ごとの小さな入口から読む。各入口は現在のランタイム
-  // 変数へ遅延して委譲するため、初期化順を変えずに段階移行できる。
-  state:Object.freeze({
-    read(){return gameState;},
-    snapshot(){return WakeSevenAppContext.snapshot();},
-    navigation:Object.freeze({
-      read(){return readNavigationStateOwner();},
-      update(patch={}){return updateNavigationStateOwner(patch);}
-    }),
-    board:Object.freeze({
-      read(){const {ori,spin,history,moves,best}=readBoardStateOwner(),{drag,busy,boardTouchActive}=readInteractionStateOwner();return Object.freeze({ori,spin,history,moves,best,drag,busy,boardTouchActive});},
-      update(patch={}){const boardPatch={},interactionPatch={};if(patch.ori!==undefined)boardPatch.ori=patch.ori;if(patch.spin!==undefined)boardPatch.spin=patch.spin;if(patch.history!==undefined)boardPatch.history=patch.history;if(patch.moves!==undefined)boardPatch.moves=patch.moves;if(patch.best!==undefined)boardPatch.best=patch.best;if(patch.drag!==undefined)interactionPatch.drag=patch.drag;if(patch.busy!==undefined)interactionPatch.busy=patch.busy;if(patch.boardTouchActive!==undefined)interactionPatch.boardTouchActive=patch.boardTouchActive;updateBoardStateOwner(boardPatch);updateInteractionStateOwner(interactionPatch);return this.read();}
-    }),
-    progress:Object.freeze({
-      read(){return readProgressStateOwner();},
-      update(patch={}){return updateProgressStateOwner(patch);}
-    }),
-    dialog:Object.freeze({
-      read(){return typeof readDialogStateOwner==='function'?readDialogStateOwner():Object.freeze({clearShown,nextStageAttention,masterDialogKind,rankDialogReturn,messageDialogReturn});},
-      update(patch={}){return typeof updateDialogStateOwner==='function'?updateDialogStateOwner(patch):(patch.clearShown!==undefined&&setClearShownCommand(patch.clearShown),this.read());}
-    }),
-    animation:Object.freeze({
-      read(){const {busy,drag}=readInteractionStateOwner();return Object.freeze({busy,drag,clearFlowState:typeof clearFlowState!=='undefined'?clearFlowState:null});},
-      update(patch={}){const interactionPatch={};if(patch.busy!==undefined)interactionPatch.busy=patch.busy;if(patch.drag!==undefined)interactionPatch.drag=patch.drag;updateInteractionStateOwner(interactionPatch);return this.read();}
-    }),
-    session:Object.freeze({
-      read(){return readSessionStateOwner();},
-      update(patch={}){return updateSessionStateOwner(patch);}
-    }),
-    settings:Object.freeze({
-      read(){return readSettingsStateOwner();},
-      update(patch={}){return updateSettingsStateOwner(patch);}
-    })
-  }),
-  // 現在の画面状態を、表示処理が使える読み取り専用スナップショットで返す。
-  snapshot(){
-    return Object.freeze({
-      ...WakeSevenAppContext.state.navigation.read(),
-      clearShown:WakeSevenAppContext.state.dialog.read().clearShown
-    });
-  },
-  isClearShown(){return WakeSevenAppContext.state.dialog.read().clearShown===true;},
-  // clearShown の変更はここを通す。保存は既存の syncGameState の責務とする。
-  setClearShown(value){return WakeSevenAppContext.state.dialog.update({clearShown:value}).clearShown;},
-  setMode(mode){return setActiveMode(mode);}
-});
 // 個別の共有状態を書き換える場合も、呼び出し側が所有変数へ直接代入しないようにする。
-function setNavigationIndexCommand(kind,value){
-  const patch=kind==='stageIndex'?{stageIndex:value}:kind==='masteryIndex'?{masteryIndex:value}:kind==='satoriIndex'?{satoriIndex:value}:kind==='tutorialStep'?{tutorialStep:value}:{};
-  return updateNavigationStateCommand(patch);
-}
-function setClearShownCommand(value){return updateDialogStateCommand({clearShown:value}).clearShown;}
-function setSavedFreeSessionCommand(value){return updateSessionStateCommand({savedFreeSession:value}).savedFreeSession;}
-function setSpeedSessionCommand(value){return updateSessionStateCommand({speedSession:value}).speedSession;}
-function setSpeedVariantCommand(value){return updateSessionStateCommand({speedVariant:value}).speedVariant;}
+function setClearShownCommand(value){return updateDialogStateOwner({clearShown:value}).clearShown;}
+function setSavedFreeSessionCommand(value){return updateSessionStateOwner({savedFreeSession:value}).savedFreeSession;}
+function setSpeedSessionCommand(value){return updateSessionStateOwner({speedSession:value}).speedSession;}
+function setSpeedVariantCommand(value){return updateSessionStateOwner({speedVariant:value}).speedVariant;}
 
 // ===== 実行設定（テーマ・サウンド） =====
 // 実行中の設定はこの変数群だけが所有する。読み書きは owner API に集約し、
@@ -4356,7 +4282,7 @@ function playClearSound(kind='normal'){
   (tunes[kind]||tunes.normal).forEach(([tone,delay])=>playTone(tone,.18,.032,delay));
 }
 function clearSoundKind(){
-  const navigation=readNavigationContext();
+  const navigation=readNavigationStateOwner();
   if(navigation.mode==='free'||navigation.mode==='custom'||navigation.mode==='speed')return 'normal';
   if(navigation.mode==='satori'&&navigation.satoriIndex===SATORI_STAGES.length-1&&isSatoriMastered())return 'satori';
   if(navigation.mode!=='mastery'&&navigation.stageIndex===STAGES.length-1&&allPrimaryCleared())return 'training';
@@ -4460,8 +4386,7 @@ async function shareWakeSeven(kind='game',button){
 // iPadOS Safariは:hover付きの要素だと「1回目のタップはhoverだけ、2回目でclick」になることがある。
 // ダミーのtouchstartリスナーを一つ登録しておくと、その挙動を止められる（既知の回避策）。
 document.addEventListener('touchstart',()=>{},{passive:true});
-// DOM取得はWakeSevenAppContext.domを唯一の入口にする。
-const $=WakeSevenAppContext.dom.get;
+const $=id=>document.getElementById(id);
 const svg=$('board');
 const DEBUG_MODE=new URLSearchParams(location.search).get('debug')==='1'
   &&(location.protocol==='file:'||['localhost','127.0.0.1','::1'].includes(location.hostname));
@@ -4635,10 +4560,10 @@ function syncGameState(){
 const SPEED_LAST_TAB_STORAGE_KEY=STORAGE_KEY_GROUPS.speed.lastTab;
 const SPEED_NEW_TAB_STORAGE_KEY=STORAGE_KEY_GROUPS.speed.newTab;
 const COURSE_DEFINITIONS=Object.freeze({
-  tutorial:{id:'tutorial',total:WakeSevenAppContext.courses.tutorial().length,label:'tutorial',indexKey:'tutorialStep'},
-  primary:{id:'primary',total:WakeSevenAppContext.courses.primary().length,label:'training',indexKey:'stageIndex'},
-  mastery:{id:'mastery',total:WakeSevenAppContext.courses.mastery().length,label:'mastery',indexKey:'masteryIndex'},
-  satori:{id:'satori',total:WakeSevenAppContext.courses.satori().length,label:'satori',indexKey:'satoriIndex'},
+  tutorial:{id:'tutorial',total:TUTORIAL_STEPS.length,label:'tutorial',indexKey:'tutorialStep'},
+  primary:{id:'primary',total:STAGES.length,label:'training',indexKey:'stageIndex'},
+  mastery:{id:'mastery',total:EXTRA_STAGES.length,label:'mastery',indexKey:'masteryIndex'},
+  satori:{id:'satori',total:SATORI_STAGES.length,label:'satori',indexKey:'satoriIndex'},
   speed:{id:'speed',total:SATORI_STAGES.length,label:'speed',indexKey:'speedIndex'},
   free:{id:'free',total:null,label:'free',indexKey:null},
   custom:{id:'custom',total:null,label:'custom',indexKey:null}
@@ -4679,7 +4604,7 @@ const PICKER_TRAINING_FIRST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='training
 const PICKER_TRAINING_LAST_ROUND=PRIMARY_SECTIONS.findIndex(s=>s.id==='trainingLower')-PRIMARY_PICKER_SECTION_COUNT;
 // 現在のモード・コース・問題位置を、画面や計測から共通して参照する実行コンテキスト。
 function getGameContext(){
-  const navigation=readNavigationContext();
+  const navigation=readNavigationStateOwner();
   if(isMode('tutorial'))return {mode:'tutorial',course:courseDefinitionForMode(),index:WakeSevenState.navigationIndex(navigation,'tutorial'),position:tutorialStep+1,total:TUTORIAL_STEPS.length,lap:1};
   if(isSideCourseMode())return {mode:activeMode,course:courseDefinitionForMode(),index:null,position:null,total:null,lap:activeLap};
   if(isMode('speed')){
@@ -4692,14 +4617,12 @@ function getGameContext(){
 }
 // UI/補助モジュールから実行状態を読むための薄い境界。
 // 個別のランタイム変数を直接参照する箇所を増やさず、読み取り専用のスナップショットを渡す。
-function runtimeSnapshot(){const navigation=WakeSevenAppContext.state.navigation.read(),settings=WakeSevenAppContext.state.settings.read(),session=WakeSevenAppContext.state.session.read();return Object.freeze({...navigation,language:settings.currentLang,speedVariant:session.speedVariant});}
+function runtimeSnapshot(){const navigation=readNavigationStateOwner(),settings=readSettingsStateOwner(),session=readSessionStateOwner();return Object.freeze({...navigation,language:settings.currentLang,speedVariant:session.speedVariant});}
 // navigation/dialogの読み取りは、呼び出し側が個別の可変変数へ依存しないよう用途別入口を使う。
-function readNavigationContext(){return WakeSevenAppContext.state.navigation.read();}
-function readDialogContext(){return WakeSevenAppContext.state.dialog.read();}
 // 進行・復元経路では、同じ入口で必要な状態を一度だけ取得する。
 // 各値の所有者と更新経路は変えず、呼び出し側の再読込だけを減らす。
 function readProgressionContext(){
-  return Object.freeze({navigation:readNavigationContext(),dialog:readDialogContext(),session:WakeSevenAppContext.state.session.read()});
+  return Object.freeze({navigation:readNavigationStateOwner(),dialog:readDialogStateOwner(),session:readSessionStateOwner()});
 }
 function runtimeStageKey(){
   const ctx=getGameContext();
@@ -5161,7 +5084,7 @@ function darumaBodyColor(index){
   return rainbowDarumaGranted&&darumaColor==='rainbow'?AWAKENED_DARUMA_COLORS[index%AWAKENED_DARUMA_COLORS.length]:'';
 }
 function applyBoardTheme(){
-  const settings=WakeSevenAppContext.state.settings.read();
+  const settings=readSettingsStateOwner();
   const tones=BOARD_THEME_TONES[settings.boardTheme];
   tileEls.forEach(tile=>{
     const hex=tile.querySelector('.hex');
@@ -5182,7 +5105,7 @@ function applyBoardTheme(){
   if(accentPath)accentPath.style.stroke='';
 }
 function renderBoardThemeOptions(){
-  const settings=WakeSevenAppContext.state.settings.read();
+  const settings=readSettingsStateOwner();
   const colors={default:true,gold:hasMasterReward(),satori:hasSatoriReward()};
   $('boardThemeLayoutSection').hidden=!hasSatoriReward();
   $('boardThemeColorLabel').closest('.board-theme-section').classList.toggle('two-color-choice',!hasSatoriReward());
@@ -5330,17 +5253,6 @@ function hexPath(r){
   return p+'Z';
 }
 
-// ===== アプリケーション共有状態 =====
-// commandからブラウザAPIと保存形式を隔離する実行境界。
-// command側は状態変更の意図だけを記述し、時計・保存APIへ直接依存しない。
-function commandStorageGet(key,fallback=''){return storage.get(key,fallback);}
-function commandStorageSet(key,value){storage.set(key,value);return value;}
-function commandStorageRemove(key){storage.remove(key);return true;}
-function commandStorageJson(key,fallback=null){return storage.json(key,fallback);}
-function commandStorageSetJson(key,value){storage.setJson(key,value);return value;}
-function commandNow(){return performance.now();}
-function commandTimestamp(){return Date.now();}
-
 // ===== スピードランランタイム =====
 // ===== スピードラン(速解き)ランタイム =====
 /* 速解きは同じセッション基盤で派生ルールを増やせるよう、モード定義を分離する。 */
@@ -5441,8 +5353,8 @@ function speedHistoryStorageKey(variant=speedVariant){return speedStorageKey(SPE
 // 速解きの開始・終了で使う共有状態を、入口ごとに一度だけ取得する。
 // セッション保存や画面遷移の途中でactiveLap/variantを読み直さないための境界。
 function createSpeedTransitionContext(){
-  const navigation=readNavigationContext();
-  const session=WakeSevenAppContext.state.session.read();
+  const navigation=readNavigationStateOwner();
+  const session=readSessionStateOwner();
   return Object.freeze({navigation,session,speedVariant:session.speedVariant||speedVariant,returnMode:navigation.lastStageMode||navigation.mode});
 }
 let speedSession=null,speedClockStarted=0,speedManuallyPaused=false;
@@ -5566,7 +5478,7 @@ function randomTrainingSpeedView(){
   // 対称変換なので最短手数は保ったまま、暗記ではなく盤面の読み取りを問える。
   return SYMMETRIES[Math.floor(Math.random()*SYMMETRIES.length)];
 }
-function pendingSpeedTrial(variant=activeSpeedDefinition().id,navigation=readNavigationContext()){
+function pendingSpeedTrial(variant=activeSpeedDefinition().id,navigation=readNavigationStateOwner()){
   // 卒業試験は一周目だけ。二周目は各コースをそのまま進める。
   if(navigation.lap===2)return null;
   if(variant==='training9'&&!speedTrainingTrialCleared)return 'training9';
@@ -5602,12 +5514,12 @@ function animateBoardArrival(){
 }
 function loadSpeedStage(restoreBoard=false,arriving=false){
   if(!speedSession)return;
-  const sessionContext=WakeSevenAppContext.state.session.read();
+  const sessionContext=readSessionStateOwner();
   // 問題プール・表示ルールは、実行中セッションのvariantに固定する。
   const currentVariant=SPEED_MODE_DEFINITIONS[speedSession.variant]?speedSession.variant:(sessionContext.speedVariant||speedVariant);
   if(speedSession.index>0)updateSpeedSessionFieldsCommand({started:true});
   setSpeedManualPauseCommand(false);
-  setCampaignModeCommand('speed');editingBoard=false;
+  setActiveMode('speed');editingBoard=false;
   const pool=speedStagePool(SPEED_MODE_DEFINITIONS[currentVariant]||activeSpeedDefinition());
   if(!speedSession.started&&speedSession.index===0&&!speedSession.movedCurrent){
     // スタート前は問題を見せず、全員が起きたまっさらな盤面で開始を促す。
@@ -5720,18 +5632,18 @@ function completeSpeedStage(){
 // 開始・一時停止・再開・復元の呼び出しを一つの機能入口から追跡する。
 // タイマー計算、問題データ、保存の実装は既存の所有モジュールへ委譲する。
 const WakeSevenSpeedFeature=Object.freeze({
-  openPicker(){return openSpeedPicker();},
+  openPicker:openSpeedPicker,
   start(options={}){
     const request=typeof options==='boolean'?{forceNew:options}:(options&&typeof options==='object'?options:{});
     if(SPEED_MODE_DEFINITIONS[request.variant])setSpeedVariantCommand(request.variant);
     return enterSpeedMode(request.forceNew===true);
   },
-  begin(){return beginSpeedRun();},
-  advance(){return advanceSpeedRun();},
-  complete(){return completeSpeedStage();},
-  pause(){return pauseSpeedRun();},
-  openPause(){return openSpeedPauseDialog();},
-  resume(options={}){return resumeSpeedRun(options);},
+  begin:beginSpeedRun,
+  advance:advanceSpeedRun,
+  complete:completeSpeedStage,
+  pause:pauseSpeedRun,
+  openPause:openSpeedPauseDialog,
+  resume:resumeSpeedRun,
   restart(){setSpeedManualPauseCommand(false);clearSpeedSession();return enterSpeedMode(true);},
   restore(session=null){
     if(session&&validSpeedSession(session)){
@@ -5742,8 +5654,8 @@ const WakeSevenSpeedFeature=Object.freeze({
     }
     return enterSpeedMode(false);
   },
-  startClock(){return startSpeedClock();},
-  pauseClock(){return pauseSpeedClock();}
+  startClock:startSpeedClock,
+  pauseClock:pauseSpeedClock
 });
 
 // ===== 盤面アニメーション補助 =====
@@ -5860,13 +5772,6 @@ function updateAutoSwipePreview(clones,progress,turnDelta){
 // ===== 盤面座標変換 =====
 // 盤面の座標変換表示だけを担当する小さな境界。
 // DOMやゲーム状態を参照せず、board.jsから安全に再利用できる。
-const WakeSevenBoardGeometry=Object.freeze({
-  tileTransform:(x,y,turn)=>'translate('+x.toFixed(2)+'px,'+y.toFixed(2)+'px) rotate('+(turn*120)+'deg)',
-  tileTransformDeg:(x,y,deg)=>'translate('+x.toFixed(2)+'px,'+y.toFixed(2)+'px) rotate('+deg+'deg)',
-  nearestRotationDeg:(fromDeg,toDeg)=>{const delta=((toDeg-fromDeg+180)%360+360)%360-180;return fromDeg+delta;}
-});
-
-
 // ===== 盤面入力・アニメーションセッション =====
 // ポインタイベントを盤面操作で使う最小の入力モデルへ正規化する。
 // DOMや盤面状態を変更せず、判定・command・アニメーションは呼び出し側に残す。
@@ -6020,7 +5925,6 @@ function finishBoardAnimationSession(session){
   return true;
 }
 function cancelBoardAnimationSession(session=boardAnimationSession){if(!session||session.cleaned)return false;session.cancelled=true;setBoardAnimationPhase(session,BOARD_ANIMATION_PHASE.cancelled);return finishBoardAnimationSession(session);}
-function cancelBoardAnimation(){return cancelBoardAnimationSession();}
 
 // ===== 盤面SVG・学習ダイアログ =====
 // ===== 盤面SVG構築・入門/学園ダイアログ・最短2手レッスン =====
@@ -6417,8 +6321,8 @@ const CHAIN_STEPS={
     onAction(){WakeSevenDialogChainFeature.show('academyWelcome');}
   },
   academyWelcome:{...academyBoardStep('enroll','academyWelcomeTitle','academyWelcomeText','academyWelcomeStart',()=>{}),noFrame:true},
-  basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(readNavigationContext().stageIndex+1)),
-  applicationWelcome:academyBoardStep('application','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(readNavigationContext().stageIndex+1)),
+  basicWelcome:academyBoardStep('basic','basicWelcomeTitle','basicWelcomeText','basicWelcomeStart',()=>loadStage(readNavigationStateOwner().stageIndex+1)),
+  applicationWelcome:academyBoardStep('application','applicationWelcomeTitle','applicationWelcomeText','applicationWelcomeStart',()=>loadStage(readNavigationStateOwner().stageIndex+1)),
   developmentWelcome:{
     titleKey:'developmentWelcomeTitle', actionKey:'developmentWelcomeStart',
     render(body){
@@ -6444,7 +6348,7 @@ const CHAIN_STEPS={
       buildTrainingMiddleSpinBoard('developmentWelcomeSpinBoard','developmentWelcomeSpinCounter',DEVELOPMENT_THREE_STAGES[0].state);
       return ()=>stopClearGuideBoard('developmentWelcomeSpinBoard');
     },
-    onAction(){loadStage(readNavigationContext().stageIndex+1);}
+    onAction(){loadStage(readNavigationStateOwner().stageIndex+1);}
   },
   developmentFourStart:{
     titleKey:'developmentFourStartTitle', actionKey:'developmentFourStartStart',
@@ -6453,7 +6357,7 @@ const CHAIN_STEPS={
       body.querySelector('[data-chain-dialog-text]')?.setAttribute('id','chainDialogText');
       $('chainDialogText').textContent=tr('developmentFourStartText');
     },
-    onAction(){loadStage(readNavigationContext().stageIndex+1);}
+    onAction(){loadStage(readNavigationStateOwner().stageIndex+1);}
   },
   trainingWelcome:{
     wide:true, titleKey:'trainingWelcomeTitle', actionKey:'trainingWelcomeNext',
@@ -7047,13 +6951,14 @@ function paint(){
   if(!editingBoard&&!isMode('speed')&&isSolved()&&!clearShown){completeBoard({mode:activeMode});}
 }
 function tileTransform(x,y,turn){
-  return WakeSevenBoardGeometry.tileTransform(x,y,turn);
+  return 'translate('+x.toFixed(2)+'px,'+y.toFixed(2)+'px) rotate('+(turn*120)+'deg)';
 }
 function tileTransformDeg(x,y,deg){
-  return WakeSevenBoardGeometry.tileTransformDeg(x,y,deg);
+  return 'translate('+x.toFixed(2)+'px,'+y.toFixed(2)+'px) rotate('+deg+'deg)';
 }
 function nearestRotationDeg(fromDeg,toDeg){
-  return WakeSevenBoardGeometry.nearestRotationDeg(fromDeg,toDeg);
+  const delta=((toDeg-fromDeg+180)%360+360)%360-180;
+  return fromDeg+delta;
 }
 function snapshot(){
   return {o:Uint8Array.from(ori),s:Int16Array.from(spin),t:tileEls.slice(),m:moves};
@@ -7126,7 +7031,7 @@ function reorientBoard(permutation,flip=false,rotationDeg=0){
   }
 }
 function cancelTileAnimations(){
-  cancelBoardAnimation('tile-animation-cancel');
+  cancelBoardAnimationSession();
   for(const el of baseTiles) for(const a of el.getAnimations()) a.cancel();
 }
 function wakeFeedback(elements){
@@ -7172,7 +7077,7 @@ function replaceBoardState(next,{paintNow=false}={}){
   replaceBoardStateCommand(next,{paintNow});
 }
 function setPosition(state,par){
-  cancelBoardAnimation('position-change');
+  cancelBoardAnimationSession();
   loadFourthChecks();
   resetFourthDistance();
   cancelTutorialHint();
@@ -7272,7 +7177,7 @@ function showTutorialCue(){
 }
 function loadTutorialStep(index=0){
   clearUiEffectTimers('tutorial');
-  setCampaignModeCommand('tutorial');editingBoard=false;
+  setActiveMode('tutorial');editingBoard=false;
   setTutorialStepCommand(index);
   // 前の段階で消した誤操作棒は、次の段階では再表示する。
   svg.querySelectorAll('.grip-marker.narrow-hidden').forEach(marker=>marker.classList.remove('narrow-hidden'));
@@ -7305,10 +7210,10 @@ function loadStage(index){
     return;
   }
   if(isMode('speed'))WakeSevenSpeedFeature.pause();
-  setCampaignModeCommand('stage');editingBoard=false;
+  setActiveMode('stage');editingBoard=false;
   updateDialogStateOwner({nextStageAttention:false});
   const nextStageIndex=Math.max(0,Math.min(STAGES.length-1,index));
-  setNavigationIndexCommand('stageIndex',nextStageIndex);
+  updateNavigationStateOwner({stageIndex:nextStageIndex});
   returnStageContext={extra:false,satori:false,index:stageIndex};
   const stage=STAGES[stageIndex];
   persistCurrentStage(false,stageIndex);
@@ -7323,10 +7228,10 @@ function loadExtraStage(index){
   // 一周目は、だるま修行の修了試験を終えるまで名人への道へ進めない。
   if(!canEnterMastery()){showMasterDialog('intermediate');return;}
   if(isMode('speed'))WakeSevenSpeedFeature.pause();
-  setCampaignModeCommand('mastery');editingBoard=false;
+  setActiveMode('mastery');editingBoard=false;
   updateDialogStateOwner({nextStageAttention:false});
   const nextExtraIndex=Math.max(0,Math.min(EXTRA_STAGES.length-1,index));
-  setNavigationIndexCommand('masteryIndex',nextExtraIndex);
+  updateNavigationStateOwner({masteryIndex:nextExtraIndex});
   returnStageContext={extra:true,satori:false,index:extraIndex};
   const stage=EXTRA_STAGES[extraIndex];
   persistCurrentStage(true,extraIndex);
@@ -7342,10 +7247,10 @@ function loadSatoriStage(index){
     return;
   }
   if(isMode('speed'))WakeSevenSpeedFeature.pause();
-  setCampaignModeCommand('satori');editingBoard=false;
+  setActiveMode('satori');editingBoard=false;
   updateDialogStateOwner({nextStageAttention:false});
   const nextSatoriIndex=Math.max(0,Math.min(SATORI_STAGES.length-1,index));
-  setNavigationIndexCommand('satoriIndex',nextSatoriIndex);
+  updateNavigationStateOwner({satoriIndex:nextSatoriIndex});
   returnStageContext={extra:false,satori:true,index:satoriIndex};
   const stage=SATORI_STAGES[satoriIndex];
   try{storage.set(STORAGE_KEY_GROUPS.progression.currentStage,JSON.stringify({satori:true,index:satoriIndex,lap:activeLap}));}catch(_){}
@@ -8092,7 +7997,7 @@ function finishDrag(e,cancel=false,forcedTurns=null){
     animateGroupedSwipe(dg,target,dir,waking);
     return;
   }
-  if(dir) WakeSevenBoardCommands.applySwipe(dg.ti,dir,{save:!isMode('tutorial')});
+  if(dir) applySwipe(dg.ti,dir,!isMode('tutorial'),true);
   paint();
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){wakeFeedback(waking);resumeTutorialCue();return;}
   const delta=Math.abs(target-dg.deg);
@@ -8194,7 +8099,7 @@ function animateGuidedBasicRewind(dg,rewindOverride=null){
   requestBoardAnimationFrame(session,frame);
 }
 function handleBoardPointerUp(e){if(!clearInvalidGrab(e))finishDrag(e);}
-function handleBoardPointerCancel(e){cancelBoardAnimation('pointercancel');if(!clearInvalidGrab(e))finishDrag(e,true);}
+function handleBoardPointerCancel(e){cancelBoardAnimationSession();if(!clearInvalidGrab(e))finishDrag(e,true);}
 svg.addEventListener('pointerdown',handleBoardPointerDown);
 svg.addEventListener('pointermove',handleBoardPointerMove);
 svg.addEventListener('pointerleave',handleBoardPointerLeave);
@@ -8224,7 +8129,7 @@ function undoLastMove(){
     if(isMode('speed')&&speedSession)setTimeout(persistSpeedSession,460);
   }
 }
-$('undo').addEventListener('click',()=>WakeSevenBoardCommands.undo());
+$('undo').addEventListener('click',undoLastMove);
 $('reset').addEventListener('click',()=>{
   if(busy)return;
   if(editingBoard){resetMakerBoard();return;}
@@ -8577,29 +8482,8 @@ function refreshGuidedBasicCandidates(){
   });
 }
 
-// ===== 共有状態更新コマンド =====
-// 共有状態を書き換える操作命令。
-// 画面イベントは個別の let や保存形式を直接変更せず、この入口へ意図を渡す。
-function updateNavigationStateCommand(patch={}){
-  return WakeSevenAppContext.state.navigation.update(patch);
-}
-function updateDialogStateCommand(patch={}){
-  return WakeSevenAppContext.state.dialog.update(patch);
-}
-function updateSessionStateCommand(patch={}){
-  return WakeSevenAppContext.state.session.update(patch);
-}
-function setCampaignModeCommand(mode,patch={}){
-  return updateNavigationStateCommand({ ...patch, mode });
-}
 // ===== 盤面コマンド =====
 // 盤面操作のコマンド入口。イベント側で盤面状態を直接変更しない。
-const WakeSevenBoardCommands=Object.freeze({
-  applySwipe:(ti,dir,options={})=>applySwipe(ti,dir,options.save??true,options.playEffects??true),
-  undo:()=>undoLastMove(),
-  // リセットも盤面操作の入口に揃え、イベント側で盤面状態を直接変更しない。
-  reset:()=>restartWithAnimation()
-});
 // 1回分の確定状態を書き込むcommand。アニメーションや正解判定は呼び出し側に残し、
 // ori/spin/tiles/moves/history の更新順だけをここで保証する。
 function commitBoardMoveCommand(ti,dir,{save=true}={}){
@@ -8622,7 +8506,7 @@ function initializeBoardPositionCommand(state,par){
   updateBoardStateOwner({currentInitialState:state,currentInitialPar:par});
   const nextOri=dec(state);
   replaceBoardState({ori:nextOri,spin:Int16Array.from(nextOri),tiles:baseTiles.slice(),best:par,moves:0,history:[]});
-  WakeSevenAppContext.setClearShown(false);
+  setClearShownCommand(false);
   return nextOri;
 }
 function replaceBoardStateCommand(next,{paintNow=false}={}){
@@ -8642,7 +8526,7 @@ function captureFreeSessionCommand(){
 function restoreFreeSessionBoardCommand(session){
   if(!session)return false;
   replaceBoardStateCommand({ori:Uint8Array.from(session.ori),spin:Int16Array.from(session.spin),tiles:session.tileEls.slice(),moves:session.moves,best:session.best,history:session.history.map(cloneHistoryEntry)});
-  updateBoardStateOwner({currentInitialState:session.initialState,currentInitialPar:session.initialPar});WakeSevenAppContext.setClearShown(session.clearShown);
+  updateBoardStateOwner({currentInitialState:session.initialState,currentInitialPar:session.initialPar});setClearShownCommand(session.clearShown);
   return true;
 }
 function applyBoardOrientationCommand(permutation,flip=false){
@@ -8660,39 +8544,39 @@ function applyBoardOrientationCommand(permutation,flip=false){
 // ===== 設定コマンド =====
 // 設定変更の書き込み境界。UIイベントはこのcommandを呼び、保存形式を直接扱わない。
 function toggleSoundCommand(){
-  const settings=WakeSevenAppContext.state.settings.read();
+  const settings=readSettingsStateOwner();
   const soundEnabledNext=!settings.soundEnabled;
-  WakeSevenAppContext.state.settings.update({soundEnabled:soundEnabledNext});
-  try{commandStorageSet(STORAGE_KEY_GROUPS.settings.sound,soundEnabledNext?'on':'off');}catch(_){ }
+  updateSettingsStateOwner({soundEnabled:soundEnabledNext});
+  try{storage.set(STORAGE_KEY_GROUPS.settings.sound,soundEnabledNext?'on':'off');}catch(_){ }
   updateSoundToggle();
   if(soundEnabledNext)playTone(523,.07,.025);
 }
 function selectBoardThemeCommand(button){
   if(!button||button.disabled)return;
   if(button.dataset.boardColor){
-    WakeSevenAppContext.state.settings.update({boardTheme:button.dataset.boardColor,boardThemeChosen:true});
-    try{commandStorageSet(STORAGE_KEY_GROUPS.settings.boardThemeChosen,'1');}catch(_){ }
+    updateSettingsStateOwner({boardTheme:button.dataset.boardColor,boardThemeChosen:true});
+    try{storage.set(STORAGE_KEY_GROUPS.settings.boardThemeChosen,'1');}catch(_){ }
   }else if(button.dataset.boardLayout){
-    WakeSevenAppContext.state.settings.update({boardLayout:button.dataset.boardLayout,boardLayoutChosen:true});
-    try{commandStorageSet(STORAGE_KEY_GROUPS.settings.boardLayoutChosen,'1');}catch(_){ }
+    updateSettingsStateOwner({boardLayout:button.dataset.boardLayout,boardLayoutChosen:true});
+    try{storage.set(STORAGE_KEY_GROUPS.settings.boardLayoutChosen,'1');}catch(_){ }
   }else if(button.dataset.darumaColor){
-    WakeSevenAppContext.state.settings.update({darumaColor:button.dataset.darumaColor,darumaColorChosen:true});
-    try{commandStorageSet(STORAGE_KEY_GROUPS.settings.darumaColor,darumaColor);commandStorageSet(STORAGE_KEY_GROUPS.settings.darumaColorChosen,'1');}catch(_){ }
+    updateSettingsStateOwner({darumaColor:button.dataset.darumaColor,darumaColorChosen:true});
+    try{storage.set(STORAGE_KEY_GROUPS.settings.darumaColor,darumaColor);storage.set(STORAGE_KEY_GROUPS.settings.darumaColorChosen,'1');}catch(_){ }
   }else return;
   updateMasterTheme();
   renderBoardThemeOptions();
 }
 function grantMasterRewardSettingsCommand(){
-  WakeSevenAppContext.state.settings.update({boardTheme:'gold',boardThemeChosen:false});
-  try{commandStorageRemove(STORAGE_KEY_GROUPS.settings.boardThemeChosen);}catch(_){ }
+  updateSettingsStateOwner({boardTheme:'gold',boardThemeChosen:false});
+  try{storage.remove(STORAGE_KEY_GROUPS.settings.boardThemeChosen);}catch(_){ }
 }
 function resetSettingsCommand(){
-  WakeSevenAppContext.state.settings.update({soundEnabled:true,boardTheme:'default',boardLayout:'normal',boardThemeChosen:false,boardLayoutChosen:false,darumaColor:'red',darumaColorChosen:false});
+  updateSettingsStateOwner({soundEnabled:true,boardTheme:'default',boardLayout:'normal',boardThemeChosen:false,boardLayoutChosen:false,darumaColor:'red',darumaColorChosen:false});
 }
 function setLanguageCommand(lang){
   if(!UI_TEXT[lang])return false;
-  WakeSevenAppContext.state.settings.update({currentLang:lang});
-  try{commandStorageSet(STORAGE_KEY_GROUPS.settings.language,lang);}catch(_){ }
+  updateSettingsStateOwner({currentLang:lang});
+  try{storage.set(STORAGE_KEY_GROUPS.settings.language,lang);}catch(_){ }
   return true;
 }
 
@@ -8702,12 +8586,12 @@ function grantMasterDialogRewardsCommand(kind){
   if(kind==='satori'&&!secondLapActive){unlockSpeedVariant('satori73');renderStageNav();}
   if(kind==='mastery'&&secondLapActive&&!rainbowDarumaGranted){
     setUnlock('rainbowDarumaGranted',true);updateSettingsStateOwner({darumaColor:'rainbow',darumaColorChosen:false});
-    try{commandStorageSet(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');commandStorageRemove(STORAGE_KEY_GROUPS.settings.darumaColorChosen);}catch(_){ }
+    try{storage.set(STORAGE_KEY_GROUPS.rewards.rainbowDarumaGranted,'1');storage.remove(STORAGE_KEY_GROUPS.settings.darumaColorChosen);}catch(_){ }
     updateMasterTheme();renderStageNav();syncGameState();
   }
   if(kind==='awakening'&&!awakenedGranted){
     setUnlock('awakened',true);updateUnlockStateOwner({threeDUnlocked:true});
-    try{commandStorageSet(STORAGE_KEY_GROUPS.rewards.awakenedGranted,'1');commandStorageSet(STORAGE_KEY_GROUPS.rewards.threeDUnlocked,'1');}catch(_){ }
+    try{storage.set(STORAGE_KEY_GROUPS.rewards.awakenedGranted,'1');storage.set(STORAGE_KEY_GROUPS.rewards.threeDUnlocked,'1');}catch(_){ }
     persistLapProgress();updateMasterTheme();renderStageNav();rememberSpecialMessage('awakening');syncGameState();
   }
 }
@@ -8742,7 +8626,7 @@ function advanceSpeedSessionCommand(){
 }
 function setSpeedManualPauseCommand(value){speedManuallyPaused=value===true;return speedManuallyPaused;}
 function startSpeedClockStateCommand(startedAt){speedClockStarted=startedAt;return speedClockStarted;}
-function pauseSpeedClockStateCommand(now=commandNow()){
+function pauseSpeedClockStateCommand(now=performance.now()){
   if(speedClockStarted){if(speedSession)updateSpeedSessionFieldsCommand({elapsedMs:speedSession.elapsedMs+now-speedClockStarted});speedClockStarted=0;}
   return speedSession?.elapsedMs||0;
 }
@@ -8753,10 +8637,10 @@ function persistSpeedSessionCommand(){
   // 九番勝負から十八番勝負へ切り替えた直後に、古いセッションへ上書きする事故を防ぐ。
   const variant=SPEED_MODE_DEFINITIONS[speedSession.variant]?speedSession.variant:'training9';
   const payload={...speedSession,variant,elapsedMs:elapsed,board:isMode('speed')?serializeActiveBoard():speedSession.board};
-  commandStorageSetJson(speedSessionStorageKey(variant),payload);commandStorageSet(STORAGE_KEY_GROUPS.speed.activeVariant,variant);
+  storage.setJson(speedSessionStorageKey(variant),payload);storage.set(STORAGE_KEY_GROUPS.speed.activeVariant,variant);
   return true;
 }
-function clearSpeedSessionCommand(variant=speedVariant){commandStorageRemove(speedSessionStorageKey(variant));return true;}
+function clearSpeedSessionCommand(variant=speedVariant){storage.remove(speedSessionStorageKey(variant));return true;}
 function completeSpeedSessionCommand(result){
   if(!speedSession)return false;
   setSpeedSessionCommand({...speedSession,...result,completed:true});
@@ -8773,14 +8657,14 @@ function updateSpeedOptimalClearsCommand(){
 function recordSpeedCompletionCommand(elapsed,optimalClears){
   if(!speedSession)return null;
   const time=Math.max(0,Math.round(elapsed));
-  let bestTime=Number(commandStorageGet(speedBestStorageKey(),'0'))||0;
-  if(!bestTime||time<bestTime){bestTime=time;commandStorageSet(speedBestStorageKey(),String(bestTime));}
-  const entries=commandStorageJson(speedHistoryStorageKey(),[]);
+  let bestTime=Number(storage.get(speedBestStorageKey(),'0'))||0;
+  if(!bestTime||time<bestTime){bestTime=time;storage.set(speedBestStorageKey(),String(bestTime));}
+  const entries=storage.json(speedHistoryStorageKey(),[]);
   const history=Array.isArray(entries)?entries.filter(entry=>Number.isFinite(entry?.elapsedMs)&&entry.elapsedMs>=0):[];
-  history.unshift({elapsedMs:time,optimalClears,total:speedSession.total||activeSpeedDefinition().total,completedAt:commandTimestamp()});
-  commandStorageSetJson(speedHistoryStorageKey(),history.slice(0,20));
+  history.unshift({elapsedMs:time,optimalClears,total:speedSession.total||activeSpeedDefinition().total,completedAt:Date.now()});
+  storage.setJson(speedHistoryStorageKey(),history.slice(0,20));
   clearSpeedSessionCommand();
-  commandStorageRemove(STORAGE_KEY_GROUPS.speed.activeVariant);
+  storage.remove(STORAGE_KEY_GROUPS.speed.activeVariant);
   completeSpeedSessionCommand({elapsedMs:time,bestMs:bestTime,optimalClears,runNumber:history.length});
   return {bestTime,history,runNumber:history.length};
 }
@@ -8788,25 +8672,25 @@ function recordSpeedCompletionCommand(elapsed,optimalClears){
 // ===== チュートリアルコマンド =====
 // チュートリアル状態の書き込みcommand。演出・誤操作判定はUI側に残す。
 function setTutorialStepCommand(index){
-  updateNavigationStateCommand({tutorialStep:Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index))});
-  commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialStep,String(tutorialStep));
+  updateNavigationStateOwner({tutorialStep:Math.max(0,Math.min(TUTORIAL_STEPS.length-1,index))});
+  storage.set(STORAGE_KEY_GROUPS.progression.tutorialStep,String(tutorialStep));
   return tutorialStep;
 }
 function completeTutorialCommand(){
-  commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialComplete,'1');
-  commandStorageRemove(STORAGE_KEY_GROUPS.progression.tutorialStep);
+  storage.set(STORAGE_KEY_GROUPS.progression.tutorialComplete,'1');
+  storage.remove(STORAGE_KEY_GROUPS.progression.tutorialStep);
   return true;
 }
 function resetTutorialCommand(){
-  updateNavigationStateCommand({tutorialStep:0});
-  commandStorageRemove(STORAGE_KEY_GROUPS.progression.tutorialStep);
-  commandStorageRemove(STORAGE_KEY_GROUPS.progression.introSeen);
+  updateNavigationStateOwner({tutorialStep:0});
+  storage.remove(STORAGE_KEY_GROUPS.progression.tutorialStep);
+  storage.remove(STORAGE_KEY_GROUPS.progression.introSeen);
   return true;
 }
 function persistTutorialSessionCommand(step=tutorialStep){
   syncGameState();
-  commandStorageSetJson(STORAGE_KEY_GROUPS.progression.activeSession,{mode:'tutorial',step});
-  commandStorageSet(STORAGE_KEY_GROUPS.progression.tutorialStep,String(step));
+  storage.setJson(STORAGE_KEY_GROUPS.progression.activeSession,{mode:'tutorial',step});
+  storage.set(STORAGE_KEY_GROUPS.progression.tutorialStep,String(step));
   return true;
 }
 
@@ -8914,7 +8798,7 @@ function boardQuizEnoughMatchingStates(state,match,limit,accept=()=>true){
 function boardQuizSameShapeState(state,shapeState){const shape=dec(shapeState);for(const symmetry of SYMMETRIES){const transformed=transformStateBySymmetry(state,symmetry),board=dec(transformed);if(board.every((value,index)=>(value===0)===(shape[index]===0)))return transformed;}return state;}
 function boardQuizCenterIsNotOdd(board){if(board[3]===0)return true;const count=[0,0,0];board.forEach(value=>{if(value!==0)count[value]++;});return count[board[3]]===Math.max(...count);}
 function boardQuizConfigForCurrent(){
-  const {masteryIndex}=WakeSevenAppContext.state.navigation.read();
+  const {masteryIndex}=readNavigationStateOwner();
   const masteryContext=isMode('mastery')||returnStageContext?.extra===true;
   if(!masteryContext)return null;
   // クリア後は activeMode が次の導線用に切り替わることがあるため、
@@ -8979,7 +8863,7 @@ function boardQuizTransformControls(index){
   return '<div class="board-quiz-tools">'+buttons.map(([kind,label])=>'<button type="button" data-board-transform="'+kind+'" data-board-index="'+index+'" aria-label="'+tr(label)+'">'+transformIcon(kind)+'</button>').join('')+'</div>';
 }
 function boardQuizMarkup(config,states,moveChoiceOrder,copy,rootId,detailPatterns){
-  const card=(board,index)=>{const template=document.getElementById('boardQuizCardTemplate'),wrapper=document.createElement('div');if(!template)return '<div class="board-quiz-card"><button class="board-quiz-option" type="button" data-board-answer="'+index+'"><span class="board-quiz-board">'+miniBoardSvg(board)+'</span></button></div>';const fragment=template.content.cloneNode(true),card=fragment.firstElementChild,answer=card.querySelector('.board-quiz-option');answer.dataset.boardAnswer=index;card.querySelector('.board-quiz-board').innerHTML=miniBoardSvg(board);card.querySelectorAll('[data-board-transform]').forEach(button=>{button.dataset.boardIndex=index;svgSetIcon(button,transformIcon(button.dataset.boardTransform));});wrapper.appendChild(card);return wrapper.innerHTML;};
+  const card=(board,index)=>{const template=document.getElementById('boardQuizCardTemplate'),wrapper=document.createElement('div');if(!template)return '<div class="board-quiz-card"><button class="board-quiz-option" type="button" data-board-answer="'+index+'"><span class="board-quiz-board">'+miniBoardSvg(board)+'</span></button></div>';const fragment=template.content.cloneNode(true),card=fragment.firstElementChild,answer=card.querySelector('.board-quiz-option');answer.dataset.boardAnswer=index;card.querySelector('.board-quiz-board').innerHTML=miniBoardSvg(board);card.querySelectorAll('[data-board-transform]').forEach(button=>{button.dataset.boardIndex=index;svgMount(button,transformIcon(button.dataset.boardTransform));});wrapper.appendChild(card);return wrapper.innerHTML;};
   const boardMarkup=config.kind==='moves'
     ?'<div class="board-quiz-single"><span class="board-quiz-board">'+miniBoardSvg(states[0])+'</span>'+boardQuizTransformControls(0)+'</div><div class="board-quiz-moves">'+moveChoiceOrder.map((choice,index)=>'<button class="board-quiz-option" type="button" data-board-answer="'+index+'">'+copy.moveChoices[choice]+'</button>').join('')+'</div>'
     :'<div class="board-quiz-options '+(states.length===3?'three':'')+'">'+states.map(card).join('')+'</div>';
@@ -9025,9 +8909,9 @@ function stageClearTextAt(mode,index){
   if(entry.guideCard)return resolveLocaleText(entry.guideCard.text);
   return entry.tip?resolveLocaleText(entry.tip):'';
 }
-function stageClearText(){const navigation=readNavigationContext(),{mode}=navigation;return mode==='free'||mode==='custom'||mode==='satori'?'':stageClearTextAt(mode==='mastery',mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);}
+function stageClearText(){const navigation=readNavigationStateOwner(),{mode}=navigation;return mode==='free'||mode==='custom'||mode==='satori'?'':stageClearTextAt(mode==='mastery',mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);}
 function clearEntryForCurrent(){
-  const navigation=readNavigationContext(),{mode}=navigation;
+  const navigation=readNavigationStateOwner(),{mode}=navigation;
   if(mode==='mastery')return clearContentAt(true,navigation.masteryIndex);
   if(mode==='free'||mode==='custom'||mode==='satori')return undefined;
   return clearContentAt(false,navigation.stageIndex);
@@ -9039,7 +8923,7 @@ function stageClearArtAt(mode,index){
   if(entry.guideCard)return 'guideCard:'+entry.guideCard.state.join('');
   return entry.art||'';
 }
-function stageClearArt(){const navigation=readNavigationContext(),{mode}=navigation;return mode==='satori'?'':stageClearArtAt(mode==='mastery',mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);}
+function stageClearArt(){const navigation=readNavigationStateOwner(),{mode}=navigation;return mode==='satori'?'':stageClearArtAt(mode==='mastery',mode==='mastery'?navigation.masteryIndex:navigation.stageIndex);}
 
 // ===== メッセージUIの宣言データ =====
 const MESSAGE_REVIEW_STORAGE_KEY=STORAGE_KEY_GROUPS.dialogs.messageReview;
@@ -9062,14 +8946,14 @@ const VOLUME_NEXT_RULES=Object.freeze({
 });
 function messageReviewEntryKey(entry){const kind=entry.awakened?'master:awakening':entry.satori?'satori':entry.master?'master:'+entry.master:entry.boardQuiz?'board-quiz':entry.quiz!==undefined?'quiz':'text';return (entry.awakened||entry.satori?'satori':entry.extra?'extra':'primary')+':'+entry.index+':'+kind;}
 function finalizeMessageReviewEntries(entries){return entries.map(entry=>{const messageId=entry.master||clearContentKey(!!entry.extra,entry.index);const message=entry.master?milestoneMessageDescriptor(entry.master):clearMessageDescriptor(!!entry.extra,entry.index);return {...entry,messageId,message};});}
-function messageReviewProgressSets(){const {lap}=WakeSevenAppContext.state.navigation.read();return {primary:lap===2?lap1ClearedStages:clearedStagesForLap(lap),extra:lap===2?lap1ClearedExtraStages:clearedExtraStagesForLap(lap),satori:lap===2?lap1ClearedSatoriStages:clearedSatoriStagesForLap(lap)};}
+function messageReviewProgressSets(){const {lap}=readNavigationStateOwner();return {primary:lap===2?lap1ClearedStages:clearedStagesForLap(lap),extra:lap===2?lap1ClearedExtraStages:clearedExtraStagesForLap(lap),satori:lap===2?lap1ClearedSatoriStages:clearedSatoriStagesForLap(lap)};}
 function collectPrimaryMessageReviewEntries(reviewPrimary){const entries=[];for(let i=0;i<STAGES.length;i++){if(!reviewPrimary.has(i))continue;if(i===ACADEMY_STAGE_COUNT-1){if(speedTrainingTrialCleared){entries.push({master:'primary',extra:false,index:i});const before=clearContentBefore(false,TRAINING_STAGE_START);if(before?.dialog)entries.push({master:before.dialog,extra:false,index:i});}continue;}const text=stageClearTextAt(false,i);if(text)entries.push({extra:false,index:i,text,art:stageClearArtAt(false,i)});const primaryEntry=clearContentAt(false,i);if(primaryEntry&&primaryEntry.quiz)entries.push({extra:false,index:i,quiz:resolveLocaleText(primaryEntry.quiz),art:stageClearArtAt(false,i)});}return entries;}
 function collectExtraMessageReviewEntries(reviewExtra){const entries=[];for(let i=0;i<EXTRA_STAGES.length;i++){if(!reviewExtra.has(i))continue;if((i+1)%MASTER_VOLUME_SIZE===0){if(i===EXTRA_STAGES.length-1){if(speedMasteryTrialCleared)entries.push({master:'mastery',extra:true,index:i});}else if(i!==29||speedIntermediateTrialCleared)entries.push({master:'volume',extra:true,index:i});continue;}const text=stageClearTextAt(true,i);if(text)entries.push({extra:true,index:i,text,art:stageClearArtAt(true,i)});const extraEntry=clearContentAt(true,i);if(extraEntry&&extraEntry.boardQuiz)entries.push({extra:true,index:i,boardQuiz:true});if(extraEntry&&extraEntry.quiz)entries.push({extra:true,index:i,quiz:resolveLocaleText(extraEntry.quiz),art:stageClearArtAt(true,i)});}return entries;}
 function collectMessageReviewMilestones(reviewMastered,reviewSatoriMastered){const entries=[];if(reviewMastered&&speedMasteryTrialCleared)entries.push({master:'satoriIntro',extra:true,index:EXTRA_STAGES.length-1});if(reviewSatoriMastered||hasSatoriReward())entries.push({master:'satori',satori:true,index:SATORI_STAGES.length-1});if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});if(awakenedGranted)entries.push({master:'awakening',awakened:true,index:SATORI_STAGES.length-1});return entries;}
 function buildMessageReviewEntries(){const entries=[];const {primary:reviewPrimary,extra:reviewExtra,satori:reviewSatori}=messageReviewProgressSets();const {primary:reviewPrimaryDone,extra:reviewMastered,satori:reviewSatoriMastered}=messageReviewCompletion({primary:reviewPrimary,extra:reviewExtra,satori:reviewSatori});entries.push(...collectPrimaryMessageReviewEntries(reviewPrimary));if(!reviewPrimaryDone){if(secondLapUnlocked)entries.push({master:'secondLapIntro',extra:true,index:SATORI_STAGES.length-1});return finalizeMessageReviewEntries(entries);}entries.push(...collectExtraMessageReviewEntries(reviewExtra));entries.push(...collectMessageReviewMilestones(reviewMastered,reviewSatoriMastered));return finalizeMessageReviewEntries(entries);}
 function messageReviewCompletion(sets){return {primary:STAGES.every((_,index)=>sets.primary.has(index)),extra:EXTRA_STAGES.every((_,index)=>sets.extra.has(index)),satori:SATORI_STAGES.every((_,index)=>sets.satori.has(index))};}
-function messageReviewPlace(entry){const {currentLang:language}=WakeSevenAppContext.state.settings.read();if(entry.awakened)return tr('awakenedTitle');if(entry.satori)return language==='ja'?'悟りへの道・第'+(entry.index+1)+'問 クリア':tr('satoriTitle');if(entry.master==='satoriIntro')return language==='ja'?'悟りへの道の案内':tr('satoriIntroTitle');if(entry.master==='secondLapIntro')return language==='ja'?'二周目の案内':tr('secondLapTitle');if(entry.master==='trainingWelcome')return language==='ja'?'だるま修行の案内':tr('trainingWelcomeTitle');if(!entry.extra){if(language!=='ja')return tr('stageAria',{n:entry.index+1,par:STAGES[entry.index].par});const {section,position}=primarySectionPosition(entry.index);return tr(section.labelKey)+' 第'+position+'問 クリア';}const volume=Math.floor(entry.index/MASTER_VOLUME_SIZE)+1;return language==='ja'?'名人への道 '+volumeLabel(volume)+'・第'+(entry.index%MASTER_VOLUME_SIZE+1)+'問 クリア':tr('extraStageAria',{n:entry.index+1,total:EXTRA_STAGES.length});}
-function messageReviewStageContext(entry){const {currentLang:language}=WakeSevenAppContext.state.settings.read();if(entry.awakened)return tr('secondLapPath');if(entry.satori)return tr('satori')+' '+(entry.index+1)+' / '+SATORI_STAGES.length;if(entry.master==='satoriIntro')return tr('satori');if(entry.master==='secondLapIntro')return tr('secondLapPath');if(entry.master==='trainingWelcome')return tr('darumaTraining');if(!entry.extra){const {section,position:number}=primarySectionPosition(entry.index);return tr(section.labelKey)+' '+number+' / '+section.total;}const volume=Math.floor(entry.index/MASTER_VOLUME_SIZE)+1;const path=language==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume);return path+'　'+masterSubtitle(volume)+' '+(entry.index%MASTER_VOLUME_SIZE+1)+' / '+MASTER_VOLUME_SIZE;}
+function messageReviewPlace(entry){const {currentLang:language}=readSettingsStateOwner();if(entry.awakened)return tr('awakenedTitle');if(entry.satori)return language==='ja'?'悟りへの道・第'+(entry.index+1)+'問 クリア':tr('satoriTitle');if(entry.master==='satoriIntro')return language==='ja'?'悟りへの道の案内':tr('satoriIntroTitle');if(entry.master==='secondLapIntro')return language==='ja'?'二周目の案内':tr('secondLapTitle');if(entry.master==='trainingWelcome')return language==='ja'?'だるま修行の案内':tr('trainingWelcomeTitle');if(!entry.extra){if(language!=='ja')return tr('stageAria',{n:entry.index+1,par:STAGES[entry.index].par});const {section,position}=primarySectionPosition(entry.index);return tr(section.labelKey)+' 第'+position+'問 クリア';}const volume=Math.floor(entry.index/MASTER_VOLUME_SIZE)+1;return language==='ja'?'名人への道 '+volumeLabel(volume)+'・第'+(entry.index%MASTER_VOLUME_SIZE+1)+'問 クリア':tr('extraStageAria',{n:entry.index+1,total:EXTRA_STAGES.length});}
+function messageReviewStageContext(entry){const {currentLang:language}=readSettingsStateOwner();if(entry.awakened)return tr('secondLapPath');if(entry.satori)return tr('satori')+' '+(entry.index+1)+' / '+SATORI_STAGES.length;if(entry.master==='satoriIntro')return tr('satori');if(entry.master==='secondLapIntro')return tr('secondLapPath');if(entry.master==='trainingWelcome')return tr('darumaTraining');if(!entry.extra){const {section,position:number}=primarySectionPosition(entry.index);return tr(section.labelKey)+' '+number+' / '+section.total;}const volume=Math.floor(entry.index/MASTER_VOLUME_SIZE)+1;const path=language==='ja'?'名人への道・'+volumeLabel(volume):tr('allPatternsKind')+' '+volumeLabel(volume);return path+'　'+masterSubtitle(volume)+' '+(entry.index%MASTER_VOLUME_SIZE+1)+' / '+MASTER_VOLUME_SIZE;}
 function configureMessageReviewHeader(entry){$('messageDialogTitle').textContent=tr('clear');$('messageDialogPlace').textContent=messageReviewPlace(entry);}
 function rememberSpecialMessage(master){const entry=buildMessageReviewEntries().find(item=>item.master===master);if(!entry)return;const key=messageReviewEntryKey(entry);try{storage.set(MESSAGE_REVIEW_STORAGE_KEY,key);storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);}catch(_){}}
 function rememberClearedMessage(extra,index,satori=false){const entry=buildMessageReviewEntries().find(item=>!!item.satori===satori&&!!item.extra===extra&&item.index===index);if(!entry)return;const key=messageReviewEntryKey(entry);try{storage.set(MESSAGE_REVIEW_STORAGE_KEY,key);storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);}catch(_){} }
@@ -9091,7 +8975,7 @@ function messageReviewRenderer(entry){if(entry.quiz!==undefined)return MESSAGE_R
 function renderMessageArtwork(art,twoMoveLesson,illustration,lessonCopy,lessonRule){const classByArt={'move-graph':art==='moveGraph','board-card':art.startsWith('twoMoveCard:')||art.startsWith('guideCard:'),'controls-art':art==='controls','navigation-art':art==='navigation','menu-art':art==='menuButtons','rank-badge-art':art==='rankBadgeArt','unwritten-art':art==='unwritten','cheer-art':art==='cheer','intro-guide-art':art==='introGuide','two-move-lesson-art':!!twoMoveLesson};Object.entries(classByArt).forEach(([className,enabled])=>illustration.classList.toggle(className,enabled));stopClearGuideBoard('messageClearGuideBoard');stopClearGuideBoard('messageTwoMoveLessonBoard');illustration.replaceChildren();if(art==='introGuide'){const template=document.getElementById('message-intro-guide-frame-template');if(template){const board=template.content.cloneNode(true).firstElementChild;board.id='messageClearGuideBoard';illustration.append(board);}else illustration.innerHTML='<svg id="messageClearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>';}else if(twoMoveLesson){const template=document.getElementById('message-two-move-lesson-frame-template');if(template){const board=template.content.cloneNode(true).firstElementChild;board.id='messageTwoMoveLessonBoard';illustration.append(board);}else illustration.innerHTML='<svg id="messageTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>';}else if(art)illustration.innerHTML=tipArt(art);if(art==='cheer'){const template=document.getElementById('message-cheer-caption-template');if(template){const caption=template.content.cloneNode(true);caption.querySelector('[data-cheer-caption]').textContent=tr('cheerCaption');illustration.append(caption);}}if(art==='introGuide')buildClearGuideBoard('messageClearGuideBoard');if(twoMoveLesson)buildTwoMoveLessonBoard('messageTwoMoveLessonBoard',twoMoveLesson);illustration.hidden=!art;lessonCopy.hidden=!twoMoveLesson;lessonRule.hidden=!twoMoveLesson;}
 function renderMessageLesson(twoMoveLesson,illustration,lessonCopy,lessonRule){if(twoMoveLesson){renderTwoMoveLessonRule('messageTwoMoveLessonRule');renderTwoMoveLessonCopy('messageTwoMoveLessonCopy',twoMoveLesson);$('messageDialogText').after(illustration);illustration.before(lessonRule);illustration.after(lessonCopy);}else{lessonRule.replaceChildren();lessonCopy.replaceChildren();}}
 function renderMessageQuiz(quiz){renderQuizInto({root:'messageQuiz',options:'messageQuizOptions',note:'messageQuizNote',title:'messageQuizTitle',question:'messageQuizQuestion'},quiz);}
-function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=WakeSevenAppContext.state.navigation.read();updateDialogStateOwner({messageDialogReturn:returnTarget});messageReviewEntries=buildMessageReviewEntries();if(resume){let lastKey='',lastClearKey='';try{lastKey=storage.get(MESSAGE_REVIEW_STORAGE_KEY)||'';lastClearKey=storage.get(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY)||'';}catch(_){}if(!lastClearKey&&isSatoriMastered()){const satoriEntry=messageReviewEntries.findIndex(entry=>entry.satori);if(satoriEntry>=0){messageReviewIndex=satoriEntry;const key=messageReviewEntryKey(messageReviewEntries[satoriEntry]);try{storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);}catch(_){}}else messageReviewIndex=0;}else{const saved=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===lastKey);messageReviewIndex=saved>=0?saved:0;}}else{const currentExtra=isMode('mastery'),currentIndex=currentExtra?masteryIndex:stageIndex;const exact=messageReviewEntries.findIndex(entry=>entry.extra===currentExtra&&entry.index===currentIndex);messageReviewIndex=exact>=0?exact:0;}renderMessageReview();$('messageDialog').hidden=false;$('closeMessages').focus();}
+function openMessageReview({resume=false,returnTarget=null}={}){const {stageIndex,masteryIndex}=readNavigationStateOwner();updateDialogStateOwner({messageDialogReturn:returnTarget});messageReviewEntries=buildMessageReviewEntries();if(resume){let lastKey='',lastClearKey='';try{lastKey=storage.get(MESSAGE_REVIEW_STORAGE_KEY)||'';lastClearKey=storage.get(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY)||'';}catch(_){}if(!lastClearKey&&isSatoriMastered()){const satoriEntry=messageReviewEntries.findIndex(entry=>entry.satori);if(satoriEntry>=0){messageReviewIndex=satoriEntry;const key=messageReviewEntryKey(messageReviewEntries[satoriEntry]);try{storage.set(MESSAGE_REVIEW_LAST_CLEAR_STORAGE_KEY,key);}catch(_){}}else messageReviewIndex=0;}else{const saved=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===lastKey);messageReviewIndex=saved>=0?saved:0;}}else{const currentExtra=isMode('mastery'),currentIndex=currentExtra?masteryIndex:stageIndex;const exact=messageReviewEntries.findIndex(entry=>entry.extra===currentExtra&&entry.index===currentIndex);messageReviewIndex=exact>=0?exact:0;}renderMessageReview();$('messageDialog').hidden=false;$('closeMessages').focus();}
 const MESSAGE_RENDERERS=Object.freeze({
   quiz:entry=>{configureMessageReviewHeader(entry);renderMessageQuiz(entry.quiz);},
   boardQuiz:entry=>{configureMessageReviewHeader(entry);renderBoardQuiz('messageBoardQuiz',clearContentAt(true,entry.index).boardQuiz);},
@@ -9104,7 +8988,7 @@ function renderMasteryMilestone(entry,{seal,rankText,masterText,boardNote}){$('m
 function renderSatoriMilestone(entry,{seal,rankText,masterText}){$('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('satoriRank'),false,5);setSealColor(seal,5);seal.classList.add('rank-frame-seal');configureMilestoneHeader(entry,tr('satoriTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(tr('satoriRank'));masterText.hidden=false;masterText.textContent=tr('satoriText');}
 function renderAwakeningMilestone(entry,{seal,rankText,masterText,boardNote}){$('messageMasterSealLabel').innerHTML=rankFrameSvg(tr('awakenedRank'),false,6);setSealColor(seal,6);seal.classList.add('rank-frame-seal');configureMilestoneHeader(entry,tr('awakenedTitle'));rankText.hidden=false;rankText.textContent=rankEarnedText(tr('awakenedRank'));masterText.hidden=false;masterText.textContent=tr('satoriThanks');boardNote.hidden=false;boardNote.textContent=tr('threeDUnlockedText');}
 function renderIntroMilestone(entry,{seal,masterText}){const data=INTRO_MILESTONE_COPY[entry.master];if(!data)return;seal.hidden=entry.master==='trainingWelcome';if(entry.master==='satoriIntro'){$('messageMasterSealLabel').innerHTML=satoriSealSvg();setSealColor(seal,5);}else if(entry.master==='secondLapIntro'){$('messageMasterSealLabel').textContent=secondLapMark();seal.classList.add('second-lap-mark');}configureMilestoneHeader(entry,tr(data[0]));masterText.hidden=false;masterText.textContent=tr(data[1]);}
-function renderVolumeMilestone(entry,volume,{seal,rankText,masterText}){const {currentLang:language}=WakeSevenAppContext.state.settings.read();const nextRules=VOLUME_NEXT_RULES[language]||[];const clearName=language==='ja'?'名人への道・'+volumeLabel(volume)+'　'+masterSubtitle(volume):volumeLabel(volume)+'　'+masterSubtitle(volume);$('messageMasterSealLabel').textContent=rankForVolume(volume);setSealColor(seal,volume+1);configureMilestoneHeader(entry,tr('volumeClearTitle',{n:clearName}));rankText.hidden=false;rankText.textContent=rankEarnedText(rankForVolume(volume));masterText.hidden=false;masterText.textContent=nextRules[volume-1]||tr('volumeClearText');}
+function renderVolumeMilestone(entry,volume,{seal,rankText,masterText}){const {currentLang:language}=readSettingsStateOwner();const nextRules=VOLUME_NEXT_RULES[language]||[];const clearName=language==='ja'?'名人への道・'+volumeLabel(volume)+'　'+masterSubtitle(volume):volumeLabel(volume)+'　'+masterSubtitle(volume);$('messageMasterSealLabel').textContent=rankForVolume(volume);setSealColor(seal,volume+1);configureMilestoneHeader(entry,tr('volumeClearTitle',{n:clearName}));rankText.hidden=false;rankText.textContent=rankEarnedText(rankForVolume(volume));masterText.hidden=false;masterText.textContent=nextRules[volume-1]||tr('volumeClearText');}
 const MILESTONE_RENDERERS=Object.freeze({primary:(entry,view)=>renderPrimaryMilestone(entry,view),mastery:(entry,view)=>renderMasteryMilestone(entry,view),satori:(entry,view)=>renderSatoriMilestone(entry,view),awakening:(entry,view)=>renderAwakeningMilestone(entry,view),satoriIntro:(entry,view)=>renderIntroMilestone(entry,view),secondLapIntro:(entry,view)=>renderIntroMilestone(entry,view),trainingWelcome:(entry,view)=>renderIntroMilestone(entry,view),volume:(entry,view,volume)=>renderVolumeMilestone(entry,volume,view)});
 
 // ===== 進行表示 =====
@@ -9230,7 +9114,7 @@ function masterCommonRules(){return currentLang==='ja'?'名人への道は最短
 // 値の決定だけを担当し、状態やDOMは変更しない。
 function createProgressionMessageContext(context={}){
   const source=context||{};
-  const appState=typeof WakeSevenAppContext!=='undefined'?WakeSevenAppContext.snapshot():{};
+  const appState=readNavigationStateOwner();
   return Object.freeze({
     mode:source.mode??appState.mode??null,
     stageIndex:source.stageIndex??appState.stageIndex??null,
@@ -9278,7 +9162,7 @@ const clearFeatureRestoreDialog=context=>{
 // clear-flowの純粋な文脈生成へ委譲し、呼び出し側がactiveMode等を直接読むのを防ぐ。
 function resolveClearFeatureContext(context=null){
   if(context?.mode)return context;
-  const navigation=readNavigationContext();
+  const navigation=readNavigationStateOwner();
   return createClearTransitionContext(navigation.stageIndex+1);
 }
 // 表示は共通ダイアログへ委譲するが、クリア機能の表示入口を一つにする。
@@ -9311,14 +9195,12 @@ function readDialogChainContext(){return Object.freeze({
   history:Object.freeze(chainHistory.slice()),
   open:typeof $('chainDialog')!=='undefined'&&!$('chainDialog').hidden
 });}
-function showDialogChainStep(name){return openChainedDialog(name);}
-function startDialogChain(name){chainHistory=[];return showDialogChainStep(name);}
 const WakeSevenDialogChainFeature=Object.freeze({
-  start(name){return startDialogChain(name);},
-  show(name){return showDialogChainStep(name);},
+  start(name){chainHistory=[];return openChainedDialog(name);},
+  show:openChainedDialog,
   next(){return $('chainDialogAction')?.click();},
   back(){return $('chainDialogPrev')?.click();},
-  close(){return closeChainDialog();},
+  close:closeChainDialog,
   context:readDialogChainContext
 });
 
@@ -9433,7 +9315,7 @@ function renderTwoMovePatterns(){
       }
       button.dataset.twoMoveTransform=transform;
       button.setAttribute('aria-label',tr(label));
-      svgSetIcon(button.querySelector('[data-transform-art]'),transformIcon(transform));
+      svgMount(button.querySelector('[data-transform-art]'),transformIcon(transform));
       tools.appendChild(button);
     });
     card.querySelector('[data-two-move-open]').innerHTML=miniBoardSvg(state);
@@ -9454,7 +9336,7 @@ function openTwoMovePatterns({returnToClear=false}={}){
   $('closeTwoMovePatterns').focus();
 }
 function renderTwoMoveDetail(){
-  replaceRenderedContent($('twoMoveDetailBoard'),miniBoardSvg(twoMoveDetailState));
+  svgMount($('twoMoveDetailBoard'),miniBoardSvg(twoMoveDetailState));
   const tips=PLAY_TIPS[currentLang]||PLAY_TIPS.ja;
   const intro=(TWO_MOVE_DETAIL_INTROS[currentLang]||TWO_MOVE_DETAIL_INTROS.ja)[twoMoveDetailIndex]||'';
   $('twoMoveDetailIntro').textContent=intro;
@@ -9610,20 +9492,14 @@ function tipDaruma(x,y,scale=.55){
 // ===== ステージ選択・称号一覧の入口 =====
 // 選択画面と称号一覧の相互遷移を一つの機能入口から追跡する。
 // 解放判定、一覧描画、ステージ読込は既存の所有モジュールへ委譲する。
-function readStagePickerContext(){const navigation=readNavigationContext();return Object.freeze({
-  mode:navigation.mode,lap:navigation.lap,stageIndex:navigation.stageIndex,
-  pickerOpen:!$('stagePicker').hidden,rankOpen:!$('rankDialog').hidden,
-  rankReturn:readDialogContext().rankDialogReturn
-});}
 const WakeSevenStagePickerFeature=Object.freeze({
-  context:readStagePickerContext,
   open(options={}){
     options=options&&typeof options==='object'?options:{};
     if(options.round!==undefined||options.satoriPage!==undefined||options.lap!==undefined)return openStagePickerAt(options);
     return openStagePicker();
   },
-  openSatori(){return openSatoriPicker();},
-  openRank(returnTarget=null){return openRankDialog(returnTarget);},
+  openSatori:openSatoriPicker,
+  openRank:openRankDialog,
   openRankFrom(dialogId,sealId){return typeof openRankDialogFrom==='function'&&openRankDialogFrom(dialogId,sealId);},
   close(options={}){
     const {focusId=null}=options&&typeof options==='object'?options:{};
@@ -9631,7 +9507,7 @@ const WakeSevenStagePickerFeature=Object.freeze({
     if(focusId)$(focusId)?.focus();
     return true;
   },
-  moveRound(direction){return moveStagePickerRound(direction);},
+  moveRound:moveStagePickerRound,
   setRankLap(lap){
     if(lap!==1&&lap!==2)return false;
     if(lap===2&&!secondLapUnlocked)return false;
@@ -9640,7 +9516,7 @@ const WakeSevenStagePickerFeature=Object.freeze({
     return true;
   },
   closeRank(){
-    const returnTarget=readDialogContext().rankDialogReturn;
+    const returnTarget=readDialogStateOwner().rankDialogReturn;
     updateDialogStateOwner({rankDialogReturn:null});
     $('rankDialog').hidden=true;
     if(!focusReturnTarget(returnTarget))$('rankBadge').focus();
@@ -9657,16 +9533,6 @@ const WakeSevenStagePickerFeature=Object.freeze({
 
 // ===== 設定・About・リセットの機能入口 =====
 // 設定画面の入口と復帰状態だけをまとめ、設定値の保存・描画は既存の所有処理へ委譲する。
-function readSettingsFeatureContext(){
-  const settings=WakeSevenAppContext.state.settings.read();
-  const dialog=(id)=>!$(id)?.hidden;
-  return Object.freeze({
-    ...settings,
-    settingsOpen:dialog('settingsDialog'),
-    aboutOpen:dialog('aboutDialog'),
-    resetOpen:dialog('resetDialog')
-  });
-}
 function openSettingsFeature(){
   $('settingsDialog').hidden=false;
   $('settingsDialogClose').focus();
@@ -9699,7 +9565,6 @@ function resetSettingsFeature(options={resetIntro:true,showIntro:true,preserveRe
   return true;
 }
 const WakeSevenSettingsFeature=Object.freeze({
-  context:readSettingsFeatureContext,
   open:openSettingsFeature,
   openAbout:openAboutFeature,
   openReset:openResetFeature,
@@ -9714,7 +9579,7 @@ const WakeSevenSettingsFeature=Object.freeze({
 // 公開進行で使う「本編をすべてクリア済みか」の判定は、各UIから同じ入口を参照する。
 // 分割時にこの小さな共有判定を失うと、クリア後の「次の問題へ」が
 // ダイアログを閉じるだけになるため、ここで明示的に保持する。
-const allPrimaryCleared=()=>{const progress=WakeSevenAppContext.state.progress.read();return STAGES.every((_,i)=>progress.clearedStages.has(i));};
+const allPrimaryCleared=()=>{const progress=readProgressStateOwner();return STAGES.every((_,i)=>progress.clearedStages.has(i));};
 // 速解きモード完走の印。時計の文字盤とスピード線で「速さ」を表す。
 function speedSealSvg(){
   return '<svg viewBox="0 0 64 64" aria-hidden="true">'
@@ -9793,7 +9658,7 @@ function appendStagePickerButton(grid,{label,ariaLabel,cleared=false,current=fal
 }
 function renderSatoriStagePicker(){
   const pickerSatori=pickerLap===2?lap2ClearedSatoriStages:lap1ClearedSatoriStages;
-  const currentContext=WakeSevenAppContext.snapshot();
+  const currentContext=readNavigationStateOwner();
   const pageSize=Math.ceil(SATORI_STAGES.length/SATORI_PICKER_PAGES);
   const start=satoriPickerPage*pageSize,end=Math.min(SATORI_STAGES.length,start+pageSize);
   const grid=prepareStagePicker({satori:true,
@@ -9829,7 +9694,7 @@ function openSatoriPicker(){
 // 入口を分けたままにすると、通常メニューと称号一覧で picker の状態だけが
 // ずれるため、状態判定後の表示経路を一つにする。
 function openStagePickerAt({lap,round,satoriPage=null}={}){
-  lap=Number.isInteger(lap)?lap:WakeSevenAppContext.snapshot().lap;
+  lap=Number.isInteger(lap)?lap:readNavigationStateOwner().lap;
   round=typeof round==='undefined'?pickerRound:round;
   pickerLap=lap;
   pickerRound=round;
@@ -9843,9 +9708,9 @@ function openStagePickerAt({lap,round,satoriPage=null}={}){
 }
 function renderStagePicker(){
   if(pickerRound==='satori'){renderSatoriStagePicker();return;}
-  const navigation=readNavigationContext();
+  const navigation=readNavigationStateOwner();
   const pickerRefs=createRefs(['stagePickerTitle','closeStagePicker','stagePickerRound','pickerRoundLabel','pickerPrevRound','pickerNextRound','stagePickerGrid']);
-  const progress=WakeSevenAppContext.state.progress.read();
+  const progress=readProgressStateOwner();
   const pickerPrimary=pickerLap===2?progress.lap2ClearedStages:progress.lap1ClearedStages;
   const pickerExtra=pickerLap===2?progress.lap2ClearedExtraStages:progress.lap1ClearedExtraStages;
   const pickerAcademyDone=Array.from({length:ACADEMY_STAGE_COUNT},(_,i)=>pickerPrimary.has(i)).every(Boolean);
@@ -10164,7 +10029,7 @@ function renderClearTip(){
   illustration.classList.toggle('two-move-lesson-art',!!twoMoveLesson);
   stopClearGuideBoard('clearGuideBoard');
   stopClearGuideBoard('clearTwoMoveLessonBoard');
-  replaceRenderedContent(illustration,art==='introGuide'?'<svg id="clearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
+  svgMount(illustration,art==='introGuide'?'<svg id="clearGuideBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
     :twoMoveLesson?'<svg id="clearTwoMoveLessonBoard" viewBox="14 0 293 310" aria-hidden="true"></svg>'
     :art?tipArt(art)+(art==='cheer'?'<p class="cheer-caption">'+tr('cheerCaption')+'</p>':''):'');
   if(art==='introGuide')buildClearGuideBoard('clearGuideBoard');
@@ -10199,7 +10064,7 @@ function volumeLabel(n){
   return (labels[currentLang]||labels.ja)[n-1]||String(n);
 }
 function hideGameDialogs(){
-  cancelBoardAnimation('dialog-close');
+  cancelBoardAnimationSession();
   closeProgressionQuiz();
   closeChainDialog();
   closeTwoMoveLessonDialog();
@@ -10765,10 +10630,10 @@ function createProgressionViewContext({
   });
 }
 function renderStageNav(){
-  const appState=WakeSevenAppContext.snapshot();
-  const navigation=WakeSevenAppContext.state.navigation.read();
-  const session=WakeSevenAppContext.state.session.read().speedSession;
-  const {currentLang:language}=WakeSevenAppContext.state.settings.read();
+  const appState=readNavigationStateOwner();
+  const navigation=readNavigationStateOwner();
+  const session=readSessionStateOwner().speedSession;
+  const {currentLang:language}=readSettingsStateOwner();
   const viewContext=createProgressionViewContext({
     mode:appState.mode,
     lap:appState.lap,
@@ -11169,7 +11034,7 @@ function startClearFlow({animation=true,context={},nextAction=null}={}){
     return;
   }
   const delay=animation===false?0:celebrateClear();
-  scheduleClearFlowDialog(()=>{if(!WakeSevenAppContext.isClearShown()||!isSolved()){resetClearFlow();return;}finishClearFlow();},delay,clearCycle);
+  scheduleClearFlowDialog(()=>{if(!readDialogStateOwner().clearShown||!isSolved()){resetClearFlow();return;}finishClearFlow();},delay,clearCycle);
 }
 // clearFlowState.cycle はクリア周期を識別する世代番号。表示予約がキャンセルされても、
 // 古い完了処理が後から実行された場合に現在の盤面へ作用しないようにする。
@@ -11215,7 +11080,7 @@ function restoreClearFlowDialog(context={}){
 // 閉じる副作用や連続表示の切り替えで判定がずれるため、同じクリア周期の
 // ルート判定と表示判定にはこの入口を使う。
 function createClearTransitionContext(nextStageIndex){
-  const navigation=readNavigationContext();
+  const navigation=readNavigationStateOwner();
   const mode=navigation.mode;
   const lap=navigation.lap;
   const currentStageIndex=navigation.stageIndex;
@@ -11224,7 +11089,7 @@ function createClearTransitionContext(nextStageIndex){
   return Object.freeze({
     mode,stageIndex:currentStageIndex,extraIndex:navigation.masteryIndex,satoriIndex:navigation.satoriIndex,activeLap:lap,
     nextStageIndex:resolvedNextStageIndex,
-    solved:isSolved(),clearShown:WakeSevenAppContext.isClearShown(),
+    solved:isSolved(),clearShown:readDialogStateOwner().clearShown,
     academyIsCleared:academyCleared(),
     allPrimaryIsCleared:allPrimaryCleared(),
     currentLapPrimaryComplete:STAGES.every((_,i)=>currentLapPrimaryCleared.has(i)),
@@ -11242,7 +11107,7 @@ function finishClearFlow(){
   const dialog=consumeClearFlowDialog(cycle);
   if(dialog)WakeSevenClearFeature.show(dialog.context,dialog.source);
   requestAnimationFrame(()=>{
-    if(WakeSevenAppContext.isClearShown()&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
+    if(readDialogStateOwner().clearShown&&isSolved()&&!hasCompetingDialogForClear())$('clearDialog').hidden=false;
   });
   persistClearFlowCheckpoint();
   return true;
@@ -11275,7 +11140,7 @@ function dispatchClearFlowAction(action){
   makerButtonBlockedUntil=performance.now()+600;
   clearUiEffectTimers('maker-reveal');
   setUiEffectTimer('maker-reveal','unlock',()=>{makerButtonBlockedUntil=0;renderStageNav();},600);
-  const navigation=readNavigationContext();
+  const navigation=readNavigationStateOwner();
   const context=clearFlowState.context||createClearTransitionContext(navigation.stageIndex+1);
   const nextStageIndex=context.nextStageIndex;
   const route=resolveAfterClearRoute(context);
@@ -11488,8 +11353,6 @@ function svgMount(root,markup=''){
   if(markup)root.insertAdjacentHTML('afterbegin',markup);
   return root;
 }
-function svgSetIcon(root,markup=''){return svgMount(root,markup);}
-
 const WakeSevenRendererRegistry=Object.freeze({
   create(renderers={}){const entries=new Map(Object.entries(renderers).filter(([,render])=>typeof render==='function').map(([name,render])=>[name,Object.freeze({render})]));return Object.freeze({get:name=>entries.get(name)||null,names:()=>[...entries.keys()]});}
 });
@@ -11502,19 +11365,18 @@ function renderCurrentView(model={},context={}){
   const renderers=WakeSevenRendererRegistry.create(screenRenderers);
   renderers.names().forEach(name=>renderers.get(name).render(model,context));
 }
-// 動的コンテナ更新の共通境界。既存rendererのmarkup生成は維持する。
-function replaceRenderedContent(root,markup=''){return svgMount(root,markup);}
-
 // ===== アプリケーションイベント =====
 // 要素検索とイベント登録は、公開イベントの単一入口でまとめて追跡する。
 // 小さな別ファイルへ分散させず、イベント配線と同じ境界に置く。
 // イベント配線の提供場所は共有コンテキストに統一する。
-const WakeSevenEventBindings=WakeSevenAppContext.events;
+const WakeSevenEventBindings=Object.freeze({
+  click(id,handler){const element=$(id);if(!element)return null;element.addEventListener('click',handler);return element;}
+});
 
 // ===== デバッグツール =====
 function debugClearCurrent(extraMoves=0){
   if(!DEBUG_MODE||busy||editingBoard)return;
-  const navigation=readNavigationContext();
+  const navigation=readNavigationStateOwner();
   extraMoves=Number.isInteger(extraMoves)?extraMoves:0;
   cancelTutorialHint();
   cancelTileAnimations();
@@ -11733,7 +11595,7 @@ $('tutorialDebugSkip').addEventListener('click',debugSkipTutorial);
 $('debugReset').addEventListener('click',()=>resetStoredProgress({resetIntro:true,showIntro:true,preserveRewards:false}));
 // ===== イベントリスナー群A =====
 function handleClearTipLink(){
-  const navigation=readNavigationContext();
+  const navigation=readNavigationStateOwner();
   if($('clearTipLink').dataset.target==='rank'){
     $('clearDialog').hidden=true;
     WakeSevenStagePickerFeature.openRank();
@@ -11855,7 +11717,7 @@ function bindSpeedEvents(){
 }
 function bindMessageReviewEvents(){
   $('closeMessages').addEventListener('click',()=>{
-    const returnTarget=readDialogContext().messageDialogReturn;
+    const returnTarget=readDialogStateOwner().messageDialogReturn;
     updateDialogStateOwner({messageDialogReturn:null});
     $('messageDialog').hidden=true;
     focusReturnTarget(returnTarget);
@@ -11916,7 +11778,7 @@ const MASTER_DIALOG_CHAIN={
   mastery:{via:'close',when:()=>secondLapActive||speedMasteryTrialCleared,open:'satoriIntro'}
 };
 $('masterClose').addEventListener('click',()=>{
-  const dialogContext=readDialogContext();
+  const dialogContext=readDialogStateOwner();
   const {navigation}=readProgressionContext();
   const dialogKind=dialogContext.masterDialogKind;
   const chain=MASTER_DIALOG_CHAIN[dialogKind];
@@ -11982,7 +11844,7 @@ for(const [sealId,dialogId] of [['masterSeal','masterDialog'],['messageMasterSea
 }
 $('closeRankDialog').addEventListener('click',()=>WakeSevenStagePickerFeature.closeRank());
 $('masterStart').addEventListener('click',()=>{
-  const dialogKind=readDialogContext().masterDialogKind;
+  const dialogKind=readDialogStateOwner().masterDialogKind;
   const {navigation}=readProgressionContext();
   const speedTarget=$('masterStart').dataset.speedVariant;
   hideGameDialogs();
@@ -12049,7 +11911,7 @@ $('twoMoveLessonNext').addEventListener('click',()=>navigateTwoMoveLesson(1));
 $('closeTwoMoveLesson').addEventListener('click',closeTwoMoveLessonDialog);
 $('retryTwoMoveLesson').addEventListener('click',()=>{
   closeTwoMoveLessonDialog();
-  WakeSevenBoardCommands.reset();
+  restartWithAnimation();
 });
 $('twoMoveLessonDialog').addEventListener('click',event=>{
   if(event.target===$('twoMoveLessonDialog'))closeTwoMoveLessonDialog();
@@ -12191,7 +12053,7 @@ function renderTipGuide(model={}){
       caption.append(fragment);
     }else caption.textContent=captions[guideIndex]+' '+tipGuideBestLabel(best);
   }
-  replaceRenderedContent($('tipGuideArt'),compact
+  svgMount($('tipGuideArt'),compact
     ?'<div class="tip-guide-single-visual">'+tipGuideSvg(guideIndex,currentBoards)+'</div>'+tipGuideControls(0,1)
     :tipGuideDoubleMarkup(currentBoards));
   const tipText=tips[GUIDE_TIP_INDEX[guideIndex]];
@@ -12413,13 +12275,13 @@ function applyLanguage(lang){
   if(!$('speedPauseDialog').hidden)renderSpeedPauseStats();
   [['mirrorBoard','mirror','mirror'],['flipBoardVertical','vertical','flipVertical'],['rotateBoardBack','rotateBack','rotateCcw'],['rotateBoard','rotate','rotateCw']].forEach(([id,icon,label])=>{
     const button=$(id);
-    svgSetIcon(button.querySelector('[data-transform-icon]'),transformIcon(icon));
+    svgMount(button.querySelector('[data-transform-icon]'),transformIcon(icon));
     button.querySelector('[data-transform-label]').textContent=tr(label);
   });
   [
     ['twoMoveDetailRotateBack','rotateBack','rotateCcw'],['twoMoveDetailRotate','rotate','rotateCw'],['twoMoveDetailMirror','mirror','mirror'],['twoMoveDetailFlipVertical','vertical','flipVertical']
   ].forEach(([id,icon,label])=>{
-    svgSetIcon($(id),transformIcon(icon));
+    svgMount($(id),transformIcon(icon));
     $(id).setAttribute('aria-label',tr(label));
   });
   if(!$('chainDialog').hidden&&chainActiveName)WakeSevenDialogChainFeature.show(chainActiveName);
@@ -12442,7 +12304,7 @@ function applyLanguage(lang){
     renderClearQuizForEntry(clearEntryForCurrent());
     showProgressionQuiz({rootId:'boardQuiz',boardQuizConfig:boardQuizConfigForCurrent(),requireAnswer:true});
     const action=$('clearNext');
-    const navigation=readNavigationContext();
+    const navigation=readNavigationStateOwner();
     if(navigation.mode==='free')action.textContent=tr('another');
     else if(navigation.mode==='custom')action.textContent=tr('again');
     else if(navigation.mode==='mastery')action.textContent=navigation.masteryIndex===EXTRA_STAGES.length-1?tr('toFree'):tr('nextPattern');
@@ -12621,7 +12483,7 @@ function resetStoredProgress({resetIntro=false,showIntro=false,preserveRewards=f
   if(isMode('speed'))WakeSevenSpeedFeature.pause();
   lap1ClearedStages=new Set();lap1ClearedExtraStages=new Set();lap1ClearedSatoriStages=new Set();
   lap2ClearedStages=new Set();lap2ClearedExtraStages=new Set();lap2ClearedSatoriStages=new Set();
-  updateUnlockStateOwner({secondLapUnlocked:false});updateNavigationStateCommand({lap:1});
+  updateUnlockStateOwner({secondLapUnlocked:false});updateNavigationStateOwner({lap:1});
   fourthCheckUsage={};
   try{
     storage.remove(STORAGE_KEY_GROUPS.progression.cleared);
@@ -12730,7 +12592,7 @@ window.addEventListener('pagehide',()=>{if(isMode('speed'))pauseSpeedClock();per
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'){if(isMode('speed'))pauseSpeedClock();persistActiveSession();}
   else if(isMode('speed')&&!speedAwaitingStart()){
-    if(isSolved()&&WakeSevenAppContext.state.session.read().speedSession){
+    if(isSolved()&&readSessionStateOwner().speedSession){
       // 非表示の間にクリア演出や、その後の次の問題へ進む処理が止まってしまうことがある
       // (裏に回った端末がタイマーの発火を止める・遅らせる等)。
       // 復帰時にクリア済みの盤面が残っていたら、保留中のタイマーは捨てて即座に確定させる。
