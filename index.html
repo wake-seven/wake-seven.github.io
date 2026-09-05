@@ -7510,15 +7510,20 @@ function gripPoint(t){
   const angle=Math.atan2(t.y-CELL[3].y,t.x-CELL[3].x);
   return {x:t.x+32*Math.cos(angle),y:t.y+32*Math.sin(angle),angle};
 }
+// 棒は外側からつかむ操作に寄せる。中心側まで同じ大きさで拾うと、
+// 中央の盤面を押しただけでも棒をつかめてしまうため、内側は短くする。
+const GRIP_HIT_RANGE=Object.freeze({inner:20,outer:46,across:36});
 function gripAt(p){
   let hit=null,best=Infinity;
   TRI.forEach((t,ti)=>{
     const grip=gripPoint(t),dx=p.x-grip.x,dy=p.y-grip.y;
     const along=dx*Math.cos(grip.angle)+dy*Math.sin(grip.angle);
     const across=-dx*Math.sin(grip.angle)+dy*Math.cos(grip.angle);
-    // 見えている水色の棒（36×8）よりかなり広く、指でもつかみやすい当たり判定にする。
-    if(Math.abs(along)>46||Math.abs(across)>30)return;
-    const score=(along/46)**2+(across/30)**2;
+    // 見えている水色の棒（36×8）より広く、指でもつかみやすい当たり判定にする。
+    // ただし中心側は中央盤面を判定外に保ち、外向きには広げず横幅だけを少し広げる。
+    if(along < -GRIP_HIT_RANGE.inner||along > GRIP_HIT_RANGE.outer||Math.abs(across)>GRIP_HIT_RANGE.across)return;
+    const alongRange=along<0?GRIP_HIT_RANGE.inner:GRIP_HIT_RANGE.outer;
+    const score=(along/alongRange)**2+(across/GRIP_HIT_RANGE.across)**2;
     if(score<best){best=score;hit={ti,t,grip};}
   });
   return hit;
