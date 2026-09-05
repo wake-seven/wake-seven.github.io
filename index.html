@@ -2034,13 +2034,10 @@ const SPEED_BOARD_VIEW={permutation:VIEW_ROTATE_MINUS60,flip:false};
 /* ---- 全探索ソルバ（向き3値・7マス = 3進7桁） ---- */
 // 盤面アルゴリズムはDOMから切り離したドメイン実装を利用し、既存名は互換ラッパーとして残す。
 const BOARD_DOMAIN=WakeSevenBoardDomain.create({cellCount:N,triangles:TRI});
-const P3=BOARD_DOMAIN.powers, NS=BOARD_DOMAIN.stateCount;
+const NS=BOARD_DOMAIN.stateCount;
 const enc=o=>BOARD_DOMAIN.encode(o);
 const dec=n=>BOARD_DOMAIN.decode(n);
-const swipeOnce=(o,ti,dir)=>BOARD_DOMAIN.swipe(o,ti,dir);
-const clickOnce=(o,ti,dir=1)=>BOARD_DOMAIN.click(o,ti,dir);
 const rollOnce=(o,ti,dir)=>BOARD_DOMAIN.roll(o,ti,dir);
-const centerOnce=(o,dir=1)=>BOARD_DOMAIN.center(o,dir);
 const buildSolver=kind=>BOARD_DOMAIN.buildSolver(kind);
 const SOLVER=buildSolver('roll');
 const INTRO_STAGE_COUNT=3;
@@ -2444,26 +2441,6 @@ function satoriStagesAtDepth(depth){
 // 最短手数ぶん、毎手12通りを完全にランダムに選んだときの最短クリア確率で並べる。
 // 最短4手に入った途端に急に易しくなることを避ける。
 const SATORI_CATALOG=[1,2,3,4].flatMap(satoriStagesAtDepth);
-const SATORI_PROBABILITY_ASCENDING=[...SATORI_CATALOG].sort((a,b)=>{
-  const ae=progressOptionCounts(a),be=progressOptionCounts(b);
-  return ae.progress-be.progress||be.worse-ae.worse||a.state-b.state;
-});
-const SATORI_PROBABILITY_DESCENDING=[...SATORI_CATALOG].sort((a,b)=>{
-  const ae=progressOptionCounts(a),be=progressOptionCounts(b);
-  return be.progress-ae.progress||ae.worse-be.worse||a.state-b.state;
-});
-function satoriExpectedNextDistance(stage){
-  const ae=progressOptionCounts(stage);
-  return stage.par+(ae.worse-ae.progress)/12;
-}
-const SATORI_EXPECTED_STAGES=[
-  ...SATORI_CATALOG.filter(stage=>stage.par===1),
-  ...SATORI_CATALOG.filter(stage=>stage.par===2),
-  ...SATORI_CATALOG.filter(stage=>stage.par>=3).sort((a,b)=>{
-    const delta=satoriExpectedNextDistance(a)-satoriExpectedNextDistance(b);
-    return delta||a.par-b.par||a.state-b.state;
-  })
-];
 const satoriOptimalPathMemo=new Map();
 function satoriOptimalPathCount(state,steps){
   if(steps===0)return state===0?1:0;
@@ -2480,21 +2457,6 @@ function satoriOptimalPathCount(state,steps){
 function satoriOptimalClearProbability(stage){
   return satoriOptimalPathCount(stage.state,stage.par)/(12**stage.par);
 }
-// ひとつ前の並び。比較検証用の固定データとして残す。
-const SATORI_GLOBAL_OPTIMAL_STAGES=[...SATORI_CATALOG].sort((a,b)=>{
-  const delta=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
-  return delta||a.par-b.par||a.state-b.state;
-});
-// 一時的に採用していた「手数優先」の並び。比較検証用に残す。
-const SATORI_DEPTH_OPTIMAL_STAGES=[...SATORI_CATALOG].sort((a,b)=>{
-  // まず最短手数の少ない順。その同じ手数の中だけ、最短で解ける確率順にする。
-  // 3手の問題が4手の問題より後になることはない。
-  const depth=a.par-b.par;
-  if(depth)return depth;
-  const delta=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
-  return delta||a.state-b.state;
-});
-// 以前の確率順。比較検証用の固定データとして残す。
 const SATORI_HUMAN_TIE_STAGES=[...SATORI_CATALOG].sort((a,b)=>{
   const probability=satoriOptimalClearProbability(b)-satoriOptimalClearProbability(a);
   if(probability)return probability;
@@ -2524,8 +2486,6 @@ const SATORI_MIXED_STAGES=[
 ];
 const SATORI_STAGES=[...SATORI_MIXED_STAGES];
 [SATORI_STAGES[71],SATORI_STAGES[72]]=[SATORI_STAGES[72],SATORI_STAGES[71]];
-const SATORI_ORDER_VERSION='mixed-depths-final-swap-10';
-const satoriStageIndexByState=new Map(SATORI_STAGES.map((stage,index)=>[stage.state,index]));
 
 // ===== 多言語UIデータ =====
 // ===== 多言語文言辞書 =====
@@ -4769,10 +4729,6 @@ const MAIN_BOARD_GUIDANCE=Object.freeze({
   'primary:11':'basicGuideJoinTwo'
 });
 Object.assign(MESSAGE_CATALOG.guidance,MAIN_BOARD_GUIDANCE);
-// 初めて原理を見せる問題は矢印つき、次の問題は「回す3枚」だけを示す。
-const BASIC_LESSON_ASSISTS=Object.freeze({
-  3:'arrow',4:'axis',8:'arrow',9:'axis'
-});
 function mainBoardGuidance(){return messageContent('guidance',runtimeStageKey());}
 function appendMoveCountEmphasis(root,message){
   message.split(/([12]枚)/g).forEach(part=>{
@@ -6025,7 +5981,6 @@ function setBoardAnimationPhase(session,phase){
   session.phase=phase;
   return true;
 }
-function getBoardAnimationSession(){return boardAnimationSession;}
 function requestBoardAnimationFrame(session,callback){
   if(!isBoardAnimationSessionActive(session))return 0;
   setBoardAnimationPhase(session,BOARD_ANIMATION_PHASE.running);
@@ -6065,87 +6020,7 @@ function finishBoardAnimationSession(session){
   return true;
 }
 function cancelBoardAnimationSession(session=boardAnimationSession){if(!session||session.cleaned)return false;session.cancelled=true;setBoardAnimationPhase(session,BOARD_ANIMATION_PHASE.cancelled);return finishBoardAnimationSession(session);}
-function cancelBoardAnimation(reason='cancelled'){cancelActiveTutorialRewindSession(reason);return cancelBoardAnimationSession();}
-
-// ===== チュートリアル巻き戻し表示 =====
-// チュートリアル巻き戻し演出へ渡す表示モデル。副作用を持たない。
-function createTutorialRewindModel({startAngle=0,endAngle=0,direction=1,pivot,items=[],duration=720,cue=''}){
-  return {startAngle,endAngle,direction,pivot,items,duration,cue};
-}
-
-// 巻き戻し中に一時的にgroupへ移す要素のDOM位置とインライン表示を退避する。
-function captureTutorialRewindDomSnapshot(items=[]){
-  const ordered=[...items].sort((a,b)=>{
-    if(a.el?.parentNode!==b.el?.parentNode)return 0;
-    const children=[...(a.el?.parentNode?.children||[])];
-    return children.indexOf(a.el)-children.indexOf(b.el);
-  });
-  return ordered.map(item=>({
-    el:item.el,
-    parent:item.el?.parentNode||null,
-    nextSibling:item.el?.nextSibling||null,
-    style:item.el?.getAttribute('style')
-  }));
-}
-
-// 終了・キャンセルのどちらからも同じ復元経路を通し、棒との前後関係を戻す。
-function restoreTutorialRewindDomSnapshot(snapshot=[]){
-  for(const entry of snapshot){
-    if(!entry.el||!entry.parent)continue;
-    const reference=entry.nextSibling&&entry.nextSibling.parentNode===entry.parent
-      ?entry.nextSibling:null;
-    entry.parent.insertBefore(entry.el,reference);
-    if(entry.style===null||entry.style===undefined)entry.el.removeAttribute('style');
-    else entry.el.setAttribute('style',entry.style);
-  }
-}
-
-let tutorialRewindSessionSerial=0;
-let activeTutorialRewindSession=null;
-function startTutorialRewindSession({snapshot=[],group=null,onCleanup=()=>{}}={}){
-  if(activeTutorialRewindSession&&!activeTutorialRewindSession.cleaned)cancelTutorialRewindSession(activeTutorialRewindSession);
-  const session={id:++tutorialRewindSessionSerial,snapshot,group,onCleanup,animation:null,timers:[],cancelled:false,cleaned:false,cancelling:false};
-  activeTutorialRewindSession=session;
-  return session;
-}
-function setTutorialRewindTimer(session,callback,delay){
-  const timer=setTimeout(()=>{
-    if(session.cleaned||session.cancelled)return;
-    callback();
-  },delay);
-  session.timers.push(timer);
-  return timer;
-}
-function bindTutorialRewindAnimation(session,animation){
-  session.animation=animation;
-  animation.onfinish=()=>cleanupTutorialRewindSession(session);
-  animation.oncancel=()=>{
-    if(!session.cancelling)cancelTutorialRewindSession(session);
-  };
-  return session;
-}
-function cleanupTutorialRewindSession(session){
-  if(session.cleaned)return false;
-  session.cleaned=true;
-  for(const timer of session.timers)clearTimeout(timer);
-  session.timers.length=0;
-  restoreTutorialRewindDomSnapshot(session.snapshot);
-  session.group?.remove();
-  if(activeTutorialRewindSession===session)activeTutorialRewindSession=null;
-  session.onCleanup({cancelled:session.cancelled});
-  return true;
-}
-function cancelTutorialRewindSession(session){
-  if(session.cleaned)return false;
-  session.cancelled=true;
-  session.cancelling=true;
-  try{session.animation?.cancel();}catch{}
-  session.cancelling=false;
-  return cleanupTutorialRewindSession(session);
-}
-function cancelActiveTutorialRewindSession(reason='cancelled'){
-  return activeTutorialRewindSession?cancelTutorialRewindSession(activeTutorialRewindSession):false;
-}
+function cancelBoardAnimation(){return cancelBoardAnimationSession();}
 
 // ===== 盤面SVG・学習ダイアログ =====
 // ===== 盤面SVG構築・入門/学園ダイアログ・最短2手レッスン =====
@@ -8459,14 +8334,6 @@ function renderBoardTileFlash(tile,active=true){
 function renderTutorialFeedback({text,visible=true,classes={}}={}){
   renderBoardInteractionFeedback({promptText:text,promptVisible:visible,classes});
 }
-// チュートリアル巻き戻し中のだるま状態とテーマ色を反映するrenderer。
-function renderTutorialRewindAppearance(items=[],turnOffset=0){
-  for(const item of items){
-    const state=mod3(item.turn+turnOffset)===0?'stand':'fallen';
-    renderBoardTileState(item.el,{state});
-  }
-  applyBoardTheme();
-}
 // 回転軸の補助線を生成する。座標計算は呼び出し側から受け取り、盤面状態は変更しない。
 function renderAxisGuide(root,triangle,cellPositions=[],ratio=.57){
   if(!root||!triangle)return null;
@@ -8655,22 +8522,6 @@ function renderApplicationTargetCells(){
   renderApplicationTargetPreview();
 }
 
-// 応用編の目標3枚を、1回正しく回した直後の小型見本として表示する。
-// targetCellsは「1手後に同じ向きで寝る3枚」なので、ソルバーで距離を1つ縮めた状態を描く。
-function applicationGoalPreviewState(stage){
-  if(!stage)return null;
-  const start=dec(stage.state),distance=SOLVER.dist[enc(start)],targets=stage.targetCells||[];
-  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){
-    const next=rollOnce(start,ti,dir);
-    if(SOLVER.dist[enc(next)]!==distance-1)continue;
-    if(targets.length===3&&targets.every(cell=>next[cell]===next[targets[0]]))return enc(next);
-  }
-  for(let ti=0;ti<TRI.length;ti++)for(const dir of [1,-1]){
-    const next=rollOnce(start,ti,dir);
-    if(SOLVER.dist[enc(next)]===distance-1)return enc(next);
-  }
-  return stage.state;
-}
 function renderApplicationTargetPreview(){
   const preview=$('applicationTargetPreview'),board=$('applicationTargetPreviewBoard');
   if(!preview||!board)return;
@@ -8741,18 +8592,6 @@ function updateSessionStateCommand(patch={}){
 function setCampaignModeCommand(mode,patch={}){
   return updateNavigationStateCommand({ ...patch, mode });
 }
-function restoreNavigationStateCommand(navigation={}){
-  return updateNavigationStateCommand({
-    mode:navigation.mode,
-    lap:navigation.lap,
-    stageIndex:navigation.stageIndex,
-    masteryIndex:navigation.masteryIndex,
-    satoriIndex:navigation.satoriIndex,
-    tutorialStep:navigation.tutorialStep,
-    lastStageMode:navigation.lastStageMode
-  });
-}
-
 // ===== 盤面コマンド =====
 // 盤面操作のコマンド入口。イベント側で盤面状態を直接変更しない。
 const WakeSevenBoardCommands=Object.freeze({
@@ -9403,26 +9242,6 @@ function createProgressionMessageContext(context={}){
   });
 }
 
-// 進行に関わる画面の公開ダイアログ入口。呼び出し側は画面IDと復帰先だけを渡し、
-// どの描画関数を使うか、既存画面をいつ閉じるかはここで統一する。
-function openDialog(dialogId, options={}){
-  const context=options||{};
-  if(dialogId==='stagePicker'){
-    if(typeof openStagePickerAt==='function'&&(context.round!==undefined||context.satoriPage!==undefined||context.lap!==undefined)){
-      return openStagePickerAt({lap:context.lap,round:context.round,satoriPage:context.satoriPage});
-    }
-    return typeof openStagePicker==='function'&&openStagePicker();
-  }
-  if(dialogId==='rankDialog')return typeof openRankDialog==='function'&&openRankDialog(context.returnTarget||null);
-  if(dialogId==='messageDialog')return typeof openMessageReview==='function'&&openMessageReview(context);
-  if(dialogId==='chainDialog')return WakeSevenDialogChainFeature.start(context.name);
-  const dialog=$(dialogId);
-  if(!dialog)return false;
-  dialog.hidden=false;
-  if(context.focusId)$(context.focusId)?.focus();
-  return true;
-}
-
 // 進行クイズの公開入口も、進行ダイアログと同じ文脈で管理する。
 let progressionQuizContext=null;
 function showProgressionQuiz(context={}){
@@ -9437,7 +9256,6 @@ function showProgressionQuiz(context={}){
   if(rootId==='boardQuiz'||rootId==='messageBoardQuiz')try{renderBoardQuiz(rootId,config,{requireAnswer:options.requireAnswer??rootId==='boardQuiz'});}catch(error){console.error('progression quiz render failed',error);resetBoardQuiz(rootId,{requireAnswer:options.requireAnswer??rootId==='boardQuiz'});}
   return !!(options.quiz!==undefined||config);
 }
-function resolveProgressionQuiz(answer){const value=answer&&typeof answer==='object'?answer:{};const rootId=value.rootId||progressionQuizContext?.rootId||'boardQuiz';const index=Number(value.index??answer);if(!Number.isInteger(index)||index<0)return false;const root=$(rootId);const button=root.querySelector('[data-board-answer="'+index+'"]')||root.querySelector('.quiz-option:nth-child('+(index+1)+')');if(!button||button.disabled)return false;button.click();return true;}
 function closeProgressionQuiz(){const rootIds=new Set([progressionQuizContext?.rootId,'clearQuiz','boardQuiz','messageQuiz','messageBoardQuiz'].filter(Boolean));rootIds.forEach(rootId=>{const root=$(rootId);if(!root)return;root.hidden=true;root.classList.remove('quiz-success');if(rootId==='boardQuiz'||rootId==='messageBoardQuiz')resetBoardQuiz(rootId);});progressionQuizContext=null;}
 
 // ===== クリア機能の入口 =====
@@ -10095,15 +9913,6 @@ function openStagePicker(){
   const showingIndex=isMode('mastery')?extraIndex:returnStageContext.index;
   const round=showingExtra?Math.floor(showingIndex/MASTER_VOLUME_SIZE):PRIMARY_SECTIONS.indexOf(primarySection(showingIndex))-PRIMARY_PICKER_SECTION_COUNT;
   WakeSevenStagePickerFeature.open({lap:navigation.lap,round});
-}
-function openStagePickerForRank(rankIndex){
-  const {navigation}=readProgressionContext();
-  updateDialogStateOwner({rankDialogReturn:null});
-  $('rankDialog').hidden=true;
-  $('resetDialog').hidden=true;
-  // 称号一覧で選択した周（activeLap）を、そのまま問題選択にも引き継ぐ。
-  const round=rankIndex===0?-PRIMARY_PICKER_SECTION_COUNT:rankIndex===1?PICKER_TRAINING_FIRST_ROUND:rankIndex-2;
-  openStagePickerAt({lap:navigation.lap,round});
 }
 // ===== ステージナビゲーション表示 =====
 // 現在モードの状態をヘッダー、操作欄、案内へ反映する。前後ボタンのイベントは
@@ -11195,33 +11004,6 @@ function clearScheduledHint(){cancelTutorialHint();}
 $('hint').addEventListener('click',()=>{cancelTutorialHint();if(isFourthVolume())revealFourthDistance();else showBestMoveHint();});
 
 
-// ===== 進行フローの遷移契約 =====
-// 画面ごとの条件分岐を再実装するためのものではなく、既存の入口が
-// どの状態を経由するかを読み取るための監査用の宣言データ。
-// 実際の副作用は progression-clear-flow.js / speed.js / runtime.js が担当する。
-const PROGRESSION_FLOW_CONTRACT=Object.freeze([
-  {id:'campaign-clear',mode:'campaign',from:'playing',event:'盤面が解けた',entry:'WakeSevenClearFeature.start',persist:'clearShown→progress記録',cancel:'resetClearFlow・別盤面への遷移',to:'clear-animation',guard:'clearFlowState.cycle + phase idle',owner:'progression-clear-flow'},
-  {id:'campaign-clear-dialog',mode:'campaign',from:'clear-animation',event:'演出完了',entry:'finishClearFlow',persist:'clearDialog状態',cancel:'clear-transitionタイマー取消',to:'clear-dialog',guard:'animationPending + dialogSequence consume once',owner:'progression-clear-flow'},
-  {id:'campaign-next',mode:'campaign',from:'clear-dialog|quiz/message',event:'次へ',entry:'WakeSevenClearFeature.next→dispatchClearFlowAction',persist:'次の問題・周回・解放状態',cancel:'hideGameDialogs・遷移世代無効化',to:'next-stage-dialog|next-playing',guard:'dialog/content phase + route resolved once',owner:'progression-clear-flow'},
-  {id:'speed-start',mode:'speed',from:'speed-start-dialog',event:'開始/再開',entry:'startSpeedRun|resumeSpeedRun',persist:'speed session・開始時刻',cancel:'pauseSpeedRun・speed transition timer取消',to:'playing'},
-  {id:'speed-clear',mode:'speed',from:'playing',event:'速解き問題が解けた',entry:'finishStage→advanceSpeedRun',persist:'問題記録・speed session',cancel:'pauseSpeedRun・旧セッション退役',to:'playing|speed-finished'},
-  {id:'rank-reward',mode:'campaign|speed',from:'clear-dialog|speed-finished',event:'称号条件達成',entry:'openRankDialog',persist:'称号・報酬・解放状態',cancel:'closeRankDialog',to:'rank-dialog|next-stage-dialog'},
-  {id:'reload-session',mode:'any',from:'page-load',event:'保存状態を検出',entry:'restoreActiveSession→restoreDialogState',persist:'読み取りのみ（再保存は各復元処理）',cancel:'壊れた保存値を無視',to:'playing|保存済みダイアログ'},
-  {id:'reload-clear',mode:'campaign',from:'page-load',event:'clearShownかつ解決済み',entry:'restoreDialogState→showClearDialog',persist:'clear状態を維持',cancel:'clear状態不整合時は通常盤面',to:'clear-dialog'},
-  {id:'reload-speed',mode:'speed',from:'page-load',event:'speed sessionを検出',entry:'restoreActiveSession→readActiveSpeedSession',persist:'speed sessionを維持',cancel:'一時停止状態へ退避',to:'speed-pause-dialog|playing'}
-]);
-function getProgressionFlowContract(){return PROGRESSION_FLOW_CONTRACT;}
-
-// 進行の主要オーケストレーターを、状態判断→遷移→描画の順で追跡するための監査メタデータ。
-// ここは実装を呼び出す層ではなく、各入口の責務と読み進める順番を明示する地図である。
-// 新しい抽象化を増やさず、実装側の関数名を参照して契約検査に利用する。
-const PROGRESSION_ORCHESTRATORS=Object.freeze([
-  {id:'clear-start',name:'クリア開始オーケストレーター',entry:'startClearFlow',source:'src/ui/progression-clear-flow.js',order:{decision:['beginClearFlow','createClearTransitionContext'],transition:['persistClearFlowCheckpoint'],render:['scheduleClearFlowDialog']}},
-  {id:'clear-advance',name:'クリア後進行オーケストレーター',entry:'dispatchClearFlowAction',source:'src/ui/progression-clear-flow.js',order:{decision:['resolveAfterClearRoute'],transition:['persistClearFlowCheckpoint','setClearFlowPhase'],render:['showMasterDialog']}},
-  {id:'dialog-restore',name:'ダイアログ復元オーケストレーター',entry:'restoreDialogState',source:'src/runtime/runtime.js',order:{decision:['clear:()=>'],transition:['createClearTransitionContext'],render:['WakeSevenClearFeature.restoreClearDialog']}},
-  {id:'stage-advance',name:'ステージ進行オーケストレーター',entry:'dispatchClearFlowAction',source:'src/ui/progression-clear-flow.js',order:{decision:['resolveAfterClearRoute'],transition:['setClearFlowPhase'],render:['loadStage']}}
-]);
-
 // ===== クリア後の状態遷移 =====
 // クリア演出の表示と、次の問題/コースへの遷移を進行UI本体から分離する。
 // clearShown は保存・進行用の状態なので、表示予約の重複防止には使わない。
@@ -11518,8 +11300,6 @@ function dispatchClearFlowAction(action){
   if(route.kind==='restore-free')return restoreFreeSession();
   return loadStage(route.index);
 }
-// 既存イベントからの互換入口。実際の遷移は状態機械の action dispatcher に集約する。
-function advanceAfterClear(){return dispatchClearFlowAction(CLEAR_FLOW_ACTION.next);}
 let returnToClearCard=false,twoMovePatternsReturnTarget=null,twoMoveDetailReturnTarget=null,guideHubReturn=false;
 function returnToClearDialog(){
   returnToClearCard=false;$('clearDialogMessage').textContent=clearDialogHeading();renderClearStageContext();renderClearTip();showProgressionQuiz({rootId:'clearQuiz',clearEntry:clearEntryForCurrent()});
@@ -13054,23 +12834,6 @@ function setVisible(elementOrId, visible) {
   return element;
 }
 
-function setDisabled(elementOrId, disabled) {
-  const element = resolveElement(elementOrId);
-  if (element) element.disabled = !!disabled;
-  return element;
-}
-
-function setAttribute(elementOrId, name, value) {
-  const element = resolveElement(elementOrId);
-  if (element) element.setAttribute(name, String(value));
-  return element;
-}
-
-function clear(elementOrId) {
-  const element = resolveElement(elementOrId);
-  if (element) element.replaceChildren();
-  return element;
-}
 function createRefs(ids,documentRef=document){return Object.freeze(Object.fromEntries(ids.map(id=>[id,documentRef?.getElementById(id)||null])));}
 
 
