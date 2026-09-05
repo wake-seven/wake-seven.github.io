@@ -9817,7 +9817,12 @@ const WakeSevenStagePickerFeature=Object.freeze({
   openSatori(){return openSatoriPicker();},
   openRank(returnTarget=null){return openRankDialog(returnTarget);},
   openRankFrom(dialogId,sealId){return typeof openRankDialogFrom==='function'&&openRankDialogFrom(dialogId,sealId);},
-  close({focusId=null}={}){closeStagePicker();if(focusId)$(focusId)?.focus();return true;},
+  close(options={}){
+    const {focusId=null}=options&&typeof options==='object'?options:{};
+    closeStagePicker();
+    if(focusId)$(focusId)?.focus();
+    return true;
+  },
   moveRound(direction){return moveStagePickerRound(direction);},
   setRankLap(lap){
     if(lap!==1&&lap!==2)return false;
@@ -9856,7 +9861,8 @@ function readSettingsFeatureContext(){
     ...settings,
     settingsOpen:dialog('settingsDialog'),
     aboutOpen:dialog('aboutDialog'),
-    resetOpen:dialog('resetDialog')
+    resetOpen:dialog('resetDialog'),
+    themeOpen:dialog('boardThemeDialog')
   });
 }
 function openSettingsFeature(){
@@ -9871,6 +9877,7 @@ function openAboutFeature(){
   return true;
 }
 function closeSettingsFeature(id='settingsDialog'){
+  if(!['settingsDialog','aboutDialog','resetDialog'].includes(id))return false;
   return setDialogOpenState(id,false);
 }
 function openResetFeature(){
@@ -9894,6 +9901,7 @@ function closeBoardThemeFeature(){
   return true;
 }
 function selectBoardThemeFeature(button){
+  if(!button||button.disabled)return false;
   selectBoardThemeCommand(button);
   return true;
 }
@@ -9901,7 +9909,8 @@ function toggleSoundFeature(){
   toggleSoundCommand();
   return WakeSevenAppContext.state.settings.read().soundEnabled;
 }
-function setLanguageFeature(lang,{closeMenu=false,focusToggle=false}={}){
+function setLanguageFeature(lang,options={}){
+  const {closeMenu=false,focusToggle=false}=options&&typeof options==='object'?options:{};
   if(!UI_TEXT[lang])return false;
   applyLanguage(lang);
   if(closeMenu){
@@ -13064,13 +13073,62 @@ if(document.documentElement.classList.contains('embed')&&window.parent!==window)
   });
 
   const speedApi = Object.freeze({
-    pause() { return pauseSpeedRun(); },
-    startClock() { return startSpeedClock(); },
-    pauseClock() { return pauseSpeedClock(); },
+    pause() { return WakeSevenSpeedFeature.pause(); },
+    startClock() { return WakeSevenSpeedFeature.startClock(); },
+    pauseClock() { return WakeSevenSpeedFeature.pauseClock(); },
     get definitions() { return SPEED_MODE_DEFINITIONS; }
   });
 
-  global.WakeSeven = Object.freeze({state: stateApi, progression: progressionApi, messages: messagesApi, speed: speedApi});
+  const settingsApi = Object.freeze({
+    get context() { return WakeSevenSettingsFeature.context(); },
+    open() { return WakeSevenSettingsFeature.open(); },
+    openAbout() { return WakeSevenSettingsFeature.openAbout(); },
+    openReset() { return WakeSevenSettingsFeature.openReset(); },
+    openTheme() { return WakeSevenSettingsFeature.openTheme(); },
+    close(id) { return WakeSevenSettingsFeature.close(id); },
+    closeTheme() { return WakeSevenSettingsFeature.closeTheme(); },
+    selectTheme(button) { return WakeSevenSettingsFeature.selectTheme(button); },
+    toggleSound() { return WakeSevenSettingsFeature.toggleSound(); },
+    setLanguage(lang,options) { return WakeSevenSettingsFeature.setLanguage(lang,options); },
+    reset(options) { return WakeSevenSettingsFeature.reset(options); }
+  });
+
+  const navigationApi = Object.freeze({
+    get context() { return WakeSevenStagePickerFeature.context(); },
+    openPicker(options) { return WakeSevenStagePickerFeature.open(options); },
+    openSatori() { return WakeSevenStagePickerFeature.openSatori(); },
+    closePicker(options) { return WakeSevenStagePickerFeature.close(options); },
+    movePickerRound(direction) { return WakeSevenStagePickerFeature.moveRound(direction); },
+    openRank(returnTarget) { return WakeSevenStagePickerFeature.openRank(returnTarget); },
+    closeRank() { return WakeSevenStagePickerFeature.closeRank(); }
+  });
+
+  const dialogsApi = Object.freeze({
+    clear: Object.freeze({
+      start(options) { return WakeSevenClearFeature.start(options); },
+      next() { return WakeSevenClearFeature.next(); },
+      close() { return WakeSevenClearFeature.close(); },
+      get context() { return WakeSevenClearFeature.context(); }
+    }),
+    chain: Object.freeze({
+      start(name) { return WakeSevenDialogChainFeature.start(name); },
+      show(name) { return WakeSevenDialogChainFeature.show(name); },
+      next() { return WakeSevenDialogChainFeature.next(); },
+      back() { return WakeSevenDialogChainFeature.back(); },
+      close() { return WakeSevenDialogChainFeature.close(); },
+      get context() { return WakeSevenDialogChainFeature.context(); }
+    })
+  });
+
+  global.WakeSeven = Object.freeze({
+    state:stateApi,
+    progression:progressionApi,
+    messages:messagesApi,
+    speed:speedApi,
+    settings:settingsApi,
+    navigation:navigationApi,
+    dialogs:dialogsApi
+  });
 })(window);
 
 // ===== 共通DOM更新API =====
