@@ -68,7 +68,7 @@
   /* デバッグモード以外は、文字列選択やコピーを禁止して画面をアプリらしくする。 */
   body:not(.debug-mode){user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
   body[data-board-theme="gold"] #board .tile.stand .hex{fill:#F6DE93;stroke:#C89C35}
-  body[data-board-theme="gold"] #board .tile.fallen .hex{fill:#D7B75F;stroke:#A67D28}
+  body[data-board-theme="gold"] #board .tile.fallen .hex{fill:#D7B75F;stroke:#C89C35}
   .brand{position:relative;width:100%;max-width:var(--content-max);display:flex;flex-direction:column;align-items:center}
   .app-menu{position:absolute;z-index:20;top:-0.9375rem;right:0}
   .menu-toggle{
@@ -253,7 +253,7 @@
   .stage-picker.satori-picker{max-height:none}
   .stage-picker.satori-picker .stage-picker-grid{grid-template-columns:repeat(5,1fr);overflow:visible;padding-right:0}
   body[data-board-theme="satori"] #board .tile.stand .hex{fill:#F1F1ED;stroke:#D6D6D0}
-  body[data-board-theme="satori"] #board .tile.fallen .hex{fill:#AAA9A4;stroke:#8E8D88}
+  body[data-board-theme="satori"] #board .tile.fallen .hex{fill:#AAA9A4;stroke:#D6D6D0}
   /* 悟りの褒美：パネルを30°左へ回し、縦に2・3・2と見える配置にする。
      回転で見た目の幅は約1.4倍に膨らむが、縮小はせず.board-wrap側のoverflow:hiddenで
      枠の外にはみ出た分(六角形の先端のごく一部)だけを切り取る。盤面自体は等倍のまま。 */
@@ -868,7 +868,7 @@
   #board.hinting .tile.selected.stand{filter:drop-shadow(0 6px 6px rgba(0,0,0,.24)) brightness(1.07)}
   #board.hinting .tile.selected.fallen{filter:drop-shadow(0 6px 6px rgba(0,0,0,.24)) saturate(.92)}
   .hex{fill:var(--washi);stroke:#C0AC88;stroke-width:1.5}
-  .tile.fallen .hex{fill:var(--washi2);stroke:#9EA8AF}
+  .tile.fallen .hex{fill:var(--washi2);stroke:#C0AC88}
   .tile.stand .shut,.tile.fallen .open{display:none}
   .tile .happy{display:none}
   #board.celebrating .tile .open,#board.celebrating .tile .shut{display:none}
@@ -5076,8 +5076,8 @@ function updateMasterTheme(){
   try{storage.set(STORAGE_KEY_GROUPS.settings.boardTheme,boardTheme);storage.set(STORAGE_KEY_GROUPS.settings.boardLayout,boardLayout);storage.set(STORAGE_KEY_GROUPS.settings.darumaColor,darumaColor);}catch(_){ }
 }
 const BOARD_THEME_TONES={
-  gold:{stand:{fill:'#F6DE93',stroke:'#C89C35'},fallen:{fill:'#D7B75F',stroke:'#A67D28'}},
-  satori:{stand:{fill:'#F1F1ED',stroke:'#D6D6D0'},fallen:{fill:'#AAA9A4',stroke:'#8E8D88'}}
+  gold:{stand:{fill:'#F6DE93',stroke:'#C89C35'},fallen:{fill:'#D7B75F',stroke:'#C89C35'}},
+  satori:{stand:{fill:'#F1F1ED',stroke:'#D6D6D0'},fallen:{fill:'#AAA9A4',stroke:'#D6D6D0'}}
 };
 const AWAKENED_DARUMA_COLORS=['#C93D35','#D7763D','#C89A36','#4F9676','#4C7FAE','#6B63A4','#AF5E84'];
 function darumaBodyColor(index){
@@ -6210,6 +6210,10 @@ function buildAcademyWelcomeBoard(variant='enroll'){
       // 静止時の枠を先に消す。回転追従する枠はunit内で描くため、
       // 盤面側に残った固定枠と二重表示にならないようにする。
       clearApplicationTargetLayer(board);
+      // 回さない目標パネルの紫枠は盤面側へすぐ描き直す。
+      // これまでここを省いていたため、歓迎演出の回転中だけ2枚の枠が消えていた。
+      const stationaryTargetTiles=cycleTiles.filter((tile,index)=>targetCells.has(index)&&!t.cells.includes(index));
+      renderApplicationTargetLayer(board,stationaryTargetTiles,stationaryTargetTiles,{anchorSelector:'.grip-marker'});
       for(const index of t.cells)unit.appendChild(cycleTiles[index]);
       unit.appendChild(touch);
       // 回転中も共有レイヤーAPIで対象パネルの枠を生成する。
