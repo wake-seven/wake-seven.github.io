@@ -9884,6 +9884,33 @@ function openResetFeature(){
   $('resetDialogClose').focus();
   return true;
 }
+function openBoardThemeFeature(){
+  closeSettingsFeature();
+  openBoardThemeDialog();
+  return true;
+}
+function closeBoardThemeFeature(){
+  $('boardThemeDialog').hidden=true;
+  return true;
+}
+function selectBoardThemeFeature(button){
+  selectBoardThemeCommand(button);
+  return true;
+}
+function toggleSoundFeature(){
+  toggleSoundCommand();
+  return WakeSevenAppContext.state.settings.read().soundEnabled;
+}
+function setLanguageFeature(lang,{closeMenu=false,focusToggle=false}={}){
+  if(!UI_TEXT[lang])return false;
+  applyLanguage(lang);
+  if(closeMenu){
+    $('languageMenu').classList.remove('show');
+    $('languageToggle').setAttribute('aria-expanded','false');
+  }
+  if(focusToggle)$('languageToggle').focus();
+  return true;
+}
 function resetSettingsFeature(options={resetIntro:true,showIntro:true,preserveRewards:true}){
   $('resetDialog').hidden=true;
   resetStoredProgress(options);
@@ -9894,6 +9921,11 @@ const WakeSevenSettingsFeature=Object.freeze({
   open:openSettingsFeature,
   openAbout:openAboutFeature,
   openReset:openResetFeature,
+  openTheme:openBoardThemeFeature,
+  closeTheme:closeBoardThemeFeature,
+  selectTheme:selectBoardThemeFeature,
+  toggleSound:toggleSoundFeature,
+  setLanguage:setLanguageFeature,
   reset:resetSettingsFeature,
   close:closeSettingsFeature,
   restore:openSettingsFeature
@@ -12712,25 +12744,24 @@ $('menuToggle').addEventListener('click',e=>{
   $(id).addEventListener('click',closeAppMenu);
 });
 $('soundToggle').addEventListener('click',()=>{
-  toggleSoundCommand();
+  WakeSevenSettingsFeature.toggleSound();
 });
 $('twoMovePatterns').addEventListener('click',()=>{
   closeAppMenu();
   openTwoMovePatterns();
 });
 $('menuBoardTheme').addEventListener('click',()=>{
-  WakeSevenSettingsFeature.close();
   closeAppMenu();
-  openBoardThemeDialog();
+  WakeSevenSettingsFeature.openTheme();
 });
-$('closeBoardTheme').addEventListener('click',()=>{$('boardThemeDialog').hidden=true;});
+$('closeBoardTheme').addEventListener('click',()=>WakeSevenSettingsFeature.closeTheme());
 $('boardThemeDialog').addEventListener('click',event=>{
-  if(event.target===$('boardThemeDialog'))$('boardThemeDialog').hidden=true;
+  if(event.target===$('boardThemeDialog'))WakeSevenSettingsFeature.closeTheme();
 });
 $('boardThemeOptions').addEventListener('click',event=>{
   const button=event.target.closest('[data-board-color],[data-board-layout],[data-daruma-color]');
   if(!button||button.disabled)return;
-  selectBoardThemeCommand(button);
+  WakeSevenSettingsFeature.selectTheme(button);
 });
 function closeTwoMovePatterns(){
   $('twoMoveDialog').hidden=true;
@@ -12803,10 +12834,7 @@ $('clearShapeRuleMirror').addEventListener('click',()=>transformClearShapeRule(0
 $('clearShapeRuleFlipVertical').addEventListener('click',()=>transformClearShapeRule(180,true));
 document.querySelectorAll('[data-lang]').forEach(button=>{
   button.addEventListener('click',()=>{
-    applyLanguage(button.dataset.lang);
-    $('languageMenu').classList.remove('show');
-    $('languageToggle').setAttribute('aria-expanded','false');
-    $('languageToggle').focus();
+    WakeSevenSettingsFeature.setLanguage(button.dataset.lang,{closeMenu:true,focusToggle:true});
   });
 });
 document.addEventListener('click',e=>{
