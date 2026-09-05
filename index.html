@@ -824,15 +824,13 @@
   .tile.stand{filter:brightness(1.04)}
   .tile.fallen{filter:none}
   /* 応用編の枠はパネル自身と一緒に動き、棒より背面で表示する。 */
-  /* 応用編はパネル自身の境界線を強調する。棒と同じSVG階層で、スワイプにも追従する。 */
-  #board .tile.application-target .hex{stroke:#8B35F0 !important;stroke-width:5 !important;stroke-linejoin:round}
+  /* 紫枠は専用レイヤーに描き、太線が隣のパネルへはみ出さないよう内側へ収める。 */
+  #board .application-target-inline-frame{fill:none;stroke:#8B35F0;stroke-width:7;stroke-linejoin:miter;stroke-miterlimit:2;pointer-events:none;vector-effect:non-scaling-stroke}
   #board .application-target-overlay-layer{pointer-events:none}
-  #board .application-target-overlay{fill:none;stroke:#8B35F0;stroke-width:5;stroke-linejoin:round;pointer-events:none;vector-effect:non-scaling-stroke}
-  #academyWelcomeBoard .application-target-overlay{fill:none;stroke:#8B35F0;stroke-width:5;stroke-linejoin:round;pointer-events:none;vector-effect:non-scaling-stroke}
+  #board .application-target-overlay{fill:none;stroke:#8B35F0;stroke-width:7;stroke-linejoin:miter;stroke-miterlimit:2;pointer-events:none;vector-effect:non-scaling-stroke}
+  #academyWelcomeBoard .application-target-overlay{fill:none;stroke:#8B35F0;stroke-width:7;stroke-linejoin:miter;stroke-miterlimit:2;pointer-events:none;vector-effect:non-scaling-stroke}
   .application-target-text{color:#C477FF;font-weight:800;background:rgba(139,53,240,.24);border-radius:.25em;padding:.04em .22em}
   #chainDialogText.application-welcome-text{color:#D8BE78}
-  /* 応用クラス開始案内でも、目標の3枚そのものの境界線を強調する。 */
-  #academyWelcomeBoard .tile.application-target .hex{stroke:#8B35F0 !important;stroke-width:5 !important;stroke-linejoin:round}
   /* ミニ盤面(比較カード等)の回転アニメでも、本編の.tileと同じくレイヤーを先に確保しておく。
      iOSで、新しい要素をtransformすると初回フレームだけ描画がずれることがある対策。 */
   .mini-tile,.mini-daruma,.tip-guide-tile,.tip-guide-daruma{transform-box:view-box;transform-origin:0 0;will-change:transform}
@@ -5671,12 +5669,30 @@ function animationTileState(turn){
 }
 const APPLICATION_TARGET_FRAME_CLASS='application-target-overlay';
 const APPLICATION_TARGET_LAYER_CLASS='application-target-overlay-layer';
-// 応用編の目標枠を描画する共通API。枠をパネルの外側に一度だけ作り、
+const APPLICATION_TARGET_INLINE_FRAME_CLASS='application-target-inline-frame';
+const APPLICATION_TARGET_FRAME_STROKE=7;
+const APPLICATION_PANEL_BORDER_STROKE=1.5;
+// パネル枠を少しまたいで、紫の目標枠をより外側まで見せるための余白。
+const APPLICATION_TARGET_FRAME_OUTSET=1.25;
+// 正六角形では、半径を stroke / √3 だけ縮めると太線の外縁が元の辺に収まる。
+// 既存パネル枠の外縁までは使ってよいため、その分だけ外側へ寄せる。
+const APPLICATION_TARGET_FRAME_RADIUS=R-(APPLICATION_TARGET_FRAME_STROKE-APPLICATION_PANEL_BORDER_STROKE)/Math.sqrt(3)+APPLICATION_TARGET_FRAME_OUTSET;
+// 応用編の目標枠を描画する共通API。枠をパネルの内側に一度だけ作り、
 // 対象パネルと同じ親・同じtransformの下に置くことで、隣接パネルに隠れず、
 // スワイプや開始演出でも物理パネルに追従させる。
 function clearApplicationTargetLayer(root=svg){
   root?.querySelectorAll?.('.'+APPLICATION_TARGET_LAYER_CLASS).forEach(layer=>layer.remove());
   root?.querySelectorAll?.('.'+APPLICATION_TARGET_FRAME_CLASS).forEach(frame=>frame.remove());
+}
+// メイン盤面では枠をタイル自身の子にする。ドラッグ中も同じtransformで動き、
+// パネルの縁に紫を塗ったように見せられる。
+function renderApplicationTargetInlineFrame(tile,active){
+  tile?.querySelectorAll?.('.'+APPLICATION_TARGET_INLINE_FRAME_CLASS).forEach(frame=>frame.remove());
+  if(!active||!tile)return;
+  const frame=document.createElementNS('http://www.w3.org/2000/svg','path');
+  frame.setAttribute('class',APPLICATION_TARGET_INLINE_FRAME_CLASS);
+  frame.setAttribute('d',hexPath(APPLICATION_TARGET_FRAME_RADIUS));
+  tile.appendChild(frame);
 }
 function renderApplicationTargetLayer(root,tiles,targetTiles,{anchorSelector=null}={}){
   if(!root)return null;
@@ -5690,7 +5706,8 @@ function renderApplicationTargetLayer(root,tiles,targetTiles,{anchorSelector=nul
     if(!hex)continue;
     const frame=document.createElementNS('http://www.w3.org/2000/svg','path');
     frame.setAttribute('class',APPLICATION_TARGET_FRAME_CLASS);
-    frame.setAttribute('d',hex.getAttribute('d')||'');
+    // 線幅はそのままに、パネル枠を少し使う位置まで中心線を外へ寄せる。
+    frame.setAttribute('d',hexPath(APPLICATION_TARGET_FRAME_RADIUS));
     if(tile.style.transform)frame.style.transform=tile.style.transform;
     layer.appendChild(frame);
   }
@@ -5727,7 +5744,14 @@ function placeSwipeGroupOnTop(group,root=svg){
 function placeSwipeTilesOnTop(root,items,anchorSelector='.pivot'){
   if(!root)return;
   const anchor=anchorSelector?root.querySelector(anchorSelector):null;
-  for(const item of items||[]){
+  // 回る3枚のうち目標パネルを最後に置く。SVGは後にある要素ほど前面になるため、
+  // パネルと一体の紫枠が隣の回転パネルに隠れない。
+  const ordered=[...(items||[])].sort((a,b)=>{
+    const aTarget=Number((a?.el||a)?.classList?.contains('application-target'));
+    const bTarget=Number((b?.el||b)?.classList?.contains('application-target'));
+    return aTarget-bTarget;
+  });
+  for(const item of ordered){
     const tile=item?.el||item;
     if(!tile)continue;
     if(anchor)root.insertBefore(tile,anchor);else root.appendChild(tile);
@@ -5754,9 +5778,7 @@ function createSwipeGroup(items,pivot){
     group.appendChild(clone);
     clones.push({item,clone,hex:clone.querySelector('.hex')});
   }
-  // 枠は共有APIで生成し、クローンと同じ回転グループに置く。
-  renderApplicationTargetLayer(group,clones.map(({clone})=>clone),
-    clones.filter(({clone})=>clone.classList.contains('application-target')).map(({clone})=>clone));
+  // クローンにはタイル内の紫枠も複製済みなので、別レイヤーは重ねない。
   placeSwipeGroupOnTop(group);
   return {group,clones};
 }
@@ -8057,7 +8079,10 @@ function animateGuidedBasicRewind(dg,rewindOverride=null){
   const NS_='http://www.w3.org/2000/svg';
   const group=document.createElementNS(NS_,'g');
   group.setAttribute('class','auto-swipe-group');
-  const clones=dg.items.map(item=>{
+  // 通常回転と同じく、紫枠付きの対象パネルを最後に描いて隣の回転パネルより前へ出す。
+  const orderedItems=[...dg.items].sort((a,b)=>
+    Number(a.el.classList.contains('application-target'))-Number(b.el.classList.contains('application-target')));
+  const clones=orderedItems.map(item=>{
     const clone=item.el.cloneNode(true);
     clone.style.transform=orbitTransform(item,0,dg.kc);
     item.el.style.visibility='hidden';
@@ -8437,10 +8462,14 @@ function bindApplicationTargetTiles(){
 }
 function renderApplicationTargetCells(){
   if(!isApplicationTargetStage())applicationTargetTiles.clear();
-  tileEls.forEach(tile=>tile.classList.toggle('application-target',applicationTargetTiles.has(tile)));
-  // 静止表示も開始アニメ・スワイプと同じ共有レイヤーAPIを使う。
+  tileEls.forEach(tile=>{
+    const isTarget=applicationTargetTiles.has(tile);
+    tile.classList.toggle('application-target',isTarget);
+    renderApplicationTargetInlineFrame(tile,isTarget);
+  });
+  // 静止時・ドラッグ時とも、紫枠は対象パネルの子として一緒に動く。
   placeApplicationTargetTiles(svg,tileEls,applicationTargetTiles,{anchorSelector:'.pivot'});
-  renderApplicationTargetLayer(svg,tileEls,applicationTargetTiles,{anchorSelector:'.pivot'});
+  clearApplicationTargetLayer(svg);
   renderApplicationTargetPreview();
 }
 
