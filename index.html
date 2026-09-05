@@ -4627,7 +4627,7 @@ const DIALOG_RESTORE_HANDLERS=Object.freeze({
   chain:state=>{if(!CHAIN_STEPS[state.name])return false;openChainedDialog(state.name);return true;},
   clear:()=>{if(!(clearShown&&isSolved()))return false;const clearContext=createClearTransitionContext();return WakeSevenClearFeature.restoreClearDialog(clearContext);},
   message:state=>{openMessageReview({resume:true});if(state.key){const index=messageReviewEntries.findIndex(entry=>messageReviewEntryKey(entry)===state.key);if(index>=0){messageReviewIndex=index;renderMessageReview();}}return true;},
-  rank:()=>{openRankDialog();return true;},
+  rank:()=>{WakeSevenStagePickerFeature.openRank();return true;},
   tipGuide:()=>{openTipGuide();return true;},
   guideHub:()=>{openGuideHub();return true;}
 });
@@ -9808,12 +9808,43 @@ function readStagePickerContext(){const navigation=readNavigationContext();retur
 });}
 const WakeSevenStagePickerFeature=Object.freeze({
   context:readStagePickerContext,
-  open(options={}){return openDialog('stagePicker',options);},
+  open(options={}){
+    options=options&&typeof options==='object'?options:{};
+    if(options.round!==undefined||options.satoriPage!==undefined||options.lap!==undefined)return openStagePickerAt(options);
+    return openStagePicker();
+  },
   select(options={}){return openStagePickerAt(options);},
-  openRank(returnTarget=null){return openDialog('rankDialog',{returnTarget});},
+  openSatori(){return openSatoriPicker();},
+  openRank(returnTarget=null){return openRankDialog(returnTarget);},
   openRankFrom(dialogId,sealId){return typeof openRankDialogFrom==='function'&&openRankDialogFrom(dialogId,sealId);},
-  close(){return closeStagePicker();},
-  restore(options={}){return openDialog('stagePicker',options);}
+  close({focusId=null}={}){closeStagePicker();if(focusId)$(focusId)?.focus();return true;},
+  moveRound(direction){return moveStagePickerRound(direction);},
+  setRankLap(lap){
+    if(lap!==1&&lap!==2)return false;
+    if(lap===2&&!secondLapUnlocked)return false;
+    rankListLap=lap;
+    renderRankList();
+    return true;
+  },
+  closeRank(){
+    const returnTarget=readDialogContext().rankDialogReturn;
+    updateDialogStateOwner({rankDialogReturn:null});
+    $('rankDialog').hidden=true;
+    if(!focusReturnTarget(returnTarget))$('rankBadge').focus();
+    return true;
+  },
+  openPickerFromRank({lap,round,satoriPage=null}={}){
+    if(lap!==1&&lap!==2)return false;
+    activateCampaignLap(lap);
+    updateDialogStateOwner({rankDialogReturn:null});
+    $('rankDialog').hidden=true;
+    return openStagePickerAt({lap,round,satoriPage});
+  },
+  restore(options={}){
+    options=options&&typeof options==='object'?options:{};
+    if(options.round!==undefined||options.satoriPage!==undefined||options.lap!==undefined)return openStagePickerAt(options);
+    return openStagePicker();
+  }
 });
 
 // ===== 設定・About・リセットの機能入口 =====
@@ -9970,7 +10001,7 @@ function renderSatoriStagePicker(){
       current: pickerLap===currentContext.lap&&isMode('satori')&&currentContext.satoriIndex===index,
       disabled: !(index===0||pickerSatori.has(index)||pickerSatori.has(index-1)),
       onClick: ()=>{
-        closeStagePicker();
+        WakeSevenStagePickerFeature.close();
         activateCampaignLap(pickerLap);
         loadSatoriStage(index);
       }
@@ -10056,7 +10087,7 @@ function renderStagePicker(){
     if(number){number.textContent=String(displayNumber);detail.textContent=tr('shortest')+' '+stage.par+' '+tr('moveUnit');}
     else b.innerHTML=displayNumber+'<span>'+tr('shortest')+' '+stage.par+' '+tr('moveUnit')+'</span>';
     b.addEventListener('click',()=>{
-      closeStagePicker();
+      WakeSevenStagePickerFeature.close();
       activateCampaignLap(pickerLap);
       if(isPrimary)loadStage(index);
       else if(allPrimaryCleared())loadExtraStage(index);
@@ -10067,7 +10098,7 @@ function renderStagePicker(){
 function openStagePicker(){
   const {navigation}=readProgressionContext();
   if(isMode('satori')||(isSideCourseMode()&&returnStageContext.satori)){
-    openSatoriPicker();
+    WakeSevenStagePickerFeature.openSatori();
     return;
   }
   const showingExtra=isMode('mastery')||(isSideCourseMode()&&returnStageContext.extra);
@@ -11492,7 +11523,7 @@ function dispatchClearFlowAction(action){
   if(route.kind==='free')return startFree();
   if(route.kind==='custom'){setPosition(currentInitialState,currentInitialPar);return renderStageNav();}
   if(route.kind==='satori-stage')return loadSatoriStage(route.index);
-  if(route.kind==='satori-picker')return openSatoriPicker();
+  if(route.kind==='satori-picker')return WakeSevenStagePickerFeature.openSatori();
   if(route.kind==='mastery-stage')return loadExtraStage(route.index);
   if(route.kind==='restore-free')return restoreFreeSession();
   return loadStage(route.index);
@@ -11651,10 +11682,8 @@ function renderRankList(){
     if(earned&&speedExamClearedForRank(index))title.insertAdjacentHTML('beforeend','<button type="button" class="speed-exam-badge" data-exam-index="'+index+'">'+speedExamBadgeSvg()+'</button>');
     count.textContent=rankProblemCount(index);
     if(linkable)path.addEventListener('click',()=>{
-      activateCampaignLap(second?2:1);
-      updateDialogStateOwner({rankDialogReturn:null});$('rankDialog').hidden=true;
       const pickerOptions={lap:second?2:1,round:index===6||index===5?'satori':index===0?-PRIMARY_PICKER_SECTION_COUNT:index===1?PICKER_TRAINING_FIRST_ROUND:index-2};
-      WakeSevenStagePickerFeature.open(pickerOptions);
+      WakeSevenStagePickerFeature.openPickerFromRank(pickerOptions);
     });
     condition.append(path,count);list.appendChild(row);
   });
@@ -11667,8 +11696,8 @@ function openRankDialog(returnTarget=null){
   $('rankDialog').hidden=false;
   $('closeRankDialog').focus();
 }
-$('rankLap1').addEventListener('click',()=>{rankListLap=1;renderRankList();});
-$('rankLap2').addEventListener('click',()=>{if(secondLapUnlocked){rankListLap=2;renderRankList();}});
+$('rankLap1').addEventListener('click',()=>WakeSevenStagePickerFeature.setRankLap(1));
+$('rankLap2').addEventListener('click',()=>WakeSevenStagePickerFeature.setRankLap(2));
 function openRankDialogFrom(dialogId,sealId){
   const seal=$(sealId);
   if(!seal.classList.contains('rank-seal'))return;
@@ -11937,7 +11966,7 @@ function handleClearTipLink(){
   const navigation=readNavigationContext();
   if($('clearTipLink').dataset.target==='rank'){
     $('clearDialog').hidden=true;
-    openRankDialog(null);
+    WakeSevenStagePickerFeature.openRank();
     return;
   }
   if($('clearTipLink').dataset.target==='messages'){
@@ -12005,7 +12034,7 @@ WakeSevenEventBindings.click('menuStagePicker',()=>{closeAppMenu();WakeSevenStag
   $('settingsDialog').addEventListener('click',e=>{if(e.target===e.currentTarget)WakeSevenSettingsFeature.close();});
   WakeSevenEventBindings.click('menuAllPatterns',()=>{window.open('all-patterns.html','_blank','noopener');});
   WakeSevenEventBindings.click('menuOpen3D',()=>{window.open('index_3D.html','_blank','noopener');});
-  WakeSevenEventBindings.click('menuSatori',()=>{closeAppMenu();openSatoriPicker();});
+  WakeSevenEventBindings.click('menuSatori',()=>{closeAppMenu();WakeSevenStagePickerFeature.openSatori();});
   WakeSevenEventBindings.click('menuSpeed',()=>{
     closeAppMenu();
     if(isMode('speed')){WakeSevenSpeedFeature.pause();WakeSevenSpeedFeature.openPicker();return;}
@@ -12095,11 +12124,10 @@ bindMenuEvents();
 // ステージ選択はヘッダー、メニュー、称号一覧の3経路から同じ描画入口を使う。
 WakeSevenEventBindings.click('stagePickerTrigger',()=>WakeSevenStagePickerFeature.open());
 WakeSevenEventBindings.click('closeStagePicker',()=>{
-  closeStagePicker();
-  $('stagePickerTrigger').focus();
+  WakeSevenStagePickerFeature.close({focusId:'stagePickerTrigger'});
 });
-WakeSevenEventBindings.click('pickerPrevRound',()=>moveStagePickerRound(-1));
-WakeSevenEventBindings.click('pickerNextRound',()=>moveStagePickerRound(1));
+WakeSevenEventBindings.click('pickerPrevRound',()=>WakeSevenStagePickerFeature.moveRound(-1));
+WakeSevenEventBindings.click('pickerNextRound',()=>WakeSevenStagePickerFeature.moveRound(1));
 WakeSevenEventBindings.click('stagePickerRankBadge',()=>{
   $('stagePicker').hidden=true;
   WakeSevenStagePickerFeature.openRank({dialogId:'stagePicker',focusId:'stagePickerRankBadge'});
@@ -12172,7 +12200,7 @@ $('messageRankLink').addEventListener('click',()=>{
     return;
   }
   $('messageDialog').hidden=true;
-  openRankDialog(null);
+  WakeSevenStagePickerFeature.openRank();
 });
 $('rankBadge').addEventListener('click',()=>WakeSevenStagePickerFeature.openRank());
 $('masterSeal').addEventListener('click',()=>WakeSevenStagePickerFeature.openRankFrom('masterDialog','masterSeal'));
@@ -12182,11 +12210,7 @@ for(const [sealId,dialogId] of [['masterSeal','masterDialog'],['messageMasterSea
     if(event.key==='Enter'||event.key===' '){event.preventDefault();WakeSevenStagePickerFeature.openRankFrom(dialogId,sealId);}
   });
 }
-$('closeRankDialog').addEventListener('click',()=>{
-  const returnTarget=readDialogContext().rankDialogReturn;updateDialogStateOwner({rankDialogReturn:null});
-  $('rankDialog').hidden=true;
-  if(!focusReturnTarget(returnTarget))$('rankBadge').focus();
-});
+$('closeRankDialog').addEventListener('click',()=>WakeSevenStagePickerFeature.closeRank());
 $('masterStart').addEventListener('click',()=>{
   const dialogKind=readDialogContext().masterDialogKind;
   const {navigation}=readProgressionContext();
@@ -12215,8 +12239,8 @@ $('masterStart').addEventListener('click',()=>{
   if(dialogKind==='pathInfo')loadExtraStage(0);
   else if(dialogKind==='secondLapIntro')loadStage(0);
   else if(dialogKind==='satoriIntro')loadSatoriStage(0);
-  else if(dialogKind==='satori')openSatoriPicker();
-  else if(dialogKind==='mastery')openSatoriPicker();
+  else if(dialogKind==='satori')WakeSevenStagePickerFeature.openSatori();
+  else if(dialogKind==='mastery')WakeSevenStagePickerFeature.openSatori();
   else loadExtraStage(navigation.masteryIndex+1);
 });
 $('masterSpeedUnlockStart').addEventListener('click',()=>{
