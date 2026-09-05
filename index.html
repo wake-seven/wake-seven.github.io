@@ -9876,20 +9876,6 @@ function openResetFeature(){
   $('resetDialogClose').focus();
   return true;
 }
-function openBoardThemeFeature(){
-  closeSettingsFeature();
-  openBoardThemeDialog();
-  return true;
-}
-function closeBoardThemeFeature(){
-  $('boardThemeDialog').hidden=true;
-  return true;
-}
-function selectBoardThemeFeature(button){
-  if(!button||button.disabled)return false;
-  selectBoardThemeCommand(button);
-  return true;
-}
 function toggleSoundFeature(){
   toggleSoundCommand();
   return WakeSevenAppContext.state.settings.read().soundEnabled;
@@ -9915,9 +9901,6 @@ const WakeSevenSettingsFeature=Object.freeze({
   open:openSettingsFeature,
   openAbout:openAboutFeature,
   openReset:openResetFeature,
-  openTheme:openBoardThemeFeature,
-  closeTheme:closeBoardThemeFeature,
-  selectTheme:selectBoardThemeFeature,
   toggleSound:toggleSoundFeature,
   setLanguage:setLanguageFeature,
   reset:resetSettingsFeature,
@@ -12744,17 +12727,18 @@ $('twoMovePatterns').addEventListener('click',()=>{
   openTwoMovePatterns();
 });
 $('menuBoardTheme').addEventListener('click',()=>{
+  WakeSevenSettingsFeature.close();
   closeAppMenu();
-  WakeSevenSettingsFeature.openTheme();
+  openBoardThemeDialog();
 });
-$('closeBoardTheme').addEventListener('click',()=>WakeSevenSettingsFeature.closeTheme());
+$('closeBoardTheme').addEventListener('click',()=>{$('boardThemeDialog').hidden=true;});
 $('boardThemeDialog').addEventListener('click',event=>{
-  if(event.target===$('boardThemeDialog'))WakeSevenSettingsFeature.closeTheme();
+  if(event.target===$('boardThemeDialog'))$('boardThemeDialog').hidden=true;
 });
 $('boardThemeOptions').addEventListener('click',event=>{
   const button=event.target.closest('[data-board-color],[data-board-layout],[data-daruma-color]');
   if(!button||button.disabled)return;
-  WakeSevenSettingsFeature.selectTheme(button);
+  selectBoardThemeCommand(button);
 });
 function closeTwoMovePatterns(){
   $('twoMoveDialog').hidden=true;
