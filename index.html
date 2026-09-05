@@ -1048,11 +1048,11 @@
 </div>
 <div class="stage-accent" id="stageAccent" aria-hidden="true"><div class="stage-accent-fill" id="stageAccentFill"></div></div>
 <div class="mode-row">
+  <div class="speed-clock-inline" id="speedClockInline" hidden><span id="speedClockLabel">タイム</span><b id="speedClockValue">00:00</b></div>
   <div class="status-metric remaining"><span id="shortestLabel">あと</span><b id="stagePar">1</b><span id="moveUnit">くるり</span><span class="academy-clear-suffix" id="academyClearSuffix"></span></div>
   <div class="application-target-preview" id="applicationTargetPreview" hidden aria-label="応用クラスの目標"><svg id="applicationTargetPreviewBoard" viewBox="14 0 293 310" aria-hidden="true"></svg><span id="applicationTargetPreviewLabel">を作る</span></div>
   <span class="status-separator">/</span>
   <div class="status-metric moves"><span id="movesLabel">いま</span><b id="moves">0</b><span id="movesUnit">くるり</span></div>
-  <div class="speed-clock-inline" id="speedClockInline" hidden><span id="speedClockLabel">タイム</span><b id="speedClockValue">00:00</b></div>
   <div class="speed-pause-inline" id="speedPauseInline"></div>
   <button class="chip on two-move-lesson-open" id="twoMoveLessonOpen" type="button" hidden>コツを見る</button>
   <button class="chip stage-return" id="stageModeReturn" hidden>ステージモードへ</button>
@@ -10708,8 +10708,9 @@ function renderStageNav(){
     $('debugTools').hidden=!DEBUG_MODE;
     for(const id of ['debugReset','debugClear','debugSpeedJumpFinish','debugAlmost','debugMore','debugFar','debugSkipTutorial','debugIntro2','debugBasic11','debugApplication20','debugAcademy20','debugSpeedTraining8','debugTrainingUpper','debugTrainingMiddle','debugTrainingLower','debugSpeedIntermediate17','debugExtra14','debugExtra29','debugExtra44','debugSpeedMastery26','debugSatori72','debugSecondIntro2','debugSecondBasic11','debugSecondApplication20','debugSecondAcademy20','debugSecondTrainingUpper','debugSecondTrainingMiddle','debugSecondTrainingLower','debugSecondExtra14','debugSecondExtra29','debugSecondExtra44','debugSecondSatori72'])$(id).hidden=!DEBUG_MODE;
     const pauseButton=$('speedPause'),pauseInline=$('speedPauseInline'),playActions=document.querySelector('.play-actions');
+    const speedTrainingNine=isMode('speed')&&speedVariant==='training9';
     const awaitingSpeedStart=isMode('speed')&&speedAwaitingStart();
-    if(isMode('speed')&&!speedShowsRemaining())pauseInline.appendChild(pauseButton);
+    if(speedTrainingNine||(isMode('speed')&&!speedShowsRemaining()))pauseInline.appendChild(pauseButton);
     else playActions.appendChild(pauseButton);
     $('reset').textContent=editingBoard?tr('resetAll'):speedShowsRemaining()?tr('reset'):isMode('speed')?tr('speedPuzzleRestart'):tr('reset');
     $('reset').hidden=hideLearningControls||isMode('satori')||(isMode('speed')&&!speedShowsRemaining());
@@ -10718,7 +10719,7 @@ function renderStageNav(){
     $('playbar').hidden=hideLearningControls||(awaitingSpeedStart&&!speedShowsRemaining());
     const hideBoardViewControls=assistedLearning||isMode('speed')||(isMode('stage')&&navigation.stageIndex>=TRAINING_STAGE_START&&navigation.stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT);
     for(const id of ['rotateBoardBack','rotateBoard','mirrorBoard','flipBoardVertical'])$(id).hidden=hideBoardViewControls;
-    $('twoMoveLessonOpen').hidden=!((isMode('stage')&&navigation.stageIndex>=TRAINING_STAGE_START&&navigation.stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)||isTwoMoveLessonSpeedStage());
+    $('twoMoveLessonOpen').hidden=speedTrainingNine||!((isMode('stage')&&navigation.stageIndex>=TRAINING_STAGE_START&&navigation.stageIndex<TRAINING_STAGE_START+TRAINING_UPPER_COUNT)||isTwoMoveLessonSpeedStage());
     $('twoMoveLessonOpen').textContent=tr('twoMoveLessonOpen');
   }
   function renderStageNavModeButtons(){
