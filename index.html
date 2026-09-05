@@ -9846,8 +9846,7 @@ function readSettingsFeatureContext(){
     ...settings,
     settingsOpen:dialog('settingsDialog'),
     aboutOpen:dialog('aboutDialog'),
-    resetOpen:dialog('resetDialog'),
-    themeOpen:dialog('boardThemeDialog')
+    resetOpen:dialog('resetDialog')
   });
 }
 function openSettingsFeature(){
@@ -9876,21 +9875,6 @@ function openResetFeature(){
   $('resetDialogClose').focus();
   return true;
 }
-function toggleSoundFeature(){
-  toggleSoundCommand();
-  return WakeSevenAppContext.state.settings.read().soundEnabled;
-}
-function setLanguageFeature(lang,options={}){
-  const {closeMenu=false,focusToggle=false}=options&&typeof options==='object'?options:{};
-  if(!UI_TEXT[lang])return false;
-  applyLanguage(lang);
-  if(closeMenu){
-    $('languageMenu').classList.remove('show');
-    $('languageToggle').setAttribute('aria-expanded','false');
-  }
-  if(focusToggle)$('languageToggle').focus();
-  return true;
-}
 function resetSettingsFeature(options={resetIntro:true,showIntro:true,preserveRewards:true}){
   $('resetDialog').hidden=true;
   resetStoredProgress(options);
@@ -9901,8 +9885,6 @@ const WakeSevenSettingsFeature=Object.freeze({
   open:openSettingsFeature,
   openAbout:openAboutFeature,
   openReset:openResetFeature,
-  toggleSound:toggleSoundFeature,
-  setLanguage:setLanguageFeature,
   reset:resetSettingsFeature,
   close:closeSettingsFeature
 });
@@ -12720,7 +12702,7 @@ $('menuToggle').addEventListener('click',e=>{
   $(id).addEventListener('click',closeAppMenu);
 });
 $('soundToggle').addEventListener('click',()=>{
-  WakeSevenSettingsFeature.toggleSound();
+  toggleSoundCommand();
 });
 $('twoMovePatterns').addEventListener('click',()=>{
   closeAppMenu();
@@ -12811,7 +12793,10 @@ $('clearShapeRuleMirror').addEventListener('click',()=>transformClearShapeRule(0
 $('clearShapeRuleFlipVertical').addEventListener('click',()=>transformClearShapeRule(180,true));
 document.querySelectorAll('[data-lang]').forEach(button=>{
   button.addEventListener('click',()=>{
-    WakeSevenSettingsFeature.setLanguage(button.dataset.lang,{closeMenu:true,focusToggle:true});
+    applyLanguage(button.dataset.lang);
+    $('languageMenu').classList.remove('show');
+    $('languageToggle').setAttribute('aria-expanded','false');
+    $('languageToggle').focus();
   });
 });
 document.addEventListener('click',e=>{
