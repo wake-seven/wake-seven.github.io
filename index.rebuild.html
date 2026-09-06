@@ -846,7 +846,8 @@
       RuntimeState.history = [];
       RuntimeState.phase = BoardPhase.READY;
       saveAppState('next puzzle');
-      renderRuntime({ context:'next puzzle' });
+      // 新しい問題に進んだ時だけ、P2と同じ七枚が中央から広がる到着演出を見せる。復元時には再生しない。
+      runArrivalEffect();
     }
     // 全員が起きた後のクリア演出。通常の回転とは別の表情と弾みだけを描く。
     function runClearEffect() {
