@@ -15,7 +15,7 @@
 - 応用導入、紫枠、残り2手形ガイド、速解き九番UI、試験ゲート、クリア後分岐は、現行版との並列比較で合意した観測結果に一致する。
 - 問題／モード切替後に旧世代のタイマー、`requestAnimationFrame`、Web Animations完了処理が状態やDOMを変更しない。
 - 保存値が正常なら定義済みの安定状態へ復帰し、破損・旧版・未解放の値なら安全にフォールバックする。
-- 新HTML内は後述の検索アンカーと命名規約を守り、1機能の状態、ポリシー、描画、操作入口、演出を `rg` で辿れる。
+- 新HTML内は自然な機能名と命名規約を守り、1機能の状態、ポリシー、描画、操作入口、演出を必要に応じた `rg` で辿れる。
 - 切替直前まで基準版 `index.html` を変更せず、切替後もタグまたはrevertで即時に戻せる。
 
 ### 非目標
@@ -32,11 +32,12 @@
 
 この再構築の第一目的は、**AIが機能追加・故障改修を、速く、正しく、低い探索コストで行えること**である。見栄えのよい分割、一般的な設計様式、将来使うかもしれない抽象化は、この目的を上回らない。
 
-- 改修の入口は、機能キー、仕様ID、またはユーザーが使う言葉での `rg` 1回とする。検索結果の前後だけで、対象機能の実データ、状態・方針、描画、操作入口、対象検証を読めなければならない。
-- HTMLの都合でCSS・DOM・JSが離れる場合だけは、同じ機能キーを各実装箇所に付ける。主たるJavaScript実装は、機能単位で連続して置く。データ、描画、イベント、検証を「整理のため」だけに別の汎用セクションへ散らさない。
-- 未実装の機能キー、空の `START/END`、対象なし表、将来用の抽象APIは `index.rebuild.html` に置かない。未実装であることはこの計画にだけ記録する。`rg` の結果が実装のように見える偽の入口を作らない。
+- 改修調査はユーザーの依頼文だけを入口とし、AI自身が自然に検索語を決める。実装者が指定した専用キーや仕様IDを知っていることを前提にしない。
+- AIが日本語、英語の実装語、UI文言、DOM ID、CSSクラスのどこから調べ始めても、主実装へ到達できる名前と配置にする。特定の言語や一回の検索成功だけを合格条件にしない。
+- 主たるJavaScript実装は機能単位で連続して置き、検索で着いた周辺から、目的、状態の所有者、入力、状態変更、描画、演出、検証との関係を説明できるようにする。データ、描画、イベント、検証を「整理のため」だけに別の汎用セクションへ散らさない。
+- 検索専用の記号、キーワード一覧、空の `START/END`、対象なし表、将来用の抽象APIは `index.rebuild.html` に置かない。コメントはその場所の処理目的や判断理由を説明する場合だけ書く。
 - 共通化は、少なくとも二つの**実装済み**機能が同じ入出力契約で使う処理に限る。共通化によって検索結果から機能の流れが読めなくなるなら、重複を選ぶ。
-- 各変更の完了前に、実装者は対象の `rg` 結果と前後のコードを確認する。レビューは「一般論としてきれいか」ではなく、「次のAIがこの検索から変更箇所と影響範囲を迷わず読めるか」で判断する。
+- 各フェーズの完了前に、実装者とは別のレビュー文脈で、関数名や検索語を教えずユーザー風の改修依頼だけを渡す。レビューAIが自分で `rg` し、変更箇所、目的、影響範囲、関連検証を説明できるかで判断する。使用した検索語と到達箇所は完了報告に記録するが、HTMLへ転記しない。
 
 ## 2. ファイル、ブランチ、バックアップ
 
@@ -59,89 +60,21 @@
 
 ## 3. 新HTMLの内部構成
 
-以下は検索語彙の目安であり、全項目を空の骨格として先に置くための一覧ではない。各 `START` / `END` コメントは、対応する実コードが初めて入る時点で作り、実装依頼やレビューではその名前を使う。
+HTMLの並び順は、画面に近い順にする。CSSは共通見た目→盤面→各画面固有、DOMは画面本体→ダイアログ→SVG部品、JavaScriptは問題データ→盤面ルール→状態→描画→入力→その画面の操作→自己検査→起動、を基本にする。各機能は、必要な状態、表示、操作、検査をできるだけ近接配置する。
 
-```text
-<!doctype html>
-<html>
-  <head>
-    WAKE7:HEAD:META
-    WAKE7:HEAD:BOOT-FLAGS
-    <style>
-      WAKE7:CSS:TOKENS-RESET
-      WAKE7:CSS:SHELL
-      WAKE7:CSS:BOARD
-      WAKE7:CSS:CONTROLS
-      WAKE7:CSS:DIALOGS
-      WAKE7:CSS:FEATURE-TUTORIAL
-      WAKE7:CSS:FEATURE-ACADEMY
-      WAKE7:CSS:FEATURE-APPLICATION
-      WAKE7:CSS:FEATURE-TRAINING
-      WAKE7:CSS:FEATURE-MASTERY-SATORI
-      WAKE7:CSS:FEATURE-SPEED
-      WAKE7:CSS:FEATURE-FREE-CUSTOM
-      WAKE7:CSS:EFFECTS
-      WAKE7:CSS:RESPONSIVE
-      WAKE7:CSS:ACCESSIBILITY-DEBUG
-    </style>
-  </head>
-  <body>
-    WAKE7:DOM:SHELL
-    WAKE7:DOM:STATUS-NAV
-    WAKE7:DOM:BOARD
-    WAKE7:DOM:DIALOGS
-      WAKE7:DOM:FEATURE-TUTORIAL
-      WAKE7:DOM:FEATURE-ACADEMY
-      WAKE7:DOM:FEATURE-APPLICATION
-      WAKE7:DOM:FEATURE-TRAINING
-      WAKE7:DOM:FEATURE-MASTERY-SATORI
-      WAKE7:DOM:FEATURE-SPEED
-      WAKE7:DOM:FEATURE-FREE-CUSTOM
-    WAKE7:DOM:TEMPLATES
-    WAKE7:DOM:SVG-DEFS
-    <script type="module">
-      WAKE7:JS:CONSTANTS
-      WAKE7:JS:CONTENT-DATA
-      WAKE7:JS:STAGE-DATA
-      WAKE7:JS:BOARD-DOMAIN
-      WAKE7:JS:STATE-SCHEMA
-      WAKE7:JS:SELECTORS-POLICIES
-      WAKE7:JS:COMMANDS
-      WAKE7:JS:PERSISTENCE
-      WAKE7:JS:DOM-REFS
-      WAKE7:JS:BOARD-RENDER
-      WAKE7:JS:UI-RENDER
-      WAKE7:JS:DIALOG-RENDER
-      WAKE7:JS:EFFECT-RUNNER
-      WAKE7:JS:POINTER-INPUT
-      WAKE7:JS:FEATURE-TUTORIAL
-      WAKE7:JS:FEATURE-ACADEMY
-      WAKE7:JS:FEATURE-APPLICATION
-      WAKE7:JS:FEATURE-TRAINING
-      WAKE7:JS:FEATURE-MASTERY-SATORI
-      WAKE7:JS:FEATURE-SPEED
-      WAKE7:JS:FEATURE-FREE-CUSTOM
-      WAKE7:JS:EVENT-BINDINGS
-      WAKE7:JS:LIFECYCLE-BOOT
-      WAKE7:JS:DEBUG-SELFTEST
-    </script>
-  </body>
-</html>
-```
+コメントは「棒の当たり判定」「クリア演出」「速解きの時計」のように、コードの意図を説明するためだけに書く。`WAKE7:`のような検索専用の記号、仕様IDの反復、空のセクション見出しはHTMLへ置かない。
 
-実際のコメントは `<!-- WAKE7:DOM:BOARD:START -->`、`/* WAKE7:JS:BOARD-DOMAIN:START */` の形にする。機能の検索入口には仕様IDも併記する。例: `/* SPEC: BOARD-001 BOARD-002 */`。同じIDを無関係な場所へ大量に散らさず、主実装、主検証入口、必要なCSSの最大3か所程度に留める。未実装の機能名だけをこのHTMLへ予告として書かない。
+### 改修時の調べ方
 
-### 機能横断の検索契約
-
-- 実装済み機能のキーは `FEATURE-TUTORIAL`、`FEATURE-ACADEMY`、`FEATURE-APPLICATION`、`FEATURE-TRAINING`、`FEATURE-MASTERY-SATORI`、`FEATURE-SPEED`、`FEATURE-FREE-CUSTOM` を使う。未実装のキーをHTMLへ置かない。
-- ある機能がCSS・DOM・JavaScriptを持つ場合、その実コードに同じ機能キーと仕様IDを付ける。CSSやDOMがまだ不要なら、実装のないアンカーを作らない。
-- 機能改修の調査は `rg -n "FEATURE-APPLICATION|SPEC: APP-" index.rebuild.html` のように、機能キーと仕様ID接頭辞の1回の検索から始める。この検索で主実装と検証入口が列挙できず、別の巨大な汎用領域を掘る必要がある状態は未完了とする。
+- AIは依頼文の自然な語、日本語UI文言、関数名、DOM ID、CSSクラスのいずれからでも必要に応じて `rg` する。特定の検索語や一回の検索成功を契約にしない。
+- 「棒の判定」「回転」「クリア」「一手戻す」「保存」のような自然な依頼から調べた時、該当する説明コメント、ユーザー向け文言、または自然な関数名を入口に、関連処理を近い範囲で読めることを受入れ条件にする。
+- 日本語のコメントだけ、英語の関数名だけのどちらかに依存しない。日本語の依頼文と、`hitTestGrip`、`runClearEffect`、`intentUndo` のような実装語の双方から辿れるようにする。
 - 共通基盤へ出してよいのは、2機能以上が同じ契約で利用する処理だけとする。共通化した機能からは名前付きAPIを呼び、共通セクションに機能固有の分岐を蓄積しない。
 
 ### 命名規約
 
 - JavaScript: 定数は `UPPER_SNAKE_CASE`、関数と値は `camelCase`、概念を表す固定オブジェクトは単数名とする。
-- DOM参照: IDは `w7-<feature>-<role>`、`data-w7-action` はユーザー操作、`data-w7-ref` は描画参照に使う。ID文字列を機能コードへ散在させず、`DOM-REFS` で一度だけ収集する。
+- DOM参照: IDは `w7-<feature>-<role>`、`data-w7-action` はユーザー操作、`data-w7-ref` は描画参照に使う。ID文字列を機能コードへ散在させず、DOM参照を使う描画・操作処理の近くで一度だけ収集する。
 - CSS: `.w7-<block>__<element>` と `.is-*` を使用する。`.is-*` は描画結果であり、ゲーム状態の正本にしない。`hidden`、`opacity:0`、要素の有無を入力可否判定に使わない。
 - 状態遷移: ユーザー意図は `intent*`、検証済みの同期更新は `commit*`、派生値は `select*`、描画は `render*`、演出開始は `run*Effect`、保存は `save*` / `restore*` とする。
 - イベントハンドラは `handle<対象><イベント>` とし、DOMイベントから意図へ変換するだけにする。
@@ -230,7 +163,7 @@ AppState ⇄ 保存アダプタ（起動・確定点・pagehideのみ）
 - **作業:** ブランチと候補ファイル名を固定する。現行版のPC/360px基準画面、主要状態、設定項目、ダイアログ一覧を記録する。`OPEN-003` を決め、`OPEN-001`・`002`・`006` の棚卸し表を作る。決定は文書更新が許可された別タスクで仕様台帳へ反映する。
 - **完了条件:** 比較するURL、保存名前空間、viewport、言語、テーマ、テスト開始状態が固定され、凍結ファイルに差分がない。
 - **検証:** 基準タグを別checkoutまたはブラウザで開け、現行デバッグ導線で重点状態へ到達できる。
-- **コミット境界:** `rebuild(p0): add clean single-html shell`。メタ情報、空の主要DOM領域、検索アンカー、起動失敗表示まで。
+- **コミット境界:** `rebuild(p0): add clean single-html shell`。メタ情報、P1に必要な最小DOM、起動失敗表示まで。将来機能の空DOMや検索専用コメントは置かない。
 - **停止:** `OPEN-003` が未決、比較用現行版が起動しない、基準タグが参照できない場合。
 
 ### P1. 純粋盤面ドメインと静的盤面
@@ -238,7 +171,7 @@ AppState ⇄ 保存アダプタ（起動・確定点・pagehideのみ）
 - **仕様:** `BOARD-001`。
 - **入力:** 現行の盤面ジオメトリ、`WakeSevenBoardDomain`、三角定義、向きの見た目。文言やモード処理は読まない。
 - **作業:** 7セル、3値、6本の三角軸、符号化／復号、±120度のroll、全探索ソルバを純粋関数で実装する。1問を静的SVGへ描画する。盤面の論理向きとview変換を分離する。
-- **完了条件:** 自己検査が2187状態を完走し、静的な初期盤面と解決盤面を描ける。盤面機能はCSS・DOM・JavaScript・検証が実コードとして検索できる。未実装の7機能について、偽の検索アンカーや画面UIを置かない。
+- **完了条件:** 自己検査が2187状態を完走し、静的な初期盤面と解決盤面を描ける。盤面機能は自然な関数名、DOM名、説明コメントから実コードとして辿れる。未実装の7機能について、検索専用コメントや画面UIを置かない。
 - **検証:** 7章の全状態検証を実施し、PC/360pxで現行とセル位置・寝方・軸位置を比較する。
 - **コミット境界:** `rebuild(p1): implement board domain and static renderer`。
 - **停止:** 到達可能性の分類、逆操作、ステージ `par` のいずれかが参照計算と一致しない場合。
@@ -336,7 +269,7 @@ AppState ⇄ 保存アダプタ（起動・確定点・pagehideのみ）
 
 ### `3^7` ドメイン自己検査
 
-`WAKE7:JS:DEBUG-SELFTEST` に公開ビルドで副作用を起こさない検査入口を置き、`?debug=1` の時だけ結果を表示する。少なくとも次を全2187状態で検査する。
+`runSelftest` のような自然な検査関数を公開ビルドで副作用なく実行し、`?debug=1` の時だけ結果を表示する。少なくとも次を全2187状態で検査する。
 
 1. `decode(encode(cells))` と `encode(decode(id))` が恒等で、全IDが一意である。
 2. 各セル値が0〜2、各操作対象が相異なる3セル、全軸が盤面ジオメトリの三角に一致する。
@@ -397,7 +330,7 @@ AppState ⇄ 保存アダプタ（起動・確定点・pagehideのみ）
 - だるまのSVG path、静的イラスト、アイコン、メタ情報、外部リンク。
 - 盤面座標、色token、ゲーム性に関わる寸法など、`OPEN-002` の比較で妥当性を確認した定数。
 
-コピーはセクション単位で行い、前後に検索アンカーを置く。コピーしたデータには件数、ID重複、参照先、配列長を検査する。現行コメントにあるビルド生成前提や未使用データは持ち込まない。
+コピーは機能単位で行い、データを利用する描画・操作処理の近くに置く。コピーしたデータには件数、ID重複、参照先、配列長を検査する。現行コメントにあるビルド生成前提や未使用データは持ち込まない。
 
 ### 制御ロジックとして再実装
 
@@ -456,17 +389,17 @@ AppState ⇄ 保存アダプタ（起動・確定点・pagehideのみ）
 - `REBUILD_SPEC.md` の {仕様ID見出し}
 - `REBUILD_CHECKLIST.md` の {A/C/D項目}
 - 現行 `index.html` の検索入口: {関数名・定数名・DOM ID}
-- 新版 `index.rebuild.html` のアンカー: {WAKE7:...}
+- 新版 `index.rebuild.html` の入口: {依頼に出る自然語、関数名、DOM ID、CSSクラス}
 
 変更範囲:
-- 原則 `index.rebuild.html` の上記アンカー内だけ。
+- 原則 `index.rebuild.html` の上記入口と、その周辺の関連処理だけ。
 - `index.html` と既存仕様文書は変更しない。
 - 別CSS/JS、ビルド工程、生成ファイルを作らない。
 
 実装要件:
 - {入力→状態遷移→描画→演出→保存の観測可能な流れ}
 - {維持する不変条件}
-- 機能キー: 今回**実装する** `FEATURE-{NAME}` をCSS・DOM・JavaScriptの実コードで共通使用し、仕様ID接頭辞との1回の `rg` で主要実装と検証入口を列挙できること。未実装機能のアンカーや雛形は追加しない。
+- 依頼に出る自然な言葉、ユーザー向け文言、実装の関数名のいずれから調べても、関連する状態、描画、入力、検査を近い範囲で読めるようにする。検索のためだけのコメント、記号、空の雛形は追加しない。
 - 旧版からコピー可: {純粋データ／文言だけを具体化}
 - 再実装: {制御ロジックを具体化}
 
@@ -476,7 +409,7 @@ AppState ⇄ 保存アダプタ（起動・確定点・pagehideのみ）
 - スマホ/タッチ: {ケース}
 - リロード/lifecycle: {ケース}
 - reduced motion: {ケース}
-- 検索契約: `rg -n "FEATURE-{NAME}|SPEC: {PREFIX}-" index.rebuild.html`
+- 改修しそうな自然語と実装語の双方で検索し、関連箇所へ辿れることを確認する。
 - `git diff --check`
 
 停止条件:
@@ -484,7 +417,7 @@ AppState ⇄ 保存アダプタ（起動・確定点・pagehideのみ）
   状態所有の二重化、生timer、未説明の現行差分を発見したら実装を止めて報告する。
 
 完了報告:
-- 変更アンカー、満たした仕様ID、実行した検証と結果、残件、
+- 変更箇所、満たした仕様ID、実行した検証と結果、残件、
   commit候補メッセージを簡潔に報告する。依頼なしにcommit/pushしない。
 ```
 
@@ -495,7 +428,7 @@ AppState ⇄ 保存アダプタ（起動・確定点・pagehideのみ）
 - 原則は `Terra high`。静的データ移植、DOM/CSS、通常描画、限定された1機能、決定済み仕様の実装と回帰修正を担当させる。
 - `Sol high` は、P2の状態／演出世代、P5の複合導入、P7の速解き時計・lifecycle、P9の統合監査など、複数状態機械が交差する難所か矛盾監査に限定する。最初から全フェーズをSolで実装しない。
 - 同じタスクで毎回85万byteの現行HTML全体を再読させない。仕様IDの「根拠」、関数名、定数名、DOM IDを `rg -n` で絞り、前後の必要範囲だけ読む。
-- 各フェーズの最初に全仕様を再要約しない。前フェーズcommit、対象ID、該当アンカー、決定済み `OPEN-*` をプロンプトへ渡す。
+- 各フェーズの最初に全仕様を再要約しない。前フェーズcommit、対象ID、既知の関数名・DOM ID・ユーザー向け文言、決定済み `OPEN-*` をプロンプトへ渡す。
 - 監査はbranch全体の再説明ではなく、前フェーズcommitからのdiff、対象状態遷移、失敗シナリオに限定する。Solによる全体監査はP9で一度行う。
 - マルチエージェントは常用しない。単一HTMLの同時編集は競合と二重設計を生むため、独立した読取専用調査や別端末の検証が明確に分離できる場合だけ使う。
 - 失敗時はモデルを上げる前に、再現手順、期待／実際、AppState、RuntimeState、effect generation、対象diffを小さく採取する。同じ曖昧な依頼を高価なモデルへ繰り返さない。

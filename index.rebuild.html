@@ -7,19 +7,14 @@
   <link rel="icon" href="data:,">
   <title>だるまさんを起こして！</title>
   <style>
-    /* WAKE7:CSS:ROOT:START | WAKE7:CSS:FEATURE-BOARD:DEPENDENCIES */
+    /* ページ全体の見た目 */
     :root { --ai:#16283c; --ai2:#1f3752; --washi:#f7eedc; --washi2:#bccdd3; --kin:#c9a54e; --content-max:23.25rem; }
     html { font-size:calc(16px * clamp(1,calc(100vw / 570px),1.5)); max-width:100%; overflow-x:hidden; }
     * { box-sizing:border-box; }
     body { margin:0; min-height:100vh; min-height:100dvh; max-width:100%; display:flex; flex-direction:column; align-items:center; padding:1.125rem 0.75rem max(0.75rem,env(safe-area-inset-bottom)); background:var(--ai); background-image:radial-gradient(120% 70% at 50% 0%,var(--ai2) 0%,var(--ai) 62%); color:var(--washi); font-family:"A1 Gothic","Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,"Noto Sans JP",sans-serif; }
-    /* WAKE7:CSS:ROOT:END */
-
-    /* WAKE7:CSS:SHELL:START | WAKE7:CSS:FEATURE-BOARD:DEPENDENCIES */
+    /* 画面の枠 */
     .w7-shell { width:100%; max-width:var(--content-max); }
-    /* WAKE7:CSS:SHELL:END */
-
-    /* WAKE7:CSS:FEATURE-BOARD:START */
-    /* SPEC: BOARD-001 BOARD-002 BOARD-003 BOARD-004 ASYNC-001 */
+    /* 盤面、棒、操作ボタン */
     .w7-board-feature { display:grid; gap:0.625rem; }
     .w7-board-status { display:flex; justify-content:center; gap:1.5rem; min-height:1.75rem; font-weight:700; font-size:1.05rem; font-variant-numeric:tabular-nums; }
     .w7-board-status strong { display:inline-block; min-width:1.25ch; text-align:right; color:#f5d66d; font-size:1.2em; }
@@ -35,6 +30,7 @@
     .w7-axis-grip { fill:#7dd8f5; stroke:#3e9bc2; stroke-width:1.25; pointer-events:none; filter:drop-shadow(0 1px 1px rgb(0 0 0 / .25)); }
     .w7-board.is-grip-hover { cursor:grab; }
     .w7-board[data-phase="dragging"] { cursor:grabbing; }
+    /* 棒はつかんで回転している間と、全員が起きた後には表示しない。 */
     .w7-board:not([data-phase="ready"]) .w7-axis-layer { opacity:0; }
     .w7-board[data-solved="true"] .w7-axis-layer { opacity:0; }
     .w7-board.is-invalid-grab .w7-cell { opacity:.28; filter:saturate(.55) brightness(.62); }
@@ -48,14 +44,12 @@
     .w7-board-button:disabled { opacity:.42; cursor:default; box-shadow:none; }
     .w7-clear-burst { pointer-events:none; transform-box:view-box; }
     @media (prefers-reduced-motion:reduce) { .w7-board * { animation:none!important; transition:none!important; } }
-    /* WAKE7:CSS:FEATURE-BOARD:END */
-    /* WAKE7:CSS:FEATURE-BOARD:RESPONSIVE */ @media (max-width:480px) { body { padding-left:0.25rem; padding-right:0.25rem; padding-bottom:max(0.5rem,env(safe-area-inset-bottom)); } .w7-shell,.w7-board-frame { max-width:none; } }
+    /* スマホでは盤面を横いっぱいに使う */
+    @media (max-width:480px) { body { padding-left:0.25rem; padding-right:0.25rem; padding-bottom:max(0.5rem,env(safe-area-inset-bottom)); } .w7-shell,.w7-board-frame { max-width:none; } }
   </style>
 </head>
 <body>
-  <!-- WAKE7:DOM:FEATURE-BOARD:START -->
-  <!-- SPEC: BOARD-001 BOARD-002 BOARD-003 BOARD-004 ASYNC-001 — board UI and assets stay in this feature range. -->
-  <!-- WAKE7:DOM:SHELL:START -->
+  <!-- 盤面の画面 -->
   <main class="w7-shell">
     <section class="w7-board-feature" aria-label="七枚のだるま盤">
       <div class="w7-board-status" aria-live="polite">
@@ -72,8 +66,7 @@
       </div>
     </section>
   </main>
-  <!-- WAKE7:DOM:SHELL:END -->
-  <!-- WAKE7:DOM:FEATURE-BOARD:SVG-ASSETS:START — copied static board assets, not a second source file. -->
+  <!-- だるまのSVG部品。盤面描画からuseして使う。 -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
     <g id="w7-daruma-body">
       <path d="M0 -34C17 -34 31 -18 31 4C31 24 18 36 0 36C-18 36 -31 24 -31 4C-31 -18 -17 -34 0 -34Z" fill="var(--daruma-body, #C8352C)"/>
@@ -103,18 +96,15 @@
       <path d="M-5 5C-3 8 3 8 5 5" stroke="#241D1A" stroke-width="2" stroke-linecap="round" fill="none"/>
     </g>
   </defs></svg>
-  <!-- WAKE7:DOM:FEATURE-BOARD:SVG-ASSETS:END -->
-  <!-- WAKE7:DOM:FEATURE-BOARD:END -->
 
   <script type="module">
-    /* WAKE7:AI-MAINTENANCE:START
-       Primary goal: an AI changes one feature correctly after one rg search.
-       Keep a real feature's data, policy, rendering, input, and verification together.
-       Do not add unused feature anchors, placeholder UI, or abstraction-only code.
-       Prefer local duplication over hiding a feature flow behind a generic layer.
-       WAKE7:AI-MAINTENANCE:END */
-    /* WAKE7:JS:FEATURE-BOARD:START */
-    /* WAKE7:JS:CONSTANTS:START */
+    /*
+      将来の改修では、依頼に出てくる自然な言葉から近い処理を見つけられることを優先する。
+      説明コメント、状態、描画、入力、検査は、それぞれが必要になる場所の近くに置く。
+      検索のためだけの記号、空の雛形、汎用化だけを目的にした層は増やさない。
+    */
+
+    // 盤面の定数と、いま表示する問題
     const CELL_COUNT = 7;
     const CELL_RADIUS = 54;
     const CELL_SPACING_X = Math.sqrt(3) * CELL_RADIUS;
@@ -141,15 +131,12 @@
     const CLEAR_MILLISECONDS = 820;
     const CLEAR_TILE_STAGGER_MILLISECONDS = 65;
     const CLEAR_SETTLE_MILLISECONDS = CLEAR_MILLISECONDS + (CELL_COUNT - 1) * CLEAR_TILE_STAGGER_MILLISECONDS;
-    // The visible rod spans 18px each way along its axis. Keep 10px of center-side
-    // padding without reaching the board center; favor width across the rod over outward reach.
+    // 棒をつかめる範囲。innerは盤面中心側、outerは外周側、acrossは棒の左右方向。
+    // 中央盤面までは広げず、外へ伸ばすより棒の左右を広くする。
     const GRIP_HIT_RANGE = Object.freeze({ inner:28, outer:24, across:40 });
-    // Current index.html stage 1. P1/P2 render, operate, and validate this one reference-problem source.
+    // 現行index.htmlのステージ1を、いまの盤面表示・操作・自己検査の基準にする。
     const REFERENCE_STAGE = Object.freeze({ puzzleId:'stage-001', state:31, par:1 });
-    /* WAKE7:JS:CONSTANTS:END */
-
-    /* WAKE7:JS:BOARD-DOMAIN:START */
-    /* SPEC: BOARD-001 */
+    // 七枚の向きと、三枚を120度回す盤面ルール
     function makeTriangles(cellPositions) {
       const isNeighbor = (a, b) => Math.abs(Math.hypot(a.x - b.x, a.y - b.y) - CELL_SPACING_X) < 2;
       const triangles = [];
@@ -231,9 +218,7 @@
     });
     const SOLVER = WakeSevenBoardDomain.buildSolver();
     const INITIAL_BOARD = Object.freeze(Array.from(WakeSevenBoardDomain.decode(REFERENCE_STAGE.state)));
-    /* WAKE7:JS:BOARD-DOMAIN:END */
-
-    /* WAKE7:JS:VIEW-TRANSFORM:START */
+    // 画面上の見た目だけを変える座標変換。盤面ルールや履歴は変えない。
     /* The board's logic always uses CELL_POSITIONS; this display transform is presentation-only. */
     const BOARD_VIEW = Object.freeze({ rotationDegrees: 0, translateX: 0, translateY: 0 });
     function viewPoint(logicalPoint) {
@@ -265,10 +250,7 @@
       for (let from = 0; from < CELL_COUNT; from += 1) transformed[symmetry.permutation[from]] = symmetry.flip ? (3 - cells[from]) % 3 : cells[from];
       return transformed;
     }
-    /* WAKE7:JS:VIEW-TRANSFORM:END */
-
-    /* WAKE7:JS:UI-RENDER:START */
-    /* SPEC: BOARD-001 BOARD-002 BOARD-003 BOARD-004 */
+    // 盤面、だるま、六本の棒をSVGへ描く
     const SVG_NS = 'http://www.w3.org/2000/svg';
     const boardElement = document.querySelector('#w7-board');
     const boardMovesElement = document.querySelector('#w7-board-moves');
@@ -349,6 +331,7 @@
       const sourceOffset = triangle.cells.indexOf(cellIndex);
       return triangle.cells[(sourceOffset + (turns % 3) + 3) % 3];
     }
+    // 回転中のパネル位置とだるまの向き。確定フレームでは計算上の終点ではなく定位置を使い、数ピクセルのずれを残さない。
     function rotationFrameForCell(cells, triangleIndex, cellIndex, degrees, previewTurns = 0, settledTurns = null) {
       const triangle = TRIANGLES[triangleIndex];
       const pivot = viewPoint({ x:triangle.x, y:triangle.y });
@@ -357,7 +340,7 @@
       const displayOrientation = (cells[cellIndex] + (displayTurns % 3) + 3) % 3;
       const atSettledPosition = settledTurns !== null && Math.abs(degrees - settledTurns * TURN_DEGREES) < .001;
       const point = atSettledPosition ? viewPoint(CELL_POSITIONS[rotateTriangleCellIndex(triangle, cellIndex, settledTurns)]) : rotatePoint(start, pivot, degrees);
-      // During movement, panel color and face remain asleep until the physical angle is nearly upright.
+      // 回転中にだるまが起きるタイミングは、実際の角度が正立に近づいた時だけにする。
       const standing = atSettledPosition ? displayOrientation === 0 : Math.abs(normalizedDegrees(orientationDegrees(cells[cellIndex]) + degrees)) <= DARUMA_UPRIGHT_WINDOW_DEGREES;
       return Object.freeze({
         point,
@@ -367,6 +350,7 @@
         transform:atSettledPosition ? `translate(${point.x} ${point.y})` : `translate(${point.x} ${point.y}) rotate(${degrees})`,
       });
     }
+    // 回転する三枚を専用レイヤーへ移し、止まるまで隣のパネルより前に表示する。
     function ensureRotationPreviewLayer(triangleIndex) {
       let rotatingLayer = boardElement.querySelector('.w7-rotating-layer');
       if (rotatingLayer?.dataset.triangleIndex === String(triangleIndex)) return rotatingLayer;
@@ -396,10 +380,7 @@
       renderBoardStatus(previewCells, moveDelta);
       renderBoardPhase();
     }
-    /* WAKE7:JS:UI-RENDER:END */
-
-    /* WAKE7:JS:RUNTIME-STATE:START */
-    /* SPEC: BOARD-002 BOARD-003 ASYNC-001 — this object is the sole owner of transient board state. */
+    // 操作中の盤面状態。ドラッグ、回転、やり直し、クリア演出はここだけを更新する。
     const BoardPhase = Object.freeze({ ARRIVING:'arriving', READY:'ready', DRAGGING:'dragging', ROTATING:'rotating', UNDOING:'undoing', RESTARTING:'restarting', CELEBRATING:'celebrating' });
     const RuntimeState = {
       cells: Uint8Array.from(INITIAL_BOARD),
@@ -427,10 +408,7 @@
       RuntimeState.history.push(Object.freeze({ triangleIndex, direction, before:Object.freeze(Array.from(before)), after:Object.freeze(Array.from(after)) }));
       RuntimeState.cells = after;
     }
-    /* WAKE7:JS:RUNTIME-STATE:END */
-
-    /* WAKE7:JS:EFFECT-RUNNER:START */
-    /* SPEC: BOARD-004 ASYNC-001 — every asynchronous completion belongs to one generation. */
+    // 回転中の連打や画面切替で古い演出が状態を書き換えないよう、全演出を世代単位で中断する。
     function disposeEffectResources(effect) {
       effect.animationFrames.forEach(handle => cancelAnimationFrame(handle));
       effect.timers.forEach(handle => clearTimeout(handle));
@@ -498,10 +476,7 @@
       };
       requestEffectFrame(effect, frame);
     }
-    /* WAKE7:JS:EFFECT-RUNNER:END */
-
-    /* WAKE7:JS:POINTER-INPUT:START */
-    /* SPEC: BOARD-002 — pointer capture, continuous preview, one transactional commit or cancel. */
+    // 棒の当たり判定と、ドラッグで回す操作
     function eventToBoardPoint(event) {
       const matrix = boardElement.getScreenCTM();
       if (matrix && typeof DOMPoint === 'function') { const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse()); return { x:point.x, y:point.y }; }
@@ -542,6 +517,7 @@
     function safelyCapturePointer(pointerId) { try { boardElement.setPointerCapture(pointerId); } catch {} }
     function safelyReleasePointer(pointerId) { try { if (boardElement.hasPointerCapture(pointerId)) boardElement.releasePointerCapture(pointerId); } catch {} }
     function beginInvalidGrab(event) {
+      // 棒の判定外では回転を始めず、ハンド表示も外して操作方法だけを知らせる。
       RuntimeState.invalidPointerId = event.pointerId;
       boardElement.classList.remove('is-grip-hover');
       boardElement.classList.add('is-invalid-grab');
@@ -618,10 +594,7 @@
       if (RuntimeState.invalidPointerId === event.pointerId) { RuntimeState.invalidPointerId = null; boardElement.classList.remove('is-invalid-grab'); boardGripPrompt.hidden = true; renderBoardPhase(); return; }
       if (RuntimeState.drag?.pointerId === event.pointerId) finishBoardDrag(event, true);
     }
-    /* WAKE7:JS:POINTER-INPUT:END */
-
-    /* WAKE7:JS:BOARD-COMMANDS:START */
-    /* SPEC: BOARD-003 BOARD-004 ASYNC-001 */
+    // 盤面が中央から広がる到着演出
     function runArrivalEffect() {
       renderRuntime();
       const effect = beginEffect(BoardPhase.ARRIVING);
@@ -636,6 +609,7 @@
         });
       }, () => { if (finishEffect(effect)) renderRuntime({ context:'arrival' }); });
     }
+    // 一手戻す。最後に確定した回転だけを逆再生し、履歴から外す。
     function intentUndo() {
       if (!selectCanUseHistory() || RuntimeState.history.length === 0) return false;
       const entry = RuntimeState.history.at(-1);
@@ -649,6 +623,7 @@
       } });
       return true;
     }
+    // やり直す。現在の問題の初期盤面へ戻し、履歴を空にする。
     function intentRestart() {
       if (!selectCanUseHistory() || RuntimeState.history.length === 0 && WakeSevenBoardDomain.encode(RuntimeState.cells) === REFERENCE_STAGE.state) return false;
       const effect = beginEffect(BoardPhase.RESTARTING);
@@ -663,6 +638,7 @@
       });
       return true;
     }
+    // 全員が起きた後のクリア演出。通常の回転とは別の表情と弾みだけを描く。
     function runClearEffect() {
       const effect = beginEffect(BoardPhase.CELEBRATING);
       renderRuntime({ happy:true });
@@ -693,9 +669,7 @@
       setEffectTimer(effect, () => burst.remove(), CLEAR_MILLISECONDS);
       setEffectTimer(effect, () => { if (finishEffect(effect)) renderRuntime({ happy:true, context:'clear effect' }); }, CLEAR_SETTLE_MILLISECONDS);
     }
-    /* WAKE7:JS:BOARD-COMMANDS:END */
-
-    /* WAKE7:JS:EVENT-BINDINGS:START */
+    // 盤面と操作ボタンのイベント
     boardElement.addEventListener('pointerdown', handleBoardPointerDown);
     boardElement.addEventListener('pointermove', handleBoardPointerMove);
     boardElement.addEventListener('pointerleave', handleBoardPointerLeave);
@@ -717,14 +691,11 @@
       }
     });
     window.addEventListener('pagehide', () => cancelActiveEffect('pagehide'));
-    /* WAKE7:JS:EVENT-BINDINGS:END */
-
-    /* WAKE7:JS:DEBUG-SELFTEST:START */
-    /* SPEC: BOARD-001 BOARD-002 BOARD-003 BOARD-004 ASYNC-001 — exhaustive domain plus P2 transition contracts. */
+    // 盤面ルール、棒の判定、回転、Undo、クリア演出の自己検査
     function runSelftest() {
       const errors = [];
-      const p2Contracts = [];
-      const checkP2 = (name, passed, failure) => { p2Contracts.push(name); if (!passed) errors.push(failure); };
+      const boardInteractionChecks = [];
+      const checkBoardInteraction = (name, passed, failure) => { boardInteractionChecks.push(name); if (!passed) errors.push(failure); };
       const seen = new Set();
       for (let state = 0; state < WakeSevenBoardDomain.stateCount; state += 1) {
         const decoded = WakeSevenBoardDomain.decode(state);
@@ -781,13 +752,13 @@
       else {
         const after = WakeSevenBoardDomain.roll(INITIAL_BOARD, reducingMove.triangleIndex, reducingMove.direction);
         const restored = WakeSevenBoardDomain.roll(after, reducingMove.triangleIndex, -reducingMove.direction);
-        checkP2('commit-undo-model', WakeSevenBoardDomain.isSolved(after) && WakeSevenBoardDomain.encode(restored) === REFERENCE_STAGE.state, 'P2 commit/undo model mismatch');
+        checkBoardInteraction('commit-undo-model', WakeSevenBoardDomain.isSolved(after) && WakeSevenBoardDomain.encode(restored) === REFERENCE_STAGE.state, 'commit/undo model mismatch');
       }
-      checkP2('drag-turn-count', selectDragTurns(17, 100, true) === 0 && selectDragTurns(20, 200, true) === 1 && selectDragTurns(-20, 200, true) === -1 && selectDragTurns(20, 500, true) === 0 && selectDragTurns(121) === 1 && selectDragTurns(181) === 2 && selectDragTurns(-301) === -3, 'drag turn-count contract mismatch');
+      checkBoardInteraction('drag-turn-count', selectDragTurns(17, 100, true) === 0 && selectDragTurns(20, 200, true) === 1 && selectDragTurns(-20, 200, true) === -1 && selectDragTurns(20, 500, true) === 0 && selectDragTurns(121) === 1 && selectDragTurns(181) === 2 && selectDragTurns(-301) === -3, 'drag turn-count contract mismatch');
       const twoTurns = rollBoardTurns(INITIAL_BOARD, 0, 2);
-      checkP2('continuous-rotation', WakeSevenBoardDomain.encode(twoTurns) === WakeSevenBoardDomain.encode(WakeSevenBoardDomain.roll(WakeSevenBoardDomain.roll(INITIAL_BOARD, 0, 1), 0, 1)), 'continuous rotation contract mismatch');
-      checkP2('input-gate', selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:null, cells:Uint8Array.from(INITIAL_BOARD) }) && !selectCanStartBoardDrag({ phase:BoardPhase.ROTATING, invalidPointerId:null, cells:Uint8Array.from(INITIAL_BOARD) }) && !selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:null, cells:Uint8Array.from(SOLVED_BOARD) }) && !selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:1, cells:Uint8Array.from(INITIAL_BOARD) }), 'input gate contract mismatch');
-      checkP2('grip-center-excluded', hitTestGrip({ x:CELL_POSITIONS[3].x, y:CELL_POSITIONS[3].y }) === null, 'board center entered grip hit range');
+      checkBoardInteraction('continuous-rotation', WakeSevenBoardDomain.encode(twoTurns) === WakeSevenBoardDomain.encode(WakeSevenBoardDomain.roll(WakeSevenBoardDomain.roll(INITIAL_BOARD, 0, 1), 0, 1)), 'continuous rotation contract mismatch');
+      checkBoardInteraction('input-gate', selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:null, cells:Uint8Array.from(INITIAL_BOARD) }) && !selectCanStartBoardDrag({ phase:BoardPhase.ROTATING, invalidPointerId:null, cells:Uint8Array.from(INITIAL_BOARD) }) && !selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:null, cells:Uint8Array.from(SOLVED_BOARD) }) && !selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:1, cells:Uint8Array.from(INITIAL_BOARD) }), 'input gate contract mismatch');
+      checkBoardInteraction('grip-center-excluded', hitTestGrip({ x:CELL_POSITIONS[3].x, y:CELL_POSITIONS[3].y }) === null, 'board center entered grip hit range');
       const gripPoint = (geometry, along, across = 0) => ({ x:geometry.grip[0] + Math.cos(geometry.angle) * along - Math.sin(geometry.angle) * across, y:geometry.grip[1] + Math.sin(geometry.angle) * along + Math.cos(geometry.angle) * across });
       const allGripRegionsMatch = TRIANGLES.every((triangle, triangleIndex) => {
         const geometry = axisGeometry(triangle);
@@ -799,7 +770,7 @@
           && hitTestGrip(gripPoint(geometry, 0, 39))?.triangleIndex === triangleIndex
           && hitTestGrip(gripPoint(geometry, 0, 41)) === null;
       });
-      checkP2('all-grip-regions', allGripRegionsMatch, 'one or more grip hit regions mismatched');
+      checkBoardInteraction('all-grip-regions', allGripRegionsMatch, 'one or more grip hit regions mismatched');
       let settledFramesMatch = true;
       let cancelledFramesMatch = true;
       TRIANGLES.forEach((triangle, triangleIndex) => [1, -1].forEach(direction => {
@@ -820,30 +791,26 @@
             && !cancelled.transform.includes(' rotate(');
         });
       }));
-      checkP2('settled-frame-alignment', settledFramesMatch, 'rotation final frame differs from canonical board');
-      checkP2('cancelled-frame-alignment', cancelledFramesMatch, 'cancelled rotation final frame differs from canonical board');
+      checkBoardInteraction('settled-frame-alignment', settledFramesMatch, 'rotation final frame differs from canonical board');
+      checkBoardInteraction('cancelled-frame-alignment', cancelledFramesMatch, 'cancelled rotation final frame differs from canonical board');
       const wakeCells = Uint8Array.from(SOLVED_BOARD);
       const wakeCellIndex = TRIANGLES[0].cells[0];
       wakeCells[wakeCellIndex] = 2;
       const wakesAtDegrees = TURN_DEGREES - DARUMA_UPRIGHT_WINDOW_DEGREES;
-      checkP2('wake-angle-window', DARUMA_UPRIGHT_WINDOW_DEGREES === 22 && !rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees - 1).standing && rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees).standing, 'daruma wake angle window changed');
+      checkBoardInteraction('wake-angle-window', DARUMA_UPRIGHT_WINDOW_DEGREES === 22 && !rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees - 1).standing && rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees).standing, 'daruma wake angle window changed');
       const happyPaths = Array.from(document.querySelectorAll('#w7-face-happy path')).map(path => path.getAttribute('d'));
-      checkP2('clear-face-asset', happyPaths.join('|') === 'M-13 -14C-11 -17 -6 -17 -4 -14|M4 -14C6 -17 11 -17 13 -14|M-13 -4Q-8 -11 -3 -4|M3 -4Q8 -11 13 -4|M-5 5C-3 8 3 8 5 5', 'clear face asset mismatch');
-      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:1, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, p2Contracts:Object.freeze(p2Contracts) });
+      checkBoardInteraction('clear-face-asset', happyPaths.join('|') === 'M-13 -14C-11 -17 -6 -17 -4 -14|M4 -14C6 -17 11 -17 13 -14|M-13 -4Q-8 -11 -3 -4|M3 -4Q8 -11 13 -4|M-5 5C-3 8 3 8 5 5', 'clear face asset mismatch');
+      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:1, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, boardInteractionChecks:Object.freeze(boardInteractionChecks) });
     }
-    /* WAKE7:JS:DEBUG-SELFTEST:END */
-
-    /* WAKE7:JS:LIFECYCLE-BOOT:START */
+    // 起動時に盤面ルールと操作の前提を確認してから表示する
     const selftestResult = runSelftest();
-    if (!selftestResult.passed) throw new Error(`P2 board self-test failed: ${selftestResult.errors.slice(0, 3).join('; ')}`);
+    if (!selftestResult.passed) throw new Error(`board self-test failed: ${selftestResult.errors.slice(0, 3).join('; ')}`);
     boardElement.dataset.selftest = 'passed';
     boardElement.dataset.checkedStates = String(selftestResult.stateCount);
     boardElement.dataset.checkedAxes = String(selftestResult.axisCount);
     boardElement.dataset.checkedRenders = `${selftestResult.renderedInitialCells}+${selftestResult.renderedSolvedCells}`;
-    boardElement.dataset.checkedP2Contracts = selftestResult.p2Contracts.join(',');
+    boardElement.dataset.checkedBoardInteraction = selftestResult.boardInteractionChecks.join(',');
     runArrivalEffect();
-    /* WAKE7:JS:LIFECYCLE-BOOT:END */
-    /* WAKE7:JS:FEATURE-BOARD:END */
   </script>
 </body>
 </html>
