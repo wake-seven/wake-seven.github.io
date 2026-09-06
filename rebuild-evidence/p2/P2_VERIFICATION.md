@@ -25,13 +25,15 @@ Observed result:
 {"pc":"passed","mobile":"passed","reducedMotion":"passed"}
 ```
 
+The normal verification run does not rewrite the committed evidence images. Set `UPDATE_P2_SCREENSHOTS=1` only when intentionally refreshing them.
+
 The script asserts all of the following against live DOM state:
 
 | Scenario | Expected and observed result |
 | --- | --- |
 | Tap during arrival | Rejected; state 31 and empty history remain unchanged |
 | Short drag | Returns to state 31 without adding history |
-| Drag preview then `pointercancel` | Shows moves 1 / remaining 0 without mutating state or history, then returns to state 31 |
+| Drag preview then `pointercancel` | Shows moves 1 / remaining 0 without mutating state or history; the three rotating cells stay in a foreground layer with the normal panel border, then return to state 31 |
 | Release outside the board | Safely commits one move; Undo restores state 31 |
 | Positive and negative drag | Both directions commit; the negative reference move solves the problem |
 | Input during rotation | A rapid second tap is ignored; only one history entry is created |
@@ -68,10 +70,11 @@ The candidate was also opened directly as `file:///C:/git_work/wake-seven/index.
 
 ## Interactive browser pass
 
-The localhost candidate was opened in the Codex in-app browser. A real pointer drag changed state 31 → state 0 with history 1 and `data-invariant="passed"`; clicking “一手戻す” returned state 0 → state 31 with history 0 and the invariant still passing.
+The localhost candidate was opened in the Codex in-app browser. A real pointer drag changed state 31 → state 0 with history 1 and `data-invariant="passed"`; clicking “一手戻す” returned state 0 → state 31 with history 0 and the invariant still passing. A follow-up mid-drag inspection observed three cells in `w7-rotating-layer`, no purple drag class, the normal 1.5px border, and that foreground layer immediately before the axis-control layer.
 
 ## Visual evidence
 
 - `pc-1440x1000-ready.png`: initial board with six cyan rods, six gold pivots, status, Undo, and Restart
+- `pc-1440x1000-drag-preview.png`: the three rotating panels above stationary panels, without an application-only purple frame
 - `mobile-360x800-ready.png`: the same controls fitted at 360×800
 - `pc-1440x1000-clear.png`: solved board during the exclusive clear effect with happy faces and the central ring

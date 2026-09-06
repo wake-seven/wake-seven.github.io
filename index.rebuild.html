@@ -28,7 +28,6 @@
     .w7-cell-hex { fill:var(--washi); stroke:#c0ac88; stroke-width:1.5; }
     .w7-cell--fallen .w7-cell-hex { fill:var(--washi2); stroke:#c0ac88; }
     .w7-cell--standing { filter:brightness(1.04); }
-    .w7-cell--dragging .w7-cell-hex { stroke:#8b43ef; stroke-width:4; }
     .w7-daruma { transform-box:fill-box; transform-origin:center; }
     .w7-axis-pivot { fill:var(--kin); opacity:.72; pointer-events:none; }
     .w7-axis-grip { fill:#7dd8f5; stroke:#3e9bc2; stroke-width:1.25; pointer-events:none; filter:drop-shadow(0 1px 1px rgb(0 0 0 / .25)); }
@@ -324,15 +323,17 @@
       renderBoard(cells);
       const triangle = TRIANGLES[triangleIndex];
       const pivot = viewPoint({ x:triangle.x, y:triangle.y });
+      const rotatingLayer = svgElement('g', { class:'w7-rotating-layer', 'aria-hidden':'true' });
+      boardElement.insertBefore(rotatingLayer, boardElement.querySelector('.w7-axis-layer'));
       triangle.cells.forEach(cellIndex => {
         const cell = boardElement.querySelector(`[data-cell-index="${cellIndex}"]`);
+        rotatingLayer.append(cell);
         const start = viewPoint(CELL_POSITIONS[cellIndex]);
         const point = rotatePoint(start, pivot, degrees);
         const visuallyStanding = Math.abs(normalizedDegrees(orientationDegrees(cells[cellIndex]) + degrees)) <= 22;
         cell.setAttribute('transform', `translate(${point.x} ${point.y}) rotate(${degrees})`);
         cell.classList.toggle('w7-cell--standing', visuallyStanding);
         cell.classList.toggle('w7-cell--fallen', !visuallyStanding);
-        cell.classList.add('w7-cell--dragging');
       });
       const previewCells = previewDirection ? WakeSevenBoardDomain.roll(cells, triangleIndex, previewDirection) : cells;
       renderBoardStatus(previewCells, Boolean(previewDirection));

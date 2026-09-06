@@ -4,6 +4,7 @@ const { chromium } = require('playwright');
 
 const URL = 'http://127.0.0.1:8765/index.rebuild.html';
 const OUTPUT = __dirname;
+const UPDATE_SCREENSHOTS = process.env.UPDATE_P2_SCREENSHOTS === '1';
 const VIEWBOX = { x: 14, y: 0, width: 293, height: 310 };
 const AXES = [
   { pivot:[160.3007,101], grip:[160.3007,69] },
@@ -75,6 +76,10 @@ async function waitReady(page) {
   await page.waitForFunction(() => document.querySelector('#w7-board')?.dataset.phase === 'ready');
 }
 
+async function saveEvidenceScreenshot(page, filename) {
+  if (UPDATE_SCREENSHOTS) await page.screenshot({ path:path.join(OUTPUT, filename), fullPage:true });
+}
+
 async function openPage(context) {
   const page = await context.newPage();
   const errors = [];
@@ -96,7 +101,7 @@ async function openPage(context) {
     await waitReady(page);
     assert.deepEqual(await snapshot(page), { phase:'ready', state:31, history:0, invariant:'passed', selftest:'passed', axes:6, cells:[1,1,0,1,0,0,0] }, 'arrival tap changed state');
     assert.equal(await page.locator('#w7-board').evaluate(board => getComputedStyle(board).touchAction), 'none', 'touch scrolling is not suppressed');
-    await page.screenshot({ path:path.join(OUTPUT, 'pc-1440x1000-ready.png'), fullPage:true });
+    await saveEvidenceScreenshot(page, 'pc-1440x1000-ready.png');
 
     await mouseDrag(page, 0, 10);
     await waitReady(page);
@@ -109,6 +114,11 @@ async function openPage(context) {
       assert.equal((await snapshot(page)).history, 0, 'drag preview mutated history');
       assert.equal(await page.locator('#w7-board-moves').textContent(), '1', 'move preview was not shown');
       assert.equal(await page.locator('#w7-board-remaining').textContent(), '0', 'remaining preview was not shown');
+      assert.equal(await page.locator('.w7-rotating-layer .w7-cell').count(), 3, 'rotating cells are not grouped in the foreground');
+      assert.equal(await page.locator('.w7-rotating-layer + .w7-axis-layer').count(), 1, 'rotating layer is not directly behind the controls');
+      assert.equal(await page.locator('.w7-rotating-layer .w7-cell--dragging').count(), 0, 'normal rotation unexpectedly uses a purple target style');
+      assert.equal(await page.locator('.w7-rotating-layer .w7-cell-hex').first().evaluate(path => getComputedStyle(path).strokeWidth), '1.5px', 'rotation changed the normal panel border');
+      await saveEvidenceScreenshot(page, 'pc-1440x1000-drag-preview.png');
     } });
     await waitReady(page);
     assert.equal((await snapshot(page)).state, 31, 'pointercancel changed state');
@@ -121,6 +131,8 @@ async function openPage(context) {
     await page.locator('#w7-board-undo').click();
     assert.equal(await page.locator('#w7-board-undo').isDisabled(), true, 'Undo must lock controls while running');
     assert.equal(await page.locator('#w7-board-restart').isDisabled(), true, 'Restart must be rejected during Undo');
+    await page.waitForFunction(() => document.querySelectorAll('.w7-rotating-layer .w7-cell').length === 3);
+    assert.equal(await page.locator('.w7-rotating-layer .w7-cell').count(), 3, 'Undo did not lift its three rotating cells');
     await waitReady(page);
     assert.equal((await snapshot(page)).state, 31, 'Undo did not restore outside-release move');
 
@@ -141,7 +153,7 @@ async function openPage(context) {
     const clearTap = await clientPoint(page, AXES[2].grip);
     await page.mouse.click(clearTap.x, clearTap.y);
     assert.deepEqual({ state:(await snapshot(page)).state, history:(await snapshot(page)).history }, { state:clearState.state, history:clearState.history }, 'clear tap changed state');
-    await page.screenshot({ path:path.join(OUTPUT, 'pc-1440x1000-clear.png'), fullPage:true });
+    await saveEvidenceScreenshot(page, 'pc-1440x1000-clear.png');
     await waitReady(page);
     assert.deepEqual({ state:(await snapshot(page)).state, history:(await snapshot(page)).history, invariant:(await snapshot(page)).invariant }, { state:0, history:1, invariant:'passed' });
     await page.locator('#w7-board-undo').click();
@@ -159,7 +171,7 @@ async function openPage(context) {
     const mobileContext = await browser.newContext({ viewport:{ width:360, height:800 }, isMobile:true, hasTouch:true, deviceScaleFactor:1 });
     const mobile = await openPage(mobileContext);
     await waitReady(mobile.page);
-    await mobile.page.screenshot({ path:path.join(OUTPUT, 'mobile-360x800-ready.png'), fullPage:true });
+    await saveEvidenceScreenshot(mobile.page, 'mobile-360x800-ready.png');
     const cdp = await mobileContext.newCDPSession(mobile.page);
     await touchDrag(mobile.page, cdp, 0, -120);
     await waitReady(mobile.page);
