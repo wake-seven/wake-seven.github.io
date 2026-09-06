@@ -44,7 +44,6 @@
     .w7-board-button { min-width:7rem; min-height:2.75rem; border:1px solid #c0ac88; border-radius:999px; padding:0.55rem 1rem; background:var(--washi); color:#2d2925; font:inherit; font-weight:700; box-shadow:0 2px 0 rgb(0 0 0 / .24); cursor:pointer; }
     .w7-board-button:focus-visible { outline:3px solid #7dd8f5; outline-offset:3px; }
     .w7-board-button:disabled { opacity:.42; cursor:default; box-shadow:none; }
-    .w7-clear-burst { pointer-events:none; transform-box:view-box; }
     .w7-dialog-backdrop { position:fixed; z-index:10; inset:0; display:grid; place-items:center; padding:1rem; background:rgb(5 14 25 / .64); }
     .w7-dialog-backdrop[hidden] { display:none; }
     .w7-dialog { width:min(100%,22rem); border:2px solid #7dd8f5; border-radius:1rem; padding:1.35rem; background:var(--ai2); color:var(--washi); box-shadow:0 1rem 3rem rgb(0 0 0 / .42); text-align:center; }
@@ -817,6 +816,19 @@
       AppState.ui.dialog = clearDialogDescriptor(AppState.navigation.puzzleIndex);
       saveAppState('clear committed');
     }
+    function nextPuzzleIndex(currentIndex) { return currentIndex + 1 < NORMAL_PUZZLES.length ? currentIndex + 1 : 0; }
+    // 「次の問題へ」は、進捗を残したまま問題文脈・初期盤面・ダイアログだけをまとめて切り替える。
+    function makeNextPuzzleAppState(appState) {
+      const puzzleIndex = nextPuzzleIndex(appState.navigation.puzzleIndex);
+      const puzzle = puzzleAt(puzzleIndex);
+      const initialCells = puzzleInitialCells(puzzle);
+      return {
+        ...appState,
+        navigation:{ mode:'normal', puzzleIndex, puzzleId:puzzle.puzzleId },
+        board:{ initialCells, cells:[...initialCells], history:[], clearCommitted:false },
+        ui:{ dialog:null },
+      };
+    }
     function resetCurrentPuzzleWithoutAnimation(reason) {
       const puzzle = selectActivePuzzle();
       AppState.board = { initialCells:puzzleInitialCells(puzzle), cells:puzzleInitialCells(puzzle), history:[], clearCommitted:false };
@@ -829,9 +841,12 @@
     }
     function intentRetryPuzzle() { resetCurrentPuzzleWithoutAnimation('clear dialog retry'); }
     function intentNextPuzzle() {
-      const nextIndex = AppState.navigation.puzzleIndex + 1 < NORMAL_PUZZLES.length ? AppState.navigation.puzzleIndex + 1 : 0;
-      AppState.navigation = { mode:'normal', puzzleIndex:nextIndex, puzzleId:puzzleAt(nextIndex).puzzleId };
-      resetCurrentPuzzleWithoutAnimation('next puzzle');
+      AppState = makeNextPuzzleAppState(AppState);
+      RuntimeState.cells = Uint8Array.from(AppState.board.cells);
+      RuntimeState.history = [];
+      RuntimeState.phase = BoardPhase.READY;
+      saveAppState('next puzzle');
+      renderRuntime({ context:'next puzzle' });
     }
     // 全員が起きた後のクリア演出。通常の回転とは別の表情と弾みだけを描く。
     function runClearEffect() {
@@ -849,19 +864,7 @@
           { transform:base },
         ], { duration:CLEAR_MILLISECONDS, delay:index * CLEAR_TILE_STAGGER_MILLISECONDS, easing:'cubic-bezier(.2,.8,.25,1)' });
       });
-      const center = viewPoint(CELL_POSITIONS[3]);
-      const burst = svgElement('g', { class:'w7-clear-burst', 'pointer-events':'none' });
-      burst.style.transformOrigin = `${center.x}px ${center.y}px`;
-      burst.style.transformBox = 'view-box';
-      burst.append(svgElement('circle', { cx:center.x, cy:center.y, r:47, fill:'none', stroke:'#c9a54e', 'stroke-width':4 }));
-      burst.append(svgElement('circle', { cx:center.x, cy:center.y, r:58, fill:'none', stroke:'#f3e8d5', 'stroke-width':1.5, opacity:.7 }));
-      boardElement.append(burst);
-      startEffectAnimation(effect, burst, [
-        { transform:'scale(.55)', opacity:0 },
-        { transform:'scale(.8)', opacity:1, offset:.2 },
-        { transform:'scale(2.45)', opacity:0 },
-      ], { duration:CLEAR_MILLISECONDS, easing:'cubic-bezier(.15,.7,.2,1)' });
-      setEffectTimer(effect, () => burst.remove(), CLEAR_MILLISECONDS);
+      // 中央だけに円が残る演出は出さない。全員の弾みだけでクリアを見せる。
       setEffectTimer(effect, () => { if (finishEffect(effect)) renderRuntime({ happy:true, context:'clear effect' }); }, CLEAR_SETTLE_MILLISECONDS);
     }
     // 盤面と操作ボタンのイベント
@@ -1029,6 +1032,8 @@
         savedClear.ui = { dialog:null };
         const restoredClear = normalizePersistentAppState(savedClear);
         checkRuntime('solved-reload-rebuilds-clear-state', restoredClear.board.clearCommitted && restoredClear.ui.dialog?.type === 'clear' && restoredClear.ui.dialog.puzzleId === firstPuzzle.puzzleId && restoredClear.progress.normalCompleted.includes(firstPuzzle.puzzleId), 'solved reload did not rebuild clear state');
+        const afterNext = makeNextPuzzleAppState(restoredClear);
+        checkRuntime('next-puzzle-reload', afterNext.navigation.puzzleId === puzzleAt(1).puzzleId && sameCells(afterNext.board.cells, puzzleInitialCells(puzzleAt(1))) && afterNext.board.history.length === 0 && !afterNext.board.clearCommitted && afterNext.ui.dialog === null && afterNext.progress.normalCompleted.includes(firstPuzzle.puzzleId), 'next puzzle did not preserve progress and reset its board');
         const preservedProgress = puzzleAt(1).puzzleId;
         const brokenBoard = normalizePersistentAppState({ ...savedClear, board:{ ...savedClear.board, cells:[9, 9, 9] }, progress:{ normalCompleted:[preservedProgress] }, rewards:{ masterGoldGranted:true, satoriDesignGranted:false }, settings:{ theme:'gold', layout:'satori-tilted' } });
         checkRuntime('broken-board-keeps-independent-state', sameCells(brokenBoard.board.cells, initial) && brokenBoard.progress.normalCompleted.includes(preservedProgress) && brokenBoard.settings.theme === 'gold' && brokenBoard.settings.layout === 'standard', 'broken board fallback changed independent progress or reward settings');
@@ -1047,17 +1052,26 @@
       if (!twoMoveSolution) errors.push('second P3 puzzle has no two-move solution');
       else {
         const afterOneMove = Array.from(twoMoveSolution.afterFirst);
-        const oneMoveStage = makeDefaultAppState(1);
-        oneMoveStage.board = { initialCells:[...secondInitial], cells:afterOneMove, history:[{ triangleIndex:twoMoveSolution.firstMove.triangleIndex, direction:twoMoveSolution.firstMove.direction, before:[...secondInitial], after:afterOneMove }], clearCommitted:false };
+        const afterTwoMoves = Array.from(twoMoveSolution.afterSecond);
+        const firstHistoryEntry = { triangleIndex:twoMoveSolution.firstMove.triangleIndex, direction:twoMoveSolution.firstMove.direction, before:[...secondInitial], after:afterOneMove };
+        const secondHistoryEntry = { triangleIndex:twoMoveSolution.secondMove.triangleIndex, direction:twoMoveSolution.secondMove.direction, before:afterOneMove, after:afterTwoMoves };
+        const twoMoveStage = makeDefaultAppState(1);
+        twoMoveStage.board = { initialCells:[...secondInitial], cells:afterTwoMoves, history:[firstHistoryEntry, secondHistoryEntry], clearCommitted:false };
+        const restoredTwoMove = normalizePersistentAppState(twoMoveStage);
+        checkRuntime('two-move-history-reload', restoredTwoMove.board.history.length === 2 && sameCells(restoredTwoMove.board.cells, afterTwoMoves) && restoredTwoMove.board.clearCommitted, 'two-move history did not restore its solved board');
+        // 二手目をUndoした保存状態は、二手目の前のcellsと一件だけ残ったhistoryが一致しなければならない。
+        const undoStage = { ...twoMoveStage, board:{ initialCells:[...secondInitial], cells:afterOneMove, history:[firstHistoryEntry], clearCommitted:false }, ui:{ dialog:null } };
+        const restoredUndo = normalizePersistentAppState(undoStage);
+        checkRuntime('undo-after-two-moves-reload', restoredUndo.board.history.length === 1 && sameCells(restoredUndo.board.cells, afterOneMove) && !restoredUndo.board.clearCommitted, 'undo state did not restore its one-move board');
+        const oneMoveStage = undoStage;
         const restoredOneMove = normalizePersistentAppState(oneMoveStage);
         checkRuntime('one-move-reload', restoredOneMove.navigation.puzzleId === secondPuzzle.puzzleId && restoredOneMove.board.history.length === 1 && sameCells(restoredOneMove.board.cells, afterOneMove), 'one-move reload did not preserve stage state');
-        const undoStage = makeDefaultAppState(1);
-        const restoredUndo = normalizePersistentAppState(undoStage);
-        checkRuntime('undo-to-zero-move-reload', restoredUndo.board.history.length === 0 && sameCells(restoredUndo.board.cells, secondInitial), 'undo-to-zero-move reload changed the board');
+        const malformedHistory = normalizePersistentAppState({ ...twoMoveStage, board:{ ...twoMoveStage.board, history:[firstHistoryEntry, { ...secondHistoryEntry, before:[...secondInitial] }] } });
+        checkRuntime('malformed-history-fallback', malformedHistory.board.history.length === 0 && sameCells(malformedHistory.board.cells, secondInitial), 'malformed history did not fall back to the initial board');
         const malformedPuzzleContext = normalizePersistentAppState({ ...oneMoveStage, navigation:{ ...oneMoveStage.navigation, puzzleId:'unknown-puzzle' } });
         checkRuntime('malformed-puzzle-id-fallback', malformedPuzzleContext.navigation.puzzleId === puzzleAt(0).puzzleId && sameCells(malformedPuzzleContext.board.cells, puzzleInitialCells(puzzleAt(0))), 'malformed puzzle id did not fall back safely');
       }
-      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:1, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
+      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:NORMAL_PUZZLES.length, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
     }
     // 起動時に盤面ルールと操作の前提を確認してから表示する
     const selftestResult = runSelftest();
