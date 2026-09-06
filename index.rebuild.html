@@ -142,7 +142,8 @@
     const ARRIVAL_MILLISECONDS = 420;
     const RESTART_MILLISECONDS = 280;
     const CLEAR_MILLISECONDS = 820;
-    const CLEAR_TILE_STAGGER_MILLISECONDS = 65;
+    // 最後のだるまの弾みが終わってから出すダイアログを、少しだけ早める間隔。
+    const CLEAR_TILE_STAGGER_MILLISECONDS = 40;
     const CLEAR_SETTLE_MILLISECONDS = CLEAR_MILLISECONDS + (CELL_COUNT - 1) * CLEAR_TILE_STAGGER_MILLISECONDS;
     // 棒をつかめる範囲。innerは盤面中心側、outerは外周側、acrossは棒の左右方向。
     // 中央盤面までは広げず、外へ伸ばすより棒の左右を広くする。
