@@ -7,68 +7,64 @@
   <title>だるまさんを起こして！</title>
   <style>
     /* WAKE7:CSS:ROOT:START */
-    :root { --ai:#172c43; --washi:#f3e8d5; --kin:#c9a54e; --fallen:#b9c6d6; }
+    :root { --ai:#16283c; --ai2:#1f3752; --washi:#f7eedc; --washi2:#bccdd3; --kin:#c9a54e; --content-max:23.25rem; }
+    html { font-size:calc(16px * clamp(1,calc(100vw / 570px),1.5)); max-width:100%; overflow-x:hidden; }
     * { box-sizing:border-box; }
-    body { margin:0; min-height:100vh; min-height:100dvh; display:grid; place-items:center; background:var(--ai); color:var(--washi); font-family:"A1 Gothic","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif; }
+    body { margin:0; min-height:100vh; min-height:100dvh; max-width:100%; display:flex; flex-direction:column; align-items:center; padding:1.125rem 0.75rem max(0.75rem,env(safe-area-inset-bottom)); background:var(--ai); background-image:radial-gradient(120% 70% at 50% 0%,var(--ai2) 0%,var(--ai) 62%); color:var(--washi); font-family:"A1 Gothic","Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,"Noto Sans JP",sans-serif; }
     /* WAKE7:CSS:ROOT:END */
 
     /* WAKE7:CSS:SHELL:START */
-    .w7-shell { width:min(100%, 30rem); padding:0.75rem 0.25rem; }
+    .w7-shell { width:100%; max-width:var(--content-max); }
     /* WAKE7:CSS:SHELL:END */
-
-    /* WAKE7:CSS:CONTROLS:START */
-    /* P1 has no visible controls.  Pointer interaction begins in P2. */
-    /* WAKE7:CSS:CONTROLS:END */
 
     /* WAKE7:CSS:FEATURE-BOARD:START */
     /* SPEC: BOARD-001 — P1's logical cells and SVG view stay separate. */
-    .w7-board-frame { max-width:30rem; margin:0 auto; }
+    .w7-board-frame { width:100%; max-width:var(--content-max); margin:0 auto; }
     .w7-board { display:block; width:100%; height:auto; overflow:visible; }
     .w7-cell-hex { fill:var(--washi); stroke:#c0ac88; stroke-width:1.5; }
-    .w7-cell--fallen .w7-cell-hex { fill:var(--fallen); stroke:#718297; }
+    .w7-cell--fallen .w7-cell-hex { fill:var(--washi2); stroke:#c0ac88; }
+    .w7-cell--standing { filter:brightness(1.04); }
     .w7-daruma { transform-box:fill-box; transform-origin:center; }
-    .w7-axis-ray { stroke:#7dd8f5; stroke-width:2.5; stroke-linecap:round; opacity:.72; }
-    .w7-axis-dot { fill:var(--kin); opacity:.72; }
     /* WAKE7:CSS:FEATURE-BOARD:END */
-    @media (max-width:380px) { .w7-shell { padding-inline:0.125rem; } }
+    @media (max-width:480px) { body { padding-left:0.25rem; padding-right:0.25rem; padding-bottom:max(0.5rem,env(safe-area-inset-bottom)); } .w7-shell,.w7-board-frame { max-width:none; } }
   </style>
 </head>
 <body>
+  <!-- WAKE7:DOM:FEATURE-BOARD:START -->
+  <!-- SPEC: BOARD-001 — the feature range includes its sole DOM and SVG assets. -->
   <!-- WAKE7:DOM:SHELL:START -->
   <main class="w7-shell">
     <section aria-label="七枚のだるま盤">
-      <!-- WAKE7:DOM:FEATURE-BOARD:START -->
-      <!-- SPEC: BOARD-001 -->
       <div class="w7-board-frame">
         <svg id="w7-board" class="w7-board" viewBox="14 0 293 310" role="img" aria-label="七枚のだるま盤"></svg>
       </div>
-      <!-- WAKE7:DOM:FEATURE-BOARD:END -->
     </section>
   </main>
   <!-- WAKE7:DOM:SHELL:END -->
-  <!-- WAKE7:DOM:SVG-ASSETS:START — copied static board assets, not a second source file. -->
+  <!-- WAKE7:DOM:FEATURE-BOARD:SVG-ASSETS:START — copied static board assets, not a second source file. -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
     <g id="w7-daruma-body">
-      <path d="M0 -34C17 -34 31 -18 31 4C31 24 18 36 0 36C-18 36 -31 24 -31 4C-31 -18 -17 -34 0 -34Z" fill="#c8352c"/>
-      <path d="M0 -34C17 -34 31 -18 31 4C31 24 18 36 0 36C-18 36 -31 24 -31 4C-31 -18 -17 -34 0 -34Z" fill="none" stroke="#241d1a" stroke-width="2.4"/>
-      <ellipse cx="0" cy="-6" rx="19" ry="18" fill="#f3e8d5" stroke="#241d1a" stroke-width="1.9"/>
-      <path d="M-15 22C-8 28 8 28 15 22" stroke="#c9a54e" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+      <path d="M0 -34C17 -34 31 -18 31 4C31 24 18 36 0 36C-18 36 -31 24 -31 4C-31 -18 -17 -34 0 -34Z" fill="var(--daruma-body, #C8352C)"/>
+      <path d="M0 -34C17 -34 31 -18 31 4C31 24 18 36 0 36C-18 36 -31 24 -31 4C-31 -18 -17 -34 0 -34Z" fill="none" stroke="#241D1A" stroke-width="2.4"/>
+      <ellipse cx="0" cy="-6" rx="19" ry="18" fill="#F3E8D5" stroke="#241D1A" stroke-width="1.9"/>
+      <path d="M-15 22C-8 28 8 28 15 22" stroke="var(--daruma-accent, #C9A54E)" stroke-width="2.4" stroke-linecap="round" fill="none"/>
     </g>
     <g id="w7-face-open">
-      <path d="M-13 -14C-11 -17 -6 -17 -4 -14M4 -14C6 -17 11 -17 13 -14" stroke="#241d1a" stroke-width="2.8" stroke-linecap="round" fill="none"/>
-      <circle cx="-8" cy="-5" r="3.7" fill="#241d1a"/><circle cx="8" cy="-5" r="3.7" fill="#241d1a"/>
-      <circle cx="-9.2" cy="-6.2" r="1.2" fill="#f3e8d5"/><circle cx="6.8" cy="-6.2" r="1.2" fill="#f3e8d5"/>
-      <circle cx="-15" cy="3" r="4.4" fill="#e2897b" opacity=".5"/><circle cx="15" cy="3" r="4.4" fill="#e2897b" opacity=".5"/>
-      <path d="M-5 5C-3 8 3 8 5 5" stroke="#241d1a" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <path d="M-13 -14C-11 -17 -6 -17 -4 -14M4 -14C6 -17 11 -17 13 -14" stroke="#241D1A" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+      <circle cx="-8" cy="-5" r="3.7" fill="#241D1A"/><circle cx="8" cy="-5" r="3.7" fill="#241D1A"/>
+      <circle cx="-9.2" cy="-6.2" r="1.2" fill="#F3E8D5"/><circle cx="6.8" cy="-6.2" r="1.2" fill="#F3E8D5"/>
+      <circle cx="-15" cy="3" r="4.4" fill="#E2897B" opacity=".5"/><circle cx="15" cy="3" r="4.4" fill="#E2897B" opacity=".5"/>
+      <path d="M-5 5C-3 8 3 8 5 5" stroke="#241D1A" stroke-width="2" stroke-linecap="round" fill="none"/>
     </g>
     <g id="w7-face-shut">
-      <path d="M-13 -13C-11 -15 -6 -15 -4 -13M4 -13C6 -15 11 -15 13 -13" stroke="#241d1a" stroke-width="2.6" stroke-linecap="round" fill="none" opacity=".7"/>
-      <path d="M-13 -5C-11 -1 -5 -1 -3 -5M3 -5C5 -1 11 -1 13 -5" stroke="#241d1a" stroke-width="2.6" stroke-linecap="round" fill="none"/>
-      <circle cx="-15" cy="3" r="4.4" fill="#e2897b" opacity=".32"/><circle cx="15" cy="3" r="4.4" fill="#e2897b" opacity=".32"/>
-      <ellipse cx="0" cy="6" rx="3" ry="2.3" fill="#241d1a" opacity=".75"/>
+      <path d="M-13 -13C-11 -15 -6 -15 -4 -13M4 -13C6 -15 11 -15 13 -13" stroke="#241D1A" stroke-width="2.6" stroke-linecap="round" fill="none" opacity=".7"/>
+      <path d="M-13 -5C-11 -1 -5 -1 -3 -5M3 -5C5 -1 11 -1 13 -5" stroke="#241D1A" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+      <circle cx="-15" cy="3" r="4.4" fill="#E2897B" opacity=".32"/><circle cx="15" cy="3" r="4.4" fill="#E2897B" opacity=".32"/>
+      <ellipse cx="0" cy="6" rx="3" ry="2.3" fill="#241D1A" opacity=".75"/>
     </g>
   </defs></svg>
-  <!-- WAKE7:DOM:SVG-ASSETS:END -->
+  <!-- WAKE7:DOM:FEATURE-BOARD:SVG-ASSETS:END -->
+  <!-- WAKE7:DOM:FEATURE-BOARD:END -->
 
   <script type="module">
     /* WAKE7:AI-MAINTENANCE:START
@@ -94,21 +90,8 @@
     const INITIAL_PAR = 1;
     const SOLVED_BOARD = Object.freeze([0, 0, 0, 0, 0, 0, 0]);
     const EXPECTED_DISTANCE_DISTRIBUTION = Object.freeze([1, 12, 102, 402, 212]);
-    // P1 imports only the stage data it renders.  Later phases extend this catalog with their own feature data.
-    const P1_STAGE_CATALOG = Object.freeze([
-      Object.freeze({ puzzleId: 'stage-001', state: 31, par: 1 }),
-      Object.freeze({ puzzleId: 'stage-002', state: 558, par: 1 }),
-      Object.freeze({ puzzleId: 'stage-003', state: 837, par: 1 }),
-      Object.freeze({ puzzleId: 'stage-004', state: 1732, par: 2 }),
-      Object.freeze({ puzzleId: 'stage-005', state: 922, par: 2 }),
-      Object.freeze({ puzzleId: 'stage-006', state: 526, par: 2 }),
-      Object.freeze({ puzzleId: 'stage-007', state: 1516, par: 2 }),
-      Object.freeze({ puzzleId: 'stage-008', state: 544, par: 2 }),
-      Object.freeze({ puzzleId: 'stage-009', state: 196, par: 2 }),
-      Object.freeze({ puzzleId: 'stage-010', state: 76, par: 2 }),
-      Object.freeze({ puzzleId: 'stage-011', state: 57, par: 2 }),
-      Object.freeze({ puzzleId: 'stage-012', state: 7, par: 2 }),
-    ]);
+    // P1 renders and validates one real reference problem; later stage catalogs belong to their implementing phase.
+    const P1_STAGE = Object.freeze({ puzzleId: 'stage-001', state: 31, par: 1 });
     /* WAKE7:JS:CONSTANTS:END */
 
     /* WAKE7:JS:BOARD-DOMAIN:START */
@@ -127,6 +110,19 @@
     }
 
     const TRIANGLES = makeTriangles(CELL_POSITIONS);
+    const EXPECTED_AXES = Object.freeze([
+      Object.freeze({ cells:'0,1,3', pivot:Object.freeze([160.3007,101]), grip:Object.freeze([160.3007,69]) }),
+      Object.freeze({ cells:'0,3,2', pivot:Object.freeze([113.5354,128]), grip:Object.freeze([85.8226,112]) }),
+      Object.freeze({ cells:'1,4,3', pivot:Object.freeze([207.0661,128]), grip:Object.freeze([234.7789,112]) }),
+      Object.freeze({ cells:'2,3,5', pivot:Object.freeze([113.5354,182]), grip:Object.freeze([85.8226,198]) }),
+      Object.freeze({ cells:'3,4,6', pivot:Object.freeze([207.0661,182]), grip:Object.freeze([234.7789,198]) }),
+      Object.freeze({ cells:'3,6,5', pivot:Object.freeze([160.3007,209]), grip:Object.freeze([160.3007,241]) }),
+    ]);
+    function axisGeometry(triangle) {
+      const center = CELL_POSITIONS[3];
+      const angle = Math.atan2(triangle.y - center.y, triangle.x - center.x);
+      return Object.freeze({ pivot:Object.freeze([triangle.x, triangle.y]), grip:Object.freeze([triangle.x + 32 * Math.cos(angle), triangle.y + 32 * Math.sin(angle)]) });
+    }
 
     const WakeSevenBoardDomain = Object.freeze({
       cellCount: CELL_COUNT,
@@ -228,15 +224,16 @@
       group.append(svgElement('use', { href: orientation === 0 ? '#w7-face-open' : '#w7-face-shut' }));
       parent.append(group);
     }
-    function renderBoard(cells = INITIAL_BOARD) {
-      boardElement.replaceChildren();
+    function renderBoard(cells = INITIAL_BOARD, target = boardElement) {
+      target.replaceChildren();
       cells.forEach((orientation, index) => {
         const point = viewPoint(CELL_POSITIONS[index]);
         const cell = svgElement('g', { class: `w7-cell ${orientation === 0 ? 'w7-cell--standing' : 'w7-cell--fallen'}`, transform: `translate(${point.x} ${point.y})` });
         cell.append(svgElement('path', { class: 'w7-cell-hex', d: hexPath(CELL_RADIUS) }));
         appendDaruma(cell, orientation);
-        boardElement.append(cell);
+        target.append(cell);
       });
+      return target;
     }
     /* WAKE7:JS:UI-RENDER:END */
 
@@ -265,32 +262,47 @@
       const distribution = SOLVER.byDepth.map(states => states.length);
       if (TRIANGLES.length !== 6) errors.push(`expected 6 axes, got ${TRIANGLES.length}`);
       if (TRIANGLES.some(triangle => triangle.cells.length !== 3 || new Set(triangle.cells).size !== 3)) errors.push('axis does not contain three distinct cells');
+      TRIANGLES.forEach((triangle, index) => {
+        const expected = EXPECTED_AXES[index];
+        const geometry = axisGeometry(triangle);
+        const close = (actual, reference) => Math.abs(actual - reference) < 0.0001;
+        if (!expected || triangle.cells.join(',') !== expected.cells) errors.push(`axis ${index} cells mismatch: ${triangle.cells.join(',')}`);
+        if (!expected || !geometry.pivot.every((value, coordinate) => close(value, expected.pivot[coordinate]))) errors.push(`axis ${index} pivot mismatch`);
+        if (!expected || !geometry.grip.every((value, coordinate) => close(value, expected.grip[coordinate]))) errors.push(`axis ${index} grip mismatch`);
+      });
       if (seen.size !== 729) errors.push(`expected 729 reachable states, got ${seen.size}`);
       if (WakeSevenBoardDomain.stateCount - seen.size !== 1458) errors.push(`expected 1458 unreachable states, got ${WakeSevenBoardDomain.stateCount - seen.size}`);
       if (distribution.join(',') !== EXPECTED_DISTANCE_DISTRIBUTION.join(',')) errors.push(`distance distribution mismatch: ${distribution.join(',')}`);
       if (!WakeSevenBoardDomain.isSolved(SOLVED_BOARD)) errors.push('solved board was not solved');
-      const puzzleIds = new Set();
-      for (const stage of P1_STAGE_CATALOG) {
-        if (puzzleIds.has(stage.puzzleId)) errors.push(`duplicate puzzle ID ${stage.puzzleId}`);
-        puzzleIds.add(stage.puzzleId);
-        if (!Number.isInteger(stage.state) || stage.state < 0 || stage.state >= WakeSevenBoardDomain.stateCount) errors.push(`invalid stage state for ${stage.puzzleId}`);
-        else if (SOLVER.distance[stage.state] !== stage.par) errors.push(`stage par mismatch for ${stage.puzzleId}: expected ${stage.par}, got ${SOLVER.distance[stage.state]}`);
-      }
+      if (!Number.isInteger(P1_STAGE.state) || P1_STAGE.state < 0 || P1_STAGE.state >= WakeSevenBoardDomain.stateCount) errors.push(`invalid stage state for ${P1_STAGE.puzzleId}`);
+      else if (SOLVER.distance[P1_STAGE.state] !== P1_STAGE.par) errors.push(`stage par mismatch for ${P1_STAGE.puzzleId}: expected ${P1_STAGE.par}, got ${SOLVER.distance[P1_STAGE.state]}`);
       if (VIEW_SYMMETRIES.some(symmetry => new Set(symmetry.permutation).size !== CELL_COUNT)) errors.push('view permutation is not bijective');
       const initialDistance = SOLVER.distance[WakeSevenBoardDomain.encode(INITIAL_BOARD)];
       if (initialDistance !== INITIAL_PAR) errors.push(`expected initial distance ${INITIAL_PAR}, got ${initialDistance}`);
-      return Object.freeze({ passed: errors.length === 0, errors: Object.freeze(errors), stateCount: WakeSevenBoardDomain.stateCount, reachableCount: seen.size, distanceDistribution: Object.freeze(distribution), stageReferenceCount: P1_STAGE_CATALOG.length, symmetryCount: VIEW_SYMMETRIES.length, initialDistance });
+      if (WakeSevenBoardDomain.encode(INITIAL_BOARD) !== P1_STAGE.state) errors.push(`initial board does not match ${P1_STAGE.puzzleId}`);
+      const renderProbe = svgElement('svg');
+      renderBoard(INITIAL_BOARD, renderProbe);
+      const initialCells = Array.from(renderProbe.querySelectorAll('.w7-cell'));
+      if (initialCells.length !== CELL_COUNT) errors.push(`initial render expected ${CELL_COUNT} cells, got ${initialCells.length}`);
+      if (initialCells.map(cell => cell.classList.contains('w7-cell--fallen') ? 1 : 0).join(',') !== INITIAL_BOARD.map(value => value ? 1 : 0).join(',')) errors.push('initial render orientation mismatch');
+      const expectedInitialRotations = INITIAL_BOARD.map(value => `rotate(${value === 0 ? 0 : value === 1 ? 120 : -120})`);
+      if (Array.from(renderProbe.querySelectorAll('.w7-daruma')).some((daruma, index) => daruma.getAttribute('transform') !== expectedInitialRotations[index])) errors.push('initial daruma rotation mismatch');
+      renderBoard(SOLVED_BOARD, renderProbe);
+      const solvedCells = Array.from(renderProbe.querySelectorAll('.w7-cell'));
+      if (solvedCells.length !== CELL_COUNT || solvedCells.some(cell => !cell.classList.contains('w7-cell--standing'))) errors.push('solved render mismatch');
+      if (Array.from(renderProbe.querySelectorAll('.w7-daruma')).some(daruma => daruma.getAttribute('transform') !== 'rotate(0)')) errors.push('solved daruma orientation mismatch');
+      return Object.freeze({ passed: errors.length === 0, errors: Object.freeze(errors), stateCount: WakeSevenBoardDomain.stateCount, reachableCount: seen.size, distanceDistribution: Object.freeze(distribution), stageReferenceCount: 1, symmetryCount: VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length });
     }
     /* WAKE7:JS:DEBUG-SELFTEST:END */
-
-    /* WAKE7:JS:EVENT-BINDINGS:START */
-    /* P1 has no pointer or button bindings.  Board input begins in P2. */
-    /* WAKE7:JS:EVENT-BINDINGS:END */
 
     /* WAKE7:JS:LIFECYCLE-BOOT:START */
     const selftestResult = runSelftest();
     renderBoard();
     if (!selftestResult.passed) throw new Error(`P1 board self-test failed: ${selftestResult.errors.slice(0, 3).join('; ')}`);
+    boardElement.dataset.selftest = 'passed';
+    boardElement.dataset.checkedStates = String(selftestResult.stateCount);
+    boardElement.dataset.checkedAxes = String(selftestResult.axisCount);
+    boardElement.dataset.checkedRenders = `${selftestResult.renderedInitialCells}+${selftestResult.renderedSolvedCells}`;
     /* WAKE7:JS:LIFECYCLE-BOOT:END */
     /* WAKE7:JS:FEATURE-BOARD:END */
   </script>
