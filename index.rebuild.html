@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:,">
   <title>だるまさんを起こして！</title>
   <style>
     /* WAKE7:CSS:ROOT:START | WAKE7:CSS:FEATURE-BOARD:DEPENDENCIES */
@@ -18,25 +19,48 @@
     /* WAKE7:CSS:SHELL:END */
 
     /* WAKE7:CSS:FEATURE-BOARD:START */
-    /* SPEC: BOARD-001 — P1's logical cells and SVG view stay separate. */
-    .w7-board-frame { width:100%; max-width:var(--content-max); margin:0 auto; }
-    .w7-board { display:block; width:100%; height:auto; overflow:visible; }
+    /* SPEC: BOARD-001 BOARD-002 BOARD-003 BOARD-004 ASYNC-001 */
+    .w7-board-feature { display:grid; gap:0.625rem; }
+    .w7-board-status { display:flex; justify-content:center; gap:1.5rem; min-height:1.75rem; font-weight:700; font-size:1.05rem; font-variant-numeric:tabular-nums; }
+    .w7-board-status strong { display:inline-block; min-width:1.25ch; text-align:right; color:#f5d66d; font-size:1.2em; }
+    .w7-board-frame { position:relative; width:100%; max-width:var(--content-max); margin:0 auto; }
+    .w7-board { display:block; width:100%; height:auto; overflow:visible; touch-action:none; user-select:none; -webkit-user-select:none; }
     .w7-cell-hex { fill:var(--washi); stroke:#c0ac88; stroke-width:1.5; }
     .w7-cell--fallen .w7-cell-hex { fill:var(--washi2); stroke:#c0ac88; }
     .w7-cell--standing { filter:brightness(1.04); }
+    .w7-cell--dragging .w7-cell-hex { stroke:#8b43ef; stroke-width:4; }
     .w7-daruma { transform-box:fill-box; transform-origin:center; }
+    .w7-axis-pivot { fill:var(--kin); opacity:.72; pointer-events:none; }
+    .w7-axis-grip { fill:#7dd8f5; stroke:#3e9bc2; stroke-width:1.25; pointer-events:none; filter:drop-shadow(0 1px 1px rgb(0 0 0 / .25)); }
+    .w7-board[data-phase="ready"] { cursor:grab; }
+    .w7-board[data-phase="dragging"] { cursor:grabbing; }
+    .w7-board:not([data-phase="ready"]):not([data-phase="dragging"]) .w7-axis-layer { opacity:0; }
+    .w7-board-controls { display:flex; justify-content:center; gap:0.75rem; }
+    .w7-board-button { min-width:7rem; min-height:2.75rem; border:1px solid #c0ac88; border-radius:999px; padding:0.55rem 1rem; background:var(--washi); color:#2d2925; font:inherit; font-weight:700; box-shadow:0 2px 0 rgb(0 0 0 / .24); cursor:pointer; }
+    .w7-board-button:focus-visible { outline:3px solid #7dd8f5; outline-offset:3px; }
+    .w7-board-button:disabled { opacity:.42; cursor:default; box-shadow:none; }
+    .w7-clear-ring { fill:none; stroke:#f5d66d; stroke-width:4; opacity:0; pointer-events:none; }
+    @media (prefers-reduced-motion:reduce) { .w7-board * { animation:none!important; transition:none!important; } }
     /* WAKE7:CSS:FEATURE-BOARD:END */
     /* WAKE7:CSS:FEATURE-BOARD:RESPONSIVE */ @media (max-width:480px) { body { padding-left:0.25rem; padding-right:0.25rem; padding-bottom:max(0.5rem,env(safe-area-inset-bottom)); } .w7-shell,.w7-board-frame { max-width:none; } }
   </style>
 </head>
 <body>
   <!-- WAKE7:DOM:FEATURE-BOARD:START -->
-  <!-- SPEC: BOARD-001 — the feature range includes its sole DOM and SVG assets. -->
+  <!-- SPEC: BOARD-001 BOARD-002 BOARD-003 BOARD-004 ASYNC-001 — board UI and assets stay in this feature range. -->
   <!-- WAKE7:DOM:SHELL:START -->
   <main class="w7-shell">
-    <section aria-label="七枚のだるま盤">
+    <section class="w7-board-feature" aria-label="七枚のだるま盤">
+      <div class="w7-board-status" aria-live="polite">
+        <span>いま <strong id="w7-board-moves">0</strong> くるり</span>
+        <span>あと <strong id="w7-board-remaining">1</strong> くるり</span>
+      </div>
       <div class="w7-board-frame">
         <svg id="w7-board" class="w7-board" viewBox="14 0 293 310" role="img" aria-label="七枚のだるま盤"></svg>
+      </div>
+      <div class="w7-board-controls" aria-label="盤面の操作">
+        <button id="w7-board-undo" class="w7-board-button" type="button" data-w7-action="undo">一手戻す</button>
+        <button id="w7-board-restart" class="w7-board-button" type="button" data-w7-action="restart">やり直す</button>
       </div>
     </section>
   </main>
@@ -61,6 +85,12 @@
       <path d="M-13 -5C-11 -1 -5 -1 -3 -5M3 -5C5 -1 11 -1 13 -5" stroke="#241D1A" stroke-width="2.6" stroke-linecap="round" fill="none"/>
       <circle cx="-15" cy="3" r="4.4" fill="#E2897B" opacity=".32"/><circle cx="15" cy="3" r="4.4" fill="#E2897B" opacity=".32"/>
       <ellipse cx="0" cy="6" rx="3" ry="2.3" fill="#241D1A" opacity=".75"/>
+    </g>
+    <g id="w7-face-happy">
+      <path d="M-13 -13C-10 -17 -5 -17 -2 -13M2 -13C5 -17 10 -17 13 -13" stroke="#241D1A" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+      <path d="M-13 -5C-10 -1 -5 -1 -2 -5M2 -5C5 -1 10 -1 13 -5" stroke="#241D1A" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+      <circle cx="-15" cy="3" r="4.8" fill="#E2897B" opacity=".58"/><circle cx="15" cy="3" r="4.8" fill="#E2897B" opacity=".58"/>
+      <path d="M-7 4C-4 11 4 11 7 4" stroke="#241D1A" stroke-width="2.4" stroke-linecap="round" fill="none"/>
     </g>
   </defs></svg>
   <!-- WAKE7:DOM:FEATURE-BOARD:SVG-ASSETS:END -->
@@ -87,8 +117,17 @@
     })));
     const SOLVED_BOARD = Object.freeze([0, 0, 0, 0, 0, 0, 0]);
     const EXPECTED_DISTANCE_DISTRIBUTION = Object.freeze([1, 12, 102, 402, 212]);
-    // Current index.html stage 1. P1 renders and validates this single source of reference-problem truth.
-    const P1_STAGE = Object.freeze({ puzzleId: 'stage-001', state: 31, par: 1 });
+    const TURN_DEGREES = 120;
+    const DRAG_COMMIT_DEGREES = 60;
+    const QUICK_FLICK_DEGREES = 18;
+    const QUICK_FLICK_MILLISECONDS = 320;
+    const ROTATION_MILLISECONDS = 230;
+    const ARRIVAL_MILLISECONDS = 420;
+    const RESTART_MILLISECONDS = 280;
+    const CLEAR_MILLISECONDS = 720;
+    const GRIP_HIT_RANGE = Object.freeze({ inner:20, outer:46, across:36 });
+    // Current index.html stage 1. P1/P2 render, operate, and validate this one reference-problem source.
+    const REFERENCE_STAGE = Object.freeze({ puzzleId:'stage-001', state:31, par:1 });
     /* WAKE7:JS:CONSTANTS:END */
 
     /* WAKE7:JS:BOARD-DOMAIN:START */
@@ -118,7 +157,7 @@
     function axisGeometry(triangle) {
       const center = CELL_POSITIONS[3];
       const angle = Math.atan2(triangle.y - center.y, triangle.x - center.x);
-      return Object.freeze({ pivot:Object.freeze([triangle.x, triangle.y]), grip:Object.freeze([triangle.x + 32 * Math.cos(angle), triangle.y + 32 * Math.sin(angle)]) });
+      return Object.freeze({ pivot:Object.freeze([triangle.x, triangle.y]), grip:Object.freeze([triangle.x + 32 * Math.cos(angle), triangle.y + 32 * Math.sin(angle)]), angle });
     }
 
     const WakeSevenBoardDomain = Object.freeze({
@@ -173,7 +212,7 @@
       },
     });
     const SOLVER = WakeSevenBoardDomain.buildSolver();
-    const INITIAL_BOARD = Object.freeze(Array.from(WakeSevenBoardDomain.decode(P1_STAGE.state)));
+    const INITIAL_BOARD = Object.freeze(Array.from(WakeSevenBoardDomain.decode(REFERENCE_STAGE.state)));
     /* WAKE7:JS:BOARD-DOMAIN:END */
 
     /* WAKE7:JS:VIEW-TRANSFORM:START */
@@ -211,32 +250,351 @@
     /* WAKE7:JS:VIEW-TRANSFORM:END */
 
     /* WAKE7:JS:UI-RENDER:START */
-    /* SPEC: BOARD-001 */
+    /* SPEC: BOARD-001 BOARD-002 BOARD-003 BOARD-004 */
     const SVG_NS = 'http://www.w3.org/2000/svg';
     const boardElement = document.querySelector('#w7-board');
+    const boardMovesElement = document.querySelector('#w7-board-moves');
+    const boardRemainingElement = document.querySelector('#w7-board-remaining');
+    const boardUndoButton = document.querySelector('#w7-board-undo');
+    const boardRestartButton = document.querySelector('#w7-board-restart');
     function svgElement(name, attributes = {}) { const element = document.createElementNS(SVG_NS, name); for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, String(value)); return element; }
     function hexPath(radius) { return Array.from({ length: 6 }, (_, index) => { const angle = (90 + index * 60) * Math.PI / 180; return `${index ? 'L' : 'M'}${(radius * Math.cos(angle)).toFixed(2)} ${(radius * -Math.sin(angle)).toFixed(2)}`; }).join(' ') + 'Z'; }
-    function appendDaruma(parent, orientation) {
-      const group = svgElement('g', { class: 'w7-daruma', transform: `rotate(${orientation === 0 ? 0 : orientation === 1 ? 120 : -120})` });
+    function orientationDegrees(orientation) { return orientation === 0 ? 0 : orientation === 1 ? TURN_DEGREES : -TURN_DEGREES; }
+    function appendDaruma(parent, orientation, happy = false) {
+      const group = svgElement('g', { class: 'w7-daruma', transform: `rotate(${orientationDegrees(orientation)})`, 'data-orientation': orientation });
       group.append(svgElement('use', { href: '#w7-daruma-body' }));
-      group.append(svgElement('use', { href: orientation === 0 ? '#w7-face-open' : '#w7-face-shut' }));
+      group.append(svgElement('use', { href: happy && orientation === 0 ? '#w7-face-happy' : orientation === 0 ? '#w7-face-open' : '#w7-face-shut' }));
       parent.append(group);
     }
-    function renderBoard(cells = INITIAL_BOARD, target = boardElement) {
+    function appendAxisLayer(target) {
+      const layer = svgElement('g', { class: 'w7-axis-layer', 'aria-hidden': 'true' });
+      TRIANGLES.forEach((triangle, triangleIndex) => {
+        const geometry = axisGeometry(triangle);
+        const pivot = viewPoint({ x:geometry.pivot[0], y:geometry.pivot[1] });
+        const grip = viewPoint({ x:geometry.grip[0], y:geometry.grip[1] });
+        layer.append(svgElement('circle', { class:'w7-axis-pivot', cx:pivot.x, cy:pivot.y, r:4.4, 'data-axis':triangleIndex }));
+        const gripGroup = svgElement('g', { transform:`translate(${grip.x} ${grip.y}) rotate(${geometry.angle * 180 / Math.PI + BOARD_VIEW.rotationDegrees})`, 'data-axis':triangleIndex });
+        gripGroup.append(svgElement('rect', { class:'w7-axis-grip', x:-18, y:-4, width:36, height:8, rx:4 }));
+        layer.append(gripGroup);
+      });
+      target.append(layer);
+    }
+    function renderBoard(cells = INITIAL_BOARD, target = boardElement, options = {}) {
+      const includeAxes = options.includeAxes ?? target === boardElement;
       target.replaceChildren();
-      cells.forEach((orientation, index) => {
+      Array.from(cells).forEach((orientation, index) => {
         const point = viewPoint(CELL_POSITIONS[index]);
-        const cell = svgElement('g', { class: `w7-cell ${orientation === 0 ? 'w7-cell--standing' : 'w7-cell--fallen'}`, transform: `translate(${point.x} ${point.y})` });
-        cell.append(svgElement('path', { class: 'w7-cell-hex', d: hexPath(CELL_RADIUS) }));
-        appendDaruma(cell, orientation);
+        const cell = svgElement('g', { class:`w7-cell ${orientation === 0 ? 'w7-cell--standing' : 'w7-cell--fallen'}`, transform:`translate(${point.x} ${point.y})`, 'data-cell-index':index, 'data-orientation':orientation });
+        cell.append(svgElement('path', { class:'w7-cell-hex', d:hexPath(CELL_RADIUS) }));
+        appendDaruma(cell, orientation, Boolean(options.happy));
         target.append(cell);
       });
+      if (includeAxes) appendAxisLayer(target);
       return target;
+    }
+    function selectDistance(cells) { const value = SOLVER.distance[WakeSevenBoardDomain.encode(cells)]; return value === 255 ? null : value; }
+    function renderBoardStatus(cells = RuntimeState.cells, previewMove = false) {
+      boardMovesElement.textContent = String(RuntimeState.history.length + (previewMove ? 1 : 0));
+      const distance = selectDistance(cells);
+      boardRemainingElement.textContent = distance === null ? '—' : String(distance);
+    }
+    function renderBoardPhase() {
+      boardElement.dataset.phase = RuntimeState.phase;
+      boardElement.dataset.state = String(WakeSevenBoardDomain.encode(RuntimeState.cells));
+      boardElement.dataset.historyLength = String(RuntimeState.history.length);
+      boardElement.dataset.solved = String(WakeSevenBoardDomain.isSolved(RuntimeState.cells));
+      const ready = RuntimeState.phase === BoardPhase.READY;
+      boardUndoButton.disabled = !ready || RuntimeState.history.length === 0;
+      boardRestartButton.disabled = !ready || (RuntimeState.history.length === 0 && WakeSevenBoardDomain.encode(RuntimeState.cells) === REFERENCE_STAGE.state);
+    }
+    function renderRuntime(options = {}) {
+      renderBoard(RuntimeState.cells, boardElement, { happy:Boolean(options.happy) });
+      renderBoardStatus();
+      renderBoardPhase();
+      if (RuntimeState.phase === BoardPhase.READY) assertRuntimeDomAlignment(options.context ?? 'render');
+    }
+    function normalizedDegrees(degrees) { return ((degrees + 180) % 360 + 360) % 360 - 180; }
+    function rotatePoint(point, pivot, degrees) {
+      const radians = degrees * Math.PI / 180;
+      const dx = point.x - pivot.x;
+      const dy = point.y - pivot.y;
+      return { x:pivot.x + dx * Math.cos(radians) - dy * Math.sin(radians), y:pivot.y + dx * Math.sin(radians) + dy * Math.cos(radians) };
+    }
+    function renderRotationPreview(cells, triangleIndex, degrees, previewDirection = 0) {
+      renderBoard(cells);
+      const triangle = TRIANGLES[triangleIndex];
+      const pivot = viewPoint({ x:triangle.x, y:triangle.y });
+      triangle.cells.forEach(cellIndex => {
+        const cell = boardElement.querySelector(`[data-cell-index="${cellIndex}"]`);
+        const start = viewPoint(CELL_POSITIONS[cellIndex]);
+        const point = rotatePoint(start, pivot, degrees);
+        const visuallyStanding = Math.abs(normalizedDegrees(orientationDegrees(cells[cellIndex]) + degrees)) <= 22;
+        cell.setAttribute('transform', `translate(${point.x} ${point.y}) rotate(${degrees})`);
+        cell.classList.toggle('w7-cell--standing', visuallyStanding);
+        cell.classList.toggle('w7-cell--fallen', !visuallyStanding);
+        cell.classList.add('w7-cell--dragging');
+      });
+      const previewCells = previewDirection ? WakeSevenBoardDomain.roll(cells, triangleIndex, previewDirection) : cells;
+      renderBoardStatus(previewCells, Boolean(previewDirection));
+      renderBoardPhase();
     }
     /* WAKE7:JS:UI-RENDER:END */
 
+    /* WAKE7:JS:RUNTIME-STATE:START */
+    /* SPEC: BOARD-002 BOARD-003 ASYNC-001 — this object is the sole owner of transient board state. */
+    const BoardPhase = Object.freeze({ ARRIVING:'arriving', READY:'ready', DRAGGING:'dragging', ROTATING:'rotating', UNDOING:'undoing', RESTARTING:'restarting', CELEBRATING:'celebrating' });
+    const RuntimeState = {
+      cells: Uint8Array.from(INITIAL_BOARD),
+      history: [],
+      phase: BoardPhase.READY,
+      drag: null,
+      effectGeneration: 0,
+      activeEffect: null,
+    };
+    function selectCanStartBoardDrag(state = RuntimeState) { return state.phase === BoardPhase.READY && !WakeSevenBoardDomain.isSolved(state.cells); }
+    function selectCanUseHistory(state = RuntimeState) { return state.phase === BoardPhase.READY; }
+    function assertRuntimeDomAlignment(context) {
+      const cells = Array.from(boardElement.querySelectorAll('.w7-cell'));
+      const domOrientations = cells.map(cell => Number(cell.dataset.orientation));
+      const aligned = cells.length === CELL_COUNT && domOrientations.every((value, index) => value === RuntimeState.cells[index]);
+      const historyAligned = Number(boardElement.dataset.historyLength) === RuntimeState.history.length;
+      const stateAligned = Number(boardElement.dataset.state) === WakeSevenBoardDomain.encode(RuntimeState.cells);
+      boardElement.dataset.invariant = aligned && historyAligned && stateAligned ? 'passed' : 'failed';
+      if (!aligned || !historyAligned || !stateAligned) throw new Error(`board invariant failed after ${context}`);
+    }
+    function commitBoardMove(triangleIndex, direction) {
+      const before = Uint8Array.from(RuntimeState.cells);
+      const after = WakeSevenBoardDomain.roll(before, triangleIndex, direction);
+      RuntimeState.history.push(Object.freeze({ triangleIndex, direction, before:Object.freeze(Array.from(before)), after:Object.freeze(Array.from(after)) }));
+      RuntimeState.cells = after;
+    }
+    /* WAKE7:JS:RUNTIME-STATE:END */
+
+    /* WAKE7:JS:EFFECT-RUNNER:START */
+    /* SPEC: BOARD-004 ASYNC-001 — every asynchronous completion belongs to one generation. */
+    function disposeEffectResources(effect) {
+      effect.animationFrames.forEach(handle => cancelAnimationFrame(handle));
+      effect.timers.forEach(handle => clearTimeout(handle));
+      effect.animations.forEach(animation => animation.cancel());
+      effect.cleanups.forEach(cleanup => cleanup());
+      effect.animationFrames.clear(); effect.timers.clear(); effect.animations.clear(); effect.cleanups.clear();
+    }
+    function cancelActiveEffect(reason = 'cancelled') {
+      const effect = RuntimeState.activeEffect;
+      RuntimeState.activeEffect = null;
+      RuntimeState.effectGeneration += 1;
+      if (effect) { effect.reason = reason; disposeEffectResources(effect); }
+      RuntimeState.drag = null;
+      RuntimeState.phase = BoardPhase.READY;
+    }
+    function beginEffect(phase) {
+      if (RuntimeState.activeEffect) cancelActiveEffect('superseded');
+      const effect = { generation:++RuntimeState.effectGeneration, phase, animationFrames:new Set(), timers:new Set(), animations:new Set(), cleanups:new Set(), reason:'' };
+      RuntimeState.activeEffect = effect;
+      RuntimeState.phase = phase;
+      renderBoardPhase();
+      return effect;
+    }
+    function isCurrentEffect(effect) { return RuntimeState.activeEffect === effect && RuntimeState.effectGeneration === effect.generation; }
+    function finishEffect(effect, nextPhase = BoardPhase.READY) {
+      if (!isCurrentEffect(effect)) return false;
+      RuntimeState.activeEffect = null;
+      RuntimeState.phase = nextPhase;
+      disposeEffectResources(effect);
+      return true;
+    }
+    function registerEffectCleanup(effect, cleanup) { effect.cleanups.add(cleanup); return () => effect.cleanups.delete(cleanup); }
+    function requestEffectFrame(effect, callback) {
+      const handle = requestAnimationFrame(timestamp => {
+        effect.animationFrames.delete(handle);
+        if (isCurrentEffect(effect)) callback(timestamp);
+      });
+      effect.animationFrames.add(handle);
+      return handle;
+    }
+    function setEffectTimer(effect, callback, milliseconds) {
+      const handle = setTimeout(() => {
+        effect.timers.delete(handle);
+        if (isCurrentEffect(effect)) callback();
+      }, milliseconds);
+      effect.timers.add(handle);
+      return handle;
+    }
+    function startEffectAnimation(effect, element, keyframes, options) {
+      const animation = element.animate(keyframes, options);
+      effect.animations.add(animation);
+      animation.onfinish = () => effect.animations.delete(animation);
+      animation.oncancel = () => effect.animations.delete(animation);
+      return animation;
+    }
+    function runEffectFrames(effect, milliseconds, update, complete) {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches || milliseconds <= 0) { update(1); if (isCurrentEffect(effect)) complete(); return; }
+      let startedAt = null;
+      const frame = timestamp => {
+        if (startedAt === null) startedAt = timestamp;
+        const linear = Math.min(1, (timestamp - startedAt) / milliseconds);
+        update(1 - (1 - linear) ** 3);
+        if (linear < 1) requestEffectFrame(effect, frame);
+        else if (isCurrentEffect(effect)) complete();
+      };
+      requestEffectFrame(effect, frame);
+    }
+    /* WAKE7:JS:EFFECT-RUNNER:END */
+
+    /* WAKE7:JS:POINTER-INPUT:START */
+    /* SPEC: BOARD-002 — pointer capture, continuous preview, one transactional commit or cancel. */
+    function eventToBoardPoint(event) {
+      const matrix = boardElement.getScreenCTM();
+      if (matrix && typeof DOMPoint === 'function') { const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse()); return { x:point.x, y:point.y }; }
+      const bounds = boardElement.getBoundingClientRect();
+      return { x:14 + (event.clientX - bounds.left) * 293 / bounds.width, y:(event.clientY - bounds.top) * 310 / bounds.height };
+    }
+    function hitTestGrip(point) {
+      let bestHit = null;
+      let bestScore = Infinity;
+      TRIANGLES.forEach((triangle, triangleIndex) => {
+        const geometry = axisGeometry(triangle);
+        const grip = { x:geometry.grip[0], y:geometry.grip[1] };
+        const dx = point.x - grip.x;
+        const dy = point.y - grip.y;
+        const along = dx * Math.cos(geometry.angle) + dy * Math.sin(geometry.angle);
+        const across = -dx * Math.sin(geometry.angle) + dy * Math.cos(geometry.angle);
+        if (along < -GRIP_HIT_RANGE.inner || along > GRIP_HIT_RANGE.outer || Math.abs(across) > GRIP_HIT_RANGE.across) return;
+        const alongRange = along < 0 ? GRIP_HIT_RANGE.inner : GRIP_HIT_RANGE.outer;
+        const score = (along / alongRange) ** 2 + (across / GRIP_HIT_RANGE.across) ** 2;
+        if (score < bestScore) { bestScore = score; bestHit = { triangleIndex, triangle, geometry }; }
+      });
+      return bestHit;
+    }
+    function selectDragDirection(degrees, elapsedMilliseconds = Infinity, allowQuickFlick = false) {
+      const magnitude = Math.abs(degrees);
+      if (magnitude >= DRAG_COMMIT_DEGREES || allowQuickFlick && magnitude >= QUICK_FLICK_DEGREES && elapsedMilliseconds <= QUICK_FLICK_MILLISECONDS) return degrees >= 0 ? 1 : -1;
+      return 0;
+    }
+    function safelyCapturePointer(pointerId) { try { boardElement.setPointerCapture(pointerId); } catch {} }
+    function safelyReleasePointer(pointerId) { try { if (boardElement.hasPointerCapture(pointerId)) boardElement.releasePointerCapture(pointerId); } catch {} }
+    function handleBoardPointerDown(event) {
+      if (!selectCanStartBoardDrag() || event.pointerType === 'mouse' && event.button !== 0) return;
+      const point = eventToBoardPoint(event);
+      const hit = hitTestGrip(point);
+      if (!hit) return;
+      event.preventDefault();
+      const effect = beginEffect(BoardPhase.DRAGGING);
+      const startAngle = Math.atan2(point.y - hit.triangle.y, point.x - hit.triangle.x);
+      RuntimeState.drag = { pointerId:event.pointerId, triangleIndex:hit.triangleIndex, cells:Uint8Array.from(RuntimeState.cells), startedAt:performance.now(), lastAngle:startAngle, degrees:0, effect };
+      safelyCapturePointer(event.pointerId);
+      registerEffectCleanup(effect, () => safelyReleasePointer(event.pointerId));
+      renderRotationPreview(RuntimeState.drag.cells, hit.triangleIndex, 0, 0);
+    }
+    function handleBoardPointerMove(event) {
+      const drag = RuntimeState.drag;
+      if (!drag || RuntimeState.phase !== BoardPhase.DRAGGING || drag.pointerId !== event.pointerId) return;
+      event.preventDefault();
+      const point = eventToBoardPoint(event);
+      const triangle = TRIANGLES[drag.triangleIndex];
+      const angle = Math.atan2(point.y - triangle.y, point.x - triangle.x);
+      const delta = normalizedDegrees((angle - drag.lastAngle) * 180 / Math.PI);
+      drag.lastAngle = angle;
+      drag.degrees = Math.max(-150, Math.min(150, drag.degrees + delta));
+      const previewDirection = selectDragDirection(drag.degrees);
+      renderRotationPreview(drag.cells, drag.triangleIndex, drag.degrees, previewDirection);
+    }
+    function finishBoardDrag(event, cancelled = false) {
+      const drag = RuntimeState.drag;
+      if (!drag || drag.pointerId !== event.pointerId || !isCurrentEffect(drag.effect)) return;
+      event.preventDefault();
+      RuntimeState.drag = null;
+      safelyReleasePointer(event.pointerId);
+      if (cancelled) { cancelActiveEffect('pointercancel'); renderRuntime({ context:'pointercancel' }); return; }
+      const elapsed = performance.now() - drag.startedAt;
+      const direction = selectDragDirection(drag.degrees, elapsed, true);
+      const targetDegrees = direction * TURN_DEGREES;
+      RuntimeState.phase = BoardPhase.ROTATING;
+      drag.effect.phase = BoardPhase.ROTATING;
+      renderBoardPhase();
+      const duration = ROTATION_MILLISECONDS * Math.max(.25, Math.abs(targetDegrees - drag.degrees) / TURN_DEGREES);
+      runEffectFrames(drag.effect, duration, progress => renderRotationPreview(drag.cells, drag.triangleIndex, drag.degrees + (targetDegrees - drag.degrees) * progress, direction), () => {
+        if (direction) commitBoardMove(drag.triangleIndex, direction);
+        if (!finishEffect(drag.effect)) return;
+        renderRuntime({ context:direction ? 'move commit' : 'short drag cancel' });
+        if (direction && WakeSevenBoardDomain.isSolved(RuntimeState.cells)) runClearEffect();
+      });
+    }
+    function handleBoardPointerUp(event) { finishBoardDrag(event, false); }
+    function handleBoardPointerCancel(event) { finishBoardDrag(event, true); }
+    function handleBoardLostPointerCapture(event) { if (RuntimeState.drag?.pointerId === event.pointerId) finishBoardDrag(event, true); }
+    /* WAKE7:JS:POINTER-INPUT:END */
+
+    /* WAKE7:JS:BOARD-COMMANDS:START */
+    /* SPEC: BOARD-003 BOARD-004 ASYNC-001 */
+    function runArrivalEffect() {
+      renderRuntime();
+      const effect = beginEffect(BoardPhase.ARRIVING);
+      const center = viewPoint(CELL_POSITIONS[3]);
+      runEffectFrames(effect, ARRIVAL_MILLISECONDS, progress => {
+        boardElement.querySelectorAll('.w7-cell').forEach((cell, index) => {
+          const destination = viewPoint(CELL_POSITIONS[index]);
+          const x = center.x + (destination.x - center.x) * progress;
+          const y = center.y + (destination.y - center.y) * progress;
+          cell.setAttribute('transform', `translate(${x} ${y}) scale(${.72 + .28 * progress})`);
+          cell.style.opacity = String(progress);
+        });
+      }, () => { if (finishEffect(effect)) renderRuntime({ context:'arrival' }); });
+    }
+    function intentUndo() {
+      if (!selectCanUseHistory() || RuntimeState.history.length === 0) return false;
+      const entry = RuntimeState.history.at(-1);
+      const currentCells = Uint8Array.from(RuntimeState.cells);
+      const effect = beginEffect(BoardPhase.UNDOING);
+      runEffectFrames(effect, ROTATION_MILLISECONDS, progress => renderRotationPreview(currentCells, entry.triangleIndex, -entry.direction * TURN_DEGREES * progress, 0), () => {
+        if (!isCurrentEffect(effect) || RuntimeState.history.at(-1) !== entry) return;
+        RuntimeState.history.pop();
+        RuntimeState.cells = Uint8Array.from(entry.before);
+        if (finishEffect(effect)) renderRuntime({ context:'undo' });
+      });
+      return true;
+    }
+    function intentRestart() {
+      if (!selectCanUseHistory() || RuntimeState.history.length === 0 && WakeSevenBoardDomain.encode(RuntimeState.cells) === REFERENCE_STAGE.state) return false;
+      const effect = beginEffect(BoardPhase.RESTARTING);
+      runEffectFrames(effect, RESTART_MILLISECONDS, progress => {
+        const opacity = 1 - Math.sin(Math.PI * progress) * .62;
+        const scale = 1 - Math.sin(Math.PI * progress) * .08;
+        boardElement.querySelectorAll('.w7-cell').forEach(cell => { cell.style.opacity = String(opacity); cell.setAttribute('transform', `${cell.getAttribute('transform').replace(/ scale\([^)]*\)$/, '')} scale(${scale})`); });
+      }, () => {
+        RuntimeState.cells = Uint8Array.from(INITIAL_BOARD);
+        RuntimeState.history.length = 0;
+        if (finishEffect(effect)) renderRuntime({ context:'restart' });
+      });
+      return true;
+    }
+    function runClearEffect() {
+      const effect = beginEffect(BoardPhase.CELEBRATING);
+      renderRuntime({ happy:true });
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { if (finishEffect(effect)) renderRuntime({ context:'reduced-motion clear' }); return; }
+      boardElement.querySelectorAll('.w7-cell').forEach((cell, index) => startEffectAnimation(effect, cell, [{ filter:'brightness(1)' }, { filter:'brightness(1.45)' }, { filter:'brightness(1)' }], { duration:420, delay:index * 28, easing:'ease-out' }));
+      const center = viewPoint(CELL_POSITIONS[3]);
+      const ring = svgElement('circle', { class:'w7-clear-ring', cx:center.x, cy:center.y, r:32 });
+      boardElement.append(ring);
+      startEffectAnimation(effect, ring, [{ opacity:0, transform:'scale(.7)' }, { opacity:1, offset:.28 }, { opacity:0, transform:'scale(3.1)' }], { duration:CLEAR_MILLISECONDS, easing:'ease-out' });
+      setEffectTimer(effect, () => { if (finishEffect(effect)) renderRuntime({ context:'clear effect' }); }, CLEAR_MILLISECONDS);
+    }
+    /* WAKE7:JS:BOARD-COMMANDS:END */
+
+    /* WAKE7:JS:EVENT-BINDINGS:START */
+    boardElement.addEventListener('pointerdown', handleBoardPointerDown);
+    boardElement.addEventListener('pointermove', handleBoardPointerMove);
+    boardElement.addEventListener('pointerup', handleBoardPointerUp);
+    boardElement.addEventListener('pointercancel', handleBoardPointerCancel);
+    boardElement.addEventListener('lostpointercapture', handleBoardLostPointerCapture);
+    boardUndoButton.addEventListener('click', intentUndo);
+    boardRestartButton.addEventListener('click', intentRestart);
+    window.addEventListener('blur', () => { if (RuntimeState.phase === BoardPhase.DRAGGING) { cancelActiveEffect('window blur'); renderRuntime({ context:'window blur' }); } });
+    window.addEventListener('pagehide', () => cancelActiveEffect('pagehide'));
+    /* WAKE7:JS:EVENT-BINDINGS:END */
+
     /* WAKE7:JS:DEBUG-SELFTEST:START */
-    /* SPEC: BOARD-001 — all 3^7 values, inverse rolls, and BFS distribution. */
+    /* SPEC: BOARD-001 BOARD-002 BOARD-003 BOARD-004 ASYNC-001 — exhaustive domain plus P2 transition contracts. */
     function runSelftest() {
       const errors = [];
       const seen = new Set();
@@ -272,34 +630,46 @@
       if (WakeSevenBoardDomain.stateCount - seen.size !== 1458) errors.push(`expected 1458 unreachable states, got ${WakeSevenBoardDomain.stateCount - seen.size}`);
       if (distribution.join(',') !== EXPECTED_DISTANCE_DISTRIBUTION.join(',')) errors.push(`distance distribution mismatch: ${distribution.join(',')}`);
       if (!WakeSevenBoardDomain.isSolved(SOLVED_BOARD)) errors.push('solved board was not solved');
-      if (!Number.isInteger(P1_STAGE.state) || P1_STAGE.state < 0 || P1_STAGE.state >= WakeSevenBoardDomain.stateCount) errors.push(`invalid stage state for ${P1_STAGE.puzzleId}`);
-      else if (SOLVER.distance[P1_STAGE.state] !== P1_STAGE.par) errors.push(`stage par mismatch for ${P1_STAGE.puzzleId}: expected ${P1_STAGE.par}, got ${SOLVER.distance[P1_STAGE.state]}`);
+      if (!Number.isInteger(REFERENCE_STAGE.state) || REFERENCE_STAGE.state < 0 || REFERENCE_STAGE.state >= WakeSevenBoardDomain.stateCount) errors.push(`invalid stage state for ${REFERENCE_STAGE.puzzleId}`);
+      else if (SOLVER.distance[REFERENCE_STAGE.state] !== REFERENCE_STAGE.par) errors.push(`stage par mismatch for ${REFERENCE_STAGE.puzzleId}: expected ${REFERENCE_STAGE.par}, got ${SOLVER.distance[REFERENCE_STAGE.state]}`);
       if (VIEW_SYMMETRIES.some(symmetry => new Set(symmetry.permutation).size !== CELL_COUNT)) errors.push('view permutation is not bijective');
-      const initialDistance = SOLVER.distance[P1_STAGE.state];
-      if (WakeSevenBoardDomain.encode(INITIAL_BOARD) !== P1_STAGE.state) errors.push(`initial board does not match ${P1_STAGE.puzzleId}`);
+      const initialDistance = SOLVER.distance[REFERENCE_STAGE.state];
+      if (WakeSevenBoardDomain.encode(INITIAL_BOARD) !== REFERENCE_STAGE.state) errors.push(`initial board does not match ${REFERENCE_STAGE.puzzleId}`);
       const renderProbe = svgElement('svg');
       renderBoard(INITIAL_BOARD, renderProbe);
       const initialCells = Array.from(renderProbe.querySelectorAll('.w7-cell'));
       if (initialCells.length !== CELL_COUNT) errors.push(`initial render expected ${CELL_COUNT} cells, got ${initialCells.length}`);
       if (initialCells.map(cell => cell.classList.contains('w7-cell--fallen') ? 1 : 0).join(',') !== INITIAL_BOARD.map(value => value ? 1 : 0).join(',')) errors.push('initial render orientation mismatch');
-      const expectedInitialRotations = INITIAL_BOARD.map(value => `rotate(${value === 0 ? 0 : value === 1 ? 120 : -120})`);
+      const expectedInitialRotations = INITIAL_BOARD.map(value => `rotate(${orientationDegrees(value)})`);
       if (Array.from(renderProbe.querySelectorAll('.w7-daruma')).some((daruma, index) => daruma.getAttribute('transform') !== expectedInitialRotations[index])) errors.push('initial daruma rotation mismatch');
       renderBoard(SOLVED_BOARD, renderProbe);
       const solvedCells = Array.from(renderProbe.querySelectorAll('.w7-cell'));
       if (solvedCells.length !== CELL_COUNT || solvedCells.some(cell => !cell.classList.contains('w7-cell--standing'))) errors.push('solved render mismatch');
       if (Array.from(renderProbe.querySelectorAll('.w7-daruma')).some(daruma => daruma.getAttribute('transform') !== 'rotate(0)')) errors.push('solved daruma orientation mismatch');
-      return Object.freeze({ passed: errors.length === 0, errors: Object.freeze(errors), stateCount: WakeSevenBoardDomain.stateCount, reachableCount: seen.size, distanceDistribution: Object.freeze(distribution), stageReferenceCount: 1, symmetryCount: VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length });
+      renderBoard(INITIAL_BOARD, renderProbe, { includeAxes:true });
+      if (renderProbe.querySelectorAll('.w7-axis-grip').length !== TRIANGLES.length || renderProbe.querySelectorAll('.w7-axis-pivot').length !== TRIANGLES.length) errors.push('interactive axis render mismatch');
+      const reducingMove = TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction }))).find(move => selectDistance(WakeSevenBoardDomain.roll(INITIAL_BOARD, move.triangleIndex, move.direction)) === 0);
+      if (!reducingMove) errors.push('reference stage has no solving move');
+      else {
+        const after = WakeSevenBoardDomain.roll(INITIAL_BOARD, reducingMove.triangleIndex, reducingMove.direction);
+        const restored = WakeSevenBoardDomain.roll(after, reducingMove.triangleIndex, -reducingMove.direction);
+        if (!WakeSevenBoardDomain.isSolved(after) || WakeSevenBoardDomain.encode(restored) !== REFERENCE_STAGE.state) errors.push('P2 commit/undo model mismatch');
+      }
+      if (selectDragDirection(17, 100, true) !== 0 || selectDragDirection(20, 200, true) !== 1 || selectDragDirection(-20, 200, true) !== -1 || selectDragDirection(20, 500, true) !== 0 || selectDragDirection(70) !== 1 || selectDragDirection(-70) !== -1) errors.push('drag threshold contract mismatch');
+      if (!selectCanStartBoardDrag({ phase:BoardPhase.READY, cells:Uint8Array.from(INITIAL_BOARD) }) || selectCanStartBoardDrag({ phase:BoardPhase.ROTATING, cells:Uint8Array.from(INITIAL_BOARD) }) || selectCanStartBoardDrag({ phase:BoardPhase.READY, cells:Uint8Array.from(SOLVED_BOARD) })) errors.push('input gate contract mismatch');
+      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:1, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, p2ContractCount:4 });
     }
     /* WAKE7:JS:DEBUG-SELFTEST:END */
 
     /* WAKE7:JS:LIFECYCLE-BOOT:START */
     const selftestResult = runSelftest();
-    renderBoard();
-    if (!selftestResult.passed) throw new Error(`P1 board self-test failed: ${selftestResult.errors.slice(0, 3).join('; ')}`);
+    if (!selftestResult.passed) throw new Error(`P2 board self-test failed: ${selftestResult.errors.slice(0, 3).join('; ')}`);
     boardElement.dataset.selftest = 'passed';
     boardElement.dataset.checkedStates = String(selftestResult.stateCount);
     boardElement.dataset.checkedAxes = String(selftestResult.axisCount);
     boardElement.dataset.checkedRenders = `${selftestResult.renderedInitialCells}+${selftestResult.renderedSolvedCells}`;
+    boardElement.dataset.checkedP2Contracts = String(selftestResult.p2ContractCount);
+    runArrivalEffect();
     /* WAKE7:JS:LIFECYCLE-BOOT:END */
     /* WAKE7:JS:FEATURE-BOARD:END */
   </script>
