@@ -84,8 +84,8 @@ rg -n "FEATURE-BOARD|SPEC: BOARD-001" index.rebuild.html
 
 Its results lead directly to:
 
-- CSS at lines 20–28;
+- board CSS at lines 20–28, plus its token, shell-width, and responsive dependencies marked at lines 9, 16, and 29;
 - board DOM and the copied daruma SVG assets at lines 33–67;
-- board constants, domain, view transform, renderer, and self-test inside the single JavaScript feature range at lines 76–307.
+- board constants, domain, view transform, renderer, and self-test inside the single JavaScript feature range at lines 76–304.
 
 There are no empty controls/event sections, future feature anchors, or multi-stage catalog placeholders in the P1 source.

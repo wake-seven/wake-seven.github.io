@@ -6,14 +6,14 @@
   <meta name="color-scheme" content="dark">
   <title>だるまさんを起こして！</title>
   <style>
-    /* WAKE7:CSS:ROOT:START */
+    /* WAKE7:CSS:ROOT:START | WAKE7:CSS:FEATURE-BOARD:DEPENDENCIES */
     :root { --ai:#16283c; --ai2:#1f3752; --washi:#f7eedc; --washi2:#bccdd3; --kin:#c9a54e; --content-max:23.25rem; }
     html { font-size:calc(16px * clamp(1,calc(100vw / 570px),1.5)); max-width:100%; overflow-x:hidden; }
     * { box-sizing:border-box; }
     body { margin:0; min-height:100vh; min-height:100dvh; max-width:100%; display:flex; flex-direction:column; align-items:center; padding:1.125rem 0.75rem max(0.75rem,env(safe-area-inset-bottom)); background:var(--ai); background-image:radial-gradient(120% 70% at 50% 0%,var(--ai2) 0%,var(--ai) 62%); color:var(--washi); font-family:"A1 Gothic","Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,"Noto Sans JP",sans-serif; }
     /* WAKE7:CSS:ROOT:END */
 
-    /* WAKE7:CSS:SHELL:START */
+    /* WAKE7:CSS:SHELL:START | WAKE7:CSS:FEATURE-BOARD:DEPENDENCIES */
     .w7-shell { width:100%; max-width:var(--content-max); }
     /* WAKE7:CSS:SHELL:END */
 
@@ -26,7 +26,7 @@
     .w7-cell--standing { filter:brightness(1.04); }
     .w7-daruma { transform-box:fill-box; transform-origin:center; }
     /* WAKE7:CSS:FEATURE-BOARD:END */
-    @media (max-width:480px) { body { padding-left:0.25rem; padding-right:0.25rem; padding-bottom:max(0.5rem,env(safe-area-inset-bottom)); } .w7-shell,.w7-board-frame { max-width:none; } }
+    /* WAKE7:CSS:FEATURE-BOARD:RESPONSIVE */ @media (max-width:480px) { body { padding-left:0.25rem; padding-right:0.25rem; padding-bottom:max(0.5rem,env(safe-area-inset-bottom)); } .w7-shell,.w7-board-frame { max-width:none; } }
   </style>
 </head>
 <body>
@@ -85,12 +85,9 @@
       x: BOARD_ORIGIN.x + column * CELL_SPACING_X,
       y: BOARD_ORIGIN.y + row * CELL_SPACING_Y,
     })));
-    // Current index.html stage 1: state 31, par 1.  P1 keeps a real, reachable board as its static baseline.
-    const INITIAL_BOARD = Object.freeze([1, 1, 0, 1, 0, 0, 0]);
-    const INITIAL_PAR = 1;
     const SOLVED_BOARD = Object.freeze([0, 0, 0, 0, 0, 0, 0]);
     const EXPECTED_DISTANCE_DISTRIBUTION = Object.freeze([1, 12, 102, 402, 212]);
-    // P1 renders and validates one real reference problem; later stage catalogs belong to their implementing phase.
+    // Current index.html stage 1. P1 renders and validates this single source of reference-problem truth.
     const P1_STAGE = Object.freeze({ puzzleId: 'stage-001', state: 31, par: 1 });
     /* WAKE7:JS:CONSTANTS:END */
 
@@ -176,6 +173,7 @@
       },
     });
     const SOLVER = WakeSevenBoardDomain.buildSolver();
+    const INITIAL_BOARD = Object.freeze(Array.from(WakeSevenBoardDomain.decode(P1_STAGE.state)));
     /* WAKE7:JS:BOARD-DOMAIN:END */
 
     /* WAKE7:JS:VIEW-TRANSFORM:START */
@@ -277,8 +275,7 @@
       if (!Number.isInteger(P1_STAGE.state) || P1_STAGE.state < 0 || P1_STAGE.state >= WakeSevenBoardDomain.stateCount) errors.push(`invalid stage state for ${P1_STAGE.puzzleId}`);
       else if (SOLVER.distance[P1_STAGE.state] !== P1_STAGE.par) errors.push(`stage par mismatch for ${P1_STAGE.puzzleId}: expected ${P1_STAGE.par}, got ${SOLVER.distance[P1_STAGE.state]}`);
       if (VIEW_SYMMETRIES.some(symmetry => new Set(symmetry.permutation).size !== CELL_COUNT)) errors.push('view permutation is not bijective');
-      const initialDistance = SOLVER.distance[WakeSevenBoardDomain.encode(INITIAL_BOARD)];
-      if (initialDistance !== INITIAL_PAR) errors.push(`expected initial distance ${INITIAL_PAR}, got ${initialDistance}`);
+      const initialDistance = SOLVER.distance[P1_STAGE.state];
       if (WakeSevenBoardDomain.encode(INITIAL_BOARD) !== P1_STAGE.state) errors.push(`initial board does not match ${P1_STAGE.puzzleId}`);
       const renderProbe = svgElement('svg');
       renderBoard(INITIAL_BOARD, renderProbe);
