@@ -20,7 +20,7 @@
     /* P1 has no visible controls.  Pointer interaction begins in P2. */
     /* WAKE7:CSS:CONTROLS:END */
 
-    /* WAKE7:CSS:BOARD:START */
+    /* WAKE7:CSS:FEATURE-BOARD:START */
     /* SPEC: BOARD-001 — P1's logical cells and SVG view stay separate. */
     .w7-board-frame { max-width:30rem; margin:0 auto; }
     .w7-board { display:block; width:100%; height:auto; overflow:visible; }
@@ -29,49 +29,23 @@
     .w7-daruma { transform-box:fill-box; transform-origin:center; }
     .w7-axis-ray { stroke:#7dd8f5; stroke-width:2.5; stroke-linecap:round; opacity:.72; }
     .w7-axis-dot { fill:var(--kin); opacity:.72; }
-    /* WAKE7:CSS:BOARD:END */
-
-    /* WAKE7:CSS:ACCESSIBILITY-DEBUG:START */
-    /* WAKE7:CSS:FEATURE-TUTORIAL:START — P1 target-none; no visible feature CSS yet. */
-    /* WAKE7:CSS:FEATURE-TUTORIAL:END */
-    /* WAKE7:CSS:FEATURE-ACADEMY:START — P1 target-none; no visible feature CSS yet. */
-    /* WAKE7:CSS:FEATURE-ACADEMY:END */
-    /* WAKE7:CSS:FEATURE-APPLICATION:START — P1 target-none; no visible feature CSS yet. */
-    /* WAKE7:CSS:FEATURE-APPLICATION:END */
-    /* WAKE7:CSS:FEATURE-TRAINING:START — P1 target-none; no visible feature CSS yet. */
-    /* WAKE7:CSS:FEATURE-TRAINING:END */
-    /* WAKE7:CSS:FEATURE-MASTERY-SATORI:START — P1 target-none; no visible feature CSS yet. */
-    /* WAKE7:CSS:FEATURE-MASTERY-SATORI:END */
-    /* WAKE7:CSS:FEATURE-SPEED:START — P1 target-none; no visible feature CSS yet. */
-    /* WAKE7:CSS:FEATURE-SPEED:END */
-    /* WAKE7:CSS:FEATURE-FREE-CUSTOM:START — P1 target-none; no visible feature CSS yet. */
-    /* WAKE7:CSS:FEATURE-FREE-CUSTOM:END */
+    /* WAKE7:CSS:FEATURE-BOARD:END */
     @media (max-width:380px) { .w7-shell { padding-inline:0.125rem; } }
-    /* WAKE7:CSS:ACCESSIBILITY-DEBUG:END */
   </style>
 </head>
 <body>
   <!-- WAKE7:DOM:SHELL:START -->
   <main class="w7-shell">
     <section aria-label="七枚のだるま盤">
-      <!-- WAKE7:DOM:BOARD:START -->
+      <!-- WAKE7:DOM:FEATURE-BOARD:START -->
       <!-- SPEC: BOARD-001 -->
       <div class="w7-board-frame">
         <svg id="w7-board" class="w7-board" viewBox="14 0 293 310" role="img" aria-label="七枚のだるま盤"></svg>
       </div>
-      <!-- WAKE7:DOM:BOARD:END -->
+      <!-- WAKE7:DOM:FEATURE-BOARD:END -->
     </section>
   </main>
   <!-- WAKE7:DOM:SHELL:END -->
-  <!-- P1 keeps feature target-none entries in source only; no provisional feature UI is rendered. -->
-  <!-- WAKE7:DOM:FEATURE-TUTORIAL:START --><!-- P1 target-none --><!-- WAKE7:DOM:FEATURE-TUTORIAL:END -->
-  <!-- WAKE7:DOM:FEATURE-ACADEMY:START --><!-- P1 target-none --><!-- WAKE7:DOM:FEATURE-ACADEMY:END -->
-  <!-- WAKE7:DOM:FEATURE-APPLICATION:START --><!-- P1 target-none --><!-- WAKE7:DOM:FEATURE-APPLICATION:END -->
-  <!-- WAKE7:DOM:FEATURE-TRAINING:START --><!-- P1 target-none --><!-- WAKE7:DOM:FEATURE-TRAINING:END -->
-  <!-- WAKE7:DOM:FEATURE-MASTERY-SATORI:START --><!-- P1 target-none --><!-- WAKE7:DOM:FEATURE-MASTERY-SATORI:END -->
-  <!-- WAKE7:DOM:FEATURE-SPEED:START --><!-- P1 target-none --><!-- WAKE7:DOM:FEATURE-SPEED:END -->
-  <!-- WAKE7:DOM:FEATURE-FREE-CUSTOM:START --><!-- P1 target-none --><!-- WAKE7:DOM:FEATURE-FREE-CUSTOM:END -->
-
   <!-- WAKE7:DOM:SVG-ASSETS:START — copied static board assets, not a second source file. -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
     <g id="w7-daruma-body">
@@ -97,6 +71,13 @@
   <!-- WAKE7:DOM:SVG-ASSETS:END -->
 
   <script type="module">
+    /* WAKE7:AI-MAINTENANCE:START
+       Primary goal: an AI changes one feature correctly after one rg search.
+       Keep a real feature's data, policy, rendering, input, and verification together.
+       Do not add unused feature anchors, placeholder UI, or abstraction-only code.
+       Prefer local duplication over hiding a feature flow behind a generic layer.
+       WAKE7:AI-MAINTENANCE:END */
+    /* WAKE7:JS:FEATURE-BOARD:START */
     /* WAKE7:JS:CONSTANTS:START */
     const CELL_COUNT = 7;
     const CELL_RADIUS = 54;
@@ -128,29 +109,6 @@
       Object.freeze({ puzzleId: 'stage-011', state: 57, par: 2 }),
       Object.freeze({ puzzleId: 'stage-012', state: 7, par: 2 }),
     ]);
-    // WAKE7:JS:FEATURE-TUTORIAL:START — target-none metadata is validated by P1 self-test.
-    // WAKE7:JS:FEATURE-ACADEMY:START
-    // WAKE7:JS:FEATURE-APPLICATION:START
-    // WAKE7:JS:FEATURE-TRAINING:START
-    // WAKE7:JS:FEATURE-MASTERY-SATORI:START
-    // WAKE7:JS:FEATURE-SPEED:START
-    // WAKE7:JS:FEATURE-FREE-CUSTOM:START
-    const P1_FEATURE_TARGETS = Object.freeze([
-      Object.freeze({ key: 'FEATURE-TUTORIAL', phase: 'P4', reason: 'チュートリアルの状態・UIはP1の純粋盤面範囲外。' }),
-      Object.freeze({ key: 'FEATURE-ACADEMY', phase: 'P4', reason: '学園の進行・問題列はP1の純粋盤面範囲外。' }),
-      Object.freeze({ key: 'FEATURE-APPLICATION', phase: 'P5', reason: '応用導入・紫枠はP1の静的表示範囲外。' }),
-      Object.freeze({ key: 'FEATURE-TRAINING', phase: 'P5', reason: '修行の進行・形ガイドはP1の純粋盤面範囲外。' }),
-      Object.freeze({ key: 'FEATURE-MASTERY-SATORI', phase: 'P6', reason: '名人・悟りの条件とUIはP1の純粋盤面範囲外。' }),
-      Object.freeze({ key: 'FEATURE-SPEED', phase: 'P7', reason: '速解きの時計・試験・保存はP1の純粋盤面範囲外。' }),
-      Object.freeze({ key: 'FEATURE-FREE-CUSTOM', phase: 'P7', reason: '自由盤面・カスタム状態はP1の純粋盤面範囲外。' }),
-    ]);
-    // WAKE7:JS:FEATURE-TUTORIAL:END
-    // WAKE7:JS:FEATURE-ACADEMY:END
-    // WAKE7:JS:FEATURE-APPLICATION:END
-    // WAKE7:JS:FEATURE-TRAINING:END
-    // WAKE7:JS:FEATURE-MASTERY-SATORI:END
-    // WAKE7:JS:FEATURE-SPEED:END
-    // WAKE7:JS:FEATURE-FREE-CUSTOM:END
     /* WAKE7:JS:CONSTANTS:END */
 
     /* WAKE7:JS:BOARD-DOMAIN:START */
@@ -318,12 +276,10 @@
         if (!Number.isInteger(stage.state) || stage.state < 0 || stage.state >= WakeSevenBoardDomain.stateCount) errors.push(`invalid stage state for ${stage.puzzleId}`);
         else if (SOLVER.distance[stage.state] !== stage.par) errors.push(`stage par mismatch for ${stage.puzzleId}: expected ${stage.par}, got ${SOLVER.distance[stage.state]}`);
       }
-      const featureKeys = new Set(P1_FEATURE_TARGETS.map(feature => feature.key));
-      if (P1_FEATURE_TARGETS.length !== 7 || featureKeys.size !== 7 || P1_FEATURE_TARGETS.some(feature => !feature.phase || !feature.reason)) errors.push('P1 feature target-none map is incomplete');
       if (VIEW_SYMMETRIES.some(symmetry => new Set(symmetry.permutation).size !== CELL_COUNT)) errors.push('view permutation is not bijective');
       const initialDistance = SOLVER.distance[WakeSevenBoardDomain.encode(INITIAL_BOARD)];
       if (initialDistance !== INITIAL_PAR) errors.push(`expected initial distance ${INITIAL_PAR}, got ${initialDistance}`);
-      return Object.freeze({ passed: errors.length === 0, errors: Object.freeze(errors), stateCount: WakeSevenBoardDomain.stateCount, reachableCount: seen.size, distanceDistribution: Object.freeze(distribution), stageReferenceCount: P1_STAGE_CATALOG.length, featureTargetNoneCount: featureKeys.size, symmetryCount: VIEW_SYMMETRIES.length, initialDistance });
+      return Object.freeze({ passed: errors.length === 0, errors: Object.freeze(errors), stateCount: WakeSevenBoardDomain.stateCount, reachableCount: seen.size, distanceDistribution: Object.freeze(distribution), stageReferenceCount: P1_STAGE_CATALOG.length, symmetryCount: VIEW_SYMMETRIES.length, initialDistance });
     }
     /* WAKE7:JS:DEBUG-SELFTEST:END */
 
@@ -336,6 +292,7 @@
     renderBoard();
     if (!selftestResult.passed) throw new Error(`P1 board self-test failed: ${selftestResult.errors.slice(0, 3).join('; ')}`);
     /* WAKE7:JS:LIFECYCLE-BOOT:END */
+    /* WAKE7:JS:FEATURE-BOARD:END */
   </script>
 </body>
 </html>
