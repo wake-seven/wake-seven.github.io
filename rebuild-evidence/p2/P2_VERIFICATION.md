@@ -1,80 +1,66 @@
 # P2 verification evidence — interaction, history, exclusive effects
 
-Verified on 2026-09-06 from P1 base commit `a0cd7a0`.
+## Current status
+
+P2 is **not accepted yet**. The current candidate contains corrective work after commits `7eaa5e9` and `80923b7`; PC and mobile operation must be confirmed manually before the corrective work is committed and P2 is marked complete again.
+
+Automated visual/E2E judgment is intentionally not used for current acceptance. The user performs the final visual and interaction check directly.
 
 ## Scope
 
 - Candidate: `index.rebuild.html`
 - Specifications: `BOARD-002`, `BOARD-003`, `BOARD-004`, `ASYNC-001`
-- Viewports: PC 1440×1000 and mobile 360×800
-- Browser: installed Chrome driven by bundled Playwright, plus an interactive pass in the Codex in-app browser
-- P3 was not started: there is no persistence, problem progression, navigation, or clear dialog.
+- P3 has not started: there is no persistence, problem progression, navigation, or clear dialog.
 
-## Automated browser check
+## Current code checks
 
-Run from the repository root while `http://127.0.0.1:8765` serves the repository:
+The following non-visual checks were run after the current corrective work:
 
-```powershell
-$env:NODE_PATH='C:\Users\user\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\node_modules'
-& 'C:\Users\user\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe' 'rebuild-evidence\p2\p2-browser-check.cjs'
-```
+- The module body extracted from `index.rebuild.html` passes `node --check -`.
+- `git diff --check` passes; only the repository's existing LF-to-CRLF working-copy warnings are emitted.
+- A standalone numeric check confirms the inner, outer, and across hit boundaries for all six rods.
+- Raw `requestAnimationFrame`, `setTimeout`, and Web Animations calls remain inside `WAKE7:JS:EFFECT-RUNNER`.
+- `renderRotationPreview` no longer rebuilds the seven-cell board on every pointer or animation frame; it updates the existing rotating three-cell layer.
+- Normal settle, short-drag return, and Undo use `settleBoardRotation`.
 
-Observed result:
+The boot self-test names its P2 contracts in `data-checked-p2-contracts` instead of publishing a manually maintained count. The current source checks:
 
-```json
-{"pc":"passed","mobile":"passed","reducedMotion":"passed"}
-```
+- `commit-undo-model`
+- `drag-turn-count`
+- `continuous-rotation`
+- `input-gate`
+- `grip-center-excluded`
+- `all-grip-regions`
+- `settled-frame-alignment`
+- `cancelled-frame-alignment`
+- `wake-angle-window`
+- `clear-face-asset`
 
-The normal verification run does not rewrite the committed evidence images. Set `UPDATE_P2_SCREENSHOTS=1` only when intentionally refreshing them.
+These source-level checks do not replace manual visual acceptance.
 
-The script asserts all of the following against live DOM state:
+## Manual acceptance required
 
-| Scenario | Expected and observed result |
-| --- | --- |
-| Tap during arrival | Rejected; state 31 and empty history remain unchanged |
-| Short drag | Returns to state 31 without adding history |
-| Drag preview then `pointercancel` | Shows moves 1 / remaining 0 without mutating state or history; the three rotating cells stay in a foreground layer with the normal panel border, then return to state 31 |
-| Release outside the board | Safely commits one move; Undo restores state 31 |
-| Positive and negative drag | Both directions commit; the negative reference move solves the problem |
-| Input during rotation | A rapid second tap is ignored; only one history entry is created |
-| Input during clear | Rejected; solved state and history remain unchanged |
-| Restart during Undo | Restart stays disabled and cannot supersede the Undo generation |
-| Restart | Restores state 31 and empties history |
-| Touch drag at 360×800 | Solves to state 0; Undo restores state 31 |
-| Touch scroll policy | Computed `touch-action` is `none` on the board |
-| Reload | Returns to the single static P2 problem with aligned empty history |
-| Reduced motion | Arrival, rotation, and clear reach their correct final states immediately |
+| Scenario | PC | Mobile | Expected result |
+| --- | --- | --- | --- |
+| Rod hover and hit area | Pending | Pending | Hand cursor only in the six rod regions; center excluded; each rod has center-side padding |
+| Short drag | Pending | Pending | Returns without position, face, panel-color, state, or history drift |
+| One 120-degree turn | Pending | Pending | Rotating three panels stay in front and stop without a final pixel jump |
+| Continuous 240/360-degree turn | Pending | Pending | Rotation remains continuous and records one history entry per 120 degrees |
+| Wake/sleep timing | Pending | Pending | Panel color and face change together only near the upright angle |
+| Pointer cancel / outside release | Pending | Pending | Cancel restores exactly; outside release safely commits when applicable |
+| Undo | Pending | Pending | Uses the same settled coordinates as a normal turn and removes one confirmed turn |
+| Restart | Pending | Pending | Restores state 31 and clears history |
+| Clear effect | Pending | Pending | Happy faces and clear motion appear; the central burst does not remain afterward |
+| Reduced motion | Pending | Pending | Every command reaches the same final state without stale effects |
 
-Every stable render asserts that RuntimeState cells, confirmed history length, encoded state, and per-cell DOM orientation agree. The browser exposes the result as `data-invariant="passed"`.
-
-## Domain and source checks
-
-The boot self-test still enumerates all 2187 encoded values. It verifies encode/decode, inverse rolls on all six axes, BFS distances, the 729/1458 reachable split, symmetry invariance, the stage reference, static renders, six visible rods and axes, drag thresholds, the input gate, and the commit/Undo model. Browser-observed boot attributes were:
-
-- `data-selftest="passed"`
-- `data-checked-states="2187"`
-- `data-checked-axes="6"`
-- `data-checked-p2-contracts="4"`
-
-The feature-local search entry is:
+## Search contract
 
 ```powershell
 rg -n "FEATURE-BOARD|SPEC: BOARD-002|SPEC: BOARD-003|SPEC: BOARD-004|SPEC: ASYNC-001" index.rebuild.html
 ```
 
-That one search reaches the board CSS, DOM, RuntimeState, effect runner, pointer input, commands, event bindings, and self-test. Raw `requestAnimationFrame`, `setTimeout`, and Web Animations calls occur only inside `WAKE7:JS:EFFECT-RUNNER`; all callers register against the current generation.
+That one search reaches the board CSS and DOM plus RuntimeState, frame calculation, pointer input, shared settling, Effect Runner, commands, event bindings, and self-test. P2 remains inside the single HTML source.
 
-`git diff --check` passed.
+## Historical artifacts
 
-The candidate was also opened directly as `file:///C:/git_work/wake-seven/index.rebuild.html`; it reached `ready` with no page errors, self-test passed, state 31, and all six rods present. The product still has no runtime or build dependency outside the one HTML file.
-
-## Interactive browser pass
-
-The localhost candidate was opened in the Codex in-app browser. A real pointer drag changed state 31 → state 0 with history 1 and `data-invariant="passed"`; clicking “一手戻す” returned state 0 → state 31 with history 0 and the invariant still passing. A follow-up mid-drag inspection observed three cells in `w7-rotating-layer`, no purple drag class, the normal 1.5px border, and that foreground layer immediately before the axis-control layer.
-
-## Visual evidence
-
-- `pc-1440x1000-ready.png`: initial board with six cyan rods, six gold pivots, status, Undo, and Restart
-- `pc-1440x1000-drag-preview.png`: the three rotating panels above stationary panels, without an application-only purple frame
-- `mobile-360x800-ready.png`: the same controls fitted at 360×800
-- `pc-1440x1000-clear.png`: solved board during the exclusive clear effect with happy faces and the central ring
+`p2-browser-check.cjs` and the PNG files in this directory were produced for the initial P2 implementation before the current corrective work. They are retained only as historical comparison material and **must not be treated as passing evidence for the current candidate**. They are not rerun for current acceptance.
