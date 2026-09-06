@@ -65,7 +65,9 @@
       WAKE7:CSS:DIALOGS
       WAKE7:CSS:FEATURE-TUTORIAL
       WAKE7:CSS:FEATURE-ACADEMY
+      WAKE7:CSS:FEATURE-APPLICATION
       WAKE7:CSS:FEATURE-TRAINING
+      WAKE7:CSS:FEATURE-MASTERY-SATORI
       WAKE7:CSS:FEATURE-SPEED
       WAKE7:CSS:FEATURE-FREE-CUSTOM
       WAKE7:CSS:EFFECTS
@@ -78,6 +80,13 @@
     WAKE7:DOM:STATUS-NAV
     WAKE7:DOM:BOARD
     WAKE7:DOM:DIALOGS
+      WAKE7:DOM:FEATURE-TUTORIAL
+      WAKE7:DOM:FEATURE-ACADEMY
+      WAKE7:DOM:FEATURE-APPLICATION
+      WAKE7:DOM:FEATURE-TRAINING
+      WAKE7:DOM:FEATURE-MASTERY-SATORI
+      WAKE7:DOM:FEATURE-SPEED
+      WAKE7:DOM:FEATURE-FREE-CUSTOM
     WAKE7:DOM:TEMPLATES
     WAKE7:DOM:SVG-DEFS
     <script type="module">
@@ -111,6 +120,16 @@
 ```
 
 実際のコメントは `<!-- WAKE7:DOM:BOARD:START -->`、`/* WAKE7:JS:BOARD-DOMAIN:START */` の形にする。機能の検索入口には仕様IDも併記する。例: `/* SPEC: BOARD-001 BOARD-002 */`。同じIDを無関係な場所へ大量に散らさず、主実装、主検証入口、必要なCSSの最大3か所程度に留める。
+
+### 機能横断の検索契約
+
+- 機能キーは `FEATURE-TUTORIAL`、`FEATURE-ACADEMY`、`FEATURE-APPLICATION`、`FEATURE-TRAINING`、`FEATURE-MASTERY-SATORI`、`FEATURE-SPEED`、`FEATURE-FREE-CUSTOM` の7種に固定する。
+- 各機能は、関連するCSS・DOM・JavaScriptのセクションで必ず同じ機能キーを使う。別名や略称を作らない。
+- 機能固有のCSSセレクター、DOM ID、`data-w7-action`、状態、関数には、機能キーに対応する語彙（`application`、`speed` など）を使う。機能名と無関係な汎用名だけで実装しない。
+- DOMを共通の `WAKE7:DOM:DIALOGS` 内に置く場合も、各機能の `WAKE7:DOM:FEATURE-*:START/END` で囲み、対応する仕様IDを併記する。
+- 共通基盤へ出してよいのは、2機能以上が同じ契約で利用する処理だけとする。共通化した機能からは名前付きAPIを呼び、共通セクションに機能固有の分岐を蓄積しない。
+- 機能改修の調査は `rg -n "FEATURE-APPLICATION|SPEC: APP-" index.rebuild.html` のように、機能キーと仕様ID接頭辞の1回の検索から始める。この検索で主要なCSS・DOM・JavaScriptと検証入口が列挙できない状態は、そのフェーズの未完了とする。
+- 空のアンカーを合格扱いしない。CSSまたはDOMが不要な機能は、機能マップに「対象なし」と理由を書き、実装を別セクションへ隠さない。
 
 ### 命名規約
 
@@ -209,7 +228,7 @@ AppState ⇄ 保存アダプタ（起動・確定点・pagehideのみ）
 - **仕様:** `BOARD-001`。
 - **入力:** 現行の盤面ジオメトリ、`WakeSevenBoardDomain`、三角定義、向きの見た目。文言やモード処理は読まない。
 - **作業:** 7セル、3値、6本の三角軸、符号化／復号、±120度のroll、全探索ソルバを純粋関数で実装する。1問を静的SVGへ描画する。盤面の論理向きとview変換を分離する。
-- **完了条件:** デバッグ自己検査が2187状態を完走し、静的な初期盤面と解決盤面を描ける。
+- **完了条件:** デバッグ自己検査が2187状態を完走し、静的な初期盤面と解決盤面を描ける。加えて、全7機能のCSS・DOM・JavaScriptの検索アンカーが骨格に存在し、機能キーの1回の `rg` で関連セクションまたは「対象なし」の明示を列挙できる。
 - **検証:** 7章の全状態検証を実施し、PC/360pxで現行とセル位置・寝方・軸位置を比較する。
 - **コミット境界:** `rebuild(p1): implement board domain and static renderer`。
 - **停止:** 到達可能性の分類、逆操作、ステージ `par` のいずれかが参照計算と一致しない場合。
@@ -437,6 +456,7 @@ AppState ⇄ 保存アダプタ（起動・確定点・pagehideのみ）
 実装要件:
 - {入力→状態遷移→描画→演出→保存の観測可能な流れ}
 - {維持する不変条件}
+- 機能キー: `FEATURE-{NAME}` をCSS・DOM・JavaScriptで共通使用し、仕様ID接頭辞との1回の `rg` で主要実装と検証入口を列挙できること。
 - 旧版からコピー可: {純粋データ／文言だけを具体化}
 - 再実装: {制御ロジックを具体化}
 
@@ -446,6 +466,7 @@ AppState ⇄ 保存アダプタ（起動・確定点・pagehideのみ）
 - スマホ/タッチ: {ケース}
 - リロード/lifecycle: {ケース}
 - reduced motion: {ケース}
+- 検索契約: `rg -n "FEATURE-{NAME}|SPEC: {PREFIX}-" index.rebuild.html`
 - `git diff --check`
 
 停止条件:
