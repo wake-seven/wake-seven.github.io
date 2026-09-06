@@ -44,6 +44,7 @@
     .w7-board-button { min-width:7rem; min-height:2.75rem; border:1px solid #c0ac88; border-radius:999px; padding:0.55rem 1rem; background:var(--washi); color:#2d2925; font:inherit; font-weight:700; box-shadow:0 2px 0 rgb(0 0 0 / .24); cursor:pointer; }
     .w7-board-button:focus-visible { outline:3px solid #7dd8f5; outline-offset:3px; }
     .w7-board-button:disabled { opacity:.42; cursor:default; box-shadow:none; }
+    .w7-clear-burst { pointer-events:none; transform-box:view-box; }
     .w7-dialog-backdrop { position:fixed; z-index:10; inset:0; display:grid; place-items:center; padding:1rem; background:rgb(5 14 25 / .64); }
     .w7-dialog-backdrop[hidden] { display:none; }
     .w7-dialog { width:min(100%,22rem); border:2px solid #7dd8f5; border-radius:1rem; padding:1.35rem; background:var(--ai2); color:var(--washi); box-shadow:0 1rem 3rem rgb(0 0 0 / .42); text-align:center; }
@@ -865,7 +866,20 @@
           { transform:base },
         ], { duration:CLEAR_MILLISECONDS, delay:index * CLEAR_TILE_STAGGER_MILLISECONDS, easing:'cubic-bezier(.2,.8,.25,1)' });
       });
-      // 中央だけに円が残る演出は出さない。全員の弾みだけでクリアを見せる。
+      // クリアの円は広がって消す。終端で初期状態へ戻さず透明を保つため、中央だけの円は残らない。
+      const center = viewPoint(CELL_POSITIONS[3]);
+      const burst = svgElement('g', { class:'w7-clear-burst', 'pointer-events':'none' });
+      burst.style.transformOrigin = `${center.x}px ${center.y}px`;
+      burst.style.transformBox = 'view-box';
+      burst.append(svgElement('circle', { cx:center.x, cy:center.y, r:47, fill:'none', stroke:'#c9a54e', 'stroke-width':4 }));
+      burst.append(svgElement('circle', { cx:center.x, cy:center.y, r:58, fill:'none', stroke:'#f3e8d5', 'stroke-width':1.5, opacity:.7 }));
+      boardElement.append(burst);
+      startEffectAnimation(effect, burst, [
+        { transform:'scale(.55)', opacity:0 },
+        { transform:'scale(.8)', opacity:1, offset:.2 },
+        { transform:'scale(2.45)', opacity:0 },
+      ], { duration:CLEAR_MILLISECONDS, easing:'cubic-bezier(.15,.7,.2,1)', fill:'forwards' });
+      setEffectTimer(effect, () => burst.remove(), CLEAR_MILLISECONDS);
       setEffectTimer(effect, () => { if (finishEffect(effect)) renderRuntime({ happy:true, context:'clear effect' }); }, CLEAR_SETTLE_MILLISECONDS);
     }
     // 盤面と操作ボタンのイベント
