@@ -463,6 +463,10 @@
       };
       return { rewards, settings };
     }
+    function normalizeNormalProgress(rawProgress) {
+      const recorded = Array.isArray(rawProgress?.normalCompleted) ? rawProgress.normalCompleted : [];
+      return { normalCompleted:[...new Set(recorded.filter(puzzleId => NORMAL_PUZZLES.some(puzzle => puzzle.puzzleId === puzzleId)))] };
+    }
     // localStorageからの復元は、問題・履歴・クリア文脈を順番に検査する。壊れた盤面だけを初期盤面へ戻し、報酬設定は別に保つ。
     function normalizePersistentAppState(raw) {
       if (!raw || raw.schemaVersion !== APP_SCHEMA_VERSION || raw.catalogVersion !== APP_CATALOG_VERSION) return makeDefaultAppState();
@@ -472,20 +476,23 @@
       const fallback = makeDefaultAppState(candidateIndex);
       const puzzle = puzzleAt(candidateIndex);
       const expectedInitial = puzzleInitialCells(puzzle);
+      const progress = normalizeNormalProgress(raw.progress);
+      const rewardAndSettings = normalizeRewardsAndSettings(raw.rewards, raw.settings);
       const board = raw.board;
       const boardIsValid = board && sameCells(board.initialCells ?? [], expectedInitial) && isOrientationCells(board.cells);
       const history = boardIsValid ? validMoveHistory(board.history, expectedInitial, board.cells) : null;
-      if (history === null) return { ...fallback, ...normalizeRewardsAndSettings(raw.rewards, raw.settings) };
+      // 盤面だけが壊れても、既に獲得した通常問題の進捗や報酬設定まで消さない。
+      if (history === null) return { ...fallback, progress, ...rewardAndSettings };
       const solved = WakeSevenBoardDomain.isSolved(board.cells);
-      const clearCommitted = board.clearCommitted === true && solved;
-      // clearCommittedだけが残った場合も、問題文脈からダイアログを組み直して「解けたのに進めない」を防ぐ。
-      const dialog = clearCommitted ? clearDialogDescriptor(candidateIndex) : null;
-      const completed = Array.isArray(raw.progress?.normalCompleted) ? raw.progress.normalCompleted.filter(id => NORMAL_PUZZLES.some(puzzleItem => puzzleItem.puzzleId === id)) : [];
+      // 解決済み盤面なら、壊れた／欠けたclearCommittedやdialogに依存せず、必ず進行できるクリア状態を再構成する。
+      const clearCommitted = solved;
+      const dialog = solved ? clearDialogDescriptor(candidateIndex) : null;
+      if (solved && !progress.normalCompleted.includes(puzzle.puzzleId)) progress.normalCompleted.push(puzzle.puzzleId);
       return {
         ...fallback,
         board:{ initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted },
-        progress:{ normalCompleted:[...new Set(completed)] },
-        ...normalizeRewardsAndSettings(raw.rewards, raw.settings),
+        progress,
+        ...rewardAndSettings,
         ui:{ dialog },
       };
     }
@@ -878,14 +885,27 @@
         renderRuntime({ context:'window blur' });
       }
     });
+    // 非表示化やbfcache復帰では、途中フレームを捨ててAppStateの安定盤面とダイアログを描き直す。
+    function normalizeRuntimeAfterInterruption(reason) {
+      if (RuntimeState.invalidPointerId !== null) safelyReleasePointer(RuntimeState.invalidPointerId);
+      RuntimeState.invalidPointerId = null;
+      boardElement.classList.remove('is-invalid-grab','is-grip-hover');
+      boardGripPrompt.hidden = true;
+      if (RuntimeState.phase !== BoardPhase.READY || RuntimeState.activeEffect) cancelActiveEffect(reason);
+      RuntimeState.drag = null;
+      RuntimeState.phase = BoardPhase.READY;
+      renderRuntime({ context:reason });
+    }
     // 保存は確定した盤面だけ。ドラッグやアニメーションの途中角度は捨て、最後の安定AppStateへ戻す。
     function saveStableAppStateBeforeLeave(reason) {
-      if (RuntimeState.phase !== BoardPhase.READY) cancelActiveEffect(reason);
+      normalizeRuntimeAfterInterruption(reason);
       syncBoardToAppState();
       saveAppState(reason);
     }
     window.addEventListener('pagehide', () => saveStableAppStateBeforeLeave('pagehide'));
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveStableAppStateBeforeLeave('hidden'); });
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') normalizeRuntimeAfterInterruption('visible'); });
+    window.addEventListener('pageshow', event => { if (event.persisted) normalizeRuntimeAfterInterruption('pageshow'); });
     // 盤面ルール、棒の判定、回転、Undo、クリア演出の自己検査
     function runSelftest() {
       const errors = [];
@@ -1004,15 +1024,39 @@
         const initial = puzzleInitialCells(firstPuzzle);
         const solved = Array.from(WakeSevenBoardDomain.roll(initial, firstSolution.triangleIndex, firstSolution.direction));
         const savedClear = makeDefaultAppState();
-        savedClear.board = { initialCells:[...initial], cells:solved, history:[{ triangleIndex:firstSolution.triangleIndex, direction:firstSolution.direction, before:[...initial], after:[...solved] }], clearCommitted:true };
+        // clearCommittedとdialogと進捗が欠けていても、解決済み盤面から進行可能な状態を復元する。
+        savedClear.board = { initialCells:[...initial], cells:solved, history:[{ triangleIndex:firstSolution.triangleIndex, direction:firstSolution.direction, before:[...initial], after:[...solved] }], clearCommitted:false };
         savedClear.ui = { dialog:null };
         const restoredClear = normalizePersistentAppState(savedClear);
-        checkRuntime('clear-reload-rebuilds-dialog', restoredClear.board.clearCommitted && restoredClear.ui.dialog?.type === 'clear' && restoredClear.ui.dialog.puzzleId === firstPuzzle.puzzleId, 'clear reload did not rebuild dialog');
-        const brokenBoard = normalizePersistentAppState({ ...savedClear, board:{ ...savedClear.board, cells:[9, 9, 9] }, rewards:{ masterGoldGranted:true, satoriDesignGranted:false }, settings:{ theme:'gold', layout:'satori-tilted' } });
-        checkRuntime('broken-board-safe-fallback', sameCells(brokenBoard.board.cells, initial) && brokenBoard.settings.theme === 'gold' && brokenBoard.settings.layout === 'standard', 'broken board fallback changed unrelated reward settings');
+        checkRuntime('solved-reload-rebuilds-clear-state', restoredClear.board.clearCommitted && restoredClear.ui.dialog?.type === 'clear' && restoredClear.ui.dialog.puzzleId === firstPuzzle.puzzleId && restoredClear.progress.normalCompleted.includes(firstPuzzle.puzzleId), 'solved reload did not rebuild clear state');
+        const preservedProgress = puzzleAt(1).puzzleId;
+        const brokenBoard = normalizePersistentAppState({ ...savedClear, board:{ ...savedClear.board, cells:[9, 9, 9] }, progress:{ normalCompleted:[preservedProgress] }, rewards:{ masterGoldGranted:true, satoriDesignGranted:false }, settings:{ theme:'gold', layout:'satori-tilted' } });
+        checkRuntime('broken-board-keeps-independent-state', sameCells(brokenBoard.board.cells, initial) && brokenBoard.progress.normalCompleted.includes(preservedProgress) && brokenBoard.settings.theme === 'gold' && brokenBoard.settings.layout === 'standard', 'broken board fallback changed independent progress or reward settings');
       }
       const lockedRewardSettings = normalizePersistentAppState({ ...makeDefaultAppState(), settings:{ theme:'gold', layout:'satori-tilted', themeChosen:true, layoutChosen:true } });
       checkRuntime('locked-reward-selection-fallback', lockedRewardSettings.settings.theme === 'standard' && lockedRewardSettings.settings.layout === 'standard', 'locked reward selection was not normalized');
+      const zeroMoveRestore = normalizePersistentAppState(makeDefaultAppState());
+      checkRuntime('zero-move-reload', zeroMoveRestore.board.history.length === 0 && sameCells(zeroMoveRestore.board.cells, puzzleInitialCells(puzzleAt(0))), 'zero-move reload changed the board');
+      const secondPuzzle = puzzleAt(1);
+      const secondInitial = puzzleInitialCells(secondPuzzle);
+      const possibleMoves = TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction })));
+      const twoMoveSolution = possibleMoves.flatMap(firstMove => {
+        const afterFirst = WakeSevenBoardDomain.roll(secondInitial, firstMove.triangleIndex, firstMove.direction);
+        return possibleMoves.map(secondMove => ({ firstMove, secondMove, afterFirst, afterSecond:WakeSevenBoardDomain.roll(afterFirst, secondMove.triangleIndex, secondMove.direction) }));
+      }).find(candidate => WakeSevenBoardDomain.isSolved(candidate.afterSecond));
+      if (!twoMoveSolution) errors.push('second P3 puzzle has no two-move solution');
+      else {
+        const afterOneMove = Array.from(twoMoveSolution.afterFirst);
+        const oneMoveStage = makeDefaultAppState(1);
+        oneMoveStage.board = { initialCells:[...secondInitial], cells:afterOneMove, history:[{ triangleIndex:twoMoveSolution.firstMove.triangleIndex, direction:twoMoveSolution.firstMove.direction, before:[...secondInitial], after:afterOneMove }], clearCommitted:false };
+        const restoredOneMove = normalizePersistentAppState(oneMoveStage);
+        checkRuntime('one-move-reload', restoredOneMove.navigation.puzzleId === secondPuzzle.puzzleId && restoredOneMove.board.history.length === 1 && sameCells(restoredOneMove.board.cells, afterOneMove), 'one-move reload did not preserve stage state');
+        const undoStage = makeDefaultAppState(1);
+        const restoredUndo = normalizePersistentAppState(undoStage);
+        checkRuntime('undo-to-zero-move-reload', restoredUndo.board.history.length === 0 && sameCells(restoredUndo.board.cells, secondInitial), 'undo-to-zero-move reload changed the board');
+        const malformedPuzzleContext = normalizePersistentAppState({ ...oneMoveStage, navigation:{ ...oneMoveStage.navigation, puzzleId:'unknown-puzzle' } });
+        checkRuntime('malformed-puzzle-id-fallback', malformedPuzzleContext.navigation.puzzleId === puzzleAt(0).puzzleId && sameCells(malformedPuzzleContext.board.cells, puzzleInitialCells(puzzleAt(0))), 'malformed puzzle id did not fall back safely');
+      }
       return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:1, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
     }
     // 起動時に盤面ルールと操作の前提を確認してから表示する
