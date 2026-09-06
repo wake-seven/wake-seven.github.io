@@ -14,6 +14,8 @@
     body { margin:0; min-height:100vh; min-height:100dvh; max-width:100%; display:flex; flex-direction:column; align-items:center; padding:1.125rem 0.75rem max(0.75rem,env(safe-area-inset-bottom)); background:var(--ai); background-image:radial-gradient(120% 70% at 50% 0%,var(--ai2) 0%,var(--ai) 62%); color:var(--washi); font-family:"A1 Gothic","Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,"Noto Sans JP",sans-serif; }
     /* 画面の枠 */
     .w7-shell { width:100%; max-width:var(--content-max); }
+    .w7-app-title { margin:0 0 .35rem; text-align:center; font-size:clamp(1.25rem,5vw,1.65rem); }
+    .w7-stage-label { margin:0 0 .8rem; text-align:center; color:#b9e8f2; font-weight:700; }
     /* 盤面、棒、操作ボタン */
     .w7-board-feature { display:grid; gap:0.625rem; }
     .w7-board-status { display:flex; justify-content:center; gap:1.5rem; min-height:1.75rem; font-weight:700; font-size:1.05rem; font-variant-numeric:tabular-nums; }
@@ -43,6 +45,12 @@
     .w7-board-button:focus-visible { outline:3px solid #7dd8f5; outline-offset:3px; }
     .w7-board-button:disabled { opacity:.42; cursor:default; box-shadow:none; }
     .w7-clear-burst { pointer-events:none; transform-box:view-box; }
+    .w7-dialog-backdrop { position:fixed; z-index:10; inset:0; display:grid; place-items:center; padding:1rem; background:rgb(5 14 25 / .64); }
+    .w7-dialog-backdrop[hidden] { display:none; }
+    .w7-dialog { width:min(100%,22rem); border:2px solid #7dd8f5; border-radius:1rem; padding:1.35rem; background:var(--ai2); color:var(--washi); box-shadow:0 1rem 3rem rgb(0 0 0 / .42); text-align:center; }
+    .w7-dialog h2 { margin:0 0 .6rem; font-size:1.55rem; }
+    .w7-dialog p { margin:.3rem 0 1rem; line-height:1.55; }
+    .w7-dialog-actions { display:flex; justify-content:center; gap:.65rem; flex-wrap:wrap; }
     @media (prefers-reduced-motion:reduce) { .w7-board * { animation:none!important; transition:none!important; } }
     /* スマホでは盤面を横いっぱいに使う */
     @media (max-width:480px) { body { padding-left:0.25rem; padding-right:0.25rem; padding-bottom:max(0.5rem,env(safe-area-inset-bottom)); } .w7-shell,.w7-board-frame { max-width:none; } }
@@ -51,6 +59,8 @@
 <body>
   <!-- 盤面の画面 -->
   <main class="w7-shell">
+    <h1 class="w7-app-title">だるまさんを起こして！</h1>
+    <p id="w7-stage-label" class="w7-stage-label">通常問題 1 / 2</p>
     <section class="w7-board-feature" aria-label="七枚のだるま盤">
       <div class="w7-board-status" aria-live="polite">
         <span>いま <strong id="w7-board-moves">0</strong> くるり</span>
@@ -66,6 +76,9 @@
       </div>
     </section>
   </main>
+  <div id="w7-dialog-backdrop" class="w7-dialog-backdrop" hidden>
+    <section id="w7-dialog" class="w7-dialog" role="dialog" aria-modal="true" aria-labelledby="w7-dialog-title" tabindex="-1"></section>
+  </div>
   <!-- だるまのSVG部品。盤面描画からuseして使う。 -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
     <g id="w7-daruma-body">
@@ -218,6 +231,14 @@
     });
     const SOLVER = WakeSevenBoardDomain.buildSolver();
     const INITIAL_BOARD = Object.freeze(Array.from(WakeSevenBoardDomain.decode(REFERENCE_STAGE.state)));
+    // P3で扱う通常問題は二問だけ。問題を増やす時も、盤面状態と最短手数はこのカタログに集める。
+    const NORMAL_PUZZLES = Object.freeze([
+      Object.freeze({ puzzleId:'stage-001', state:31, par:1 }),
+      Object.freeze({ puzzleId:'stage-002', state:1732, par:2 }),
+    ]);
+    const APP_STORAGE_KEY = 'wake7-rebuild-v1';
+    const APP_SCHEMA_VERSION = 1;
+    const APP_CATALOG_VERSION = 1;
     // 画面上の見た目だけを変える座標変換。盤面ルールや履歴は変えない。
     /* The board's logic always uses CELL_POSITIONS; this display transform is presentation-only. */
     const BOARD_VIEW = Object.freeze({ rotationDegrees: 0, translateX: 0, translateY: 0 });
@@ -258,6 +279,9 @@
     const boardUndoButton = document.querySelector('#w7-board-undo');
     const boardRestartButton = document.querySelector('#w7-board-restart');
     const boardGripPrompt = document.querySelector('#w7-grip-prompt');
+    const stageLabelElement = document.querySelector('#w7-stage-label');
+    const dialogBackdropElement = document.querySelector('#w7-dialog-backdrop');
+    const dialogElement = document.querySelector('#w7-dialog');
     function svgElement(name, attributes = {}) { const element = document.createElementNS(SVG_NS, name); for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, String(value)); return element; }
     function hexPath(radius) { return Array.from({ length: 6 }, (_, index) => { const angle = (90 + index * 60) * Math.PI / 180; return `${index ? 'L' : 'M'}${(radius * Math.cos(angle)).toFixed(2)} ${(radius * -Math.sin(angle)).toFixed(2)}`; }).join(' ') + 'Z'; }
     function orientationDegrees(orientation) { return orientation === 0 ? 0 : orientation === 1 ? TURN_DEGREES : -TURN_DEGREES; }
@@ -304,14 +328,16 @@
       boardElement.dataset.state = String(WakeSevenBoardDomain.encode(RuntimeState.cells));
       boardElement.dataset.historyLength = String(RuntimeState.history.length);
       boardElement.dataset.solved = String(WakeSevenBoardDomain.isSolved(RuntimeState.cells));
-      const ready = RuntimeState.phase === BoardPhase.READY && RuntimeState.invalidPointerId === null;
+      const ready = RuntimeState.phase === BoardPhase.READY && RuntimeState.invalidPointerId === null && selectCanInteractWithBoard();
       boardUndoButton.disabled = !ready || RuntimeState.history.length === 0;
-      boardRestartButton.disabled = !ready || (RuntimeState.history.length === 0 && WakeSevenBoardDomain.encode(RuntimeState.cells) === REFERENCE_STAGE.state);
+      boardRestartButton.disabled = !ready || (RuntimeState.history.length === 0 && WakeSevenBoardDomain.encode(RuntimeState.cells) === selectActivePuzzle().state);
     }
     function renderRuntime(options = {}) {
       renderBoard(RuntimeState.cells, boardElement, { happy:Boolean(options.happy) });
       renderBoardStatus();
+      renderStageLabel();
       renderBoardPhase();
+      renderDialog();
       if (RuntimeState.phase === BoardPhase.READY) assertRuntimeDomAlignment(options.context ?? 'render');
     }
     function normalizedDegrees(degrees) { return ((degrees + 180) % 360 + 360) % 360 - 180; }
@@ -382,17 +408,147 @@
     }
     // 操作中の盤面状態。ドラッグ、回転、やり直し、クリア演出はここだけを更新する。
     const BoardPhase = Object.freeze({ ARRIVING:'arriving', READY:'ready', DRAGGING:'dragging', ROTATING:'rotating', UNDOING:'undoing', RESTARTING:'restarting', CELEBRATING:'celebrating' });
+    // 通常問題の進行、盤面、報酬の選択は AppState が所有する。アニメーション途中の値は RuntimeState だけに置く。
+    function puzzleAt(index) { return NORMAL_PUZZLES[index] ?? NORMAL_PUZZLES[0]; }
+    function puzzleInitialCells(puzzle) { return Array.from(WakeSevenBoardDomain.decode(puzzle.state)); }
+    function makeDefaultAppState(puzzleIndex = 0) {
+      const puzzle = puzzleAt(puzzleIndex);
+      const initialCells = puzzleInitialCells(puzzle);
+      return {
+        schemaVersion:APP_SCHEMA_VERSION,
+        catalogVersion:APP_CATALOG_VERSION,
+        navigation:{ mode:'normal', puzzleIndex, puzzleId:puzzle.puzzleId },
+        board:{ initialCells, cells:[...initialCells], history:[], clearCommitted:false },
+        progress:{ normalCompleted:[] },
+        // rewardsは獲得資格、settingsは現在の表示選択。P3では表示をまだ変えない。
+        rewards:{ masterGoldGranted:false, satoriDesignGranted:false },
+        settings:{ theme:'standard', layout:'standard', themeChosen:false, layoutChosen:false },
+        ui:{ dialog:null },
+      };
+    }
+    function isOrientationCells(value) { return Array.isArray(value) && value.length === CELL_COUNT && value.every(cell => Number.isInteger(cell) && cell >= 0 && cell <= 2); }
+    function sameCells(left, right) { return left.length === right.length && left.every((cell, index) => cell === right[index]); }
+    function validMoveHistory(value, initialCells, cells) {
+      if (!Array.isArray(value)) return null;
+      let replay = Uint8Array.from(initialCells);
+      const history = [];
+      for (const entry of value) {
+        if (!entry || !Number.isInteger(entry.triangleIndex) || entry.triangleIndex < 0 || entry.triangleIndex >= TRIANGLES.length || (entry.direction !== 1 && entry.direction !== -1) || !isOrientationCells(entry.before) || !isOrientationCells(entry.after) || !sameCells(entry.before, Array.from(replay))) return null;
+        const after = WakeSevenBoardDomain.roll(replay, entry.triangleIndex, entry.direction);
+        if (!sameCells(entry.after, Array.from(after))) return null;
+        history.push(Object.freeze({ triangleIndex:entry.triangleIndex, direction:entry.direction, before:Object.freeze([...entry.before]), after:Object.freeze([...entry.after]) }));
+        replay = after;
+      }
+      return sameCells(cells, Array.from(replay)) ? history : null;
+    }
+    function clearDialogDescriptor(puzzleIndex) {
+      const puzzle = puzzleAt(puzzleIndex);
+      const nextPuzzle = NORMAL_PUZZLES[puzzleIndex + 1] ?? null;
+      return Object.freeze({ type:'clear', puzzleId:puzzle.puzzleId, nextPuzzleId:nextPuzzle?.puzzleId ?? null });
+    }
+    function normalizeRewardsAndSettings(rawRewards, rawSettings) {
+      const rewards = {
+        masterGoldGranted:rawRewards?.masterGoldGranted === true,
+        satoriDesignGranted:rawRewards?.satoriDesignGranted === true,
+      };
+      const requestedTheme = rawSettings?.theme;
+      const requestedLayout = rawSettings?.layout;
+      const themeAllowed = requestedTheme === 'standard' || requestedTheme === 'gold' && rewards.masterGoldGranted || requestedTheme === 'satori' && rewards.satoriDesignGranted;
+      const layoutAllowed = requestedLayout === 'standard' || requestedLayout === 'satori-tilted' && rewards.satoriDesignGranted;
+      const settings = {
+        theme:themeAllowed ? requestedTheme : 'standard',
+        layout:layoutAllowed ? requestedLayout : 'standard',
+        themeChosen:themeAllowed && rawSettings?.themeChosen === true,
+        layoutChosen:layoutAllowed && rawSettings?.layoutChosen === true,
+      };
+      return { rewards, settings };
+    }
+    // localStorageからの復元は、問題・履歴・クリア文脈を順番に検査する。壊れた盤面だけを初期盤面へ戻し、報酬設定は別に保つ。
+    function normalizePersistentAppState(raw) {
+      if (!raw || raw.schemaVersion !== APP_SCHEMA_VERSION || raw.catalogVersion !== APP_CATALOG_VERSION) return makeDefaultAppState();
+      const requestedIndex = raw.navigation?.puzzleIndex;
+      const navigationIsValid = raw.navigation?.mode === 'normal' && Number.isInteger(requestedIndex) && NORMAL_PUZZLES[requestedIndex] && raw.navigation?.puzzleId === NORMAL_PUZZLES[requestedIndex].puzzleId;
+      const candidateIndex = navigationIsValid ? requestedIndex : 0;
+      const fallback = makeDefaultAppState(candidateIndex);
+      const puzzle = puzzleAt(candidateIndex);
+      const expectedInitial = puzzleInitialCells(puzzle);
+      const board = raw.board;
+      const boardIsValid = board && sameCells(board.initialCells ?? [], expectedInitial) && isOrientationCells(board.cells);
+      const history = boardIsValid ? validMoveHistory(board.history, expectedInitial, board.cells) : null;
+      if (history === null) return { ...fallback, ...normalizeRewardsAndSettings(raw.rewards, raw.settings) };
+      const solved = WakeSevenBoardDomain.isSolved(board.cells);
+      const clearCommitted = board.clearCommitted === true && solved;
+      // clearCommittedだけが残った場合も、問題文脈からダイアログを組み直して「解けたのに進めない」を防ぐ。
+      const dialog = clearCommitted ? clearDialogDescriptor(candidateIndex) : null;
+      const completed = Array.isArray(raw.progress?.normalCompleted) ? raw.progress.normalCompleted.filter(id => NORMAL_PUZZLES.some(puzzleItem => puzzleItem.puzzleId === id)) : [];
+      return {
+        ...fallback,
+        board:{ initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted },
+        progress:{ normalCompleted:[...new Set(completed)] },
+        ...normalizeRewardsAndSettings(raw.rewards, raw.settings),
+        ui:{ dialog },
+      };
+    }
+    let restoredFromStorage = false;
+    function loadAppState() {
+      try {
+        const serialized = localStorage.getItem(APP_STORAGE_KEY);
+        if (serialized === null) return makeDefaultAppState();
+        const state = normalizePersistentAppState(JSON.parse(serialized));
+        restoredFromStorage = state.schemaVersion === APP_SCHEMA_VERSION;
+        return state;
+      }
+      catch { return makeDefaultAppState(); }
+    }
+    let AppState = loadAppState();
+    function saveAppState(reason) {
+      try { localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(AppState)); document.documentElement.dataset.w7LastSave = reason; }
+      catch { document.documentElement.dataset.w7LastSave = 'unavailable'; }
+    }
+    function selectActivePuzzle() { return puzzleAt(AppState.navigation.puzzleIndex); }
+    function selectCanInteractWithBoard(appState = AppState) { return appState.ui.dialog === null && !appState.board.clearCommitted; }
+    function syncBoardToAppState() {
+      AppState.board.cells = Array.from(RuntimeState.cells);
+      AppState.board.history = RuntimeState.history.map(entry => ({ triangleIndex:entry.triangleIndex, direction:entry.direction, before:[...entry.before], after:[...entry.after] }));
+    }
+    function renderStageLabel() {
+      const puzzle = selectActivePuzzle();
+      stageLabelElement.textContent = `通常問題 ${AppState.navigation.puzzleIndex + 1} / ${NORMAL_PUZZLES.length}　最短 ${puzzle.par} くるり`;
+    }
+    function renderDialog() {
+      // クリアは先に記録するが、祝福アニメーションが終わるまでダイアログは重ねない。
+      const descriptor = RuntimeState.phase === BoardPhase.CELEBRATING ? null : AppState.ui.dialog;
+      dialogBackdropElement.hidden = !descriptor;
+      if (!descriptor) { dialogElement.replaceChildren(); return; }
+      const puzzle = selectActivePuzzle();
+      const title = document.createElement('h2');
+      title.id = 'w7-dialog-title';
+      title.textContent = '全員起きました！';
+      const message = document.createElement('p');
+      const nextPuzzle = NORMAL_PUZZLES[AppState.navigation.puzzleIndex + 1];
+      message.textContent = nextPuzzle ? `通常問題 ${AppState.navigation.puzzleIndex + 1} を ${RuntimeState.history.length} くるりでクリア！` : `通常問題 ${AppState.navigation.puzzleIndex + 1} を ${RuntimeState.history.length} くるりでクリア！ P3の通常問題はここまでです。`;
+      const actions = document.createElement('div');
+      actions.className = 'w7-dialog-actions';
+      const retry = document.createElement('button');
+      retry.className = 'w7-board-button'; retry.type = 'button'; retry.textContent = 'もう一度'; retry.addEventListener('click', intentRetryPuzzle);
+      const next = document.createElement('button');
+      next.className = 'w7-board-button'; next.type = 'button'; next.textContent = nextPuzzle ? '次の問題へ' : '最初から'; next.addEventListener('click', intentNextPuzzle);
+      actions.append(retry, next);
+      dialogElement.replaceChildren(title, message, actions);
+      queueMicrotask(() => next.focus());
+      dialogElement.dataset.puzzleId = puzzle.puzzleId;
+    }
     const RuntimeState = {
-      cells: Uint8Array.from(INITIAL_BOARD),
-      history: [],
+      cells: Uint8Array.from(AppState.board.cells),
+      history: AppState.board.history.map(entry => Object.freeze({ triangleIndex:entry.triangleIndex, direction:entry.direction, before:Object.freeze([...entry.before]), after:Object.freeze([...entry.after]) })),
       phase: BoardPhase.READY,
       drag: null,
       invalidPointerId: null,
       effectGeneration: 0,
       activeEffect: null,
     };
-    function selectCanStartBoardDrag(state = RuntimeState) { return state.phase === BoardPhase.READY && state.invalidPointerId === null && !WakeSevenBoardDomain.isSolved(state.cells); }
-    function selectCanUseHistory(state = RuntimeState) { return state.phase === BoardPhase.READY && state.invalidPointerId === null; }
+    function selectCanStartBoardDrag(state = RuntimeState, appState = AppState) { return selectCanInteractWithBoard(appState) && state.phase === BoardPhase.READY && state.invalidPointerId === null && !WakeSevenBoardDomain.isSolved(state.cells); }
+    function selectCanUseHistory(state = RuntimeState, appState = AppState) { return selectCanInteractWithBoard(appState) && state.phase === BoardPhase.READY && state.invalidPointerId === null; }
     function assertRuntimeDomAlignment(context) {
       const cells = Array.from(boardElement.querySelectorAll('.w7-cell'));
       const domOrientations = cells.map(cell => Number(cell.dataset.orientation));
@@ -582,8 +738,13 @@
       const completeRotation = () => {
         if (turns) for (let count = 0; count < Math.abs(turns); count += 1) commitBoardMove(drag.triangleIndex, Math.sign(turns));
         if (!finishEffect(drag.effect)) return;
+        if (turns && WakeSevenBoardDomain.isSolved(RuntimeState.cells)) {
+          commitClearForCurrentPuzzle();
+          runClearEffect();
+          return;
+        }
+        if (turns) { syncBoardToAppState(); saveAppState('move commit'); }
         renderRuntime({ context:turns ? 'move commit' : 'short drag cancel' });
-        if (turns && WakeSevenBoardDomain.isSolved(RuntimeState.cells)) runClearEffect();
       };
       settleBoardRotation({ effect:drag.effect, cells:drag.cells, triangleIndex:drag.triangleIndex, fromDegrees:drag.degrees, turns, complete:completeRotation });
     }
@@ -619,24 +780,51 @@
         if (!isCurrentEffect(effect) || RuntimeState.history.at(-1) !== entry) return;
         RuntimeState.history.pop();
         RuntimeState.cells = Uint8Array.from(entry.before);
-        if (finishEffect(effect)) renderRuntime({ context:'undo' });
+        if (finishEffect(effect)) { syncBoardToAppState(); saveAppState('undo'); renderRuntime({ context:'undo' }); }
       } });
       return true;
     }
     // やり直す。現在の問題の初期盤面へ戻し、履歴を空にする。
     function intentRestart() {
-      if (!selectCanUseHistory() || RuntimeState.history.length === 0 && WakeSevenBoardDomain.encode(RuntimeState.cells) === REFERENCE_STAGE.state) return false;
+      if (!selectCanUseHistory() || RuntimeState.history.length === 0 && WakeSevenBoardDomain.encode(RuntimeState.cells) === selectActivePuzzle().state) return false;
       const effect = beginEffect(BoardPhase.RESTARTING);
       runEffectFrames(effect, RESTART_MILLISECONDS, progress => {
         const opacity = 1 - Math.sin(Math.PI * progress) * .62;
         const scale = 1 - Math.sin(Math.PI * progress) * .08;
         boardElement.querySelectorAll('.w7-cell').forEach(cell => { cell.style.opacity = String(opacity); cell.setAttribute('transform', `${cell.getAttribute('transform').replace(/ scale\([^)]*\)$/, '')} scale(${scale})`); });
       }, () => {
-        RuntimeState.cells = Uint8Array.from(INITIAL_BOARD);
+        RuntimeState.cells = Uint8Array.from(AppState.board.initialCells);
         RuntimeState.history.length = 0;
-        if (finishEffect(effect)) renderRuntime({ context:'restart' });
+        AppState.board.clearCommitted = false;
+        AppState.ui.dialog = null;
+        if (finishEffect(effect)) { syncBoardToAppState(); saveAppState('restart'); renderRuntime({ context:'restart' }); }
       });
       return true;
+    }
+    // クリアは演出ではなく確定コマンドで一度だけ記録する。リロード時にも同じ問題のダイアログを再構成できる。
+    function commitClearForCurrentPuzzle() {
+      syncBoardToAppState();
+      AppState.board.clearCommitted = true;
+      const puzzleId = selectActivePuzzle().puzzleId;
+      if (!AppState.progress.normalCompleted.includes(puzzleId)) AppState.progress.normalCompleted.push(puzzleId);
+      AppState.ui.dialog = clearDialogDescriptor(AppState.navigation.puzzleIndex);
+      saveAppState('clear committed');
+    }
+    function resetCurrentPuzzleWithoutAnimation(reason) {
+      const puzzle = selectActivePuzzle();
+      AppState.board = { initialCells:puzzleInitialCells(puzzle), cells:puzzleInitialCells(puzzle), history:[], clearCommitted:false };
+      AppState.ui.dialog = null;
+      RuntimeState.cells = Uint8Array.from(AppState.board.cells);
+      RuntimeState.history = [];
+      RuntimeState.phase = BoardPhase.READY;
+      saveAppState(reason);
+      renderRuntime({ context:reason });
+    }
+    function intentRetryPuzzle() { resetCurrentPuzzleWithoutAnimation('clear dialog retry'); }
+    function intentNextPuzzle() {
+      const nextIndex = AppState.navigation.puzzleIndex + 1 < NORMAL_PUZZLES.length ? AppState.navigation.puzzleIndex + 1 : 0;
+      AppState.navigation = { mode:'normal', puzzleIndex:nextIndex, puzzleId:puzzleAt(nextIndex).puzzleId };
+      resetCurrentPuzzleWithoutAnimation('next puzzle');
     }
     // 全員が起きた後のクリア演出。通常の回転とは別の表情と弾みだけを描く。
     function runClearEffect() {
@@ -690,12 +878,19 @@
         renderRuntime({ context:'window blur' });
       }
     });
-    window.addEventListener('pagehide', () => cancelActiveEffect('pagehide'));
+    // 保存は確定した盤面だけ。ドラッグやアニメーションの途中角度は捨て、最後の安定AppStateへ戻す。
+    function saveStableAppStateBeforeLeave(reason) {
+      if (RuntimeState.phase !== BoardPhase.READY) cancelActiveEffect(reason);
+      syncBoardToAppState();
+      saveAppState(reason);
+    }
+    window.addEventListener('pagehide', () => saveStableAppStateBeforeLeave('pagehide'));
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveStableAppStateBeforeLeave('hidden'); });
     // 盤面ルール、棒の判定、回転、Undo、クリア演出の自己検査
     function runSelftest() {
       const errors = [];
-      const boardInteractionChecks = [];
-      const checkBoardInteraction = (name, passed, failure) => { boardInteractionChecks.push(name); if (!passed) errors.push(failure); };
+      const runtimeChecks = [];
+      const checkRuntime = (name, passed, failure) => { runtimeChecks.push(name); if (!passed) errors.push(failure); };
       const seen = new Set();
       for (let state = 0; state < WakeSevenBoardDomain.stateCount; state += 1) {
         const decoded = WakeSevenBoardDomain.decode(state);
@@ -752,13 +947,14 @@
       else {
         const after = WakeSevenBoardDomain.roll(INITIAL_BOARD, reducingMove.triangleIndex, reducingMove.direction);
         const restored = WakeSevenBoardDomain.roll(after, reducingMove.triangleIndex, -reducingMove.direction);
-        checkBoardInteraction('commit-undo-model', WakeSevenBoardDomain.isSolved(after) && WakeSevenBoardDomain.encode(restored) === REFERENCE_STAGE.state, 'commit/undo model mismatch');
+        checkRuntime('commit-undo-model', WakeSevenBoardDomain.isSolved(after) && WakeSevenBoardDomain.encode(restored) === REFERENCE_STAGE.state, 'commit/undo model mismatch');
       }
-      checkBoardInteraction('drag-turn-count', selectDragTurns(17, 100, true) === 0 && selectDragTurns(20, 200, true) === 1 && selectDragTurns(-20, 200, true) === -1 && selectDragTurns(20, 500, true) === 0 && selectDragTurns(121) === 1 && selectDragTurns(181) === 2 && selectDragTurns(-301) === -3, 'drag turn-count contract mismatch');
+      checkRuntime('drag-turn-count', selectDragTurns(17, 100, true) === 0 && selectDragTurns(20, 200, true) === 1 && selectDragTurns(-20, 200, true) === -1 && selectDragTurns(20, 500, true) === 0 && selectDragTurns(121) === 1 && selectDragTurns(181) === 2 && selectDragTurns(-301) === -3, 'drag turn-count contract mismatch');
       const twoTurns = rollBoardTurns(INITIAL_BOARD, 0, 2);
-      checkBoardInteraction('continuous-rotation', WakeSevenBoardDomain.encode(twoTurns) === WakeSevenBoardDomain.encode(WakeSevenBoardDomain.roll(WakeSevenBoardDomain.roll(INITIAL_BOARD, 0, 1), 0, 1)), 'continuous rotation contract mismatch');
-      checkBoardInteraction('input-gate', selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:null, cells:Uint8Array.from(INITIAL_BOARD) }) && !selectCanStartBoardDrag({ phase:BoardPhase.ROTATING, invalidPointerId:null, cells:Uint8Array.from(INITIAL_BOARD) }) && !selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:null, cells:Uint8Array.from(SOLVED_BOARD) }) && !selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:1, cells:Uint8Array.from(INITIAL_BOARD) }), 'input gate contract mismatch');
-      checkBoardInteraction('grip-center-excluded', hitTestGrip({ x:CELL_POSITIONS[3].x, y:CELL_POSITIONS[3].y }) === null, 'board center entered grip hit range');
+      checkRuntime('continuous-rotation', WakeSevenBoardDomain.encode(twoTurns) === WakeSevenBoardDomain.encode(WakeSevenBoardDomain.roll(WakeSevenBoardDomain.roll(INITIAL_BOARD, 0, 1), 0, 1)), 'continuous rotation contract mismatch');
+      const playableAppState = makeDefaultAppState();
+      checkRuntime('input-gate', selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:null, cells:Uint8Array.from(INITIAL_BOARD) }, playableAppState) && !selectCanStartBoardDrag({ phase:BoardPhase.ROTATING, invalidPointerId:null, cells:Uint8Array.from(INITIAL_BOARD) }, playableAppState) && !selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:null, cells:Uint8Array.from(SOLVED_BOARD) }, playableAppState) && !selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:1, cells:Uint8Array.from(INITIAL_BOARD) }, playableAppState), 'input gate contract mismatch');
+      checkRuntime('grip-center-excluded', hitTestGrip({ x:CELL_POSITIONS[3].x, y:CELL_POSITIONS[3].y }) === null, 'board center entered grip hit range');
       const gripPoint = (geometry, along, across = 0) => ({ x:geometry.grip[0] + Math.cos(geometry.angle) * along - Math.sin(geometry.angle) * across, y:geometry.grip[1] + Math.sin(geometry.angle) * along + Math.cos(geometry.angle) * across });
       const allGripRegionsMatch = TRIANGLES.every((triangle, triangleIndex) => {
         const geometry = axisGeometry(triangle);
@@ -770,7 +966,7 @@
           && hitTestGrip(gripPoint(geometry, 0, 39))?.triangleIndex === triangleIndex
           && hitTestGrip(gripPoint(geometry, 0, 41)) === null;
       });
-      checkBoardInteraction('all-grip-regions', allGripRegionsMatch, 'one or more grip hit regions mismatched');
+      checkRuntime('all-grip-regions', allGripRegionsMatch, 'one or more grip hit regions mismatched');
       let settledFramesMatch = true;
       let cancelledFramesMatch = true;
       TRIANGLES.forEach((triangle, triangleIndex) => [1, -1].forEach(direction => {
@@ -791,16 +987,33 @@
             && !cancelled.transform.includes(' rotate(');
         });
       }));
-      checkBoardInteraction('settled-frame-alignment', settledFramesMatch, 'rotation final frame differs from canonical board');
-      checkBoardInteraction('cancelled-frame-alignment', cancelledFramesMatch, 'cancelled rotation final frame differs from canonical board');
+      checkRuntime('settled-frame-alignment', settledFramesMatch, 'rotation final frame differs from canonical board');
+      checkRuntime('cancelled-frame-alignment', cancelledFramesMatch, 'cancelled rotation final frame differs from canonical board');
       const wakeCells = Uint8Array.from(SOLVED_BOARD);
       const wakeCellIndex = TRIANGLES[0].cells[0];
       wakeCells[wakeCellIndex] = 2;
       const wakesAtDegrees = TURN_DEGREES - DARUMA_UPRIGHT_WINDOW_DEGREES;
-      checkBoardInteraction('wake-angle-window', DARUMA_UPRIGHT_WINDOW_DEGREES === 22 && !rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees - 1).standing && rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees).standing, 'daruma wake angle window changed');
+      checkRuntime('wake-angle-window', DARUMA_UPRIGHT_WINDOW_DEGREES === 22 && !rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees - 1).standing && rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees).standing, 'daruma wake angle window changed');
       const happyPaths = Array.from(document.querySelectorAll('#w7-face-happy path')).map(path => path.getAttribute('d'));
-      checkBoardInteraction('clear-face-asset', happyPaths.join('|') === 'M-13 -14C-11 -17 -6 -17 -4 -14|M4 -14C6 -17 11 -17 13 -14|M-13 -4Q-8 -11 -3 -4|M3 -4Q8 -11 13 -4|M-5 5C-3 8 3 8 5 5', 'clear face asset mismatch');
-      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:1, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, boardInteractionChecks:Object.freeze(boardInteractionChecks) });
+      checkRuntime('clear-face-asset', happyPaths.join('|') === 'M-13 -14C-11 -17 -6 -17 -4 -14|M4 -14C6 -17 11 -17 13 -14|M-13 -4Q-8 -11 -3 -4|M3 -4Q8 -11 13 -4|M-5 5C-3 8 3 8 5 5', 'clear face asset mismatch');
+      checkRuntime('normal-puzzle-catalog', NORMAL_PUZZLES.length === 2 && NORMAL_PUZZLES.every(puzzle => SOLVER.distance[puzzle.state] === puzzle.par), 'normal puzzle catalog has an invalid par');
+      const firstPuzzle = puzzleAt(0);
+      const firstSolution = TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction }))).find(move => WakeSevenBoardDomain.isSolved(WakeSevenBoardDomain.roll(puzzleInitialCells(firstPuzzle), move.triangleIndex, move.direction)));
+      if (!firstSolution) errors.push('first P3 puzzle has no clear move');
+      else {
+        const initial = puzzleInitialCells(firstPuzzle);
+        const solved = Array.from(WakeSevenBoardDomain.roll(initial, firstSolution.triangleIndex, firstSolution.direction));
+        const savedClear = makeDefaultAppState();
+        savedClear.board = { initialCells:[...initial], cells:solved, history:[{ triangleIndex:firstSolution.triangleIndex, direction:firstSolution.direction, before:[...initial], after:[...solved] }], clearCommitted:true };
+        savedClear.ui = { dialog:null };
+        const restoredClear = normalizePersistentAppState(savedClear);
+        checkRuntime('clear-reload-rebuilds-dialog', restoredClear.board.clearCommitted && restoredClear.ui.dialog?.type === 'clear' && restoredClear.ui.dialog.puzzleId === firstPuzzle.puzzleId, 'clear reload did not rebuild dialog');
+        const brokenBoard = normalizePersistentAppState({ ...savedClear, board:{ ...savedClear.board, cells:[9, 9, 9] }, rewards:{ masterGoldGranted:true, satoriDesignGranted:false }, settings:{ theme:'gold', layout:'satori-tilted' } });
+        checkRuntime('broken-board-safe-fallback', sameCells(brokenBoard.board.cells, initial) && brokenBoard.settings.theme === 'gold' && brokenBoard.settings.layout === 'standard', 'broken board fallback changed unrelated reward settings');
+      }
+      const lockedRewardSettings = normalizePersistentAppState({ ...makeDefaultAppState(), settings:{ theme:'gold', layout:'satori-tilted', themeChosen:true, layoutChosen:true } });
+      checkRuntime('locked-reward-selection-fallback', lockedRewardSettings.settings.theme === 'standard' && lockedRewardSettings.settings.layout === 'standard', 'locked reward selection was not normalized');
+      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:1, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
     }
     // 起動時に盤面ルールと操作の前提を確認してから表示する
     const selftestResult = runSelftest();
@@ -809,8 +1022,10 @@
     boardElement.dataset.checkedStates = String(selftestResult.stateCount);
     boardElement.dataset.checkedAxes = String(selftestResult.axisCount);
     boardElement.dataset.checkedRenders = `${selftestResult.renderedInitialCells}+${selftestResult.renderedSolvedCells}`;
-    boardElement.dataset.checkedBoardInteraction = selftestResult.boardInteractionChecks.join(',');
-    runArrivalEffect();
+    boardElement.dataset.checkedRuntime = selftestResult.runtimeChecks.join(',');
+    // 復元時は途中演出を再生せず、保存済みの安定盤面（クリアならダイアログ）をそのまま出す。
+    if (restoredFromStorage) renderRuntime({ context:'restore' });
+    else runArrivalEffect();
   </script>
 </body>
 </html>
