@@ -1,0 +1,18 @@
+# P0 decision register
+
+This register turns the eight open items in `REBUILD_PLAN.md` into implementation gates. “Project owner” means the user/product decision-maker; P0 records recommendations but does not silently convert them into a requirement.
+
+| ID | Status | Decision deadline / owner | Current recommendation and basis | Stop gate if still open |
+| --- | --- | --- | --- | --- |
+| OPEN-001 | Undecided; content scope inventory pending | Before P8 / Project owner | Preserve Japanese functional UI and every flow-critical dialog; inventory exact multilingual copy and long-form tips separately, then decide whether they are parity scope. This protects playability without claiming that unreviewed prose is identical. | P8 (dialog/content parity) |
+| OPEN-002 | Undecided; visual fidelity contract is now recorded in P0 baseline | Before P1 visual acceptance / Project owner | Match game-bearing geometry and interaction layout; permit browser font rasterization and non-functional shadow/antialias variance. The P0 comparison contract makes the boundary testable. | P1 for board visual sign-off; P8 for final polish |
+| OPEN-003 | **Early decision required; not decided** | Before P1 / Project owner | V2 should cover `index.html` only. Keep `all-patterns.html` and `index_3D.html` frozen and out of the V2 acceptance set; the existing plan and baseline tag already frame the work this way. Including them changes scope, branch planning, and comparison work materially. | P1 |
+| OPEN-004 | **Early decision required; not decided** | Before P3 / Project owner | Use a new, versioned V2 key such as `wake7-rebuild-v1`; do not read, migrate, enumerate, or delete existing `wake7-*` keys. This is reversible and avoids corrupting the frozen baseline’s saves. | P3 |
+| OPEN-005 | Undecided; observation needs targeted recording | Before P5 / Project owner | On first lap, replay the application demonstration only for each puzzle’s first entry; after a saved one-move board reload, restore the stable board without replaying an intro that obscures it. This favors continuity, but differs from the observed current replay tendency and needs explicit approval. | P5 |
+| OPEN-006 | **Early decision required; not decided** | Before P3 (clear dialog) and before P8 (full matrix) / Project owner | Restore only descriptors that have a stable return route and safe focus: clear, chain/milestone, master, message review, speed pause/restart, rank, two-move lesson/detail and optimal-fail where context validates. Do not restore ephemeral intro, settings/about/theme, guide hub, or an arrival/callout frame; fall back to the stable board. Existing code’s partial map and fallback loop make an explicit allowlist necessary. | P3 for clear-flow contract; P8 for all dialogs |
+| OPEN-007 | Undecided | Before P7 / Project owner | After any normal reload or visibility interruption, restore a running speed session as paused and require an explicit resume. This gives one fair, understandable clock policy and avoids the current F5-versus-tab inconsistency. | P7 |
+| OPEN-008 | Undecided | Before P7 / Project owner | Do not promise a free-board session after leaving free mode and reloading; preserve it only while free mode is active. Adding cross-mode persistence increases state/schema complexity without a confirmed user benefit. | P7 |
+
+## P0 exit and next action
+
+P0 evidence and decision preparation are complete, but implementation must not start past the gates above. The immediate owner decision is OPEN-003; OPEN-004 and OPEN-006 must be decided before P3. No specification file has been edited to imply a decision.
