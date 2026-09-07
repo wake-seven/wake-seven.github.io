@@ -39,6 +39,11 @@
     .w7-axis-layer [data-axis].w7-tutorial-target .w7-axis-grip { fill:#7dd8f5; stroke:#3e9bc2; stroke-width:1.25; filter:drop-shadow(0 0 5px rgb(98 215 244 / .78)); animation:w7-tutorial-grip-pulse 1.2s ease-in-out infinite; }
     /* 最初の補助では、正解の棒以外を見せない。探索の段階ではこのclassを付けない。 */
     .w7-axis-layer g[data-axis].w7-tutorial-hidden { opacity:0; }
+    /* 入門編は「どの棒か」を考える画面。候補外と、誤って消えた棒は描画も入力も外す。 */
+    .w7-axis-layer g[data-axis].w7-academy-hidden { opacity:0; pointer-events:none; }
+    .w7-axis-layer g[data-axis].w7-academy-fallen { opacity:.55; pointer-events:none; filter:grayscale(1) brightness(.75); }
+    .w7-axis-layer g[data-axis].w7-academy-fallen .w7-axis-grip { fill:#8a96a3; stroke:#5b6673; }
+    .w7-axis-layer g[data-axis].w7-academy-candidate .w7-axis-grip { fill:#7dd8f5; stroke:#3e9bc2; filter:drop-shadow(0 0 5px rgb(98 215 244 / .68)); }
     @keyframes w7-tutorial-grip-pulse { 50% { opacity:.58; } }
     .w7-board.is-grip-hover { cursor:grab; }
     .w7-board[data-phase="dragging"] { cursor:grabbing; }
@@ -52,6 +57,12 @@
     body.w7-tutorial-mode .w7-grip-prompt { place-items:start center; padding:0.75rem 1.25rem 0; }
     .w7-grip-prompt[hidden] { display:none; }
     .w7-grip-prompt span { display:block; padding:.6rem .8rem; border:1px solid rgb(98 215 244 / .66); border-radius:.4rem; background:rgb(22 40 60 / .86); color:#b9e8f2; font-size:clamp(1rem,4vw,1.25rem); font-weight:800; line-height:1.35; box-shadow:0 4px 18px rgb(0 0 0 / .28); }
+    .w7-academy-callout { position:absolute; z-index:11; inset:0; display:grid; place-items:center; pointer-events:none; opacity:0; transition:opacity .22s ease; }
+    .w7-academy-callout[hidden] { display:none; }
+    .w7-academy-callout.is-visible { opacity:1; }
+    .w7-academy-callout-badge { display:inline-flex; align-items:center; gap:.25rem; padding:.85rem 1.25rem .8rem; border:2px solid #29a8ce; border-radius:999px; background:rgb(15 35 52 / .85); box-shadow:0 5px 20px rgb(0 0 0 / .34); }
+    .w7-academy-callout-label,.w7-academy-callout-unit { color:#9bcBDD; font-size:1.18rem; font-weight:700; transform:translateY(.35rem); }
+    .w7-academy-callout-number { color:#62b8d2; font-size:3.75rem; font-weight:750; line-height:1; text-shadow:0 0 10px rgb(98 184 210 / .24); }
     /* 指定方向を伝える、旧版と同じ水色／白縁の弧。盤面の入力とは独立した表示だけのSVG。 */
     .w7-tutorial-arrow { pointer-events:none; }
     .w7-tutorial-arrow .w7-arrow-border { fill:none; stroke:#bff0ff; stroke-width:8.5; stroke-linecap:round; }
@@ -69,21 +80,54 @@
     .w7-clear-burst { pointer-events:none; transform-box:view-box; }
     .w7-dialog-backdrop { position:fixed; z-index:10; inset:0; display:grid; place-items:center; padding:1rem; background:rgb(4 13 24 / .7); backdrop-filter:blur(4px); }
     .w7-dialog-backdrop[hidden] { display:none; }
-    .w7-dialog { width:min(100%,22rem); border:2px solid #7dd8f5; border-radius:1rem; padding:1.35rem; background:var(--ai2); color:var(--washi); box-shadow:0 1rem 3rem rgb(0 0 0 / .42); text-align:center; }
+    .w7-dialog { position:relative; width:min(100%,22rem); border:2px solid #7dd8f5; border-radius:1rem; padding:1.35rem; background:var(--ai2); color:var(--washi); box-shadow:0 1rem 3rem rgb(0 0 0 / .42); text-align:center; }
     .w7-dialog h2 { margin:0 0 .6rem; font-size:1.55rem; }
     .w7-dialog p { margin:.3rem 0 1rem; line-height:1.55; }
+    .w7-clear-stage-context { position:absolute; top:.9rem; right:1rem; margin:0!important; color:#9bcBDD; font-size:.78rem; font-weight:700; line-height:1.2!important; }
+    .w7-clear-note { margin:.625rem 0 .75rem!important; padding:.7rem .8rem; border-radius:.25rem; background:rgb(98 184 210 / .1); color:#b9e8f2; font-size:1.08rem; font-weight:700; line-height:1.62!important; text-align:left; white-space:pre-line; }
+    .w7-clear-art { display:block; width:min(100%,14rem); height:8rem; margin:.25rem auto .75rem; overflow:visible; }
+    .w7-clear-guide-art { width:min(100%,13.5rem); height:auto; max-height:14rem; }
+    .w7-clear-quiz { display:grid; gap:.4rem; margin:.75rem 0 1rem; text-align:left; }
+    .w7-clear-quiz { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .w7-clear-quiz p { grid-column:1 / -1; margin:0; color:#b9e8f2; font-size:.9rem; font-weight:700; }
+    .w7-clear-quiz button { border:1px solid rgb(185 232 242 / .22); border-radius:.45rem; padding:.45rem .6rem; background:rgb(255 255 255 / .04); color:#b9e8f2; font:inherit; font-size:.78rem; font-weight:700; text-align:left; cursor:pointer; }
+    .w7-clear-quiz button.is-correct { border-color:#56c7a2; background:rgb(86 199 162 / .14); }
+    .w7-clear-quiz button.is-wrong { border-color:#df6c61; background:rgb(223 108 97 / .13); }
+    .w7-clear-quiz-note { min-height:1.4rem!important; color:#b9c6d6!important; font-size:.78rem!important; font-weight:600!important; }
+    .w7-clear-quiz.is-success { position:relative; }
+    .w7-clear-quiz.is-success::before,.w7-clear-quiz.is-success::after { position:absolute; z-index:2; color:#f2d77a; font-size:1.125rem; line-height:1; opacity:0; pointer-events:none; animation:w7-quiz-spark .7s cubic-bezier(.18,.8,.24,1) both; }
+    .w7-clear-quiz.is-success::before { content:"✦"; top:24%; left:7%; }
+    .w7-clear-quiz.is-success::after { content:"✧"; top:14%; right:8%; animation-delay:.09s; }
+    .w7-clear-quiz.is-success button.is-correct { animation:w7-quiz-correct-pop .48s cubic-bezier(.18,.9,.25,1) both; }
+    @keyframes w7-quiz-correct-pop { 0% { transform:scale(.92); filter:brightness(.9); } 55% { transform:scale(1.045); filter:brightness(1.32); } 100% { transform:scale(1); filter:brightness(1); } }
+    @keyframes w7-quiz-spark { 0% { transform:translateY(8px) scale(.35) rotate(-18deg); opacity:0; } 28% { opacity:1; } 100% { transform:translateY(-19px) scale(1.15) rotate(14deg); opacity:0; } }
     .w7-dialog-actions { display:flex; justify-content:center; gap:.65rem; flex-wrap:wrap; }
+    .w7-dialog--clear h2 { margin-top:.4rem; }
+    .w7-dialog-next,.w7-dialog-default { border-color:var(--kin); background:var(--kin); color:var(--ai); }
     /* 導入ダイアログは、本文だけでなく旧版と同じ七枚の見本を見せる。 */
-    .w7-dialog--welcome { width:min(100%,22.5rem); padding:1.375rem 1.25rem; border-width:1px; border-radius:.9375rem; border-color:rgb(255 255 255 / .16); background:#1a3047; box-shadow:0 20px 55px rgb(0 0 0 / .5); }
+    .w7-dialog--welcome { width:min(100%,22.5rem); padding:1.375rem 1.25rem; border:2px solid #7dd8f5; border-radius:1rem; background:var(--ai2); box-shadow:0 1rem 3rem rgb(0 0 0 / .42); }
     .w7-dialog--welcome h2 { margin-bottom:.875rem; font-size:1.3125rem; letter-spacing:.08em; }
     .w7-dialog--welcome p { margin-top:.5625rem; color:#a8b6c7; font-size:1.0625rem; line-height:1.6; }
+    .w7-academy-intro-message { color:var(--kin)!important; font-size:1.25rem!important; font-weight:800; }
     .w7-welcome-board { display:block; width:min(100%,16.25rem); height:auto; margin:.5rem auto -.125rem; transition:opacity .18s ease; }
+    .w7-academy-intro-preview { width:calc(100% + 1rem); max-width:none; margin:.35rem -.5rem .8rem; padding:.08rem .7rem .35rem; border:1px solid rgb(125 216 245 / .58); border-radius:.7rem; background:rgb(22 40 60 / .28); }
     .w7-welcome-board.w7-welcome-cycle-fade { opacity:0; }
     .w7-dialog--welcome .w7-board-button { min-height:3.1rem; padding:.875rem 2rem; font-size:1.1875rem; }
     .w7-dialog--welcome .w7-board-button { border-color:var(--kin); background:var(--kin); color:var(--ai); box-shadow:none; }
+    .w7-dialog--welcome .w7-dialog-actions { margin-top:.55rem; }
+    .w7-dialog--enroll h2 { margin:.15rem 0 .55rem; color:var(--washi); font-size:clamp(1.05rem,5vw,1.35rem); letter-spacing:0; white-space:nowrap; }
+    .w7-enroll-art { display:block; width:min(100%,12.75rem); height:auto; max-height:14.75rem; margin:.7rem auto .85rem; }
     .w7-welcome-swipe { fill:#62b8d2; filter:drop-shadow(0 0 3px rgb(98 184 210 / .8)); }
+    /* 数字をtransformで拡大するとSVG上で横へ跳ねるため、文字サイズだけを短く弾ませる。 */
+    .w7-welcome-counter-pulse { animation:w7-welcome-counter-pulse .34s cubic-bezier(.2,.8,.25,1); }
+    @keyframes w7-welcome-counter-pulse { 0%,100% { font-size:var(--w7-counter-size); filter:drop-shadow(0 0 2px rgb(98 184 210 / .2)); } 52% { font-size:calc(var(--w7-counter-size) + 10px); filter:drop-shadow(0 0 8px rgb(98 184 210 / .72)); } }
     /* 旧版のチュートリアルは盤面だけを見せる。手数HUDや問題番号はここに出さない。 */
     body.w7-tutorial-mode .w7-stage-label,body.w7-tutorial-mode .w7-board-status { display:none; }
+    body.w7-academy-mode .w7-board-status span:first-child,body.w7-academy-mode .w7-board-controls { display:none; }
+    body.w7-academy-mode .w7-board-status { min-height:4.75rem; align-items:center; color:#9bcBDD; font-size:1.18rem; }
+    body.w7-academy-mode .w7-board-status span:last-child { display:inline-flex; align-items:baseline; gap:.2rem; }
+    body.w7-academy-mode #w7-board-remaining { min-width:auto; color:#62b8d2; font-size:4rem; line-height:.8; transform:translateY(.14rem); text-shadow:0 0 10px rgb(98 184 210 / .24); }
+    body.w7-academy-mode #w7-academy-clear-suffix { color:var(--washi); font-size:.92em; }
     body.w7-tutorial-mode .w7-board-feature { gap:0; }
     body.w7-tutorial-mode .w7-board-frame { margin-top:.75rem; }
     body.w7-tutorial-mode .w7-board { margin-top:2.5rem; }
@@ -101,11 +145,12 @@
     <section class="w7-board-feature" aria-label="七枚のだるま盤">
       <div class="w7-board-status" aria-live="polite">
         <span>いま <strong id="w7-board-moves">0</strong> くるり</span>
-        <span>あと <strong id="w7-board-remaining">1</strong> くるり</span>
+        <span>あと <strong id="w7-board-remaining">1</strong> くるり<span id="w7-academy-clear-suffix" hidden> でクリア</span></span>
       </div>
       <div class="w7-board-frame">
         <svg id="w7-board" class="w7-board" viewBox="14 0 293 310" role="img" aria-label="七枚のだるま盤"></svg>
         <div id="w7-grip-prompt" class="w7-grip-prompt" hidden><span>水色の棒をつかんで回そう</span></div>
+        <div id="w7-academy-callout" class="w7-academy-callout" hidden><span class="w7-academy-callout-badge"><span class="w7-academy-callout-label">あと</span><strong id="w7-academy-callout-number" class="w7-academy-callout-number">2</strong><span class="w7-academy-callout-unit">くるり</span></span></div>
       </div>
       <div class="w7-board-controls" aria-label="盤面の操作">
         <button id="w7-board-undo" class="w7-board-button" type="button" data-w7-action="undo">一手戻す</button>
@@ -186,8 +231,8 @@
     // 旧チュートリアルは祝福文を読めるよう、盤面の弾みより長く約1.25秒表示する。
     const TUTORIAL_CLEAR_TRANSITION_MILLISECONDS = 1250;
     // 棒をつかめる範囲。innerは盤面中心側、outerは外周側、acrossは棒の左右方向。
-    // 中央盤面までは広げず、外へ伸ばすより棒の左右を広くする。
-    const GRIP_HIT_RANGE = Object.freeze({ inner:28, outer:24, across:40 });
+    // 中央盤面までは広げず、外周側だけ盤面の縁を少し越えてつかめるようにする。
+    const GRIP_HIT_RANGE = Object.freeze({ inner:28, outer:34, across:40 });
     // 現行index.htmlのステージ1を、いまの盤面表示・操作・自己検査の基準にする。
     const REFERENCE_STAGE = Object.freeze({ puzzleId:'stage-001', state:31, par:1 });
     // 七枚の向きと、三枚を120度回す盤面ルール
@@ -272,10 +317,25 @@
     });
     const SOLVER = WakeSevenBoardDomain.buildSolver();
     const INITIAL_BOARD = Object.freeze(Array.from(WakeSevenBoardDomain.decode(REFERENCE_STAGE.state)));
-    // P4aで実際に到達できる問題だけを置く。未実装コースの空カタログは作らない。
+    // P4bで触れる学園問題。旧版の並びをそのまま明示し、問題追加時もここをrgすれば辿れる。
     const ACADEMY_INTRO_PUZZLES = Object.freeze([
-      Object.freeze({ puzzleId:'academy-intro-001', state:31, par:1 }),
+      Object.freeze({ puzzleId:'academy-intro-001', classId:'intro', state:31, par:1, initialCandidateCount:6, clearNote:'水色の棒をつかんで回そう', clearArt:'introGuide' }),
+      Object.freeze({ puzzleId:'academy-intro-002', classId:'intro', state:558, par:1, initialCandidateCount:6, clearNote:'ゲームを中断して閉じても、今やっている問題から再開できます。' }),
+      Object.freeze({ puzzleId:'academy-intro-003', classId:'intro', state:837, par:1, initialCandidateCount:6 }),
     ]);
+    const ACADEMY_BASIC_PUZZLES = Object.freeze([
+      Object.freeze({ puzzleId:'academy-basic-001', classId:'basic', state:922, par:2, initialCandidateCount:1, clearNote:'「あと ○くるり」を見ると、今の盤面からあと何回で全員を起こせるかわかります。', clearArt:'remaining' }),
+      Object.freeze({ puzzleId:'academy-basic-002', classId:'basic', state:1516, par:2, initialCandidateCount:2 }),
+      Object.freeze({ puzzleId:'academy-basic-003', classId:'basic', state:526, par:2, initialCandidateCount:3, clearNote:'「だるまさんがころんだ」遊びの由来は比較的新しい可能性もあり、明治生まれの人々の記憶のなかには無いという話もあります。', clearArt:'theories' }),
+      Object.freeze({ puzzleId:'academy-basic-004', classId:'basic', state:544, par:2, initialCandidateCount:3, clearNote:'回転したら3体がどの向きになるか、想像してみよう。' }),
+      Object.freeze({ puzzleId:'academy-basic-005', classId:'basic', state:1732, par:2, initialCandidateCount:3 }),
+      Object.freeze({ puzzleId:'academy-basic-006', classId:'basic', state:196, par:2, initialCandidateCount:3, preferredTriangle:2, clearNote:'高崎だるまは、群馬県ふるさと伝統工芸品に指定されています。1859年に赤い顔料が輸入されると、だるまづくりは盛んになりました。', clearArt:'craft' }),
+      Object.freeze({ puzzleId:'academy-basic-007', classId:'basic', state:76, par:2, initialCandidateCount:3 }),
+      Object.freeze({ puzzleId:'academy-basic-008', classId:'basic', state:7, par:2, initialCandidateCount:3, clearArt:'red', clearQuiz:Object.freeze({ question:'だるまの赤は、何を表す色？', choices:Object.freeze(['まよけや生命力','お祝いごとの華やかさ','火のあたたかさ','秋のもみじ']), correct:0, note:'だるまの赤は、まよけや生命力を表す色です。' }) }),
+      Object.freeze({ puzzleId:'academy-basic-009', classId:'basic', state:57, par:2, initialCandidateCount:3 }),
+    ]);
+    // P5が応用の実盤面・紫枠を担当するまで、ここは「次のクラスへ進める」安定した入口だけを持つ。
+    const ACADEMY_APPLICATION_ENTRY_PUZZLE = Object.freeze({ puzzleId:'academy-application-entry', state:922, par:2 });
     // 旧版の最終的な5状態を、生成順依存ではなく明示データとして移す。
     // solutionは「この段階で教える一本の手順」。自己検査でstate・parと照合する。
     const TUTORIAL_STEPS = Object.freeze([
@@ -325,11 +385,13 @@
     const boardElement = document.querySelector('#w7-board');
     const boardMovesElement = document.querySelector('#w7-board-moves');
     const boardRemainingElement = document.querySelector('#w7-board-remaining');
+    const academyClearSuffixElement = document.querySelector('#w7-academy-clear-suffix');
     const boardControlsElement = document.querySelector('.w7-board-controls');
     const boardUndoButton = document.querySelector('#w7-board-undo');
     const boardRestartButton = document.querySelector('#w7-board-restart');
     const debugResetButton = document.querySelector('#w7-debug-reset');
     const boardGripPrompt = document.querySelector('#w7-grip-prompt');
+    const academyCalloutElement = document.querySelector('#w7-academy-callout');
     const stageLabelElement = document.querySelector('#w7-stage-label');
     const dialogBackdropElement = document.querySelector('#w7-dialog-backdrop');
     const dialogElement = document.querySelector('#w7-dialog');
@@ -384,8 +446,10 @@
       boardUndoButton.disabled = !ready || RuntimeState.history.length === 0;
       boardRestartButton.disabled = !ready || (RuntimeState.history.length === 0 && WakeSevenBoardDomain.encode(RuntimeState.cells) === selectActivePuzzle().state);
       // チュートリアルは指定された一手を試す導線に絞る。Undo/Restartは入門以降で表示する。
-      boardControlsElement.hidden = AppState.navigation.mode === 'tutorial';
+      boardControlsElement.hidden = AppState.navigation.mode === 'tutorial' || isAcademyGuidedRoute();
       document.body.classList.toggle('w7-tutorial-mode', isTutorialRoute());
+      document.body.classList.toggle('w7-academy-mode', isAcademyGuidedRoute());
+      academyClearSuffixElement.hidden = !isAcademyGuidedRoute();
       debugResetButton.textContent = isTutorialRoute() ? '↻ リセット' : 'デバッグ：チュートリアルを最初から';
     }
     function renderRuntime(options = {}) {
@@ -395,6 +459,7 @@
       renderBoardPhase();
       renderDialog();
       renderTutorialCue();
+      renderAcademyGuidance();
       if (RuntimeState.phase === BoardPhase.READY) assertRuntimeDomAlignment(options.context ?? 'render');
     }
     function normalizedDegrees(degrees) { return ((degrees + 180) % 360 + 360) % 360 - 180; }
@@ -459,21 +524,32 @@
         daruma.setAttribute('transform', `rotate(${orientationDegrees(frame.darumaOrientation)})`);
         daruma.querySelector('use:last-child').setAttribute('href', frame.standing ? '#w7-face-open' : '#w7-face-shut');
       });
-      const previewCells = previewTurns ? rollBoardTurns(cells, triangleIndex, previewTurns) : cells;
-      renderBoardStatus(previewCells, moveDelta);
+      // 学園の「あと○くるり」は、ドラッグが60度を越えた瞬間ではなく、
+      // 回る三枚の見た目が実際に起きる／寝る瞬間にだけ次の数へ切り替える。
+      const academyVisualChange = isAcademyGuidedRoute() && previewTurns && (
+        settledTurns !== null
+        || triangle.cells.some(cellIndex => rotationFrameForCell(cells, triangleIndex, cellIndex, degrees).standing !== (cells[cellIndex] === 0))
+        || Math.abs(degrees) >= TURN_DEGREES - DARUMA_UPRIGHT_WINDOW_DEGREES
+      );
+      const previewCells = previewTurns && (!isAcademyGuidedRoute() || academyVisualChange)
+        ? rollBoardTurns(cells, triangleIndex, previewTurns)
+        : cells;
+      renderBoardStatus(previewCells, academyVisualChange ? moveDelta : 0);
       renderBoardPhase();
     }
     // 操作中の盤面状態。ドラッグ、回転、やり直し、クリア演出はここだけを更新する。
     const BoardPhase = Object.freeze({ ARRIVING:'arriving', READY:'ready', DRAGGING:'dragging', ROTATING:'rotating', UNDOING:'undoing', RESTARTING:'restarting', CELEBRATING:'celebrating' });
     // コース進行はAppState、アニメーション途中の値はRuntimeStateが所有する。
-    // P4aはtutorialとacademy-introだけを実装する。後続コースを空の雛形として置かない。
+    // コースの遷移先はここに集約する。入力・候補棒の方は下の「入門編の棒候補」に置く。
     function tutorialStepAt(index) { return TUTORIAL_STEPS[index] ?? TUTORIAL_STEPS[0]; }
     function academyIntroPuzzleAt(index) { return ACADEMY_INTRO_PUZZLES[index] ?? ACADEMY_INTRO_PUZZLES[0]; }
+    function academyBasicPuzzleAt(index) { return ACADEMY_BASIC_PUZZLES[index] ?? ACADEMY_BASIC_PUZZLES[0]; }
     function puzzleInitialCells(puzzle) { return Array.from(WakeSevenBoardDomain.decode(puzzle.state)); }
     function selectPuzzleForNavigation(navigation) {
-      return navigation.mode === 'tutorial'
-        ? tutorialStepAt(navigation.tutorialStep)
-        : academyIntroPuzzleAt(navigation.puzzleIndex);
+      if (navigation.mode === 'tutorial') return tutorialStepAt(navigation.tutorialStep);
+      if (navigation.routeId === 'academy-basic') return academyBasicPuzzleAt(navigation.puzzleIndex);
+      if (navigation.routeId === 'academy-application-entry') return ACADEMY_APPLICATION_ENTRY_PUZZLE;
+      return academyIntroPuzzleAt(navigation.puzzleIndex);
     }
     function makeBoardState(puzzle) {
       const initialCells = puzzleInitialCells(puzzle);
@@ -489,6 +565,13 @@
     function makeAcademyIntroNavigation(puzzleIndex = 0) {
       const puzzle = academyIntroPuzzleAt(puzzleIndex);
       return { mode:'stage', routeId:'academy-intro', courseId:'academy', sectionId:'intro', lap:1, tutorialStep:null, puzzleIndex, puzzleId:puzzle.puzzleId, returnRoute:null };
+    }
+    function makeAcademyBasicNavigation(puzzleIndex = 0) {
+      const puzzle = academyBasicPuzzleAt(puzzleIndex);
+      return { mode:'stage', routeId:'academy-basic', courseId:'academy', sectionId:'basic', lap:1, tutorialStep:null, puzzleIndex, puzzleId:puzzle.puzzleId, returnRoute:null };
+    }
+    function makeAcademyApplicationEntryNavigation() {
+      return { mode:'stage', routeId:'academy-application-entry', courseId:'academy', sectionId:'application', lap:1, tutorialStep:null, puzzleIndex:0, puzzleId:ACADEMY_APPLICATION_ENTRY_PUZZLE.puzzleId, returnRoute:null };
     }
     function makeAppStateForNavigation(navigation, options = {}) {
       const puzzle = selectPuzzleForNavigation(navigation);
@@ -521,6 +604,12 @@
         settings:appState.settings,
         dialog,
       });
+    }
+    function makeAcademyBasicAppState(appState, dialog = { type:'academy-basic-welcome' }) {
+      return makeAppStateForNavigation(makeAcademyBasicNavigation(0), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, dialog });
+    }
+    function makeAcademyApplicationEntryAppState(appState) {
+      return makeAppStateForNavigation(makeAcademyApplicationEntryNavigation(), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, dialog:{ type:'academy-application-entry' } });
     }
     function isOrientationCells(value) { return Array.isArray(value) && value.length === CELL_COUNT && value.every(cell => Number.isInteger(cell) && cell >= 0 && cell <= 2); }
     function sameCells(left, right) { return left.length === right.length && left.every((cell, index) => cell === right[index]); }
@@ -556,7 +645,7 @@
       return { rewards, settings };
     }
     function normalizeCourseProgress(rawProgress) {
-      const knownPuzzleIds = new Set([...TUTORIAL_STEPS, ...ACADEMY_INTRO_PUZZLES].map(puzzle => puzzle.puzzleId));
+      const knownPuzzleIds = new Set([...TUTORIAL_STEPS, ...ACADEMY_INTRO_PUZZLES, ...ACADEMY_BASIC_PUZZLES, ACADEMY_APPLICATION_ENTRY_PUZZLE].map(puzzle => puzzle.puzzleId));
       const recorded = Array.isArray(rawProgress?.completedPuzzleIds) ? rawProgress.completedPuzzleIds : [];
       return {
         tutorialCompleted:rawProgress?.tutorialCompleted === true,
@@ -572,12 +661,19 @@
       const academyIsValid = rawNavigation?.mode === 'stage' && rawNavigation?.routeId === 'academy-intro'
         && Number.isInteger(puzzleIndex) && ACADEMY_INTRO_PUZZLES[puzzleIndex]
         && rawNavigation?.puzzleId === ACADEMY_INTRO_PUZZLES[puzzleIndex].puzzleId;
-      if (progress.tutorialCompleted) return academyIsValid ? makeAcademyIntroNavigation(puzzleIndex) : makeAcademyIntroNavigation(0);
+      const basicIsValid = rawNavigation?.mode === 'stage' && rawNavigation?.routeId === 'academy-basic'
+        && Number.isInteger(puzzleIndex) && ACADEMY_BASIC_PUZZLES[puzzleIndex]
+        && rawNavigation?.puzzleId === ACADEMY_BASIC_PUZZLES[puzzleIndex].puzzleId;
+      const applicationIsValid = rawNavigation?.mode === 'stage' && rawNavigation?.routeId === 'academy-application-entry' && rawNavigation?.puzzleId === ACADEMY_APPLICATION_ENTRY_PUZZLE.puzzleId;
+      if (progress.tutorialCompleted) return applicationIsValid ? makeAcademyApplicationEntryNavigation() : basicIsValid ? makeAcademyBasicNavigation(puzzleIndex) : academyIsValid ? makeAcademyIntroNavigation(puzzleIndex) : makeAcademyIntroNavigation(0);
       return tutorialIsValid ? makeTutorialNavigation(tutorialStep) : makeTutorialNavigation(0);
     }
     function stableDialogForNavigation(rawDialog, navigation, solved) {
       if (rawDialog?.type === 'welcome' && navigation.mode === 'tutorial' && navigation.tutorialStep === 0) return { type:'welcome' };
       if (rawDialog?.type === 'academy-enroll' && navigation.routeId === 'academy-intro' && !solved) return { type:'academy-enroll' };
+      if (rawDialog?.type === 'academy-intro-welcome' && navigation.routeId === 'academy-intro' && !solved) return { type:'academy-intro-welcome' };
+      if (rawDialog?.type === 'academy-basic-welcome' && navigation.routeId === 'academy-basic' && !solved) return { type:'academy-basic-welcome' };
+      if (rawDialog?.type === 'academy-application-entry' && navigation.routeId === 'academy-application-entry') return { type:'academy-application-entry' };
       if (rawDialog?.type === 'clear' && navigation.mode === 'stage' && solved) return clearDialogDescriptor(selectPuzzleForNavigation(navigation));
       return null;
     }
@@ -603,6 +699,8 @@
           ? makeTutorialStepAppState({ ...fallback, progress }, nextStep)
           : makeAcademyIntroAppState({ ...fallback, progress:{ ...progress, tutorialCompleted:true } }, { type:'academy-enroll' });
       }
+      if (solved && navigation.routeId === 'academy-intro' && navigation.puzzleIndex === ACADEMY_INTRO_PUZZLES.length - 1) return makeAcademyBasicAppState({ ...fallback, progress });
+      if (solved && navigation.routeId === 'academy-basic' && navigation.puzzleIndex === ACADEMY_BASIC_PUZZLES.length - 1) return makeAcademyApplicationEntryAppState({ ...fallback, progress });
       const completedPuzzleIds = [...progress.completedPuzzleIds];
       if (solved && !completedPuzzleIds.includes(puzzle.puzzleId)) completedPuzzleIds.push(puzzle.puzzleId);
       return {
@@ -640,7 +738,10 @@
         stageLabelElement.textContent = `チュートリアル ${AppState.navigation.tutorialStep + 1} / ${TUTORIAL_STEPS.length}`;
         return;
       }
-      stageLabelElement.textContent = `だるま学園・入門 ${AppState.navigation.puzzleIndex + 1} / 3　最短 ${puzzle.par} くるり`;
+      if (AppState.navigation.routeId === 'academy-application-entry') { stageLabelElement.textContent = 'だるま学園・応用クラス'; return; }
+      const className = AppState.navigation.routeId === 'academy-basic' ? '基本' : '入門';
+      const count = AppState.navigation.routeId === 'academy-basic' ? ACADEMY_BASIC_PUZZLES.length : ACADEMY_INTRO_PUZZLES.length;
+      stageLabelElement.textContent = `${className} ${AppState.navigation.puzzleIndex + 1} / ${count}`;
     }
     // 導入ダイアログの七枚見本。ゲーム盤とは別の入力を持たず、旧版の「触る→棒が消える→一回転→全員起きる」だけを見せる。
     function runWelcomePreviewCycle(preview) {
@@ -705,6 +806,137 @@
       ], { duration:CLEAR_MILLISECONDS, easing:'cubic-bezier(.15,.7,.2,1)', fill:'forwards' });
       setTimeout(() => { if (burst.isConnected) burst.remove(); }, CLEAR_MILLISECONDS);
     }
+    // 学園の最初にだけ出す、残り手数が一つ減る静止見本。実盤面とは別SVGなので操作は受け取らない。
+    function runAcademyWelcomePreview(preview, message, puzzle, initialText, afterText, layout = {}) {
+      const initialCells = puzzleInitialCells(puzzle);
+      renderBoard(initialCells, preview, { includeAxes:true });
+      const reducing = TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction }))).find(move => selectDistance(WakeSevenBoardDomain.roll(initialCells, move.triangleIndex, move.direction)) === selectDistance(initialCells) - 1);
+      if (!reducing) return;
+      const distance = selectDistance(initialCells);
+      // 歓迎見本の「あと○くるり」は、本盤面の小さなHUDではなく大きな主役として読む。
+      // 入門／基本で文字だけを動かす指定はここに置き、七枚の盤面位置は共有のまま保つ。
+      const counter = { labelX:28, labelY:0, numberX:104, numberY:8, numberSize:84, unitX:158, unitY:0, releaseX:224, releaseY:0, ...layout };
+      const label = svgElement('text', { x:counter.labelX, y:counter.labelY, fill:'#9bcBDD', 'font-size':20, 'font-weight':700 });
+      label.textContent = 'あと';
+      const number = svgElement('text', { x:counter.numberX, y:counter.numberY, fill:'#62b8d2', 'font-size':counter.numberSize, 'font-weight':750, 'text-anchor':'middle' });
+      number.style.setProperty('--w7-counter-size', `${counter.numberSize}px`);
+      number.textContent = String(distance);
+      const unit = svgElement('text', { x:counter.unitX, y:counter.unitY, fill:'#9bcBDD', 'font-size':20, 'font-weight':700 });
+      unit.textContent = 'くるり';
+      const release = svgElement('text', { x:counter.releaseX, y:counter.releaseY, fill:'#62b8d2', 'font-size':14, 'font-weight':700, 'text-anchor':'middle' });
+      preview.append(label, number, unit, release);
+      const triangle = TRIANGLES[reducing.triangleIndex];
+      const axis = axisGeometry(triangle);
+      const touch = svgElement('circle', { class:'w7-welcome-swipe', cx:axis.grip[0], cy:axis.grip[1], r:6.5, display:'none' });
+      preview.append(touch);
+      setTimeout(() => {
+        if (!preview.isConnected) return;
+        preview.querySelector('.w7-axis-layer')?.setAttribute('opacity', '0');
+        touch.removeAttribute('display');
+        triangle.cells.forEach(index => preview.querySelector(`[data-cell-index="${index}"]`)?.classList.add('is-grabbed'));
+        const rotationLayer = svgElement('g', { class:'w7-welcome-rotation' });
+        rotationLayer.style.transformBox = 'view-box';
+        rotationLayer.style.transformOrigin = `${triangle.x}px ${triangle.y}px`;
+        triangle.cells.forEach(index => rotationLayer.append(preview.querySelector(`[data-cell-index="${index}"]`)));
+        rotationLayer.append(touch);
+        preview.append(rotationLayer);
+        // 旧版の歓迎見本と同じく、少し行き過ぎてから120度へ収める。
+        const turn = reducing.direction * TURN_DEGREES;
+        rotationLayer.animate([
+          { transform:'rotate(0deg)', offset:0 },
+          { transform:`rotate(${turn + Math.sign(turn) * 8}deg)`, offset:.612 },
+          { transform:`rotate(${turn - Math.sign(turn) * 6}deg)`, offset:.852 },
+          { transform:`rotate(${turn}deg)`, offset:1 },
+        ], { duration:4980, easing:'cubic-bezier(.33,0,.67,1)', fill:'forwards' });
+        // 見本も、回転中のだるま自体は初期の向きを保ったまま親レイヤーと回す。
+        // ここで最終向きを先に設定すると親の回転が二重にかかり、起きた瞬間だけ向きが狂う。
+        let wakeDelay = 0;
+        triangle.cells.forEach(index => {
+          const wasStanding = initialCells[index] === 0;
+          const willStand = Math.abs(normalizedDegrees(orientationDegrees(initialCells[index]) + turn)) <= DARUMA_UPRIGHT_WINDOW_DEGREES;
+          if (wasStanding === willStand) return;
+          // 見本では正解の形を早めに読めるよう、起床は実盤面の98度より少し手前にする。
+          const threshold = willStand ? 70 : 22;
+          const delay = Math.round(3048 * threshold / 128);
+          if (willStand) wakeDelay = Math.max(wakeDelay, delay);
+          setTimeout(() => {
+            const cell = preview.querySelector(`[data-cell-index="${index}"]`);
+            if (!cell?.isConnected) return;
+            cell.classList.toggle('w7-cell--standing', willStand);
+            cell.classList.toggle('w7-cell--fallen', !willStand);
+            cell.querySelector('.w7-daruma use:last-child')?.setAttribute('href', willStand ? '#w7-face-open' : '#w7-face-shut');
+          }, 950 + delay);
+        });
+        setTimeout(() => {
+          if (!preview.isConnected) return;
+          number.textContent = String(distance - 1);
+          number.classList.remove('w7-welcome-counter-pulse');
+          void number.getBoundingClientRect();
+          number.classList.add('w7-welcome-counter-pulse');
+        }, 950 + (wakeDelay || Math.round(3048 * 22 / 128)));
+      }, 950);
+      setTimeout(() => {
+        if (!preview.isConnected) return;
+        // 途中で付けた数字のパルスを、描き直し時にもう一度開始させない。
+        number.classList.remove('w7-welcome-counter-pulse');
+        const afterCells = WakeSevenBoardDomain.roll(initialCells, reducing.triangleIndex, reducing.direction);
+        const cleared = WakeSevenBoardDomain.isSolved(afterCells);
+        renderBoard(afterCells, preview, { includeAxes:false, happy:cleared });
+        release.textContent = afterText;
+        preview.append(label, number, unit, release);
+        // 入門の一手見本はここで全員が起きる。通常ウェルカムと同じ弾みと金の円を出す。
+        if (cleared) playWelcomePreviewCelebration(preview);
+      }, 5930);
+      // 旧版と同じく、見本は一度だけで止めず、短く消えてから最初の状態へ戻る。
+      setTimeout(() => {
+        if (!preview.isConnected) return;
+        preview.classList.add('w7-welcome-cycle-fade');
+        setTimeout(() => {
+          if (!preview.isConnected) return;
+          preview.classList.remove('w7-welcome-cycle-fade');
+          runAcademyWelcomePreview(preview, message, puzzle, initialText, afterText, layout);
+        }, 240);
+      }, 6640);
+      message.textContent = initialText;
+    }
+    function renderAcademyEnrollArt() {
+      // 旧版 academyEnrollArtSvg と同じ固定SVG。新版では定義IDだけ w7-* に対応させる。
+      // 旧版の描画は校舎が右端を少し越える。新版では全体が見えるviewBoxに広げる。
+      const art = svgElement('svg', { class:'w7-enroll-art', viewBox:'0 0 236 236', 'aria-hidden':'true' });
+      const sakura = (x, y, scale = 1) => `<g transform="translate(${x} ${y}) scale(${scale})">${Array.from({ length:5 }, (_, index) => `<ellipse cx="0" cy="-3.6" rx="2.6" ry="4.2" fill="#F4BFD1" stroke="#E191AC" stroke-width=".4" transform="rotate(${index * 72})"/>`).join('')}<circle r="1.4" fill="#F6D77C"/></g>`;
+      const petal = (x, y, rotation, scale = 1) => `<ellipse cx="${x}" cy="${y}" rx="${2.6 * scale}" ry="${4.6 * scale}" fill="#F4BFD1" transform="rotate(${rotation} ${x} ${y})"/>`;
+      const spark = (x, y, size = 5) => `<rect x="${-size / 2}" y="${-size / 2}" width="${size}" height="${size}" fill="#C9A54E" transform="translate(${x} ${y}) rotate(45)"/>`;
+      art.innerHTML = `<g transform="translate(168 48) scale(1.05)"><path d="M-60 40L0 0L60 40Z" fill="#C8524A" stroke="#7A2E28" stroke-width="2"/><circle cx="0" cy="21" r="10.5" fill="#FBF3E4" stroke="#3A2A22" stroke-width="1.6"/><path d="M0 21L0 14M0 21L6 24" stroke="#3A2A22" stroke-width="1.4" stroke-linecap="round"/><rect x="-52" y="40" width="104" height="70" fill="#8B5E3C" stroke="#5C3D25" stroke-width="1.8"/><path d="M-52 58H52M-52 76H52M-52 94H52" stroke="#5C3D25" stroke-width="1" opacity=".3"/><rect x="-38" y="52" width="16" height="16" fill="#3E7FBF" stroke="#F1E4C8" stroke-width="2"/><rect x="-8" y="52" width="16" height="16" fill="#3E7FBF" stroke="#F1E4C8" stroke-width="2"/><rect x="22" y="52" width="16" height="16" fill="#3E7FBF" stroke="#F1E4C8" stroke-width="2"/><rect x="-38" y="82" width="16" height="16" fill="#3E7FBF" stroke="#F1E4C8" stroke-width="2"/><rect x="22" y="82" width="16" height="16" fill="#3E7FBF" stroke="#F1E4C8" stroke-width="2"/><path d="M-20 84L0 62L20 84Z" fill="#DCE3E6" stroke="#C8524A" stroke-width="4"/><rect x="-13" y="84" width="26" height="26" fill="#201914" stroke="#5C3D25" stroke-width="1.6"/><path d="M13 84L13 110" stroke="#DCE3E6" stroke-width="3" stroke-linecap="round"/></g><path d="M2 2C14 10 22 20 26 34" fill="none" stroke="#6B4630" stroke-width="2.2" stroke-linecap="round"/><path d="M10 9C14 7 18 8 20 11" fill="none" stroke="#6B4630" stroke-width="1.5" stroke-linecap="round"/>${sakura(8,6,1)}${sakura(19,16,.85)}${sakura(24,29,.7)}<path d="M202 2C190 10 182 20 178 34" fill="none" stroke="#6B4630" stroke-width="2.2" stroke-linecap="round"/><path d="M194 9C190 7 186 8 184 11" fill="none" stroke="#6B4630" stroke-width="1.5" stroke-linecap="round"/>${sakura(196,6,1)}${sakura(185,16,.85)}${sakura(180,29,.7)}<path d="M28 24Q102 4 176 24L176 46Q102 26 28 46Z" fill="#FBF3E4" stroke="#B23B2E" stroke-width="2.4"/><path d="M28 24L14 30L28 46Z" fill="#B23B2E"/><path d="M176 24L190 30L176 46Z" fill="#B23B2E"/><text x="102" y="32" text-anchor="middle" fill="#B23B2E" font-family="serif" font-size="17" font-weight="800" letter-spacing=".15em">祝　入学</text>${petal(50,66,25)}${petal(154,60,-40,.9)}${petal(172,98,60,.85)}${petal(32,102,-15,.85)}${spark(20,54)}${spark(186,64,4.2)}<g transform="translate(102 152) scale(2.05)"><use href="#w7-daruma-body"/><use href="#w7-face-happy"/></g><g transform="translate(61 172) scale(.9)"><ellipse cx="0" cy="-7" rx="4.2" ry="7" fill="#FBF3E4" stroke="#B23B2E" stroke-width="1" transform="rotate(0)"/><ellipse cx="0" cy="-7" rx="4.2" ry="7" fill="#FBF3E4" stroke="#B23B2E" stroke-width="1" transform="rotate(60)"/><ellipse cx="0" cy="-7" rx="4.2" ry="7" fill="#FBF3E4" stroke="#B23B2E" stroke-width="1" transform="rotate(120)"/><ellipse cx="0" cy="-7" rx="4.2" ry="7" fill="#FBF3E4" stroke="#B23B2E" stroke-width="1" transform="rotate(180)"/><ellipse cx="0" cy="-7" rx="4.2" ry="7" fill="#FBF3E4" stroke="#B23B2E" stroke-width="1" transform="rotate(240)"/><ellipse cx="0" cy="-7" rx="4.2" ry="7" fill="#FBF3E4" stroke="#B23B2E" stroke-width="1" transform="rotate(300)"/><path d="M3 6L11 24L4 21Z" fill="#B23B2E"/><path d="M-2 7L1 25L-5 22Z" fill="#B23B2E"/><circle r="3.2" fill="#C9A54E" stroke="#B23B2E" stroke-width=".8"/></g>`;
+      return art;
+    }
+    // 雑学の挿絵は旧版と同じ小さなSVG構成を使う。描画方式を作り直さず、
+    // 旧版との見た目差をここ一箇所で防ぐ（#w7-* は新版の共通defsへの読み替え）。
+    function renderLegacyTriviaArt(kind) {
+      const art = svgElement('svg', { class:'w7-clear-art', viewBox:'0 0 210 86', 'aria-hidden':'true' });
+      const daruma = (x, y, scale = .55) => `<g transform="translate(${x} ${y}) scale(${scale})"><use href="#w7-daruma-body"/><use href="#w7-face-open"/></g>`;
+      const takasakiDaruma = (x, y, scale = .55) => `<g transform="translate(${x} ${y}) scale(${scale * 1.15} ${scale})"><use href="#w7-daruma-body"/><path d="M-20 8H20V16H-20Z" fill="#C8352C"/><path d="M-11-22C-5-25 5-25 11-22C20-18 23-12 23 0C23 6 21 8.5 18 9.5C12 10.5 6 11 0 11C-6 11-12 10.5-18 9.5C-21 8.5-23 6-23 0C-23-12-20-18-11-22Z" fill="#F3E8D5"/><use href="#w7-face-open"/><path d="M-15 22C-8 28 8 28 15 22" fill="none" stroke="#C8352C" stroke-width="4.4" stroke-linecap="round"/></g>`;
+      if (kind === 'remaining') {
+        art.innerHTML = '<rect x="24" y="8" width="162" height="66" rx="8" fill="#173842" stroke="#62B8D2" stroke-width="1.6"/><text x="50" y="56" fill="#9BCBDD" font-family="sans-serif" font-size="13" font-weight="600">あと</text><text x="101" y="56" text-anchor="middle" fill="#62B8D2" font-family="sans-serif" font-size="34" font-weight="750">2</text><text x="145" y="56" text-anchor="middle" fill="#9BCBDD" font-family="sans-serif" font-size="13" font-weight="600">くるり</text>';
+      } else if (kind === 'theories') {
+        art.innerHTML = `<g transform="translate(105 62) scale(.7)"><use href="#w7-daruma-body"/><use href="#w7-face-shut"/><path d="M-15 22C-8 28 8 28 15 22" fill="none" stroke="#C8352C" stroke-width="4" stroke-linecap="round"/></g><text x="105" y="82" text-anchor="middle" fill="#C9A54E" font-family="sans-serif" font-size="10" font-weight="800">鬼</text>${daruma(62,29,.28)}<g transform="translate(145 36) rotate(-24) translate(-145 -36)">${daruma(145,36,.42)}</g><path d="M161 20l5-3M162 25l6-1" fill="none" stroke="#B9E8F2" stroke-width="1.8" stroke-linecap="round"/>`;
+      } else if (kind === 'craft') {
+        art.innerHTML = `${takasakiDaruma(105,51,.95)}<defs><clipPath id="w7-takasaki-belly"><ellipse cx="105" cy="54" rx="34" ry="31"/></clipPath></defs><g clip-path="url(#w7-takasaki-belly)"><path d="M78 62C76 67 77 72 80 75M88 64C86 68 86 73 88 76M132 62C134 67 133 72 130 75M122 64C124 68 124 73 122 76" fill="none" stroke="#C9A54E" stroke-width="4.4" stroke-linecap="round"/></g><text x="105" y="77" text-anchor="middle" fill="#F3E8D5" font-family="sans-serif" font-size="17" font-weight="800">福</text>`;
+      } else { // red: 正答は文字で出さず、旧版の赤いだるまと光だけで題材を示す。
+        art.innerHTML = `<path d="M105 7v11M68 20l8 8M142 20l-8 8M58 52h12M140 52h12" fill="none" stroke="#C9A54E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>${daruma(105,52,.7)}`;
+      }
+      return art;
+    }
+    function renderAcademyClearArt(kind) {
+      const art = svgElement('svg', { class:'w7-clear-art', viewBox:'0 0 240 140', 'aria-hidden':'true' });
+      if (kind === 'introGuide') {
+        // 最初のウェルカムと同じ「棒→タッチ→回転→全員起床」を、クリア後の
+        // 水色の棒ガイドでも繰り返す。挿入後に始めないとSVGが未接続で描画されない。
+        art.classList.add('w7-clear-guide-art');
+        art.setAttribute('viewBox', '14 0 293 310');
+        queueMicrotask(() => { if (art.isConnected) runWelcomePreviewCycle(art); });
+      } else return renderLegacyTriviaArt(kind);
+      return art;
+    }
     function renderDialog() {
       // クリアと到着の最中はダイアログを重ねず、安定フレームでだけ表示する。
       const descriptor = RuntimeState.phase === BoardPhase.CELEBRATING || RuntimeState.phase === BoardPhase.ARRIVING ? null : AppState.ui.dialog;
@@ -716,9 +948,12 @@
       const message = document.createElement('p');
       const actions = document.createElement('div');
       actions.className = 'w7-dialog-actions';
+      const details = [];
+      let clearArtwork = null;
       const addAction = (label, handler) => {
         const button = document.createElement('button');
         button.className = 'w7-board-button'; button.type = 'button'; button.textContent = label; button.addEventListener('click', handler);
+        if (label === '次へ') button.classList.add('w7-dialog-next');
         actions.append(button);
         return button;
       };
@@ -733,17 +968,91 @@
         // replaceChildren後でないとisConnectedがfalseになり、見本の初期描画が走らない。
         runWelcomePreviewCycle(preview);
       } else if (descriptor.type === 'academy-enroll') {
-        dialogElement.className = 'w7-dialog';
-        title.textContent = 'だるま学園へ ようこそ！';
-        message.textContent = 'チュートリアルをクリアしたね。まずは入門クラスから始めよう。';
+        dialogElement.className = 'w7-dialog w7-dialog--enroll';
+        title.textContent = 'だるま学園 入学おめでとう！';
+        defaultAction = addAction('つぎへ', intentOpenAcademyIntroWelcome);
+        details.push(renderAcademyEnrollArt());
+      } else if (descriptor.type === 'academy-intro-welcome') {
+        dialogElement.className = 'w7-dialog w7-dialog--welcome';
+        title.textContent = 'はじめは入門クラスだよ！';
+        const preview = svgElement('svg', { class:'w7-welcome-board w7-academy-intro-preview', viewBox:'14 -88 293 398', 'aria-hidden':'true' });
+        message.className = 'w7-academy-intro-message';
+        runAcademyWelcomePreview(preview, message, academyIntroPuzzleAt(0), '最初はゆっくりまわそう', '', { labelX:92, labelY:-22, numberX:156, numberY:-14, numberSize:64, unitX:178, unitY:-22, releaseY:-22 });
         defaultAction = addAction('はじめる', intentStartAcademyIntro);
-      } else {
+        dialogElement.replaceChildren(title, message, preview, actions);
+      } else if (descriptor.type === 'academy-basic-welcome') {
+        dialogElement.className = 'w7-dialog w7-dialog--welcome';
+        title.textContent = '基本クラスへ ようこそ！';
+        const preview = svgElement('svg', { class:'w7-welcome-board w7-academy-intro-preview', viewBox:'14 -88 293 398', 'aria-hidden':'true' });
+        message.className = 'w7-academy-intro-message';
+        runAcademyWelcomePreview(preview, message, academyBasicPuzzleAt(0), 'あと○くるりが減ったら、指をはなそう', '', { labelX:92, labelY:-22, numberX:156, numberY:-14, numberSize:64, unitX:178, unitY:-22, releaseY:-22 });
+        defaultAction = addAction('はじめる', intentStartAcademyBasic);
+        dialogElement.replaceChildren(title, message, preview, actions);
+      } else if (descriptor.type === 'academy-application-entry') {
         dialogElement.className = 'w7-dialog';
+        title.textContent = '応用クラスへ ようこそ！';
+        message.textContent = '次は、回す場所を自分で見つけよう。';
+        defaultAction = addAction('基本クラスをもう一度', intentReturnToAcademyBasic);
+      } else {
+        dialogElement.className = 'w7-dialog w7-dialog--clear';
         title.textContent = '全員起きました！';
-        message.textContent = `入門 ${AppState.navigation.puzzleIndex + 1} を ${RuntimeState.history.length} くるりでクリア！`;
-        defaultAction = addAction('もう一度', intentRetryPuzzle);
+        const className = AppState.navigation.routeId === 'academy-basic' ? '基本' : '入門';
+        const count = AppState.navigation.routeId === 'academy-basic' ? ACADEMY_BASIC_PUZZLES.length : ACADEMY_INTRO_PUZZLES.length;
+        const stageContext = document.createElement('p');
+        stageContext.className = 'w7-clear-stage-context';
+        stageContext.textContent = `${className} ${AppState.navigation.puzzleIndex + 1} / ${count}`;
+        details.push(stageContext);
+        if (puzzle.clearNote) {
+          message.className = 'w7-clear-note';
+          message.textContent = puzzle.clearNote;
+        }
+        if (puzzle.clearArt) clearArtwork = renderAcademyClearArt(puzzle.clearArt);
+        if (puzzle.clearQuiz) {
+          const detail = document.createElement('section');
+          detail.className = 'w7-clear-quiz';
+          const question = document.createElement('p');
+          question.textContent = `だるまクイズ　${puzzle.clearQuiz.question}`;
+          const note = document.createElement('p');
+          note.className = 'w7-clear-quiz-note';
+          const order = puzzle.clearQuiz.choices.map((_, index) => index);
+          for (let index = order.length - 1; index > 0; index -= 1) {
+            const other = Math.floor(Math.random() * (index + 1));
+            [order[index], order[other]] = [order[other], order[index]];
+          }
+          const correctChoiceIndex = order.indexOf(puzzle.clearQuiz.correct);
+          order.forEach((choiceIndex, index) => {
+            const button = document.createElement('button');
+            button.type = 'button'; button.textContent = puzzle.clearQuiz.choices[choiceIndex];
+            button.addEventListener('click', () => {
+              detail.querySelectorAll('button').forEach(item => item.disabled = true);
+              const correctButton = detail.querySelectorAll('button')[correctChoiceIndex];
+              correctButton.classList.add('is-correct');
+              if (index === correctChoiceIndex) {
+                detail.classList.remove('is-success');
+                void detail.getBoundingClientRect();
+                detail.classList.add('is-success');
+                note.textContent = `正解！　${puzzle.clearQuiz.note}`;
+              } else {
+                button.classList.add('is-wrong');
+                note.textContent = `おしい！　${puzzle.clearQuiz.note}`;
+              }
+            });
+            detail.append(button);
+          });
+          detail.prepend(question);
+          detail.append(note);
+          details.push(detail);
+        }
+        // この段階には旧版の問題一覧へ戻る画面がまだない。閉じて操作不能にするより、
+        // 同じ問題を試せる「もう一度」を明示し、安定して触れる状態を保つ。
+        addAction('もう一度', intentRetryPuzzle);
+        defaultAction = addAction('次へ', intentNextAcademyPuzzle);
       }
-      if (descriptor.type !== 'welcome') dialogElement.replaceChildren(title, message, actions);
+      if (!['welcome','academy-intro-welcome','academy-basic-welcome'].includes(descriptor.type)) {
+        // クリア画面は「見本 → メッセージ → クイズ」の読み順。問題番号は絶対配置なので最後でよい。
+        dialogElement.replaceChildren(title, ...(clearArtwork ? [clearArtwork] : []), ...(message.textContent ? [message] : []), ...details, actions);
+      }
+      defaultAction.classList.add('w7-dialog-default');
       queueMicrotask(() => defaultAction.focus());
       dialogElement.dataset.puzzleId = puzzle.puzzleId;
     }
@@ -757,11 +1066,99 @@
       tutorialFeedback: null,
       tutorialFeedbackGeneration: 0,
       tutorialCueGeneration: 0,
+      // 入門編の候補・落ちた棒・短い文言は画面だけの状態。保存せず、問題／確定手が変われば作り直す。
+      academyGuidanceSignature: '',
+      academyCandidates: new Set(),
+      academyFallen: new Set(),
+      academyFeedback: null,
+      academyFeedbackGeneration: 0,
+      academyCalloutRemaining: null,
+      academyCalloutGeneration: 0,
       effectGeneration: 0,
       activeEffect: null,
     };
     // チュートリアル固有の表示・誤操作判定。盤面DOM、棒の判定、回転処理は共有する。
     function isTutorialRoute(appState = AppState) { return appState.navigation.mode === 'tutorial' && appState.navigation.routeId === 'tutorial'; }
+    function isAcademyGuidedRoute(appState = AppState) { return appState.navigation.mode === 'stage' && ['academy-intro','academy-basic'].includes(appState.navigation.routeId); }
+    function academyCandidateCount(cells = RuntimeState.cells, puzzle = selectActivePuzzle()) {
+      if (selectDistance(cells) <= 1) return TRIANGLES.length;
+      return puzzle.initialCandidateCount ?? TRIANGLES.length;
+    }
+    function academyReducingTriangles(cells = RuntimeState.cells) {
+      const current = selectDistance(cells);
+      return TRIANGLES.map((triangle, triangleIndex) => {
+        const directions = [1, -1].filter(direction => selectDistance(WakeSevenBoardDomain.roll(cells, triangleIndex, direction)) === current - 1);
+        return { triangleIndex, directions };
+      }).filter(candidate => candidate.directions.length);
+    }
+    function academyStableOrder(values, puzzle = selectActivePuzzle(), cells = RuntimeState.cells, historyLength = RuntimeState.history.length) {
+      const seed = `${puzzle.puzzleId}:${WakeSevenBoardDomain.encode(cells)}:${historyLength}`;
+      const hash = value => Array.from(`${seed}:${value}`).reduce((total, char) => (total * 31 + char.charCodeAt(0)) >>> 0, 17);
+      return [...values].sort((left, right) => hash(left) - hash(right) || left - right);
+    }
+    // 学園の候補棒: まず正解を一本だけ必ず残し、残りは「その時点で進まない棒」を優先する。
+    // これなら、間違えた棒が落ちる導入を見せつつ、正解棒を先に全部並べることがない。
+    function selectAcademyCandidateTriangles({ puzzle = selectActivePuzzle(), cells = RuntimeState.cells, historyLength = RuntimeState.history.length } = {}) {
+      const reducing = academyReducingTriangles(cells).map(candidate => candidate.triangleIndex);
+      const preferred = puzzle.preferredTriangle;
+      const correct = preferred !== undefined && reducing.includes(preferred)
+        ? preferred
+        : academyStableOrder(reducing, puzzle, cells, historyLength)[0];
+      const all = TRIANGLES.map((_, index) => index);
+      const safeWrong = academyStableOrder(all.filter(index => index !== correct && !reducing.includes(index)), puzzle, cells, historyLength);
+      const fallbackCorrect = academyStableOrder(all.filter(index => index !== correct && reducing.includes(index)), puzzle, cells, historyLength);
+      return Object.freeze([correct, ...safeWrong, ...fallbackCorrect].slice(0, academyCandidateCount(cells, puzzle)));
+    }
+    function refreshAcademyGuidance(force = false) {
+      if (!isAcademyGuidedRoute() || WakeSevenBoardDomain.isSolved(RuntimeState.cells)) { RuntimeState.academyCandidates = new Set(); RuntimeState.academyFallen = new Set(); RuntimeState.academyGuidanceSignature = ''; return; }
+      const signature = `${AppState.navigation.puzzleId}:${WakeSevenBoardDomain.encode(RuntimeState.cells)}:${RuntimeState.history.length}`;
+      if (!force && signature === RuntimeState.academyGuidanceSignature) return;
+      RuntimeState.academyCandidates = new Set(selectAcademyCandidateTriangles());
+      RuntimeState.academyFallen = new Set();
+      RuntimeState.academyFeedback = null;
+      RuntimeState.academyGuidanceSignature = signature;
+    }
+    function renderAcademyGuidance() {
+      if (!isAcademyGuidedRoute()) { academyCalloutElement.hidden = true; academyCalloutElement.classList.remove('is-visible'); return; }
+      refreshAcademyGuidance();
+      boardElement.querySelectorAll('.w7-axis-layer g[data-axis]').forEach(axis => {
+        const index = Number(axis.dataset.axis);
+        axis.classList.toggle('w7-academy-candidate', RuntimeState.academyCandidates.has(index));
+        axis.classList.toggle('w7-academy-hidden', !RuntimeState.academyCandidates.has(index) && !RuntimeState.academyFallen.has(index));
+        axis.classList.toggle('w7-academy-fallen', RuntimeState.academyFallen.has(index));
+      });
+      if (RuntimeState.academyCalloutRemaining !== null) {
+        academyCalloutElement.querySelector('#w7-academy-callout-number').textContent = String(RuntimeState.academyCalloutRemaining);
+        academyCalloutElement.hidden = false;
+        requestAnimationFrame(() => { if (!academyCalloutElement.hidden) academyCalloutElement.classList.add('is-visible'); });
+      } else {
+        academyCalloutElement.classList.remove('is-visible');
+        academyCalloutElement.hidden = true;
+      }
+    }
+    function setAcademyFeedback(message, milliseconds = 650) {
+      RuntimeState.academyFeedback = message;
+      const generation = ++RuntimeState.academyFeedbackGeneration;
+      boardGripPrompt.querySelector('span').textContent = message;
+      boardGripPrompt.hidden = false;
+      setTimeout(() => { if (generation === RuntimeState.academyFeedbackGeneration) { RuntimeState.academyFeedback = null; boardGripPrompt.hidden = true; } }, milliseconds);
+    }
+    function showAcademyRemainingCallout() {
+      const remaining = selectDistance(RuntimeState.cells);
+      if (!remaining || remaining < 1 || WakeSevenBoardDomain.isSolved(RuntimeState.cells)) return;
+      RuntimeState.academyCalloutRemaining = remaining;
+      const generation = ++RuntimeState.academyCalloutGeneration;
+      renderAcademyGuidance();
+      setTimeout(() => {
+        if (generation !== RuntimeState.academyCalloutGeneration) return;
+        academyCalloutElement.classList.remove('is-visible');
+        setTimeout(() => {
+          if (generation !== RuntimeState.academyCalloutGeneration) return;
+          RuntimeState.academyCalloutRemaining = null;
+          renderAcademyGuidance();
+        }, 220);
+      }, 700);
+    }
     function selectTutorialExpectedMove(state = RuntimeState, appState = AppState) {
       if (!isTutorialRoute(appState)) return null;
       return tutorialStepAt(appState.navigation.tutorialStep).solution[state.history.length] ?? null;
@@ -876,6 +1273,10 @@
       RuntimeState.history = AppState.board.history.map(entry => Object.freeze({ triangleIndex:entry.triangleIndex, direction:entry.direction, before:Object.freeze([...entry.before]), after:Object.freeze([...entry.after]) }));
       RuntimeState.phase = BoardPhase.READY;
       RuntimeState.drag = null;
+      RuntimeState.academyGuidanceSignature = '';
+      RuntimeState.academyFeedback = null;
+      RuntimeState.academyCalloutRemaining = null;
+      RuntimeState.academyCalloutGeneration += 1;
     }
     function selectCanStartBoardDrag(state = RuntimeState, appState = AppState) { return selectCanInteractWithBoard(appState) && state.phase === BoardPhase.READY && state.invalidPointerId === null && !WakeSevenBoardDomain.isSolved(state.cells); }
     function selectCanUseHistory(state = RuntimeState, appState = AppState) { return selectCanInteractWithBoard(appState) && state.phase === BoardPhase.READY && state.invalidPointerId === null; }
@@ -986,6 +1387,12 @@
       });
       return bestHit;
     }
+    function isSelectableGrip(hit) {
+      if (!hit) return false;
+      if (!isAcademyGuidedRoute()) return true;
+      refreshAcademyGuidance();
+      return RuntimeState.academyCandidates.has(hit.triangleIndex) && !RuntimeState.academyFallen.has(hit.triangleIndex);
+    }
     function selectDragTurns(degrees, elapsedMilliseconds = Infinity, allowQuickFlick = false) {
       const magnitude = Math.abs(degrees);
       if (magnitude >= DRAG_COMMIT_DEGREES) return Math.sign(degrees) * Math.max(1, Math.round(magnitude / TURN_DEGREES));
@@ -998,6 +1405,22 @@
       const normalized = ((turns % 3) + 3) % 3;
       return normalized === 1 ? 1 : normalized === 2 ? -1 : 0;
     }
+    function logicalDirectionForTurns(turns) { return tutorialLogicalDirection(turns); }
+    // 入門編の一手判定。距離を一つ減らす向きだけが正解で、240度も反対向き120度と同じ一手にする。
+    function academyMoveOutcome(triangleIndex, direction, maxAbsDegrees) {
+      const correctDirections = academyReducingTriangles().find(candidate => candidate.triangleIndex === triangleIndex)?.directions ?? [];
+      if (direction && correctDirections.includes(direction)) return 'correct';
+      if (correctDirections.length) return 'wrong-direction';
+      if (direction || maxAbsDegrees >= 120) return 'wrong-rod';
+      return 'cancel';
+    }
+    function academyGuidedRewindPath(rawDegrees) {
+      const normalized = ((rawDegrees % 360) + 360) % 360;
+      const signed = rawDegrees < 0 ? normalized - 360 : normalized;
+      if (Math.abs(rawDegrees) >= 360) return Object.freeze({ start:signed, end:0 });
+      if (Math.abs(rawDegrees) > 240) return Object.freeze({ start:rawDegrees, end:Math.sign(rawDegrees) * 360 });
+      return Object.freeze({ start:rawDegrees, end:0 });
+    }
     function settleBoardRotation({ effect, cells, triangleIndex, fromDegrees, turns, moveDelta = Math.abs(turns), milliseconds, complete }) {
       const targetDegrees = turns * TURN_DEGREES;
       const renderProgress = progress => renderRotationPreview(cells, triangleIndex, fromDegrees + (targetDegrees - fromDegrees) * progress, turns, turns, moveDelta);
@@ -1008,7 +1431,7 @@
     }
     function safelyCapturePointer(pointerId) { try { boardElement.setPointerCapture(pointerId); } catch {} }
     function safelyReleasePointer(pointerId) { try { if (boardElement.hasPointerCapture(pointerId)) boardElement.releasePointerCapture(pointerId); } catch {} }
-    function flashTutorialGrabbedCells(triangleIndex) {
+    function flashGrabbedCells(triangleIndex) {
       // 棒をつかめた瞬間、旧版と同じく回る三枚だけを短く水色に光らせる。
       TRIANGLES[triangleIndex]?.cells.forEach(cellIndex => {
         const cell = boardElement.querySelector(`[data-cell-index="${cellIndex}"]`);
@@ -1024,8 +1447,8 @@
       RuntimeState.invalidPointerId = event.pointerId;
       boardElement.classList.remove('is-grip-hover');
       boardElement.classList.add('is-invalid-grab');
-      if (isTutorialRoute()) boardGripPrompt.querySelector('span').textContent = tutorialMessage ?? '水色の棒をつかもう';
-      boardGripPrompt.hidden = false;
+      if (isTutorialRoute()) { boardGripPrompt.querySelector('span').textContent = tutorialMessage ?? '水色の棒をつかもう'; boardGripPrompt.hidden = false; }
+      if (isAcademyGuidedRoute()) setAcademyFeedback('そこじゃないよ');
       safelyCapturePointer(event.pointerId);
       renderBoardPhase();
     }
@@ -1034,7 +1457,7 @@
       RuntimeState.invalidPointerId = null;
       safelyReleasePointer(event.pointerId);
       boardElement.classList.remove('is-invalid-grab');
-      boardGripPrompt.hidden = true;
+      if (!isAcademyGuidedRoute() || RuntimeState.academyFeedback === null) boardGripPrompt.hidden = true;
       renderBoardPhase();
       if (isTutorialRoute()) scheduleTutorialCue(80);
       else renderTutorialCue();
@@ -1052,17 +1475,21 @@
         beginInvalidGrab(event, tutorialWrongGripText(tutorialStepAt(AppState.navigation.tutorialStep), RuntimeState.history.length));
         return;
       }
+      if (isAcademyGuidedRoute()) {
+        refreshAcademyGuidance();
+        if (!RuntimeState.academyCandidates.has(hit.triangleIndex) || RuntimeState.academyFallen.has(hit.triangleIndex)) { beginInvalidGrab(event); return; }
+      }
       boardElement.classList.remove('is-grip-hover');
       boardGripPrompt.hidden = true;
       const effect = beginEffect(BoardPhase.DRAGGING);
       const startAngle = Math.atan2(point.y - hit.triangle.y, point.x - hit.triangle.x);
       clearTutorialFeedback();
       RuntimeState.tutorialCueGeneration += 1;
-      RuntimeState.drag = { pointerId:event.pointerId, triangleIndex:hit.triangleIndex, cells:Uint8Array.from(RuntimeState.cells), startedAt:performance.now(), lastAngle:startAngle, degrees:0, tutorialReleaseCue:false, tutorialStarted:false, effect };
+      RuntimeState.drag = { pointerId:event.pointerId, triangleIndex:hit.triangleIndex, cells:Uint8Array.from(RuntimeState.cells), startedAt:performance.now(), lastAngle:startAngle, degrees:0, maxAbsDegrees:0, tutorialReleaseCue:false, tutorialStarted:false, effect };
       safelyCapturePointer(event.pointerId);
       registerEffectCleanup(effect, () => safelyReleasePointer(event.pointerId));
       renderRotationPreview(RuntimeState.drag.cells, hit.triangleIndex, 0, 0);
-      if (isTutorialRoute()) flashTutorialGrabbedCells(hit.triangleIndex);
+      if (isTutorialRoute() || isAcademyGuidedRoute()) flashGrabbedCells(hit.triangleIndex);
       if (expectedMove) {
         const step = tutorialStepAt(AppState.navigation.tutorialStep);
         const moveIndex = RuntimeState.history.length;
@@ -1079,7 +1506,7 @@
       const drag = RuntimeState.drag;
       if (!drag) {
         if (RuntimeState.invalidPointerId !== null) { if (RuntimeState.invalidPointerId === event.pointerId) event.preventDefault(); return; }
-        if (event.pointerType === 'mouse' && RuntimeState.phase === BoardPhase.READY) boardElement.classList.toggle('is-grip-hover', Boolean(hitTestGrip(eventToBoardPoint(event))));
+        if (event.pointerType === 'mouse' && RuntimeState.phase === BoardPhase.READY) boardElement.classList.toggle('is-grip-hover', isSelectableGrip(hitTestGrip(eventToBoardPoint(event))));
         return;
       }
       if (RuntimeState.phase !== BoardPhase.DRAGGING || drag.pointerId !== event.pointerId) return;
@@ -1090,6 +1517,7 @@
       const delta = normalizedDegrees((angle - drag.lastAngle) * 180 / Math.PI);
       drag.lastAngle = angle;
       drag.degrees += delta;
+      drag.maxAbsDegrees = Math.max(drag.maxAbsDegrees, Math.abs(drag.degrees));
       const previewTurns = selectDragTurns(drag.degrees);
       renderRotationPreview(drag.cells, drag.triangleIndex, drag.degrees, previewTurns);
       const expectedMove = selectTutorialExpectedMove();
@@ -1128,9 +1556,14 @@
       if (cancelled) { cancelActiveEffect('pointercancel'); renderRuntime({ context:'pointercancel' }); return; }
       const elapsed = performance.now() - drag.startedAt;
       const selectedTurns = selectDragTurns(drag.degrees, elapsed, true);
-      const committedTurns = isTutorialRoute() ? tutorialLogicalDirection(selectedTurns) : selectedTurns;
+      const committedTurns = isTutorialRoute() || isAcademyGuidedRoute() ? logicalDirectionForTurns(selectedTurns) : selectedTurns;
       const tutorialMoveAllowed = isTutorialMoveAllowed(drag.triangleIndex, committedTurns);
-      const settledTurns = tutorialMoveAllowed && isTutorialRoute() ? selectedTurns : tutorialMoveAllowed ? committedTurns : 0;
+      const academyOutcome = isAcademyGuidedRoute() ? academyMoveOutcome(drag.triangleIndex, committedTurns, drag.maxAbsDegrees) : null;
+      const academyMoveAllowed = academyOutcome === 'correct';
+      const settledTurns = isAcademyGuidedRoute() ? academyMoveAllowed ? selectedTurns : 0 : tutorialMoveAllowed && isTutorialRoute() ? selectedTurns : tutorialMoveAllowed ? committedTurns : 0;
+      // 誤った学園操作は、360度ぶんを逆再生しない。旧版と同じく現在角度から最短の
+      // 元位置／一周位置へ戻すため、長く回したときも「棒が落ちる」結果がすぐ伝わる。
+      const academyRewind = isAcademyGuidedRoute() && !academyMoveAllowed ? academyGuidedRewindPath(drag.degrees) : null;
       const wrongTutorialMessage = committedTurns && !tutorialMoveAllowed
         ? tutorialStepAt(AppState.navigation.tutorialStep).cue === 'chain-direction' ? 'そこじゃないよ' : 'おしい！そこじゃないよ！'
         : null;
@@ -1139,6 +1572,22 @@
       drag.effect.phase = BoardPhase.ROTATING;
       renderBoardPhase();
       const completeRotation = () => {
+        if (isAcademyGuidedRoute() && !academyMoveAllowed) {
+          if (academyOutcome === 'wrong-rod') {
+            RuntimeState.academyCandidates.delete(drag.triangleIndex);
+            RuntimeState.academyFallen.add(drag.triangleIndex);
+          }
+          if (academyOutcome === 'wrong-direction') {
+            const reducing = new Set(academyReducingTriangles().map(candidate => candidate.triangleIndex));
+            RuntimeState.academyCandidates.forEach(index => { if (!reducing.has(index)) RuntimeState.academyFallen.add(index); });
+            RuntimeState.academyCandidates = new Set([...RuntimeState.academyCandidates].filter(index => reducing.has(index)));
+          }
+          if (finishEffect(drag.effect)) {
+            renderRuntime({ context:`academy ${academyOutcome}` });
+            if (academyOutcome !== 'cancel') setAcademyFeedback(academyOutcome === 'wrong-direction' ? (committedTurns ? 'そっちじゃないよ' : '棒はあってるよ') : 'そこじゃないよ');
+          }
+          return;
+        }
         if (committedTurns && !tutorialMoveAllowed) {
           if (finishEffect(drag.effect)) {
             renderRuntime({ context:'tutorial wrong move' });
@@ -1150,19 +1599,19 @@
         if (!finishEffect(drag.effect)) return;
         if (committedTurns && WakeSevenBoardDomain.isSolved(RuntimeState.cells)) {
           commitClearForCurrentPuzzle();
-          runClearEffect(isTutorialRoute() ? advanceTutorialAfterClear : null);
+          runClearEffect(isTutorialRoute() ? advanceTutorialAfterClear : isAcademyGuidedRoute() ? advanceAcademyAfterClear : null);
           return;
         }
-        if (committedTurns) { syncBoardToAppState(); saveAppState('move commit'); }
+        if (committedTurns) { syncBoardToAppState(); saveAppState('move commit'); if (isAcademyGuidedRoute()) showAcademyRemainingCallout(); }
         renderRuntime({ context:committedTurns ? 'move commit' : 'short drag cancel' });
       };
-      settleBoardRotation({ effect:drag.effect, cells:drag.cells, triangleIndex:drag.triangleIndex, fromDegrees:drag.degrees, turns:settledTurns, complete:completeRotation });
+      settleBoardRotation({ effect:drag.effect, cells:drag.cells, triangleIndex:drag.triangleIndex, fromDegrees:academyRewind?.start ?? drag.degrees, turns:academyRewind ? academyRewind.end / TURN_DEGREES : settledTurns, complete:completeRotation });
     }
     function handleBoardPointerLeave() { if (!RuntimeState.drag && RuntimeState.invalidPointerId === null) boardElement.classList.remove('is-grip-hover'); }
     function handleBoardPointerUp(event) { if (!clearInvalidGrab(event)) finishBoardDrag(event, false); }
     function handleBoardPointerCancel(event) { if (!clearInvalidGrab(event)) finishBoardDrag(event, true); }
     function handleBoardLostPointerCapture(event) {
-      if (RuntimeState.invalidPointerId === event.pointerId) { RuntimeState.invalidPointerId = null; boardElement.classList.remove('is-invalid-grab'); boardGripPrompt.hidden = true; renderBoardPhase(); renderTutorialCue(); return; }
+      if (RuntimeState.invalidPointerId === event.pointerId) { RuntimeState.invalidPointerId = null; boardElement.classList.remove('is-invalid-grab'); if (!isAcademyGuidedRoute() || RuntimeState.academyFeedback === null) boardGripPrompt.hidden = true; renderBoardPhase(); renderTutorialCue(); return; }
       if (RuntimeState.drag?.pointerId === event.pointerId) finishBoardDrag(event, true);
     }
     // 盤面が中央から広がる到着演出
@@ -1217,7 +1666,7 @@
       AppState.board.clearCommitted = true;
       const puzzleId = selectActivePuzzle().puzzleId;
       if (!AppState.progress.completedPuzzleIds.includes(puzzleId)) AppState.progress.completedPuzzleIds.push(puzzleId);
-      AppState.ui.dialog = isTutorialRoute() ? null : clearDialogDescriptor(selectActivePuzzle());
+      AppState.ui.dialog = isTutorialRoute() || isAcademyBoundaryClear() ? null : clearDialogDescriptor(selectActivePuzzle());
       saveAppState('clear committed');
     }
     function resetCurrentPuzzleWithoutAnimation(reason) {
@@ -1227,6 +1676,7 @@
       RuntimeState.cells = Uint8Array.from(AppState.board.cells);
       RuntimeState.history = [];
       RuntimeState.phase = BoardPhase.READY;
+      RuntimeState.academyGuidanceSignature = '';
       saveAppState(reason);
       renderRuntime({ context:reason });
     }
@@ -1244,6 +1694,37 @@
       AppState.ui.dialog = null;
       saveAppState('academy intro start');
       renderRuntime({ context:'academy intro start' });
+    }
+    function intentOpenAcademyIntroWelcome() {
+      if (AppState.navigation.routeId !== 'academy-intro') return;
+      AppState.ui.dialog = { type:'academy-intro-welcome' };
+      saveAppState('academy intro welcome');
+      renderRuntime({ context:'academy intro welcome' });
+    }
+    function intentStartAcademyBasic() {
+      if (AppState.navigation.routeId !== 'academy-basic') return;
+      AppState.ui.dialog = null;
+      replaceRuntimeBoardFromAppState();
+      saveAppState('academy basic start');
+      runArrivalEffect();
+    }
+    function intentReturnToAcademyBasic() {
+      if (AppState.navigation.routeId !== 'academy-application-entry') return;
+      AppState = makeAcademyBasicAppState(AppState);
+      replaceRuntimeBoardFromAppState();
+      saveAppState('academy application entry return');
+      renderRuntime({ context:'academy application entry return' });
+    }
+    function intentNextAcademyPuzzle() {
+      if (!isAcademyGuidedRoute() || !AppState.board.clearCommitted) return;
+      const nextIndex = AppState.navigation.puzzleIndex + 1;
+      const list = AppState.navigation.routeId === 'academy-basic' ? ACADEMY_BASIC_PUZZLES : ACADEMY_INTRO_PUZZLES;
+      if (nextIndex >= list.length) return;
+      AppState = makeAppStateForNavigation(AppState.navigation.routeId === 'academy-basic' ? makeAcademyBasicNavigation(nextIndex) : makeAcademyIntroNavigation(nextIndex), { progress:AppState.progress, rewards:AppState.rewards, settings:AppState.settings });
+      replaceRuntimeBoardFromAppState();
+      RuntimeState.academyGuidanceSignature = '';
+      saveAppState('academy next puzzle');
+      runArrivalEffect();
     }
     // 開発中だけ使う入口。V2の現在地だけを初回導入へ戻し、旧版の保存キーは変更しない。
     function intentDebugResetToTutorial() {
@@ -1272,6 +1753,20 @@
       if (!reason) return;
       saveAppState(reason);
       runArrivalEffect();
+    }
+    function isAcademyBoundaryClear() {
+      if (!isAcademyGuidedRoute()) return false;
+      const lastIndex = AppState.navigation.routeId === 'academy-basic' ? ACADEMY_BASIC_PUZZLES.length - 1 : ACADEMY_INTRO_PUZZLES.length - 1;
+      return AppState.navigation.puzzleIndex === lastIndex;
+    }
+    // クラス最終問だけはクリア演出の直後に次クラスの導入へ進む。中断後もこの安定状態へ戻る。
+    function advanceAcademyAfterClear() {
+      if (!isAcademyBoundaryClear()) { renderRuntime({ happy:true, context:'academy clear' }); return; }
+      AppState = AppState.navigation.routeId === 'academy-intro' ? makeAcademyBasicAppState(AppState) : makeAcademyApplicationEntryAppState(AppState);
+      replaceRuntimeBoardFromAppState();
+      RuntimeState.academyGuidanceSignature = '';
+      saveAppState('academy class transition');
+      renderRuntime({ context:'academy class transition' });
     }
     // 全員が起きた後のクリア演出。通常の回転とは別の表情と弾みだけを描く。
     function runClearEffect(afterClear = null) {
@@ -1350,11 +1845,13 @@
       RuntimeState.phase = BoardPhase.READY;
       // 巻き戻し途中の誤操作文言・遅延した通常案内を、復帰先の盤面へ持ち越さない。
       const tutorialTransition = settleCompletedTutorialToNextState();
-      if (!tutorialTransition) {
+      const academyTransition = !tutorialTransition && isAcademyBoundaryClear() && AppState.board.clearCommitted && WakeSevenBoardDomain.isSolved(AppState.board.cells);
+      if (academyTransition) advanceAcademyAfterClear();
+      if (!tutorialTransition && !academyTransition) {
         clearTutorialFeedback();
         RuntimeState.tutorialCueGeneration += 1;
       }
-      renderRuntime({ context:tutorialTransition ?? reason });
+      if (!academyTransition) renderRuntime({ context:tutorialTransition ?? reason });
     }
     // 保存は確定した盤面だけ。ドラッグやアニメーションの途中角度は捨て、最後の安定AppStateへ戻す。
     function saveStableAppStateBeforeLeave(reason) {
@@ -1442,8 +1939,8 @@
         return hitTestGrip(gripPoint(geometry, 0))?.triangleIndex === triangleIndex
           && hitTestGrip(gripPoint(geometry, -27))?.triangleIndex === triangleIndex
           && hitTestGrip(gripPoint(geometry, -29)) === null
-          && hitTestGrip(gripPoint(geometry, 23))?.triangleIndex === triangleIndex
-          && hitTestGrip(gripPoint(geometry, 25)) === null
+          && hitTestGrip(gripPoint(geometry, 33))?.triangleIndex === triangleIndex
+          && hitTestGrip(gripPoint(geometry, 35)) === null
           && hitTestGrip(gripPoint(geometry, 0, 39))?.triangleIndex === triangleIndex
           && hitTestGrip(gripPoint(geometry, 0, 41)) === null;
       });
@@ -1488,7 +1985,18 @@
         }) && WakeSevenBoardDomain.isSolved(cells);
       });
       checkRuntime('tutorial-catalog', tutorialCatalogValid, 'tutorial states, par, or explicit solutions are invalid');
-      checkRuntime('academy-intro-catalog', ACADEMY_INTRO_PUZZLES.length === 1 && ACADEMY_INTRO_PUZZLES.every(puzzle => SOLVER.distance[puzzle.state] === puzzle.par), 'academy intro catalog is invalid');
+      checkRuntime('academy-intro-catalog', ACADEMY_INTRO_PUZZLES.length === 3 && ACADEMY_INTRO_PUZZLES.every(puzzle => SOLVER.distance[puzzle.state] === puzzle.par), 'academy intro catalog is invalid');
+      checkRuntime('academy-basic-catalog', ACADEMY_BASIC_PUZZLES.length === 9 && ACADEMY_BASIC_PUZZLES.every(puzzle => SOLVER.distance[puzzle.state] === puzzle.par), 'academy basic catalog is invalid');
+      const basicSix = academyBasicPuzzleAt(5);
+      const basicSixCells = puzzleInitialCells(basicSix);
+      const basicSixCandidates = selectAcademyCandidateTriangles({ puzzle:basicSix, cells:basicSixCells, historyLength:0 });
+      checkRuntime('academy-basic-six-top-right', basicSix.preferredTriangle === 2 && basicSixCandidates.includes(2), 'basic six no longer starts with the top-right teaching rod');
+      const basicThree = academyBasicPuzzleAt(2);
+      const basicThreeCells = puzzleInitialCells(basicThree);
+      const basicThreeReducing = new Set(academyReducingTriangles(basicThreeCells).map(candidate => candidate.triangleIndex));
+      const basicThreeCandidates = selectAcademyCandidateTriangles({ puzzle:basicThree, cells:basicThreeCells, historyLength:0 });
+      checkRuntime('academy-candidate-learning-order', basicThreeCandidates[0] !== undefined && basicThreeCandidates.slice(1).some(index => !basicThreeReducing.has(index)), 'academy candidates no longer include a safely-wrong rod before fallback solutions');
+      checkRuntime('academy-guided-rewind', academyGuidedRewindPath(300).end === 360 && academyGuidedRewindPath(-300).end === -360 && academyGuidedRewindPath(410).start === 50 && academyGuidedRewindPath(410).end === 0, 'academy wrong-move rewind path changed');
       const academyPuzzle = academyIntroPuzzleAt(0);
       const academyInitial = puzzleInitialCells(academyPuzzle);
       const academySolution = [{ triangleIndex:0, direction:-1 }];
@@ -1536,7 +2044,7 @@
       checkRuntime('tutorial-final-reload-enters-academy', restoredFinalTutorial.navigation.routeId === 'academy-intro' && restoredFinalTutorial.progress.tutorialCompleted && restoredFinalTutorial.ui.dialog?.type === 'academy-enroll', 'final tutorial reload did not enter academy intro');
       const malformedPuzzleContext = normalizePersistentAppState({ ...midTutorial, navigation:{ ...midTutorial.navigation, puzzleId:'unknown-puzzle' } });
       checkRuntime('malformed-tutorial-context-fallback', malformedPuzzleContext.navigation.tutorialStep === 0 && sameCells(malformedPuzzleContext.board.cells, puzzleInitialCells(tutorialStepAt(0))), 'malformed tutorial context did not fall back safely');
-      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:ACADEMY_INTRO_PUZZLES.length, tutorialStepCount:TUTORIAL_STEPS.length, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
+      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:ACADEMY_INTRO_PUZZLES.length + ACADEMY_BASIC_PUZZLES.length, tutorialStepCount:TUTORIAL_STEPS.length, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
     }
     // 起動時に盤面ルールと操作の前提を確認してから表示する
     const selftestResult = runSelftest();
