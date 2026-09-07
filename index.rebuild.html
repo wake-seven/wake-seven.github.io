@@ -334,7 +334,22 @@
       Object.freeze({ puzzleId:'academy-basic-008', classId:'basic', state:7, par:2, initialCandidateCount:3, clearArt:'red', clearQuiz:Object.freeze({ question:'だるまの赤は、何を表す色？', choices:Object.freeze(['まよけや生命力','お祝いごとの華やかさ','火のあたたかさ','秋のもみじ']), correct:0, note:'だるまの赤は、まよけや生命力を表す色です。' }) }),
       Object.freeze({ puzzleId:'academy-basic-009', classId:'basic', state:57, par:2, initialCandidateCount:3 }),
     ]);
-    // P5が応用の実盤面・紫枠を担当するまで、ここは「次のクラスへ進める」安定した入口だけを持つ。
+    // 旧版の APPLICATION_STAGE_TARGETS をそのまま固定カタログへ移した。
+    // source は旧 TWO_MOVE_STAGES の0始まりの参照番号。targetCells は「正しい棒を
+    // 一回回した後に同じ向きで寝る物理パネル三枚」で、表示側がソルバーから推測しない。
+    // `rg "application|targetCells"` でデータとP5の意図を一緒に辿れるようにここへ置く。
+    const ACADEMY_APPLICATION_PUZZLES = Object.freeze([
+      Object.freeze({ puzzleId:'academy-application-001', classId:'application', source:1, state:922, par:2, targetCells:Object.freeze([0, 1, 4]) }),
+      Object.freeze({ puzzleId:'academy-application-002', classId:'application', source:0, state:1732, par:2, targetCells:Object.freeze([0, 1, 6]) }),
+      Object.freeze({ puzzleId:'academy-application-003', classId:'application', source:2, state:526, par:2, targetCells:Object.freeze([0, 1, 5]) }),
+      Object.freeze({ puzzleId:'academy-application-004', classId:'application', source:3, state:1516, par:2, targetCells:Object.freeze([0, 1, 5]) }),
+      Object.freeze({ puzzleId:'academy-application-005', classId:'application', source:4, state:544, par:2, targetCells:Object.freeze([0, 1, 2]) }),
+      Object.freeze({ puzzleId:'academy-application-006', classId:'application', source:5, state:196, par:2, targetCells:Object.freeze([0, 1, 4]) }),
+      Object.freeze({ puzzleId:'academy-application-007', classId:'application', source:6, state:76, par:2, targetCells:Object.freeze([1, 2, 3]) }),
+      Object.freeze({ puzzleId:'academy-application-008', classId:'application', source:7, state:57, par:2, targetCells:Object.freeze([0, 1, 2]) }),
+      Object.freeze({ puzzleId:'academy-application-009', classId:'application', source:8, state:7, par:2, targetCells:Object.freeze([0, 3, 4]) }),
+    ]);
+    // P5-1 は実問題へ入る前の安定した入口を残す。P5-2 が0手導入を担当する。
     const ACADEMY_APPLICATION_ENTRY_PUZZLE = Object.freeze({ puzzleId:'academy-application-entry', state:922, par:2 });
     // 旧版の最終的な5状態を、生成順依存ではなく明示データとして移す。
     // solutionは「この段階で教える一本の手順」。自己検査でstate・parと照合する。
@@ -347,7 +362,7 @@
     ]);
     const APP_STORAGE_KEY = 'wake7-rebuild-v2';
     const APP_SCHEMA_VERSION = 2;
-    const APP_CATALOG_VERSION = 2;
+    const APP_CATALOG_VERSION = 3;
     // 画面上の見た目だけを変える座標変換。盤面ルールや履歴は変えない。
     /* The board's logic always uses CELL_POSITIONS; this display transform is presentation-only. */
     const BOARD_VIEW = Object.freeze({ rotationDegrees: 0, translateX: 0, translateY: 0 });
@@ -544,10 +559,12 @@
     function tutorialStepAt(index) { return TUTORIAL_STEPS[index] ?? TUTORIAL_STEPS[0]; }
     function academyIntroPuzzleAt(index) { return ACADEMY_INTRO_PUZZLES[index] ?? ACADEMY_INTRO_PUZZLES[0]; }
     function academyBasicPuzzleAt(index) { return ACADEMY_BASIC_PUZZLES[index] ?? ACADEMY_BASIC_PUZZLES[0]; }
+    function academyApplicationPuzzleAt(index) { return ACADEMY_APPLICATION_PUZZLES[index] ?? ACADEMY_APPLICATION_PUZZLES[0]; }
     function puzzleInitialCells(puzzle) { return Array.from(WakeSevenBoardDomain.decode(puzzle.state)); }
     function selectPuzzleForNavigation(navigation) {
       if (navigation.mode === 'tutorial') return tutorialStepAt(navigation.tutorialStep);
       if (navigation.routeId === 'academy-basic') return academyBasicPuzzleAt(navigation.puzzleIndex);
+      if (navigation.routeId === 'academy-application') return academyApplicationPuzzleAt(navigation.puzzleIndex);
       if (navigation.routeId === 'academy-application-entry') return ACADEMY_APPLICATION_ENTRY_PUZZLE;
       return academyIntroPuzzleAt(navigation.puzzleIndex);
     }
@@ -572,6 +589,10 @@
     }
     function makeAcademyApplicationEntryNavigation() {
       return { mode:'stage', routeId:'academy-application-entry', courseId:'academy', sectionId:'application', lap:1, tutorialStep:null, puzzleIndex:0, puzzleId:ACADEMY_APPLICATION_ENTRY_PUZZLE.puzzleId, returnRoute:null };
+    }
+    function makeAcademyApplicationNavigation(puzzleIndex = 0) {
+      const puzzle = academyApplicationPuzzleAt(puzzleIndex);
+      return { mode:'stage', routeId:'academy-application', courseId:'academy', sectionId:'application', lap:1, tutorialStep:null, puzzleIndex, puzzleId:puzzle.puzzleId, returnRoute:null };
     }
     function makeAppStateForNavigation(navigation, options = {}) {
       const puzzle = selectPuzzleForNavigation(navigation);
@@ -611,6 +632,9 @@
     function makeAcademyApplicationEntryAppState(appState) {
       return makeAppStateForNavigation(makeAcademyApplicationEntryNavigation(), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, dialog:{ type:'academy-application-entry' } });
     }
+    function makeAcademyApplicationAppState(appState, puzzleIndex = 0) {
+      return makeAppStateForNavigation(makeAcademyApplicationNavigation(puzzleIndex), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings });
+    }
     function isOrientationCells(value) { return Array.isArray(value) && value.length === CELL_COUNT && value.every(cell => Number.isInteger(cell) && cell >= 0 && cell <= 2); }
     function sameCells(left, right) { return left.length === right.length && left.every((cell, index) => cell === right[index]); }
     function validMoveHistory(value, initialCells, cells) {
@@ -645,7 +669,7 @@
       return { rewards, settings };
     }
     function normalizeCourseProgress(rawProgress) {
-      const knownPuzzleIds = new Set([...TUTORIAL_STEPS, ...ACADEMY_INTRO_PUZZLES, ...ACADEMY_BASIC_PUZZLES, ACADEMY_APPLICATION_ENTRY_PUZZLE].map(puzzle => puzzle.puzzleId));
+      const knownPuzzleIds = new Set([...TUTORIAL_STEPS, ...ACADEMY_INTRO_PUZZLES, ...ACADEMY_BASIC_PUZZLES, ...ACADEMY_APPLICATION_PUZZLES, ACADEMY_APPLICATION_ENTRY_PUZZLE].map(puzzle => puzzle.puzzleId));
       const recorded = Array.isArray(rawProgress?.completedPuzzleIds) ? rawProgress.completedPuzzleIds : [];
       return {
         tutorialCompleted:rawProgress?.tutorialCompleted === true,
@@ -664,8 +688,11 @@
       const basicIsValid = rawNavigation?.mode === 'stage' && rawNavigation?.routeId === 'academy-basic'
         && Number.isInteger(puzzleIndex) && ACADEMY_BASIC_PUZZLES[puzzleIndex]
         && rawNavigation?.puzzleId === ACADEMY_BASIC_PUZZLES[puzzleIndex].puzzleId;
+      const applicationPuzzleIsValid = rawNavigation?.mode === 'stage' && rawNavigation?.routeId === 'academy-application'
+        && Number.isInteger(puzzleIndex) && ACADEMY_APPLICATION_PUZZLES[puzzleIndex]
+        && rawNavigation?.puzzleId === ACADEMY_APPLICATION_PUZZLES[puzzleIndex].puzzleId;
       const applicationIsValid = rawNavigation?.mode === 'stage' && rawNavigation?.routeId === 'academy-application-entry' && rawNavigation?.puzzleId === ACADEMY_APPLICATION_ENTRY_PUZZLE.puzzleId;
-      if (progress.tutorialCompleted) return applicationIsValid ? makeAcademyApplicationEntryNavigation() : basicIsValid ? makeAcademyBasicNavigation(puzzleIndex) : academyIsValid ? makeAcademyIntroNavigation(puzzleIndex) : makeAcademyIntroNavigation(0);
+      if (progress.tutorialCompleted) return applicationPuzzleIsValid ? makeAcademyApplicationNavigation(puzzleIndex) : applicationIsValid ? makeAcademyApplicationEntryNavigation() : basicIsValid ? makeAcademyBasicNavigation(puzzleIndex) : academyIsValid ? makeAcademyIntroNavigation(puzzleIndex) : makeAcademyIntroNavigation(0);
       return tutorialIsValid ? makeTutorialNavigation(tutorialStep) : makeTutorialNavigation(0);
     }
     function stableDialogForNavigation(rawDialog, navigation, solved) {
@@ -728,6 +755,13 @@
     }
     function selectActivePuzzle() { return selectPuzzleForNavigation(AppState.navigation); }
     function selectCanInteractWithBoard(appState = AppState) { return appState.ui.dialog === null && !appState.board.clearCommitted; }
+    // OPEN-005: P5-2の導入演出は保存状態からだけ決める。途中フレームや「見た」印は
+    // 保存しないため、同じ問題を0手で再訪してもtrue、1手以上の復元ではfalseになる。
+    function applicationShouldReplayIntro(appState = AppState) {
+      return appState.navigation.routeId === 'academy-application'
+        && !appState.board.clearCommitted
+        && appState.board.history.length === 0;
+    }
     function syncBoardToAppState() {
       AppState.board.cells = Array.from(RuntimeState.cells);
       AppState.board.history = RuntimeState.history.map(entry => ({ triangleIndex:entry.triangleIndex, direction:entry.direction, before:[...entry.before], after:[...entry.after] }));
@@ -739,8 +773,8 @@
         return;
       }
       if (AppState.navigation.routeId === 'academy-application-entry') { stageLabelElement.textContent = 'だるま学園・応用クラス'; return; }
-      const className = AppState.navigation.routeId === 'academy-basic' ? '基本' : '入門';
-      const count = AppState.navigation.routeId === 'academy-basic' ? ACADEMY_BASIC_PUZZLES.length : ACADEMY_INTRO_PUZZLES.length;
+      const className = AppState.navigation.routeId === 'academy-application' ? '応用' : AppState.navigation.routeId === 'academy-basic' ? '基本' : '入門';
+      const count = AppState.navigation.routeId === 'academy-application' ? ACADEMY_APPLICATION_PUZZLES.length : AppState.navigation.routeId === 'academy-basic' ? ACADEMY_BASIC_PUZZLES.length : ACADEMY_INTRO_PUZZLES.length;
       stageLabelElement.textContent = `${className} ${AppState.navigation.puzzleIndex + 1} / ${count}`;
     }
     // 導入ダイアログの七枚見本。ゲーム盤とは別の入力を持たず、旧版の「触る→棒が消える→一回転→全員起きる」だけを見せる。
@@ -992,12 +1026,13 @@
         dialogElement.className = 'w7-dialog';
         title.textContent = '応用クラスへ ようこそ！';
         message.textContent = '次は、回す場所を自分で見つけよう。';
-        defaultAction = addAction('基本クラスをもう一度', intentReturnToAcademyBasic);
+        addAction('基本クラスをもう一度', intentReturnToAcademyBasic);
+        defaultAction = addAction('はじめる', intentStartAcademyApplication);
       } else {
         dialogElement.className = 'w7-dialog w7-dialog--clear';
         title.textContent = '全員起きました！';
-        const className = AppState.navigation.routeId === 'academy-basic' ? '基本' : '入門';
-        const count = AppState.navigation.routeId === 'academy-basic' ? ACADEMY_BASIC_PUZZLES.length : ACADEMY_INTRO_PUZZLES.length;
+        const className = AppState.navigation.routeId === 'academy-application' ? '応用' : AppState.navigation.routeId === 'academy-basic' ? '基本' : '入門';
+        const count = AppState.navigation.routeId === 'academy-application' ? ACADEMY_APPLICATION_PUZZLES.length : AppState.navigation.routeId === 'academy-basic' ? ACADEMY_BASIC_PUZZLES.length : ACADEMY_INTRO_PUZZLES.length;
         const stageContext = document.createElement('p');
         stageContext.className = 'w7-clear-stage-context';
         stageContext.textContent = `${className} ${AppState.navigation.puzzleIndex + 1} / ${count}`;
@@ -1080,6 +1115,8 @@
     // チュートリアル固有の表示・誤操作判定。盤面DOM、棒の判定、回転処理は共有する。
     function isTutorialRoute(appState = AppState) { return appState.navigation.mode === 'tutorial' && appState.navigation.routeId === 'tutorial'; }
     function isAcademyGuidedRoute(appState = AppState) { return appState.navigation.mode === 'stage' && ['academy-intro','academy-basic'].includes(appState.navigation.routeId); }
+    // 応用はP5-1では候補棒・誤手の専用補助を持たず、共有盤面の通常入力を使う。
+    function isAcademyApplicationRoute(appState = AppState) { return appState.navigation.mode === 'stage' && appState.navigation.routeId === 'academy-application'; }
     function academyCandidateCount(cells = RuntimeState.cells, puzzle = selectActivePuzzle()) {
       if (selectDistance(cells) <= 1) return TRIANGLES.length;
       return puzzle.initialCandidateCount ?? TRIANGLES.length;
@@ -1715,12 +1752,26 @@
       saveAppState('academy application entry return');
       renderRuntime({ context:'academy application entry return' });
     }
+    function intentStartAcademyApplication() {
+      if (AppState.navigation.routeId !== 'academy-application-entry') return;
+      AppState = makeAcademyApplicationAppState(AppState, 0);
+      replaceRuntimeBoardFromAppState();
+      saveAppState('academy application start');
+      // P5-1 は既存の七枚同時到着だけを共有する。P5-2 が
+      // applicationShouldReplayIntro() を使う導入演出を追加する。
+      runArrivalEffect();
+    }
     function intentNextAcademyPuzzle() {
-      if (!isAcademyGuidedRoute() || !AppState.board.clearCommitted) return;
+      if (!(isAcademyGuidedRoute() || isAcademyApplicationRoute()) || !AppState.board.clearCommitted) return;
       const nextIndex = AppState.navigation.puzzleIndex + 1;
-      const list = AppState.navigation.routeId === 'academy-basic' ? ACADEMY_BASIC_PUZZLES : ACADEMY_INTRO_PUZZLES;
+      const list = AppState.navigation.routeId === 'academy-application' ? ACADEMY_APPLICATION_PUZZLES : AppState.navigation.routeId === 'academy-basic' ? ACADEMY_BASIC_PUZZLES : ACADEMY_INTRO_PUZZLES;
       if (nextIndex >= list.length) return;
-      AppState = makeAppStateForNavigation(AppState.navigation.routeId === 'academy-basic' ? makeAcademyBasicNavigation(nextIndex) : makeAcademyIntroNavigation(nextIndex), { progress:AppState.progress, rewards:AppState.rewards, settings:AppState.settings });
+      const nextNavigation = AppState.navigation.routeId === 'academy-application'
+        ? makeAcademyApplicationNavigation(nextIndex)
+        : AppState.navigation.routeId === 'academy-basic'
+          ? makeAcademyBasicNavigation(nextIndex)
+          : makeAcademyIntroNavigation(nextIndex);
+      AppState = makeAppStateForNavigation(nextNavigation, { progress:AppState.progress, rewards:AppState.rewards, settings:AppState.settings });
       replaceRuntimeBoardFromAppState();
       RuntimeState.academyGuidanceSignature = '';
       saveAppState('academy next puzzle');
@@ -1987,6 +2038,44 @@
       checkRuntime('tutorial-catalog', tutorialCatalogValid, 'tutorial states, par, or explicit solutions are invalid');
       checkRuntime('academy-intro-catalog', ACADEMY_INTRO_PUZZLES.length === 3 && ACADEMY_INTRO_PUZZLES.every(puzzle => SOLVER.distance[puzzle.state] === puzzle.par), 'academy intro catalog is invalid');
       checkRuntime('academy-basic-catalog', ACADEMY_BASIC_PUZZLES.length === 9 && ACADEMY_BASIC_PUZZLES.every(puzzle => SOLVER.distance[puzzle.state] === puzzle.par), 'academy basic catalog is invalid');
+      const applicationExpected = [
+        [922, 2, [0, 1, 4]], [1732, 2, [0, 1, 6]], [526, 2, [0, 1, 5]],
+        [1516, 2, [0, 1, 5]], [544, 2, [0, 1, 2]], [196, 2, [0, 1, 4]],
+        [76, 2, [1, 2, 3]], [57, 2, [0, 1, 2]], [7, 2, [0, 3, 4]],
+      ];
+      const applicationCatalogValid = ACADEMY_APPLICATION_PUZZLES.length === applicationExpected.length
+        && new Set(ACADEMY_APPLICATION_PUZZLES.map(puzzle => puzzle.puzzleId)).size === ACADEMY_APPLICATION_PUZZLES.length
+        && ACADEMY_APPLICATION_PUZZLES.every((puzzle, index) => {
+          const [state, par, targetCells] = applicationExpected[index];
+          return puzzle.puzzleId === `academy-application-${String(index + 1).padStart(3, '0')}`
+            && puzzle.classId === 'application'
+            && puzzle.source === [1, 0, 2, 3, 4, 5, 6, 7, 8][index]
+            && puzzle.state === state
+            && puzzle.par === par
+            && SOLVER.distance[puzzle.state] === puzzle.par
+            && puzzle.targetCells.length === 3
+            && new Set(puzzle.targetCells).size === 3
+            && puzzle.targetCells.every(cell => Number.isInteger(cell) && cell >= 0 && cell < CELL_COUNT)
+            && sameCells(puzzle.targetCells, targetCells);
+        });
+      checkRuntime('academy-application-catalog', applicationCatalogValid, 'application puzzle ID, order, state, par, or targetCells is invalid');
+      const applicationZero = makeAcademyApplicationAppState(makeAcademyApplicationEntryAppState(makeDefaultAppState()), 0);
+      const restoredApplicationZero = normalizePersistentAppState(applicationZero);
+      const applicationFirst = academyApplicationPuzzleAt(0);
+      const applicationInitial = puzzleInitialCells(applicationFirst);
+      const applicationFirstMove = TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction })))
+        .find(move => selectDistance(WakeSevenBoardDomain.roll(applicationInitial, move.triangleIndex, move.direction)) === applicationFirst.par - 1);
+      const applicationAfterOne = Array.from(WakeSevenBoardDomain.roll(applicationInitial, applicationFirstMove.triangleIndex, applicationFirstMove.direction));
+      const applicationOne = makeAcademyApplicationAppState(makeAcademyApplicationEntryAppState(makeDefaultAppState()), 0);
+      applicationOne.board = { initialCells:[...applicationInitial], cells:applicationAfterOne, history:[{ ...applicationFirstMove, before:[...applicationInitial], after:applicationAfterOne }], clearCommitted:false };
+      const restoredApplicationOne = normalizePersistentAppState(applicationOne);
+      checkRuntime('academy-application-open-005-restore', applicationShouldReplayIntro(restoredApplicationZero)
+        && restoredApplicationZero.navigation.puzzleId === applicationFirst.puzzleId
+        && restoredApplicationZero.board.history.length === 0
+        && sameCells(restoredApplicationZero.board.cells, applicationInitial)
+        && !applicationShouldReplayIntro(restoredApplicationOne)
+        && restoredApplicationOne.board.history.length === 1
+        && sameCells(restoredApplicationOne.board.cells, applicationAfterOne), 'application zero/one-move restore violates OPEN-005');
       const basicSix = academyBasicPuzzleAt(5);
       const basicSixCells = puzzleInitialCells(basicSix);
       const basicSixCandidates = selectAcademyCandidateTriangles({ puzzle:basicSix, cells:basicSixCells, historyLength:0 });
@@ -2044,7 +2133,7 @@
       checkRuntime('tutorial-final-reload-enters-academy', restoredFinalTutorial.navigation.routeId === 'academy-intro' && restoredFinalTutorial.progress.tutorialCompleted && restoredFinalTutorial.ui.dialog?.type === 'academy-enroll', 'final tutorial reload did not enter academy intro');
       const malformedPuzzleContext = normalizePersistentAppState({ ...midTutorial, navigation:{ ...midTutorial.navigation, puzzleId:'unknown-puzzle' } });
       checkRuntime('malformed-tutorial-context-fallback', malformedPuzzleContext.navigation.tutorialStep === 0 && sameCells(malformedPuzzleContext.board.cells, puzzleInitialCells(tutorialStepAt(0))), 'malformed tutorial context did not fall back safely');
-      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:ACADEMY_INTRO_PUZZLES.length + ACADEMY_BASIC_PUZZLES.length, tutorialStepCount:TUTORIAL_STEPS.length, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
+      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:ACADEMY_INTRO_PUZZLES.length + ACADEMY_BASIC_PUZZLES.length + ACADEMY_APPLICATION_PUZZLES.length, tutorialStepCount:TUTORIAL_STEPS.length, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
     }
     // 起動時に盤面ルールと操作の前提を確認してから表示する
     const selftestResult = runSelftest();
