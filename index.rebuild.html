@@ -13,8 +13,11 @@
     * { box-sizing:border-box; }
     body { margin:0; min-height:100vh; min-height:100dvh; max-width:100%; display:flex; flex-direction:column; align-items:center; padding:1.125rem 0.75rem max(0.75rem,env(safe-area-inset-bottom)); background:var(--ai); background-image:radial-gradient(120% 70% at 50% 0%,var(--ai2) 0%,var(--ai) 62%); color:var(--washi); font-family:"A1 Gothic","Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,"Noto Sans JP",sans-serif; }
     /* 画面の枠 */
-    .w7-shell { width:100%; max-width:var(--content-max); }
-    .w7-app-title { margin:0 0 .35rem; text-align:center; font-size:clamp(1.25rem,5vw,1.65rem); }
+    .w7-shell { position:relative; width:100%; max-width:var(--content-max); }
+    .w7-brand-sub { display:flex; align-items:center; justify-content:center; gap:.625rem; margin:0; color:var(--kin); font-size:.625rem; font-weight:750; letter-spacing:.27em; }
+    .w7-brand-sub::before,.w7-brand-sub::after { content:""; width:1.875rem; height:1px; background:linear-gradient(90deg,transparent,rgb(201 165 78 / .8)); }
+    .w7-brand-sub::after { background:linear-gradient(90deg,rgb(201 165 78 / .8),transparent); }
+    .w7-app-title { margin:.4375rem 0 .35rem; text-align:center; font-size:1.3125rem; font-weight:800; letter-spacing:.07em; }
     .w7-stage-label { margin:0 0 .8rem; text-align:center; color:#b9e8f2; font-weight:700; }
     /* 盤面、棒、操作ボタン */
     .w7-board-feature { display:grid; gap:0.625rem; }
@@ -26,10 +29,17 @@
     .w7-cell-hex { fill:var(--washi); stroke:#c0ac88; stroke-width:1.5; }
     .w7-cell--fallen .w7-cell-hex { fill:var(--washi2); stroke:#c0ac88; }
     .w7-cell--standing { filter:brightness(1.04); }
+    .w7-cell.is-grabbed .w7-cell-hex { animation:w7-grab-flash .34s cubic-bezier(.18,.8,.24,1); }
+    @keyframes w7-grab-flash { 0%,100% { filter:drop-shadow(0 0 0 rgb(98 215 244 / 0)); } 45% { filter:drop-shadow(0 0 10px rgb(98 215 244 / .9)) brightness(1.22); } }
     /* Daruma artwork is authored around local (0,0), the same center as its panel. */
     .w7-daruma { transform-origin:0 0; }
     .w7-axis-pivot { fill:var(--kin); opacity:.72; pointer-events:none; }
     .w7-axis-grip { fill:#7dd8f5; stroke:#3e9bc2; stroke-width:1.25; pointer-events:none; filter:drop-shadow(0 1px 1px rgb(0 0 0 / .25)); }
+    /* チュートリアルで次に回す棒。盤面の入力判定は共通のまま、見た目だけを強調する。 */
+    .w7-axis-layer [data-axis].w7-tutorial-target .w7-axis-grip { fill:#7dd8f5; stroke:#3e9bc2; stroke-width:1.25; filter:drop-shadow(0 0 5px rgb(98 215 244 / .78)); animation:w7-tutorial-grip-pulse 1.2s ease-in-out infinite; }
+    /* 最初の補助では、正解の棒以外を見せない。探索の段階ではこのclassを付けない。 */
+    .w7-axis-layer g[data-axis].w7-tutorial-hidden { opacity:0; }
+    @keyframes w7-tutorial-grip-pulse { 50% { opacity:.58; } }
     .w7-board.is-grip-hover { cursor:grab; }
     .w7-board[data-phase="dragging"] { cursor:grabbing; }
     /* 棒はつかんで回転している間と、全員が起きた後には表示しない。 */
@@ -38,19 +48,45 @@
     .w7-board.is-invalid-grab .w7-cell { opacity:.28; filter:saturate(.55) brightness(.62); }
     .w7-board.is-invalid-grab .w7-axis-pivot { opacity:.18; }
     .w7-grip-prompt { position:absolute; z-index:2; inset:0; display:grid; place-items:center; pointer-events:none; padding:2.5rem 1.25rem; text-align:center; }
+    /* 旧チュートリアルと同じく、回す三枚を隠さないよう案内は盤面上側へ置く。 */
+    body.w7-tutorial-mode .w7-grip-prompt { place-items:start center; padding:0.75rem 1.25rem 0; }
     .w7-grip-prompt[hidden] { display:none; }
     .w7-grip-prompt span { display:block; padding:.6rem .8rem; border:1px solid rgb(98 215 244 / .66); border-radius:.4rem; background:rgb(22 40 60 / .86); color:#b9e8f2; font-size:clamp(1rem,4vw,1.25rem); font-weight:800; line-height:1.35; box-shadow:0 4px 18px rgb(0 0 0 / .28); }
+    /* 指定方向を伝える、旧版と同じ水色／白縁の弧。盤面の入力とは独立した表示だけのSVG。 */
+    .w7-tutorial-arrow { pointer-events:none; }
+    .w7-tutorial-arrow .w7-arrow-border { fill:none; stroke:#bff0ff; stroke-width:8.5; stroke-linecap:round; }
+    .w7-tutorial-arrow .w7-arrow-line { fill:none; stroke:#62b8d2; stroke-width:5.5; stroke-linecap:round; filter:drop-shadow(0 0 3px rgb(22 40 60 / .9)); }
+    .w7-tutorial-arrow .w7-arrow-head { fill:#62b8d2; stroke:#bff0ff; stroke-width:1.5; stroke-linejoin:round; animation:w7-tutorial-grip-pulse 1.2s ease-in-out infinite; }
     .w7-board-controls { display:flex; justify-content:center; gap:0.75rem; }
+    .w7-board-controls[hidden] { display:none; }
     .w7-board-button { min-width:7rem; min-height:2.75rem; border:1px solid #c0ac88; border-radius:999px; padding:0.55rem 1rem; background:var(--washi); color:#2d2925; font:inherit; font-weight:700; box-shadow:0 2px 0 rgb(0 0 0 / .24); cursor:pointer; }
     .w7-board-button:focus-visible { outline:3px solid #7dd8f5; outline-offset:3px; }
     .w7-board-button:disabled { opacity:.42; cursor:default; box-shadow:none; }
+    .w7-debug-reset { display:block; margin:1.1rem auto 0; border:0; background:transparent; color:#9eb4c8; font:inherit; font-size:.78rem; text-decoration:underline; text-underline-offset:.22em; cursor:pointer; }
+    /* 旧版のチュートリアル中のリセット位置。学園以降では開発用リンクとして下へ戻す。 */
+    body.w7-tutorial-mode .w7-debug-reset { position:absolute; z-index:4; top:-.75rem; right:0; margin:0; min-height:2.125rem; padding:0 .65rem; border:1px solid rgb(98 184 210 / .38); border-radius:999px; background:rgb(22 40 60 / .62); color:#afc3d0; font-size:.75rem; text-decoration:none; }
+    .w7-debug-reset:focus-visible { outline:2px solid #7dd8f5; outline-offset:3px; border-radius:.2rem; }
     .w7-clear-burst { pointer-events:none; transform-box:view-box; }
-    .w7-dialog-backdrop { position:fixed; z-index:10; inset:0; display:grid; place-items:center; padding:1rem; background:rgb(5 14 25 / .64); }
+    .w7-dialog-backdrop { position:fixed; z-index:10; inset:0; display:grid; place-items:center; padding:1rem; background:rgb(4 13 24 / .7); backdrop-filter:blur(4px); }
     .w7-dialog-backdrop[hidden] { display:none; }
     .w7-dialog { width:min(100%,22rem); border:2px solid #7dd8f5; border-radius:1rem; padding:1.35rem; background:var(--ai2); color:var(--washi); box-shadow:0 1rem 3rem rgb(0 0 0 / .42); text-align:center; }
     .w7-dialog h2 { margin:0 0 .6rem; font-size:1.55rem; }
     .w7-dialog p { margin:.3rem 0 1rem; line-height:1.55; }
     .w7-dialog-actions { display:flex; justify-content:center; gap:.65rem; flex-wrap:wrap; }
+    /* 導入ダイアログは、本文だけでなく旧版と同じ七枚の見本を見せる。 */
+    .w7-dialog--welcome { width:min(100%,22.5rem); padding:1.375rem 1.25rem; border-width:1px; border-radius:.9375rem; border-color:rgb(255 255 255 / .16); background:#1a3047; box-shadow:0 20px 55px rgb(0 0 0 / .5); }
+    .w7-dialog--welcome h2 { margin-bottom:.875rem; font-size:1.3125rem; letter-spacing:.08em; }
+    .w7-dialog--welcome p { margin-top:.5625rem; color:#a8b6c7; font-size:1.0625rem; line-height:1.6; }
+    .w7-welcome-board { display:block; width:min(100%,16.25rem); height:auto; margin:.5rem auto -.125rem; transition:opacity .18s ease; }
+    .w7-welcome-board.w7-welcome-cycle-fade { opacity:0; }
+    .w7-dialog--welcome .w7-board-button { min-height:3.1rem; padding:.875rem 2rem; font-size:1.1875rem; }
+    .w7-dialog--welcome .w7-board-button { border-color:var(--kin); background:var(--kin); color:var(--ai); box-shadow:none; }
+    .w7-welcome-swipe { fill:#62b8d2; filter:drop-shadow(0 0 3px rgb(98 184 210 / .8)); }
+    /* 旧版のチュートリアルは盤面だけを見せる。手数HUDや問題番号はここに出さない。 */
+    body.w7-tutorial-mode .w7-stage-label,body.w7-tutorial-mode .w7-board-status { display:none; }
+    body.w7-tutorial-mode .w7-board-feature { gap:0; }
+    body.w7-tutorial-mode .w7-board-frame { margin-top:.75rem; }
+    body.w7-tutorial-mode .w7-board { margin-top:2.5rem; }
     @media (prefers-reduced-motion:reduce) { .w7-board * { animation:none!important; transition:none!important; } }
     /* スマホでは盤面を横いっぱいに使う */
     @media (max-width:480px) { body { padding-left:0.25rem; padding-right:0.25rem; padding-bottom:max(0.5rem,env(safe-area-inset-bottom)); } .w7-shell,.w7-board-frame { max-width:none; } }
@@ -59,6 +95,7 @@
 <body>
   <!-- 盤面の画面 -->
   <main class="w7-shell">
+    <p class="w7-brand-sub">WAKE SEVEN</p>
     <h1 class="w7-app-title">だるまさんを起こして！</h1>
     <p id="w7-stage-label" class="w7-stage-label">通常問題 1 / 2</p>
     <section class="w7-board-feature" aria-label="七枚のだるま盤">
@@ -75,6 +112,7 @@
         <button id="w7-board-restart" class="w7-board-button" type="button" data-w7-action="restart">やり直す</button>
       </div>
     </section>
+    <button id="w7-debug-reset" class="w7-debug-reset" type="button">デバッグ：チュートリアルを最初から</button>
   </main>
   <div id="w7-dialog-backdrop" class="w7-dialog-backdrop" hidden>
     <section id="w7-dialog" class="w7-dialog" role="dialog" aria-modal="true" aria-labelledby="w7-dialog-title" tabindex="-1"></section>
@@ -145,6 +183,8 @@
     // 最後のだるまの弾みが終わってから出すダイアログを、はっきり早める間隔。
     const CLEAR_TILE_STAGGER_MILLISECONDS = 25;
     const CLEAR_SETTLE_MILLISECONDS = CLEAR_MILLISECONDS + (CELL_COUNT - 1) * CLEAR_TILE_STAGGER_MILLISECONDS;
+    // 旧チュートリアルは祝福文を読めるよう、盤面の弾みより長く約1.25秒表示する。
+    const TUTORIAL_CLEAR_TRANSITION_MILLISECONDS = 1250;
     // 棒をつかめる範囲。innerは盤面中心側、outerは外周側、acrossは棒の左右方向。
     // 中央盤面までは広げず、外へ伸ばすより棒の左右を広くする。
     const GRIP_HIT_RANGE = Object.freeze({ inner:28, outer:24, across:40 });
@@ -232,14 +272,22 @@
     });
     const SOLVER = WakeSevenBoardDomain.buildSolver();
     const INITIAL_BOARD = Object.freeze(Array.from(WakeSevenBoardDomain.decode(REFERENCE_STAGE.state)));
-    // P3で扱う通常問題は二問だけ。問題を増やす時も、盤面状態と最短手数はこのカタログに集める。
-    const NORMAL_PUZZLES = Object.freeze([
-      Object.freeze({ puzzleId:'stage-001', state:31, par:1 }),
-      Object.freeze({ puzzleId:'stage-002', state:1732, par:2 }),
+    // P4aで実際に到達できる問題だけを置く。未実装コースの空カタログは作らない。
+    const ACADEMY_INTRO_PUZZLES = Object.freeze([
+      Object.freeze({ puzzleId:'academy-intro-001', state:31, par:1 }),
     ]);
-    const APP_STORAGE_KEY = 'wake7-rebuild-v1';
-    const APP_SCHEMA_VERSION = 1;
-    const APP_CATALOG_VERSION = 1;
+    // 旧版の最終的な5状態を、生成順依存ではなく明示データとして移す。
+    // solutionは「この段階で教える一本の手順」。自己検査でstate・parと照合する。
+    const TUTORIAL_STEPS = Object.freeze([
+      Object.freeze({ puzzleId:'tutorial-001', state:558, par:1, cue:'grab', solution:Object.freeze([Object.freeze({ triangleIndex:3, direction:1 })]) }),
+      Object.freeze({ puzzleId:'tutorial-002', state:1998, par:1, cue:'grab', solution:Object.freeze([Object.freeze({ triangleIndex:5, direction:1 })]) }),
+      Object.freeze({ puzzleId:'tutorial-003', state:837, par:1, cue:'find', solution:Object.freeze([Object.freeze({ triangleIndex:4, direction:-1 })]) }),
+      Object.freeze({ puzzleId:'tutorial-004', state:1980, par:2, cue:'chain', solution:Object.freeze([Object.freeze({ triangleIndex:3, direction:1 }), Object.freeze({ triangleIndex:5, direction:1 })]) }),
+      Object.freeze({ puzzleId:'tutorial-005', state:1449, par:2, cue:'chain-direction', solution:Object.freeze([Object.freeze({ triangleIndex:4, direction:1 }), Object.freeze({ triangleIndex:3, direction:1 })]) }),
+    ]);
+    const APP_STORAGE_KEY = 'wake7-rebuild-v2';
+    const APP_SCHEMA_VERSION = 2;
+    const APP_CATALOG_VERSION = 2;
     // 画面上の見た目だけを変える座標変換。盤面ルールや履歴は変えない。
     /* The board's logic always uses CELL_POSITIONS; this display transform is presentation-only. */
     const BOARD_VIEW = Object.freeze({ rotationDegrees: 0, translateX: 0, translateY: 0 });
@@ -277,8 +325,10 @@
     const boardElement = document.querySelector('#w7-board');
     const boardMovesElement = document.querySelector('#w7-board-moves');
     const boardRemainingElement = document.querySelector('#w7-board-remaining');
+    const boardControlsElement = document.querySelector('.w7-board-controls');
     const boardUndoButton = document.querySelector('#w7-board-undo');
     const boardRestartButton = document.querySelector('#w7-board-restart');
+    const debugResetButton = document.querySelector('#w7-debug-reset');
     const boardGripPrompt = document.querySelector('#w7-grip-prompt');
     const stageLabelElement = document.querySelector('#w7-stage-label');
     const dialogBackdropElement = document.querySelector('#w7-dialog-backdrop');
@@ -326,12 +376,17 @@
     }
     function renderBoardPhase() {
       boardElement.dataset.phase = RuntimeState.phase;
+      boardElement.dataset.route = AppState.navigation.routeId;
       boardElement.dataset.state = String(WakeSevenBoardDomain.encode(RuntimeState.cells));
       boardElement.dataset.historyLength = String(RuntimeState.history.length);
       boardElement.dataset.solved = String(WakeSevenBoardDomain.isSolved(RuntimeState.cells));
       const ready = RuntimeState.phase === BoardPhase.READY && RuntimeState.invalidPointerId === null && selectCanInteractWithBoard();
       boardUndoButton.disabled = !ready || RuntimeState.history.length === 0;
       boardRestartButton.disabled = !ready || (RuntimeState.history.length === 0 && WakeSevenBoardDomain.encode(RuntimeState.cells) === selectActivePuzzle().state);
+      // チュートリアルは指定された一手を試す導線に絞る。Undo/Restartは入門以降で表示する。
+      boardControlsElement.hidden = AppState.navigation.mode === 'tutorial';
+      document.body.classList.toggle('w7-tutorial-mode', isTutorialRoute());
+      debugResetButton.textContent = isTutorialRoute() ? '↻ リセット' : 'デバッグ：チュートリアルを最初から';
     }
     function renderRuntime(options = {}) {
       renderBoard(RuntimeState.cells, boardElement, { happy:Boolean(options.happy) });
@@ -339,6 +394,7 @@
       renderStageLabel();
       renderBoardPhase();
       renderDialog();
+      renderTutorialCue();
       if (RuntimeState.phase === BoardPhase.READY) assertRuntimeDomAlignment(options.context ?? 'render');
     }
     function normalizedDegrees(degrees) { return ((degrees + 180) % 360 + 360) % 360 - 180; }
@@ -409,23 +465,62 @@
     }
     // 操作中の盤面状態。ドラッグ、回転、やり直し、クリア演出はここだけを更新する。
     const BoardPhase = Object.freeze({ ARRIVING:'arriving', READY:'ready', DRAGGING:'dragging', ROTATING:'rotating', UNDOING:'undoing', RESTARTING:'restarting', CELEBRATING:'celebrating' });
-    // 通常問題の進行、盤面、報酬の選択は AppState が所有する。アニメーション途中の値は RuntimeState だけに置く。
-    function puzzleAt(index) { return NORMAL_PUZZLES[index] ?? NORMAL_PUZZLES[0]; }
+    // コース進行はAppState、アニメーション途中の値はRuntimeStateが所有する。
+    // P4aはtutorialとacademy-introだけを実装する。後続コースを空の雛形として置かない。
+    function tutorialStepAt(index) { return TUTORIAL_STEPS[index] ?? TUTORIAL_STEPS[0]; }
+    function academyIntroPuzzleAt(index) { return ACADEMY_INTRO_PUZZLES[index] ?? ACADEMY_INTRO_PUZZLES[0]; }
     function puzzleInitialCells(puzzle) { return Array.from(WakeSevenBoardDomain.decode(puzzle.state)); }
-    function makeDefaultAppState(puzzleIndex = 0) {
-      const puzzle = puzzleAt(puzzleIndex);
+    function selectPuzzleForNavigation(navigation) {
+      return navigation.mode === 'tutorial'
+        ? tutorialStepAt(navigation.tutorialStep)
+        : academyIntroPuzzleAt(navigation.puzzleIndex);
+    }
+    function makeBoardState(puzzle) {
       const initialCells = puzzleInitialCells(puzzle);
+      return { initialCells, cells:[...initialCells], history:[], clearCommitted:false };
+    }
+    function makeDefaultRewards() { return { masterGoldGranted:false, satoriDesignGranted:false }; }
+    function makeDefaultSettings() { return { theme:'standard', layout:'standard', themeChosen:false, layoutChosen:false }; }
+    function makeDefaultProgress() { return { tutorialCompleted:false, completedPuzzleIds:[] }; }
+    function makeTutorialNavigation(tutorialStep = 0) {
+      const puzzle = tutorialStepAt(tutorialStep);
+      return { mode:'tutorial', routeId:'tutorial', courseId:'tutorial', sectionId:'tutorial', lap:1, tutorialStep, puzzleIndex:tutorialStep, puzzleId:puzzle.puzzleId, returnRoute:null };
+    }
+    function makeAcademyIntroNavigation(puzzleIndex = 0) {
+      const puzzle = academyIntroPuzzleAt(puzzleIndex);
+      return { mode:'stage', routeId:'academy-intro', courseId:'academy', sectionId:'intro', lap:1, tutorialStep:null, puzzleIndex, puzzleId:puzzle.puzzleId, returnRoute:null };
+    }
+    function makeAppStateForNavigation(navigation, options = {}) {
+      const puzzle = selectPuzzleForNavigation(navigation);
       return {
         schemaVersion:APP_SCHEMA_VERSION,
         catalogVersion:APP_CATALOG_VERSION,
-        navigation:{ mode:'normal', puzzleIndex, puzzleId:puzzle.puzzleId },
-        board:{ initialCells, cells:[...initialCells], history:[], clearCommitted:false },
-        progress:{ normalCompleted:[] },
-        // rewardsは獲得資格、settingsは現在の表示選択。P3では表示をまだ変えない。
-        rewards:{ masterGoldGranted:false, satoriDesignGranted:false },
-        settings:{ theme:'standard', layout:'standard', themeChosen:false, layoutChosen:false },
-        ui:{ dialog:null },
+        navigation,
+        board:makeBoardState(puzzle),
+        progress:options.progress ?? makeDefaultProgress(),
+        // rewardsは獲得資格、settingsは現在の表示選択。表示・獲得UIは後続フェーズで実装する。
+        rewards:options.rewards ?? makeDefaultRewards(),
+        settings:options.settings ?? makeDefaultSettings(),
+        ui:{ dialog:options.dialog ?? null },
       };
+    }
+    function makeDefaultAppState() {
+      return makeAppStateForNavigation(makeTutorialNavigation(0), { dialog:{ type:'welcome' } });
+    }
+    function makeTutorialStepAppState(appState, tutorialStep) {
+      return makeAppStateForNavigation(makeTutorialNavigation(tutorialStep), {
+        progress:appState.progress,
+        rewards:appState.rewards,
+        settings:appState.settings,
+      });
+    }
+    function makeAcademyIntroAppState(appState, dialog = null) {
+      return makeAppStateForNavigation(makeAcademyIntroNavigation(0), {
+        progress:{ ...appState.progress, tutorialCompleted:true },
+        rewards:appState.rewards,
+        settings:appState.settings,
+        dialog,
+      });
     }
     function isOrientationCells(value) { return Array.isArray(value) && value.length === CELL_COUNT && value.every(cell => Number.isInteger(cell) && cell >= 0 && cell <= 2); }
     function sameCells(left, right) { return left.length === right.length && left.every((cell, index) => cell === right[index]); }
@@ -442,11 +537,7 @@
       }
       return sameCells(cells, Array.from(replay)) ? history : null;
     }
-    function clearDialogDescriptor(puzzleIndex) {
-      const puzzle = puzzleAt(puzzleIndex);
-      const nextPuzzle = NORMAL_PUZZLES[puzzleIndex + 1] ?? null;
-      return Object.freeze({ type:'clear', puzzleId:puzzle.puzzleId, nextPuzzleId:nextPuzzle?.puzzleId ?? null });
-    }
+    function clearDialogDescriptor(puzzle) { return Object.freeze({ type:'clear', puzzleId:puzzle.puzzleId }); }
     function normalizeRewardsAndSettings(rawRewards, rawSettings) {
       const rewards = {
         masterGoldGranted:rawRewards?.masterGoldGranted === true,
@@ -464,37 +555,61 @@
       };
       return { rewards, settings };
     }
-    function normalizeNormalProgress(rawProgress) {
-      const recorded = Array.isArray(rawProgress?.normalCompleted) ? rawProgress.normalCompleted : [];
-      return { normalCompleted:[...new Set(recorded.filter(puzzleId => NORMAL_PUZZLES.some(puzzle => puzzle.puzzleId === puzzleId)))] };
+    function normalizeCourseProgress(rawProgress) {
+      const knownPuzzleIds = new Set([...TUTORIAL_STEPS, ...ACADEMY_INTRO_PUZZLES].map(puzzle => puzzle.puzzleId));
+      const recorded = Array.isArray(rawProgress?.completedPuzzleIds) ? rawProgress.completedPuzzleIds : [];
+      return {
+        tutorialCompleted:rawProgress?.tutorialCompleted === true,
+        completedPuzzleIds:[...new Set(recorded.filter(puzzleId => knownPuzzleIds.has(puzzleId)))],
+      };
     }
-    // localStorageからの復元は、問題・履歴・クリア文脈を順番に検査する。壊れた盤面だけを初期盤面へ戻し、報酬設定は別に保つ。
+    function navigationFromPersistentState(rawNavigation, progress) {
+      const tutorialStep = rawNavigation?.tutorialStep;
+      const tutorialIsValid = rawNavigation?.mode === 'tutorial' && rawNavigation?.routeId === 'tutorial'
+        && Number.isInteger(tutorialStep) && TUTORIAL_STEPS[tutorialStep]
+        && rawNavigation?.puzzleId === TUTORIAL_STEPS[tutorialStep].puzzleId;
+      const puzzleIndex = rawNavigation?.puzzleIndex;
+      const academyIsValid = rawNavigation?.mode === 'stage' && rawNavigation?.routeId === 'academy-intro'
+        && Number.isInteger(puzzleIndex) && ACADEMY_INTRO_PUZZLES[puzzleIndex]
+        && rawNavigation?.puzzleId === ACADEMY_INTRO_PUZZLES[puzzleIndex].puzzleId;
+      if (progress.tutorialCompleted) return academyIsValid ? makeAcademyIntroNavigation(puzzleIndex) : makeAcademyIntroNavigation(0);
+      return tutorialIsValid ? makeTutorialNavigation(tutorialStep) : makeTutorialNavigation(0);
+    }
+    function stableDialogForNavigation(rawDialog, navigation, solved) {
+      if (rawDialog?.type === 'welcome' && navigation.mode === 'tutorial' && navigation.tutorialStep === 0) return { type:'welcome' };
+      if (rawDialog?.type === 'academy-enroll' && navigation.routeId === 'academy-intro' && !solved) return { type:'academy-enroll' };
+      if (rawDialog?.type === 'clear' && navigation.mode === 'stage' && solved) return clearDialogDescriptor(selectPuzzleForNavigation(navigation));
+      return null;
+    }
+    // localStorageからの復元は、ルート、問題、履歴、ダイアログを順番に検査する。
+    // チュートリアルの解決済み途中演出は、次段階（最終なら入学案内）という安定状態へ正規化する。
     function normalizePersistentAppState(raw) {
       if (!raw || raw.schemaVersion !== APP_SCHEMA_VERSION || raw.catalogVersion !== APP_CATALOG_VERSION) return makeDefaultAppState();
-      const requestedIndex = raw.navigation?.puzzleIndex;
-      const navigationIsValid = raw.navigation?.mode === 'normal' && Number.isInteger(requestedIndex) && NORMAL_PUZZLES[requestedIndex] && raw.navigation?.puzzleId === NORMAL_PUZZLES[requestedIndex].puzzleId;
-      const candidateIndex = navigationIsValid ? requestedIndex : 0;
-      const fallback = makeDefaultAppState(candidateIndex);
-      const puzzle = puzzleAt(candidateIndex);
-      const expectedInitial = puzzleInitialCells(puzzle);
-      const progress = normalizeNormalProgress(raw.progress);
+      const progress = normalizeCourseProgress(raw.progress);
       const rewardAndSettings = normalizeRewardsAndSettings(raw.rewards, raw.settings);
+      const navigation = navigationFromPersistentState(raw.navigation, progress);
+      const fallback = makeAppStateForNavigation(navigation, { progress, ...rewardAndSettings, dialog:stableDialogForNavigation(raw.ui?.dialog, navigation, false) });
+      const puzzle = selectPuzzleForNavigation(navigation);
+      const expectedInitial = puzzleInitialCells(puzzle);
       const board = raw.board;
       const boardIsValid = board && sameCells(board.initialCells ?? [], expectedInitial) && isOrientationCells(board.cells);
       const history = boardIsValid ? validMoveHistory(board.history, expectedInitial, board.cells) : null;
-      // 盤面だけが壊れても、既に獲得した通常問題の進捗や報酬設定まで消さない。
-      if (history === null) return { ...fallback, progress, ...rewardAndSettings };
+      // 盤面だけが壊れても、完了記録や報酬設定は残す。
+      if (history === null) return fallback;
       const solved = WakeSevenBoardDomain.isSolved(board.cells);
-      // 解決済み盤面なら、壊れた／欠けたclearCommittedやdialogに依存せず、必ず進行できるクリア状態を再構成する。
-      const clearCommitted = solved;
-      const dialog = solved ? clearDialogDescriptor(candidateIndex) : null;
-      if (solved && !progress.normalCompleted.includes(puzzle.puzzleId)) progress.normalCompleted.push(puzzle.puzzleId);
+      if (solved && navigation.mode === 'tutorial') {
+        const nextStep = navigation.tutorialStep + 1;
+        return nextStep < TUTORIAL_STEPS.length
+          ? makeTutorialStepAppState({ ...fallback, progress }, nextStep)
+          : makeAcademyIntroAppState({ ...fallback, progress:{ ...progress, tutorialCompleted:true } }, { type:'academy-enroll' });
+      }
+      const completedPuzzleIds = [...progress.completedPuzzleIds];
+      if (solved && !completedPuzzleIds.includes(puzzle.puzzleId)) completedPuzzleIds.push(puzzle.puzzleId);
       return {
         ...fallback,
-        board:{ initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted },
-        progress,
-        ...rewardAndSettings,
-        ui:{ dialog },
+        board:{ initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted:solved },
+        progress:{ ...progress, completedPuzzleIds },
+        ui:{ dialog:stableDialogForNavigation(raw.ui?.dialog, navigation, solved) ?? (solved ? clearDialogDescriptor(puzzle) : null) },
       };
     }
     let restoredFromStorage = false;
@@ -513,7 +628,7 @@
       try { localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(AppState)); document.documentElement.dataset.w7LastSave = reason; }
       catch { document.documentElement.dataset.w7LastSave = 'unavailable'; }
     }
-    function selectActivePuzzle() { return puzzleAt(AppState.navigation.puzzleIndex); }
+    function selectActivePuzzle() { return selectPuzzleForNavigation(AppState.navigation); }
     function selectCanInteractWithBoard(appState = AppState) { return appState.ui.dialog === null && !appState.board.clearCommitted; }
     function syncBoardToAppState() {
       AppState.board.cells = Array.from(RuntimeState.cells);
@@ -521,29 +636,115 @@
     }
     function renderStageLabel() {
       const puzzle = selectActivePuzzle();
-      stageLabelElement.textContent = `通常問題 ${AppState.navigation.puzzleIndex + 1} / ${NORMAL_PUZZLES.length}　最短 ${puzzle.par} くるり`;
+      if (AppState.navigation.mode === 'tutorial') {
+        stageLabelElement.textContent = `チュートリアル ${AppState.navigation.tutorialStep + 1} / ${TUTORIAL_STEPS.length}`;
+        return;
+      }
+      stageLabelElement.textContent = `だるま学園・入門 ${AppState.navigation.puzzleIndex + 1} / 3　最短 ${puzzle.par} くるり`;
+    }
+    // 導入ダイアログの七枚見本。ゲーム盤とは別の入力を持たず、旧版の「触る→棒が消える→一回転→全員起きる」だけを見せる。
+    function runWelcomePreviewCycle(preview) {
+      const initialCells = puzzleInitialCells(REFERENCE_STAGE);
+      const firstTriangle = TRIANGLES[0];
+      const isAlive = () => preview.isConnected;
+      const later = (callback, milliseconds) => setTimeout(() => { if (isAlive()) callback(); }, milliseconds);
+      const drawStart = () => {
+        if (!isAlive()) return;
+        renderBoard(initialCells, preview, { includeAxes:true });
+        const firstAxis = axisGeometry(firstTriangle);
+        const swipe = svgElement('circle', { class:'w7-welcome-swipe', cx:firstAxis.pivot[0], cy:firstAxis.pivot[1] - 40, r:6.5, display:'none' });
+        preview.append(swipe);
+        // 指が触れた瞬間に、どの棒を使うか決まったことを視覚的に伝える。
+        later(() => {
+          preview.querySelector('.w7-axis-layer')?.setAttribute('opacity', '0');
+          swipe.removeAttribute('display');
+        }, 1050);
+        later(() => {
+          const pivot = firstTriangle;
+          const rotationLayer = svgElement('g', { class:'w7-welcome-rotation' });
+          firstTriangle.cells.forEach(cellIndex => rotationLayer.append(preview.querySelector(`[data-cell-index="${cellIndex}"]`)));
+          rotationLayer.append(swipe);
+          preview.append(rotationLayer);
+          rotationLayer.style.transformBox = 'view-box';
+          rotationLayer.style.transformOrigin = `${pivot.x}px ${pivot.y}px`;
+          rotationLayer.animate([{ transform:'rotate(0deg)' }, { transform:'rotate(-120deg)' }], { duration:2000, easing:'cubic-bezier(.33,0,.67,1)', fill:'forwards' });
+        }, 1750);
+        later(() => {
+          renderBoard(SOLVED_BOARD, preview, { includeAxes:false, happy:true });
+          playWelcomePreviewCelebration(preview);
+        }, 3750);
+        later(() => { preview.classList.add('w7-welcome-cycle-fade'); }, 4970);
+        later(() => { preview.classList.remove('w7-welcome-cycle-fade'); drawStart(); }, 5400);
+      };
+      drawStart();
+    }
+    function playWelcomePreviewCelebration(preview) {
+      // 導入見本でも、旧版と同じ「全員起きた」弾みと金色の広がりを短く見せる。
+      preview.querySelectorAll('.w7-cell').forEach((cell, index) => {
+        const point = viewPoint(CELL_POSITIONS[index]);
+        const base = `translate(${point.x}px,${point.y}px)`;
+        cell.animate([
+          { transform:base },
+          { transform:`${base} scale(1.13,.78) skewX(-7deg)`, offset:.2 },
+          { transform:`${base} scale(.86,1.18) skewX(6deg)`, offset:.42 },
+          { transform:`${base} scale(1.08,.91) skewX(-3deg)`, offset:.64 },
+          { transform:base },
+        ], { duration:CLEAR_MILLISECONDS, delay:index * CLEAR_TILE_STAGGER_MILLISECONDS, easing:'cubic-bezier(.2,.8,.25,1)' });
+      });
+      const center = viewPoint(CELL_POSITIONS[3]);
+      const burst = svgElement('g', { class:'w7-clear-burst', 'pointer-events':'none' });
+      burst.style.transformOrigin = `${center.x}px ${center.y}px`;
+      burst.style.transformBox = 'view-box';
+      burst.append(svgElement('circle', { cx:center.x, cy:center.y, r:47, fill:'none', stroke:'#c9a54e', 'stroke-width':4 }));
+      burst.append(svgElement('circle', { cx:center.x, cy:center.y, r:58, fill:'none', stroke:'#f3e8d5', 'stroke-width':1.5, opacity:.7 }));
+      preview.append(burst);
+      burst.animate([
+        { transform:'scale(.55)', opacity:0 },
+        { transform:'scale(.8)', opacity:1, offset:.2 },
+        { transform:'scale(2.45)', opacity:0 },
+      ], { duration:CLEAR_MILLISECONDS, easing:'cubic-bezier(.15,.7,.2,1)', fill:'forwards' });
+      setTimeout(() => { if (burst.isConnected) burst.remove(); }, CLEAR_MILLISECONDS);
     }
     function renderDialog() {
-      // クリアは先に記録するが、祝福アニメーションが終わるまでダイアログは重ねない。
-      const descriptor = RuntimeState.phase === BoardPhase.CELEBRATING ? null : AppState.ui.dialog;
+      // クリアと到着の最中はダイアログを重ねず、安定フレームでだけ表示する。
+      const descriptor = RuntimeState.phase === BoardPhase.CELEBRATING || RuntimeState.phase === BoardPhase.ARRIVING ? null : AppState.ui.dialog;
       dialogBackdropElement.hidden = !descriptor;
-      if (!descriptor) { dialogElement.replaceChildren(); return; }
+      if (!descriptor) { dialogElement.replaceChildren(); dialogElement.className = 'w7-dialog'; return; }
       const puzzle = selectActivePuzzle();
       const title = document.createElement('h2');
       title.id = 'w7-dialog-title';
-      title.textContent = '全員起きました！';
       const message = document.createElement('p');
-      const nextPuzzle = NORMAL_PUZZLES[AppState.navigation.puzzleIndex + 1];
-      message.textContent = nextPuzzle ? `通常問題 ${AppState.navigation.puzzleIndex + 1} を ${RuntimeState.history.length} くるりでクリア！` : `通常問題 ${AppState.navigation.puzzleIndex + 1} を ${RuntimeState.history.length} くるりでクリア！ P3の通常問題はここまでです。`;
       const actions = document.createElement('div');
       actions.className = 'w7-dialog-actions';
-      const retry = document.createElement('button');
-      retry.className = 'w7-board-button'; retry.type = 'button'; retry.textContent = 'もう一度'; retry.addEventListener('click', intentRetryPuzzle);
-      const next = document.createElement('button');
-      next.className = 'w7-board-button'; next.type = 'button'; next.textContent = nextPuzzle ? '次の問題へ' : '最初から'; next.addEventListener('click', intentNextPuzzle);
-      actions.append(retry, next);
-      dialogElement.replaceChildren(title, message, actions);
-      queueMicrotask(() => next.focus());
+      const addAction = (label, handler) => {
+        const button = document.createElement('button');
+        button.className = 'w7-board-button'; button.type = 'button'; button.textContent = label; button.addEventListener('click', handler);
+        actions.append(button);
+        return button;
+      };
+      let defaultAction;
+      if (descriptor.type === 'welcome') {
+        dialogElement.className = 'w7-dialog w7-dialog--welcome';
+        title.textContent = 'だるまさんを起こして！';
+        message.textContent = 'くるりと3体をまわして、みんな起こそう';
+        const preview = svgElement('svg', { class:'w7-welcome-board', viewBox:'14 0 293 310', 'aria-hidden':'true' });
+        defaultAction = addAction('はじめる', intentStartTutorial);
+        dialogElement.replaceChildren(title, message, preview, actions);
+        // replaceChildren後でないとisConnectedがfalseになり、見本の初期描画が走らない。
+        runWelcomePreviewCycle(preview);
+      } else if (descriptor.type === 'academy-enroll') {
+        dialogElement.className = 'w7-dialog';
+        title.textContent = 'だるま学園へ ようこそ！';
+        message.textContent = 'チュートリアルをクリアしたね。まずは入門クラスから始めよう。';
+        defaultAction = addAction('はじめる', intentStartAcademyIntro);
+      } else {
+        dialogElement.className = 'w7-dialog';
+        title.textContent = '全員起きました！';
+        message.textContent = `入門 ${AppState.navigation.puzzleIndex + 1} を ${RuntimeState.history.length} くるりでクリア！`;
+        defaultAction = addAction('もう一度', intentRetryPuzzle);
+      }
+      if (descriptor.type !== 'welcome') dialogElement.replaceChildren(title, message, actions);
+      queueMicrotask(() => defaultAction.focus());
       dialogElement.dataset.puzzleId = puzzle.puzzleId;
     }
     const RuntimeState = {
@@ -552,9 +753,130 @@
       phase: BoardPhase.READY,
       drag: null,
       invalidPointerId: null,
+      // チュートリアルの短い誤操作メッセージは保存しない。次の安定操作で必ず通常の誘導に戻す。
+      tutorialFeedback: null,
+      tutorialFeedbackGeneration: 0,
+      tutorialCueGeneration: 0,
       effectGeneration: 0,
       activeEffect: null,
     };
+    // チュートリアル固有の表示・誤操作判定。盤面DOM、棒の判定、回転処理は共有する。
+    function isTutorialRoute(appState = AppState) { return appState.navigation.mode === 'tutorial' && appState.navigation.routeId === 'tutorial'; }
+    function selectTutorialExpectedMove(state = RuntimeState, appState = AppState) {
+      if (!isTutorialRoute(appState)) return null;
+      return tutorialStepAt(appState.navigation.tutorialStep).solution[state.history.length] ?? null;
+    }
+    // 5段階の案内文と、いつ棒を絞る／自分で探させるかを旧版の観測結果としてここに寄せる。
+    function tutorialPromptText(step, moveIndex, phase = 'grab') {
+      if (phase === 'clear') {
+        if (step.cue === 'find') return 'いいね！では次は連続で回すよ';
+        if (step.cue === 'chain') return 'OK！また場所が変わるよ';
+        if (step.cue === 'chain-direction') return 'やったね！それでは本編のはじまり～';
+        return AppState.navigation.tutorialStep === 0 ? 'お見事！ほかの3枚でやってみよう！' : 'そう、その調子！また場所が変わるよ';
+      }
+      if (step.cue === 'find') return phase === 'grab' ? 'どこをつかめばいいかな？' : 'そう、そこを回して、そろったらはなそう';
+      if (step.cue === 'chain') {
+        if (moveIndex > 0) return phase === 'grab' ? 'どこをつかめばいいかな？' : 'さぁ、どっちにまわそう？';
+        return phase === 'grab' ? '棒をつかんで…' : phase === 'turn' ? 'まわして…' : 'はなす';
+      }
+      if (step.cue === 'chain-direction') {
+        if (moveIndex > 0) return 'OK！あとは一人でできるかな？';
+        return phase === 'grab' ? '棒をつかんで…' : phase === 'turn' ? 'さぁ、どっちにまわそう？' : '回し始めたら、スワイプしながらはなす位置を考えよう';
+      }
+      if (AppState.navigation.tutorialStep === 1) return phase === 'grab' ? '水色をつかんで…' : phase === 'turn' ? 'くるりとまわして…' : 'はなそう';
+      return phase === 'grab' ? '水色の棒をつかもう' : phase === 'turn' ? '回し始めたら、スワイプしながらはなす位置を考えよう' : 'ここではなそう';
+    }
+    function tutorialUsesTargetOnly(step, moveIndex) {
+      return step.cue === 'grab' || (step.cue === 'chain' && moveIndex === 0) || (step.cue === 'chain-direction' && moveIndex === 0);
+    }
+    function removeTutorialArrow() { boardElement.querySelectorAll('.w7-tutorial-arrow').forEach(arrow => arrow.remove()); }
+    function renderTutorialDirectionArrow(triangleIndex, direction) {
+      removeTutorialArrow();
+      const triangle = TRIANGLES[triangleIndex];
+      if (!triangle) return;
+      const pivot = viewPoint(triangle);
+      const boardCenter = viewPoint(CELL_POSITIONS[3]);
+      const radius = 38;
+      // 旧版と同じく、各三角の「盤面外側」から120度先へ向かう弧にする。
+      const startAngle = Math.atan2(pivot.y - boardCenter.y, pivot.x - boardCenter.x) * 180 / Math.PI;
+      const endAngle = startAngle + direction * 120;
+      const shaftEnd = endAngle - direction * 22;
+      const pointAt = angle => ({ x:pivot.x + radius * Math.cos(angle * Math.PI / 180), y:pivot.y + radius * Math.sin(angle * Math.PI / 180) });
+      const start = pointAt(startAngle), base = pointAt(shaftEnd), end = pointAt(endAngle);
+      const sweep = direction > 0 ? 1 : 0;
+      const path = `M ${start.x.toFixed(2)} ${start.y.toFixed(2)} A ${radius} ${radius} 0 0 ${sweep} ${base.x.toFixed(2)} ${base.y.toFixed(2)}`;
+      const radians = endAngle * Math.PI / 180;
+      const axisX = -Math.sin(radians) * direction, axisY = Math.cos(radians) * direction;
+      const normalX = -axisY, normalY = axisX;
+      const left = { x:base.x + normalX * 9, y:base.y + normalY * 9 };
+      const right = { x:base.x - normalX * 9, y:base.y - normalY * 9 };
+      const arrow = svgElement('g', { class:'w7-tutorial-arrow', 'aria-hidden':'true' });
+      arrow.append(svgElement('path', { class:'w7-arrow-border', d:path }));
+      arrow.append(svgElement('path', { class:'w7-arrow-line', d:path }));
+      arrow.append(svgElement('path', { class:'w7-arrow-head', d:`M ${end.x.toFixed(2)} ${end.y.toFixed(2)} L ${left.x.toFixed(2)} ${left.y.toFixed(2)} L ${right.x.toFixed(2)} ${right.y.toFixed(2)} Z` }));
+      boardElement.append(arrow);
+    }
+    function clearTutorialFeedback() {
+      RuntimeState.tutorialFeedback = null;
+      RuntimeState.tutorialFeedbackGeneration += 1;
+    }
+    function setTutorialFeedback(message, milliseconds = 0) {
+      RuntimeState.tutorialFeedback = message;
+      const generation = ++RuntimeState.tutorialFeedbackGeneration;
+      renderTutorialCue();
+      if (milliseconds > 0) setTimeout(() => {
+        if (generation !== RuntimeState.tutorialFeedbackGeneration) return;
+        clearTutorialFeedback();
+        renderTutorialCue();
+      }, milliseconds);
+    }
+    function showTutorialFeedbackDuringRotation(message) {
+      clearTutorialFeedback();
+      RuntimeState.tutorialFeedback = message;
+      removeTutorialArrow();
+      boardGripPrompt.querySelector('span').textContent = message;
+      boardGripPrompt.hidden = false;
+    }
+    function scheduleTutorialCue(milliseconds) {
+      const generation = ++RuntimeState.tutorialCueGeneration;
+      const puzzleId = AppState.navigation.puzzleId;
+      setTimeout(() => {
+        if (generation !== RuntimeState.tutorialCueGeneration || AppState.navigation.puzzleId !== puzzleId) return;
+        if (RuntimeState.phase === BoardPhase.READY && RuntimeState.invalidPointerId === null) renderTutorialCue();
+      }, milliseconds);
+    }
+    function renderTutorialCue() {
+      const step = isTutorialRoute() ? tutorialStepAt(AppState.navigation.tutorialStep) : null;
+      const expectedMove = selectTutorialExpectedMove();
+      const moveIndex = RuntimeState.history.length;
+      boardElement.querySelectorAll('g[data-axis]').forEach(axis => axis.classList.remove('w7-tutorial-target', 'w7-tutorial-hidden'));
+      removeTutorialArrow();
+      if (!step || !expectedMove || RuntimeState.phase !== BoardPhase.READY || AppState.ui.dialog !== null || RuntimeState.invalidPointerId !== null) {
+        if (RuntimeState.invalidPointerId === null) boardGripPrompt.hidden = true;
+        return;
+      }
+      if (tutorialUsesTargetOnly(step, moveIndex)) {
+        boardElement.querySelectorAll('g[data-axis]').forEach(axis => {
+          axis.classList.toggle('w7-tutorial-hidden', axis.dataset.axis !== String(expectedMove.triangleIndex));
+        });
+        boardElement.querySelector(`g[data-axis="${expectedMove.triangleIndex}"]`)?.classList.add('w7-tutorial-target');
+      }
+      boardGripPrompt.querySelector('span').textContent = RuntimeState.tutorialFeedback ?? tutorialPromptText(step, moveIndex, 'grab');
+      boardGripPrompt.hidden = false;
+    }
+    function tutorialWrongGripText(step, moveIndex) {
+      return step.cue === 'find' || step.cue === 'chain-direction' || (step.cue === 'chain' && moveIndex > 0) ? 'そこじゃないよ' : '水色の棒をつかもう';
+    }
+    function isTutorialMoveAllowed(triangleIndex, direction) {
+      const expectedMove = selectTutorialExpectedMove();
+      return !isTutorialRoute() || !direction || Boolean(expectedMove && direction === expectedMove.direction && triangleIndex === expectedMove.triangleIndex);
+    }
+    function replaceRuntimeBoardFromAppState() {
+      RuntimeState.cells = Uint8Array.from(AppState.board.cells);
+      RuntimeState.history = AppState.board.history.map(entry => Object.freeze({ triangleIndex:entry.triangleIndex, direction:entry.direction, before:Object.freeze([...entry.before]), after:Object.freeze([...entry.after]) }));
+      RuntimeState.phase = BoardPhase.READY;
+      RuntimeState.drag = null;
+    }
     function selectCanStartBoardDrag(state = RuntimeState, appState = AppState) { return selectCanInteractWithBoard(appState) && state.phase === BoardPhase.READY && state.invalidPointerId === null && !WakeSevenBoardDomain.isSolved(state.cells); }
     function selectCanUseHistory(state = RuntimeState, appState = AppState) { return selectCanInteractWithBoard(appState) && state.phase === BoardPhase.READY && state.invalidPointerId === null; }
     function assertRuntimeDomAlignment(context) {
@@ -670,6 +992,12 @@
       if (allowQuickFlick && magnitude >= QUICK_FLICK_DEGREES && elapsedMilliseconds <= QUICK_FLICK_MILLISECONDS) return Math.sign(degrees);
       return 0;
     }
+    // チュートリアルでは、240度は反対向きの120度と同じ盤面になる。盤面判定はこの実効方向、
+    // 見た目の停止位置は実際に回した角度を使うため、正解240度を120度へ巻き戻さない。
+    function tutorialLogicalDirection(turns) {
+      const normalized = ((turns % 3) + 3) % 3;
+      return normalized === 1 ? 1 : normalized === 2 ? -1 : 0;
+    }
     function settleBoardRotation({ effect, cells, triangleIndex, fromDegrees, turns, moveDelta = Math.abs(turns), milliseconds, complete }) {
       const targetDegrees = turns * TURN_DEGREES;
       const renderProgress = progress => renderRotationPreview(cells, triangleIndex, fromDegrees + (targetDegrees - fromDegrees) * progress, turns, turns, moveDelta);
@@ -680,11 +1008,23 @@
     }
     function safelyCapturePointer(pointerId) { try { boardElement.setPointerCapture(pointerId); } catch {} }
     function safelyReleasePointer(pointerId) { try { if (boardElement.hasPointerCapture(pointerId)) boardElement.releasePointerCapture(pointerId); } catch {} }
-    function beginInvalidGrab(event) {
+    function flashTutorialGrabbedCells(triangleIndex) {
+      // 棒をつかめた瞬間、旧版と同じく回る三枚だけを短く水色に光らせる。
+      TRIANGLES[triangleIndex]?.cells.forEach(cellIndex => {
+        const cell = boardElement.querySelector(`[data-cell-index="${cellIndex}"]`);
+        if (!cell) return;
+        cell.classList.remove('is-grabbed');
+        void cell.getBoundingClientRect();
+        cell.classList.add('is-grabbed');
+        setTimeout(() => cell.classList.remove('is-grabbed'), 380);
+      });
+    }
+    function beginInvalidGrab(event, tutorialMessage = null) {
       // 棒の判定外では回転を始めず、ハンド表示も外して操作方法だけを知らせる。
       RuntimeState.invalidPointerId = event.pointerId;
       boardElement.classList.remove('is-grip-hover');
       boardElement.classList.add('is-invalid-grab');
+      if (isTutorialRoute()) boardGripPrompt.querySelector('span').textContent = tutorialMessage ?? '水色の棒をつかもう';
       boardGripPrompt.hidden = false;
       safelyCapturePointer(event.pointerId);
       renderBoardPhase();
@@ -696,6 +1036,8 @@
       boardElement.classList.remove('is-invalid-grab');
       boardGripPrompt.hidden = true;
       renderBoardPhase();
+      if (isTutorialRoute()) scheduleTutorialCue(80);
+      else renderTutorialCue();
       return true;
     }
     function handleBoardPointerDown(event) {
@@ -704,14 +1046,34 @@
       const point = eventToBoardPoint(event);
       const hit = hitTestGrip(point);
       if (!hit) { beginInvalidGrab(event); return; }
+      const expectedMove = selectTutorialExpectedMove();
+      if (expectedMove && hit.triangleIndex !== expectedMove.triangleIndex) {
+        // 探す段階も含め、誤った棒では回転を開始しない。旧版と同じ暗転→離す→誘導復帰。
+        beginInvalidGrab(event, tutorialWrongGripText(tutorialStepAt(AppState.navigation.tutorialStep), RuntimeState.history.length));
+        return;
+      }
       boardElement.classList.remove('is-grip-hover');
       boardGripPrompt.hidden = true;
       const effect = beginEffect(BoardPhase.DRAGGING);
       const startAngle = Math.atan2(point.y - hit.triangle.y, point.x - hit.triangle.x);
-      RuntimeState.drag = { pointerId:event.pointerId, triangleIndex:hit.triangleIndex, cells:Uint8Array.from(RuntimeState.cells), startedAt:performance.now(), lastAngle:startAngle, degrees:0, effect };
+      clearTutorialFeedback();
+      RuntimeState.tutorialCueGeneration += 1;
+      RuntimeState.drag = { pointerId:event.pointerId, triangleIndex:hit.triangleIndex, cells:Uint8Array.from(RuntimeState.cells), startedAt:performance.now(), lastAngle:startAngle, degrees:0, tutorialReleaseCue:false, tutorialStarted:false, effect };
       safelyCapturePointer(event.pointerId);
       registerEffectCleanup(effect, () => safelyReleasePointer(event.pointerId));
       renderRotationPreview(RuntimeState.drag.cells, hit.triangleIndex, 0, 0);
+      if (isTutorialRoute()) flashTutorialGrabbedCells(hit.triangleIndex);
+      if (expectedMove) {
+        const step = tutorialStepAt(AppState.navigation.tutorialStep);
+        const moveIndex = RuntimeState.history.length;
+        const isSoloSecond = step.cue === 'chain-direction' && moveIndex > 0;
+        if (!isSoloSecond) {
+          boardGripPrompt.querySelector('span').textContent = tutorialPromptText(step, moveIndex, 'turn');
+          boardGripPrompt.hidden = false;
+        }
+        // 連続回転の二手目と第五問は、あえて方向を自分で考えさせる。
+        if (!(step.cue === 'chain' && moveIndex > 0) && step.cue !== 'chain-direction') renderTutorialDirectionArrow(expectedMove.triangleIndex, expectedMove.direction);
+      }
     }
     function handleBoardPointerMove(event) {
       const drag = RuntimeState.drag;
@@ -730,6 +1092,32 @@
       drag.degrees += delta;
       const previewTurns = selectDragTurns(drag.degrees);
       renderRotationPreview(drag.cells, drag.triangleIndex, drag.degrees, previewTurns);
+      const expectedMove = selectTutorialExpectedMove();
+      if (expectedMove) {
+        const step = tutorialStepAt(AppState.navigation.tutorialStep);
+        const moveIndex = RuntimeState.history.length;
+        if (step.cue === 'chain-direction' && moveIndex === 0) {
+          if (!drag.tutorialStarted && Math.abs(drag.degrees) >= 3) {
+            drag.tutorialStarted = true;
+            removeTutorialArrow();
+            boardGripPrompt.querySelector('span').textContent = tutorialPromptText(step, moveIndex, 'release');
+            boardGripPrompt.hidden = false;
+          }
+        } else if (step.cue === 'grab' || step.cue === 'chain' && moveIndex === 0) {
+          const nearRelease = Math.abs(drag.degrees) >= 102 && Math.abs(drag.degrees) <= 138;
+          if (nearRelease && !drag.tutorialReleaseCue) {
+            drag.tutorialReleaseCue = true;
+            removeTutorialArrow();
+            boardGripPrompt.querySelector('span').textContent = tutorialPromptText(step, moveIndex, 'release');
+            boardGripPrompt.hidden = false;
+          } else if (!nearRelease && drag.tutorialReleaseCue) {
+            drag.tutorialReleaseCue = false;
+            boardGripPrompt.querySelector('span').textContent = tutorialPromptText(step, moveIndex, 'turn');
+            boardGripPrompt.hidden = false;
+            renderTutorialDirectionArrow(expectedMove.triangleIndex, expectedMove.direction);
+          }
+        }
+      }
     }
     function finishBoardDrag(event, cancelled = false) {
       const drag = RuntimeState.drag;
@@ -739,34 +1127,48 @@
       safelyReleasePointer(event.pointerId);
       if (cancelled) { cancelActiveEffect('pointercancel'); renderRuntime({ context:'pointercancel' }); return; }
       const elapsed = performance.now() - drag.startedAt;
-      const turns = selectDragTurns(drag.degrees, elapsed, true);
+      const selectedTurns = selectDragTurns(drag.degrees, elapsed, true);
+      const committedTurns = isTutorialRoute() ? tutorialLogicalDirection(selectedTurns) : selectedTurns;
+      const tutorialMoveAllowed = isTutorialMoveAllowed(drag.triangleIndex, committedTurns);
+      const settledTurns = tutorialMoveAllowed && isTutorialRoute() ? selectedTurns : tutorialMoveAllowed ? committedTurns : 0;
+      const wrongTutorialMessage = committedTurns && !tutorialMoveAllowed
+        ? tutorialStepAt(AppState.navigation.tutorialStep).cue === 'chain-direction' ? 'そこじゃないよ' : 'おしい！そこじゃないよ！'
+        : null;
+      if (wrongTutorialMessage) showTutorialFeedbackDuringRotation(wrongTutorialMessage);
       RuntimeState.phase = BoardPhase.ROTATING;
       drag.effect.phase = BoardPhase.ROTATING;
       renderBoardPhase();
       const completeRotation = () => {
-        if (turns) for (let count = 0; count < Math.abs(turns); count += 1) commitBoardMove(drag.triangleIndex, Math.sign(turns));
-        if (!finishEffect(drag.effect)) return;
-        if (turns && WakeSevenBoardDomain.isSolved(RuntimeState.cells)) {
-          commitClearForCurrentPuzzle();
-          runClearEffect();
+        if (committedTurns && !tutorialMoveAllowed) {
+          if (finishEffect(drag.effect)) {
+            renderRuntime({ context:'tutorial wrong move' });
+            setTutorialFeedback(wrongTutorialMessage, 150);
+          }
           return;
         }
-        if (turns) { syncBoardToAppState(); saveAppState('move commit'); }
-        renderRuntime({ context:turns ? 'move commit' : 'short drag cancel' });
+        if (committedTurns) for (let count = 0; count < Math.abs(committedTurns); count += 1) commitBoardMove(drag.triangleIndex, Math.sign(committedTurns));
+        if (!finishEffect(drag.effect)) return;
+        if (committedTurns && WakeSevenBoardDomain.isSolved(RuntimeState.cells)) {
+          commitClearForCurrentPuzzle();
+          runClearEffect(isTutorialRoute() ? advanceTutorialAfterClear : null);
+          return;
+        }
+        if (committedTurns) { syncBoardToAppState(); saveAppState('move commit'); }
+        renderRuntime({ context:committedTurns ? 'move commit' : 'short drag cancel' });
       };
-      settleBoardRotation({ effect:drag.effect, cells:drag.cells, triangleIndex:drag.triangleIndex, fromDegrees:drag.degrees, turns, complete:completeRotation });
+      settleBoardRotation({ effect:drag.effect, cells:drag.cells, triangleIndex:drag.triangleIndex, fromDegrees:drag.degrees, turns:settledTurns, complete:completeRotation });
     }
     function handleBoardPointerLeave() { if (!RuntimeState.drag && RuntimeState.invalidPointerId === null) boardElement.classList.remove('is-grip-hover'); }
     function handleBoardPointerUp(event) { if (!clearInvalidGrab(event)) finishBoardDrag(event, false); }
     function handleBoardPointerCancel(event) { if (!clearInvalidGrab(event)) finishBoardDrag(event, true); }
     function handleBoardLostPointerCapture(event) {
-      if (RuntimeState.invalidPointerId === event.pointerId) { RuntimeState.invalidPointerId = null; boardElement.classList.remove('is-invalid-grab'); boardGripPrompt.hidden = true; renderBoardPhase(); return; }
+      if (RuntimeState.invalidPointerId === event.pointerId) { RuntimeState.invalidPointerId = null; boardElement.classList.remove('is-invalid-grab'); boardGripPrompt.hidden = true; renderBoardPhase(); renderTutorialCue(); return; }
       if (RuntimeState.drag?.pointerId === event.pointerId) finishBoardDrag(event, true);
     }
     // 盤面が中央から広がる到着演出
     function runArrivalEffect() {
-      renderRuntime();
       const effect = beginEffect(BoardPhase.ARRIVING);
+      renderRuntime();
       const center = viewPoint(CELL_POSITIONS[3]);
       runEffectFrames(effect, ARRIVAL_MILLISECONDS, progress => {
         boardElement.querySelectorAll('.w7-cell').forEach((cell, index) => {
@@ -809,27 +1211,14 @@
       });
       return true;
     }
-    // クリアは演出ではなく確定コマンドで一度だけ記録する。リロード時にも同じ問題のダイアログを再構成できる。
+    // クリアは演出ではなく確定コマンドで一度だけ記録する。チュートリアルは祝福後に自動遷移する。
     function commitClearForCurrentPuzzle() {
       syncBoardToAppState();
       AppState.board.clearCommitted = true;
       const puzzleId = selectActivePuzzle().puzzleId;
-      if (!AppState.progress.normalCompleted.includes(puzzleId)) AppState.progress.normalCompleted.push(puzzleId);
-      AppState.ui.dialog = clearDialogDescriptor(AppState.navigation.puzzleIndex);
+      if (!AppState.progress.completedPuzzleIds.includes(puzzleId)) AppState.progress.completedPuzzleIds.push(puzzleId);
+      AppState.ui.dialog = isTutorialRoute() ? null : clearDialogDescriptor(selectActivePuzzle());
       saveAppState('clear committed');
-    }
-    function nextPuzzleIndex(currentIndex) { return currentIndex + 1 < NORMAL_PUZZLES.length ? currentIndex + 1 : 0; }
-    // 「次の問題へ」は、進捗を残したまま問題文脈・初期盤面・ダイアログだけをまとめて切り替える。
-    function makeNextPuzzleAppState(appState) {
-      const puzzleIndex = nextPuzzleIndex(appState.navigation.puzzleIndex);
-      const puzzle = puzzleAt(puzzleIndex);
-      const initialCells = puzzleInitialCells(puzzle);
-      return {
-        ...appState,
-        navigation:{ mode:'normal', puzzleIndex, puzzleId:puzzle.puzzleId },
-        board:{ initialCells, cells:[...initialCells], history:[], clearCommitted:false },
-        ui:{ dialog:null },
-      };
     }
     function resetCurrentPuzzleWithoutAnimation(reason) {
       const puzzle = selectActivePuzzle();
@@ -842,20 +1231,63 @@
       renderRuntime({ context:reason });
     }
     function intentRetryPuzzle() { resetCurrentPuzzleWithoutAnimation('clear dialog retry'); }
-    function intentNextPuzzle() {
-      AppState = makeNextPuzzleAppState(AppState);
-      RuntimeState.cells = Uint8Array.from(AppState.board.cells);
-      RuntimeState.history = [];
-      RuntimeState.phase = BoardPhase.READY;
-      saveAppState('next puzzle');
-      // 新しい問題に進んだ時だけ、P2と同じ七枚が中央から広がる到着演出を見せる。復元時には再生しない。
+    function intentStartTutorial() {
+      if (!isTutorialRoute()) return;
+      AppState.ui.dialog = null;
+      clearTutorialFeedback();
+      saveAppState('tutorial start');
+      replaceRuntimeBoardFromAppState();
+      runArrivalEffect();
+    }
+    function intentStartAcademyIntro() {
+      if (AppState.navigation.routeId !== 'academy-intro') return;
+      AppState.ui.dialog = null;
+      saveAppState('academy intro start');
+      renderRuntime({ context:'academy intro start' });
+    }
+    // 開発中だけ使う入口。V2の現在地だけを初回導入へ戻し、旧版の保存キーは変更しない。
+    function intentDebugResetToTutorial() {
+      cancelActiveEffect('debug reset');
+      AppState = makeDefaultAppState();
+      clearTutorialFeedback();
+      replaceRuntimeBoardFromAppState();
+      saveAppState('debug reset tutorial');
+      renderRuntime({ context:'debug reset tutorial' });
+    }
+    // クリア済みチュートリアルを、次の「触れる安定状態」へ一度だけ進める。
+    // 演出完走時は到着演出を続け、中断時はこの状態だけをそのまま描画する。
+    function settleCompletedTutorialToNextState() {
+      if (!isTutorialRoute() || !AppState.board.clearCommitted || !WakeSevenBoardDomain.isSolved(AppState.board.cells)) return null;
+      const nextStep = AppState.navigation.tutorialStep + 1;
+      AppState = nextStep < TUTORIAL_STEPS.length
+        ? makeTutorialStepAppState(AppState, nextStep)
+        : makeAcademyIntroAppState(AppState, { type:'academy-enroll' });
+      clearTutorialFeedback();
+      RuntimeState.tutorialCueGeneration += 1;
+      replaceRuntimeBoardFromAppState();
+      return nextStep < TUTORIAL_STEPS.length ? 'tutorial next step' : 'tutorial completed';
+    }
+    function advanceTutorialAfterClear() {
+      const reason = settleCompletedTutorialToNextState();
+      if (!reason) return;
+      saveAppState(reason);
       runArrivalEffect();
     }
     // 全員が起きた後のクリア演出。通常の回転とは別の表情と弾みだけを描く。
-    function runClearEffect() {
+    function runClearEffect(afterClear = null) {
       const effect = beginEffect(BoardPhase.CELEBRATING);
       renderRuntime({ happy:true });
-      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { if (finishEffect(effect)) renderRuntime({ happy:true, context:'reduced-motion clear' }); return; }
+      if (isTutorialRoute()) {
+        const step = tutorialStepAt(AppState.navigation.tutorialStep);
+        RuntimeState.tutorialFeedback = tutorialPromptText(step, RuntimeState.history.length, 'clear');
+        boardGripPrompt.querySelector('span').textContent = RuntimeState.tutorialFeedback;
+        boardGripPrompt.hidden = false;
+      }
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const transition = isTutorialRoute() ? TUTORIAL_CLEAR_TRANSITION_MILLISECONDS : 0;
+        setEffectTimer(effect, () => { if (finishEffect(effect)) afterClear ? afterClear() : renderRuntime({ happy:true, context:'reduced-motion clear' }); }, transition);
+        return;
+      }
       boardElement.querySelectorAll('.w7-cell').forEach((cell, index) => {
         const point = viewPoint(CELL_POSITIONS[index]);
         const base = `translate(${point.x}px,${point.y}px)`;
@@ -881,7 +1313,8 @@
         { transform:'scale(2.45)', opacity:0 },
       ], { duration:CLEAR_MILLISECONDS, easing:'cubic-bezier(.15,.7,.2,1)', fill:'forwards' });
       setEffectTimer(effect, () => burst.remove(), CLEAR_MILLISECONDS);
-      setEffectTimer(effect, () => { if (finishEffect(effect)) renderRuntime({ happy:true, context:'clear effect' }); }, CLEAR_SETTLE_MILLISECONDS);
+      const transition = isTutorialRoute() ? TUTORIAL_CLEAR_TRANSITION_MILLISECONDS : CLEAR_SETTLE_MILLISECONDS;
+      setEffectTimer(effect, () => { if (finishEffect(effect)) afterClear ? afterClear() : renderRuntime({ happy:true, context:'clear effect' }); }, transition);
     }
     // 盤面と操作ボタンのイベント
     boardElement.addEventListener('pointerdown', handleBoardPointerDown);
@@ -892,6 +1325,7 @@
     boardElement.addEventListener('lostpointercapture', handleBoardLostPointerCapture);
     boardUndoButton.addEventListener('click', intentUndo);
     boardRestartButton.addEventListener('click', intentRestart);
+    debugResetButton.addEventListener('click', intentDebugResetToTutorial);
     window.addEventListener('blur', () => {
       if (RuntimeState.invalidPointerId !== null) {
         safelyReleasePointer(RuntimeState.invalidPointerId);
@@ -899,6 +1333,7 @@
         boardElement.classList.remove('is-invalid-grab','is-grip-hover');
         boardGripPrompt.hidden = true;
         renderBoardPhase();
+        renderTutorialCue();
       } else if (RuntimeState.phase === BoardPhase.DRAGGING) {
         cancelActiveEffect('window blur');
         renderRuntime({ context:'window blur' });
@@ -913,7 +1348,13 @@
       if (RuntimeState.phase !== BoardPhase.READY || RuntimeState.activeEffect) cancelActiveEffect(reason);
       RuntimeState.drag = null;
       RuntimeState.phase = BoardPhase.READY;
-      renderRuntime({ context:reason });
+      // 巻き戻し途中の誤操作文言・遅延した通常案内を、復帰先の盤面へ持ち越さない。
+      const tutorialTransition = settleCompletedTutorialToNextState();
+      if (!tutorialTransition) {
+        clearTutorialFeedback();
+        RuntimeState.tutorialCueGeneration += 1;
+      }
+      renderRuntime({ context:tutorialTransition ?? reason });
     }
     // 保存は確定した盤面だけ。ドラッグやアニメーションの途中角度は捨て、最後の安定AppStateへ戻す。
     function saveStableAppStateBeforeLeave(reason) {
@@ -989,9 +1430,10 @@
         checkRuntime('commit-undo-model', WakeSevenBoardDomain.isSolved(after) && WakeSevenBoardDomain.encode(restored) === REFERENCE_STAGE.state, 'commit/undo model mismatch');
       }
       checkRuntime('drag-turn-count', selectDragTurns(17, 100, true) === 0 && selectDragTurns(20, 200, true) === 1 && selectDragTurns(-20, 200, true) === -1 && selectDragTurns(20, 500, true) === 0 && selectDragTurns(121) === 1 && selectDragTurns(181) === 2 && selectDragTurns(-301) === -3, 'drag turn-count contract mismatch');
+      checkRuntime('tutorial-turn-direction', tutorialLogicalDirection(1) === 1 && tutorialLogicalDirection(2) === -1 && tutorialLogicalDirection(3) === 0 && tutorialLogicalDirection(-1) === -1 && tutorialLogicalDirection(-2) === 1 && tutorialLogicalDirection(0) === 0, 'tutorial long-turn direction changed');
       const twoTurns = rollBoardTurns(INITIAL_BOARD, 0, 2);
       checkRuntime('continuous-rotation', WakeSevenBoardDomain.encode(twoTurns) === WakeSevenBoardDomain.encode(WakeSevenBoardDomain.roll(WakeSevenBoardDomain.roll(INITIAL_BOARD, 0, 1), 0, 1)), 'continuous rotation contract mismatch');
-      const playableAppState = makeDefaultAppState();
+      const playableAppState = { ...makeDefaultAppState(), ui:{ dialog:null } };
       checkRuntime('input-gate', selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:null, cells:Uint8Array.from(INITIAL_BOARD) }, playableAppState) && !selectCanStartBoardDrag({ phase:BoardPhase.ROTATING, invalidPointerId:null, cells:Uint8Array.from(INITIAL_BOARD) }, playableAppState) && !selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:null, cells:Uint8Array.from(SOLVED_BOARD) }, playableAppState) && !selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:1, cells:Uint8Array.from(INITIAL_BOARD) }, playableAppState), 'input gate contract mismatch');
       checkRuntime('grip-center-excluded', hitTestGrip({ x:CELL_POSITIONS[3].x, y:CELL_POSITIONS[3].y }) === null, 'board center entered grip hit range');
       const gripPoint = (geometry, along, across = 0) => ({ x:geometry.grip[0] + Math.cos(geometry.angle) * along - Math.sin(geometry.angle) * across, y:geometry.grip[1] + Math.sin(geometry.angle) * along + Math.cos(geometry.angle) * across });
@@ -1035,59 +1477,66 @@
       checkRuntime('wake-angle-window', DARUMA_UPRIGHT_WINDOW_DEGREES === 22 && !rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees - 1).standing && rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees).standing, 'daruma wake angle window changed');
       const happyPaths = Array.from(document.querySelectorAll('#w7-face-happy path')).map(path => path.getAttribute('d'));
       checkRuntime('clear-face-asset', happyPaths.join('|') === 'M-13 -14C-11 -17 -6 -17 -4 -14|M4 -14C6 -17 11 -17 13 -14|M-13 -4Q-8 -11 -3 -4|M3 -4Q8 -11 13 -4|M-5 5C-3 8 3 8 5 5', 'clear face asset mismatch');
-      checkRuntime('normal-puzzle-catalog', NORMAL_PUZZLES.length === 2 && NORMAL_PUZZLES.every(puzzle => SOLVER.distance[puzzle.state] === puzzle.par), 'normal puzzle catalog has an invalid par');
-      const firstPuzzle = puzzleAt(0);
-      const firstSolution = TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction }))).find(move => WakeSevenBoardDomain.isSolved(WakeSevenBoardDomain.roll(puzzleInitialCells(firstPuzzle), move.triangleIndex, move.direction)));
-      if (!firstSolution) errors.push('first P3 puzzle has no clear move');
-      else {
-        const initial = puzzleInitialCells(firstPuzzle);
-        const solved = Array.from(WakeSevenBoardDomain.roll(initial, firstSolution.triangleIndex, firstSolution.direction));
-        const savedClear = makeDefaultAppState();
-        // clearCommittedとdialogと進捗が欠けていても、解決済み盤面から進行可能な状態を復元する。
-        savedClear.board = { initialCells:[...initial], cells:solved, history:[{ triangleIndex:firstSolution.triangleIndex, direction:firstSolution.direction, before:[...initial], after:[...solved] }], clearCommitted:false };
-        savedClear.ui = { dialog:null };
-        const restoredClear = normalizePersistentAppState(savedClear);
-        checkRuntime('solved-reload-rebuilds-clear-state', restoredClear.board.clearCommitted && restoredClear.ui.dialog?.type === 'clear' && restoredClear.ui.dialog.puzzleId === firstPuzzle.puzzleId && restoredClear.progress.normalCompleted.includes(firstPuzzle.puzzleId), 'solved reload did not rebuild clear state');
-        const afterNext = makeNextPuzzleAppState(restoredClear);
-        checkRuntime('next-puzzle-reload', afterNext.navigation.puzzleId === puzzleAt(1).puzzleId && sameCells(afterNext.board.cells, puzzleInitialCells(puzzleAt(1))) && afterNext.board.history.length === 0 && !afterNext.board.clearCommitted && afterNext.ui.dialog === null && afterNext.progress.normalCompleted.includes(firstPuzzle.puzzleId), 'next puzzle did not preserve progress and reset its board');
-        const preservedProgress = puzzleAt(1).puzzleId;
-        const brokenBoard = normalizePersistentAppState({ ...savedClear, board:{ ...savedClear.board, cells:[9, 9, 9] }, progress:{ normalCompleted:[preservedProgress] }, rewards:{ masterGoldGranted:true, satoriDesignGranted:false }, settings:{ theme:'gold', layout:'satori-tilted' } });
-        checkRuntime('broken-board-keeps-independent-state', sameCells(brokenBoard.board.cells, initial) && brokenBoard.progress.normalCompleted.includes(preservedProgress) && brokenBoard.settings.theme === 'gold' && brokenBoard.settings.layout === 'standard', 'broken board fallback changed independent progress or reward settings');
-      }
+      const applySolution = (puzzle, solution) => solution.reduce((cells, move) => WakeSevenBoardDomain.roll(cells, move.triangleIndex, move.direction), Uint8Array.from(puzzleInitialCells(puzzle)));
+      const tutorialCatalogValid = TUTORIAL_STEPS.length === 5 && TUTORIAL_STEPS.every(step => {
+        const before = puzzleInitialCells(step);
+        let cells = Uint8Array.from(before);
+        return SOLVER.distance[step.state] === step.par && step.solution.length === step.par && step.solution.every(move => {
+          const beforeDistance = selectDistance(cells);
+          cells = WakeSevenBoardDomain.roll(cells, move.triangleIndex, move.direction);
+          return beforeDistance !== null && selectDistance(cells) === beforeDistance - 1;
+        }) && WakeSevenBoardDomain.isSolved(cells);
+      });
+      checkRuntime('tutorial-catalog', tutorialCatalogValid, 'tutorial states, par, or explicit solutions are invalid');
+      checkRuntime('academy-intro-catalog', ACADEMY_INTRO_PUZZLES.length === 1 && ACADEMY_INTRO_PUZZLES.every(puzzle => SOLVER.distance[puzzle.state] === puzzle.par), 'academy intro catalog is invalid');
+      const academyPuzzle = academyIntroPuzzleAt(0);
+      const academyInitial = puzzleInitialCells(academyPuzzle);
+      const academySolution = [{ triangleIndex:0, direction:-1 }];
+      const academySolved = Array.from(applySolution(academyPuzzle, academySolution));
+      const academyClear = makeAppStateForNavigation(makeAcademyIntroNavigation(), { progress:{ tutorialCompleted:true, completedPuzzleIds:[] } });
+      academyClear.board = { initialCells:[...academyInitial], cells:academySolved, history:[{ ...academySolution[0], before:[...academyInitial], after:academySolved }], clearCommitted:false };
+      const restoredAcademyClear = normalizePersistentAppState(academyClear);
+      checkRuntime('academy-clear-reload', restoredAcademyClear.board.clearCommitted && restoredAcademyClear.ui.dialog?.type === 'clear' && restoredAcademyClear.progress.completedPuzzleIds.includes(academyPuzzle.puzzleId), 'academy clear reload did not rebuild stable dialog');
+      const preservedProgress = TUTORIAL_STEPS[0].puzzleId;
+      const brokenBoard = normalizePersistentAppState({ ...academyClear, board:{ ...academyClear.board, cells:[9, 9, 9] }, progress:{ tutorialCompleted:true, completedPuzzleIds:[preservedProgress] }, rewards:{ masterGoldGranted:true, satoriDesignGranted:false }, settings:{ theme:'gold', layout:'satori-tilted' } });
+      checkRuntime('broken-board-keeps-independent-state', sameCells(brokenBoard.board.cells, academyInitial) && brokenBoard.progress.completedPuzzleIds.includes(preservedProgress) && brokenBoard.settings.theme === 'gold' && brokenBoard.settings.layout === 'standard', 'broken board fallback changed independent progress or reward settings');
       const lockedRewardSettings = normalizePersistentAppState({ ...makeDefaultAppState(), settings:{ theme:'gold', layout:'satori-tilted', themeChosen:true, layoutChosen:true } });
       checkRuntime('locked-reward-selection-fallback', lockedRewardSettings.settings.theme === 'standard' && lockedRewardSettings.settings.layout === 'standard', 'locked reward selection was not normalized');
       const zeroMoveRestore = normalizePersistentAppState(makeDefaultAppState());
-      checkRuntime('zero-move-reload', zeroMoveRestore.board.history.length === 0 && sameCells(zeroMoveRestore.board.cells, puzzleInitialCells(puzzleAt(0))), 'zero-move reload changed the board');
-      const secondPuzzle = puzzleAt(1);
-      const secondInitial = puzzleInitialCells(secondPuzzle);
-      const possibleMoves = TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction })));
-      const twoMoveSolution = possibleMoves.flatMap(firstMove => {
-        const afterFirst = WakeSevenBoardDomain.roll(secondInitial, firstMove.triangleIndex, firstMove.direction);
-        return possibleMoves.map(secondMove => ({ firstMove, secondMove, afterFirst, afterSecond:WakeSevenBoardDomain.roll(afterFirst, secondMove.triangleIndex, secondMove.direction) }));
-      }).find(candidate => WakeSevenBoardDomain.isSolved(candidate.afterSecond));
-      if (!twoMoveSolution) errors.push('second P3 puzzle has no two-move solution');
-      else {
-        const afterOneMove = Array.from(twoMoveSolution.afterFirst);
-        const afterTwoMoves = Array.from(twoMoveSolution.afterSecond);
-        const firstHistoryEntry = { triangleIndex:twoMoveSolution.firstMove.triangleIndex, direction:twoMoveSolution.firstMove.direction, before:[...secondInitial], after:afterOneMove };
-        const secondHistoryEntry = { triangleIndex:twoMoveSolution.secondMove.triangleIndex, direction:twoMoveSolution.secondMove.direction, before:afterOneMove, after:afterTwoMoves };
-        const twoMoveStage = makeDefaultAppState(1);
-        twoMoveStage.board = { initialCells:[...secondInitial], cells:afterTwoMoves, history:[firstHistoryEntry, secondHistoryEntry], clearCommitted:false };
-        const restoredTwoMove = normalizePersistentAppState(twoMoveStage);
-        checkRuntime('two-move-history-reload', restoredTwoMove.board.history.length === 2 && sameCells(restoredTwoMove.board.cells, afterTwoMoves) && restoredTwoMove.board.clearCommitted, 'two-move history did not restore its solved board');
-        // 二手目をUndoした保存状態は、二手目の前のcellsと一件だけ残ったhistoryが一致しなければならない。
-        const undoStage = { ...twoMoveStage, board:{ initialCells:[...secondInitial], cells:afterOneMove, history:[firstHistoryEntry], clearCommitted:false }, ui:{ dialog:null } };
-        const restoredUndo = normalizePersistentAppState(undoStage);
-        checkRuntime('undo-after-two-moves-reload', restoredUndo.board.history.length === 1 && sameCells(restoredUndo.board.cells, afterOneMove) && !restoredUndo.board.clearCommitted, 'undo state did not restore its one-move board');
-        const oneMoveStage = undoStage;
-        const restoredOneMove = normalizePersistentAppState(oneMoveStage);
-        checkRuntime('one-move-reload', restoredOneMove.navigation.puzzleId === secondPuzzle.puzzleId && restoredOneMove.board.history.length === 1 && sameCells(restoredOneMove.board.cells, afterOneMove), 'one-move reload did not preserve stage state');
-        const malformedHistory = normalizePersistentAppState({ ...twoMoveStage, board:{ ...twoMoveStage.board, history:[firstHistoryEntry, { ...secondHistoryEntry, before:[...secondInitial] }] } });
-        checkRuntime('malformed-history-fallback', malformedHistory.board.history.length === 0 && sameCells(malformedHistory.board.cells, secondInitial), 'malformed history did not fall back to the initial board');
-        const malformedPuzzleContext = normalizePersistentAppState({ ...oneMoveStage, navigation:{ ...oneMoveStage.navigation, puzzleId:'unknown-puzzle' } });
-        checkRuntime('malformed-puzzle-id-fallback', malformedPuzzleContext.navigation.puzzleId === puzzleAt(0).puzzleId && sameCells(malformedPuzzleContext.board.cells, puzzleInitialCells(puzzleAt(0))), 'malformed puzzle id did not fall back safely');
+      checkRuntime('tutorial-zero-move-reload', zeroMoveRestore.navigation.mode === 'tutorial' && zeroMoveRestore.navigation.tutorialStep === 0 && zeroMoveRestore.board.history.length === 0 && sameCells(zeroMoveRestore.board.cells, puzzleInitialCells(tutorialStepAt(0))), 'tutorial zero-move reload changed the board');
+      const twoStep = tutorialStepAt(3);
+      const twoStepInitial = puzzleInitialCells(twoStep);
+      const firstMove = twoStep.solution[0];
+      const secondMove = twoStep.solution[1];
+      const afterOneMove = Array.from(WakeSevenBoardDomain.roll(twoStepInitial, firstMove.triangleIndex, firstMove.direction));
+      const afterTwoMoves = Array.from(WakeSevenBoardDomain.roll(afterOneMove, secondMove.triangleIndex, secondMove.direction));
+      const firstHistoryEntry = { triangleIndex:firstMove.triangleIndex, direction:firstMove.direction, before:[...twoStepInitial], after:afterOneMove };
+      const secondHistoryEntry = { triangleIndex:secondMove.triangleIndex, direction:secondMove.direction, before:afterOneMove, after:afterTwoMoves };
+      const midTutorial = makeAppStateForNavigation(makeTutorialNavigation(3), { progress:makeDefaultProgress() });
+      midTutorial.board = { initialCells:[...twoStepInitial], cells:afterOneMove, history:[firstHistoryEntry], clearCommitted:false };
+      const restoredMidTutorial = normalizePersistentAppState(midTutorial);
+      checkRuntime('tutorial-one-move-reload', restoredMidTutorial.navigation.tutorialStep === 3 && restoredMidTutorial.board.history.length === 1 && sameCells(restoredMidTutorial.board.cells, afterOneMove), 'tutorial one-move reload did not preserve its stable board');
+      const solvedTutorial = { ...midTutorial, board:{ initialCells:[...twoStepInitial], cells:afterTwoMoves, history:[firstHistoryEntry, secondHistoryEntry], clearCommitted:false } };
+      const restoredSolvedTutorial = normalizePersistentAppState(solvedTutorial);
+      checkRuntime('tutorial-solved-reload-advances', restoredSolvedTutorial.navigation.tutorialStep === 4 && restoredSolvedTutorial.board.history.length === 0 && !restoredSolvedTutorial.board.clearCommitted, 'solved tutorial reload did not advance to the next stable step');
+      const malformedHistory = normalizePersistentAppState({ ...midTutorial, board:{ ...midTutorial.board, history:[{ ...firstHistoryEntry, before:[...twoStepInitial.map(() => 0)] }] } });
+      checkRuntime('tutorial-malformed-history-fallback', malformedHistory.navigation.tutorialStep === 3 && malformedHistory.board.history.length === 0 && sameCells(malformedHistory.board.cells, twoStepInitial), 'malformed tutorial history did not fall back to its step start');
+      const finalStep = tutorialStepAt(TUTORIAL_STEPS.length - 1);
+      const finalInitial = puzzleInitialCells(finalStep);
+      const finalHistory = [];
+      let finalCells = finalInitial;
+      for (const move of finalStep.solution) {
+        const after = Array.from(WakeSevenBoardDomain.roll(finalCells, move.triangleIndex, move.direction));
+        finalHistory.push({ triangleIndex:move.triangleIndex, direction:move.direction, before:[...finalCells], after });
+        finalCells = after;
       }
-      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:NORMAL_PUZZLES.length, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
+      const finalTutorial = makeAppStateForNavigation(makeTutorialNavigation(TUTORIAL_STEPS.length - 1), { progress:makeDefaultProgress() });
+      finalTutorial.board = { initialCells:[...finalInitial], cells:[...finalCells], history:finalHistory, clearCommitted:false };
+      const restoredFinalTutorial = normalizePersistentAppState(finalTutorial);
+      checkRuntime('tutorial-final-reload-enters-academy', restoredFinalTutorial.navigation.routeId === 'academy-intro' && restoredFinalTutorial.progress.tutorialCompleted && restoredFinalTutorial.ui.dialog?.type === 'academy-enroll', 'final tutorial reload did not enter academy intro');
+      const malformedPuzzleContext = normalizePersistentAppState({ ...midTutorial, navigation:{ ...midTutorial.navigation, puzzleId:'unknown-puzzle' } });
+      checkRuntime('malformed-tutorial-context-fallback', malformedPuzzleContext.navigation.tutorialStep === 0 && sameCells(malformedPuzzleContext.board.cells, puzzleInitialCells(tutorialStepAt(0))), 'malformed tutorial context did not fall back safely');
+      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:ACADEMY_INTRO_PUZZLES.length, tutorialStepCount:TUTORIAL_STEPS.length, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
     }
     // 起動時に盤面ルールと操作の前提を確認してから表示する
     const selftestResult = runSelftest();
@@ -1097,8 +1546,8 @@
     boardElement.dataset.checkedAxes = String(selftestResult.axisCount);
     boardElement.dataset.checkedRenders = `${selftestResult.renderedInitialCells}+${selftestResult.renderedSolvedCells}`;
     boardElement.dataset.checkedRuntime = selftestResult.runtimeChecks.join(',');
-    // 復元時は途中演出を再生せず、保存済みの安定盤面（クリアならダイアログ）をそのまま出す。
-    if (restoredFromStorage) renderRuntime({ context:'restore' });
+    // 復元時と初回導入は途中演出を再生せず、安定盤面とダイアログをそのまま出す。
+    if (restoredFromStorage || AppState.ui.dialog?.type === 'welcome') renderRuntime({ context:'restore or welcome' });
     else runArrivalEffect();
   </script>
 </body>
