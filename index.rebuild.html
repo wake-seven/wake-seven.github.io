@@ -26,6 +26,7 @@
     .w7-board-frame { position:relative; width:100%; max-width:var(--content-max); margin:0 auto; }
     .w7-board { display:block; width:100%; height:auto; overflow:visible; touch-action:none; user-select:none; -webkit-user-select:none; cursor:default; }
     .w7-cell { transform-box:view-box; transform-origin:0 0; will-change:transform; transition:opacity .12s ease,filter .12s ease; }
+    .w7-cell-visual { transform-box:view-box; transform-origin:0 0; }
     .w7-cell-hex { fill:var(--washi); stroke:#c0ac88; stroke-width:1.5; }
     .w7-cell--fallen .w7-cell-hex { fill:var(--washi2); stroke:#c0ac88; }
     .w7-cell--standing { filter:brightness(1.04); }
@@ -43,6 +44,8 @@
     .w7-axis-layer g[data-axis].w7-academy-hidden { opacity:0; pointer-events:none; }
     .w7-axis-layer g[data-axis].w7-academy-fallen { opacity:.55; pointer-events:none; filter:grayscale(1) brightness(.75); }
     .w7-axis-layer g[data-axis].w7-academy-fallen .w7-axis-grip { fill:#8a96a3; stroke:#5b6673; }
+    .w7-axis-layer g[data-axis].w7-application-fallen { opacity:.55; pointer-events:none; filter:grayscale(1) brightness(.75); }
+    .w7-axis-layer g[data-axis].w7-application-fallen .w7-axis-grip { fill:#8a96a3; stroke:#5b6673; }
     .w7-axis-layer g[data-axis].w7-academy-candidate .w7-axis-grip { fill:#7dd8f5; stroke:#3e9bc2; filter:drop-shadow(0 0 5px rgb(98 215 244 / .68)); }
     @keyframes w7-tutorial-grip-pulse { 50% { opacity:.58; } }
     .w7-board.is-grip-hover { cursor:grab; }
@@ -63,6 +66,30 @@
     .w7-academy-callout-badge { display:inline-flex; align-items:center; gap:.25rem; padding:.85rem 1.25rem .8rem; border:2px solid #29a8ce; border-radius:999px; background:rgb(15 35 52 / .85); box-shadow:0 5px 20px rgb(0 0 0 / .34); }
     .w7-academy-callout-label,.w7-academy-callout-unit { color:#9bcBDD; font-size:1.18rem; font-weight:700; transform:translateY(.35rem); }
     .w7-academy-callout-number { color:#62b8d2; font-size:3.75rem; font-weight:750; line-height:1; text-shadow:0 0 10px rgb(98 184 210 / .24); }
+    /* P5-2 応用導入: 完成形の静止見本、右上の縮小見本、実盤面上の型ガイド。
+       いずれもゲーム盤の状態や入力を持たない表示専用の要素にする。 */
+    .w7-application-intro-demo,.w7-application-intro-message { opacity:0; transition:opacity .24s ease; pointer-events:none; }
+    .w7-application-intro-demo.is-visible,.w7-application-intro-message.is-visible { opacity:1; }
+    .w7-application-intro-demo.is-leaving,.w7-application-intro-message.is-leaving { opacity:0; }
+    /* 応用の対象三枚は光や枠を使わず、パネルそのものを休みなく波打たせる。
+       実盤面と右上ガイドで同じ位相差を使い、三枚が連なる動きとして見せる。 */
+    .w7-cell.w7-application-target-wave .w7-cell-visual { animation:w7-application-target-wave 1.25s ease-in-out infinite; animation-delay:var(--w7-application-wave-delay,0ms); }
+    @keyframes w7-application-target-wave { 0%,100% { transform:translate(0,0) rotate(0deg) scale(1); } 20% { transform:translate(0,-5px) rotate(-3.4deg) scale(1.045); } 40% { transform:translate(0,1.8px) rotate(2.7deg) scale(.982,1.028); } 60% { transform:translate(0,-3.6px) rotate(-2.1deg) scale(1.033); } 80% { transform:translate(0,1px) rotate(1.2deg) scale(.992,1.015); } }
+    .w7-application-intro-badge { fill:rgb(15 35 52 / .9); stroke:#62b8d2; stroke-width:2; }
+    .w7-application-intro-title { fill:var(--washi); font:800 20px "A1 Gothic","Hiragino Kaku Gothic ProN",sans-serif; text-anchor:middle; }
+    .w7-application-intro-copy { fill:#8bcde0; font:700 13px "A1 Gothic","Hiragino Kaku Gothic ProN",sans-serif; text-anchor:middle; }
+    .w7-application-target-preview { position:absolute; z-index:3; right:-.3rem; top:-2.9rem; display:flex; align-items:center; gap:.1rem; color:#d8be78; font-size:.6875rem; font-weight:700; line-height:1; white-space:nowrap; pointer-events:none; opacity:1; transition:opacity .28s ease; }
+    .w7-application-target-preview[hidden] { display:none; }
+    .w7-application-target-preview.is-fading { opacity:0; }
+    .w7-application-target-preview svg { display:block; width:7.7rem; height:5rem; overflow:visible; transform:translate(1.15rem,.55rem); }
+    .w7-application-target-preview.is-entering { animation:w7-application-preview-enter .62s cubic-bezier(.18,.82,.24,1) both; }
+    @keyframes w7-application-preview-enter { from { opacity:0; transform:translate(-4.7rem,3rem) scale(1.72); } to { opacity:1; transform:translate(0,0) scale(1); } }
+    .w7-application-shape-guide { opacity:0; transition:opacity .22s ease; pointer-events:none; }
+    .w7-application-shape-guide.is-visible { opacity:1; }
+    .w7-application-shape-outline { fill:none; stroke:#29a8ce; stroke-width:8; stroke-linejoin:round; filter:drop-shadow(0 0 2px rgb(10 30 45 / .45)); }
+    .w7-application-shape-badge { fill:rgb(15 35 52 / .9); stroke:#62b8d2; stroke-width:2; }
+    .w7-application-shape-title { fill:var(--washi); font:800 17px "A1 Gothic","Hiragino Kaku Gothic ProN",sans-serif; text-anchor:middle; }
+    .w7-application-shape-name { fill:#8bcde0; font:800 21px "A1 Gothic","Hiragino Kaku Gothic ProN",sans-serif; text-anchor:middle; }
     /* 指定方向を伝える、旧版と同じ水色／白縁の弧。盤面の入力とは独立した表示だけのSVG。 */
     .w7-tutorial-arrow { pointer-events:none; }
     .w7-tutorial-arrow .w7-arrow-border { fill:none; stroke:#bff0ff; stroke-width:8.5; stroke-linecap:round; }
@@ -73,10 +100,11 @@
     .w7-board-button { min-width:7rem; min-height:2.75rem; border:1px solid #c0ac88; border-radius:999px; padding:0.55rem 1rem; background:var(--washi); color:#2d2925; font:inherit; font-weight:700; box-shadow:0 2px 0 rgb(0 0 0 / .24); cursor:pointer; }
     .w7-board-button:focus-visible { outline:3px solid #7dd8f5; outline-offset:3px; }
     .w7-board-button:disabled { opacity:.42; cursor:default; box-shadow:none; }
-    .w7-debug-reset { display:block; margin:1.1rem auto 0; border:0; background:transparent; color:#9eb4c8; font:inherit; font-size:.78rem; text-decoration:underline; text-underline-offset:.22em; cursor:pointer; }
-    /* 旧版のチュートリアル中のリセット位置。学園以降では開発用リンクとして下へ戻す。 */
-    body.w7-tutorial-mode .w7-debug-reset { position:absolute; z-index:4; top:-.75rem; right:0; margin:0; min-height:2.125rem; padding:0 .65rem; border:1px solid rgb(98 184 210 / .38); border-radius:999px; background:rgb(22 40 60 / .62); color:#afc3d0; font-size:.75rem; text-decoration:none; }
-    .w7-debug-reset:focus-visible { outline:2px solid #7dd8f5; outline-offset:3px; border-radius:.2rem; }
+    /* 開発用の状態移動は一番下へ集約する。本編ボタンと見分けるため、短い控えめなチップにする。 */
+    .w7-debug-tools { display:flex; justify-content:center; flex-wrap:wrap; gap:.35rem; margin:1.1rem auto 0; }
+    .w7-debug-button { min-width:2.35rem; min-height:2rem; border:1px solid rgb(98 184 210 / .38); border-radius:999px; padding:.25rem .6rem; background:rgb(22 40 60 / .62); color:#afc3d0; font:inherit; font-size:.78rem; font-weight:700; cursor:pointer; }
+    .w7-debug-button:hover { border-color:rgb(125 216 245 / .8); color:#d8f3fa; }
+    .w7-debug-button:focus-visible { outline:2px solid #7dd8f5; outline-offset:3px; }
     .w7-clear-burst { pointer-events:none; transform-box:view-box; }
     .w7-dialog-backdrop { position:fixed; z-index:10; inset:0; display:grid; place-items:center; padding:1rem; background:rgb(4 13 24 / .7); backdrop-filter:blur(4px); }
     .w7-dialog-backdrop[hidden] { display:none; }
@@ -103,7 +131,15 @@
     @keyframes w7-quiz-spark { 0% { transform:translateY(8px) scale(.35) rotate(-18deg); opacity:0; } 28% { opacity:1; } 100% { transform:translateY(-19px) scale(1.15) rotate(14deg); opacity:0; } }
     .w7-dialog-actions { display:flex; justify-content:center; gap:.65rem; flex-wrap:wrap; }
     .w7-dialog--clear h2 { margin-top:.4rem; }
+    .w7-dialog--clear { max-height:calc(100dvh - 2rem); overflow-y:auto; }
     .w7-dialog-next,.w7-dialog-default { border-color:var(--kin); background:var(--kin); color:var(--ai); }
+    /* P5-4 応用クリア内の型別「回し方」。見出し、実演盤面、短い指示を一つの枠に収める。 */
+    .w7-application-clear-lesson { margin:.55rem 0 .75rem; padding:.65rem .6rem .75rem; border:1px solid rgb(98 184 210 / .52); border-radius:.65rem; background:rgb(98 184 210 / .075); }
+    .w7-application-clear-lesson-title { margin:0!important; color:#62d7f4; font-size:1.3rem!important; font-weight:900; line-height:1.35!important; }
+    .w7-application-clear-lesson-board { display:block; width:min(100%,13.5rem); height:auto; margin:.15rem auto .3rem; overflow:visible; pointer-events:none; transition:opacity .16s ease; }
+    .w7-application-clear-lesson-board.is-fading { opacity:0; }
+    .w7-application-clear-lesson-hint { margin:.15rem .15rem 0!important; color:var(--kin); font-size:1.1rem!important; font-weight:800; line-height:1.55!important; }
+    .w7-application-lesson-swipe { fill:#62b8d2; filter:drop-shadow(0 0 3px rgb(98 184 210 / .85)); }
     /* 導入ダイアログは、本文だけでなく旧版と同じ七枚の見本を見せる。 */
     .w7-dialog--welcome { width:min(100%,22.5rem); padding:1.375rem 1.25rem; border:2px solid #7dd8f5; border-radius:1rem; background:var(--ai2); box-shadow:0 1rem 3rem rgb(0 0 0 / .42); }
     .w7-dialog--welcome h2 { margin-bottom:.875rem; font-size:1.3125rem; letter-spacing:.08em; }
@@ -111,6 +147,10 @@
     .w7-academy-intro-message { color:var(--kin)!important; font-size:1.25rem!important; font-weight:800; }
     .w7-welcome-board { display:block; width:min(100%,16.25rem); height:auto; margin:.5rem auto -.125rem; transition:opacity .18s ease; }
     .w7-academy-intro-preview { width:calc(100% + 1rem); max-width:none; margin:.35rem -.5rem .8rem; padding:.08rem .7rem .35rem; border:1px solid rgb(125 216 245 / .58); border-radius:.7rem; background:rgb(22 40 60 / .28); }
+    /* 応用クラス開始は、ウネウネ動く三枚の説明と盤面見本をそのまま並べる。 */
+    .w7-application-welcome-message { margin:.125rem 0 .4375rem!important; color:var(--kin)!important; font-size:1.0625rem!important; font-weight:800; line-height:1.55!important; }
+    .w7-application-welcome-message .w7-application-target-text { color:var(--kin); background:rgb(201 165 78 / .14); border-radius:.25em; padding:.04em .22em; }
+    .w7-application-welcome-preview { width:min(100%,17.5rem); margin:.75rem auto .125rem; }
     .w7-welcome-board.w7-welcome-cycle-fade { opacity:0; }
     .w7-dialog--welcome .w7-board-button { min-height:3.1rem; padding:.875rem 2rem; font-size:1.1875rem; }
     .w7-dialog--welcome .w7-board-button { border-color:var(--kin); background:var(--kin); color:var(--ai); box-shadow:none; }
@@ -128,10 +168,16 @@
     body.w7-academy-mode .w7-board-status span:last-child { display:inline-flex; align-items:baseline; gap:.2rem; }
     body.w7-academy-mode #w7-board-remaining { min-width:auto; color:#62b8d2; font-size:4rem; line-height:.8; transform:translateY(.14rem); text-shadow:0 0 10px rgb(98 184 210 / .24); }
     body.w7-academy-mode #w7-academy-clear-suffix { color:var(--washi); font-size:.92em; }
+    /* 応用は残り手数と「作る形」を同じ上段に置く。型の三枚見本が中央の文字へ
+       重ならないよう、残り手数は左、見本は右へ寄せて大きく読ませる。 */
+    body.w7-application-mode .w7-board-status { justify-content:flex-start; padding-left:.4rem; }
+    body.w7-application-mode .w7-application-target-preview { top:-5.9rem; right:-.35rem; }
+    body.w7-application-mode .w7-application-target-preview svg { width:10.395rem; height:6.75rem; transform:translate(1.7rem,.8rem); }
     body.w7-tutorial-mode .w7-board-feature { gap:0; }
     body.w7-tutorial-mode .w7-board-frame { margin-top:.75rem; }
     body.w7-tutorial-mode .w7-board { margin-top:2.5rem; }
-    @media (prefers-reduced-motion:reduce) { .w7-board * { animation:none!important; transition:none!important; } }
+    @media (max-width:480px) { .w7-application-target-preview { right:-.1rem; top:-2.8rem; } .w7-application-target-preview svg { width:6.9rem; height:4.5rem; transform:translate(1rem,.55rem); } body.w7-application-mode .w7-application-target-preview { top:-5.9rem; right:-.1rem; } body.w7-application-mode .w7-application-target-preview svg { width:9.315rem; height:6.075rem; transform:translate(1.45rem,.75rem); } }
+    @media (prefers-reduced-motion:reduce) { .w7-board * { animation:none!important; transition:none!important; } .w7-cell.w7-application-target-wave .w7-cell-visual { animation:none!important; } }
     /* スマホでは盤面を横いっぱいに使う */
     @media (max-width:480px) { body { padding-left:0.25rem; padding-right:0.25rem; padding-bottom:max(0.5rem,env(safe-area-inset-bottom)); } .w7-shell,.w7-board-frame { max-width:none; } }
   </style>
@@ -149,6 +195,7 @@
       </div>
       <div class="w7-board-frame">
         <svg id="w7-board" class="w7-board" viewBox="14 0 293 310" role="img" aria-label="七枚のだるま盤"></svg>
+        <div id="w7-application-target-preview" class="w7-application-target-preview" hidden aria-label="応用クラスで作る形"><svg id="w7-application-target-preview-board" viewBox="0 0 144 106" aria-hidden="true"></svg><span>を作る</span></div>
         <div id="w7-grip-prompt" class="w7-grip-prompt" hidden><span>水色の棒をつかんで回そう</span></div>
         <div id="w7-academy-callout" class="w7-academy-callout" hidden><span class="w7-academy-callout-badge"><span class="w7-academy-callout-label">あと</span><strong id="w7-academy-callout-number" class="w7-academy-callout-number">2</strong><span class="w7-academy-callout-unit">くるり</span></span></div>
       </div>
@@ -157,7 +204,14 @@
         <button id="w7-board-restart" class="w7-board-button" type="button" data-w7-action="restart">やり直す</button>
       </div>
     </section>
-    <button id="w7-debug-reset" class="w7-debug-reset" type="button">デバッグ：チュートリアルを最初から</button>
+    <div class="w7-debug-tools" aria-label="開発用の状態移動">
+      <button id="w7-debug-reset" class="w7-debug-button" type="button" title="チュートリアルを最初から">↻</button>
+      <button id="w7-debug-clear-current" class="w7-debug-button" type="button" title="今の問題を即クリア">即</button>
+      <button id="w7-debug-finish-tutorial" class="w7-debug-button" type="button" title="チュートリアル完了直後（入学ダイアログ）">チ</button>
+      <button id="w7-debug-finish-intro" class="w7-debug-button" type="button" title="入門クラス完了直後（基本クラス案内）">入</button>
+      <button id="w7-debug-finish-basic" class="w7-debug-button" type="button" title="基本クラス完了直後（応用クラス案内）">基</button>
+      <button id="w7-debug-finish-application" class="w7-debug-button" type="button" title="応用クラス完了直後（応用9/9クリア）">応</button>
+    </div>
   </main>
   <div id="w7-dialog-backdrop" class="w7-dialog-backdrop" hidden>
     <section id="w7-dialog" class="w7-dialog" role="dialog" aria-modal="true" aria-labelledby="w7-dialog-title" tabindex="-1"></section>
@@ -216,6 +270,9 @@
     const TURN_DEGREES = 120;
     const DARUMA_UPRIGHT_WINDOW_DEGREES = 22;
     const DRAG_COMMIT_DEGREES = 60;
+    // 学園の棒判定は、軽く触れただけでは出さない。一度でもここまで回した操作だけを
+    // 「この棒を試した」と見なし、正誤や「棒はあってるよ」を伝える。
+    const GUIDED_ROD_JUDGMENT_DEGREES = DRAG_COMMIT_DEGREES;
     const QUICK_FLICK_DEGREES = 18;
     const QUICK_FLICK_MILLISECONDS = 320;
     const ROTATION_MIN_MILLISECONDS = 190;
@@ -351,6 +408,21 @@
     ]);
     // P5-1 は実問題へ入る前の安定した入口を残す。P5-2 が0手導入を担当する。
     const ACADEMY_APPLICATION_ENTRY_PUZZLE = Object.freeze({ puzzleId:'academy-application-entry', state:922, par:2 });
+    // P5-2 の導入見本は、問題ごとの答えを先に見せない共通の「あと1くるり」静止形。
+    // source は上のカタログと同じ旧 TWO_MOVE_STAGES の参照番号なので、形名もここで明示する。
+    const APPLICATION_INTRO_STATIC_STATE = Object.freeze([1, 1, 0, 1, 0, 0, 0]);
+    const APPLICATION_INTRO_STATIC_TARGET_CELLS = Object.freeze([0, 1, 3]);
+    const APPLICATION_SHAPE_NAME_BY_SOURCE = Object.freeze({ 0:'リボン', 1:'台形', 2:'台形', 3:'いも虫', 4:'いも虫', 5:'ひし形', 6:'ひし形', 7:'中と外', 8:'外隣り' });
+    // P5-4: 応用のクリア内レッスンは、形名と短い「回す」指示だけをデータとして持つ。
+    // 見本盤面・回転は下の共通表示専用SVGが描くため、問題ごとに実装を分岐させない。
+    const APPLICATION_CLEAR_TURN_HINT_BY_SHAPE = Object.freeze({
+      'リボン':'寝た三角のうち、向きがそろっていない方を回そう',
+      '台形':'寝た三角のうち、向きがそろっていない方を回そう',
+      'いも虫':'しっぽの左右どちらかを回そう',
+      'ひし形':'寝ている3枚のどちらかを回そう',
+      '中と外':'外側で寝ている隣で起きているだるまの、奥の棒を回そう',
+      '外隣り':'外隣りの外側を回そう',
+    });
     // 旧版の最終的な5状態を、生成順依存ではなく明示データとして移す。
     // solutionは「この段階で教える一本の手順」。自己検査でstate・parと照合する。
     const TUTORIAL_STEPS = Object.freeze([
@@ -405,8 +477,15 @@
     const boardUndoButton = document.querySelector('#w7-board-undo');
     const boardRestartButton = document.querySelector('#w7-board-restart');
     const debugResetButton = document.querySelector('#w7-debug-reset');
+    const debugClearCurrentButton = document.querySelector('#w7-debug-clear-current');
+    const debugFinishTutorialButton = document.querySelector('#w7-debug-finish-tutorial');
+    const debugFinishIntroButton = document.querySelector('#w7-debug-finish-intro');
+    const debugFinishBasicButton = document.querySelector('#w7-debug-finish-basic');
+    const debugFinishApplicationButton = document.querySelector('#w7-debug-finish-application');
     const boardGripPrompt = document.querySelector('#w7-grip-prompt');
     const academyCalloutElement = document.querySelector('#w7-academy-callout');
+    const applicationTargetPreviewElement = document.querySelector('#w7-application-target-preview');
+    const applicationTargetPreviewBoardElement = document.querySelector('#w7-application-target-preview-board');
     const stageLabelElement = document.querySelector('#w7-stage-label');
     const dialogBackdropElement = document.querySelector('#w7-dialog-backdrop');
     const dialogElement = document.querySelector('#w7-dialog');
@@ -432,18 +511,140 @@
       });
       target.append(layer);
     }
+    function appendCellVisual(cell, orientation, happy = false) {
+      const visual = svgElement('g', { class:'w7-cell-visual' });
+      visual.append(svgElement('path', { class:'w7-cell-hex', d:hexPath(CELL_RADIUS) }));
+      appendDaruma(visual, orientation, happy);
+      cell.append(visual);
+    }
     function renderBoard(cells = INITIAL_BOARD, target = boardElement, options = {}) {
       const includeAxes = options.includeAxes ?? target === boardElement;
+      const panelIds = options.panelIds ?? Array.from({ length:CELL_COUNT }, (_, index) => index);
       target.replaceChildren();
       Array.from(cells).forEach((orientation, index) => {
         const point = viewPoint(CELL_POSITIONS[index]);
-        const cell = svgElement('g', { class:`w7-cell ${orientation === 0 ? 'w7-cell--standing' : 'w7-cell--fallen'}`, transform:`translate(${point.x} ${point.y})`, 'data-cell-index':index, 'data-orientation':orientation });
-        cell.append(svgElement('path', { class:'w7-cell-hex', d:hexPath(CELL_RADIUS) }));
-        appendDaruma(cell, orientation, Boolean(options.happy));
+        const cell = svgElement('g', { class:`w7-cell ${orientation === 0 ? 'w7-cell--standing' : 'w7-cell--fallen'}`, transform:`translate(${point.x} ${point.y})`, 'data-cell-index':index, 'data-panel-id':panelIds[index], 'data-orientation':orientation });
+        appendCellVisual(cell, orientation, Boolean(options.happy));
         target.append(cell);
       });
       if (includeAxes) appendAxisLayer(target);
       return target;
+    }
+    // 実盤面・導入・右上ガイド・クリア後見本で、同じ連続ウネウネを使う。
+    function appendApplicationTargetWave(cell, { order = 0 } = {}) {
+      cell.classList.add('w7-application-target-wave');
+      cell.style.setProperty('--w7-application-wave-delay', `${order * -160}ms`);
+    }
+    // targetCells は「正しい棒」ではなく、正解の一手後に注目する物理パネル三枚。
+    // 導入・右上ガイド・実プレイ中のウネウネは、この物理パネル集合だけを参照する。
+    function applicationTargetCellSet() {
+      const puzzle = isAcademyApplicationRoute() ? selectActivePuzzle() : null;
+      return new Set(puzzle?.targetCells ?? []);
+    }
+    function applicationTargetWaveIsVisible() {
+      return isAcademyApplicationRoute()
+        && !AppState.board.clearCommitted
+        && RuntimeState.applicationIntroCompleted
+        && selectDistance(RuntimeState.cells) > 1
+        && applicationTargetCellSet().size === 3;
+    }
+    // 対象三枚を少しずつ位相をずらし、停止時間を挟まずウネウネさせ続ける。
+    function renderApplicationTargetWave() {
+      const targetCells = applicationTargetCellSet();
+      const cells = Array.from(boardElement.querySelectorAll('.w7-cell'));
+      cells.forEach(cell => {
+        cell.classList.remove('w7-application-target-wave');
+        cell.style.removeProperty('--w7-application-wave-delay');
+      });
+      if (!applicationTargetWaveIsVisible()) return;
+      cells.forEach(cell => {
+        const order = [...targetCells].indexOf(Number(cell.dataset.panelId));
+        if (order < 0) return;
+        appendApplicationTargetWave(cell, { order });
+      });
+    }
+    function renderApplicationTargetPreview() {
+      const shouldShow = isAcademyApplicationRoute()
+        && RuntimeState.applicationTargetPreviewVisible
+        && selectDistance(RuntimeState.cells) > 1;
+      if (!shouldShow) {
+        if (!applicationTargetPreviewElement.hidden && selectDistance(RuntimeState.cells) <= 1) {
+          applicationTargetPreviewElement.classList.add('is-fading');
+          const puzzleId = AppState.navigation.puzzleId;
+          setTimeout(() => {
+            if (AppState.navigation.puzzleId !== puzzleId || selectDistance(RuntimeState.cells) > 1) return;
+            applicationTargetPreviewElement.hidden = true;
+            applicationTargetPreviewElement.classList.remove('is-fading');
+            applicationTargetPreviewBoardElement.replaceChildren();
+          }, 280);
+        } else {
+          applicationTargetPreviewElement.hidden = true;
+          applicationTargetPreviewElement.classList.remove('is-fading','is-entering');
+          applicationTargetPreviewBoardElement.replaceChildren();
+        }
+        return;
+      }
+      const puzzle = selectActivePuzzle();
+      if (applicationTargetPreviewElement.dataset.puzzleId !== puzzle.puzzleId) {
+        applicationTargetPreviewBoardElement.replaceChildren();
+        const positions = [[45,29],[99,29],[72,76]];
+        puzzle.targetCells.forEach((cellIndex, index) => {
+          const point = positions[index];
+          const cell = svgElement('g', { class:'w7-cell w7-cell--fallen', transform:`translate(${point[0]} ${point[1]}) scale(.6)`, 'data-cell-index':cellIndex });
+          appendCellVisual(cell, 1);
+          appendApplicationTargetWave(cell, { order:index });
+          applicationTargetPreviewBoardElement.append(cell);
+        });
+        applicationTargetPreviewElement.dataset.puzzleId = puzzle.puzzleId;
+      }
+      applicationTargetPreviewElement.hidden = false;
+      applicationTargetPreviewElement.classList.remove('is-fading');
+    }
+    // 寝ている六角形の内側の辺を消し、外周だけを水色でなぞる。型の意味を盤面上で読めるようにする表示専用処理。
+    function appendApplicationShapeOutline(target, cells) {
+      const pointKey = point => `${point.x.toFixed(2)},${point.y.toFixed(2)}`;
+      const edges = [];
+      Array.from(cells).forEach((orientation, cellIndex) => {
+        if (orientation === 0) return;
+        const center = viewPoint(CELL_POSITIONS[cellIndex]);
+        const vertices = Array.from({ length:6 }, (_, index) => {
+          const radians = (90 + index * 60) * Math.PI / 180;
+          return { x:center.x + CELL_RADIUS * Math.cos(radians), y:center.y - CELL_RADIUS * Math.sin(radians) };
+        });
+        vertices.forEach((start, index) => edges.push({ start, end:vertices[(index + 1) % vertices.length] }));
+      });
+      const externalEdges = edges.filter(edge => !edges.some(other => pointKey(other.start) === pointKey(edge.end) && pointKey(other.end) === pointKey(edge.start)));
+      const paths = [];
+      while (externalEdges.length) {
+        const first = externalEdges.shift();
+        const points = [first.start, first.end];
+        let end = first.end;
+        for (;;) {
+          const nextIndex = externalEdges.findIndex(edge => pointKey(edge.start) === pointKey(end));
+          if (nextIndex < 0) break;
+          const next = externalEdges.splice(nextIndex, 1)[0];
+          points.push(next.end);
+          end = next.end;
+        }
+        paths.push(`${points.map((point, index) => `${index ? 'L' : 'M'}${point.x.toFixed(2)} ${point.y.toFixed(2)}`).join('')}Z`);
+      }
+      paths.forEach(d => target.append(svgElement('path', { class:'w7-application-shape-outline', d })));
+    }
+    function appendApplicationShapeGuide() {
+      const guide = svgElement('g', { class:'w7-application-shape-guide', 'aria-hidden':'true' });
+      appendApplicationShapeOutline(guide, RuntimeState.cells);
+      const puzzle = selectActivePuzzle();
+      const shapeName = APPLICATION_SHAPE_NAME_BY_SOURCE[puzzle.source] ?? 'この形';
+      const center = viewPoint(CELL_POSITIONS[3]);
+      const badge = svgElement('rect', { class:'w7-application-shape-badge', x:center.x - 65, y:center.y - 29, width:130, height:58, rx:22 });
+      const title = svgElement('text', { class:'w7-application-shape-title', x:center.x, y:center.y - 3 });
+      title.textContent = 'あと2くるり';
+      const name = svgElement('text', { class:'w7-application-shape-name', x:center.x, y:center.y + 20 });
+      name.textContent = shapeName;
+      guide.append(badge, title, name);
+      boardElement.append(guide);
+      requestAnimationFrame(() => guide.classList.add('is-visible'));
+      return guide;
     }
     function selectDistance(cells) { const value = SOLVER.distance[WakeSevenBoardDomain.encode(cells)]; return value === 255 ? null : value; }
     function renderBoardStatus(cells = RuntimeState.cells, moveDelta = 0) {
@@ -460,21 +661,25 @@
       const ready = RuntimeState.phase === BoardPhase.READY && RuntimeState.invalidPointerId === null && selectCanInteractWithBoard();
       boardUndoButton.disabled = !ready || RuntimeState.history.length === 0;
       boardRestartButton.disabled = !ready || (RuntimeState.history.length === 0 && WakeSevenBoardDomain.encode(RuntimeState.cells) === selectActivePuzzle().state);
-      // チュートリアルは指定された一手を試す導線に絞る。Undo/Restartは入門以降で表示する。
-      boardControlsElement.hidden = AppState.navigation.mode === 'tutorial' || isAcademyGuidedRoute();
+      // チュートリアルと学園（入門・基本・応用）は一手ごとの学習導線に絞る。Undo/Restartは出さない。
+      boardControlsElement.hidden = AppState.navigation.mode === 'tutorial' || isAcademyGuidedRoute() || isAcademyApplicationRoute();
       document.body.classList.toggle('w7-tutorial-mode', isTutorialRoute());
-      document.body.classList.toggle('w7-academy-mode', isAcademyGuidedRoute());
-      academyClearSuffixElement.hidden = !isAcademyGuidedRoute();
-      debugResetButton.textContent = isTutorialRoute() ? '↻ リセット' : 'デバッグ：チュートリアルを最初から';
+      // 入門・基本・応用は同じ学園HUDを使う。応用だけ通常HUDへ戻さない。
+      document.body.classList.toggle('w7-academy-mode', isAcademyAssistedRoute());
+      document.body.classList.toggle('w7-application-mode', isAcademyApplicationRoute());
+      academyClearSuffixElement.hidden = !isAcademyAssistedRoute();
     }
     function renderRuntime(options = {}) {
-      renderBoard(RuntimeState.cells, boardElement, { happy:Boolean(options.happy) });
+      renderBoard(RuntimeState.cells, boardElement, { happy:Boolean(options.happy), panelIds:RuntimeState.panelIds });
       renderBoardStatus();
       renderStageLabel();
       renderBoardPhase();
       renderDialog();
       renderTutorialCue();
       renderAcademyGuidance();
+      renderApplicationGuidance();
+      renderApplicationTargetWave();
+      renderApplicationTargetPreview();
       if (RuntimeState.phase === BoardPhase.READY) assertRuntimeDomAlignment(options.context ?? 'render');
     }
     function normalizedDegrees(degrees) { return ((degrees + 180) % 360 + 360) % 360 - 180; }
@@ -493,6 +698,20 @@
     function rotateTriangleCellIndex(triangle, cellIndex, turns) {
       const sourceOffset = triangle.cells.indexOf(cellIndex);
       return triangle.cells[(sourceOffset + (turns % 3) + 3) % 3];
+    }
+    // 盤面の向きとは別に、初期位置からの物理パネルIDを追跡する。
+    // 応用targetCellsは物理パネルを指すため、ウネウネはこの対応表だけで追従させる。
+    function rotatePanelIds(panelIds, triangleIndex, turns) {
+      const triangle = TRIANGLES[triangleIndex];
+      const next = [...panelIds];
+      triangle.cells.forEach((sourceCell, sourceOffset) => {
+        const destinationCell = triangle.cells[(sourceOffset + (turns % 3) + 3) % 3];
+        next[destinationCell] = panelIds[sourceCell];
+      });
+      return next;
+    }
+    function panelIdsFromHistory(history = []) {
+      return history.reduce((panelIds, entry) => rotatePanelIds(panelIds, entry.triangleIndex, entry.direction), Array.from({ length:CELL_COUNT }, (_, index) => index));
     }
     // 回転中のパネル位置とだるまの向き。確定フレームでは計算上の終点ではなく定位置を使い、数ピクセルのずれを残さない。
     function rotationFrameForCell(cells, triangleIndex, cellIndex, degrees, previewTurns = 0, settledTurns = null) {
@@ -513,24 +732,39 @@
         transform:atSettledPosition ? `translate(${point.x} ${point.y})` : `translate(${point.x} ${point.y}) rotate(${degrees})`,
       });
     }
-    // 回転する三枚を専用レイヤーへ移し、止まるまで隣のパネルより前に表示する。
+    // 回転する三枚を一つの最前面レイヤーへ移し、途中で隣のパネルの奥へ潜らせない。
     function ensureRotationPreviewLayer(triangleIndex) {
       let rotatingLayer = boardElement.querySelector('.w7-rotating-layer');
-      if (rotatingLayer?.dataset.triangleIndex === String(triangleIndex)) return rotatingLayer;
-      if (rotatingLayer) {
-        Array.from(rotatingLayer.querySelectorAll('.w7-cell')).forEach(cell => boardElement.insertBefore(cell, rotatingLayer));
-        rotatingLayer.remove();
+      if (rotatingLayer?.dataset.triangleIndex === String(triangleIndex)) {
+        return rotatingLayer;
       }
-      rotatingLayer = svgElement('g', { class:'w7-rotating-layer', 'aria-hidden':'true', 'data-triangle-index':triangleIndex });
-      boardElement.insertBefore(rotatingLayer, boardElement.querySelector('.w7-axis-layer'));
-      TRIANGLES[triangleIndex].cells.forEach(cellIndex => rotatingLayer.append(boardElement.querySelector(`[data-cell-index="${cellIndex}"]`)));
+      if (rotatingLayer) {
+        const axisLayer = boardElement.querySelector('.w7-axis-layer');
+        Array.from(boardElement.querySelectorAll('.w7-rotation-layer .w7-cell')).forEach(cell => boardElement.insertBefore(cell, axisLayer));
+        boardElement.querySelectorAll('.w7-rotation-layer').forEach(layer => layer.remove());
+      }
+      const axisLayer = boardElement.querySelector('.w7-axis-layer');
+      rotatingLayer = svgElement('g', { class:'w7-rotation-layer w7-rotating-layer', 'aria-hidden':'true', 'data-triangle-index':triangleIndex });
+      // 回る三枚全体を必ず最前面へ置く。
+      boardElement.insertBefore(rotatingLayer, axisLayer);
+      TRIANGLES[triangleIndex].cells.forEach(cellIndex => {
+        const cell = boardElement.querySelector(`[data-cell-index="${cellIndex}"]`);
+        if (!cell) return;
+        rotatingLayer.append(cell);
+      });
       return rotatingLayer;
     }
     function renderRotationPreview(cells, triangleIndex, degrees, previewTurns = 0, settledTurns = null, moveDelta = Math.abs(previewTurns)) {
       const rotatingLayer = ensureRotationPreviewLayer(triangleIndex);
       const triangle = TRIANGLES[triangleIndex];
-      triangle.cells.forEach(cellIndex => {
-        const cell = rotatingLayer.querySelector(`[data-cell-index="${cellIndex}"]`);
+      // 先に三枚を確保してから描く。停止時に cellIndex を入れ替えても、
+      // 同じフレーム内で隣のパネルを取り違えないようにするため。
+      const rotatingCells = triangle.cells.map(cellIndex => ({
+        cellIndex,
+        cell:rotatingLayer.querySelector(`[data-cell-index="${cellIndex}"]`),
+      }));
+      rotatingCells.forEach(({ cellIndex, cell }) => {
+        if (!cell) return;
         const frame = rotationFrameForCell(cells, triangleIndex, cellIndex, degrees, previewTurns, settledTurns);
         cell.setAttribute('transform', frame.transform);
         cell.classList.toggle('w7-cell--standing', frame.standing);
@@ -541,12 +775,12 @@
       });
       // 学園の「あと○くるり」は、ドラッグが60度を越えた瞬間ではなく、
       // 回る三枚の見た目が実際に起きる／寝る瞬間にだけ次の数へ切り替える。
-      const academyVisualChange = isAcademyGuidedRoute() && previewTurns && (
+      const academyVisualChange = isAcademyAssistedRoute() && previewTurns && (
         settledTurns !== null
         || triangle.cells.some(cellIndex => rotationFrameForCell(cells, triangleIndex, cellIndex, degrees).standing !== (cells[cellIndex] === 0))
         || Math.abs(degrees) >= TURN_DEGREES - DARUMA_UPRIGHT_WINDOW_DEGREES
       );
-      const previewCells = previewTurns && (!isAcademyGuidedRoute() || academyVisualChange)
+      const previewCells = previewTurns && (!isAcademyAssistedRoute() || academyVisualChange)
         ? rollBoardTurns(cells, triangleIndex, previewTurns)
         : cells;
       renderBoardStatus(previewCells, academyVisualChange ? moveDelta : 0);
@@ -844,8 +1078,22 @@
     function runAcademyWelcomePreview(preview, message, puzzle, initialText, afterText, layout = {}) {
       const initialCells = puzzleInitialCells(puzzle);
       renderBoard(initialCells, preview, { includeAxes:true });
-      const reducing = TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction }))).find(move => selectDistance(WakeSevenBoardDomain.roll(initialCells, move.triangleIndex, move.direction)) === selectDistance(initialCells) - 1);
+      // 応用の開始見本だけは、最短手のうち「ウネウネ動く三枚」を作るものを選ぶ。
+      // 距離だけで先頭を取ると、応用9と同じく別の最短手を見せてしまう。
+      const applicationLesson = layout.applicationTargets ? selectApplicationClearLessonContext(puzzle) : null;
+      const reducing = applicationLesson ?? TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction }))).find(move => selectDistance(WakeSevenBoardDomain.roll(initialCells, move.triangleIndex, move.direction)) === selectDistance(initialCells) - 1);
       if (!reducing) return;
+      const targetPanelIds = layout.applicationTargets ? new Set(puzzle.targetCells) : null;
+      const applyApplicationTargets = () => {
+        if (!targetPanelIds) return;
+        const axisLayer = preview.querySelector('.w7-axis-layer');
+        Array.from(preview.querySelectorAll('.w7-cell')).forEach(cell => {
+          if (!targetPanelIds.has(Number(cell.dataset.panelId))) return;
+          appendApplicationTargetWave(cell, { order:[...targetPanelIds].indexOf(Number(cell.dataset.panelId)) });
+          if (axisLayer) preview.insertBefore(cell, axisLayer);
+        });
+      };
+      applyApplicationTargets();
       const distance = selectDistance(initialCells);
       // 歓迎見本の「あと○くるり」は、本盤面の小さなHUDではなく大きな主役として読む。
       // 入門／基本で文字だけを動かす指定はここに置き、七枚の盤面位置は共有のまま保つ。
@@ -913,9 +1161,14 @@
         if (!preview.isConnected) return;
         // 途中で付けた数字のパルスを、描き直し時にもう一度開始させない。
         number.classList.remove('w7-welcome-counter-pulse');
-        const afterCells = WakeSevenBoardDomain.roll(initialCells, reducing.triangleIndex, reducing.direction);
+        const afterCells = reducing.afterCells ?? WakeSevenBoardDomain.roll(initialCells, reducing.triangleIndex, reducing.direction);
         const cleared = WakeSevenBoardDomain.isSolved(afterCells);
-        renderBoard(afterCells, preview, { includeAxes:false, happy:cleared });
+        // ウネウネは位置ではなく物理パネルに付け、回転後も同じ三枚を示す。
+        const panelIds = targetPanelIds
+          ? rotatePanelIds(Array.from({ length:CELL_COUNT }, (_, index) => index), reducing.triangleIndex, reducing.direction)
+          : undefined;
+        renderBoard(afterCells, preview, { includeAxes:false, happy:cleared, panelIds });
+        applyApplicationTargets();
         release.textContent = afterText;
         preview.append(label, number, unit, release);
         // 入門の一手見本はここで全員が起きる。通常ウェルカムと同じ弾みと金の円を出す。
@@ -931,7 +1184,8 @@
           runAcademyWelcomePreview(preview, message, puzzle, initialText, afterText, layout);
         }, 240);
       }, 6640);
-      message.textContent = initialText;
+      if (typeof layout.renderMessage === 'function') layout.renderMessage(message);
+      else message.textContent = initialText;
     }
     function renderAcademyEnrollArt() {
       // 旧版 academyEnrollArtSvg と同じ固定SVG。新版では定義IDだけ w7-* に対応させる。
@@ -959,6 +1213,139 @@
         art.innerHTML = `<path d="M105 7v11M68 20l8 8M142 20l-8 8M58 52h12M140 52h12" fill="none" stroke="#C9A54E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>${daruma(105,52,.7)}`;
       }
       return art;
+    }
+    // P5-4: クリア後の小さな実演は、応用問題の初期盤面から「残り手数を一つ減らす」
+    // 一手だけを選ぶ。プレイ中の盤面や履歴は読まず、表示専用のローカル状態だけを動かす。
+    function selectApplicationClearLessonContext(puzzle) {
+      if (puzzle?.classId !== 'application') return null;
+      const initialCells = Uint8Array.from(puzzleInitialCells(puzzle));
+      const distance = selectDistance(initialCells);
+      if (distance === null || distance < 1) return null;
+      const candidates = [];
+      TRIANGLES.forEach((triangle, triangleIndex) => {
+        [1, -1].forEach(direction => {
+          const afterCells = WakeSevenBoardDomain.roll(initialCells, triangleIndex, direction);
+          if (selectDistance(afterCells) !== distance - 1) return;
+          // targetCells は「一手後に寝ている物理パネル三枚」。位置だけを見ると、応用9のように
+          // 最短手が二通りある場合に別の三枚を選んでしまうため、回転後の物理IDで照合する。
+          const panelIds = rotatePanelIds(Array.from({ length:CELL_COUNT }, (_, index) => index), triangleIndex, direction);
+          const targetPanelIds = Array.from(afterCells, (orientation, cellIndex) => orientation === 0 ? null : panelIds[cellIndex])
+            .filter(panelId => panelId !== null)
+            .sort((left, right) => left - right);
+          candidates.push({ triangle, triangleIndex, direction, afterCells, targetPanelIds });
+        });
+      });
+      const expectedTargetPanels = [...puzzle.targetCells].sort((left, right) => left - right);
+      // まず問題が教えたい目標三枚と一致する手を選ぶ。残り手数だけでは一意でない問題がある。
+      // 一致候補が無いデータでも、旧版どおり寝ている三枚を回す最短手へ安全にフォールバックする。
+      const move = candidates.find(candidate => sameCells(candidate.targetPanelIds, expectedTargetPanels))
+        ?? candidates.find(candidate => candidate.triangle.cells.every(cellIndex => initialCells[cellIndex] !== 0))
+        ?? candidates[0];
+      if (!move) return null;
+      const shapeName = APPLICATION_SHAPE_NAME_BY_SOURCE[puzzle.source];
+      const hint = APPLICATION_CLEAR_TURN_HINT_BY_SHAPE[shapeName];
+      if (!shapeName || !hint) return null;
+      return Object.freeze({ puzzle, initialCells, shapeName, hint, ...move });
+    }
+    function appendApplicationClearLessonTargets(board, puzzle) {
+      const targetPanels = new Set(puzzle.targetCells);
+      const axisLayer = board.querySelector('.w7-axis-layer');
+      Array.from(board.querySelectorAll('.w7-cell')).forEach(cell => {
+        if (!targetPanels.has(Number(cell.dataset.panelId))) return;
+        appendApplicationTargetWave(cell, { order:[...targetPanels].indexOf(Number(cell.dataset.panelId)) });
+        // 実盤面と同じく、静止した対象は隣接パネルの前に描く。
+        board.insertBefore(cell, axisLayer);
+      });
+    }
+    function renderApplicationClearLessonFrame(board, context) {
+      renderBoard(context.initialCells, board, { includeAxes:true });
+      appendApplicationClearLessonTargets(board, context.puzzle);
+      const triangle = context.triangle;
+      const geometry = axisGeometry(triangle);
+      const grip = viewPoint({ x:geometry.grip[0], y:geometry.grip[1] });
+      const swipe = svgElement('circle', { class:'w7-application-lesson-swipe', cx:grip.x, cy:grip.y, r:6.5, opacity:0, 'aria-hidden':'true' });
+      board.append(swipe);
+      return swipe;
+    }
+    function updateApplicationClearLessonRotation(context, cells, degrees, settledTurns = null) {
+      context.triangle.cells.forEach(cellIndex => {
+        const cell = cells.get(cellIndex);
+        if (!cell) return;
+        const frame = rotationFrameForCell(context.initialCells, context.triangleIndex, cellIndex, degrees, context.direction, settledTurns);
+        cell.setAttribute('transform', frame.transform);
+        cell.classList.toggle('w7-cell--standing', frame.standing);
+        cell.classList.toggle('w7-cell--fallen', !frame.standing);
+        const daruma = cell.querySelector('.w7-daruma');
+        daruma.setAttribute('transform', `rotate(${orientationDegrees(frame.darumaOrientation)})`);
+        daruma.querySelector('use:last-child').setAttribute('href', frame.standing ? '#w7-face-open' : '#w7-face-shut');
+      });
+    }
+    function runApplicationClearLessonAnimation(board, context) {
+      const renderStatic = () => renderApplicationClearLessonFrame(board, context);
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { renderStatic(); return; }
+      const play = () => {
+        if (!board.isConnected) return;
+        board.classList.remove('is-fading');
+        const swipe = renderStatic();
+        const axisLayer = board.querySelector('.w7-axis-layer');
+        setTimeout(() => {
+          if (!board.isConnected) return;
+          axisLayer.style.opacity = '0';
+          swipe.setAttribute('opacity', '1');
+          setTimeout(() => {
+            if (!board.isConnected) return;
+            const cells = new Map(context.triangle.cells.map(cellIndex => [cellIndex, board.querySelector(`[data-cell-index="${cellIndex}"]`)]));
+            // 回る三枚をまとめて末尾へ移し、実盤面と同じく必ず前面で回す。
+            context.triangle.cells.forEach(cellIndex => { const cell = cells.get(cellIndex); if (cell) board.append(cell); });
+            board.append(swipe);
+            const startedAt = performance.now();
+            const duration = 900;
+            // 点も「棒をつかんだ指」として、三枚と同じ支点の周りを動かす。
+            // 静止した円のままだと、棒を消した後に回していることが伝わらない。
+            const pivot = viewPoint({ x:context.triangle.x, y:context.triangle.y });
+            const grip = viewPoint({ x:axisGeometry(context.triangle).grip[0], y:axisGeometry(context.triangle).grip[1] });
+            const step = now => {
+              if (!board.isConnected) return;
+              const progress = Math.min(1, (now - startedAt) / duration);
+              const eased = 1 - Math.pow(1 - progress, 3);
+              const degrees = context.direction * TURN_DEGREES * eased;
+              updateApplicationClearLessonRotation(context, cells, degrees);
+              const swipePoint = rotatePoint(grip, pivot, degrees);
+              swipe.setAttribute('cx', swipePoint.x);
+              swipe.setAttribute('cy', swipePoint.y);
+              if (progress < 1) { requestAnimationFrame(step); return; }
+              updateApplicationClearLessonRotation(context, cells, context.direction * TURN_DEGREES, context.direction);
+              swipe.setAttribute('opacity', '0');
+              setTimeout(() => {
+                if (!board.isConnected) return;
+                board.classList.add('is-fading');
+                setTimeout(play, 180);
+              }, 760);
+            };
+            requestAnimationFrame(step);
+          }, 300);
+        }, 900);
+      };
+      play();
+    }
+    function renderApplicationClearLesson(puzzle) {
+      const context = selectApplicationClearLessonContext(puzzle);
+      if (!context) return null;
+      const lesson = document.createElement('section');
+      lesson.className = 'w7-application-clear-lesson';
+      lesson.setAttribute('aria-label', `${context.shapeName}の回し方`);
+      const heading = document.createElement('p');
+      heading.className = 'w7-application-clear-lesson-title';
+      heading.textContent = `「${context.shapeName}」の回し方`;
+      const board = svgElement('svg', { class:'w7-application-clear-lesson-board', viewBox:'14 0 293 310', 'aria-hidden':'true' });
+      const hint = document.createElement('p');
+      hint.className = 'w7-application-clear-lesson-hint';
+      hint.textContent = context.hint;
+      lesson.append(heading, board, hint);
+      // replaceChildren後に接続されてから始める。閉じたダイアログでは isConnected がfalseになり、
+      // 次の周期を予約しないため古い問題のアニメーションが残らない。
+      queueMicrotask(() => { if (board.isConnected) runApplicationClearLessonAnimation(board, context); });
+      return lesson;
     }
     function renderAcademyClearArt(kind) {
       const art = svgElement('svg', { class:'w7-clear-art', viewBox:'0 0 240 140', 'aria-hidden':'true' });
@@ -1023,11 +1410,31 @@
         defaultAction = addAction('はじめる', intentStartAcademyBasic);
         dialogElement.replaceChildren(title, message, preview, actions);
       } else if (descriptor.type === 'academy-application-entry') {
-        dialogElement.className = 'w7-dialog';
+        // 説明だけで終えず「ウネウネ動く三枚をそろえる」実演盤面を先に見せる。
+        dialogElement.className = 'w7-dialog w7-dialog--welcome';
         title.textContent = '応用クラスへ ようこそ！';
-        message.textContent = '次は、回す場所を自分で見つけよう。';
-        addAction('基本クラスをもう一度', intentReturnToAcademyBasic);
+        message.className = 'w7-application-welcome-message';
+        const preview = svgElement('svg', { class:'w7-welcome-board w7-application-welcome-preview', viewBox:'14 -60 293 370', 'aria-hidden':'true' });
+        const applicationPuzzle = academyApplicationPuzzleAt(0);
         defaultAction = addAction('はじめる', intentStartAcademyApplication);
+        dialogElement.replaceChildren(title, message, preview, actions);
+        // SVGがダイアログへ載った後に描画を始める。未接続のSVGで開始すると、直後の
+        // replaceChildrenにより盤面だけが失われることがある。
+        queueMicrotask(() => {
+          if (!preview.isConnected) return;
+          runAcademyWelcomePreview(preview, message, applicationPuzzle, '', '', {
+            applicationTargets:true,
+            // 「あと」と大きな数字が重ならないよう、旧版より数字側へ余白を取る。
+            labelX:34, labelY:4, numberX:94, numberY:6, numberSize:48, unitX:116, unitY:4, releaseX:184, releaseY:5,
+            renderMessage(target) {
+              const accent = document.createElement('span');
+              accent.className = 'w7-application-target-text';
+              accent.textContent = 'ウネウネ動く3枚';
+              // 対象を示す語だけ、学園のゴールドで強調する。
+              target.replaceChildren(accent, 'を、同じ向きにそろえよう');
+            },
+          });
+        });
       } else {
         dialogElement.className = 'w7-dialog w7-dialog--clear';
         title.textContent = '全員起きました！';
@@ -1042,6 +1449,10 @@
           message.textContent = puzzle.clearNote;
         }
         if (puzzle.clearArt) clearArtwork = renderAcademyClearArt(puzzle.clearArt);
+        // 応用のクリアは雑学ではなく、その問題の型をもう一度盤面で見せる。
+        // 「全員起きました！」の直下へ入れ、別ダイアログやタブには分けない。
+        const applicationLesson = puzzle.classId === 'application' ? renderApplicationClearLesson(puzzle) : null;
+        if (applicationLesson) details.push(applicationLesson);
         if (puzzle.clearQuiz) {
           const detail = document.createElement('section');
           detail.className = 'w7-clear-quiz';
@@ -1083,7 +1494,9 @@
         addAction('もう一度', intentRetryPuzzle);
         defaultAction = addAction('次へ', intentNextAcademyPuzzle);
       }
-      if (!['welcome','academy-intro-welcome','academy-basic-welcome'].includes(descriptor.type)) {
+      // 盤面見本を自前で組み立てる歓迎ダイアログは、ここでタイトルとボタンだけに
+      // 置き換えない。応用開始もこの仲間で、見本盤面を保持する。
+      if (!['welcome','academy-intro-welcome','academy-basic-welcome','academy-application-entry'].includes(descriptor.type)) {
         // クリア画面は「見本 → メッセージ → クイズ」の読み順。問題番号は絶対配置なので最後でよい。
         dialogElement.replaceChildren(title, ...(clearArtwork ? [clearArtwork] : []), ...(message.textContent ? [message] : []), ...details, actions);
       }
@@ -1094,6 +1507,7 @@
     const RuntimeState = {
       cells: Uint8Array.from(AppState.board.cells),
       history: AppState.board.history.map(entry => Object.freeze({ triangleIndex:entry.triangleIndex, direction:entry.direction, before:Object.freeze([...entry.before]), after:Object.freeze([...entry.after]) })),
+      panelIds: panelIdsFromHistory(AppState.board.history),
       phase: BoardPhase.READY,
       drag: null,
       invalidPointerId: null,
@@ -1109,14 +1523,22 @@
       academyFeedbackGeneration: 0,
       academyCalloutRemaining: null,
       academyCalloutGeneration: 0,
+      // 応用の誤操作で落ちた棒は、その問題を解く間だけの画面状態。保存や盤面履歴には書かない。
+      applicationFallen: new Set(),
+      applicationFeedback: null,
+      applicationFeedbackGeneration: 0,
+      // OPEN-005: 0手の応用問題ではこの一時状態をfalseから始め、導入が終わった後だけ右上見本を表示する。
+      // 保存はしない。再読み込み時は applicationShouldReplayIntro() から必ず作り直す。
+      applicationIntroCompleted: !applicationShouldReplayIntro(),
+      applicationTargetPreviewVisible: !applicationShouldReplayIntro(),
       effectGeneration: 0,
       activeEffect: null,
     };
     // チュートリアル固有の表示・誤操作判定。盤面DOM、棒の判定、回転処理は共有する。
     function isTutorialRoute(appState = AppState) { return appState.navigation.mode === 'tutorial' && appState.navigation.routeId === 'tutorial'; }
     function isAcademyGuidedRoute(appState = AppState) { return appState.navigation.mode === 'stage' && ['academy-intro','academy-basic'].includes(appState.navigation.routeId); }
-    // 応用はP5-1では候補棒・誤手の専用補助を持たず、共有盤面の通常入力を使う。
     function isAcademyApplicationRoute(appState = AppState) { return appState.navigation.mode === 'stage' && appState.navigation.routeId === 'academy-application'; }
+    function isAcademyAssistedRoute(appState = AppState) { return isAcademyGuidedRoute(appState) || isAcademyApplicationRoute(appState); }
     function academyCandidateCount(cells = RuntimeState.cells, puzzle = selectActivePuzzle()) {
       if (selectDistance(cells) <= 1) return TRIANGLES.length;
       return puzzle.initialCandidateCount ?? TRIANGLES.length;
@@ -1155,15 +1577,9 @@
       RuntimeState.academyFeedback = null;
       RuntimeState.academyGuidanceSignature = signature;
     }
-    function renderAcademyGuidance() {
-      if (!isAcademyGuidedRoute()) { academyCalloutElement.hidden = true; academyCalloutElement.classList.remove('is-visible'); return; }
-      refreshAcademyGuidance();
-      boardElement.querySelectorAll('.w7-axis-layer g[data-axis]').forEach(axis => {
-        const index = Number(axis.dataset.axis);
-        axis.classList.toggle('w7-academy-candidate', RuntimeState.academyCandidates.has(index));
-        axis.classList.toggle('w7-academy-hidden', !RuntimeState.academyCandidates.has(index) && !RuntimeState.academyFallen.has(index));
-        axis.classList.toggle('w7-academy-fallen', RuntimeState.academyFallen.has(index));
-      });
+    // 入門・基本と応用で共用する「あと○くるり」の中央案内。棒の候補表示とは分けることで、
+    // 応用でも残り1になった瞬間だけ同じ読みやすい案内を出せる。
+    function renderAcademyRemainingCallout() {
       if (RuntimeState.academyCalloutRemaining !== null) {
         academyCalloutElement.querySelector('#w7-academy-callout-number').textContent = String(RuntimeState.academyCalloutRemaining);
         academyCalloutElement.hidden = false;
@@ -1172,6 +1588,41 @@
         academyCalloutElement.classList.remove('is-visible');
         academyCalloutElement.hidden = true;
       }
+    }
+    function renderAcademyGuidance() {
+      // renderRuntimeでは入門・基本の直後に応用側も呼ぶ。応用の中央案内をここで消さない。
+      if (!isAcademyGuidedRoute()) {
+        if (!isAcademyApplicationRoute()) renderAcademyRemainingCallout();
+        return;
+      }
+      refreshAcademyGuidance();
+      boardElement.querySelectorAll('.w7-axis-layer g[data-axis]').forEach(axis => {
+        const index = Number(axis.dataset.axis);
+        axis.classList.toggle('w7-academy-candidate', RuntimeState.academyCandidates.has(index));
+        axis.classList.toggle('w7-academy-hidden', !RuntimeState.academyCandidates.has(index) && !RuntimeState.academyFallen.has(index));
+        axis.classList.toggle('w7-academy-fallen', RuntimeState.academyFallen.has(index));
+      });
+      renderAcademyRemainingCallout();
+    }
+    // 応用は最初から六本の棒を見せ、誤った棒だけを今回の挑戦中に落とす。
+    // targetCells と同様、判定はここで推測せず applicationMoveOutcome に集約する。
+    function renderApplicationGuidance() {
+      boardElement.querySelectorAll('.w7-axis-layer g[data-axis]').forEach(axis => {
+        const fallen = isAcademyApplicationRoute() && RuntimeState.applicationFallen.has(Number(axis.dataset.axis));
+        axis.classList.toggle('w7-application-fallen', fallen);
+      });
+      if (isAcademyApplicationRoute()) renderAcademyRemainingCallout();
+    }
+    function setApplicationFeedback(message, milliseconds = 650) {
+      RuntimeState.applicationFeedback = message;
+      const generation = ++RuntimeState.applicationFeedbackGeneration;
+      boardGripPrompt.querySelector('span').textContent = message;
+      boardGripPrompt.hidden = false;
+      setTimeout(() => {
+        if (generation !== RuntimeState.applicationFeedbackGeneration) return;
+        RuntimeState.applicationFeedback = null;
+        boardGripPrompt.hidden = true;
+      }, milliseconds);
     }
     function setAcademyFeedback(message, milliseconds = 650) {
       RuntimeState.academyFeedback = message;
@@ -1185,14 +1636,14 @@
       if (!remaining || remaining < 1 || WakeSevenBoardDomain.isSolved(RuntimeState.cells)) return;
       RuntimeState.academyCalloutRemaining = remaining;
       const generation = ++RuntimeState.academyCalloutGeneration;
-      renderAcademyGuidance();
+      renderAcademyRemainingCallout();
       setTimeout(() => {
         if (generation !== RuntimeState.academyCalloutGeneration) return;
         academyCalloutElement.classList.remove('is-visible');
         setTimeout(() => {
           if (generation !== RuntimeState.academyCalloutGeneration) return;
           RuntimeState.academyCalloutRemaining = null;
-          renderAcademyGuidance();
+          renderAcademyRemainingCallout();
         }, 220);
       }, 700);
     }
@@ -1308,19 +1759,27 @@
     function replaceRuntimeBoardFromAppState() {
       RuntimeState.cells = Uint8Array.from(AppState.board.cells);
       RuntimeState.history = AppState.board.history.map(entry => Object.freeze({ triangleIndex:entry.triangleIndex, direction:entry.direction, before:Object.freeze([...entry.before]), after:Object.freeze([...entry.after]) }));
+      RuntimeState.panelIds = panelIdsFromHistory(RuntimeState.history);
       RuntimeState.phase = BoardPhase.READY;
       RuntimeState.drag = null;
       RuntimeState.academyGuidanceSignature = '';
       RuntimeState.academyFeedback = null;
       RuntimeState.academyCalloutRemaining = null;
       RuntimeState.academyCalloutGeneration += 1;
+      RuntimeState.applicationFallen = new Set();
+      RuntimeState.applicationFeedback = null;
+      RuntimeState.applicationFeedbackGeneration += 1;
     }
     function selectCanStartBoardDrag(state = RuntimeState, appState = AppState) { return selectCanInteractWithBoard(appState) && state.phase === BoardPhase.READY && state.invalidPointerId === null && !WakeSevenBoardDomain.isSolved(state.cells); }
     function selectCanUseHistory(state = RuntimeState, appState = AppState) { return selectCanInteractWithBoard(appState) && state.phase === BoardPhase.READY && state.invalidPointerId === null; }
     function assertRuntimeDomAlignment(context) {
-      const cells = Array.from(boardElement.querySelectorAll('.w7-cell'));
+      // 応用の対象パネルは回転中に前面へ移す。DOM順ではなく固定cell index順で照合する。
+      const cells = Array.from(boardElement.querySelectorAll('.w7-cell')).sort((left, right) => Number(left.dataset.cellIndex) - Number(right.dataset.cellIndex));
       const domOrientations = cells.map(cell => Number(cell.dataset.orientation));
-      const aligned = cells.length === CELL_COUNT && domOrientations.every((value, index) => value === RuntimeState.cells[index]);
+      const domPanelIds = cells.map(cell => Number(cell.dataset.panelId));
+      const aligned = cells.length === CELL_COUNT
+        && domOrientations.every((value, index) => value === RuntimeState.cells[index])
+        && domPanelIds.every((value, index) => value === RuntimeState.panelIds[index]);
       const historyAligned = Number(boardElement.dataset.historyLength) === RuntimeState.history.length;
       const stateAligned = Number(boardElement.dataset.state) === WakeSevenBoardDomain.encode(RuntimeState.cells);
       boardElement.dataset.invariant = aligned && historyAligned && stateAligned ? 'passed' : 'failed';
@@ -1331,6 +1790,7 @@
       const after = WakeSevenBoardDomain.roll(before, triangleIndex, direction);
       RuntimeState.history.push(Object.freeze({ triangleIndex, direction, before:Object.freeze(Array.from(before)), after:Object.freeze(Array.from(after)) }));
       RuntimeState.cells = after;
+      RuntimeState.panelIds = rotatePanelIds(RuntimeState.panelIds, triangleIndex, direction);
     }
     // 回転中の連打や画面切替で古い演出が状態を書き換えないよう、全演出を世代単位で中断する。
     function disposeEffectResources(effect) {
@@ -1426,6 +1886,7 @@
     }
     function isSelectableGrip(hit) {
       if (!hit) return false;
+      if (isAcademyApplicationRoute()) return !RuntimeState.applicationFallen.has(hit.triangleIndex);
       if (!isAcademyGuidedRoute()) return true;
       refreshAcademyGuidance();
       return RuntimeState.academyCandidates.has(hit.triangleIndex) && !RuntimeState.academyFallen.has(hit.triangleIndex);
@@ -1445,6 +1906,17 @@
     function logicalDirectionForTurns(turns) { return tutorialLogicalDirection(turns); }
     // 入門編の一手判定。距離を一つ減らす向きだけが正解で、240度も反対向き120度と同じ一手にする。
     function academyMoveOutcome(triangleIndex, direction, maxAbsDegrees) {
+      if (maxAbsDegrees < GUIDED_ROD_JUDGMENT_DEGREES) return 'cancel';
+      const correctDirections = academyReducingTriangles().find(candidate => candidate.triangleIndex === triangleIndex)?.directions ?? [];
+      if (direction && correctDirections.includes(direction)) return 'correct';
+      if (correctDirections.length) return 'wrong-direction';
+      if (direction || maxAbsDegrees >= 120) return 'wrong-rod';
+      return 'cancel';
+    }
+    // 応用も「残り手数を一つ減らす一手」だけを正解とする。
+    // ウネウネ対象のtargetCellsは完成形の注目箇所なので、棒／方向の答えをそこから逆算しない。
+    function applicationMoveOutcome(triangleIndex, direction, maxAbsDegrees) {
+      if (maxAbsDegrees < GUIDED_ROD_JUDGMENT_DEGREES) return 'cancel';
       const correctDirections = academyReducingTriangles().find(candidate => candidate.triangleIndex === triangleIndex)?.directions ?? [];
       if (direction && correctDirections.includes(direction)) return 'correct';
       if (correctDirections.length) return 'wrong-direction';
@@ -1458,13 +1930,28 @@
       if (Math.abs(rawDegrees) > 240) return Object.freeze({ start:rawDegrees, end:Math.sign(rawDegrees) * 360 });
       return Object.freeze({ start:rawDegrees, end:0 });
     }
+    function finalizeSettledRotationCellIndices(triangleIndex, turns) {
+      const triangle = TRIANGLES[triangleIndex];
+      // 三枚を先に取るので、data-cell-index を書き換えても互いを取り違えない。
+      const cells = triangle.cells.map(cellIndex => ({
+        cellIndex,
+        cell:boardElement.querySelector(`[data-cell-index="${cellIndex}"]`),
+      }));
+      cells.forEach(({ cellIndex, cell }) => {
+        if (cell) cell.dataset.cellIndex = String(rotateTriangleCellIndex(triangle, cellIndex, turns));
+      });
+    }
     function settleBoardRotation({ effect, cells, triangleIndex, fromDegrees, turns, moveDelta = Math.abs(turns), milliseconds, complete }) {
       const targetDegrees = turns * TURN_DEGREES;
       const renderProgress = progress => renderRotationPreview(cells, triangleIndex, fromDegrees + (targetDegrees - fromDegrees) * progress, turns, turns, moveDelta);
       const delta = Math.abs(targetDegrees - fromDegrees);
-      if (delta < .1) { renderProgress(1); complete(); return; }
+      const finishAtTarget = () => {
+        finalizeSettledRotationCellIndices(triangleIndex, turns);
+        complete();
+      };
+      if (delta < .1) { renderProgress(1); finishAtTarget(); return; }
       const duration = milliseconds ?? Math.max(ROTATION_MIN_MILLISECONDS, Math.min(ROTATION_MAX_MILLISECONDS, delta * ROTATION_MILLISECONDS_PER_DEGREE));
-      runEffectFrames(effect, duration, renderProgress, complete);
+      runEffectFrames(effect, duration, renderProgress, finishAtTarget);
     }
     function safelyCapturePointer(pointerId) { try { boardElement.setPointerCapture(pointerId); } catch {} }
     function safelyReleasePointer(pointerId) { try { if (boardElement.hasPointerCapture(pointerId)) boardElement.releasePointerCapture(pointerId); } catch {} }
@@ -1486,6 +1973,7 @@
       boardElement.classList.add('is-invalid-grab');
       if (isTutorialRoute()) { boardGripPrompt.querySelector('span').textContent = tutorialMessage ?? '水色の棒をつかもう'; boardGripPrompt.hidden = false; }
       if (isAcademyGuidedRoute()) setAcademyFeedback('そこじゃないよ');
+      if (isAcademyApplicationRoute()) setApplicationFeedback('そこじゃないよ');
       safelyCapturePointer(event.pointerId);
       renderBoardPhase();
     }
@@ -1494,13 +1982,16 @@
       RuntimeState.invalidPointerId = null;
       safelyReleasePointer(event.pointerId);
       boardElement.classList.remove('is-invalid-grab');
-      if (!isAcademyGuidedRoute() || RuntimeState.academyFeedback === null) boardGripPrompt.hidden = true;
+      if ((!isAcademyGuidedRoute() || RuntimeState.academyFeedback === null) && (!isAcademyApplicationRoute() || RuntimeState.applicationFeedback === null)) boardGripPrompt.hidden = true;
       renderBoardPhase();
       if (isTutorialRoute()) scheduleTutorialCue(80);
       else renderTutorialCue();
       return true;
     }
     function handleBoardPointerDown(event) {
+      // 完成形見本を急いで触った時は、無反応にせず実盤面へ進める。
+      // この一回は回転操作としては数えない。
+      if (skipApplicationIntroPreview(event)) return;
       if (!selectCanStartBoardDrag() || event.pointerType === 'mouse' && event.button !== 0) return;
       event.preventDefault();
       const point = eventToBoardPoint(event);
@@ -1516,6 +2007,7 @@
         refreshAcademyGuidance();
         if (!RuntimeState.academyCandidates.has(hit.triangleIndex) || RuntimeState.academyFallen.has(hit.triangleIndex)) { beginInvalidGrab(event); return; }
       }
+      if (isAcademyApplicationRoute() && RuntimeState.applicationFallen.has(hit.triangleIndex)) { beginInvalidGrab(event); return; }
       boardElement.classList.remove('is-grip-hover');
       boardGripPrompt.hidden = true;
       const effect = beginEffect(BoardPhase.DRAGGING);
@@ -1526,7 +2018,7 @@
       safelyCapturePointer(event.pointerId);
       registerEffectCleanup(effect, () => safelyReleasePointer(event.pointerId));
       renderRotationPreview(RuntimeState.drag.cells, hit.triangleIndex, 0, 0);
-      if (isTutorialRoute() || isAcademyGuidedRoute()) flashGrabbedCells(hit.triangleIndex);
+      if (isTutorialRoute() || isAcademyAssistedRoute()) flashGrabbedCells(hit.triangleIndex);
       if (expectedMove) {
         const step = tutorialStepAt(AppState.navigation.tutorialStep);
         const moveIndex = RuntimeState.history.length;
@@ -1593,14 +2085,17 @@
       if (cancelled) { cancelActiveEffect('pointercancel'); renderRuntime({ context:'pointercancel' }); return; }
       const elapsed = performance.now() - drag.startedAt;
       const selectedTurns = selectDragTurns(drag.degrees, elapsed, true);
-      const committedTurns = isTutorialRoute() || isAcademyGuidedRoute() ? logicalDirectionForTurns(selectedTurns) : selectedTurns;
+      const committedTurns = isTutorialRoute() || isAcademyAssistedRoute() ? logicalDirectionForTurns(selectedTurns) : selectedTurns;
       const tutorialMoveAllowed = isTutorialMoveAllowed(drag.triangleIndex, committedTurns);
       const academyOutcome = isAcademyGuidedRoute() ? academyMoveOutcome(drag.triangleIndex, committedTurns, drag.maxAbsDegrees) : null;
+      const applicationOutcome = isAcademyApplicationRoute() ? applicationMoveOutcome(drag.triangleIndex, committedTurns, drag.maxAbsDegrees) : null;
       const academyMoveAllowed = academyOutcome === 'correct';
-      const settledTurns = isAcademyGuidedRoute() ? academyMoveAllowed ? selectedTurns : 0 : tutorialMoveAllowed && isTutorialRoute() ? selectedTurns : tutorialMoveAllowed ? committedTurns : 0;
-      // 誤った学園操作は、360度ぶんを逆再生しない。旧版と同じく現在角度から最短の
+      const applicationMoveAllowed = applicationOutcome === 'correct';
+      const assistedMoveAllowed = isAcademyGuidedRoute() ? academyMoveAllowed : isAcademyApplicationRoute() ? applicationMoveAllowed : null;
+      const settledTurns = isAcademyAssistedRoute() ? assistedMoveAllowed ? selectedTurns : 0 : tutorialMoveAllowed && isTutorialRoute() ? selectedTurns : tutorialMoveAllowed ? committedTurns : 0;
+      // 誤った学園／応用操作は、360度ぶんを逆再生しない。旧版と同じく現在角度から最短の
       // 元位置／一周位置へ戻すため、長く回したときも「棒が落ちる」結果がすぐ伝わる。
-      const academyRewind = isAcademyGuidedRoute() && !academyMoveAllowed ? academyGuidedRewindPath(drag.degrees) : null;
+      const academyRewind = isAcademyAssistedRoute() && !assistedMoveAllowed ? academyGuidedRewindPath(drag.degrees) : null;
       const wrongTutorialMessage = committedTurns && !tutorialMoveAllowed
         ? tutorialStepAt(AppState.navigation.tutorialStep).cue === 'chain-direction' ? 'そこじゃないよ' : 'おしい！そこじゃないよ！'
         : null;
@@ -1625,6 +2120,18 @@
           }
           return;
         }
+        if (isAcademyApplicationRoute() && !applicationMoveAllowed) {
+          if (applicationOutcome === 'wrong-rod') RuntimeState.applicationFallen.add(drag.triangleIndex);
+          if (applicationOutcome === 'wrong-direction') {
+            const reducing = new Set(academyReducingTriangles().map(candidate => candidate.triangleIndex));
+            TRIANGLES.forEach((_, index) => { if (!reducing.has(index)) RuntimeState.applicationFallen.add(index); });
+          }
+          if (finishEffect(drag.effect)) {
+            renderRuntime({ context:`application ${applicationOutcome}` });
+            if (applicationOutcome !== 'cancel') setApplicationFeedback(applicationOutcome === 'wrong-direction' ? (committedTurns ? 'そっちじゃないよ' : '棒はあってるよ') : 'そこじゃないよ');
+          }
+          return;
+        }
         if (committedTurns && !tutorialMoveAllowed) {
           if (finishEffect(drag.effect)) {
             renderRuntime({ context:'tutorial wrong move' });
@@ -1639,7 +2146,13 @@
           runClearEffect(isTutorialRoute() ? advanceTutorialAfterClear : isAcademyGuidedRoute() ? advanceAcademyAfterClear : null);
           return;
         }
-        if (committedTurns) { syncBoardToAppState(); saveAppState('move commit'); if (isAcademyGuidedRoute()) showAcademyRemainingCallout(); }
+        if (committedTurns) {
+          if (isAcademyApplicationRoute()) RuntimeState.applicationFallen = new Set();
+          syncBoardToAppState();
+          saveAppState('move commit');
+          // 応用も、正しい一手で残り1になった時だけは入門・基本と同じ中央案内を出す。
+          if (isAcademyGuidedRoute() || (isAcademyApplicationRoute() && selectDistance(RuntimeState.cells) === 1)) showAcademyRemainingCallout();
+        }
         renderRuntime({ context:committedTurns ? 'move commit' : 'short drag cancel' });
       };
       settleBoardRotation({ effect:drag.effect, cells:drag.cells, triangleIndex:drag.triangleIndex, fromDegrees:academyRewind?.start ?? drag.degrees, turns:academyRewind ? academyRewind.end / TURN_DEGREES : settledTurns, complete:completeRotation });
@@ -1648,7 +2161,7 @@
     function handleBoardPointerUp(event) { if (!clearInvalidGrab(event)) finishBoardDrag(event, false); }
     function handleBoardPointerCancel(event) { if (!clearInvalidGrab(event)) finishBoardDrag(event, true); }
     function handleBoardLostPointerCapture(event) {
-      if (RuntimeState.invalidPointerId === event.pointerId) { RuntimeState.invalidPointerId = null; boardElement.classList.remove('is-invalid-grab'); if (!isAcademyGuidedRoute() || RuntimeState.academyFeedback === null) boardGripPrompt.hidden = true; renderBoardPhase(); renderTutorialCue(); return; }
+      if (RuntimeState.invalidPointerId === event.pointerId) { RuntimeState.invalidPointerId = null; boardElement.classList.remove('is-invalid-grab'); if ((!isAcademyGuidedRoute() || RuntimeState.academyFeedback === null) && (!isAcademyApplicationRoute() || RuntimeState.applicationFeedback === null)) boardGripPrompt.hidden = true; renderBoardPhase(); renderTutorialCue(); return; }
       if (RuntimeState.drag?.pointerId === event.pointerId) finishBoardDrag(event, true);
     }
     // 盤面が中央から広がる到着演出
@@ -1666,6 +2179,131 @@
         });
       }, () => { if (finishEffect(effect)) renderRuntime({ context:'arrival' }); });
     }
+    function hideApplicationTargetPreview() {
+      applicationTargetPreviewElement.hidden = true;
+      applicationTargetPreviewElement.classList.remove('is-fading','is-entering');
+      applicationTargetPreviewElement.dataset.puzzleId = '';
+      applicationTargetPreviewBoardElement.replaceChildren();
+    }
+    // 完成形見本の三枚を、右上の常設ガイドへ受け渡す共通アニメーション。
+    // 待って見た場合と、見本をクリックして飛ばした場合で動きを分けない。
+    function animateApplicationTargetPreviewEntering() {
+      applicationTargetPreviewElement.classList.remove('is-entering');
+      void applicationTargetPreviewElement.getBoundingClientRect();
+      applicationTargetPreviewElement.classList.add('is-entering');
+      const puzzleId = AppState.navigation.puzzleId;
+      setTimeout(() => {
+        if (AppState.navigation.puzzleId === puzzleId) applicationTargetPreviewElement.classList.remove('is-entering');
+      }, 660);
+    }
+    function finishApplicationIntroArrival(effect) {
+      const guide = appendApplicationShapeGuide();
+      // 実盤面がそろったら、ガイドを残したまま先に操作可能へ戻す。
+      // ガイドはpointer-events:noneなので、中央に表示中でも棒をそのままつかめる。
+      RuntimeState.applicationIntroCompleted = true;
+      if (!finishEffect(effect)) return;
+      renderBoardPhase();
+      renderDialog();
+      renderTutorialCue();
+      renderAcademyGuidance();
+      renderApplicationGuidance();
+      renderApplicationTargetPreview();
+      const puzzleId = AppState.navigation.puzzleId;
+      setTimeout(() => {
+        if (!guide.isConnected || AppState.navigation.puzzleId !== puzzleId) return;
+        // 型ガイドが消える時点から、実盤面と右上ガイドを同じウネウネで対応させる。
+        if (RuntimeState.phase === BoardPhase.READY) renderApplicationTargetWave();
+        guide.classList.remove('is-visible');
+        setTimeout(() => { if (guide.isConnected) guide.remove(); }, 220);
+      }, 1000);
+    }
+    function startApplicationActualBoardArrival() {
+      const effect = beginEffect(BoardPhase.ARRIVING);
+      const actualCells = Array.from(boardElement.querySelectorAll('.w7-cell'));
+      const center = viewPoint(CELL_POSITIONS[3]);
+      actualCells.forEach(cell => {
+        cell.setAttribute('transform', `translate(${center.x} ${center.y}) scale(.72)`);
+        cell.style.opacity = '0';
+      });
+      runEffectFrames(effect, ARRIVAL_MILLISECONDS, progress => {
+        actualCells.forEach((cell, index) => {
+          const destination = viewPoint(CELL_POSITIONS[index]);
+          const x = center.x + (destination.x - center.x) * progress;
+          const y = center.y + (destination.y - center.y) * progress;
+          cell.setAttribute('transform', `translate(${x} ${y}) scale(${.72 + .28 * progress})`);
+          cell.style.opacity = String(progress);
+        });
+      }, () => finishApplicationIntroArrival(effect));
+    }
+    function skipApplicationIntroPreview(event) {
+      const demo = boardElement.querySelector('.w7-application-intro-demo');
+      if (event.pointerType === 'mouse' && event.button !== 0) return false;
+      if (!isAcademyApplicationRoute() || RuntimeState.applicationIntroCompleted || !demo || RuntimeState.phase !== BoardPhase.ARRIVING) return false;
+      event.preventDefault();
+      // 見本を読む人向けの待ち時間だけを飛ばす。実盤面の出現と型ガイドは同じ順番で残す。
+      cancelActiveEffect('application intro preview skipped');
+      boardElement.querySelector('.w7-application-intro-message')?.remove();
+      demo.remove();
+      // 通常の導入では静止見本が消え始める時点で出す右上ガイドも、
+      // スキップ時はここで同時に受け渡す。
+      RuntimeState.applicationTargetPreviewVisible = true;
+      renderApplicationTargetPreview();
+      animateApplicationTargetPreviewEntering();
+      startApplicationActualBoardArrival();
+      return true;
+    }
+    // 応用問題の開始だけに使うP5-2の演出。AppStateは最初から実問題の安定盤面を保持し、
+    // この関数はその上に表示専用SVGを重ねるだけなので、途中で閉じても保存状態は壊れない。
+    function runApplicationIntroSequence() {
+      if (!applicationShouldReplayIntro()) return false;
+      RuntimeState.applicationIntroCompleted = false;
+      RuntimeState.applicationTargetPreviewVisible = false;
+      hideApplicationTargetPreview();
+      const effect = beginEffect(BoardPhase.ARRIVING);
+      renderRuntime({ context:'application intro setup' });
+      const actualCells = Array.from(boardElement.querySelectorAll('.w7-cell'));
+      actualCells.forEach(cell => { cell.style.opacity = '0'; });
+      const demo = svgElement('g', { class:'w7-application-intro-demo', 'aria-hidden':'true' });
+      renderBoard(APPLICATION_INTRO_STATIC_STATE, demo, { includeAxes:false });
+      APPLICATION_INTRO_STATIC_TARGET_CELLS.forEach((index, order) => appendApplicationTargetWave(demo.querySelector(`[data-cell-index="${index}"]`), { order }));
+      const message = svgElement('g', { class:'w7-application-intro-message', 'aria-hidden':'true' });
+      const messageY = viewPoint(CELL_POSITIONS[5]).y + 4;
+      message.append(svgElement('rect', { class:'w7-application-intro-badge', x:96, y:messageY - 28, width:128, height:52, rx:18 }));
+      const title = svgElement('text', { class:'w7-application-intro-title', x:160, y:messageY - 4 });
+      title.textContent = '1回まわして';
+      const copy = svgElement('text', { class:'w7-application-intro-copy', x:160, y:messageY + 15 });
+      copy.textContent = 'この形をめざそう';
+      message.append(title, copy);
+      boardElement.append(demo, message);
+      requestEffectFrame(effect, () => { demo.classList.add('is-visible'); message.classList.add('is-visible'); });
+      const holdMilliseconds = matchMedia('(prefers-reduced-motion: reduce)').matches ? 240 : 1800;
+      setEffectTimer(effect, () => {
+        // 静止見本が消え始めるフレームで、右上の三枚見本を受け渡す。
+        RuntimeState.applicationTargetPreviewVisible = true;
+        renderApplicationTargetPreview();
+        animateApplicationTargetPreviewEntering();
+        demo.classList.add('is-leaving');
+        message.classList.add('is-leaving');
+        setEffectTimer(effect, () => {
+          demo.remove();
+          message.remove();
+          startApplicationActualBoardArrival();
+        }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 360);
+      }, holdMilliseconds);
+      return true;
+    }
+    // 問題切替・やり直し・復元の入口を一本にし、OPEN-005の「0手だけ導入」を呼び出し側に散らさない。
+    function presentApplicationPuzzle({ arrivalWhenStable = false, context = 'application stable' } = {}) {
+      RuntimeState.applicationIntroCompleted = !applicationShouldReplayIntro();
+      RuntimeState.applicationTargetPreviewVisible = !applicationShouldReplayIntro();
+      RuntimeState.applicationFallen = new Set();
+      RuntimeState.applicationFeedback = null;
+      RuntimeState.applicationFeedbackGeneration += 1;
+      hideApplicationTargetPreview();
+      if (runApplicationIntroSequence()) return;
+      if (arrivalWhenStable) runArrivalEffect();
+      else renderRuntime({ context });
+    }
     // 一手戻す。最後に確定した回転だけを逆再生し、履歴から外す。
     function intentUndo() {
       if (!selectCanUseHistory() || RuntimeState.history.length === 0) return false;
@@ -1676,7 +2314,13 @@
         if (!isCurrentEffect(effect) || RuntimeState.history.at(-1) !== entry) return;
         RuntimeState.history.pop();
         RuntimeState.cells = Uint8Array.from(entry.before);
-        if (finishEffect(effect)) { syncBoardToAppState(); saveAppState('undo'); renderRuntime({ context:'undo' }); }
+        RuntimeState.panelIds = panelIdsFromHistory(RuntimeState.history);
+        if (finishEffect(effect)) {
+          syncBoardToAppState();
+          saveAppState('undo');
+          if (isAcademyApplicationRoute() && applicationShouldReplayIntro()) presentApplicationPuzzle({ context:'application undo to zero' });
+          else renderRuntime({ context:'undo' });
+        }
       } });
       return true;
     }
@@ -1691,9 +2335,15 @@
       }, () => {
         RuntimeState.cells = Uint8Array.from(AppState.board.initialCells);
         RuntimeState.history.length = 0;
+        RuntimeState.panelIds = Array.from({ length:CELL_COUNT }, (_, index) => index);
         AppState.board.clearCommitted = false;
         AppState.ui.dialog = null;
-        if (finishEffect(effect)) { syncBoardToAppState(); saveAppState('restart'); renderRuntime({ context:'restart' }); }
+        if (finishEffect(effect)) {
+          syncBoardToAppState();
+          saveAppState('restart');
+          if (isAcademyApplicationRoute()) presentApplicationPuzzle({ context:'application restart' });
+          else renderRuntime({ context:'restart' });
+        }
       });
       return true;
     }
@@ -1712,10 +2362,12 @@
       AppState.ui.dialog = null;
       RuntimeState.cells = Uint8Array.from(AppState.board.cells);
       RuntimeState.history = [];
+      RuntimeState.panelIds = Array.from({ length:CELL_COUNT }, (_, index) => index);
       RuntimeState.phase = BoardPhase.READY;
       RuntimeState.academyGuidanceSignature = '';
       saveAppState(reason);
-      renderRuntime({ context:reason });
+      if (isAcademyApplicationRoute()) presentApplicationPuzzle({ context:reason });
+      else renderRuntime({ context:reason });
     }
     function intentRetryPuzzle() { resetCurrentPuzzleWithoutAnimation('clear dialog retry'); }
     function intentStartTutorial() {
@@ -1757,9 +2409,7 @@
       AppState = makeAcademyApplicationAppState(AppState, 0);
       replaceRuntimeBoardFromAppState();
       saveAppState('academy application start');
-      // P5-1 は既存の七枚同時到着だけを共有する。P5-2 が
-      // applicationShouldReplayIntro() を使う導入演出を追加する。
-      runArrivalEffect();
+      presentApplicationPuzzle({ context:'academy application start' });
     }
     function intentNextAcademyPuzzle() {
       if (!(isAcademyGuidedRoute() || isAcademyApplicationRoute()) || !AppState.board.clearCommitted) return;
@@ -1775,16 +2425,96 @@
       replaceRuntimeBoardFromAppState();
       RuntimeState.academyGuidanceSignature = '';
       saveAppState('academy next puzzle');
-      runArrivalEffect();
+      if (isAcademyApplicationRoute()) presentApplicationPuzzle({ context:'academy application next' });
+      else runArrivalEffect();
     }
-    // 開発中だけ使う入口。V2の現在地だけを初回導入へ戻し、旧版の保存キーは変更しない。
-    function intentDebugResetToTutorial() {
-      cancelActiveEffect('debug reset');
-      AppState = makeDefaultAppState();
+    // 開発中だけ使う状態移動。どのボタンも保存できる安定状態を作り、途中演出は持ち込まない。
+    function debugProgressWithCompleted(...catalogs) {
+      const completed = catalogs.flat().map(puzzle => puzzle.puzzleId);
+      return Object.freeze({
+        ...AppState.progress,
+        tutorialCompleted:true,
+        completedPuzzleIds:[...new Set([...AppState.progress.completedPuzzleIds, ...completed])],
+      });
+    }
+    function buildDebugSolvedBoard(puzzle) {
+      const initialCells = Array.from(puzzleInitialCells(puzzle));
+      let cells = Uint8Array.from(initialCells);
+      const history = [];
+      // 距離を必ず一つ減らす手だけを選ぶので、保存後のhistory再生検査にも通る。
+      while (!WakeSevenBoardDomain.isSolved(cells)) {
+        const distance = selectDistance(cells);
+        const move = TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction })))
+          .find(candidate => selectDistance(WakeSevenBoardDomain.roll(cells, candidate.triangleIndex, candidate.direction)) === distance - 1);
+        if (!move) throw new Error(`debug solver could not clear ${puzzle.puzzleId}`);
+        const before = Array.from(cells);
+        cells = WakeSevenBoardDomain.roll(cells, move.triangleIndex, move.direction);
+        history.push({ ...move, before, after:Array.from(cells) });
+      }
+      return Object.freeze({ initialCells, cells:Array.from(cells), history, clearCommitted:true });
+    }
+    function applyDebugStableState(nextAppState, reason) {
+      cancelActiveEffect(reason);
+      if (RuntimeState.invalidPointerId !== null) safelyReleasePointer(RuntimeState.invalidPointerId);
+      RuntimeState.invalidPointerId = null;
+      boardElement.classList.remove('is-invalid-grab','is-grip-hover');
+      boardGripPrompt.hidden = true;
+      AppState = nextAppState;
       clearTutorialFeedback();
       replaceRuntimeBoardFromAppState();
-      saveAppState('debug reset tutorial');
-      renderRuntime({ context:'debug reset tutorial' });
+      // 応用導入の途中表示をデバッグ遷移後へ残さない。応用のクリア状態では導入も再生しない。
+      RuntimeState.applicationIntroCompleted = true;
+      RuntimeState.applicationTargetPreviewVisible = false;
+      hideApplicationTargetPreview();
+      saveAppState(reason);
+      renderRuntime({ context:reason });
+    }
+    function intentDebugClearCurrentPuzzle() {
+      const puzzle = selectActivePuzzle();
+      const progress = debugProgressWithCompleted(puzzle);
+      const cleared = buildDebugSolvedBoard(puzzle);
+      // チュートリアルとクラス最終問は、本当にクリアした直後と同じ遷移先へ進める。
+      if (isTutorialRoute()) {
+        const nextStep = AppState.navigation.tutorialStep + 1;
+        const next = nextStep < TUTORIAL_STEPS.length
+          ? makeTutorialStepAppState({ ...AppState, progress }, nextStep)
+          : makeAcademyIntroAppState({ ...AppState, progress }, { type:'academy-enroll' });
+        applyDebugStableState(next, 'debug clear current tutorial');
+        return;
+      }
+      if (isAcademyBoundaryClear()) {
+        const next = AppState.navigation.routeId === 'academy-intro'
+          ? makeAcademyBasicAppState({ ...AppState, progress })
+          : makeAcademyApplicationEntryAppState({ ...AppState, progress });
+        applyDebugStableState(next, 'debug clear current academy boundary');
+        return;
+      }
+      applyDebugStableState({ ...AppState, board:cleared, progress, ui:{ dialog:clearDialogDescriptor(puzzle) } }, 'debug clear current');
+    }
+    function intentDebugFinishTutorial() {
+      const progress = debugProgressWithCompleted(TUTORIAL_STEPS);
+      applyDebugStableState(makeAcademyIntroAppState({ ...AppState, progress }, { type:'academy-enroll' }), 'debug tutorial completed');
+    }
+    function intentDebugFinishIntro() {
+      const progress = debugProgressWithCompleted(TUTORIAL_STEPS, ACADEMY_INTRO_PUZZLES);
+      applyDebugStableState(makeAcademyBasicAppState({ ...AppState, progress }), 'debug intro completed');
+    }
+    function intentDebugFinishBasic() {
+      const progress = debugProgressWithCompleted(TUTORIAL_STEPS, ACADEMY_INTRO_PUZZLES, ACADEMY_BASIC_PUZZLES);
+      applyDebugStableState(makeAcademyApplicationEntryAppState({ ...AppState, progress }), 'debug basic completed');
+    }
+    function intentDebugFinishApplication() {
+      const progress = debugProgressWithCompleted(TUTORIAL_STEPS, ACADEMY_INTRO_PUZZLES, ACADEMY_BASIC_PUZZLES, ACADEMY_APPLICATION_PUZZLES);
+      const lastIndex = ACADEMY_APPLICATION_PUZZLES.length - 1;
+      const next = makeAcademyApplicationAppState({ ...AppState, progress }, lastIndex);
+      const puzzle = academyApplicationPuzzleAt(lastIndex);
+      next.board = buildDebugSolvedBoard(puzzle);
+      next.ui.dialog = clearDialogDescriptor(puzzle);
+      applyDebugStableState(next, 'debug application completed');
+    }
+    // V2の現在地だけを初回導入へ戻し、旧版の保存キーは変更しない。
+    function intentDebugResetToTutorial() {
+      applyDebugStableState(makeDefaultAppState(), 'debug reset tutorial');
     }
     // クリア済みチュートリアルを、次の「触れる安定状態」へ一度だけ進める。
     // 演出完走時は到着演出を続け、中断時はこの状態だけをそのまま描画する。
@@ -1822,7 +2552,17 @@
     // 全員が起きた後のクリア演出。通常の回転とは別の表情と弾みだけを描く。
     function runClearEffect(afterClear = null) {
       const effect = beginEffect(BoardPhase.CELEBRATING);
-      renderRuntime({ happy:true });
+      const preserveApplicationPanels = isAcademyApplicationRoute();
+      if (preserveApplicationPanels) {
+        // 応用だけは、直前に回した物理パネルを描き直さず、そのままクリア演出に入る。
+        boardElement.querySelectorAll('.w7-cell').forEach(cell => {
+          const point = viewPoint(CELL_POSITIONS[Number(cell.dataset.cellIndex)]);
+          cell.setAttribute('transform', `translate(${point.x} ${point.y})`);
+          cell.querySelector('.w7-daruma use:last-child')?.setAttribute('href', '#w7-face-happy');
+        });
+      } else {
+        renderRuntime({ happy:true });
+      }
       if (isTutorialRoute()) {
         const step = tutorialStepAt(AppState.navigation.tutorialStep);
         RuntimeState.tutorialFeedback = tutorialPromptText(step, RuntimeState.history.length, 'clear');
@@ -1835,7 +2575,7 @@
         return;
       }
       boardElement.querySelectorAll('.w7-cell').forEach((cell, index) => {
-        const point = viewPoint(CELL_POSITIONS[index]);
+        const point = viewPoint(CELL_POSITIONS[Number(cell.dataset.cellIndex)]);
         const base = `translate(${point.x}px,${point.y}px)`;
         startEffectAnimation(effect, cell, [
           { transform:base },
@@ -1872,6 +2612,11 @@
     boardUndoButton.addEventListener('click', intentUndo);
     boardRestartButton.addEventListener('click', intentRestart);
     debugResetButton.addEventListener('click', intentDebugResetToTutorial);
+    debugClearCurrentButton.addEventListener('click', intentDebugClearCurrentPuzzle);
+    debugFinishTutorialButton.addEventListener('click', intentDebugFinishTutorial);
+    debugFinishIntroButton.addEventListener('click', intentDebugFinishIntro);
+    debugFinishBasicButton.addEventListener('click', intentDebugFinishBasic);
+    debugFinishApplicationButton.addEventListener('click', intentDebugFinishApplication);
     window.addEventListener('blur', () => {
       if (RuntimeState.invalidPointerId !== null) {
         safelyReleasePointer(RuntimeState.invalidPointerId);
@@ -1902,7 +2647,11 @@
         clearTutorialFeedback();
         RuntimeState.tutorialCueGeneration += 1;
       }
-      if (!academyTransition) renderRuntime({ context:tutorialTransition ?? reason });
+      if (!academyTransition) {
+        // 非表示中は安定盤面だけを保存し、見える状態へ戻った時にだけ0手の応用導入を最初から再生する。
+        if ((reason === 'visible' || reason === 'pageshow') && applicationShouldReplayIntro()) presentApplicationPuzzle({ context:`application ${reason}` });
+        else renderRuntime({ context:tutorialTransition ?? reason });
+      }
     }
     // 保存は確定した盤面だけ。ドラッグやアニメーションの途中角度は捨て、最後の安定AppStateへ戻す。
     function saveStableAppStateBeforeLeave(reason) {
@@ -2059,6 +2808,33 @@
             && sameCells(puzzle.targetCells, targetCells);
         });
       checkRuntime('academy-application-catalog', applicationCatalogValid, 'application puzzle ID, order, state, par, or targetCells is invalid');
+      const applicationIntroStaticValid = sameCells(APPLICATION_INTRO_STATIC_STATE, [1, 1, 0, 1, 0, 0, 0])
+        && sameCells(APPLICATION_INTRO_STATIC_TARGET_CELLS, [0, 1, 3])
+        && ACADEMY_APPLICATION_PUZZLES.every(puzzle => typeof APPLICATION_SHAPE_NAME_BY_SOURCE[puzzle.source] === 'string');
+      checkRuntime('academy-application-intro-static', applicationIntroStaticValid, 'application intro board, moving targets, or shape names are invalid');
+      const applicationClearLessonValid = ACADEMY_APPLICATION_PUZZLES.every(puzzle => {
+        const lesson = selectApplicationClearLessonContext(puzzle);
+        return lesson !== null
+          && typeof lesson.hint === 'string'
+          && lesson.hint.length > 0
+          && selectDistance(lesson.afterCells) === selectDistance(lesson.initialCells) - 1
+          && sameCells(lesson.targetPanelIds, [...puzzle.targetCells].sort((left, right) => left - right));
+      });
+      checkRuntime('academy-application-clear-lesson', applicationClearLessonValid, 'application clear lesson shape, hint, target panels, or demonstration move is invalid');
+      const applicationMoveContract = ACADEMY_APPLICATION_PUZZLES.every(puzzle => {
+        const initial = puzzleInitialCells(puzzle);
+        const reducing = TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction })))
+          .filter(move => selectDistance(WakeSevenBoardDomain.roll(initial, move.triangleIndex, move.direction)) === puzzle.par - 1);
+        const nonReducing = TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction })))
+          .filter(move => !reducing.some(correct => correct.triangleIndex === move.triangleIndex && correct.direction === move.direction));
+        return reducing.length > 0 && nonReducing.length > 0;
+      });
+      checkRuntime('academy-application-rewind-contract', applicationMoveContract, 'application puzzle lacks a valid correct/wrong move split');
+      const panelIdentityStart = Array.from({ length:CELL_COUNT }, (_, index) => index);
+      const panelIdentityMoved = rotatePanelIds(panelIdentityStart, 0, 1);
+      const panelIdentityRestored = rotatePanelIds(panelIdentityMoved, 0, -1);
+      checkRuntime('academy-application-panel-identity', sameCells(panelIdentityRestored, panelIdentityStart)
+        && !sameCells(panelIdentityMoved, panelIdentityStart), 'application target panel identity does not follow rotation');
       const applicationZero = makeAcademyApplicationAppState(makeAcademyApplicationEntryAppState(makeDefaultAppState()), 0);
       const restoredApplicationZero = normalizePersistentAppState(applicationZero);
       const applicationFirst = academyApplicationPuzzleAt(0);
@@ -2143,8 +2919,9 @@
     boardElement.dataset.checkedAxes = String(selftestResult.axisCount);
     boardElement.dataset.checkedRenders = `${selftestResult.renderedInitialCells}+${selftestResult.renderedSolvedCells}`;
     boardElement.dataset.checkedRuntime = selftestResult.runtimeChecks.join(',');
-    // 復元時と初回導入は途中演出を再生せず、安定盤面とダイアログをそのまま出す。
-    if (restoredFromStorage || AppState.ui.dialog?.type === 'welcome') renderRuntime({ context:'restore or welcome' });
+    // OPEN-005だけは例外: 応用の0手復元は「見た」状態を保存しないので、完成形見本から再生する。
+    if (applicationShouldReplayIntro()) presentApplicationPuzzle({ context:'application zero-move restore' });
+    else if (restoredFromStorage || AppState.ui.dialog?.type === 'welcome') renderRuntime({ context:'restore or welcome' });
     else runArrivalEffect();
   </script>
 </body>
