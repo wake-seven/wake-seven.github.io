@@ -71,10 +71,11 @@
     .w7-application-intro-demo,.w7-application-intro-message { opacity:0; transition:opacity .24s ease; pointer-events:none; }
     .w7-application-intro-demo.is-visible,.w7-application-intro-message.is-visible { opacity:1; }
     .w7-application-intro-demo.is-leaving,.w7-application-intro-message.is-leaving { opacity:0; }
-    /* 応用の対象三枚は光や枠を使わず、パネルそのものを休みなく波打たせる。
-       実盤面と右上ガイドで同じ位相差を使い、三枚が連なる動きとして見せる。 */
-    .w7-cell.w7-application-target-wave .w7-cell-visual { animation:w7-application-target-wave 1.25s ease-in-out infinite; animation-delay:var(--w7-application-wave-delay,0ms); }
-    @keyframes w7-application-target-wave { 0%,100% { transform:translate(0,0) rotate(0deg) scale(1); } 20% { transform:translate(0,-5px) rotate(-3.4deg) scale(1.045); } 40% { transform:translate(0,1.8px) rotate(2.7deg) scale(.982,1.028); } 60% { transform:translate(0,-3.6px) rotate(-2.1deg) scale(1.033); } 80% { transform:translate(0,1px) rotate(1.2deg) scale(.992,1.015); } }
+    /* 応用の対象三枚は、六角パネルの面全体を短く同時にピカッと光らせる。
+       通常時は元の色を残し、実盤面と右上ガイドを共通時刻で同時に発光させる。 */
+    /* 発光の明るさはJavaScriptで一括更新する。各SVG要素にCSS animationを持たせると、
+       回転時のレイヤー移動で一枚だけアニメーションが再開し、位相がずれるため。 */
+    .w7-application-target-flash { fill:#f8eaff; opacity:0; pointer-events:none; mix-blend-mode:screen; will-change:opacity,filter; }
     .w7-application-intro-badge { fill:rgb(15 35 52 / .9); stroke:#62b8d2; stroke-width:2; }
     .w7-application-intro-title { fill:var(--washi); font:800 20px "A1 Gothic","Hiragino Kaku Gothic ProN",sans-serif; text-anchor:middle; }
     .w7-application-intro-copy { fill:#8bcde0; font:700 13px "A1 Gothic","Hiragino Kaku Gothic ProN",sans-serif; text-anchor:middle; }
@@ -147,7 +148,7 @@
     .w7-academy-intro-message { color:var(--kin)!important; font-size:1.25rem!important; font-weight:800; }
     .w7-welcome-board { display:block; width:min(100%,16.25rem); height:auto; margin:.5rem auto -.125rem; transition:opacity .18s ease; }
     .w7-academy-intro-preview { width:calc(100% + 1rem); max-width:none; margin:.35rem -.5rem .8rem; padding:.08rem .7rem .35rem; border:1px solid rgb(125 216 245 / .58); border-radius:.7rem; background:rgb(22 40 60 / .28); }
-    /* 応用クラス開始は、ウネウネ動く三枚の説明と盤面見本をそのまま並べる。 */
+    /* 応用クラス開始は、ピカーンと光る三枚の説明と盤面見本をそのまま並べる。 */
     .w7-application-welcome-message { margin:.125rem 0 .4375rem!important; color:var(--kin)!important; font-size:1.0625rem!important; font-weight:800; line-height:1.55!important; }
     .w7-application-welcome-message .w7-application-target-text { color:var(--kin); background:rgb(201 165 78 / .14); border-radius:.25em; padding:.04em .22em; }
     .w7-application-welcome-preview { width:min(100%,17.5rem); margin:.75rem auto .125rem; }
@@ -177,7 +178,7 @@
     body.w7-tutorial-mode .w7-board-frame { margin-top:.75rem; }
     body.w7-tutorial-mode .w7-board { margin-top:2.5rem; }
     @media (max-width:480px) { .w7-application-target-preview { right:-.1rem; top:-2.8rem; } .w7-application-target-preview svg { width:6.9rem; height:4.5rem; transform:translate(1rem,.55rem); } body.w7-application-mode .w7-application-target-preview { top:-5.9rem; right:-.1rem; } body.w7-application-mode .w7-application-target-preview svg { width:9.315rem; height:6.075rem; transform:translate(1.45rem,.75rem); } }
-    @media (prefers-reduced-motion:reduce) { .w7-board * { animation:none!important; transition:none!important; } .w7-cell.w7-application-target-wave .w7-cell-visual { animation:none!important; } }
+    @media (prefers-reduced-motion:reduce) { .w7-board * { animation:none!important; transition:none!important; } .w7-application-target-flash { animation:none!important; opacity:.18; } }
     /* スマホでは盤面を横いっぱいに使う */
     @media (max-width:480px) { body { padding-left:0.25rem; padding-right:0.25rem; padding-bottom:max(0.5rem,env(safe-area-inset-bottom)); } .w7-shell,.w7-board-frame { max-width:none; } }
   </style>
@@ -530,37 +531,83 @@
       if (includeAxes) appendAxisLayer(target);
       return target;
     }
-    // 実盤面・導入・右上ガイド・クリア後見本で、同じ連続ウネウネを使う。
-    function appendApplicationTargetWave(cell, { order = 0 } = {}) {
-      cell.classList.add('w7-application-target-wave');
-      cell.style.setProperty('--w7-application-wave-delay', `${order * -160}ms`);
+    const APPLICATION_TARGET_FLASH_CYCLE_MILLISECONDS = 1850;
+    let applicationTargetFlashFrame = null;
+    function applicationTargetFlashAppearance(now) {
+      const phase = now % APPLICATION_TARGET_FLASH_CYCLE_MILLISECONDS;
+      // 0→明るい→ゆるく消える、を約0.6秒だけ行い、残りは元の面色を保つ。
+      if (phase < 74) return { opacity:.62 * (phase / 74), glow:12 * (phase / 74) };
+      if (phase < 333) return { opacity:.62, glow:12 };
+      if (phase < 500) {
+        const progress = (phase - 333) / 167;
+        return { opacity:.62 - .30 * progress, glow:12 - 7 * progress };
+      }
+      if (phase < 592) {
+        const progress = (phase - 500) / 92;
+        return { opacity:.32 * (1 - progress), glow:5 * (1 - progress) };
+      }
+      return { opacity:0, glow:0 };
+    }
+    // 発光を一つの時計で全SVGへ同時に描く。セルを回転レイヤーへ移動しても、
+    // 個別CSS animationの再開時刻がずれることはない。
+    function updateApplicationTargetFlash(now = performance.now()) {
+      const flashes = document.querySelectorAll('.w7-application-target-flash');
+      if (!flashes.length) { applicationTargetFlashFrame = null; return; }
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        applicationTargetFlashFrame = null;
+        return;
+      }
+      const { opacity, glow } = applicationTargetFlashAppearance(now);
+      flashes.forEach(flash => {
+        flash.style.opacity = String(opacity);
+        flash.style.filter = `drop-shadow(0 0 ${glow}px rgb(231 191 255 / ${Math.min(.92, opacity + .16)}))`;
+      });
+      applicationTargetFlashFrame = requestAnimationFrame(updateApplicationTargetFlash);
+    }
+    function synchronizeApplicationTargetFlashPhase() {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      // 既に時計が動いている場合も、この呼び出しで新しく増えた一枚を同じ時刻へ即時反映する。
+      if (applicationTargetFlashFrame !== null) {
+        const { opacity, glow } = applicationTargetFlashAppearance(performance.now());
+        document.querySelectorAll('.w7-application-target-flash').forEach(flash => {
+          flash.style.opacity = String(opacity);
+          flash.style.filter = `drop-shadow(0 0 ${glow}px rgb(231 191 255 / ${Math.min(.92, opacity + .16)}))`;
+        });
+        return;
+      }
+      updateApplicationTargetFlash();
+    }
+    // 実盤面・導入・右上ガイド・クリア後見本で、同じ短い全面発光を使う。
+    function appendApplicationTargetFlash(cell) {
+      cell.querySelectorAll('.w7-application-target-flash').forEach(flash => flash.remove());
+      const flash = svgElement('path', { class:'w7-application-target-flash', d:hexPath(CELL_RADIUS - 2), 'aria-hidden':'true' });
+      cell.append(flash);
+      synchronizeApplicationTargetFlashPhase();
     }
     // targetCells は「正しい棒」ではなく、正解の一手後に注目する物理パネル三枚。
-    // 導入・右上ガイド・実プレイ中のウネウネは、この物理パネル集合だけを参照する。
+    // 導入・右上ガイド・実プレイ中の全面発光は、この物理パネル集合だけを参照する。
     function applicationTargetCellSet() {
       const puzzle = isAcademyApplicationRoute() ? selectActivePuzzle() : null;
       return new Set(puzzle?.targetCells ?? []);
     }
-    function applicationTargetWaveIsVisible() {
+    function applicationTargetFlashIsVisible() {
       return isAcademyApplicationRoute()
         && !AppState.board.clearCommitted
         && RuntimeState.applicationIntroCompleted
         && selectDistance(RuntimeState.cells) > 1
         && applicationTargetCellSet().size === 3;
     }
-    // 対象三枚を少しずつ位相をずらし、停止時間を挟まずウネウネさせ続ける。
-    function renderApplicationTargetWave() {
+    // 対象三枚を同時に短く全面発光させ、対象を一目で示す。
+    function renderApplicationTargetFlash() {
       const targetCells = applicationTargetCellSet();
       const cells = Array.from(boardElement.querySelectorAll('.w7-cell'));
       cells.forEach(cell => {
-        cell.classList.remove('w7-application-target-wave');
-        cell.style.removeProperty('--w7-application-wave-delay');
+        cell.querySelectorAll('.w7-application-target-flash').forEach(flash => flash.remove());
       });
-      if (!applicationTargetWaveIsVisible()) return;
+      if (!applicationTargetFlashIsVisible()) return;
       cells.forEach(cell => {
-        const order = [...targetCells].indexOf(Number(cell.dataset.panelId));
-        if (order < 0) return;
-        appendApplicationTargetWave(cell, { order });
+        if (!targetCells.has(Number(cell.dataset.panelId))) return;
+        appendApplicationTargetFlash(cell);
       });
     }
     function renderApplicationTargetPreview() {
@@ -592,7 +639,7 @@
           const point = positions[index];
           const cell = svgElement('g', { class:'w7-cell w7-cell--fallen', transform:`translate(${point[0]} ${point[1]}) scale(.6)`, 'data-cell-index':cellIndex });
           appendCellVisual(cell, 1);
-          appendApplicationTargetWave(cell, { order:index });
+          appendApplicationTargetFlash(cell);
           applicationTargetPreviewBoardElement.append(cell);
         });
         applicationTargetPreviewElement.dataset.puzzleId = puzzle.puzzleId;
@@ -678,7 +725,7 @@
       renderTutorialCue();
       renderAcademyGuidance();
       renderApplicationGuidance();
-      renderApplicationTargetWave();
+      renderApplicationTargetFlash();
       renderApplicationTargetPreview();
       if (RuntimeState.phase === BoardPhase.READY) assertRuntimeDomAlignment(options.context ?? 'render');
     }
@@ -700,7 +747,7 @@
       return triangle.cells[(sourceOffset + (turns % 3) + 3) % 3];
     }
     // 盤面の向きとは別に、初期位置からの物理パネルIDを追跡する。
-    // 応用targetCellsは物理パネルを指すため、ウネウネはこの対応表だけで追従させる。
+    // 応用targetCellsは物理パネルを指すため、全面発光はこの対応表だけで追従させる。
     function rotatePanelIds(panelIds, triangleIndex, turns) {
       const triangle = TRIANGLES[triangleIndex];
       const next = [...panelIds];
@@ -752,6 +799,7 @@
         if (!cell) return;
         rotatingLayer.append(cell);
       });
+      synchronizeApplicationTargetFlashPhase();
       return rotatingLayer;
     }
     function renderRotationPreview(cells, triangleIndex, degrees, previewTurns = 0, settledTurns = null, moveDelta = Math.abs(previewTurns)) {
@@ -1078,7 +1126,7 @@
     function runAcademyWelcomePreview(preview, message, puzzle, initialText, afterText, layout = {}) {
       const initialCells = puzzleInitialCells(puzzle);
       renderBoard(initialCells, preview, { includeAxes:true });
-      // 応用の開始見本だけは、最短手のうち「ウネウネ動く三枚」を作るものを選ぶ。
+      // 応用の開始見本だけは、最短手のうち「ピカーンと光る三枚」を作るものを選ぶ。
       // 距離だけで先頭を取ると、応用9と同じく別の最短手を見せてしまう。
       const applicationLesson = layout.applicationTargets ? selectApplicationClearLessonContext(puzzle) : null;
       const reducing = applicationLesson ?? TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction }))).find(move => selectDistance(WakeSevenBoardDomain.roll(initialCells, move.triangleIndex, move.direction)) === selectDistance(initialCells) - 1);
@@ -1089,7 +1137,7 @@
         const axisLayer = preview.querySelector('.w7-axis-layer');
         Array.from(preview.querySelectorAll('.w7-cell')).forEach(cell => {
           if (!targetPanelIds.has(Number(cell.dataset.panelId))) return;
-          appendApplicationTargetWave(cell, { order:[...targetPanelIds].indexOf(Number(cell.dataset.panelId)) });
+          appendApplicationTargetFlash(cell);
           if (axisLayer) preview.insertBefore(cell, axisLayer);
         });
       };
@@ -1122,6 +1170,7 @@
         triangle.cells.forEach(index => rotationLayer.append(preview.querySelector(`[data-cell-index="${index}"]`)));
         rotationLayer.append(touch);
         preview.append(rotationLayer);
+        synchronizeApplicationTargetFlashPhase();
         // 旧版の歓迎見本と同じく、少し行き過ぎてから120度へ収める。
         const turn = reducing.direction * TURN_DEGREES;
         rotationLayer.animate([
@@ -1163,7 +1212,7 @@
         number.classList.remove('w7-welcome-counter-pulse');
         const afterCells = reducing.afterCells ?? WakeSevenBoardDomain.roll(initialCells, reducing.triangleIndex, reducing.direction);
         const cleared = WakeSevenBoardDomain.isSolved(afterCells);
-        // ウネウネは位置ではなく物理パネルに付け、回転後も同じ三枚を示す。
+        // 全面発光は位置ではなく物理パネルに付け、回転後も同じ三枚を示す。
         const panelIds = targetPanelIds
           ? rotatePanelIds(Array.from({ length:CELL_COUNT }, (_, index) => index), reducing.triangleIndex, reducing.direction)
           : undefined;
@@ -1252,7 +1301,7 @@
       const axisLayer = board.querySelector('.w7-axis-layer');
       Array.from(board.querySelectorAll('.w7-cell')).forEach(cell => {
         if (!targetPanels.has(Number(cell.dataset.panelId))) return;
-        appendApplicationTargetWave(cell, { order:[...targetPanels].indexOf(Number(cell.dataset.panelId)) });
+        appendApplicationTargetFlash(cell);
         // 実盤面と同じく、静止した対象は隣接パネルの前に描く。
         board.insertBefore(cell, axisLayer);
       });
@@ -1297,6 +1346,7 @@
             const cells = new Map(context.triangle.cells.map(cellIndex => [cellIndex, board.querySelector(`[data-cell-index="${cellIndex}"]`)]));
             // 回る三枚をまとめて末尾へ移し、実盤面と同じく必ず前面で回す。
             context.triangle.cells.forEach(cellIndex => { const cell = cells.get(cellIndex); if (cell) board.append(cell); });
+            synchronizeApplicationTargetFlashPhase();
             board.append(swipe);
             const startedAt = performance.now();
             const duration = 900;
@@ -1410,7 +1460,7 @@
         defaultAction = addAction('はじめる', intentStartAcademyBasic);
         dialogElement.replaceChildren(title, message, preview, actions);
       } else if (descriptor.type === 'academy-application-entry') {
-        // 説明だけで終えず「ウネウネ動く三枚をそろえる」実演盤面を先に見せる。
+        // 説明だけで終えず「ピカーンと光る三枚をそろえる」実演盤面を先に見せる。
         dialogElement.className = 'w7-dialog w7-dialog--welcome';
         title.textContent = '応用クラスへ ようこそ！';
         message.className = 'w7-application-welcome-message';
@@ -1429,7 +1479,7 @@
             renderMessage(target) {
               const accent = document.createElement('span');
               accent.className = 'w7-application-target-text';
-              accent.textContent = 'ウネウネ動く3枚';
+              accent.textContent = 'ピカーンと光る3枚';
               // 対象を示す語だけ、学園のゴールドで強調する。
               target.replaceChildren(accent, 'を、同じ向きにそろえよう');
             },
@@ -1914,7 +1964,7 @@
       return 'cancel';
     }
     // 応用も「残り手数を一つ減らす一手」だけを正解とする。
-    // ウネウネ対象のtargetCellsは完成形の注目箇所なので、棒／方向の答えをそこから逆算しない。
+    // 全面発光対象のtargetCellsは完成形の注目箇所なので、棒／方向の答えをそこから逆算しない。
     function applicationMoveOutcome(triangleIndex, direction, maxAbsDegrees) {
       if (maxAbsDegrees < GUIDED_ROD_JUDGMENT_DEGREES) return 'cancel';
       const correctDirections = academyReducingTriangles().find(candidate => candidate.triangleIndex === triangleIndex)?.directions ?? [];
@@ -2211,8 +2261,8 @@
       const puzzleId = AppState.navigation.puzzleId;
       setTimeout(() => {
         if (!guide.isConnected || AppState.navigation.puzzleId !== puzzleId) return;
-        // 型ガイドが消える時点から、実盤面と右上ガイドを同じウネウネで対応させる。
-        if (RuntimeState.phase === BoardPhase.READY) renderApplicationTargetWave();
+        // 型ガイドが消える時点から、実盤面と右上ガイドを同時に全面発光させる。
+        if (RuntimeState.phase === BoardPhase.READY) renderApplicationTargetFlash();
         guide.classList.remove('is-visible');
         setTimeout(() => { if (guide.isConnected) guide.remove(); }, 220);
       }, 1000);
@@ -2265,7 +2315,7 @@
       actualCells.forEach(cell => { cell.style.opacity = '0'; });
       const demo = svgElement('g', { class:'w7-application-intro-demo', 'aria-hidden':'true' });
       renderBoard(APPLICATION_INTRO_STATIC_STATE, demo, { includeAxes:false });
-      APPLICATION_INTRO_STATIC_TARGET_CELLS.forEach((index, order) => appendApplicationTargetWave(demo.querySelector(`[data-cell-index="${index}"]`), { order }));
+      APPLICATION_INTRO_STATIC_TARGET_CELLS.forEach(index => appendApplicationTargetFlash(demo.querySelector(`[data-cell-index="${index}"]`)));
       const message = svgElement('g', { class:'w7-application-intro-message', 'aria-hidden':'true' });
       const messageY = viewPoint(CELL_POSITIONS[5]).y + 4;
       message.append(svgElement('rect', { class:'w7-application-intro-badge', x:96, y:messageY - 28, width:128, height:52, rx:18 }));
