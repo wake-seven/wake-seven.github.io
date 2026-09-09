@@ -39,6 +39,14 @@
   .chip:hover{background:rgba(255,255,255,.14)}
   .chip.on,.chip.primary{background:var(--kin);color:var(--ai);border-color:var(--kin);font-weight:700}
   .chip:disabled{opacity:.42;cursor:default}
+  button:focus-visible,#stage:focus-visible{outline:2px solid var(--blue);outline-offset:4px}
+  .viewer{position:relative}
+  .zoom-controls{position:absolute;right:14px;bottom:14px;display:flex;align-items:center;gap:2px;padding:4px;border:1px solid rgba(148,178,200,.28);border-radius:999px;background:rgba(12,23,35,.9);box-shadow:0 4px 16px #0003}
+  .zoom-controls button{width:40px;height:40px;border:0;border-radius:50%;background:transparent;color:var(--washi);font:500 24px/1 sans-serif;cursor:pointer}
+  .zoom-controls button:hover{background:rgba(255,255,255,.12)}
+  .zoom-controls button:disabled{opacity:.3;cursor:default}
+  #zoomLevel{min-width:51px;text-align:center;font-size:12px;color:#C7D5E3;font-variant-numeric:tabular-nums}
+  .view-hint{text-align:center;font-size:11px;color:#94B2C8;margin-top:7px}
   #stage{
     width:100%;aspect-ratio:1/0.86;border-radius:16px;overflow:hidden;
     background:linear-gradient(#1A2C3E,#0C1723);touch-action:none;cursor:grab;
@@ -132,8 +140,16 @@
     <button class="chip" id="howtoReplay">遊び方</button>
   </div>
 
-  <div id="stage"></div>
-  <p class="cap" id="cap"><b>三又</b>をつかんで軸まで運び、腕をスワイプして回そう。</p>
+  <div class="viewer">
+    <div id="stage" tabindex="0" role="region" aria-label="おもちゃの3Dビュー" aria-describedby="viewHint"></div>
+    <div class="zoom-controls" role="group" aria-label="表示の拡大・縮小">
+      <button id="zoomOut" type="button" aria-label="縮小" title="縮小（−）">−</button>
+      <output id="zoomLevel" aria-label="表示倍率">100%</output>
+      <button id="zoomIn" type="button" aria-label="拡大" title="拡大（＋）">＋</button>
+    </div>
+  </div>
+  <p class="view-hint" id="viewHint">余白をドラッグで視点を回転 · ＋ / − またはマウスホイールでズーム</p>
+  <p class="cap" id="cap"><b>三又</b>をつかんで軸まで運び、スワイプで回転。フリックなら120度刻みで自動回転。</p>
 </div>
 
 <div class="howto-backdrop" id="howtoBackdrop" hidden>
@@ -169,11 +185,11 @@
     <ol class="howto-steps">
       <li><b>1</b> 三又をつかむ</li>
       <li><b>2</b> 3枚の交わる軸まで運ぶ</li>
-      <li><b>3</b> スワイプして3枚ごと回す</li>
+      <li><b>3</b> スワイプで回す／フリックで次の120度位置へ</li>
     </ol>
     <div class="howto-mech">
       <p class="howto-mech-title">仕組み</p>
-      <p class="howto-mech-text">三又の先には磁石が付いています。パネルの真ん中(だるまさんの裏側)には鉄板が仕込んであり、三又を軸に下ろすとそこにくっついて、3枚まとめて持ち上げられる仕組みです。</p>
+      <p class="howto-mech-text">三又の先の磁石が、パネル中央に封入した鉄板を吸着します。先端のすべり止めで3枚の向きを保ったまま持ち上げて回し、受け皿に戻します。中央のボタンで磁石を引き上げると、パネルを置いたまま三又を外せます。</p>
     </div>
     <button class="chip primary" id="howtoStart">はじめる</button>
   </div>
@@ -190,10 +206,36 @@ const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(34,1,1,5000);
 const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
 renderer.setPixelRatio(Math.min(2,devicePixelRatio));
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.shadowMap.autoUpdate=false;
+renderer.shadowMap.needsUpdate=true;
 stage.appendChild(renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xffffff,0x38485c,1.05));
-const key=new THREE.DirectionalLight(0xffffff,1.2); key.position.set(180,420,260); scene.add(key);
-const fill=new THREE.DirectionalLight(0xcfe0f0,.4); fill.position.set(-260,180,-200); scene.add(fill);
+// 撮影用の大きな白い面を映り込ませ、樹脂と金属に控えめな反射を作る。
+const studioCanvas=document.createElement('canvas'); studioCanvas.width=512; studioCanvas.height=256;
+const studio=studioCanvas.getContext('2d');
+studio.fillStyle='#68717c'; studio.fillRect(0,0,512,256);
+for(const [x,y,w,h] of [[50,35,115,95],[310,65,65,115]]){
+  const glow=studio.createLinearGradient(x,0,x+w,0);
+  glow.addColorStop(0,'#77818b');glow.addColorStop(.18,'#f7f2e8');glow.addColorStop(.82,'#f7f2e8');glow.addColorStop(1,'#77818b');
+  studio.fillStyle=glow;studio.fillRect(x,y,w,h);
+}
+const studioTexture=new THREE.CanvasTexture(studioCanvas); studioTexture.colorSpace=THREE.SRGBColorSpace;
+studioTexture.mapping=THREE.EquirectangularReflectionMapping;
+const pmrem=new THREE.PMREMGenerator(renderer);
+scene.environment=pmrem.fromEquirectangular(studioTexture).texture;
+studioTexture.dispose();pmrem.dispose();
+scene.add(new THREE.HemisphereLight(0xfff8ed,0x657b94,1.6));
+// 真上からの平行光。部品の高さにかかわらず、影のXZ位置を回転軸・受け皿に合わせる。
+const key=new THREE.DirectionalLight(0xfff4e3,1.8); key.position.set(0,420,0); scene.add(key);
+key.castShadow=true;
+key.shadow.mapSize.set(2048,2048);
+// 真下を向くカメラのupを光の方向と直交させ、lookAtの微小な傾きを避ける。
+key.shadow.camera.up.set(0,0,-1);
+Object.assign(key.shadow.camera,{left:-230,right:230,top:230,bottom:-230,near:100,far:850});
+key.shadow.normalBias=.08; key.shadow.bias=-.00006;
+const fill=new THREE.DirectionalLight(0xcfe0f0,.8); fill.position.set(260,160,-200); scene.add(fill);
+const undersideFill=new THREE.DirectionalLight(0xdce7f3,.65); undersideFill.position.set(-100,-240,200); scene.add(undersideFill);
 
 const R=52, W=Math.sqrt(3)*R, Hh=1.5*R;
 const POS=[[-W/2,-Hh],[W/2,-Hh],[-W,0],[0,0],[W,0],[-W/2,Hh],[W/2,Hh]];
@@ -229,6 +271,13 @@ function slab(h,r=R-1.5){
   g.rotateX(-Math.PI/2);
   return g;
 }
+// ベベルを含む完成寸法。上下に食い込まないよう、厚みの内側へ面取りを作る。
+function molded(shape,h,bevel=.55){
+  const g=new THREE.ExtrudeGeometry(shape,{depth:h-2*bevel,bevelEnabled:true,
+    bevelThickness:bevel,bevelSize:bevel,bevelSegments:3,curveSegments:24,steps:1});
+  g.rotateX(-Math.PI/2); g.translate(0,bevel,0);
+  return g;
+}
 function hexRing(h,outer,inner){
   const s=regularHex(outer);
   const hole=new THREE.Path();
@@ -241,8 +290,7 @@ function hexRing(h,outer,inner){
   const g=new THREE.ExtrudeGeometry(s,{depth:h,bevelEnabled:false});
   g.rotateX(-Math.PI/2); return g;
 }
-/* だるまはパネルに印刷するのでなく、透明なデカールとして一段上に置く。
-   これで木目・プラスチックの面を保ちながら、顔が必ず読める。 */
+/* だるまの印刷層。透明部分にはパネルの樹脂面が見える。 */
 function darumaTexture(color,faceCol){
   const S=384,c=document.createElement('canvas'); c.width=c.height=S;
   const g=c.getContext('2d'), cx=S/2, cy=184, k=4;
@@ -280,80 +328,136 @@ function darumaTexture(color,faceCol){
 }
 
 const root=new THREE.Group(); scene.add(root);
-let panels=[], parts=[], holes=[], plug=null, claws=[], magnets=[];
+let panels=[], parts=[], holes=[], plug=null, magnets=[], releaseButton=null;
 let slot=[{p:0,o:0},{p:1,o:1},{p:2,o:2},{p:3,o:0},{p:4,o:2},{p:5,o:1},{p:6,o:0}];
 let anim=null, homeTri=0;
-// 三又を運ぶ高さ／持ち上げる高さ／磁石を外す時のひねり角／回転を拾い始める最小半径。
-const PLUG_HOME_Y=98, PLUG_LIFT_Y=42, DETACH_TWIST_DEG=28, MIN_ROT_R=18;
-const SM=(c,r,m)=>new THREE.MeshStandardMaterial({color:c,roughness:r??(mat==='wood'?0.85:0.35),metalness:m??(mat==='wood'?0:0.08)});
+// y=0 が吸着・着座位置。パネル上面と先端のすべり止めは同じ高さ。
+const PLUG_HOME_Y=98, PLUG_LIFT_Y=42, PANEL_TOP=4, MIN_ROT_R=18;
+const FLICK_MIN_PX=8, FLICK_MIN_TANGENT_PX=5;
+const FLICK_WINDOW_MS=80, FLICK_MIN_SPEED=.28; // 離す直前の接線方向の速さ（px/ms）
+const SM=(c,r=.42,m=0)=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m,envMapIntensity:.35});
+function solid(geometry,material){
+  const mesh=new THREE.Mesh(geometry,material);
+  mesh.castShadow=true; mesh.receiveShadow=true;
+  return mesh;
+}
 
 /* パネル：薄いプラスチック製。裏側だけに受けを持ち、天面はだるまだけ。 */
 function makePanel(i){
   const g=new THREE.Group();
-  // 本編の盤面色はフラットに見える。3D照明で灰色へ沈ませず、
-  // プラスチック版も #F7EEDC の見え方を保つ。
-  const edge=mat==='pla'
-    ?new THREE.MeshBasicMaterial({color:MAT[mat].edge})
-    :SM(MAT[mat].edge);
-  const lo=new THREE.Mesh(slab(2), edge); lo.position.y=0; g.add(lo);
-  const up=new THREE.Mesh(slab(2), edge); up.position.y=2; g.add(up);
-  // 面は本編と同じ明るい生成りのまま、細い縁だけを濃くして
-  // 隣のパネルとの境目を読めるようにする。
-  if(mat==='pla'){
-    const rim=new THREE.Mesh(
-      hexRing(.14,R-1.05,R-3.05),
-      new THREE.MeshBasicMaterial({color:0xC7B486})
-    );
-    rim.position.y=4.03; g.add(rim);
-  }
+  const edge=SM(MAT[mat].edge,.38);
+  // 上下カバーの合わせ目は側面だけ。角を丸めた、厚さ5の封入パネル。
+  const lo=solid(molded(regularHex(R-2.2),1.48,.3),edge);
+  lo.position.y=-1; g.add(lo);
+  const seam=solid(slab(.1,R-1.95),SM(0xc7b995,.58));
+  seam.position.y=.48; g.add(seam);
+  const up=solid(molded(regularHex(R-2.2),3.42,.55),edge);
+  up.position.y=.58; g.add(up);
+  const rim=new THREE.Mesh(hexRing(.018,R-2.45,R-3.15),SM(0xC7B486,.55));
+  rim.position.y=PANEL_TOP+.005; g.add(rim);
   const daruma=new THREE.Mesh(
     new THREE.PlaneGeometry(76,88),
-    new THREE.MeshBasicMaterial({map:darumaTexture(COL[i],MAT[mat].face),transparent:true,alphaTest:.04,side:THREE.DoubleSide}));
-  daruma.rotation.x=-Math.PI/2; daruma.position.y=4.25; g.add(daruma);
-  // だるまの真下に隠した薄いスチール円盤。裏からだけ確認できる。
-  const steel=new THREE.Mesh(
-    new THREE.CylinderGeometry(15,15,.55,28),
-    new THREE.MeshStandardMaterial({color:0x34414a,roughness:.38,metalness:.82}));
-  steel.position.y=-.28; g.add(steel);
+    new THREE.MeshStandardMaterial({map:darumaTexture(COL[i],MAT[mat].face),roughness:.5,envMapIntensity:.2,
+      transparent:true,alphaTest:.04,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1}));
+  daruma.rotation.x=-Math.PI/2; daruma.position.y=PANEL_TOP+.025;
+  daruma.receiveShadow=true; g.add(daruma);
+  // 鉄板は表皮のすぐ下に封入。裏面から金属が飛び出す構造にしない。
+  const steel=new THREE.Mesh(new THREE.CylinderGeometry(14,14,.6,32),SM(0x8b9299,.3,.8));
+  steel.position.y=2.95; g.add(steel);
+  const weld=new THREE.Mesh(new THREE.RingGeometry(14.8,15.2,48),SM(0xd0c2a3,.6));
+  weld.rotation.x=Math.PI/2; weld.position.y=-1.015; g.add(weld);
   return g;
 }
 function makePlug(){
   const g=new THREE.Group();
-  // 三本の腕を中央でそのまま一体成形する。別の円盤・三角プレートは持たない。
-  claws=[]; magnets=[];
+  magnets=[];
+  // 三本の箱を重ねず、一続きの輪郭で成形。先端は各パネル中心まで正確にR。
+  const shape=new THREE.Shape(), half=6.35;
+  for(let k=0;k<3;k++){
+    const a=k*2*Math.PI/3, x=R*Math.cos(a), y=R*Math.sin(a);
+    if(!k) shape.moveTo(x,y-half);
+    else shape.lineTo(x+half*Math.sin(a),y-half*Math.cos(a));
+    shape.absarc(x,y,half,a-Math.PI/2,a+Math.PI/2,false);
+    const valley=a+Math.PI/3;
+    shape.lineTo(half/Math.sin(Math.PI/3)*Math.cos(valley),half/Math.sin(Math.PI/3)*Math.sin(valley));
+  }
+  shape.closePath();
+  const beam=solid(molded(shape,7,.65),SM(MAT[mat].grip,.33));
+  beam.position.y=10.5; g.add(beam);
+  const cover=solid(molded(shape,.7,.18),SM(MAT[mat].grip,.48));
+  cover.position.y=9.72; g.add(cover);
   for(let k=0;k<3;k++){
     const arm=new THREE.Group();
-    const beam=new THREE.Mesh(new THREE.BoxGeometry(54,7,14), SM(MAT[mat].grip));
-    beam.position.set(27,14,0); arm.add(beam);
-    // 先端も三又本体と同じ樹脂。丸い端部の裏へ磁石だけを埋め込む。
-    const endCap=new THREE.Mesh(new THREE.CylinderGeometry(7,7,7,28), SM(MAT[mat].grip));
-    endCap.position.set(53,14,0); arm.add(endCap);
-    const magnetMat=new THREE.MeshStandardMaterial({color:0x1b2830,roughness:.22,metalness:.9,emissive:0x000000});
-    const magnet=new THREE.Mesh(new THREE.CylinderGeometry(5.2,5.2,2.8,24), magnetMat);
-    magnet.position.set(53,9.1,0); arm.add(magnet); magnets.push({magnet});
-    const a=k*Math.PI*2/3;
-    arm.userData={a}; arm.rotation.y=-a; g.add(arm); claws.push(arm);
+    const housing=new THREE.Shape(); housing.absarc(0,0,6.65,0,Math.PI*2,false);
+    const bore=new THREE.Path(); bore.absarc(0,0,5.3,0,Math.PI*2,true); housing.holes.push(bore);
+    const endCap=solid(molded(housing,5.65,.12),SM(MAT[mat].grip,.4));
+    endCap.position.set(R,PANEL_TOP+.2,0); arm.add(endCap);
+    // ゴムの環が面に接し、回転時の滑りを防ぐ。磁石は抜け止めの内側を上下する。
+    const pad=solid(new THREE.TorusGeometry(5.95,.45,8,32),SM(0x45443e,.92));
+    pad.rotation.x=Math.PI/2; pad.position.set(R,PANEL_TOP+.475,0); arm.add(pad);
+    const magnet=solid(new THREE.CylinderGeometry(5.05,5.05,2.1,32),SM(0x90979b,.28,.72));
+    magnet.position.set(R,PANEL_TOP+1.18,0); arm.add(magnet); magnets.push({magnet});
+    const lip=new THREE.Mesh(new THREE.RingGeometry(4.75,5.35,32),SM(MAT[mat].grip,.44));
+    lip.rotation.x=Math.PI/2; lip.position.set(R,PANEL_TOP+.11,0); arm.add(lip);
+    arm.rotation.y=k*Math.PI*2/3; g.add(arm);
   }
+  const buttonSeat=solid(new THREE.CylinderGeometry(5,5,.5,32),SM(0x655222,.65));
+  buttonSeat.position.y=17.55; g.add(buttonSeat);
+  releaseButton=solid(new THREE.CylinderGeometry(4.15,4.3,1.2,32),SM(MAT[mat].plug,.4));
+  g.add(releaseButton);
   setClaw(0);
   return g;
 }
 function setClaw(active){
+  const amount=THREE.MathUtils.clamp(active,0,1);
   magnets.forEach(({magnet})=>{
-    magnet.material.emissive.setHex(active?0x2f9fbe:0x000000);
-    magnet.material.emissiveIntensity=active?.35:0;
+    magnet.position.y=PANEL_TOP+1.18+(1-amount)*2.2;
   });
+  if(releaseButton) releaseButton.position.y=17.4+amount*.8;
 }
 function build(){
   [...parts,...panels,...holes].forEach(o=>root.remove(o));
   if(plug) root.remove(plug);
   parts=[]; panels=[]; holes=[];
-  /* 台座：7枚を浅く受ける、持ち運びにも耐える一体成形の外枠。 */
-  const plate=new THREE.Mesh(new THREE.CylinderGeometry(157,160,8,6), SM(MAT[mat].board));
-  plate.position.y=-5; plate.rotation.y=Math.PI/6; root.add(plate); parts.push(plate);
+  const addPart=(mesh,x=0,y=0,z=0)=>{mesh.position.set(x,y,z);root.add(mesh);parts.push(mesh);return mesh;};
+  // 元の六角形の外形を保った上下ケース。細い継ぎ目と丸い稜線。
+  const plate=solid(molded(regularHex(158.8),6.9,.7),SM(MAT[mat].board,.53));
+  plate.rotation.y=Math.PI/6; addPart(plate,0,-9);
+  const seam=solid(slab(.18,159),SM(0x223548,.7));
+  seam.rotation.y=Math.PI/6; addPart(seam,0,-2.1);
+  // 七つの穴を一枚の天板から抜く。重なった受け枠やパネルとの干渉を作らない。
+  const deck=regularHex(156.8);
+  const floor=solid(slab(.92,157),SM(MAT[mat].recess,.72));
+  floor.rotation.y=Math.PI/6; addPart(floor,0,-1.92);
   POS.forEach(([x,z])=>{
-    const socket=new THREE.Mesh(hexRing(5.6,R+1.2,R-2.8), SM(MAT[mat].recess));
-    socket.position.set(x,-4.7,z); root.add(socket); parts.push(socket);
+    // 天板全体を30°回すため、穴は逆回転してから切り抜く。
+    const hole=new THREE.Path();
+    for(let j=5;j>=0;j--){
+      const a=(90+60*j)*Math.PI/180, px=x+(R-.55)*Math.cos(a), pz=z-(R-.55)*Math.sin(a);
+      const hx=px*Math.cos(Math.PI/6)-pz*Math.sin(Math.PI/6);
+      const hy=-(px*Math.sin(Math.PI/6)+pz*Math.cos(Math.PI/6));
+      j===5?hole.moveTo(hx,hy):hole.lineTo(hx,hy);
+    }
+    hole.closePath(); deck.holes.push(hole);
   });
+  // 深さ3.25の受け皿に厚さ5のパネルを収め、上面だけ1.75出す。
+  // 底と吸着位置は維持し、周囲の壁を1.5高くして、はまり込みを見せる。
+  const tray=solid(molded(deck,3.15,.12),SM(MAT[mat].board,.46));
+  tray.rotation.y=Math.PI/6; addPart(tray,0,-.9);
+  // 底面のねじ留めと滑り止め。ねじ頭は底面の内側に収める。
+  for(let i=0;i<6;i++){
+    const a=i*Math.PI/3, x=123*Math.cos(a), z=123*Math.sin(a);
+    addPart(solid(new THREE.CylinderGeometry(6.2,6.8,2,32),SM(0x292f35,.94)),x,-9.8,z);
+    const sx=143*Math.cos(a), sz=143*Math.sin(a);
+    const seat=new THREE.Mesh(new THREE.CircleGeometry(3.1,24),SM(0x192d40,.85));
+    seat.rotation.x=Math.PI/2; addPart(seat,sx,-9.015,sz);
+    const screw=new THREE.Mesh(new THREE.CircleGeometry(2.05,24),SM(0xadb1b4,.32,.72));
+    screw.rotation.x=Math.PI/2; addPart(screw,sx,-9.025,sz);
+    for(const angle of [0,Math.PI/2]){
+      const slot=new THREE.Mesh(new THREE.PlaneGeometry(2.6,.48),SM(0x3d464e,.7));
+      slot.rotation.set(Math.PI/2,0,angle+.25); addPart(slot,sx,-9.04,sz);
+    }
+  }
   // 台座の上側を示す金の矢印。盤を回しても「起きる向き」はここで分かる。
   const markShape=new THREE.Shape();
   markShape.moveTo(-8,-6); markShape.lineTo(8,-6); markShape.lineTo(0,10); markShape.closePath();
@@ -361,7 +465,7 @@ function build(){
   const markGeo=new THREE.ShapeGeometry(markShape); markGeo.rotateX(-Math.PI/2);
   const mark=new THREE.Mesh(markGeo,SM(MAT[mat].plug));
   // 外周から少し余白を取り、△が台座の輪郭からはみ出さない位置に置く。
-  mark.position.set(0,-.94,-122); root.add(mark); parts.push(mark);
+  mark.position.set(0,2.265,-122); root.add(mark); parts.push(mark);
   for(let i=0;i<7;i++){ const p=makePanel(i); root.add(p); panels.push(p); }
   plug=makePlug(); root.add(plug);
   apply();
@@ -383,14 +487,43 @@ function triAngle(ti){
   return -Math.atan2(POS[c][1]-t.z,POS[c][0]-t.x);
 }
 
-let yaw=-0.22, pitch=0.85, dist=540;
+const DEFAULT_DIST=540, MIN_DIST=260, MAX_DIST=940;
+let yaw=-0.22, pitch=0.85, dist=DEFAULT_DIST, targetDist=DEFAULT_DIST;
+let needsRender=true;
+const zoomIn=document.getElementById('zoomIn'), zoomOut=document.getElementById('zoomOut');
+const zoomLevel=document.getElementById('zoomLevel');
+function updateZoom(){
+  zoomLevel.value=`${Math.round(DEFAULT_DIST/dist*100)}%`;
+  zoomIn.disabled=targetDist<=MIN_DIST;
+  zoomOut.disabled=targetDist>=MAX_DIST;
+}
+function zoomBy(factor){
+  if(carryDrag||rotateDrag) return;
+  targetDist=THREE.MathUtils.clamp(targetDist*factor,MIN_DIST,MAX_DIST);
+  updateZoom();
+}
+zoomIn.addEventListener('click',()=>zoomBy(1/1.18));
+zoomOut.addEventListener('click',()=>zoomBy(1.18));
+stage.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const unit=e.deltaMode===1?16:e.deltaMode===2?stage.clientHeight:1;
+  zoomBy(Math.exp(THREE.MathUtils.clamp(e.deltaY*unit,-160,160)*.0015));
+},{passive:false});
+stage.addEventListener('keydown',e=>{
+  if(e.key==='+'||e.key==='='||e.key==='-'){
+    e.preventDefault(); zoomBy(e.key==='-'?1.18:1/1.18);
+  }
+});
 function place(){
   camera.position.set(Math.sin(yaw)*Math.cos(pitch)*dist, Math.sin(pitch)*dist+24, Math.cos(yaw)*Math.cos(pitch)*dist);
   camera.lookAt(0,10,0);
+  needsRender=true;
 }
 function resize(){
   const w=stage.clientWidth,h=stage.clientHeight;
+  if(!w||!h) return;
   renderer.setSize(w,h,false); camera.aspect=w/h; camera.updateProjectionMatrix();
+  needsRender=true;
 }
 addEventListener('resize',resize);
 
@@ -484,8 +617,8 @@ function applyRotation(ti,n){
 }
 
 const ease=k=>k<0.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
-// 着地の瞬間だけ、ほんの少し行き過ぎてから戻る「カチッ」としたばね感を出す。
-const easeSettle=(k,c1=1.15)=>{ const x=k-1; return 1+(c1+1)*x*x*x+c1*x*x; };
+// 受け皿の底で止める。負の高さへのオーバーシュートは実物では起こらない。
+const easeSettle=k=>1-Math.pow(1-k,3);
 function runSteps(steps,done){
   let si=0,t0=performance.now();
   function frame(now){
@@ -499,7 +632,7 @@ function runSteps(steps,done){
   requestAnimationFrame(frame);
 }
 
-/* 三又を軸まで運び終えたところ。台座へ吸着させて3枚を持ち上げる。 */
+/* 三又を軸まで運び終えたところ。パネルへ吸着させて3枚を持ち上げる。 */
 function settleAndLift(ti){
   anim=true;
   const tri=TRI[ti], cells=tri.cells;
@@ -526,21 +659,27 @@ function settleAndLift(ti){
   ];
   runSteps(steps,()=>{
     liftedTi=ti; anim=false; mode='lifted';
-    CAP.innerHTML='三又の<b>腕をスワイプ</b>して回してください。';
+    CAP.innerHTML='<b>スワイプ</b>で自由に回転。<b>フリック</b>でその向きの次の120度位置まで回って下ります。';
   });
 }
 
-/* 回転をやめて指を離した瞬間。一番近い120度に収め、3枚を下ろして三又を離す。 */
-function commitRotation(totalRad){
+function rotationStep(totalRad,flickDirection=0){
+  const turns=-totalRad/(2*Math.PI/3);
+  // 通常は最寄りへ。フリックだけは離した方向の次の区切りへ進める。
+  // 既に大きくスワイプした場合も逆戻りせず、勢いで何周も回さない。
+  return flickDirection>0?Math.floor(turns+1e-6)+1:
+    flickDirection<0?Math.ceil(turns-1e-6)-1:Math.round(turns);
+}
+/* 指に追従した角度から、スワイプ／フリックに応じた120度位置へ収めて下ろす。 */
+function commitRotation(totalRad,flickDirection=0){
+  if(anim||!pivot) return;
   anim=true;
   const ti=liftedTi, tri=TRI[ti];
-  const n=Math.round(-totalRad/(2*Math.PI/3));
+  const n=rotationStep(totalRad,flickDirection), startRad=totalRad;
   const targetRad=-n*2*Math.PI/3;
-  const twistSign=n?Math.sign(n):(Math.sign(totalRad)||1);
-  const twistRad=twistSign*DETACH_TWIST_DEG*Math.PI/180;
   const steps=[
-    {d:180, f:k=>{
-      const r=totalRad+(targetRad-totalRad)*k;
+    {d:flickDirection?360:180, f:k=>{
+      const r=startRad+(targetRad-startRad)*k;
       pivot.rotation.y=r; plug.rotation.y=triAngle(ti)+r;
     }},
     {d:480, f:k=>{
@@ -556,20 +695,59 @@ function commitRotation(totalRad){
     root.remove(pivot); pivot=null; applyPanels();
     const settledRot=triAngle(ti)+targetRad;
     const steps2=[
-      // ひねって磁石から外す。このひねりは戻さず、そのまま残す。
-      {d:300, f:k=>{ plug.rotation.y=settledRot+twistRad*k; setClaw(1); }},
-      // 上がる間は回転させない(ひねり角のまま静かに上昇)。
+      // 着座後にボタンを押して磁石だけを引き上げ、パネルの向きを崩さず離す。
+      {d:300, f:k=>{ plug.rotation.y=settledRot; setClaw(1-k); }},
       {d:420, f:k=>{ plug.position.set(tri.x,k*PLUG_HOME_Y,tri.z); setClaw(0); }}
     ];
     runSteps(steps2,()=>{
       anim=false; mode='idle';
-      CAP.innerHTML='<b>三又</b>をスワイプして、狙った軸まで運んでください。';
+      CAP.innerHTML='<b>三又</b>をつかんで、狙った軸まで運んでください。';
     });
   });
 }
 
+// スワイプは従来どおり追従。直近の移動だけを記録して、離す速さからフリックを判定。
+function trackRotation(e){
+  const drag=rotateDrag, dx=e.clientX-drag.axis.x, dy=e.clientY-drag.axis.y;
+  drag.travel=Math.max(drag.travel,Math.hypot(e.clientX-drag.x,e.clientY-drag.y));
+  const radius=Math.hypot(dx,dy);
+  if(radius<MIN_ROT_R){
+    drag.last=null;
+  }else{
+    const angle=Math.atan2(dy,dx);
+    if(drag.last!==null){
+      const d=shortestDelta(drag.last,angle)*drag.viewSign;
+      if(Math.abs(d)>.0001){
+        if(drag.motionSign&&Math.sign(d)!==drag.motionSign){
+          drag.samples=[drag.samples[drag.samples.length-1]];
+        }
+        drag.motionSign=Math.sign(d);
+      }
+      drag.total-=d;
+      drag.tangent+=d*(drag.radius+radius)/2;
+    }
+    drag.last=angle;
+  }
+  drag.radius=radius;
+  drag.samples.push({time:e.timeStamp,distance:drag.tangent});
+  while(drag.samples.length>2&&drag.samples[1].time<e.timeStamp-FLICK_WINDOW_MS) drag.samples.shift();
+  pivot.rotation.y=drag.total;
+  plug.rotation.y=triAngle(liftedTi)+drag.total;
+}
+function flickDirection(drag){
+  const samples=drag.samples, first=samples[0], next=samples[1], last=samples[samples.length-1];
+  if(!next||drag.travel<FLICK_MIN_PX) return 0;
+  const start=Math.max(first.time,last.time-FLICK_WINDOW_MS);
+  const fraction=THREE.MathUtils.clamp((start-first.time)/Math.max(1,next.time-first.time),0,1);
+  const distance=last.distance-(first.distance+(next.distance-first.distance)*fraction);
+  const speed=distance/Math.max(16,last.time-start);
+  return Math.abs(distance)>=FLICK_MIN_TANGENT_PX&&Math.abs(speed)>=FLICK_MIN_SPEED?Math.sign(speed):0;
+}
+
 stage.addEventListener('pointerdown',e=>{
+  if(e.button!==0) return;
   if(anim||carryDrag||rotateDrag||viewDrag) return;
+  targetDist=dist; updateZoom();
   if(mode==='idle'&&pointerOnPlug(e)){
     const pt=pointerToBoardXZ(e)||{x:plug.position.x,z:plug.position.z};
     carryDrag={id:e.pointerId, dx:plug.position.x-pt.x, dz:plug.position.z-pt.z, nearest:homeTri};
@@ -579,7 +757,12 @@ stage.addEventListener('pointerdown',e=>{
     return;
   }
   if(mode==='lifted'&&(pointerOnPlug(e)||pointerOnLiftedPanels(e))){
-    rotateDrag={id:e.pointerId, axis:projectedTriangle(liftedTi,PLUG_LIFT_Y), last:null, total:0};
+    const hit=ray.intersectObject(plug,true)[0]||ray.intersectObject(pivot,true)[0];
+    const height=hit.point.y, axis=projectedTriangle(liftedTi,height);
+    const dx=e.clientX-axis.x,dy=e.clientY-axis.y,radius=Math.hypot(dx,dy);
+    rotateDrag={id:e.pointerId,axis,x:e.clientX,y:e.clientY,radius,travel:0,
+      last:radius>=MIN_ROT_R?Math.atan2(dy,dx):null,total:0,
+      viewSign:camera.position.y>=height?1:-1,tangent:0,motionSign:0,samples:[{time:e.timeStamp,distance:0}]};
     stage.setPointerCapture(e.pointerId); stage.classList.add('drag');
     return;
   }
@@ -599,15 +782,7 @@ stage.addEventListener('pointermove',e=>{
     return;
   }
   if(rotateDrag&&e.pointerId===rotateDrag.id){
-    const a=rotateDrag.axis, dx=e.clientX-a.x, dy=e.clientY-a.y;
-    if(Math.hypot(dx,dy)<MIN_ROT_R){ rotateDrag.last=null; return; }
-    const angle=Math.atan2(dy,dx);
-    if(rotateDrag.last===null){ rotateDrag.last=angle; return; }
-    const d=shortestDelta(rotateDrag.last,angle);
-    rotateDrag.last=angle; rotateDrag.total-=d;
-    // スワイプの速さ・向きそのままに、なめらかに連続回転させる（複数周も可）。
-    pivot.rotation.y=rotateDrag.total;
-    plug.rotation.y=triAngle(liftedTi)+rotateDrag.total;
+    trackRotation(e);
     return;
   }
   if(viewDrag&&e.pointerId===viewDrag.id){
@@ -626,8 +801,10 @@ stage.addEventListener('pointerup',e=>{
     return;
   }
   if(rotateDrag&&e.pointerId===rotateDrag.id){
-    const total=rotateDrag.total; rotateDrag=null;
-    commitRotation(total);
+    // pointerupの座標も拾う。短いフリックでmoveが省略されても判定できる。
+    trackRotation(e);
+    const drag=rotateDrag; rotateDrag=null;
+    commitRotation(drag.total,flickDirection(drag));
     return;
   }
   if(viewDrag&&e.pointerId===viewDrag.id) viewDrag=null;
@@ -639,7 +816,9 @@ stage.addEventListener('pointercancel',e=>{
     targetRing.visible=false;
     plug.position.set(TRI[homeTri].x,PLUG_HOME_Y,TRI[homeTri].z); plug.rotation.y=triAngle(homeTri);
   }
-  if(rotateDrag&&e.pointerId===rotateDrag.id){ const total=rotateDrag.total; rotateDrag=null; commitRotation(total); }
+  if(rotateDrag&&e.pointerId===rotateDrag.id){
+    const total=rotateDrag.total; rotateDrag=null; commitRotation(total);
+  }
   if(viewDrag&&e.pointerId===viewDrag.id) viewDrag=null;
 });
 
@@ -677,13 +856,16 @@ function shuffleStep(ti,n,done,durMul=1){
       const r=targetRad*k;
       pivot.rotation.y=r; plug.rotation.y=finalRot+r;
     }},
-    {d:110*durMul,f:k=>{ // 下ろす(着地の瞬間だけ少し行き過ぎてから収まる)
+    {d:110*durMul,f:k=>{ // 受け皿の底へ静かに下ろす
       const y=PLUG_LIFT_Y*(1-easeSettle(k));
       pivot.position.y=y; plug.position.set(tri.x,y,tri.z);
       pivot.rotation.y=targetRad; plug.rotation.y=finalRot+targetRad; setClaw(1);
     }},
-    {d:100*durMul,f:k=>{ // 磁石を離して浮き上がる
-      plug.position.set(tri.x,k*PLUG_HOME_Y,tri.z); setClaw(1-k);
+    {d:90*durMul,f:k=>{ // パネルを置いたまま磁石を引き上げる
+      setClaw(1-k);
+    }},
+    {d:100*durMul,f:k=>{ // 吸着を解いてから三又を持ち上げる
+      plug.position.set(tri.x,k*PLUG_HOME_Y,tri.z); setClaw(0);
     }}
   ];
   runSteps(steps,()=>{
@@ -778,7 +960,7 @@ $('solve').addEventListener('click',()=>{
 });
 $('top').addEventListener('click',()=>{yaw=0;pitch=1.32;place();});
 $('under').addEventListener('click',()=>{yaw=-.55;pitch=-.72;place();});
-$('reset').addEventListener('click',()=>{yaw=-0.22;pitch=0.85;place();});
+$('reset').addEventListener('click',()=>{yaw=-0.22;pitch=0.85;dist=targetDist=DEFAULT_DIST;updateZoom();place();});
 
 /* あそびかたダイアログ:初回だけ自動表示し、ローカルストレージに既読を残す。
    「遊び方」ボタンでいつでも再表示できる。 */
@@ -795,13 +977,26 @@ let howtoSeen=false;
 try{ howtoSeen=localStorage.getItem(HOWTO_KEY)==='1'; }catch(_){}
 if(!howtoSeen) showHowto();
 
-function loop(){
+let lastFrame=performance.now(), shadowsWereMoving=true;
+function loop(now=performance.now()){
+  const dt=Math.min((now-lastFrame)/1000,.25); lastFrame=now;
+  if(dist!==targetDist){
+    dist+=(targetDist-dist)*(1-Math.exp(-14*dt));
+    if(Math.abs(dist-targetDist)<.05) dist=targetDist;
+    place(); updateZoom();
+  }
   if(targetRing.visible){
     // 小さな印を見失わないよう、ゆっくり明滅させる。
     const s=1+Math.sin(performance.now()*0.004)*.18;
     targetRing.scale.set(s,s,1);
   }
-  renderer.render(scene,camera);
+  const shadowsMoving=!!(anim||carryDrag||rotateDrag);
+  if(shadowsMoving||shadowsWereMoving) renderer.shadowMap.needsUpdate=true;
+  if(needsRender||shadowsMoving||shadowsWereMoving||targetRing.visible){
+    renderer.render(scene,camera);
+    needsRender=false;
+  }
+  shadowsWereMoving=shadowsMoving;
   requestAnimationFrame(loop);
 }
 build(); resize(); place(); loop();
