@@ -30,6 +30,9 @@
     .w7-cell-hex { fill:var(--washi); stroke:#c0ac88; stroke-width:1.5; }
     .w7-cell--fallen .w7-cell-hex { fill:var(--washi2); stroke:#c0ac88; }
     .w7-cell--standing { filter:brightness(1.04); }
+    /* 悟り報酬は本編だけに適用する。ダイアログ内の見本盤は標準色のまま。 */
+    body[data-w7-board-theme="satori"] #w7-board .w7-cell--standing .w7-cell-hex { fill:#F1F1ED; stroke:#D6D6D0; }
+    body[data-w7-board-theme="satori"] #w7-board .w7-cell--fallen .w7-cell-hex { fill:#AAA9A4; stroke:#D6D6D0; }
     .w7-cell.is-grabbed .w7-cell-hex { animation:w7-grab-flash .34s cubic-bezier(.18,.8,.24,1); }
     @keyframes w7-grab-flash { 0%,100% { filter:drop-shadow(0 0 0 rgb(98 215 244 / 0)); } 45% { filter:drop-shadow(0 0 10px rgb(98 215 244 / .9)) brightness(1.22); } }
     /* Daruma artwork is authored around local (0,0), the same center as its panel. */
@@ -239,6 +242,11 @@
       <button id="w7-debug-mastery-twentynine" class="w7-debug-button" type="button" title="名人29問完了後">名29</button>
       <button id="w7-debug-mastery-fortyfour" class="w7-debug-button" type="button" title="名人44問完了後">名44</button>
       <button id="w7-debug-mastery-fortyfive" class="w7-debug-button" type="button" title="名人45問完了直後（二十七番要求）">名45</button>
+      <button id="w7-debug-satori-start" class="w7-debug-button" type="button" title="悟りへの道を最初から">悟</button>
+      <button id="w7-debug-satori-seventytwo" class="w7-debug-button" type="button" title="悟り72問完了後">悟72</button>
+      <button id="w7-debug-satori-final" class="w7-debug-button" type="button" title="悟り73問目を開始">悟73</button>
+      <button id="w7-debug-satori-lap2" class="w7-debug-button" type="button" title="悟り二周目を開始">悟二</button>
+      <button id="w7-debug-satori-lap2-seventytwo" class="w7-debug-button" type="button" title="悟り二周目72問完了後">悟二72</button>
     </div>
   </main>
   <div id="w7-dialog-backdrop" class="w7-dialog-backdrop" hidden>
@@ -477,6 +485,18 @@
       Object.freeze({ routeId:'mastery-kyu', sectionId:'kyu', name:'名人への道・急', subtitle:'不立文字', states:Object.freeze([1159,403,1157,1097,455,401,1066,1079,1183,346,418,340,1391,1121,364]), par:4 }),
     ].map(volume => Object.freeze({ ...volume, puzzles:Object.freeze(volume.states.map((state, index) => Object.freeze({ puzzleId:`${volume.routeId}-${String(index + 1).padStart(3,'0')}`, classId:'mastery', state, par:volume.par, volumeId:volume.sectionId }))) })));
     const MASTERY_PUZZLES = Object.freeze(MASTERY_VOLUMES.flatMap(volume => volume.puzzles));
+    // 悟りへの道はsolverの列挙ではなく、旧版と照合した73問をこの順序のまま固定する。
+    // `satori-0` / `悟り` でrgすれば、入口・最短判定・報酬もこの近くの専用処理へ辿れる。
+    const SATORI_PUZZLES = Object.freeze([
+      [31,1],[7,2],[44,2],[29,2],[204,2],[128,2],[130,2],[124,2],[366,2],[50,2],
+      [5,3],[15,3],[39,3],[99,3],[117,3],[377,3],[202,3],[150,3],[13,3],[122,3],
+      [372,3],[395,3],[176,3],[382,3],[21,3],[332,4],[178,3],[364,4],[582,4],[390,3],
+      [420,3],[200,4],[457,3],[52,3],[146,4],[91,3],[344,4],[1121,4],[148,3],[106,3],
+      [358,4],[104,4],[619,3],[1105,3],[340,4],[98,3],[418,4],[1079,4],[611,3],[617,3],
+      [1183,4],[1391,4],[348,3],[426,4],[362,3],[356,3],[455,4],[380,3],[346,4],[442,3],
+      [93,3],[401,4],[1097,4],[132,3],[325,4],[1157,4],[410,3],[403,4],[449,3],[338,3],
+      [1066,4],[580,3],[1159,4],
+    ].map(([state, par], index) => Object.freeze({ puzzleId:`satori-${String(index + 1).padStart(3,'0')}`, classId:'satori', state, par })));
     const TRAINING_GOAL_SHAPES = Object.freeze({
       upper:Object.freeze(TWO_MOVE_SHAPE_CATALOG.filter(shape => [1,2,5,6,8,9].includes(shape.patternPosition)).map(shape => Object.freeze({ state:shape.baseState, name:shape.name }))),
       middle:Object.freeze([[21,'猫の耳'],[99,'両岸'],[13,'お皿'],[39,'ネックレス'],[93,'直角三角形'],[117,'一直線'],[380,'手裏剣']].map(([state,name]) => Object.freeze({ state,name }))),
@@ -503,20 +523,22 @@
       Object.freeze({ puzzleId:'tutorial-005', state:1449, par:2, cue:'chain-direction', solution:Object.freeze([Object.freeze({ triangleIndex:4, direction:1 }), Object.freeze({ triangleIndex:3, direction:1 })]) }),
     ]);
     const APP_STORAGE_KEY = 'wake7-rebuild-v2';
-    const APP_SCHEMA_VERSION = 4;
-    const APP_CATALOG_VERSION = 6;
+    const APP_SCHEMA_VERSION = 5;
+    const APP_CATALOG_VERSION = 7;
     // 画面上の見た目だけを変える座標変換。盤面ルールや履歴は変えない。
     /* The board's logic always uses CELL_POSITIONS; this display transform is presentation-only. */
-    const BOARD_VIEW = Object.freeze({ rotationDegrees: 0, translateX: 0, translateY: 0 });
-    function viewPoint(logicalPoint) {
+    const STANDARD_BOARD_VIEW = Object.freeze({ rotationDegrees: 0, translateX: 0, translateY: 0 });
+    const SATORI_BOARD_VIEW = Object.freeze({ rotationDegrees: -30, translateX: 0, translateY: 0 });
+    function selectBoardView(settings = AppState?.settings) { return settings?.layout === 'satori-tilted' ? SATORI_BOARD_VIEW : STANDARD_BOARD_VIEW; }
+    function viewPoint(logicalPoint, view = STANDARD_BOARD_VIEW) {
       const center = CELL_POSITIONS[3];
-      const radians = BOARD_VIEW.rotationDegrees * Math.PI / 180;
+      const radians = view.rotationDegrees * Math.PI / 180;
       const dx = logicalPoint.x - center.x;
       const dy = logicalPoint.y - center.y;
-      return Object.freeze({ x: center.x + dx * Math.cos(radians) - dy * Math.sin(radians) + BOARD_VIEW.translateX, y: center.y + dx * Math.sin(radians) + dy * Math.cos(radians) + BOARD_VIEW.translateY });
+      return Object.freeze({ x: center.x + dx * Math.cos(radians) - dy * Math.sin(radians) + view.translateX, y: center.y + dx * Math.sin(radians) + dy * Math.cos(radians) + view.translateY });
     }
 
-    // These are logical symmetry transforms, kept separate from the presentation-only BOARD_VIEW above.
+    // These are logical symmetry transforms, kept separate from the presentation-only board view above.
     function makeViewPermutation(rotationDegrees = 0, flip = false) {
       const center = CELL_POSITIONS[3];
       const radians = rotationDegrees * Math.PI / 180;
@@ -571,6 +593,11 @@
     const debugMasteryTwentynineButton = document.querySelector('#w7-debug-mastery-twentynine');
     const debugMasteryFortyfourButton = document.querySelector('#w7-debug-mastery-fortyfour');
     const debugMasteryFortyfiveButton = document.querySelector('#w7-debug-mastery-fortyfive');
+    const debugSatoriStartButton = document.querySelector('#w7-debug-satori-start');
+    const debugSatoriSeventytwoButton = document.querySelector('#w7-debug-satori-seventytwo');
+    const debugSatoriFinalButton = document.querySelector('#w7-debug-satori-final');
+    const debugSatoriLap2Button = document.querySelector('#w7-debug-satori-lap2');
+    const debugSatoriLap2SeventytwoButton = document.querySelector('#w7-debug-satori-lap2-seventytwo');
     const boardGripPrompt = document.querySelector('#w7-grip-prompt');
     const academyCalloutElement = document.querySelector('#w7-academy-callout');
     const applicationTargetPreviewElement = document.querySelector('#w7-application-target-preview');
@@ -581,42 +608,44 @@
     function svgElement(name, attributes = {}) { const element = document.createElementNS(SVG_NS, name); for (const [key, value] of Object.entries(attributes)) element.setAttribute(key, String(value)); return element; }
     function hexPath(radius) { return Array.from({ length: 6 }, (_, index) => { const angle = (90 + index * 60) * Math.PI / 180; return `${index ? 'L' : 'M'}${(radius * Math.cos(angle)).toFixed(2)} ${(radius * -Math.sin(angle)).toFixed(2)}`; }).join(' ') + 'Z'; }
     function orientationDegrees(orientation) { return orientation === 0 ? 0 : orientation === 1 ? TURN_DEGREES : -TURN_DEGREES; }
-    function appendDaruma(parent, orientation, happy = false) {
-      const group = svgElement('g', { class: 'w7-daruma', transform: `rotate(${orientationDegrees(orientation)})`, 'data-orientation': orientation });
+    function appendDaruma(parent, orientation, happy = false, view = STANDARD_BOARD_VIEW) {
+      // 盤面全体だけを傾け、立っているだるまは画面でまっすぐに見せる。
+      const group = svgElement('g', { class: 'w7-daruma', transform: `rotate(${orientationDegrees(orientation) - view.rotationDegrees})`, 'data-orientation': orientation });
       group.append(svgElement('use', { href: '#w7-daruma-body' }));
       group.append(svgElement('use', { href: happy && orientation === 0 ? '#w7-face-happy' : orientation === 0 ? '#w7-face-open' : '#w7-face-shut' }));
       parent.append(group);
     }
-    function appendAxisLayer(target) {
+    function appendAxisLayer(target, view = STANDARD_BOARD_VIEW) {
       const layer = svgElement('g', { class: 'w7-axis-layer', 'aria-hidden': 'true' });
       TRIANGLES.forEach((triangle, triangleIndex) => {
         const geometry = axisGeometry(triangle);
-        const pivot = viewPoint({ x:geometry.pivot[0], y:geometry.pivot[1] });
-        const grip = viewPoint({ x:geometry.grip[0], y:geometry.grip[1] });
+        const pivot = viewPoint({ x:geometry.pivot[0], y:geometry.pivot[1] }, view);
+        const grip = viewPoint({ x:geometry.grip[0], y:geometry.grip[1] }, view);
         layer.append(svgElement('circle', { class:'w7-axis-pivot', cx:pivot.x, cy:pivot.y, r:4.4, 'data-axis':triangleIndex }));
-        const gripGroup = svgElement('g', { transform:`translate(${grip.x} ${grip.y}) rotate(${geometry.angle * 180 / Math.PI + BOARD_VIEW.rotationDegrees})`, 'data-axis':triangleIndex });
+        const gripGroup = svgElement('g', { transform:`translate(${grip.x} ${grip.y}) rotate(${geometry.angle * 180 / Math.PI + view.rotationDegrees})`, 'data-axis':triangleIndex });
         gripGroup.append(svgElement('rect', { class:'w7-axis-grip', x:-18, y:-4, width:36, height:8, rx:4 }));
         layer.append(gripGroup);
       });
       target.append(layer);
     }
-    function appendCellVisual(cell, orientation, happy = false) {
+    function appendCellVisual(cell, orientation, happy = false, view = STANDARD_BOARD_VIEW) {
       const visual = svgElement('g', { class:'w7-cell-visual' });
       visual.append(svgElement('path', { class:'w7-cell-hex', d:hexPath(CELL_RADIUS) }));
-      appendDaruma(visual, orientation, happy);
+      appendDaruma(visual, orientation, happy, view);
       cell.append(visual);
     }
     function renderBoard(cells = INITIAL_BOARD, target = boardElement, options = {}) {
       const includeAxes = options.includeAxes ?? target === boardElement;
       const panelIds = options.panelIds ?? Array.from({ length:CELL_COUNT }, (_, index) => index);
+      const view = options.view ?? (target === boardElement ? selectBoardView() : STANDARD_BOARD_VIEW);
       target.replaceChildren();
       Array.from(cells).forEach((orientation, index) => {
-        const point = viewPoint(CELL_POSITIONS[index]);
-        const cell = svgElement('g', { class:`w7-cell ${orientation === 0 ? 'w7-cell--standing' : 'w7-cell--fallen'}`, transform:`translate(${point.x} ${point.y})`, 'data-cell-index':index, 'data-panel-id':panelIds[index], 'data-orientation':orientation });
-        appendCellVisual(cell, orientation, Boolean(options.happy));
+        const point = viewPoint(CELL_POSITIONS[index], view);
+        const cell = svgElement('g', { class:`w7-cell ${orientation === 0 ? 'w7-cell--standing' : 'w7-cell--fallen'}`, transform:`translate(${point.x} ${point.y}) rotate(${view.rotationDegrees})`, 'data-cell-index':index, 'data-panel-id':panelIds[index], 'data-orientation':orientation });
+        appendCellVisual(cell, orientation, Boolean(options.happy), view);
         target.append(cell);
       });
-      if (includeAxes) appendAxisLayer(target);
+      if (includeAxes) appendAxisLayer(target, view);
       return target;
     }
     // 発光後の無点灯時間を長く感じさせない、短めの共通周期。
@@ -814,7 +843,7 @@
     function renderBoardStatus(cells = RuntimeState.cells, moveDelta = 0) {
       boardMovesElement.textContent = String(RuntimeState.history.length + moveDelta);
       const distance = selectDistance(cells);
-      boardRemainingElement.textContent = isMasteryRoute() && AppState.navigation.routeId === 'mastery-kyu' && !RuntimeState.masteryRemainingRevealed ? '?' : distance === null ? '—' : String(distance);
+      boardRemainingElement.textContent = isSatoriRoute() || isMasteryRoute() && AppState.navigation.routeId === 'mastery-kyu' && !RuntimeState.masteryRemainingRevealed ? '?' : distance === null ? '—' : String(distance);
     }
     function renderBoardPhase() {
       boardElement.dataset.phase = RuntimeState.phase;
@@ -827,6 +856,7 @@
       boardRestartButton.disabled = !ready || !selectCanRestartCurrentPuzzle();
       // チュートリアルと学園（入門・基本・応用・発展）は一手ごとの学習導線に絞る。Undo/Restartは出さない。
       boardControlsElement.hidden = AppState.navigation.mode === 'tutorial' || isAcademyAssistedRoute();
+      boardUndoButton.hidden = isSatoriRoute();
       const masteryAction = isMasteryRoute();
       trainingTipButton.hidden = !isTrainingUpperRoute();
       trainingTipButton.textContent = 'コツを見る';
@@ -846,6 +876,7 @@
       document.body.classList.toggle('w7-academy-mode', isAcademyAssistedRoute());
       document.body.classList.toggle('w7-application-mode', isAcademyApplicationRoute());
       academyClearSuffixElement.hidden = !isAcademyAssistedRoute();
+      document.body.dataset.w7BoardTheme = AppState.settings.theme;
     }
     function renderRuntime(options = {}) {
       renderBoard(RuntimeState.cells, boardElement, { happy:Boolean(options.happy), panelIds:RuntimeState.panelIds });
@@ -892,14 +923,14 @@
       return history.reduce((panelIds, entry) => rotatePanelIds(panelIds, entry.triangleIndex, entry.direction), Array.from({ length:CELL_COUNT }, (_, index) => index));
     }
     // 回転中のパネル位置とだるまの向き。確定フレームでは計算上の終点ではなく定位置を使い、数ピクセルのずれを残さない。
-    function rotationFrameForCell(cells, triangleIndex, cellIndex, degrees, previewTurns = 0, settledTurns = null) {
+    function rotationFrameForCell(cells, triangleIndex, cellIndex, degrees, previewTurns = 0, settledTurns = null, view = selectBoardView()) {
       const triangle = TRIANGLES[triangleIndex];
-      const pivot = viewPoint({ x:triangle.x, y:triangle.y });
-      const start = viewPoint(CELL_POSITIONS[cellIndex]);
+      const pivot = viewPoint({ x:triangle.x, y:triangle.y }, view);
+      const start = viewPoint(CELL_POSITIONS[cellIndex], view);
       const displayTurns = settledTurns === null ? previewTurns : settledTurns;
       const displayOrientation = (cells[cellIndex] + (displayTurns % 3) + 3) % 3;
       const atSettledPosition = settledTurns !== null && Math.abs(degrees - settledTurns * TURN_DEGREES) < .001;
-      const point = atSettledPosition ? viewPoint(CELL_POSITIONS[rotateTriangleCellIndex(triangle, cellIndex, settledTurns)]) : rotatePoint(start, pivot, degrees);
+      const point = atSettledPosition ? viewPoint(CELL_POSITIONS[rotateTriangleCellIndex(triangle, cellIndex, settledTurns)], view) : rotatePoint(start, pivot, degrees);
       // 回転中にだるまが起きるタイミングは、実際の角度が正立に近づいた時だけにする。
       const standing = atSettledPosition ? displayOrientation === 0 : Math.abs(normalizedDegrees(orientationDegrees(cells[cellIndex]) + degrees)) <= DARUMA_UPRIGHT_WINDOW_DEGREES;
       return Object.freeze({
@@ -907,7 +938,7 @@
         standing,
         atSettledPosition,
         darumaOrientation:atSettledPosition ? displayOrientation : cells[cellIndex],
-        transform:atSettledPosition ? `translate(${point.x} ${point.y})` : `translate(${point.x} ${point.y}) rotate(${degrees})`,
+        transform:atSettledPosition ? `translate(${point.x} ${point.y}) rotate(${view.rotationDegrees})` : `translate(${point.x} ${point.y}) rotate(${degrees + view.rotationDegrees})`,
       });
     }
     // 回転する三枚を一つの最前面レイヤーへ移し、途中で隣のパネルの奥へ潜らせない。
@@ -948,7 +979,7 @@
         cell.classList.toggle('w7-cell--standing', frame.standing);
         cell.classList.toggle('w7-cell--fallen', !frame.standing);
         const daruma = cell.querySelector('.w7-daruma');
-        daruma.setAttribute('transform', `rotate(${orientationDegrees(frame.darumaOrientation)})`);
+        daruma.setAttribute('transform', `rotate(${orientationDegrees(frame.darumaOrientation) - selectBoardView().rotationDegrees})`);
         daruma.querySelector('use:last-child').setAttribute('href', frame.standing ? '#w7-face-open' : '#w7-face-shut');
       });
       // 学園の「あと○くるり」は、ドラッグが60度を越えた瞬間ではなく、
@@ -985,6 +1016,13 @@
     function masteryVolumeForRoute(routeId) { return MASTERY_VOLUMES.find(volume => volume.routeId === routeId) ?? null; }
     function masteryCatalogForRoute(routeId) { return masteryVolumeForRoute(routeId)?.puzzles ?? null; }
     function isMasteryRoute(navigation = AppState.navigation) { return Boolean(masteryCatalogForRoute(navigation.routeId)); }
+    // 悟り: 73問固定カタログ・最短失敗・最終報酬の入口。盤面操作は共通処理を使う。
+    function satoriCatalogForRoute(routeId) { return routeId === 'satori' ? SATORI_PUZZLES : null; }
+    function isSatoriRoute(navigation = AppState.navigation) { return navigation?.routeId === 'satori'; }
+    function hasCompletedMasteryCourse(progress, lap) { return MASTERY_PUZZLES.every(puzzle => hasCompletedPuzzle(progress, lap, puzzle.puzzleId)); }
+    function hasCompletedSatoriCourse(progress, lap) { return SATORI_PUZZLES.every(puzzle => hasCompletedPuzzle(progress, lap, puzzle.puzzleId)); }
+    // P7の速解き解放は保存フラグを増やさず、悟り一周目の73問完了から導出する。
+    function selectSatori73Unlocked(progress = AppState.progress) { return hasCompletedSatoriCourse(progress, 1); }
     function masteryVolumeName(routeId = AppState.navigation.routeId) { return masteryVolumeForRoute(routeId)?.name ?? '名人への道'; }
     function masteryRemainingCheckLimit(puzzleIndex) {
       if (puzzleIndex <= 5) return 2;
@@ -1029,6 +1067,7 @@
       if (navigation.routeId === 'training-middle') return trainingMiddlePuzzleAt(navigation.puzzleIndex);
       if (navigation.routeId === 'training-lower') return trainingLowerPuzzleAt(navigation.puzzleIndex);
       if (isMasteryRoute(navigation)) return masteryCatalogForRoute(navigation.routeId)[navigation.puzzleIndex] ?? masteryCatalogForRoute(navigation.routeId)[0];
+      if (isSatoriRoute(navigation)) return SATORI_PUZZLES[navigation.puzzleIndex] ?? SATORI_PUZZLES[0];
       if (navigation.routeId === 'academy-application-entry') return ACADEMY_APPLICATION_ENTRY_PUZZLE;
       return academyIntroPuzzleAt(navigation.puzzleIndex);
     }
@@ -1093,6 +1132,10 @@
       const volume = masteryVolumeForRoute(routeId) ?? MASTERY_VOLUMES[0];
       return { mode:'stage', routeId:volume.routeId, courseId:'mastery', sectionId:volume.sectionId, lap, tutorialStep:null, puzzleIndex:catalog.indexOf(puzzle), puzzleId:puzzle.puzzleId, returnRoute:null };
     }
+    function makeSatoriNavigation(puzzleIndex = 0, lap = 1) {
+      const puzzle = SATORI_PUZZLES[puzzleIndex] ?? SATORI_PUZZLES[0];
+      return { mode:'stage', routeId:'satori', courseId:'satori', sectionId:'satori', lap, tutorialStep:null, puzzleIndex:SATORI_PUZZLES.indexOf(puzzle), puzzleId:puzzle.puzzleId, returnRoute:null };
+    }
     // 壊れた発展navigationは入門へ戻さない。進捗から最初の未クリア問題へ戻し、
     // 全問済みなら最終問題を九番勝負解放状態の足場として使う。
     function makeDevelopmentRecoveryNavigation(progress) {
@@ -1112,6 +1155,11 @@
       const firstIncomplete = catalog.findIndex(puzzle => !completed.has(puzzle.puzzleId));
       return makeMasteryNavigation(routeId, firstIncomplete < 0 ? catalog.length - 1 : firstIncomplete, lap);
     }
+    function makeSatoriRecoveryNavigation(progress, lap = 1) {
+      const completed = new Set(selectCompletedPuzzleIdsForLap(progress, lap));
+      const firstIncomplete = SATORI_PUZZLES.findIndex(puzzle => !completed.has(puzzle.puzzleId));
+      return makeSatoriNavigation(firstIncomplete < 0 ? SATORI_PUZZLES.length - 1 : firstIncomplete, lap);
+    }
     function selectTrainingEntryGate(appState = AppState, lap = appState.navigation.lap) {
       const developmentDone = hasCompletedDevelopmentClass(appState.progress, lap);
       if (!developmentDone) return 'development-incomplete';
@@ -1123,6 +1171,12 @@
       if (lap === 1 && !appState.speed.completedTrialIds.includes('training18')) return 'speed-eighteen-required';
       return 'allowed';
     }
+    function selectSatoriEntryGate(appState = AppState, lap = appState.navigation?.lap ?? 1) {
+      if (!hasCompletedMasteryCourse(appState.progress, lap)) return 'mastery-incomplete';
+      if (lap === 1 && !appState.speed.completedTrialIds.includes('mastery27')) return 'speed-twenty-seven-required';
+      if (lap === 2 && !hasCompletedSatoriCourse(appState.progress, 1)) return 'satori-lap1-incomplete';
+      return 'allowed';
+    }
     // P7の九番完走はこの入口だけを呼ぶ。P6aからは未実装試験を開始できない。
     function makeTrainingEntryAppState(appState, lap = appState.navigation?.lap ?? 1) {
       if (selectTrainingEntryGate(appState, lap) !== 'allowed') return null;
@@ -1132,6 +1186,10 @@
     function makeMasteryEntryAppState(appState, lap = appState.navigation?.lap ?? 1) {
       if (selectMasteryEntryGate(appState, lap) !== 'allowed') return null;
       return makeMasteryAppState(appState, 'mastery-jo', 0, { type:'mastery-welcome' }, lap);
+    }
+    function makeSatoriEntryAppState(appState, lap = appState.navigation?.lap ?? 1) {
+      if (selectSatoriEntryGate(appState, lap) !== 'allowed') return null;
+      return makeSatoriAppState(appState, 0, { type:'satori-welcome' }, lap);
     }
     function makeAppStateForNavigation(navigation, options = {}) {
       const puzzle = selectPuzzleForNavigation(navigation);
@@ -1189,6 +1247,9 @@
     function makeMasteryAppState(appState, routeId = 'mastery-jo', puzzleIndex = 0, dialog = null, lap = appState.navigation?.lap ?? 1) {
       return makeAppStateForNavigation(makeMasteryNavigation(routeId, puzzleIndex, lap), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, speed:appState.speed, mastery:appState.mastery, dialog });
     }
+    function makeSatoriAppState(appState, puzzleIndex = 0, dialog = null, lap = appState.navigation?.lap ?? 1) {
+      return makeAppStateForNavigation(makeSatoriNavigation(puzzleIndex, lap), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, speed:appState.speed, mastery:appState.mastery, dialog });
+    }
     function isOrientationCells(value) { return Array.isArray(value) && value.length === CELL_COUNT && value.every(cell => Number.isInteger(cell) && cell >= 0 && cell <= 2); }
     function sameCells(left, right) { return left.length === right.length && left.every((cell, index) => cell === right[index]); }
     function validMoveHistory(value, initialCells, cells) {
@@ -1224,7 +1285,7 @@
     }
     function normalizeCourseProgress(rawProgress) {
       const tutorialIds = new Set(TUTORIAL_STEPS.map(puzzle => puzzle.puzzleId));
-      const stageIds = new Set([...ACADEMY_INTRO_PUZZLES, ...ACADEMY_BASIC_PUZZLES, ...ACADEMY_APPLICATION_PUZZLES, ...ACADEMY_DEVELOPMENT_PUZZLES, ...TRAINING_UPPER_PUZZLES, ...TRAINING_MIDDLE_PUZZLES, ...TRAINING_LOWER_PUZZLES, ...MASTERY_PUZZLES].map(puzzle => puzzle.puzzleId));
+      const stageIds = new Set([...ACADEMY_INTRO_PUZZLES, ...ACADEMY_BASIC_PUZZLES, ...ACADEMY_APPLICATION_PUZZLES, ...ACADEMY_DEVELOPMENT_PUZZLES, ...TRAINING_UPPER_PUZZLES, ...TRAINING_MIDDLE_PUZZLES, ...TRAINING_LOWER_PUZZLES, ...MASTERY_PUZZLES, ...SATORI_PUZZLES].map(puzzle => puzzle.puzzleId));
       const filtered = (value, known) => [...new Set((Array.isArray(value) ? value : []).filter(id => known.has(id)))];
       return {
         tutorialCompleted:rawProgress?.tutorialCompleted === true,
@@ -1272,6 +1333,11 @@
       const masteryIsValid = rawNavigation?.mode === 'stage' && masteryCatalog && Number.isInteger(puzzleIndex)
         && masteryCatalog[puzzleIndex] && rawNavigation?.puzzleId === masteryCatalog[puzzleIndex].puzzleId;
       const requestedMastery = rawNavigation?.mode === 'stage' && Boolean(masteryCatalog);
+      const satoriIsValid = rawNavigation?.mode === 'stage' && rawNavigation?.routeId === 'satori' && Number.isInteger(puzzleIndex)
+        && SATORI_PUZZLES[puzzleIndex] && rawNavigation?.puzzleId === SATORI_PUZZLES[puzzleIndex].puzzleId;
+      const requestedSatori = rawNavigation?.mode === 'stage' && rawNavigation?.routeId === 'satori';
+      if (satoriIsValid) return makeSatoriNavigation(puzzleIndex, lap);
+      if (requestedSatori) return makeSatoriRecoveryNavigation(progress, lap);
       if (masteryIsValid) return makeMasteryNavigation(rawNavigation.routeId, puzzleIndex, lap);
       if (requestedMastery) return makeMasteryRecoveryNavigation(rawNavigation.routeId, progress, lap);
       if (trainingIsValid) return makeTrainingNavigation(rawNavigation.routeId, puzzleIndex, lap);
@@ -1301,7 +1367,10 @@
       const masteryStartDialogRoute = Object.freeze({ 'mastery-welcome':'mastery-jo', 'mastery-ha-welcome':'mastery-ha', 'mastery-kyu-welcome':'mastery-kyu' });
       if (masteryStartDialogRoute[rawDialog?.type] === navigation.routeId && navigation.puzzleIndex === 0 && !solved) return { type:rawDialog.type };
       if (rawDialog?.type === 'speed-twenty-seven-required' && navigation.routeId === 'mastery-kyu' && navigation.puzzleIndex === 14 && solved && MASTERY_PUZZLES.every(puzzle => hasCompletedPuzzle(progress, navigation.lap, puzzle.puzzleId))) return { type:'speed-twenty-seven-required' };
-      if (rawDialog?.type === 'optimal-fail' && isMasteryRoute(navigation) && solved && rawDialog.puzzleId === navigation.puzzleId && Number.isInteger(rawDialog.bestMoves) && rawDialog.bestMoves === selectPuzzleForNavigation(navigation).par && Number.isInteger(rawDialog.actualMoves) && rawDialog.actualMoves > rawDialog.bestMoves) return { type:'optimal-fail', puzzleId:rawDialog.puzzleId, bestMoves:rawDialog.bestMoves, actualMoves:rawDialog.actualMoves };
+      if (rawDialog?.type === 'satori-welcome' && isSatoriRoute(navigation) && navigation.puzzleIndex === 0 && !solved) return { type:'satori-welcome' };
+      if (rawDialog?.type === 'satori-complete' && isSatoriRoute(navigation) && navigation.puzzleIndex === SATORI_PUZZLES.length - 1 && solved && hasCompletedSatoriCourse(progress, navigation.lap)) return { type:'satori-complete' };
+      const optimalPuzzle = selectPuzzleForNavigation(navigation);
+      if (isValidOptimalFailDescriptor(rawDialog, navigation, optimalPuzzle, solved, rawDialog?.actualMoves)) return { type:'optimal-fail', puzzleId:rawDialog.puzzleId, bestMoves:rawDialog.bestMoves, actualMoves:rawDialog.actualMoves, reason:rawDialog.reason };
       if (rawDialog?.type === 'clear' && navigation.mode === 'stage' && solved) return clearDialogDescriptor(selectPuzzleForNavigation(navigation));
       return null;
     }
@@ -1314,7 +1383,10 @@
       const mastery = normalizeMasteryState(raw.mastery);
       const rewardAndSettings = normalizeRewardsAndSettings(raw.rewards, raw.settings);
       const navigation = navigationFromPersistentState(raw.navigation, progress);
-      const fallback = makeAppStateForNavigation(navigation, { progress, speed, mastery, ...rewardAndSettings, dialog:stableDialogForNavigation(raw.ui?.dialog, navigation, false, progress, speed) });
+      // optimal-failは盤面と履歴の手数が一致して初めて復元できる。
+      // 盤面検証前のfallbackへ失敗descriptorだけを残すと、初期盤面に失敗ダイアログが重なる。
+      const fallbackDialog = raw.ui?.dialog?.type === 'optimal-fail' ? null : stableDialogForNavigation(raw.ui?.dialog, navigation, false, progress, speed);
+      const fallback = makeAppStateForNavigation(navigation, { progress, speed, mastery, ...rewardAndSettings, dialog:fallbackDialog });
       const puzzle = selectPuzzleForNavigation(navigation);
       const expectedInitial = puzzleInitialCells(puzzle);
       const board = raw.board;
@@ -1326,12 +1398,11 @@
       // 解決済み盤面とoptimal-failが食い違う保存は、通常クリアへ誤変換しない。
       // 問題ID・手数・最短値が壊れていれば、その問題の未クリア開始盤面へ安全に戻す。
       const rawOptimalFail = raw.ui?.dialog?.type === 'optimal-fail';
-      const rawOptimalFailValid = rawOptimalFail && isMasteryRoute(navigation) && solved
-        && raw.ui.dialog.puzzleId === navigation.puzzleId && raw.ui.dialog.bestMoves === puzzle.par
-        && raw.ui.dialog.actualMoves === history.length && raw.ui.dialog.actualMoves > raw.ui.dialog.bestMoves;
+      const rawOptimalFailValid = rawOptimalFail && raw.ui.dialog.actualMoves === history.length
+        && isValidOptimalFailDescriptor(raw.ui.dialog, navigation, puzzle, solved, history.length);
       if (rawOptimalFail && !rawOptimalFailValid) return fallback;
-      const masteryOutcome = isMasteryRoute(navigation) ? selectOptimalClearOutcome({ solved, actualMoves:history.length, par:puzzle.par }) : null;
-      const progressAfterSolved = solved && masteryOutcome?.type !== 'over-limit' ? withCompletedPuzzleId(progress, navigation, puzzle.puzzleId) : progress;
+      const optimalOutcome = isMasteryRoute(navigation) || isSatoriRoute(navigation) ? selectOptimalClearOutcome({ solved, actualMoves:history.length, par:puzzle.par, route:navigation }) : null;
+      const progressAfterSolved = solved && optimalOutcome?.type !== 'over-limit' ? withCompletedPuzzleId(progress, navigation, puzzle.puzzleId) : progress;
       if (solved && navigation.mode === 'tutorial') {
         const nextStep = navigation.tutorialStep + 1;
         return nextStep < TUTORIAL_STEPS.length
@@ -1344,17 +1415,18 @@
       if (solved && navigation.routeId === 'academy-development' && navigation.puzzleIndex === 4) return makeAcademyDevelopmentAppState({ ...fallback, progress:progressAfterSolved }, 5, { type:'academy-development-four-welcome' });
       const stableCurrent = {
         ...fallback,
-        board:{ initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted:solved && masteryOutcome?.type !== 'over-limit' },
+        board:{ initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted:solved && optimalOutcome?.type !== 'over-limit' },
         progress:progressAfterSolved,
         speed,
         mastery,
       };
       // 本番クリア・デバッグ・保存復元で、上巻→中巻→下巻→十八番の表を一つだけ使う。
       if (solved && isTrainingBoundaryNavigation(navigation)) return makeTrainingBoundaryDestination(stableCurrent);
-      if (solved && isMasteryRoute(navigation) && masteryOutcome?.type === 'optimal-clear' && isMasteryBoundaryNavigation(navigation)) return makeMasteryBoundaryDestination(stableCurrent);
+      if (solved && isMasteryRoute(navigation) && optimalOutcome?.type === 'optimal-clear' && isMasteryBoundaryNavigation(navigation)) return makeMasteryBoundaryDestination(stableCurrent);
+      if (solved && isSatoriRoute(navigation) && optimalOutcome?.type === 'optimal-clear' && isSatoriBoundaryNavigation(navigation)) return makeSatoriBoundaryDestination(stableCurrent);
       return {
         ...stableCurrent,
-        ui:{ dialog:stableDialogForNavigation(raw.ui?.dialog, navigation, solved, progressAfterSolved, speed) ?? (solved && isMasteryRoute(navigation) && masteryOutcome?.type === 'over-limit' ? { type:'optimal-fail', puzzleId:puzzle.puzzleId, bestMoves:puzzle.par, actualMoves:history.length } : solved && navigation.routeId === 'academy-development' && navigation.puzzleIndex === ACADEMY_DEVELOPMENT_PUZZLES.length - 1 && hasCompletedDevelopmentClass(progressAfterSolved) ? { type:'speed-nine-required' } : solved ? clearDialogDescriptor(puzzle) : null) },
+        ui:{ dialog:stableDialogForNavigation(raw.ui?.dialog, navigation, solved, progressAfterSolved, speed) ?? ((isMasteryRoute(navigation) || isSatoriRoute(navigation)) && optimalOutcome?.type === 'over-limit' ? { type:'optimal-fail', puzzleId:puzzle.puzzleId, bestMoves:puzzle.par, actualMoves:history.length, reason:'over-limit' } : isSatoriRoute(navigation) && optimalOutcome?.type === 'move-limit' ? { type:'optimal-fail', puzzleId:puzzle.puzzleId, bestMoves:puzzle.par, actualMoves:history.length, reason:'move-limit' } : solved && navigation.routeId === 'academy-development' && navigation.puzzleIndex === ACADEMY_DEVELOPMENT_PUZZLES.length - 1 && hasCompletedDevelopmentClass(progressAfterSolved) ? { type:'speed-nine-required' } : solved ? clearDialogDescriptor(puzzle) : null) },
       };
     }
     let restoredFromStorage = false;
@@ -1388,7 +1460,7 @@
     }
     function renderStageLabel() {
       // 巻末クリアは次巻を先に保存するが、祝福が終わるまでは解いた巻の見出しを残す。
-      if ((RuntimeState.pendingTrainingBoundary || RuntimeState.pendingMasteryBoundary) && RuntimeState.phase === BoardPhase.CELEBRATING) return;
+      if ((RuntimeState.pendingTrainingBoundary || RuntimeState.pendingMasteryBoundary || RuntimeState.pendingSatoriBoundary) && RuntimeState.phase === BoardPhase.CELEBRATING) return;
       const puzzle = selectActivePuzzle();
       if (AppState.navigation.mode === 'tutorial') {
         stageLabelElement.textContent = `チュートリアル ${AppState.navigation.tutorialStep + 1} / ${TUTORIAL_STEPS.length}`;
@@ -1397,6 +1469,7 @@
       if (AppState.navigation.routeId === 'academy-application-entry') { stageLabelElement.textContent = 'だるま学園・応用クラス'; return; }
       if (isTrainingRoute()) { stageLabelElement.textContent = `だるま修行・${trainingVolumeName()} ${AppState.navigation.puzzleIndex + 1} / ${trainingCatalogForRoute(AppState.navigation.routeId).length}`; return; }
       if (isMasteryRoute()) { stageLabelElement.textContent = `${masteryVolumeName()}　${masteryVolumeForRoute(AppState.navigation.routeId).subtitle} ${AppState.navigation.puzzleIndex + 1} / 15`; return; }
+      if (isSatoriRoute()) { stageLabelElement.textContent = `悟りへの道 ${AppState.navigation.puzzleIndex + 1} / ${SATORI_PUZZLES.length}`; return; }
       const className = AppState.navigation.routeId === 'academy-development' ? '発展' : AppState.navigation.routeId === 'academy-application' ? '応用' : AppState.navigation.routeId === 'academy-basic' ? '基本' : '入門';
       const count = AppState.navigation.routeId === 'academy-development' ? ACADEMY_DEVELOPMENT_PUZZLES.length : AppState.navigation.routeId === 'academy-application' ? ACADEMY_APPLICATION_PUZZLES.length : AppState.navigation.routeId === 'academy-basic' ? ACADEMY_BASIC_PUZZLES.length : ACADEMY_INTRO_PUZZLES.length;
       stageLabelElement.textContent = `${className} ${AppState.navigation.puzzleIndex + 1} / ${count}`;
@@ -1667,11 +1740,12 @@
       });
     }
     function renderApplicationClearLessonFrame(board, context) {
-      renderBoard(context.initialCells, board, { includeAxes:true });
+      // ダイアログ内の見本は、悟り報酬で本編が傾いていても標準配置のままにする。
+      renderBoard(context.initialCells, board, { includeAxes:true, view:STANDARD_BOARD_VIEW });
       appendApplicationClearLessonTargets(board, context.puzzle);
       const triangle = context.triangle;
       const geometry = axisGeometry(triangle);
-      const grip = viewPoint({ x:geometry.grip[0], y:geometry.grip[1] });
+      const grip = viewPoint({ x:geometry.grip[0], y:geometry.grip[1] }, STANDARD_BOARD_VIEW);
       const swipe = svgElement('circle', { class:'w7-application-lesson-swipe', cx:grip.x, cy:grip.y, r:6.5, opacity:0, 'aria-hidden':'true' });
       board.append(swipe);
       return swipe;
@@ -1680,7 +1754,7 @@
       context.triangle.cells.forEach(cellIndex => {
         const cell = cells.get(cellIndex);
         if (!cell) return;
-        const frame = rotationFrameForCell(context.initialCells, context.triangleIndex, cellIndex, degrees, context.direction, settledTurns);
+        const frame = rotationFrameForCell(context.initialCells, context.triangleIndex, cellIndex, degrees, context.direction, settledTurns, STANDARD_BOARD_VIEW);
         cell.setAttribute('transform', frame.transform);
         cell.classList.toggle('w7-cell--standing', frame.standing);
         cell.classList.toggle('w7-cell--fallen', !frame.standing);
@@ -2061,6 +2135,36 @@
       const action = addAction('もう一度', intentRetryPuzzle);
       const actions = document.createElement('div'); actions.className = 'w7-dialog-actions'; actions.append(action); dialogElement.replaceChildren(title,message,actions); return action;
     }
+    function renderSatoriDialog(descriptor, title, message, addAction) {
+      if (!isSatoriRoute() || !['satori-welcome','satori-complete','optimal-fail'].includes(descriptor.type)) return null;
+      if (descriptor.type === 'optimal-fail' && !descriptor.reason && descriptor.actualMoves <= descriptor.bestMoves) return null;
+      dialogElement.className = 'w7-dialog w7-dialog--clear';
+      if (descriptor.type === 'satori-welcome') {
+        dialogElement.className = 'w7-dialog w7-dialog--welcome';
+        title.textContent = '悟りへの道';
+        message.textContent = '最短手数で、73問を解き進めよう。';
+        const action = addAction('はじめる', startSatoriRoute);
+        const actions = document.createElement('div'); actions.className = 'w7-dialog-actions'; actions.append(action); dialogElement.replaceChildren(title,message,actions); return action;
+      }
+      if (descriptor.type === 'satori-complete') {
+        title.textContent = '悟りへの道 制覇！';
+        message.textContent = '白い盤と、新しい角度の盤を手に入れました。';
+        const action = addAction('もう一度', intentRetryPuzzle);
+        const actions = document.createElement('div'); actions.className = 'w7-dialog-actions'; actions.append(action); dialogElement.replaceChildren(title,message,actions); return action;
+      }
+      // 悟り二周目はHUDだけでなく、失敗ダイアログにも最短手数を出さない。
+      const secondLap = AppState.navigation.lap === 2;
+      title.textContent = secondLap ? '最短手数ではありません' : descriptor.reason === 'move-limit' ? '最短手数に達しました' : '最短手数ではありません';
+      message.textContent = secondLap ? '悟りへの道では、最短手数で全員を起こそう。' : descriptor.reason === 'move-limit' ? 'この問題はここから最短では解けません。もう一度挑戦しよう。' : '回し方を変えて、最短手数を探そう。';
+      const action = addAction('再挑戦する', intentRetryMasteryAfterOptimalFail);
+      const actions = document.createElement('div'); actions.className = 'w7-dialog-actions'; actions.append(action);
+      if (secondLap) dialogElement.replaceChildren(title,message,actions);
+      else {
+        const detail = document.createElement('p'); detail.textContent = `最短手数 ${descriptor.bestMoves}　今回 ${descriptor.actualMoves}`;
+        dialogElement.replaceChildren(title,message,detail,actions);
+      }
+      return action;
+    }
     // 修行の導入は「読ませる見本」と「実際の盤面」を混ぜない。進める操作は保存可能な
     // ダイアログ種別だけを変え、開始時に初めて操作可能な盤面を到着演出で出す。
     function intentAdvanceTrainingDialog(type) {
@@ -2086,6 +2190,13 @@
       AppState.ui.dialog = null;
       replaceRuntimeBoardFromAppState();
       saveAppState(`mastery ${routeId} start`);
+      runArrivalEffect();
+    }
+    function startSatoriRoute() {
+      if (!isSatoriRoute()) return;
+      AppState.ui.dialog = null;
+      replaceRuntimeBoardFromAppState();
+      saveAppState('satori start');
       runArrivalEffect();
     }
     function intentOpenTrainingTip() {
@@ -2186,9 +2297,10 @@
       };
       let defaultAction;
       const trainingAction = renderTrainingDialog(descriptor, title, message, addAction);
-      const masteryAction = trainingAction ? null : renderMasteryDialog(descriptor, title, message, addAction);
-      if (trainingAction || masteryAction) {
-        defaultAction = trainingAction ?? masteryAction;
+      const satoriAction = trainingAction ? null : renderSatoriDialog(descriptor, title, message, addAction);
+      const masteryAction = trainingAction || satoriAction ? null : renderMasteryDialog(descriptor, title, message, addAction);
+      if (trainingAction || satoriAction || masteryAction) {
+        defaultAction = trainingAction ?? satoriAction ?? masteryAction;
       } else if (descriptor.type === 'welcome') {
         dialogElement.className = 'w7-dialog w7-dialog--welcome';
         title.textContent = 'だるまさんを起こして！';
@@ -2334,11 +2446,11 @@
         // この段階には旧版の問題一覧へ戻る画面がまだない。閉じて操作不能にするより、
         // 同じ問題を試せる「もう一度」を明示し、安定して触れる状態を保つ。
         addAction('もう一度', intentRetryPuzzle);
-        defaultAction = addAction('次へ', isTrainingRoute() ? intentNextTrainingPuzzle : isMasteryRoute() ? intentNextMasteryPuzzle : intentNextAcademyPuzzle);
+        defaultAction = addAction('次へ', isTrainingRoute() ? intentNextTrainingPuzzle : isMasteryRoute() ? intentNextMasteryPuzzle : isSatoriRoute() ? intentNextSatoriPuzzle : intentNextAcademyPuzzle);
       }
       // 盤面見本を自前で組み立てる歓迎ダイアログは、ここでタイトルとボタンだけに
       // 置き換えない。応用開始もこの仲間で、見本盤面を保持する。
-      if (!['welcome','academy-intro-welcome','academy-basic-welcome','academy-application-entry','academy-development-welcome','academy-development-four-welcome','speed-nine-required','training-welcome','training-upper-goal','training-upper-practice','training-middle-goal','training-middle-spin','training-lower-goal','training-tip','speed-eighteen-required','mastery-welcome','mastery-ha-welcome','mastery-kyu-welcome','optimal-fail','speed-twenty-seven-required'].includes(descriptor.type)) {
+      if (!['welcome','academy-intro-welcome','academy-basic-welcome','academy-application-entry','academy-development-welcome','academy-development-four-welcome','speed-nine-required','training-welcome','training-upper-goal','training-upper-practice','training-middle-goal','training-middle-spin','training-lower-goal','training-tip','speed-eighteen-required','mastery-welcome','mastery-ha-welcome','mastery-kyu-welcome','satori-welcome','satori-complete','optimal-fail','speed-twenty-seven-required'].includes(descriptor.type)) {
         // クリア画面は「見本 → メッセージ → クイズ」の読み順。問題番号は絶対配置なので最後でよい。
         dialogElement.replaceChildren(title, ...(clearArtwork ? [clearArtwork] : []), ...(message.textContent ? [message] : []), ...details, actions);
       }
@@ -2378,6 +2490,7 @@
       // その短い間だけの印。非表示化ではこの印を見て先に次巻の安定盤面へ寄せる。
       pendingTrainingBoundary: false,
       pendingMasteryBoundary: false,
+      pendingSatoriBoundary: false,
       masteryRemainingRevealed: false,
       nextMoveHintGeneration: 0,
       effectGeneration: 0,
@@ -2742,20 +2855,21 @@
       const bounds = boardElement.getBoundingClientRect();
       return { x:14 + (event.clientX - bounds.left) * 293 / bounds.width, y:(event.clientY - bounds.top) * 310 / bounds.height };
     }
-    function hitTestGrip(point) {
+    function hitTestGrip(point, view = selectBoardView()) {
       let bestHit = null;
       let bestScore = Infinity;
       TRIANGLES.forEach((triangle, triangleIndex) => {
         const geometry = axisGeometry(triangle);
-        const grip = { x:geometry.grip[0], y:geometry.grip[1] };
+        const grip = viewPoint({ x:geometry.grip[0], y:geometry.grip[1] }, view);
         const dx = point.x - grip.x;
         const dy = point.y - grip.y;
-        const along = dx * Math.cos(geometry.angle) + dy * Math.sin(geometry.angle);
-        const across = -dx * Math.sin(geometry.angle) + dy * Math.cos(geometry.angle);
+        const displayAngle = geometry.angle + view.rotationDegrees * Math.PI / 180;
+        const along = dx * Math.cos(displayAngle) + dy * Math.sin(displayAngle);
+        const across = -dx * Math.sin(displayAngle) + dy * Math.cos(displayAngle);
         if (along < -GRIP_HIT_RANGE.inner || along > GRIP_HIT_RANGE.outer || Math.abs(across) > GRIP_HIT_RANGE.across) return;
         const alongRange = along < 0 ? GRIP_HIT_RANGE.inner : GRIP_HIT_RANGE.outer;
         const score = (along / alongRange) ** 2 + (across / GRIP_HIT_RANGE.across) ** 2;
-        if (score < bestScore) { bestScore = score; bestHit = { triangleIndex, triangle, geometry }; }
+        if (score < bestScore) { bestScore = score; bestHit = { triangleIndex, triangle, geometry, pivot:viewPoint({ x:triangle.x, y:triangle.y }, view) }; }
       });
       return bestHit;
     }
@@ -2894,7 +3008,7 @@
       boardElement.classList.remove('is-grip-hover');
       boardGripPrompt.hidden = true;
       const effect = beginEffect(BoardPhase.DRAGGING);
-      const startAngle = Math.atan2(point.y - hit.triangle.y, point.x - hit.triangle.x);
+      const startAngle = Math.atan2(point.y - hit.pivot.y, point.x - hit.pivot.x);
       clearTutorialFeedback();
       RuntimeState.tutorialCueGeneration += 1;
       RuntimeState.drag = { pointerId:event.pointerId, triangleIndex:hit.triangleIndex, cells:Uint8Array.from(RuntimeState.cells), startedAt:performance.now(), lastAngle:startAngle, degrees:0, maxAbsDegrees:0, tutorialReleaseCue:false, tutorialStarted:false, effect };
@@ -2925,7 +3039,8 @@
       event.preventDefault();
       const point = eventToBoardPoint(event);
       const triangle = TRIANGLES[drag.triangleIndex];
-      const angle = Math.atan2(point.y - triangle.y, point.x - triangle.x);
+      const pivot = viewPoint({ x:triangle.x, y:triangle.y }, selectBoardView());
+      const angle = Math.atan2(point.y - pivot.y, point.x - pivot.x);
       const delta = normalizedDegrees((angle - drag.lastAngle) * 180 / Math.PI);
       drag.lastAngle = angle;
       drag.degrees += delta;
@@ -2968,7 +3083,8 @@
       if (cancelled) { cancelActiveEffect('pointercancel'); renderRuntime({ context:'pointercancel' }); return; }
       const elapsed = performance.now() - drag.startedAt;
       const selectedTurns = selectDragTurns(drag.degrees, elapsed, true);
-      const committedTurns = isTutorialRoute() || isAcademyAssistedRoute() ? logicalDirectionForTurns(selectedTurns) : selectedTurns;
+      const requestedCommittedTurns = isTutorialRoute() || isAcademyAssistedRoute() ? logicalDirectionForTurns(selectedTurns) : selectedTurns;
+      const committedTurns = selectCommittedTurnsWithinSatoriLimit(requestedCommittedTurns);
       const tutorialMoveAllowed = isTutorialMoveAllowed(drag.triangleIndex, committedTurns);
       const academyOutcome = isAcademyCandidateRoute() ? academyMoveOutcome(drag.triangleIndex, committedTurns, drag.maxAbsDegrees) : null;
       const applicationOutcome = isAcademyApplicationRoute() ? applicationMoveOutcome(drag.triangleIndex, committedTurns, drag.maxAbsDegrees) : null;
@@ -3026,14 +3142,16 @@
         }
         if (committedTurns) for (let count = 0; count < Math.abs(committedTurns); count += 1) commitBoardMove(drag.triangleIndex, Math.sign(committedTurns));
         if (!finishEffect(drag.effect)) return;
-        if (committedTurns && WakeSevenBoardDomain.isSolved(RuntimeState.cells)) {
+        if (committedTurns && (WakeSevenBoardDomain.isSolved(RuntimeState.cells) || isSatoriRoute())) {
           const clearOutcome = commitClearForCurrentPuzzle();
-          if (clearOutcome?.type === 'over-limit') {
-            renderRuntime({ context:'mastery optimal fail' });
+          if (clearOutcome?.type === 'over-limit' || clearOutcome?.type === 'move-limit') {
+            renderRuntime({ context:`${isSatoriRoute() ? 'satori' : 'mastery'} optimal fail` });
             return;
           }
-          runClearEffect(isTutorialRoute() ? advanceTutorialAfterClear : isAcademyAssistedRoute() ? advanceAcademyAfterClear : isTrainingRoute() ? advanceTrainingAfterClear : isMasteryRoute() ? advanceMasteryAfterClear : null);
-          return;
+          if (clearOutcome?.type === 'optimal-clear' || WakeSevenBoardDomain.isSolved(RuntimeState.cells)) {
+            runClearEffect(isTutorialRoute() ? advanceTutorialAfterClear : isAcademyAssistedRoute() ? advanceAcademyAfterClear : isTrainingRoute() ? advanceTrainingAfterClear : isMasteryRoute() ? advanceMasteryAfterClear : isSatoriRoute() ? advanceSatoriAfterClear : null);
+            return;
+          }
         }
         if (committedTurns) {
           if (isAcademyApplicationRoute()) RuntimeState.applicationFallen = new Set();
@@ -3066,13 +3184,14 @@
     function runArrivalEffect() {
       const effect = beginEffect(BoardPhase.ARRIVING);
       renderRuntime();
-      const center = viewPoint(CELL_POSITIONS[3]);
+      const view = selectBoardView();
+      const center = viewPoint(CELL_POSITIONS[3], view);
       runEffectFrames(effect, ARRIVAL_MILLISECONDS, progress => {
         boardElement.querySelectorAll('.w7-cell').forEach((cell, index) => {
-          const destination = viewPoint(CELL_POSITIONS[index]);
+          const destination = viewPoint(CELL_POSITIONS[index], view);
           const x = center.x + (destination.x - center.x) * progress;
           const y = center.y + (destination.y - center.y) * progress;
-          cell.setAttribute('transform', `translate(${x} ${y}) scale(${.72 + .28 * progress})`);
+          cell.setAttribute('transform', `translate(${x} ${y}) rotate(${view.rotationDegrees}) scale(${.72 + .28 * progress})`);
           cell.style.opacity = String(progress);
         });
       }, () => { if (finishEffect(effect)) renderRuntime({ context:'arrival' }); });
@@ -3118,17 +3237,18 @@
     function startApplicationActualBoardArrival() {
       const effect = beginEffect(BoardPhase.ARRIVING);
       const actualCells = Array.from(boardElement.querySelectorAll('.w7-cell'));
-      const center = viewPoint(CELL_POSITIONS[3]);
+      const view = selectBoardView();
+      const center = viewPoint(CELL_POSITIONS[3], view);
       actualCells.forEach(cell => {
         cell.setAttribute('transform', `translate(${center.x} ${center.y}) scale(.72)`);
         cell.style.opacity = '0';
       });
       runEffectFrames(effect, ARRIVAL_MILLISECONDS, progress => {
         actualCells.forEach((cell, index) => {
-          const destination = viewPoint(CELL_POSITIONS[index]);
+          const destination = viewPoint(CELL_POSITIONS[index], view);
           const x = center.x + (destination.x - center.x) * progress;
           const y = center.y + (destination.y - center.y) * progress;
-          cell.setAttribute('transform', `translate(${x} ${y}) scale(${.72 + .28 * progress})`);
+          cell.setAttribute('transform', `translate(${x} ${y}) rotate(${view.rotationDegrees}) scale(${.72 + .28 * progress})`);
           cell.style.opacity = String(progress);
         });
       }, () => finishApplicationIntroArrival(effect));
@@ -3251,10 +3371,29 @@
       });
       return true;
     }
-    // 名人の最短クリアは進捗やclearCommittedを触る前に、この純粋判定へ集約する。
-    function selectOptimalClearOutcome({ solved, actualMoves, par }) {
+    // 名人・悟りの最短判定は、進捗やclearCommittedを触る前にここだけで決める。
+    // 悟り二周目は4手で未解決でも失敗にする。通常盤面の「残り」は見せない。
+    function selectOptimalClearOutcome({ solved, actualMoves, par, route = AppState.navigation }) {
+      if (isSatoriRoute(route) && !solved && (route.lap === 1 ? actualMoves >= par : actualMoves >= 4)) return Object.freeze({ type:'move-limit' });
       if (!solved) return Object.freeze({ type:'not-solved' });
       return actualMoves === par ? Object.freeze({ type:'optimal-clear' }) : Object.freeze({ type:'over-limit' });
+    }
+    // 悟りでは一回の長いドラッグも、失敗を確定する手数（一周目はpar、二周目は4手）より先へ進めない。
+    // 通常モードの連続回転には触れず、悟り固有の上限だけをこのpolicyで切る。
+    function selectCommittedTurnsWithinSatoriLimit(selectedTurns, navigation = AppState.navigation, puzzle = selectPuzzleForNavigation(navigation), historyLength = RuntimeState.history.length) {
+      if (!isSatoriRoute(navigation) || selectedTurns === 0) return selectedTurns;
+      const moveLimit = navigation.lap === 1 ? puzzle.par : 4;
+      const remaining = Math.max(0, moveLimit - historyLength);
+      return Math.sign(selectedTurns) * Math.min(Math.abs(selectedTurns), remaining);
+    }
+    // 保存された最短失敗は、現在の盤面・手数・理由から同じ失敗になるものだけを復元する。
+    // 正解済み盤面に失敗ダイアログが重なるような壊れた値は、開始盤面へ安全に戻す。
+    function isValidOptimalFailDescriptor(descriptor, navigation, puzzle, solved, actualMoves) {
+      if (descriptor?.type !== 'optimal-fail' || !(isMasteryRoute(navigation) || isSatoriRoute(navigation))) return false;
+      if (descriptor.puzzleId !== navigation.puzzleId || descriptor.bestMoves !== puzzle.par || !Number.isInteger(descriptor.actualMoves) || descriptor.actualMoves !== actualMoves) return false;
+      const outcome = selectOptimalClearOutcome({ solved, actualMoves, par:puzzle.par, route:navigation });
+      return outcome.type === 'over-limit' && descriptor.reason === 'over-limit'
+        || outcome.type === 'move-limit' && descriptor.reason === 'move-limit';
     }
     function isMasteryBoundaryNavigation(navigation) {
       const catalog = masteryCatalogForRoute(navigation?.routeId);
@@ -3266,19 +3405,29 @@
       if (appState.navigation.routeId === 'mastery-ha') return makeMasteryAppState(appState, 'mastery-kyu', 0, { type:'mastery-kyu-welcome' }, lap);
       return { ...appState, ui:{ dialog:{ type:'speed-twenty-seven-required' } } };
     }
+    function isSatoriBoundaryNavigation(navigation) { return isSatoriRoute(navigation) && navigation.puzzleIndex === SATORI_PUZZLES.length - 1; }
+    // 悟り73問目の報酬はクリア確定時に一度だけ保存する。設定を後で選んだ人の選択は上書きしない。
+    function makeSatoriBoundaryDestination(appState) {
+      const firstReward = appState.navigation.lap === 1 && hasCompletedSatoriCourse(appState.progress, 1) && !appState.rewards.satoriDesignGranted;
+      const rewards = firstReward ? { ...appState.rewards, satoriDesignGranted:true } : appState.rewards;
+      const settings = firstReward ? { ...appState.settings, theme:'satori', layout:'satori-tilted', themeChosen:false, layoutChosen:false } : appState.settings;
+      return { ...appState, rewards, settings, ui:{ dialog:{ type:'satori-complete' } } };
+    }
     // クリアは演出ではなく確定コマンドで一度だけ記録する。チュートリアルは祝福後に自動遷移する。
     function commitClearForCurrentPuzzle() {
       syncBoardToAppState();
       const puzzle = selectActivePuzzle();
-      if (isMasteryRoute()) {
+      if (isMasteryRoute() || isSatoriRoute()) {
         const outcome = selectOptimalClearOutcome({ solved:WakeSevenBoardDomain.isSolved(RuntimeState.cells), actualMoves:RuntimeState.history.length, par:puzzle.par });
-        if (outcome.type === 'over-limit') {
+        if (outcome.type === 'over-limit' || outcome.type === 'move-limit') {
           AppState.board.clearCommitted = false;
-          AppState.ui.dialog = { type:'optimal-fail', puzzleId:puzzle.puzzleId, bestMoves:puzzle.par, actualMoves:RuntimeState.history.length };
+          AppState.ui.dialog = { type:'optimal-fail', puzzleId:puzzle.puzzleId, bestMoves:puzzle.par, actualMoves:RuntimeState.history.length, reason:outcome.type };
           RuntimeState.pendingMasteryBoundary = false;
-          saveAppState('mastery optimal fail');
+          RuntimeState.pendingSatoriBoundary = false;
+          saveAppState(`${isSatoriRoute() ? 'satori' : 'mastery'} optimal fail`);
           return outcome;
         }
+        if (outcome.type === 'not-solved') return outcome;
       }
       AppState.board.clearCommitted = true;
       const puzzleId = puzzle.puzzleId;
@@ -3293,8 +3442,13 @@
         if (isMasteryRoute() && isMasteryBoundaryNavigation(AppState.navigation)) {
           RuntimeState.pendingMasteryBoundary = true;
           AppState = makeMasteryBoundaryDestination(AppState);
+        } else if (isSatoriRoute() && isSatoriBoundaryNavigation(AppState.navigation)) {
+          RuntimeState.pendingMasteryBoundary = false;
+          RuntimeState.pendingSatoriBoundary = true;
+          AppState = makeSatoriBoundaryDestination(AppState);
         } else {
           RuntimeState.pendingMasteryBoundary = false;
+          RuntimeState.pendingSatoriBoundary = false;
           AppState.ui.dialog = isTutorialRoute() || isAcademyBoundaryClear() ? null : clearDialogDescriptor(puzzle);
         }
       }
@@ -3316,10 +3470,10 @@
     }
     function intentRetryPuzzle() { resetCurrentPuzzleWithoutAnimation('clear dialog retry'); }
     function intentRetryMasteryAfterOptimalFail() {
-      if (!isMasteryRoute() || AppState.ui.dialog?.type !== 'optimal-fail') return;
+      if (!(isMasteryRoute() || isSatoriRoute()) || AppState.ui.dialog?.type !== 'optimal-fail') return;
       // 最短超過後は急31〜42の確認回数をすべて回復する。
       if (masteryRemainingCheckShouldReset('optimal-fail-retry', AppState.navigation.routeId, AppState.navigation.puzzleIndex)) AppState = resetMasteryRemainingChecks(AppState, AppState.navigation.puzzleId);
-      resetCurrentPuzzleWithoutAnimation('mastery optimal fail retry');
+      resetCurrentPuzzleWithoutAnimation(`${isSatoriRoute() ? 'satori' : 'mastery'} optimal fail retry`);
     }
     function intentStartTutorial() {
       if (!isTutorialRoute()) return;
@@ -3415,6 +3569,15 @@
       saveAppState('mastery next puzzle');
       runArrivalEffect();
     }
+    function intentNextSatoriPuzzle() {
+      if (!isSatoriRoute() || !AppState.board.clearCommitted) return;
+      const nextIndex = AppState.navigation.puzzleIndex + 1;
+      if (nextIndex >= SATORI_PUZZLES.length) return;
+      AppState = makeSatoriAppState(AppState, nextIndex, null, AppState.navigation.lap);
+      replaceRuntimeBoardFromAppState();
+      saveAppState('satori next puzzle');
+      runArrivalEffect();
+    }
     // 開発中だけ使う状態移動。どのボタンも保存できる安定状態を作り、途中演出は持ち込まない。
     function debugProgressWithCompleted(...catalogs) {
       const completed = catalogs.flat();
@@ -3453,6 +3616,7 @@
       AppState = nextAppState;
       RuntimeState.pendingTrainingBoundary = false;
       RuntimeState.pendingMasteryBoundary = false;
+      RuntimeState.pendingSatoriBoundary = false;
       clearTutorialFeedback();
       replaceRuntimeBoardFromAppState();
       // 応用導入の途中表示をデバッグ遷移後へ残さない。応用のクリア状態では導入も再生しない。
@@ -3466,7 +3630,7 @@
       const puzzle = selectActivePuzzle();
       const progress = debugProgressWithCompleted(puzzle);
       const cleared = buildDebugSolvedBoard(puzzle);
-      if (isMasteryRoute()) {
+      if (isMasteryRoute() || isSatoriRoute()) {
         // 「即」も、本番と同じ最短判定・完了記録・巻末遷移を通す。
         // buildDebugSolvedBoardの履歴は常にpar手なので、ここで本番経路を安全に確認できる。
         AppState = { ...AppState, board:cleared, ui:{ dialog:null } };
@@ -3475,7 +3639,7 @@
         RuntimeState.panelIds = panelIdsFromHistory(RuntimeState.history);
         RuntimeState.phase = BoardPhase.READY;
         commitClearForCurrentPuzzle();
-        applyDebugStableState(AppState, 'debug clear current mastery');
+        applyDebugStableState(AppState, `debug clear current ${isSatoriRoute() ? 'satori' : 'mastery'}`);
         return;
       }
       // チュートリアルとクラス最終問は、本当にクリアした直後と同じ遷移先へ進める。
@@ -3589,6 +3753,44 @@
       if (completedCount === 45) { next.board = buildDebugSolvedBoard(masteryCatalogForRoute('mastery-kyu')[14]); next.ui.dialog = { type:'speed-twenty-seven-required' }; }
       applyDebugStableState(next, `debug mastery ${completedCount}`);
     }
+    // 悟り用デバッグ入口。どれも本番と同じ固定カタログ、保存形式、入口ゲートを通す。
+    function withDebugMasteryTwentySeven(appState, progress) {
+      return { ...appState, progress, speed:{ ...appState.speed, completedTrialIds:[...new Set([...appState.speed.completedTrialIds, 'training9', 'training18', 'mastery27'])] } };
+    }
+    function makeDebugSatoriProgress(lap = 1, satoriCatalog = []) {
+      const base = makeDebugMasteryProgress(MASTERY_PUZZLES);
+      if (lap === 1) return debugProgressWithCompleted(TUTORIAL_STEPS, ACADEMY_INTRO_PUZZLES, ACADEMY_BASIC_PUZZLES, ACADEMY_APPLICATION_PUZZLES, ACADEMY_DEVELOPMENT_PUZZLES, TRAINING_UPPER_PUZZLES, TRAINING_MIDDLE_PUZZLES, TRAINING_LOWER_PUZZLES, MASTERY_PUZZLES, satoriCatalog);
+      return { ...base, lap1CompletedPuzzleIds:[...new Set([...base.lap1CompletedPuzzleIds, ...SATORI_PUZZLES.map(puzzle => puzzle.puzzleId)])], lap2CompletedPuzzleIds:[...MASTERY_PUZZLES.map(puzzle => puzzle.puzzleId), ...satoriCatalog.map(puzzle => puzzle.puzzleId)] };
+    }
+    // 二周目入口は「一周目悟り完了済み」だけでなく、同じ最終報酬factoryを通した状態にする。
+    // 開発ボタンだけが報酬なしの一周目完了という不可能な保存を作らないための橋渡し。
+    function withDebugSatoriCompletionReward(appState) {
+      const progress = { ...appState.progress, lap1CompletedPuzzleIds:[...new Set([...appState.progress.lap1CompletedPuzzleIds, ...SATORI_PUZZLES.map(puzzle => puzzle.puzzleId)])] };
+      const boundary = makeSatoriBoundaryDestination({ ...appState, navigation:makeSatoriNavigation(SATORI_PUZZLES.length - 1, 1), progress });
+      return { ...appState, progress, rewards:boundary.rewards, settings:boundary.settings };
+    }
+    function intentDebugSatoriStart() {
+      const entry = makeSatoriEntryAppState(withDebugMasteryTwentySeven(AppState, makeDebugSatoriProgress()));
+      applyDebugStableState(entry, 'debug satori start');
+    }
+    function intentDebugSatoriAt(completedCount, lap = 1) {
+      const progress = makeDebugSatoriProgress(lap, SATORI_PUZZLES.slice(0, completedCount));
+      const base = withDebugMasteryTwentySeven(AppState, progress);
+      const app = lap === 2 ? withDebugSatoriCompletionReward(base) : base;
+      const index = Math.min(SATORI_PUZZLES.length - 1, completedCount);
+      const next = makeSatoriAppState(app, index, completedCount === 0 ? { type:'satori-welcome' } : null, lap);
+      applyDebugStableState(next, `debug satori lap${lap} ${completedCount}`);
+    }
+    function intentDebugSatoriFinalPreclear() {
+      const progress = makeDebugSatoriProgress(1, SATORI_PUZZLES.slice(0, -1));
+      const app = withDebugMasteryTwentySeven(AppState, progress);
+      const next = makeSatoriAppState(app, SATORI_PUZZLES.length - 1);
+      const solved = buildDebugSolvedBoard(SATORI_PUZZLES.at(-1));
+      const history = solved.history.slice(0, -1);
+      const cells = history.length ? history.at(-1).after : solved.initialCells;
+      next.board = { initialCells:[...solved.initialCells], cells:[...cells], history, clearCommitted:false };
+      applyDebugStableState(next, 'debug satori final preclear');
+    }
     // V2の現在地だけを初回導入へ戻し、旧版の保存キーは変更しない。
     function intentDebugResetToTutorial() {
       applyDebugStableState(makeDefaultAppState(), 'debug reset tutorial');
@@ -3666,6 +3868,12 @@
       RuntimeState.pendingMasteryBoundary = false;
       renderRuntime({ context:'mastery volume transition stable' });
     }
+    function advanceSatoriAfterClear() {
+      if (!RuntimeState.pendingSatoriBoundary && AppState.ui.dialog?.type !== 'satori-complete') { renderRuntime({ happy:true, context:'satori clear' }); return; }
+      replaceRuntimeBoardFromAppState();
+      RuntimeState.pendingSatoriBoundary = false;
+      renderRuntime({ context:'satori completion stable' });
+    }
     // 全員が起きた後のクリア演出。通常の回転とは別の表情と弾みだけを描く。
     function runClearEffect(afterClear = null) {
       const effect = beginEffect(BoardPhase.CELEBRATING);
@@ -3673,8 +3881,8 @@
       if (preserveApplicationPanels) {
         // 応用だけは、直前に回した物理パネルを描き直さず、そのままクリア演出に入る。
         boardElement.querySelectorAll('.w7-cell').forEach(cell => {
-          const point = viewPoint(CELL_POSITIONS[Number(cell.dataset.cellIndex)]);
-          cell.setAttribute('transform', `translate(${point.x} ${point.y})`);
+          const view = selectBoardView(), point = viewPoint(CELL_POSITIONS[Number(cell.dataset.cellIndex)], view);
+          cell.setAttribute('transform', `translate(${point.x} ${point.y}) rotate(${view.rotationDegrees})`);
           cell.querySelector('.w7-daruma use:last-child')?.setAttribute('href', '#w7-face-happy');
         });
       } else {
@@ -3692,8 +3900,8 @@
         return;
       }
       boardElement.querySelectorAll('.w7-cell').forEach((cell, index) => {
-        const point = viewPoint(CELL_POSITIONS[Number(cell.dataset.cellIndex)]);
-        const base = `translate(${point.x}px,${point.y}px)`;
+        const view = selectBoardView(), point = viewPoint(CELL_POSITIONS[Number(cell.dataset.cellIndex)], view);
+        const base = `translate(${point.x}px,${point.y}px) rotate(${view.rotationDegrees}deg)`;
         startEffectAnimation(effect, cell, [
           { transform:base },
           { transform:`${base} scale(1.13,.78) skewX(-7deg)`, offset:.2 },
@@ -3703,7 +3911,7 @@
         ], { duration:CLEAR_MILLISECONDS, delay:index * CLEAR_TILE_STAGGER_MILLISECONDS, easing:'cubic-bezier(.2,.8,.25,1)' });
       });
       // クリアの円は広がって消す。終端で初期状態へ戻さず透明を保つため、中央だけの円は残らない。
-      const center = viewPoint(CELL_POSITIONS[3]);
+      const center = viewPoint(CELL_POSITIONS[3], selectBoardView());
       const burst = svgElement('g', { class:'w7-clear-burst', 'pointer-events':'none' });
       burst.style.transformOrigin = `${center.x}px ${center.y}px`;
       burst.style.transformBox = 'view-box';
@@ -3750,6 +3958,11 @@
     debugMasteryTwentynineButton.addEventListener('click', () => intentDebugMasteryAt(29));
     debugMasteryFortyfourButton.addEventListener('click', () => intentDebugMasteryAt(44));
     debugMasteryFortyfiveButton.addEventListener('click', () => intentDebugMasteryAt(45));
+    debugSatoriStartButton.addEventListener('click', intentDebugSatoriStart);
+    debugSatoriSeventytwoButton.addEventListener('click', () => intentDebugSatoriAt(72));
+    debugSatoriFinalButton.addEventListener('click', intentDebugSatoriFinalPreclear);
+    debugSatoriLap2Button.addEventListener('click', () => intentDebugSatoriAt(0, 2));
+    debugSatoriLap2SeventytwoButton.addEventListener('click', () => intentDebugSatoriAt(72, 2));
     window.addEventListener('blur', () => {
       if (RuntimeState.invalidPointerId !== null) {
         safelyReleasePointer(RuntimeState.invalidPointerId);
@@ -3779,14 +3992,16 @@
       const academyTransition = !tutorialTransition && isAcademyBoundaryClear() && AppState.board.clearCommitted && WakeSevenBoardDomain.isSolved(AppState.board.cells);
       const trainingTransition = !tutorialTransition && !academyTransition && (RuntimeState.pendingTrainingBoundary || isTrainingBoundaryClear() && AppState.board.clearCommitted && WakeSevenBoardDomain.isSolved(AppState.board.cells));
       const masteryTransition = !tutorialTransition && !academyTransition && !trainingTransition && (RuntimeState.pendingMasteryBoundary || isMasteryBoundaryNavigation(AppState.navigation) && AppState.board.clearCommitted && WakeSevenBoardDomain.isSolved(AppState.board.cells));
+      const satoriTransition = !tutorialTransition && !academyTransition && !trainingTransition && !masteryTransition && (RuntimeState.pendingSatoriBoundary || isSatoriBoundaryNavigation(AppState.navigation) && AppState.board.clearCommitted && WakeSevenBoardDomain.isSolved(AppState.board.cells));
       if (academyTransition) advanceAcademyAfterClear();
       else if (trainingTransition) advanceTrainingAfterClear();
       else if (masteryTransition) advanceMasteryAfterClear();
-      if (!tutorialTransition && !academyTransition && !trainingTransition && !masteryTransition) {
+      else if (satoriTransition) advanceSatoriAfterClear();
+      if (!tutorialTransition && !academyTransition && !trainingTransition && !masteryTransition && !satoriTransition) {
         clearTutorialFeedback();
         RuntimeState.tutorialCueGeneration += 1;
       }
-      if (!academyTransition && !trainingTransition && !masteryTransition) {
+      if (!academyTransition && !trainingTransition && !masteryTransition && !satoriTransition) {
         // 非表示中は安定盤面だけを保存し、見える状態へ戻った時にだけ0手の応用導入を最初から再生する。
         if ((reason === 'visible' || reason === 'pageshow') && applicationShouldReplayIntro()) presentApplicationPuzzle({ context:`application ${reason}` });
         else renderRuntime({ context:tutorialTransition ?? reason });
@@ -3871,17 +4086,17 @@
       checkRuntime('continuous-rotation', WakeSevenBoardDomain.encode(twoTurns) === WakeSevenBoardDomain.encode(WakeSevenBoardDomain.roll(WakeSevenBoardDomain.roll(INITIAL_BOARD, 0, 1), 0, 1)), 'continuous rotation contract mismatch');
       const playableAppState = { ...makeDefaultAppState(), ui:{ dialog:null } };
       checkRuntime('input-gate', selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:null, cells:Uint8Array.from(INITIAL_BOARD) }, playableAppState) && !selectCanStartBoardDrag({ phase:BoardPhase.ROTATING, invalidPointerId:null, cells:Uint8Array.from(INITIAL_BOARD) }, playableAppState) && !selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:null, cells:Uint8Array.from(SOLVED_BOARD) }, playableAppState) && !selectCanStartBoardDrag({ phase:BoardPhase.READY, invalidPointerId:1, cells:Uint8Array.from(INITIAL_BOARD) }, playableAppState), 'input gate contract mismatch');
-      checkRuntime('grip-center-excluded', hitTestGrip({ x:CELL_POSITIONS[3].x, y:CELL_POSITIONS[3].y }) === null, 'board center entered grip hit range');
+      checkRuntime('grip-center-excluded', hitTestGrip({ x:CELL_POSITIONS[3].x, y:CELL_POSITIONS[3].y }, STANDARD_BOARD_VIEW) === null, 'board center entered grip hit range');
       const gripPoint = (geometry, along, across = 0) => ({ x:geometry.grip[0] + Math.cos(geometry.angle) * along - Math.sin(geometry.angle) * across, y:geometry.grip[1] + Math.sin(geometry.angle) * along + Math.cos(geometry.angle) * across });
       const allGripRegionsMatch = TRIANGLES.every((triangle, triangleIndex) => {
         const geometry = axisGeometry(triangle);
-        return hitTestGrip(gripPoint(geometry, 0))?.triangleIndex === triangleIndex
-          && hitTestGrip(gripPoint(geometry, -27))?.triangleIndex === triangleIndex
-          && hitTestGrip(gripPoint(geometry, -29)) === null
-          && hitTestGrip(gripPoint(geometry, 33))?.triangleIndex === triangleIndex
-          && hitTestGrip(gripPoint(geometry, 35)) === null
-          && hitTestGrip(gripPoint(geometry, 0, 39))?.triangleIndex === triangleIndex
-          && hitTestGrip(gripPoint(geometry, 0, 41)) === null;
+        return hitTestGrip(gripPoint(geometry, 0), STANDARD_BOARD_VIEW)?.triangleIndex === triangleIndex
+          && hitTestGrip(gripPoint(geometry, -27), STANDARD_BOARD_VIEW)?.triangleIndex === triangleIndex
+          && hitTestGrip(gripPoint(geometry, -29), STANDARD_BOARD_VIEW) === null
+          && hitTestGrip(gripPoint(geometry, 33), STANDARD_BOARD_VIEW)?.triangleIndex === triangleIndex
+          && hitTestGrip(gripPoint(geometry, 35), STANDARD_BOARD_VIEW) === null
+          && hitTestGrip(gripPoint(geometry, 0, 39), STANDARD_BOARD_VIEW)?.triangleIndex === triangleIndex
+          && hitTestGrip(gripPoint(geometry, 0, 41), STANDARD_BOARD_VIEW) === null;
       });
       checkRuntime('all-grip-regions', allGripRegionsMatch, 'one or more grip hit regions mismatched');
       let settledFramesMatch = true;
@@ -3891,17 +4106,17 @@
         triangle.cells.forEach(cellIndex => {
           const destinationIndex = rotateTriangleCellIndex(triangle, cellIndex, direction);
           const expectedPoint = viewPoint(CELL_POSITIONS[destinationIndex]);
-          const settled = rotationFrameForCell(INITIAL_BOARD, triangleIndex, cellIndex, direction * TURN_DEGREES, direction, direction);
+          const settled = rotationFrameForCell(INITIAL_BOARD, triangleIndex, cellIndex, direction * TURN_DEGREES, direction, direction, STANDARD_BOARD_VIEW);
           settledFramesMatch &&= Math.hypot(settled.point.x - expectedPoint.x, settled.point.y - expectedPoint.y) < .0001
             && settled.darumaOrientation === rolled[destinationIndex]
             && settled.atSettledPosition
-            && !settled.transform.includes(' rotate(');
+            && settled.transform.endsWith('rotate(0)');
           const originalPoint = viewPoint(CELL_POSITIONS[cellIndex]);
-          const cancelled = rotationFrameForCell(INITIAL_BOARD, triangleIndex, cellIndex, 0, 0, 0);
+          const cancelled = rotationFrameForCell(INITIAL_BOARD, triangleIndex, cellIndex, 0, 0, 0, STANDARD_BOARD_VIEW);
           cancelledFramesMatch &&= Math.hypot(cancelled.point.x - originalPoint.x, cancelled.point.y - originalPoint.y) < .0001
             && cancelled.darumaOrientation === INITIAL_BOARD[cellIndex]
             && cancelled.atSettledPosition
-            && !cancelled.transform.includes(' rotate(');
+            && cancelled.transform.endsWith('rotate(0)');
         });
       }));
       checkRuntime('settled-frame-alignment', settledFramesMatch, 'rotation final frame differs from canonical board');
@@ -3910,7 +4125,7 @@
       const wakeCellIndex = TRIANGLES[0].cells[0];
       wakeCells[wakeCellIndex] = 2;
       const wakesAtDegrees = TURN_DEGREES - DARUMA_UPRIGHT_WINDOW_DEGREES;
-      checkRuntime('wake-angle-window', DARUMA_UPRIGHT_WINDOW_DEGREES === 22 && !rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees - 1).standing && rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees).standing, 'daruma wake angle window changed');
+      checkRuntime('wake-angle-window', DARUMA_UPRIGHT_WINDOW_DEGREES === 22 && !rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees - 1, 0, null, STANDARD_BOARD_VIEW).standing && rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees, 0, null, STANDARD_BOARD_VIEW).standing, 'daruma wake angle window changed');
       const happyPaths = Array.from(document.querySelectorAll('#w7-face-happy path')).map(path => path.getAttribute('d'));
       checkRuntime('clear-face-asset', happyPaths.join('|') === 'M-13 -14C-11 -17 -6 -17 -4 -14|M4 -14C6 -17 11 -17 13 -14|M-13 -4Q-8 -11 -3 -4|M3 -4Q8 -11 13 -4|M-5 5C-3 8 3 8 5 5', 'clear face asset mismatch');
       const applySolution = (puzzle, solution) => solution.reduce((cells, move) => WakeSevenBoardDomain.roll(cells, move.triangleIndex, move.direction), Uint8Array.from(puzzleInitialCells(puzzle)));
@@ -4212,7 +4427,7 @@
       const masteryKyuDestination = makeMasteryBoundaryDestination({ ...masteryKyuFinal, progress:withCompletedPuzzleId(masteryKyuFinal.progress, masteryKyuFinal.navigation, masteryKyuFinal.navigation.puzzleId) });
       checkRuntime('mastery-boundaries', masteryJoDestination.navigation.routeId === 'mastery-ha' && masteryJoDestination.ui.dialog?.type === 'mastery-ha-welcome'
         && masteryKyuDestination.navigation.routeId === 'mastery-kyu' && masteryKyuDestination.ui.dialog?.type === 'speed-twenty-seven-required', 'mastery volume boundary or twenty-seven destination is invalid');
-      const masteryFail = makeMasteryAppState(masteryGateOpen, 'mastery-jo', 0, { type:'optimal-fail', puzzleId:'mastery-jo-001', bestMoves:3, actualMoves:5 });
+      const masteryFail = makeMasteryAppState(masteryGateOpen, 'mastery-jo', 0, { type:'optimal-fail', puzzleId:'mastery-jo-001', bestMoves:3, actualMoves:5, reason:'over-limit' });
       const masterySolved = buildDebugSolvedBoard(masteryCatalogForRoute('mastery-jo')[0]);
       const masteryFailInitial = puzzleInitialCells(masteryCatalogForRoute('mastery-jo')[0]);
       const masteryFailDetour = Array.from(WakeSevenBoardDomain.roll(masteryFailInitial, 0, 1));
@@ -4221,6 +4436,67 @@
       const masteryRewardBoundary = makeMasteryBoundaryDestination({ ...masteryKyuFinal, progress:withCompletedPuzzleId(masteryKyuFinal.progress, masteryKyuFinal.navigation, masteryKyuFinal.navigation.puzzleId) });
       checkRuntime('mastery-dialog-restore', restoredMasteryFail.ui.dialog?.type === 'optimal-fail' && !restoredMasteryFail.board.clearCommitted && restoredMasteryFail.board.history.length === 5, 'mastery optimal-fail did not restore as the same failure dialog');
       checkRuntime('mastery-reward-boundary', masteryRewardBoundary.rewards.masterGoldGranted === false && masteryRewardBoundary.settings.theme !== 'gold' && !masteryRewardBoundary.speed.completedTrialIds.includes('mastery27'), 'mastery completion granted a P7 reward or completed mastery27');
+      const satoriCatalogValid = SATORI_PUZZLES.length === 73
+        && new Set(SATORI_PUZZLES.map(puzzle => puzzle.puzzleId)).size === 73
+        && new Set(SATORI_PUZZLES.map(puzzle => puzzle.state)).size === 73
+        && new Set(SATORI_PUZZLES.map(puzzle => canonicalStateForCells(puzzleInitialCells(puzzle)))).size === 73
+        && SATORI_PUZZLES.every((puzzle, index) => puzzle.puzzleId === `satori-${String(index + 1).padStart(3, '0')}` && selectDistance(puzzleInitialCells(puzzle)) === puzzle.par)
+        && SATORI_PUZZLES.filter(puzzle => puzzle.par === 1).length === 1
+        && SATORI_PUZZLES.filter(puzzle => puzzle.par === 2).length === 9
+        && SATORI_PUZZLES.filter(puzzle => puzzle.par === 3).length === 39
+        && SATORI_PUZZLES.filter(puzzle => puzzle.par === 4).length === 24;
+      checkRuntime('satori-catalog', satoriCatalogValid, 'satori fixed IDs, shortest distances, or par distribution is invalid');
+      const satoriGateBase = withDebugMasteryTwentySeven(makeDefaultAppState(), makeDebugSatoriProgress());
+      const satoriLapTwoBlocked = { ...satoriGateBase, navigation:makeSatoriNavigation(0, 2), progress:{ ...satoriGateBase.progress, lap2CompletedPuzzleIds:[...MASTERY_PUZZLES.map(puzzle => puzzle.puzzleId)] } };
+      const satoriLapTwoOpen = { ...satoriLapTwoBlocked, progress:{ ...satoriLapTwoBlocked.progress, lap1CompletedPuzzleIds:[...new Set([...satoriLapTwoBlocked.progress.lap1CompletedPuzzleIds, ...SATORI_PUZZLES.map(puzzle => puzzle.puzzleId)])] } };
+      checkRuntime('satori-entry-gate', selectSatoriEntryGate(makeDefaultAppState(), 1) === 'mastery-incomplete'
+        && selectSatoriEntryGate({ ...satoriGateBase, speed:{ completedTrialIds:['training9','training18'] } }, 1) === 'speed-twenty-seven-required'
+        && selectSatoriEntryGate(satoriGateBase, 1) === 'allowed'
+        && selectSatoriEntryGate(satoriLapTwoBlocked, 2) === 'satori-lap1-incomplete'
+        && selectSatoriEntryGate(satoriLapTwoOpen, 2) === 'allowed', 'satori entry gate does not enforce mastery, twenty-seven, and first-lap requirements');
+      const satoriRouteOne = makeSatoriNavigation(0, 1), satoriRouteTwo = makeSatoriNavigation(0, 2);
+      checkRuntime('satori-move-limit', selectOptimalClearOutcome({ solved:false, actualMoves:1, par:1, route:satoriRouteOne }).type === 'move-limit'
+        && selectOptimalClearOutcome({ solved:false, actualMoves:3, par:3, route:satoriRouteOne }).type === 'move-limit'
+        && selectOptimalClearOutcome({ solved:false, actualMoves:3, par:3, route:satoriRouteTwo }).type === 'not-solved'
+        && selectOptimalClearOutcome({ solved:false, actualMoves:4, par:3, route:satoriRouteTwo }).type === 'move-limit'
+        && selectOptimalClearOutcome({ solved:true, actualMoves:3, par:3, route:satoriRouteOne }).type === 'optimal-clear'
+        && selectCommittedTurnsWithinSatoriLimit(4, satoriRouteOne, { par:3 }, 2) === 1
+        && selectCommittedTurnsWithinSatoriLimit(-4, satoriRouteTwo, { par:3 }, 3) === -1
+        && selectCommittedTurnsWithinSatoriLimit(4, makeMasteryNavigation('mastery-jo', 0, 1), { par:3 }, 2) === 4, 'satori shortest-failure policy or multi-turn limit is invalid');
+      const satoriFinal = makeSatoriAppState(satoriGateBase, 72, null, 1);
+      satoriFinal.board = buildDebugSolvedBoard(SATORI_PUZZLES[72]);
+      satoriFinal.progress = { ...satoriFinal.progress, lap1CompletedPuzzleIds:[...new Set([...satoriFinal.progress.lap1CompletedPuzzleIds, ...SATORI_PUZZLES.map(puzzle => puzzle.puzzleId)])] };
+      const satoriReward = makeSatoriBoundaryDestination(satoriFinal);
+      const satoriRewardAgain = makeSatoriBoundaryDestination(satoriReward);
+      const restoredSatoriFinal = normalizePersistentAppState(satoriFinal);
+      checkRuntime('satori-final-reward', satoriReward.rewards.satoriDesignGranted && satoriReward.settings.theme === 'satori' && satoriReward.settings.layout === 'satori-tilted'
+        && !satoriReward.settings.themeChosen && !satoriReward.settings.layoutChosen
+        && selectSatori73Unlocked(satoriReward.progress) && !satoriReward.speed.completedTrialIds.includes('satori73')
+        && satoriRewardAgain.settings.theme === 'satori' && satoriRewardAgain.settings.layout === 'satori-tilted'
+        && restoredSatoriFinal.ui.dialog?.type === 'satori-complete' && restoredSatoriFinal.rewards.satoriDesignGranted, 'satori final reward was not idempotent, did not restore, or granted a future trial');
+      const satoriFailPuzzle = SATORI_PUZZLES[0];
+      const satoriFailInitial = puzzleInitialCells(satoriFailPuzzle);
+      const satoriWrongMove = TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction })))
+        .find(move => !WakeSevenBoardDomain.isSolved(WakeSevenBoardDomain.roll(satoriFailInitial, move.triangleIndex, move.direction)));
+      const satoriWrongAfter = satoriWrongMove && WakeSevenBoardDomain.roll(satoriFailInitial, satoriWrongMove.triangleIndex, satoriWrongMove.direction);
+      const satoriMoveLimitState = makeSatoriAppState(satoriGateBase, 0, { type:'optimal-fail', puzzleId:satoriFailPuzzle.puzzleId, bestMoves:1, actualMoves:1, reason:'move-limit' });
+      if (satoriWrongMove && satoriWrongAfter) satoriMoveLimitState.board = { initialCells:[...satoriFailInitial], cells:Array.from(satoriWrongAfter), history:[{ triangleIndex:satoriWrongMove.triangleIndex, direction:satoriWrongMove.direction, before:[...satoriFailInitial], after:Array.from(satoriWrongAfter) }], clearCommitted:false };
+      const restoredSatoriMoveLimit = normalizePersistentAppState(satoriMoveLimitState);
+      const brokenSatoriNavigation = normalizePersistentAppState({ ...makeSatoriAppState(satoriGateBase, 10), navigation:{ ...makeSatoriNavigation(10), puzzleIndex:99, puzzleId:'broken-satori' } });
+      const corruptSatoriFail = { ...satoriMoveLimitState, board:buildDebugSolvedBoard(satoriFailPuzzle), ui:{ dialog:{ type:'optimal-fail', puzzleId:satoriFailPuzzle.puzzleId, bestMoves:1, actualMoves:1, reason:'over-limit' } } };
+      const rejectedCorruptSatoriFail = normalizePersistentAppState(corruptSatoriFail);
+      const corruptSatoriMoveLimitBoard = normalizePersistentAppState({ ...satoriMoveLimitState, board:{ ...satoriMoveLimitState.board, cells:[9, 9, 9] } });
+      checkRuntime('satori-save-and-recovery', restoredSatoriMoveLimit.ui.dialog?.type === 'optimal-fail' && restoredSatoriMoveLimit.ui.dialog?.reason === 'move-limit'
+        && !restoredSatoriMoveLimit.board.clearCommitted && restoredSatoriMoveLimit.board.history.length === 1
+        && brokenSatoriNavigation.navigation.routeId === 'satori' && brokenSatoriNavigation.navigation.puzzleIndex === 0
+        && rejectedCorruptSatoriFail.board.history.length === 0 && !rejectedCorruptSatoriFail.board.clearCommitted
+        && corruptSatoriMoveLimitBoard.board.history.length === 0 && corruptSatoriMoveLimitBoard.ui.dialog === null, 'satori failure descriptor, navigation recovery, or corrupt save handling is invalid');
+      const tiltedCenter = viewPoint(CELL_POSITIONS[3], SATORI_BOARD_VIEW);
+      const tiltedDaruma = svgElement('g'); appendDaruma(tiltedDaruma, 0, false, SATORI_BOARD_VIEW);
+      const tiltedGrip = viewPoint({ x:axisGeometry(TRIANGLES[0]).grip[0], y:axisGeometry(TRIANGLES[0]).grip[1] }, SATORI_BOARD_VIEW);
+      const tiltedHit = hitTestGrip(tiltedGrip, SATORI_BOARD_VIEW);
+      checkRuntime('satori-board-view', tiltedCenter.x === CELL_POSITIONS[3].x && tiltedCenter.y === CELL_POSITIONS[3].y && tiltedDaruma.firstChild?.getAttribute('transform') === 'rotate(30)'
+        && tiltedHit?.triangleIndex === 0 && WakeSevenBoardDomain.encode(WakeSevenBoardDomain.roll(INITIAL_BOARD, tiltedHit.triangleIndex, 1)) === WakeSevenBoardDomain.encode(WakeSevenBoardDomain.roll(INITIAL_BOARD, 0, 1)), 'satori display rotation changed board logic, grip mapping, or upright daruma compensation');
       const preservedProgress = TUTORIAL_STEPS[0].puzzleId;
       const brokenBoard = normalizePersistentAppState({ ...academyClear, board:{ ...academyClear.board, cells:[9, 9, 9] }, progress:{ tutorialCompleted:true, tutorialCompletedPuzzleIds:[preservedProgress], lap1CompletedPuzzleIds:[], lap2CompletedPuzzleIds:[] }, rewards:{ masterGoldGranted:true, satoriDesignGranted:false }, settings:{ theme:'gold', layout:'satori-tilted' } });
       checkRuntime('broken-board-keeps-independent-state', sameCells(brokenBoard.board.cells, academyInitial) && brokenBoard.progress.tutorialCompletedPuzzleIds.includes(preservedProgress) && brokenBoard.settings.theme === 'gold' && brokenBoard.settings.layout === 'standard', 'broken board fallback changed independent progress or reward settings');
@@ -4260,7 +4536,7 @@
       checkRuntime('tutorial-final-reload-enters-academy', restoredFinalTutorial.navigation.routeId === 'academy-intro' && restoredFinalTutorial.progress.tutorialCompleted && restoredFinalTutorial.ui.dialog?.type === 'academy-enroll', 'final tutorial reload did not enter academy intro');
       const malformedPuzzleContext = normalizePersistentAppState({ ...midTutorial, navigation:{ ...midTutorial.navigation, puzzleId:'unknown-puzzle' } });
       checkRuntime('malformed-tutorial-context-fallback', malformedPuzzleContext.navigation.tutorialStep === 0 && sameCells(malformedPuzzleContext.board.cells, puzzleInitialCells(tutorialStepAt(0))), 'malformed tutorial context did not fall back safely');
-      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:ACADEMY_INTRO_PUZZLES.length + ACADEMY_BASIC_PUZZLES.length + ACADEMY_APPLICATION_PUZZLES.length + ACADEMY_DEVELOPMENT_PUZZLES.length + TRAINING_UPPER_PUZZLES.length + TRAINING_MIDDLE_PUZZLES.length + TRAINING_LOWER_PUZZLES.length + MASTERY_PUZZLES.length, tutorialStepCount:TUTORIAL_STEPS.length, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
+      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:ACADEMY_INTRO_PUZZLES.length + ACADEMY_BASIC_PUZZLES.length + ACADEMY_APPLICATION_PUZZLES.length + ACADEMY_DEVELOPMENT_PUZZLES.length + TRAINING_UPPER_PUZZLES.length + TRAINING_MIDDLE_PUZZLES.length + TRAINING_LOWER_PUZZLES.length + MASTERY_PUZZLES.length + SATORI_PUZZLES.length, tutorialStepCount:TUTORIAL_STEPS.length, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
     }
     // 起動時に盤面ルールと操作の前提を確認してから表示する
     const selftestResult = runSelftest();
