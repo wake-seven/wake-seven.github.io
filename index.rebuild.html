@@ -38,6 +38,10 @@
     .w7-axis-grip { fill:#7dd8f5; stroke:#3e9bc2; stroke-width:1.25; pointer-events:none; filter:drop-shadow(0 1px 1px rgb(0 0 0 / .25)); }
     /* チュートリアルで次に回す棒。盤面の入力判定は共通のまま、見た目だけを強調する。 */
     .w7-axis-layer [data-axis].w7-tutorial-target .w7-axis-grip { fill:#7dd8f5; stroke:#3e9bc2; stroke-width:1.25; filter:drop-shadow(0 0 5px rgb(98 215 244 / .78)); animation:w7-tutorial-grip-pulse 1.2s ease-in-out infinite; }
+    /* 修行と名人・序の「次の1手」。番号を知らなくても、回す三枚・棒・向きが盤面だけで分かるようにする。 */
+    .w7-cell.w7-next-move-target .w7-cell-hex { stroke:#bff0ff; stroke-width:3; filter:drop-shadow(0 0 5px rgb(98 215 244 / .72)); }
+    .w7-axis-layer g[data-axis].w7-next-move-target .w7-axis-grip { fill:#bff0ff; stroke:#3e9bc2; stroke-width:2; filter:drop-shadow(0 0 7px rgb(98 215 244 / .95)); animation:w7-tutorial-grip-pulse .75s ease-in-out infinite; }
+    .w7-axis-pivot.w7-next-move-target { opacity:1; filter:drop-shadow(0 0 5px rgb(201 165 78 / .9)); }
     /* 最初の補助では、正解の棒以外を見せない。探索の段階ではこのclassを付けない。 */
     .w7-axis-layer g[data-axis].w7-tutorial-hidden { opacity:0; }
     /* 入門編は「どの棒か」を考える画面。候補外と、誤って消えた棒は描画も入力も外す。 */
@@ -92,11 +96,11 @@
     .w7-application-shape-title { fill:var(--washi); font:800 17px "A1 Gothic","Hiragino Kaku Gothic ProN",sans-serif; text-anchor:middle; }
     .w7-application-shape-name { fill:#8bcde0; font:800 21px "A1 Gothic","Hiragino Kaku Gothic ProN",sans-serif; text-anchor:middle; }
     /* 指定方向を伝える、旧版と同じ水色／白縁の弧。盤面の入力とは独立した表示だけのSVG。 */
-    .w7-tutorial-arrow { pointer-events:none; }
-    .w7-tutorial-arrow .w7-arrow-border { fill:none; stroke:#bff0ff; stroke-width:8.5; stroke-linecap:round; }
-    .w7-tutorial-arrow .w7-arrow-line { fill:none; stroke:#62b8d2; stroke-width:5.5; stroke-linecap:round; filter:drop-shadow(0 0 3px rgb(22 40 60 / .9)); }
-    .w7-tutorial-arrow .w7-arrow-head { fill:#62b8d2; stroke:#bff0ff; stroke-width:1.5; stroke-linejoin:round; animation:w7-tutorial-grip-pulse 1.2s ease-in-out infinite; }
-    .w7-board-controls { display:flex; justify-content:center; gap:0.75rem; }
+    .w7-tutorial-arrow,.w7-next-move-arrow { pointer-events:none; }
+    .w7-tutorial-arrow .w7-arrow-border,.w7-next-move-arrow .w7-arrow-border { fill:none; stroke:#bff0ff; stroke-width:8.5; stroke-linecap:round; }
+    .w7-tutorial-arrow .w7-arrow-line,.w7-next-move-arrow .w7-arrow-line { fill:none; stroke:#62b8d2; stroke-width:5.5; stroke-linecap:round; filter:drop-shadow(0 0 3px rgb(22 40 60 / .9)); }
+    .w7-tutorial-arrow .w7-arrow-head,.w7-next-move-arrow .w7-arrow-head { fill:#62b8d2; stroke:#bff0ff; stroke-width:1.5; stroke-linejoin:round; animation:w7-tutorial-grip-pulse 1.2s ease-in-out infinite; }
+    .w7-board-controls { display:flex; justify-content:center; flex-wrap:wrap; gap:0.75rem; }
     .w7-board-controls[hidden] { display:none; }
     .w7-board-button { min-width:7rem; min-height:2.75rem; border:1px solid #c0ac88; border-radius:999px; padding:0.55rem 1rem; background:var(--washi); color:#2d2925; font:inherit; font-weight:700; box-shadow:0 2px 0 rgb(0 0 0 / .24); cursor:pointer; }
     .w7-training-tip-button { min-width:6.4rem; border-color:#62b8d2; background:#dff4f8; }
@@ -209,6 +213,7 @@
       </div>
       <div class="w7-board-controls" aria-label="盤面の操作">
         <button id="w7-training-tip" class="w7-board-button w7-training-tip-button" type="button" hidden>コツを見る</button>
+        <button id="w7-next-move-hint" class="w7-board-button" type="button" hidden>次の1手を見る</button>
         <button id="w7-board-undo" class="w7-board-button" type="button" data-w7-action="undo">一手戻す</button>
         <button id="w7-board-restart" class="w7-board-button" type="button" data-w7-action="restart">やり直す</button>
       </div>
@@ -227,6 +232,13 @@
       <button id="w7-debug-training-middle" class="w7-debug-button" type="button" title="修行中巻を最初から">修中</button>
       <button id="w7-debug-training-lower" class="w7-debug-button" type="button" title="修行下巻を最初から">修下</button>
       <button id="w7-debug-finish-training" class="w7-debug-button" type="button" title="修行完了直後（速解き十八番勝負要求）">修完</button>
+      <button id="w7-debug-mastery-jo" class="w7-debug-button" type="button" title="名人への道・序を最初から">名序</button>
+      <button id="w7-debug-mastery-ha" class="w7-debug-button" type="button" title="名人への道・破を最初から">名破</button>
+      <button id="w7-debug-mastery-kyu" class="w7-debug-button" type="button" title="名人への道・急を最初から">名急</button>
+      <button id="w7-debug-mastery-fourteen" class="w7-debug-button" type="button" title="名人14問完了後">名14</button>
+      <button id="w7-debug-mastery-twentynine" class="w7-debug-button" type="button" title="名人29問完了後">名29</button>
+      <button id="w7-debug-mastery-fortyfour" class="w7-debug-button" type="button" title="名人44問完了後">名44</button>
+      <button id="w7-debug-mastery-fortyfive" class="w7-debug-button" type="button" title="名人45問完了直後（二十七番要求）">名45</button>
     </div>
   </main>
   <div id="w7-dialog-backdrop" class="w7-dialog-backdrop" hidden>
@@ -458,6 +470,13 @@
     const TRAINING_UPPER_PUZZLES = Object.freeze([1812,882,1086,468,1004,44,550,165,783].map((state, index) => Object.freeze({ puzzleId:`training-upper-${String(index + 1).padStart(3,'0')}`, classId:'training-upper', state, par:2, patternPosition:index + 1 })));
     const TRAINING_MIDDLE_PUZZLES = Object.freeze([21,15,99,13,39,93,91,117,380].map((state, index) => Object.freeze({ puzzleId:`training-middle-${String(index + 1).padStart(3,'0')}`, classId:'training-middle', state, par:3 })));
     const TRAINING_LOWER_PUZZLES = Object.freeze([104,358,426,582,332,344,325,146,200].map((state, index) => Object.freeze({ puzzleId:`training-lower-${String(index + 1).padStart(3,'0')}`, classId:'training-lower', state, par:4 })));
+    // 名人への道は三巻を一つの固定カタログに集める。IDや順序をsolverの列挙順から作らない。
+    const MASTERY_VOLUMES = Object.freeze([
+      Object.freeze({ routeId:'mastery-jo', sectionId:'jo', name:'名人への道・序', subtitle:'七転八起', states:Object.freeze([5,150,377,176,202,382,457,390,178,420,148,52,106,122,619]), par:3 }),
+      Object.freeze({ routeId:'mastery-ha', sectionId:'ha', name:'名人への道・破', subtitle:'面壁九年', states:Object.freeze([395,372,1105,611,98,617,348,356,442,132,410,449,362,338,580]), par:3 }),
+      Object.freeze({ routeId:'mastery-kyu', sectionId:'kyu', name:'名人への道・急', subtitle:'不立文字', states:Object.freeze([1159,403,1157,1097,455,401,1066,1079,1183,346,418,340,1391,1121,364]), par:4 }),
+    ].map(volume => Object.freeze({ ...volume, puzzles:Object.freeze(volume.states.map((state, index) => Object.freeze({ puzzleId:`${volume.routeId}-${String(index + 1).padStart(3,'0')}`, classId:'mastery', state, par:volume.par, volumeId:volume.sectionId }))) })));
+    const MASTERY_PUZZLES = Object.freeze(MASTERY_VOLUMES.flatMap(volume => volume.puzzles));
     const TRAINING_GOAL_SHAPES = Object.freeze({
       upper:Object.freeze(TWO_MOVE_SHAPE_CATALOG.filter(shape => [1,2,5,6,8,9].includes(shape.patternPosition)).map(shape => Object.freeze({ state:shape.baseState, name:shape.name }))),
       middle:Object.freeze([[21,'猫の耳'],[99,'両岸'],[13,'お皿'],[39,'ネックレス'],[93,'直角三角形'],[117,'一直線'],[380,'手裏剣']].map(([state,name]) => Object.freeze({ state,name }))),
@@ -484,8 +503,8 @@
       Object.freeze({ puzzleId:'tutorial-005', state:1449, par:2, cue:'chain-direction', solution:Object.freeze([Object.freeze({ triangleIndex:4, direction:1 }), Object.freeze({ triangleIndex:3, direction:1 })]) }),
     ]);
     const APP_STORAGE_KEY = 'wake7-rebuild-v2';
-    const APP_SCHEMA_VERSION = 3;
-    const APP_CATALOG_VERSION = 5;
+    const APP_SCHEMA_VERSION = 4;
+    const APP_CATALOG_VERSION = 6;
     // 画面上の見た目だけを変える座標変換。盤面ルールや履歴は変えない。
     /* The board's logic always uses CELL_POSITIONS; this display transform is presentation-only. */
     const BOARD_VIEW = Object.freeze({ rotationDegrees: 0, translateX: 0, translateY: 0 });
@@ -529,6 +548,7 @@
     const academyClearSuffixElement = document.querySelector('#w7-academy-clear-suffix');
     const boardControlsElement = document.querySelector('.w7-board-controls');
     const trainingTipButton = document.querySelector('#w7-training-tip');
+    const nextMoveHintButton = document.querySelector('#w7-next-move-hint');
     const boardUndoButton = document.querySelector('#w7-board-undo');
     const boardRestartButton = document.querySelector('#w7-board-restart');
     const debugResetButton = document.querySelector('#w7-debug-reset');
@@ -544,6 +564,13 @@
     const debugTrainingMiddleButton = document.querySelector('#w7-debug-training-middle');
     const debugTrainingLowerButton = document.querySelector('#w7-debug-training-lower');
     const debugFinishTrainingButton = document.querySelector('#w7-debug-finish-training');
+    const debugMasteryJoButton = document.querySelector('#w7-debug-mastery-jo');
+    const debugMasteryHaButton = document.querySelector('#w7-debug-mastery-ha');
+    const debugMasteryKyuButton = document.querySelector('#w7-debug-mastery-kyu');
+    const debugMasteryFourteenButton = document.querySelector('#w7-debug-mastery-fourteen');
+    const debugMasteryTwentynineButton = document.querySelector('#w7-debug-mastery-twentynine');
+    const debugMasteryFortyfourButton = document.querySelector('#w7-debug-mastery-fortyfour');
+    const debugMasteryFortyfiveButton = document.querySelector('#w7-debug-mastery-fortyfive');
     const boardGripPrompt = document.querySelector('#w7-grip-prompt');
     const academyCalloutElement = document.querySelector('#w7-academy-callout');
     const applicationTargetPreviewElement = document.querySelector('#w7-application-target-preview');
@@ -787,7 +814,7 @@
     function renderBoardStatus(cells = RuntimeState.cells, moveDelta = 0) {
       boardMovesElement.textContent = String(RuntimeState.history.length + moveDelta);
       const distance = selectDistance(cells);
-      boardRemainingElement.textContent = distance === null ? '—' : String(distance);
+      boardRemainingElement.textContent = isMasteryRoute() && AppState.navigation.routeId === 'mastery-kyu' && !RuntimeState.masteryRemainingRevealed ? '?' : distance === null ? '—' : String(distance);
     }
     function renderBoardPhase() {
       boardElement.dataset.phase = RuntimeState.phase;
@@ -797,11 +824,23 @@
       boardElement.dataset.solved = String(WakeSevenBoardDomain.isSolved(RuntimeState.cells));
       const ready = RuntimeState.phase === BoardPhase.READY && RuntimeState.invalidPointerId === null && selectCanInteractWithBoard();
       boardUndoButton.disabled = !ready || RuntimeState.history.length === 0;
-      boardRestartButton.disabled = !ready || (RuntimeState.history.length === 0 && WakeSevenBoardDomain.encode(RuntimeState.cells) === selectActivePuzzle().state);
+      boardRestartButton.disabled = !ready || !selectCanRestartCurrentPuzzle();
       // チュートリアルと学園（入門・基本・応用・発展）は一手ごとの学習導線に絞る。Undo/Restartは出さない。
       boardControlsElement.hidden = AppState.navigation.mode === 'tutorial' || isAcademyAssistedRoute();
-      trainingTipButton.hidden = !isTrainingRoute() || AppState.navigation.routeId !== 'training-upper';
+      const masteryAction = isMasteryRoute();
+      trainingTipButton.hidden = !isTrainingUpperRoute();
+      trainingTipButton.textContent = 'コツを見る';
       trainingTipButton.disabled = !ready;
+      nextMoveHintButton.hidden = !isTrainingRoute() && !masteryAction;
+      if (masteryAction) {
+        const limit = AppState.navigation.routeId === 'mastery-kyu' ? masteryRemainingCheckLimit(AppState.navigation.puzzleIndex) : 0;
+        const used = masteryRemainingChecksUsed();
+        nextMoveHintButton.textContent = AppState.navigation.routeId === 'mastery-jo' ? '次の1手を見る' : AppState.navigation.routeId === 'mastery-ha' ? 'ヒントが使えなくなります' : `残り手数 ×${Math.max(0, limit - used)}`;
+        nextMoveHintButton.disabled = !ready || AppState.navigation.routeId === 'mastery-ha' || AppState.navigation.routeId === 'mastery-kyu' && used >= limit;
+      } else {
+        nextMoveHintButton.textContent = '次の1手を見る';
+        nextMoveHintButton.disabled = !ready;
+      }
       document.body.classList.toggle('w7-tutorial-mode', isTutorialRoute());
       // 入門・基本・応用・発展は同じ学園HUDを使う。発展も通常HUDへ戻さない。
       document.body.classList.toggle('w7-academy-mode', isAcademyAssistedRoute());
@@ -943,6 +982,33 @@
       if (routeId === 'training-lower') return TRAINING_LOWER_PUZZLES;
       return null;
     }
+    function masteryVolumeForRoute(routeId) { return MASTERY_VOLUMES.find(volume => volume.routeId === routeId) ?? null; }
+    function masteryCatalogForRoute(routeId) { return masteryVolumeForRoute(routeId)?.puzzles ?? null; }
+    function isMasteryRoute(navigation = AppState.navigation) { return Boolean(masteryCatalogForRoute(navigation.routeId)); }
+    function masteryVolumeName(routeId = AppState.navigation.routeId) { return masteryVolumeForRoute(routeId)?.name ?? '名人への道'; }
+    function masteryRemainingCheckLimit(puzzleIndex) {
+      if (puzzleIndex <= 5) return 2;
+      if (puzzleIndex <= 11) return 1;
+      return 0;
+    }
+    // mastery remaining: 回数は周回ごとの問題IDで保存する。Undoは減らさず、Restart/再挑戦だけがこの規則を呼ぶ。
+    // 31〜39はRestartでも戻し、40〜42は最短超過後の再挑戦でだけ戻す。
+    function masteryRemainingCheckShouldReset(reason, routeId, puzzleIndex) {
+      if (routeId !== 'mastery-kyu') return false;
+      if (reason === 'restart') return puzzleIndex <= 8;
+      if (reason === 'optimal-fail-retry') return puzzleIndex <= 11;
+      return false;
+    }
+    function masteryRemainingChecksUsed(appState = AppState, puzzleId = appState.navigation.puzzleId) {
+      const byLap = appState.mastery?.remainingChecksByLap?.[appState.navigation.lap === 2 ? 'lap2' : 'lap1'] ?? {};
+      return Number.isInteger(byLap[puzzleId]) ? byLap[puzzleId] : 0;
+    }
+    function withMasteryRemainingChecksUsed(appState, puzzleId, usedCount) {
+      const lapKey = appState.navigation.lap === 2 ? 'lap2' : 'lap1';
+      const old = appState.mastery?.remainingChecksByLap ?? { lap1:{}, lap2:{} };
+      return { ...appState, mastery:{ ...appState.mastery, remainingChecksByLap:{ ...old, [lapKey]:{ ...old[lapKey], [puzzleId]:usedCount } } } };
+    }
+    function resetMasteryRemainingChecks(appState, puzzleId) { return withMasteryRemainingChecksUsed(appState, puzzleId, 0); }
     function isTrainingRoute(navigation = AppState.navigation) { return Boolean(trainingCatalogForRoute(navigation.routeId)); }
     function trainingVolumeName(routeId = AppState.navigation.routeId) { return routeId === 'training-upper' ? '上巻' : routeId === 'training-middle' ? '中巻' : '下巻'; }
     function puzzleInitialCells(puzzle) { return Array.from(WakeSevenBoardDomain.decode(puzzle.state)); }
@@ -962,6 +1028,7 @@
       if (navigation.routeId === 'training-upper') return trainingUpperPuzzleAt(navigation.puzzleIndex);
       if (navigation.routeId === 'training-middle') return trainingMiddlePuzzleAt(navigation.puzzleIndex);
       if (navigation.routeId === 'training-lower') return trainingLowerPuzzleAt(navigation.puzzleIndex);
+      if (isMasteryRoute(navigation)) return masteryCatalogForRoute(navigation.routeId)[navigation.puzzleIndex] ?? masteryCatalogForRoute(navigation.routeId)[0];
       if (navigation.routeId === 'academy-application-entry') return ACADEMY_APPLICATION_ENTRY_PUZZLE;
       return academyIntroPuzzleAt(navigation.puzzleIndex);
     }
@@ -973,6 +1040,7 @@
     function makeDefaultSettings() { return { theme:'standard', layout:'standard', themeChosen:false, layoutChosen:false }; }
     function makeDefaultProgress() { return { tutorialCompleted:false, tutorialCompletedPuzzleIds:[], lap1CompletedPuzzleIds:[], lap2CompletedPuzzleIds:[] }; }
     function makeDefaultSpeedState() { return { completedTrialIds:[] }; }
+    function makeDefaultMasteryState() { return { remainingChecksByLap:{ lap1:{}, lap2:{} } }; }
     function selectCompletedPuzzleIdsForLap(progress, lap) { return lap === 2 ? progress.lap2CompletedPuzzleIds : progress.lap1CompletedPuzzleIds; }
     function withCompletedPuzzleId(progress, navigation, puzzleId) {
       if (navigation.mode === 'tutorial') return { ...progress, tutorialCompletedPuzzleIds:[...new Set([...progress.tutorialCompletedPuzzleIds, puzzleId])] };
@@ -985,6 +1053,10 @@
     function hasCompletedDevelopmentClass(progress, lap = 1) {
       const completed = new Set(selectCompletedPuzzleIdsForLap(progress, lap));
       return ACADEMY_DEVELOPMENT_PUZZLES.every(puzzle => completed.has(puzzle.puzzleId));
+    }
+    function hasCompletedTrainingCourse(progress, lap = 1) {
+      const completed = new Set(selectCompletedPuzzleIdsForLap(progress, lap));
+      return [...TRAINING_UPPER_PUZZLES, ...TRAINING_MIDDLE_PUZZLES, ...TRAINING_LOWER_PUZZLES].every(puzzle => completed.has(puzzle.puzzleId));
     }
     function makeTutorialNavigation(tutorialStep = 0) {
       const puzzle = tutorialStepAt(tutorialStep);
@@ -1015,6 +1087,12 @@
       const sectionId = routeId.replace('training-','');
       return { mode:'stage', routeId, courseId:'training', sectionId, lap, tutorialStep:null, puzzleIndex:catalog.indexOf(puzzle), puzzleId:puzzle.puzzleId, returnRoute:null };
     }
+    function makeMasteryNavigation(routeId = 'mastery-jo', puzzleIndex = 0, lap = 1) {
+      const catalog = masteryCatalogForRoute(routeId) ?? MASTERY_VOLUMES[0].puzzles;
+      const puzzle = catalog[puzzleIndex] ?? catalog[0];
+      const volume = masteryVolumeForRoute(routeId) ?? MASTERY_VOLUMES[0];
+      return { mode:'stage', routeId:volume.routeId, courseId:'mastery', sectionId:volume.sectionId, lap, tutorialStep:null, puzzleIndex:catalog.indexOf(puzzle), puzzleId:puzzle.puzzleId, returnRoute:null };
+    }
     // 壊れた発展navigationは入門へ戻さない。進捗から最初の未クリア問題へ戻し、
     // 全問済みなら最終問題を九番勝負解放状態の足場として使う。
     function makeDevelopmentRecoveryNavigation(progress) {
@@ -1028,16 +1106,32 @@
       const firstIncomplete = catalog.findIndex(puzzle => !completed.has(puzzle.puzzleId));
       return makeTrainingNavigation(routeId, firstIncomplete < 0 ? catalog.length - 1 : firstIncomplete, lap);
     }
+    function makeMasteryRecoveryNavigation(routeId, progress, lap = 1) {
+      const catalog = masteryCatalogForRoute(routeId) ?? MASTERY_VOLUMES[0].puzzles;
+      const completed = new Set(selectCompletedPuzzleIdsForLap(progress, lap));
+      const firstIncomplete = catalog.findIndex(puzzle => !completed.has(puzzle.puzzleId));
+      return makeMasteryNavigation(routeId, firstIncomplete < 0 ? catalog.length - 1 : firstIncomplete, lap);
+    }
     function selectTrainingEntryGate(appState = AppState, lap = appState.navigation.lap) {
       const developmentDone = hasCompletedDevelopmentClass(appState.progress, lap);
       if (!developmentDone) return 'development-incomplete';
       if (lap === 1 && !appState.speed.completedTrialIds.includes('training9')) return 'speed-nine-required';
       return 'allowed';
     }
+    function selectMasteryEntryGate(appState = AppState, lap = appState.navigation?.lap ?? 1) {
+      if (!hasCompletedTrainingCourse(appState.progress, lap)) return 'training-incomplete';
+      if (lap === 1 && !appState.speed.completedTrialIds.includes('training18')) return 'speed-eighteen-required';
+      return 'allowed';
+    }
     // P7の九番完走はこの入口だけを呼ぶ。P6aからは未実装試験を開始できない。
     function makeTrainingEntryAppState(appState, lap = appState.navigation?.lap ?? 1) {
       if (selectTrainingEntryGate(appState, lap) !== 'allowed') return null;
       return makeTrainingAppState(appState, 'training-upper', 0, { type:'training-welcome' }, lap);
+    }
+    // P7の十八番完走後はこの入口だけを呼ぶ。P6b自身は未実装試験を完了させない。
+    function makeMasteryEntryAppState(appState, lap = appState.navigation?.lap ?? 1) {
+      if (selectMasteryEntryGate(appState, lap) !== 'allowed') return null;
+      return makeMasteryAppState(appState, 'mastery-jo', 0, { type:'mastery-welcome' }, lap);
     }
     function makeAppStateForNavigation(navigation, options = {}) {
       const puzzle = selectPuzzleForNavigation(navigation);
@@ -1048,6 +1142,7 @@
         board:makeBoardState(puzzle),
         progress:options.progress ?? makeDefaultProgress(),
         speed:options.speed ?? makeDefaultSpeedState(),
+        mastery:options.mastery ?? makeDefaultMasteryState(),
         // rewardsは獲得資格、settingsは現在の表示選択。表示・獲得UIは後続フェーズで実装する。
         rewards:options.rewards ?? makeDefaultRewards(),
         settings:options.settings ?? makeDefaultSettings(),
@@ -1063,6 +1158,7 @@
         rewards:appState.rewards,
         settings:appState.settings,
         speed:appState.speed,
+        mastery:appState.mastery,
       });
     }
     function makeAcademyIntroAppState(appState, dialog = null) {
@@ -1071,23 +1167,27 @@
         rewards:appState.rewards,
         settings:appState.settings,
         speed:appState.speed,
+        mastery:appState.mastery,
         dialog,
       });
     }
     function makeAcademyBasicAppState(appState, dialog = { type:'academy-basic-welcome' }) {
-      return makeAppStateForNavigation(makeAcademyBasicNavigation(0), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, speed:appState.speed, dialog });
+      return makeAppStateForNavigation(makeAcademyBasicNavigation(0), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, speed:appState.speed, mastery:appState.mastery, dialog });
     }
     function makeAcademyApplicationEntryAppState(appState) {
-      return makeAppStateForNavigation(makeAcademyApplicationEntryNavigation(), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, speed:appState.speed, dialog:{ type:'academy-application-entry' } });
+      return makeAppStateForNavigation(makeAcademyApplicationEntryNavigation(), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, speed:appState.speed, mastery:appState.mastery, dialog:{ type:'academy-application-entry' } });
     }
     function makeAcademyApplicationAppState(appState, puzzleIndex = 0) {
-      return makeAppStateForNavigation(makeAcademyApplicationNavigation(puzzleIndex), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, speed:appState.speed });
+      return makeAppStateForNavigation(makeAcademyApplicationNavigation(puzzleIndex), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, speed:appState.speed, mastery:appState.mastery });
     }
     function makeAcademyDevelopmentAppState(appState, puzzleIndex = 0, dialog = puzzleIndex === 0 ? { type:'academy-development-welcome' } : null) {
-      return makeAppStateForNavigation(makeAcademyDevelopmentNavigation(puzzleIndex), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, speed:appState.speed, dialog });
+      return makeAppStateForNavigation(makeAcademyDevelopmentNavigation(puzzleIndex), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, speed:appState.speed, mastery:appState.mastery, dialog });
     }
     function makeTrainingAppState(appState, routeId = 'training-upper', puzzleIndex = 0, dialog = null, lap = appState.navigation?.lap ?? 1) {
-      return makeAppStateForNavigation(makeTrainingNavigation(routeId, puzzleIndex, lap), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, speed:appState.speed, dialog });
+      return makeAppStateForNavigation(makeTrainingNavigation(routeId, puzzleIndex, lap), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, speed:appState.speed, mastery:appState.mastery, dialog });
+    }
+    function makeMasteryAppState(appState, routeId = 'mastery-jo', puzzleIndex = 0, dialog = null, lap = appState.navigation?.lap ?? 1) {
+      return makeAppStateForNavigation(makeMasteryNavigation(routeId, puzzleIndex, lap), { progress:{ ...appState.progress, tutorialCompleted:true }, rewards:appState.rewards, settings:appState.settings, speed:appState.speed, mastery:appState.mastery, dialog });
     }
     function isOrientationCells(value) { return Array.isArray(value) && value.length === CELL_COUNT && value.every(cell => Number.isInteger(cell) && cell >= 0 && cell <= 2); }
     function sameCells(left, right) { return left.length === right.length && left.every((cell, index) => cell === right[index]); }
@@ -1124,7 +1224,7 @@
     }
     function normalizeCourseProgress(rawProgress) {
       const tutorialIds = new Set(TUTORIAL_STEPS.map(puzzle => puzzle.puzzleId));
-      const stageIds = new Set([...ACADEMY_INTRO_PUZZLES, ...ACADEMY_BASIC_PUZZLES, ...ACADEMY_APPLICATION_PUZZLES, ...ACADEMY_DEVELOPMENT_PUZZLES, ...TRAINING_UPPER_PUZZLES, ...TRAINING_MIDDLE_PUZZLES, ...TRAINING_LOWER_PUZZLES].map(puzzle => puzzle.puzzleId));
+      const stageIds = new Set([...ACADEMY_INTRO_PUZZLES, ...ACADEMY_BASIC_PUZZLES, ...ACADEMY_APPLICATION_PUZZLES, ...ACADEMY_DEVELOPMENT_PUZZLES, ...TRAINING_UPPER_PUZZLES, ...TRAINING_MIDDLE_PUZZLES, ...TRAINING_LOWER_PUZZLES, ...MASTERY_PUZZLES].map(puzzle => puzzle.puzzleId));
       const filtered = (value, known) => [...new Set((Array.isArray(value) ? value : []).filter(id => known.has(id)))];
       return {
         tutorialCompleted:rawProgress?.tutorialCompleted === true,
@@ -1136,6 +1236,13 @@
     function normalizeSpeedState(rawSpeed) {
       const known = new Set(['training9','training18','mastery27']);
       return { completedTrialIds:[...new Set((Array.isArray(rawSpeed?.completedTrialIds) ? rawSpeed.completedTrialIds : []).filter(id => known.has(id)))] };
+    }
+    function normalizeMasteryState(rawMastery) {
+      const kyuIds = new Set(masteryCatalogForRoute('mastery-kyu').map(puzzle => puzzle.puzzleId));
+      const normalizeLap = raw => Object.fromEntries(Object.entries(raw && typeof raw === 'object' ? raw : {})
+        .filter(([puzzleId]) => kyuIds.has(puzzleId))
+        .map(([puzzleId, used]) => [puzzleId, Math.max(0, Math.min(masteryRemainingCheckLimit(masteryCatalogForRoute('mastery-kyu').findIndex(puzzle => puzzle.puzzleId === puzzleId)), Number.isInteger(used) ? used : 0))]));
+      return { remainingChecksByLap:{ lap1:normalizeLap(rawMastery?.remainingChecksByLap?.lap1), lap2:normalizeLap(rawMastery?.remainingChecksByLap?.lap2) } };
     }
     function navigationFromPersistentState(rawNavigation, progress) {
       const tutorialStep = rawNavigation?.tutorialStep;
@@ -1161,6 +1268,12 @@
       const trainingIsValid = rawNavigation?.mode === 'stage' && trainingCatalog && Number.isInteger(puzzleIndex)
         && trainingCatalog[puzzleIndex] && rawNavigation?.puzzleId === trainingCatalog[puzzleIndex].puzzleId;
       const requestedTraining = rawNavigation?.mode === 'stage' && Boolean(trainingCatalog);
+      const masteryCatalog = masteryCatalogForRoute(rawNavigation?.routeId);
+      const masteryIsValid = rawNavigation?.mode === 'stage' && masteryCatalog && Number.isInteger(puzzleIndex)
+        && masteryCatalog[puzzleIndex] && rawNavigation?.puzzleId === masteryCatalog[puzzleIndex].puzzleId;
+      const requestedMastery = rawNavigation?.mode === 'stage' && Boolean(masteryCatalog);
+      if (masteryIsValid) return makeMasteryNavigation(rawNavigation.routeId, puzzleIndex, lap);
+      if (requestedMastery) return makeMasteryRecoveryNavigation(rawNavigation.routeId, progress, lap);
       if (trainingIsValid) return makeTrainingNavigation(rawNavigation.routeId, puzzleIndex, lap);
       if (requestedTraining) return makeTrainingRecoveryNavigation(rawNavigation.routeId, progress, lap);
       if (progress.tutorialCompleted) return developmentPuzzleIsValid ? makeAcademyDevelopmentNavigation(puzzleIndex) : requestedDevelopment ? makeDevelopmentRecoveryNavigation(progress) : applicationPuzzleIsValid ? makeAcademyApplicationNavigation(puzzleIndex) : applicationIsValid ? makeAcademyApplicationEntryNavigation() : basicIsValid ? makeAcademyBasicNavigation(puzzleIndex) : academyIsValid ? makeAcademyIntroNavigation(puzzleIndex) : makeAcademyIntroNavigation(0);
@@ -1185,6 +1298,10 @@
         return { type:'training-tip', patternPosition };
       }
       if (rawDialog?.type === 'speed-eighteen-required' && navigation.routeId === 'training-lower' && navigation.puzzleIndex === TRAINING_LOWER_PUZZLES.length - 1 && solved && TRAINING_LOWER_PUZZLES.every(puzzle => hasCompletedPuzzle(progress, navigation.lap, puzzle.puzzleId))) return { type:'speed-eighteen-required' };
+      const masteryStartDialogRoute = Object.freeze({ 'mastery-welcome':'mastery-jo', 'mastery-ha-welcome':'mastery-ha', 'mastery-kyu-welcome':'mastery-kyu' });
+      if (masteryStartDialogRoute[rawDialog?.type] === navigation.routeId && navigation.puzzleIndex === 0 && !solved) return { type:rawDialog.type };
+      if (rawDialog?.type === 'speed-twenty-seven-required' && navigation.routeId === 'mastery-kyu' && navigation.puzzleIndex === 14 && solved && MASTERY_PUZZLES.every(puzzle => hasCompletedPuzzle(progress, navigation.lap, puzzle.puzzleId))) return { type:'speed-twenty-seven-required' };
+      if (rawDialog?.type === 'optimal-fail' && isMasteryRoute(navigation) && solved && rawDialog.puzzleId === navigation.puzzleId && Number.isInteger(rawDialog.bestMoves) && rawDialog.bestMoves === selectPuzzleForNavigation(navigation).par && Number.isInteger(rawDialog.actualMoves) && rawDialog.actualMoves > rawDialog.bestMoves) return { type:'optimal-fail', puzzleId:rawDialog.puzzleId, bestMoves:rawDialog.bestMoves, actualMoves:rawDialog.actualMoves };
       if (rawDialog?.type === 'clear' && navigation.mode === 'stage' && solved) return clearDialogDescriptor(selectPuzzleForNavigation(navigation));
       return null;
     }
@@ -1194,9 +1311,10 @@
       if (!raw || raw.schemaVersion !== APP_SCHEMA_VERSION || raw.catalogVersion !== APP_CATALOG_VERSION) return makeDefaultAppState();
       const progress = normalizeCourseProgress(raw.progress);
       const speed = normalizeSpeedState(raw.speed);
+      const mastery = normalizeMasteryState(raw.mastery);
       const rewardAndSettings = normalizeRewardsAndSettings(raw.rewards, raw.settings);
       const navigation = navigationFromPersistentState(raw.navigation, progress);
-      const fallback = makeAppStateForNavigation(navigation, { progress, speed, ...rewardAndSettings, dialog:stableDialogForNavigation(raw.ui?.dialog, navigation, false, progress, speed) });
+      const fallback = makeAppStateForNavigation(navigation, { progress, speed, mastery, ...rewardAndSettings, dialog:stableDialogForNavigation(raw.ui?.dialog, navigation, false, progress, speed) });
       const puzzle = selectPuzzleForNavigation(navigation);
       const expectedInitial = puzzleInitialCells(puzzle);
       const board = raw.board;
@@ -1205,7 +1323,15 @@
       // 盤面だけが壊れても、完了記録や報酬設定は残す。
       if (history === null) return fallback;
       const solved = WakeSevenBoardDomain.isSolved(board.cells);
-      const progressAfterSolved = solved ? withCompletedPuzzleId(progress, navigation, puzzle.puzzleId) : progress;
+      // 解決済み盤面とoptimal-failが食い違う保存は、通常クリアへ誤変換しない。
+      // 問題ID・手数・最短値が壊れていれば、その問題の未クリア開始盤面へ安全に戻す。
+      const rawOptimalFail = raw.ui?.dialog?.type === 'optimal-fail';
+      const rawOptimalFailValid = rawOptimalFail && isMasteryRoute(navigation) && solved
+        && raw.ui.dialog.puzzleId === navigation.puzzleId && raw.ui.dialog.bestMoves === puzzle.par
+        && raw.ui.dialog.actualMoves === history.length && raw.ui.dialog.actualMoves > raw.ui.dialog.bestMoves;
+      if (rawOptimalFail && !rawOptimalFailValid) return fallback;
+      const masteryOutcome = isMasteryRoute(navigation) ? selectOptimalClearOutcome({ solved, actualMoves:history.length, par:puzzle.par }) : null;
+      const progressAfterSolved = solved && masteryOutcome?.type !== 'over-limit' ? withCompletedPuzzleId(progress, navigation, puzzle.puzzleId) : progress;
       if (solved && navigation.mode === 'tutorial') {
         const nextStep = navigation.tutorialStep + 1;
         return nextStep < TUTORIAL_STEPS.length
@@ -1218,15 +1344,17 @@
       if (solved && navigation.routeId === 'academy-development' && navigation.puzzleIndex === 4) return makeAcademyDevelopmentAppState({ ...fallback, progress:progressAfterSolved }, 5, { type:'academy-development-four-welcome' });
       const stableCurrent = {
         ...fallback,
-        board:{ initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted:solved },
+        board:{ initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted:solved && masteryOutcome?.type !== 'over-limit' },
         progress:progressAfterSolved,
         speed,
+        mastery,
       };
       // 本番クリア・デバッグ・保存復元で、上巻→中巻→下巻→十八番の表を一つだけ使う。
       if (solved && isTrainingBoundaryNavigation(navigation)) return makeTrainingBoundaryDestination(stableCurrent);
+      if (solved && isMasteryRoute(navigation) && masteryOutcome?.type === 'optimal-clear' && isMasteryBoundaryNavigation(navigation)) return makeMasteryBoundaryDestination(stableCurrent);
       return {
         ...stableCurrent,
-        ui:{ dialog:stableDialogForNavigation(raw.ui?.dialog, navigation, solved, progressAfterSolved, speed) ?? (solved && navigation.routeId === 'academy-development' && navigation.puzzleIndex === ACADEMY_DEVELOPMENT_PUZZLES.length - 1 && hasCompletedDevelopmentClass(progressAfterSolved) ? { type:'speed-nine-required' } : solved ? clearDialogDescriptor(puzzle) : null) },
+        ui:{ dialog:stableDialogForNavigation(raw.ui?.dialog, navigation, solved, progressAfterSolved, speed) ?? (solved && isMasteryRoute(navigation) && masteryOutcome?.type === 'over-limit' ? { type:'optimal-fail', puzzleId:puzzle.puzzleId, bestMoves:puzzle.par, actualMoves:history.length } : solved && navigation.routeId === 'academy-development' && navigation.puzzleIndex === ACADEMY_DEVELOPMENT_PUZZLES.length - 1 && hasCompletedDevelopmentClass(progressAfterSolved) ? { type:'speed-nine-required' } : solved ? clearDialogDescriptor(puzzle) : null) },
       };
     }
     let restoredFromStorage = false;
@@ -1260,7 +1388,7 @@
     }
     function renderStageLabel() {
       // 巻末クリアは次巻を先に保存するが、祝福が終わるまでは解いた巻の見出しを残す。
-      if (RuntimeState.pendingTrainingBoundary && RuntimeState.phase === BoardPhase.CELEBRATING) return;
+      if ((RuntimeState.pendingTrainingBoundary || RuntimeState.pendingMasteryBoundary) && RuntimeState.phase === BoardPhase.CELEBRATING) return;
       const puzzle = selectActivePuzzle();
       if (AppState.navigation.mode === 'tutorial') {
         stageLabelElement.textContent = `チュートリアル ${AppState.navigation.tutorialStep + 1} / ${TUTORIAL_STEPS.length}`;
@@ -1268,6 +1396,7 @@
       }
       if (AppState.navigation.routeId === 'academy-application-entry') { stageLabelElement.textContent = 'だるま学園・応用クラス'; return; }
       if (isTrainingRoute()) { stageLabelElement.textContent = `だるま修行・${trainingVolumeName()} ${AppState.navigation.puzzleIndex + 1} / ${trainingCatalogForRoute(AppState.navigation.routeId).length}`; return; }
+      if (isMasteryRoute()) { stageLabelElement.textContent = `${masteryVolumeName()}　${masteryVolumeForRoute(AppState.navigation.routeId).subtitle} ${AppState.navigation.puzzleIndex + 1} / 15`; return; }
       const className = AppState.navigation.routeId === 'academy-development' ? '発展' : AppState.navigation.routeId === 'academy-application' ? '応用' : AppState.navigation.routeId === 'academy-basic' ? '基本' : '入門';
       const count = AppState.navigation.routeId === 'academy-development' ? ACADEMY_DEVELOPMENT_PUZZLES.length : AppState.navigation.routeId === 'academy-application' ? ACADEMY_APPLICATION_PUZZLES.length : AppState.navigation.routeId === 'academy-basic' ? ACADEMY_BASIC_PUZZLES.length : ACADEMY_INTRO_PUZZLES.length;
       stageLabelElement.textContent = `${className} ${AppState.navigation.puzzleIndex + 1} / ${count}`;
@@ -1898,6 +2027,40 @@
       }
       return action;
     }
+    function renderMasteryDialog(descriptor, title, message, addAction) {
+      if (!descriptor.type.startsWith('mastery-') && descriptor.type !== 'optimal-fail' && descriptor.type !== 'speed-twenty-seven-required') return null;
+      dialogElement.className = 'w7-dialog w7-dialog--welcome';
+      if (descriptor.type === 'mastery-welcome') {
+        title.textContent = 'だるま修行 修了！';
+        message.textContent = 'だるま修行を終え、名人への道が開かれました。';
+        const action = addAction('名人への道・序　七転八起へ →', () => startMasteryRoute('mastery-jo'));
+        dialogElement.replaceChildren(title,message,document.createElement('div'));
+        dialogElement.append(document.createElement('div'));
+        dialogElement.lastChild.className = 'w7-dialog-actions'; dialogElement.lastChild.append(action);
+        return action;
+      }
+      if (descriptor.type === 'mastery-ha-welcome' || descriptor.type === 'mastery-kyu-welcome') {
+        const ha = descriptor.type === 'mastery-ha-welcome';
+        title.textContent = ha ? '名人への道・序　七転八起 クリア！' : '名人への道・破　面壁九年 クリア！';
+        message.textContent = ha ? '称号「不屈」。次巻ではヒントが使えない。' : '称号「熟練」。急は最短4手、残り手数は回数限定で確認できます。';
+        const action = addAction('はじめる', () => startMasteryRoute(ha ? 'mastery-ha' : 'mastery-kyu'));
+        const actions = document.createElement('div'); actions.className = 'w7-dialog-actions'; actions.append(action); dialogElement.replaceChildren(title,message,actions); return action;
+      }
+      if (descriptor.type === 'optimal-fail') {
+        dialogElement.className = 'w7-dialog w7-dialog--clear';
+        title.textContent = '最短手数に届かなかった';
+        const gap = descriptor.actualMoves - descriptor.bestMoves;
+        message.textContent = gap === 1 ? 'おしい！あと1手短縮できればクリア。' : gap === 2 ? 'もう少し！あと2手短縮できればクリア。' : '回し方を変えて最短への道を探そう！';
+        const detail = document.createElement('p'); detail.textContent = `最短手数 ${descriptor.bestMoves}　今回 ${descriptor.actualMoves}`;
+        const action = addAction('再挑戦する', intentRetryMasteryAfterOptimalFail);
+        const actions = document.createElement('div'); actions.className = 'w7-dialog-actions'; actions.append(action); dialogElement.replaceChildren(title,message,detail,actions); return action;
+      }
+      dialogElement.className = 'w7-dialog w7-dialog--clear';
+      title.textContent = '二十七番勝負が解放されたよ！';
+      message.textContent = '二十七番勝負は次の段階で遊べるようになります。';
+      const action = addAction('もう一度', intentRetryPuzzle);
+      const actions = document.createElement('div'); actions.className = 'w7-dialog-actions'; actions.append(action); dialogElement.replaceChildren(title,message,actions); return action;
+    }
     // 修行の導入は「読ませる見本」と「実際の盤面」を混ぜない。進める操作は保存可能な
     // ダイアログ種別だけを変え、開始時に初めて操作可能な盤面を到着演出で出す。
     function intentAdvanceTrainingDialog(type) {
@@ -1918,12 +2081,73 @@
     function intentStartTrainingUpper() { startTrainingRoute('training-upper'); }
     function intentStartTrainingMiddle() { startTrainingRoute('training-middle'); }
     function intentStartTrainingLower() { startTrainingRoute('training-lower'); }
+    function startMasteryRoute(routeId) {
+      if (AppState.navigation.routeId !== routeId || !isMasteryRoute()) return;
+      AppState.ui.dialog = null;
+      replaceRuntimeBoardFromAppState();
+      saveAppState(`mastery ${routeId} start`);
+      runArrivalEffect();
+    }
     function intentOpenTrainingTip() {
       if (!isTrainingUpperRoute() || !selectCanInteractWithBoard()) return;
       cancelTrainingDialogPreview();
       AppState.ui.dialog = { type:'training-tip', patternPosition:selectActivePuzzle().patternPosition ?? 1 };
       saveAppState('training tip open');
       renderRuntime({ context:'training tip open' });
+    }
+    function intentOpenNextMoveHint() {
+      if (!selectCanInteractWithBoard()) return false;
+      if (isTrainingRoute() || AppState.navigation.routeId === 'mastery-jo') return intentShowNextMoveHint();
+      if (AppState.navigation.routeId === 'mastery-kyu') return intentUseMasteryRemainingCheck();
+      return false;
+    }
+    // next move hint: だるま修行と名人・序は、同じ最短手選択と盤面上の三枚・棒・回転方向表示を使う。
+    // 「次の1手」「ヒント」でrgすれば、ボタン分岐・選択規則・表示・消去までこの周辺で追える。
+    function selectShortestOneMoveHint(cells = RuntimeState.cells) {
+      const distance = selectDistance(cells);
+      if (!Number.isInteger(distance) || distance <= 0) return null;
+      return TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction })))
+        .find(candidate => selectDistance(WakeSevenBoardDomain.roll(cells, candidate.triangleIndex, candidate.direction)) === distance - 1) ?? null;
+    }
+    function clearNextMoveHint({ invalidate = true, hidePrompt = true } = {}) {
+      if (invalidate) RuntimeState.nextMoveHintGeneration += 1;
+      boardElement.querySelectorAll('.w7-next-move-target').forEach(element => element.classList.remove('w7-next-move-target'));
+      boardElement.querySelectorAll('.w7-next-move-arrow').forEach(arrow => arrow.remove());
+      if (hidePrompt) boardGripPrompt.hidden = true;
+    }
+    function renderNextMoveHint(move) {
+      const triangle = TRIANGLES[move.triangleIndex];
+      if (!triangle) return false;
+      triangle.cells.forEach(cellIndex => boardElement.querySelector(`.w7-cell[data-cell-index="${cellIndex}"]`)?.classList.add('w7-next-move-target'));
+      boardElement.querySelector(`.w7-axis-layer g[data-axis="${move.triangleIndex}"]`)?.classList.add('w7-next-move-target');
+      boardElement.querySelector(`.w7-axis-pivot[data-axis="${move.triangleIndex}"]`)?.classList.add('w7-next-move-target');
+      appendBoardDirectionArrow(move.triangleIndex, move.direction, 'w7-next-move-arrow');
+      return true;
+    }
+    function intentShowNextMoveHint() {
+      const move = selectShortestOneMoveHint();
+      if (!move) return false;
+      clearNextMoveHint({ invalidate:false });
+      renderNextMoveHint(move);
+      boardGripPrompt.querySelector('span').textContent = '光っている3枚を、矢印の方向へ回そう';
+      boardGripPrompt.hidden = false;
+      const generation = ++RuntimeState.nextMoveHintGeneration;
+      setTimeout(() => {
+        if (generation !== RuntimeState.nextMoveHintGeneration) return;
+        clearNextMoveHint({ invalidate:false });
+      }, 1800);
+      return true;
+    }
+    // mastery remaining: 押した瞬間だけ距離を見せる。表示中かどうかはRuntimeStateだけで、保存しない。
+    function intentUseMasteryRemainingCheck() {
+      if (!isMasteryRoute() || AppState.navigation.routeId !== 'mastery-kyu' || !selectCanInteractWithBoard()) return false;
+      const puzzle = selectActivePuzzle(), limit = masteryRemainingCheckLimit(AppState.navigation.puzzleIndex), used = masteryRemainingChecksUsed();
+      if (used >= limit) return false;
+      AppState = withMasteryRemainingChecksUsed(AppState, puzzle.puzzleId, used + 1);
+      RuntimeState.masteryRemainingRevealed = true;
+      saveAppState('mastery remaining check');
+      renderRuntime({ context:'mastery remaining check' });
+      return true;
     }
     function intentCloseTrainingTip() {
       if (!isTrainingUpperRoute()) return;
@@ -1962,8 +2186,9 @@
       };
       let defaultAction;
       const trainingAction = renderTrainingDialog(descriptor, title, message, addAction);
-      if (trainingAction) {
-        defaultAction = trainingAction;
+      const masteryAction = trainingAction ? null : renderMasteryDialog(descriptor, title, message, addAction);
+      if (trainingAction || masteryAction) {
+        defaultAction = trainingAction ?? masteryAction;
       } else if (descriptor.type === 'welcome') {
         dialogElement.className = 'w7-dialog w7-dialog--welcome';
         title.textContent = 'だるまさんを起こして！';
@@ -2055,8 +2280,8 @@
       } else {
         dialogElement.className = 'w7-dialog w7-dialog--clear';
         title.textContent = '全員起きました！';
-        const className = isTrainingRoute() ? `修行・${trainingVolumeName()}` : AppState.navigation.routeId === 'academy-development' ? '発展' : AppState.navigation.routeId === 'academy-application' ? '応用' : AppState.navigation.routeId === 'academy-basic' ? '基本' : '入門';
-        const count = isTrainingRoute() ? trainingCatalogForRoute(AppState.navigation.routeId).length : AppState.navigation.routeId === 'academy-development' ? ACADEMY_DEVELOPMENT_PUZZLES.length : AppState.navigation.routeId === 'academy-application' ? ACADEMY_APPLICATION_PUZZLES.length : AppState.navigation.routeId === 'academy-basic' ? ACADEMY_BASIC_PUZZLES.length : ACADEMY_INTRO_PUZZLES.length;
+        const className = isMasteryRoute() ? masteryVolumeName() : isTrainingRoute() ? `修行・${trainingVolumeName()}` : AppState.navigation.routeId === 'academy-development' ? '発展' : AppState.navigation.routeId === 'academy-application' ? '応用' : AppState.navigation.routeId === 'academy-basic' ? '基本' : '入門';
+        const count = isMasteryRoute() ? masteryCatalogForRoute(AppState.navigation.routeId).length : isTrainingRoute() ? trainingCatalogForRoute(AppState.navigation.routeId).length : AppState.navigation.routeId === 'academy-development' ? ACADEMY_DEVELOPMENT_PUZZLES.length : AppState.navigation.routeId === 'academy-application' ? ACADEMY_APPLICATION_PUZZLES.length : AppState.navigation.routeId === 'academy-basic' ? ACADEMY_BASIC_PUZZLES.length : ACADEMY_INTRO_PUZZLES.length;
         const stageContext = document.createElement('p');
         stageContext.className = 'w7-clear-stage-context';
         stageContext.textContent = `${className} ${AppState.navigation.puzzleIndex + 1} / ${count}`;
@@ -2109,11 +2334,11 @@
         // この段階には旧版の問題一覧へ戻る画面がまだない。閉じて操作不能にするより、
         // 同じ問題を試せる「もう一度」を明示し、安定して触れる状態を保つ。
         addAction('もう一度', intentRetryPuzzle);
-        defaultAction = addAction('次へ', isTrainingRoute() ? intentNextTrainingPuzzle : intentNextAcademyPuzzle);
+        defaultAction = addAction('次へ', isTrainingRoute() ? intentNextTrainingPuzzle : isMasteryRoute() ? intentNextMasteryPuzzle : intentNextAcademyPuzzle);
       }
       // 盤面見本を自前で組み立てる歓迎ダイアログは、ここでタイトルとボタンだけに
       // 置き換えない。応用開始もこの仲間で、見本盤面を保持する。
-      if (!['welcome','academy-intro-welcome','academy-basic-welcome','academy-application-entry','academy-development-welcome','academy-development-four-welcome','speed-nine-required','training-welcome','training-upper-goal','training-upper-practice','training-middle-goal','training-middle-spin','training-lower-goal','training-tip','speed-eighteen-required'].includes(descriptor.type)) {
+      if (!['welcome','academy-intro-welcome','academy-basic-welcome','academy-application-entry','academy-development-welcome','academy-development-four-welcome','speed-nine-required','training-welcome','training-upper-goal','training-upper-practice','training-middle-goal','training-middle-spin','training-lower-goal','training-tip','speed-eighteen-required','mastery-welcome','mastery-ha-welcome','mastery-kyu-welcome','optimal-fail','speed-twenty-seven-required'].includes(descriptor.type)) {
         // クリア画面は「見本 → メッセージ → クイズ」の読み順。問題番号は絶対配置なので最後でよい。
         dialogElement.replaceChildren(title, ...(clearArtwork ? [clearArtwork] : []), ...(message.textContent ? [message] : []), ...details, actions);
       }
@@ -2152,6 +2377,9 @@
       // 巻末クリアは保存済みの次巻へ進む前に、現在の解決盤面で祝福を最後まで描く。
       // その短い間だけの印。非表示化ではこの印を見て先に次巻の安定盤面へ寄せる。
       pendingTrainingBoundary: false,
+      pendingMasteryBoundary: false,
+      masteryRemainingRevealed: false,
+      nextMoveHintGeneration: 0,
       effectGeneration: 0,
       activeEffect: null,
     };
@@ -2309,10 +2537,9 @@
       return step.cue === 'grab' || (step.cue === 'chain' && moveIndex === 0) || (step.cue === 'chain-direction' && moveIndex === 0);
     }
     function removeTutorialArrow() { boardElement.querySelectorAll('.w7-tutorial-arrow').forEach(arrow => arrow.remove()); }
-    function renderTutorialDirectionArrow(triangleIndex, direction) {
-      removeTutorialArrow();
+    function appendBoardDirectionArrow(triangleIndex, direction, className) {
       const triangle = TRIANGLES[triangleIndex];
-      if (!triangle) return;
+      if (!triangle) return null;
       const pivot = viewPoint(triangle);
       const boardCenter = viewPoint(CELL_POSITIONS[3]);
       const radius = 38;
@@ -2329,11 +2556,16 @@
       const normalX = -axisY, normalY = axisX;
       const left = { x:base.x + normalX * 9, y:base.y + normalY * 9 };
       const right = { x:base.x - normalX * 9, y:base.y - normalY * 9 };
-      const arrow = svgElement('g', { class:'w7-tutorial-arrow', 'aria-hidden':'true' });
+      const arrow = svgElement('g', { class:className, 'aria-hidden':'true' });
       arrow.append(svgElement('path', { class:'w7-arrow-border', d:path }));
       arrow.append(svgElement('path', { class:'w7-arrow-line', d:path }));
       arrow.append(svgElement('path', { class:'w7-arrow-head', d:`M ${end.x.toFixed(2)} ${end.y.toFixed(2)} L ${left.x.toFixed(2)} ${left.y.toFixed(2)} L ${right.x.toFixed(2)} ${right.y.toFixed(2)} Z` }));
       boardElement.append(arrow);
+      return arrow;
+    }
+    function renderTutorialDirectionArrow(triangleIndex, direction) {
+      removeTutorialArrow();
+      appendBoardDirectionArrow(triangleIndex, direction, 'w7-tutorial-arrow');
     }
     function clearTutorialFeedback() {
       RuntimeState.tutorialFeedback = null;
@@ -2403,9 +2635,17 @@
       RuntimeState.applicationFallen = new Set();
       RuntimeState.applicationFeedback = null;
       RuntimeState.applicationFeedbackGeneration += 1;
+      RuntimeState.masteryRemainingRevealed = false;
+      RuntimeState.nextMoveHintGeneration += 1;
     }
     function selectCanStartBoardDrag(state = RuntimeState, appState = AppState) { return selectCanInteractWithBoard(appState) && state.phase === BoardPhase.READY && state.invalidPointerId === null && !WakeSevenBoardDomain.isSolved(state.cells); }
     function selectCanUseHistory(state = RuntimeState, appState = AppState) { return selectCanInteractWithBoard(appState) && state.phase === BoardPhase.READY && state.invalidPointerId === null; }
+    // 急31〜39では、0手でも残り手数を使った後ならRestartで回数を戻せる。
+    function selectCanRestartCurrentPuzzle(state = RuntimeState, appState = AppState) {
+      const untouched = state.history.length === 0 && WakeSevenBoardDomain.encode(state.cells) === selectPuzzleForNavigation(appState.navigation).state;
+      const canRefundMasteryRemainingCheck = masteryRemainingCheckShouldReset('restart', appState.navigation.routeId, appState.navigation.puzzleIndex) && masteryRemainingChecksUsed(appState) > 0;
+      return !untouched || canRefundMasteryRemainingCheck;
+    }
     function assertRuntimeDomAlignment(context) {
       // 応用の対象パネルは回転中に前面へ移す。DOM順ではなく固定cell index順で照合する。
       const cells = Array.from(boardElement.querySelectorAll('.w7-cell')).sort((left, right) => Number(left.dataset.cellIndex) - Number(right.dataset.cellIndex));
@@ -2420,6 +2660,7 @@
       if (!aligned || !historyAligned || !stateAligned) throw new Error(`board invariant failed after ${context}`);
     }
     function commitBoardMove(triangleIndex, direction) {
+      RuntimeState.masteryRemainingRevealed = false;
       const before = Uint8Array.from(RuntimeState.cells);
       const after = WakeSevenBoardDomain.roll(before, triangleIndex, direction);
       RuntimeState.history.push(Object.freeze({ triangleIndex, direction, before:Object.freeze(Array.from(before)), after:Object.freeze(Array.from(after)) }));
@@ -2645,6 +2886,11 @@
         if (!RuntimeState.academyCandidates.has(hit.triangleIndex) || RuntimeState.academyFallen.has(hit.triangleIndex)) { beginInvalidGrab(event); return; }
       }
       if (isAcademyApplicationRoute() && RuntimeState.applicationFallen.has(hit.triangleIndex)) { beginInvalidGrab(event); return; }
+      clearNextMoveHint();
+      if (isMasteryRoute() && RuntimeState.masteryRemainingRevealed) {
+        RuntimeState.masteryRemainingRevealed = false;
+        renderBoardStatus();
+      }
       boardElement.classList.remove('is-grip-hover');
       boardGripPrompt.hidden = true;
       const effect = beginEffect(BoardPhase.DRAGGING);
@@ -2781,8 +3027,12 @@
         if (committedTurns) for (let count = 0; count < Math.abs(committedTurns); count += 1) commitBoardMove(drag.triangleIndex, Math.sign(committedTurns));
         if (!finishEffect(drag.effect)) return;
         if (committedTurns && WakeSevenBoardDomain.isSolved(RuntimeState.cells)) {
-          commitClearForCurrentPuzzle();
-          runClearEffect(isTutorialRoute() ? advanceTutorialAfterClear : isAcademyAssistedRoute() ? advanceAcademyAfterClear : isTrainingRoute() ? advanceTrainingAfterClear : null);
+          const clearOutcome = commitClearForCurrentPuzzle();
+          if (clearOutcome?.type === 'over-limit') {
+            renderRuntime({ context:'mastery optimal fail' });
+            return;
+          }
+          runClearEffect(isTutorialRoute() ? advanceTutorialAfterClear : isAcademyAssistedRoute() ? advanceAcademyAfterClear : isTrainingRoute() ? advanceTrainingAfterClear : isMasteryRoute() ? advanceMasteryAfterClear : null);
           return;
         }
         if (committedTurns) {
@@ -2955,12 +3205,14 @@
     // 一手戻す。最後に確定した回転だけを逆再生し、履歴から外す。
     function intentUndo() {
       if (!selectCanUseHistory() || RuntimeState.history.length === 0) return false;
+      clearNextMoveHint();
       const entry = RuntimeState.history.at(-1);
       const currentCells = Uint8Array.from(RuntimeState.cells);
       const effect = beginEffect(BoardPhase.UNDOING);
       settleBoardRotation({ effect, cells:currentCells, triangleIndex:entry.triangleIndex, fromDegrees:0, turns:-entry.direction, moveDelta:-1, milliseconds:UNDO_MILLISECONDS, complete:() => {
         if (!isCurrentEffect(effect) || RuntimeState.history.at(-1) !== entry) return;
         RuntimeState.history.pop();
+        RuntimeState.masteryRemainingRevealed = false;
         RuntimeState.cells = Uint8Array.from(entry.before);
         RuntimeState.panelIds = panelIdsFromHistory(RuntimeState.history);
         if (finishEffect(effect)) {
@@ -2974,7 +3226,8 @@
     }
     // やり直す。現在の問題の初期盤面へ戻し、履歴を空にする。
     function intentRestart() {
-      if (!selectCanUseHistory() || RuntimeState.history.length === 0 && WakeSevenBoardDomain.encode(RuntimeState.cells) === selectActivePuzzle().state) return false;
+      if (!selectCanUseHistory() || !selectCanRestartCurrentPuzzle()) return false;
+      clearNextMoveHint();
       const effect = beginEffect(BoardPhase.RESTARTING);
       runEffectFrames(effect, RESTART_MILLISECONDS, progress => {
         const opacity = 1 - Math.sin(Math.PI * progress) * .62;
@@ -2986,6 +3239,9 @@
         RuntimeState.panelIds = Array.from({ length:CELL_COUNT }, (_, index) => index);
         AppState.board.clearCommitted = false;
         AppState.ui.dialog = null;
+        RuntimeState.masteryRemainingRevealed = false;
+        // 急31〜39はRestartで回数を戻す。40〜42は保持し、43〜45はそもそも0回。
+        if (masteryRemainingCheckShouldReset('restart', AppState.navigation.routeId, AppState.navigation.puzzleIndex)) AppState = resetMasteryRemainingChecks(AppState, selectActivePuzzle().puzzleId);
         if (finishEffect(effect)) {
           syncBoardToAppState();
           saveAppState('restart');
@@ -2995,11 +3251,37 @@
       });
       return true;
     }
+    // 名人の最短クリアは進捗やclearCommittedを触る前に、この純粋判定へ集約する。
+    function selectOptimalClearOutcome({ solved, actualMoves, par }) {
+      if (!solved) return Object.freeze({ type:'not-solved' });
+      return actualMoves === par ? Object.freeze({ type:'optimal-clear' }) : Object.freeze({ type:'over-limit' });
+    }
+    function isMasteryBoundaryNavigation(navigation) {
+      const catalog = masteryCatalogForRoute(navigation?.routeId);
+      return Boolean(catalog) && navigation.puzzleIndex === catalog.length - 1;
+    }
+    function makeMasteryBoundaryDestination(appState) {
+      const lap = appState.navigation.lap;
+      if (appState.navigation.routeId === 'mastery-jo') return makeMasteryAppState(appState, 'mastery-ha', 0, { type:'mastery-ha-welcome' }, lap);
+      if (appState.navigation.routeId === 'mastery-ha') return makeMasteryAppState(appState, 'mastery-kyu', 0, { type:'mastery-kyu-welcome' }, lap);
+      return { ...appState, ui:{ dialog:{ type:'speed-twenty-seven-required' } } };
+    }
     // クリアは演出ではなく確定コマンドで一度だけ記録する。チュートリアルは祝福後に自動遷移する。
     function commitClearForCurrentPuzzle() {
       syncBoardToAppState();
+      const puzzle = selectActivePuzzle();
+      if (isMasteryRoute()) {
+        const outcome = selectOptimalClearOutcome({ solved:WakeSevenBoardDomain.isSolved(RuntimeState.cells), actualMoves:RuntimeState.history.length, par:puzzle.par });
+        if (outcome.type === 'over-limit') {
+          AppState.board.clearCommitted = false;
+          AppState.ui.dialog = { type:'optimal-fail', puzzleId:puzzle.puzzleId, bestMoves:puzzle.par, actualMoves:RuntimeState.history.length };
+          RuntimeState.pendingMasteryBoundary = false;
+          saveAppState('mastery optimal fail');
+          return outcome;
+        }
+      }
       AppState.board.clearCommitted = true;
-      const puzzleId = selectActivePuzzle().puzzleId;
+      const puzzleId = puzzle.puzzleId;
       AppState.progress = withCompletedPuzzleId(AppState.progress, AppState.navigation, puzzleId);
       // 修行の巻末だけは、完了記録と次巻descriptorを同じ保存値へ確定する。
       // 演出はRuntimeStateの解決盤面で最後まで流し、終端でこの安定状態を描くだけにする。
@@ -3008,7 +3290,13 @@
         AppState = makeTrainingBoundaryDestination(AppState);
       } else {
         RuntimeState.pendingTrainingBoundary = false;
-        AppState.ui.dialog = isTutorialRoute() || isAcademyBoundaryClear() ? null : clearDialogDescriptor(selectActivePuzzle());
+        if (isMasteryRoute() && isMasteryBoundaryNavigation(AppState.navigation)) {
+          RuntimeState.pendingMasteryBoundary = true;
+          AppState = makeMasteryBoundaryDestination(AppState);
+        } else {
+          RuntimeState.pendingMasteryBoundary = false;
+          AppState.ui.dialog = isTutorialRoute() || isAcademyBoundaryClear() ? null : clearDialogDescriptor(puzzle);
+        }
       }
       saveAppState('clear committed');
     }
@@ -3020,12 +3308,19 @@
       RuntimeState.history = [];
       RuntimeState.panelIds = Array.from({ length:CELL_COUNT }, (_, index) => index);
       RuntimeState.phase = BoardPhase.READY;
+      RuntimeState.masteryRemainingRevealed = false;
       RuntimeState.academyGuidanceSignature = '';
       saveAppState(reason);
       if (isAcademyApplicationRoute()) presentApplicationPuzzle({ context:reason });
       else renderRuntime({ context:reason });
     }
     function intentRetryPuzzle() { resetCurrentPuzzleWithoutAnimation('clear dialog retry'); }
+    function intentRetryMasteryAfterOptimalFail() {
+      if (!isMasteryRoute() || AppState.ui.dialog?.type !== 'optimal-fail') return;
+      // 最短超過後は急31〜42の確認回数をすべて回復する。
+      if (masteryRemainingCheckShouldReset('optimal-fail-retry', AppState.navigation.routeId, AppState.navigation.puzzleIndex)) AppState = resetMasteryRemainingChecks(AppState, AppState.navigation.puzzleId);
+      resetCurrentPuzzleWithoutAnimation('mastery optimal fail retry');
+    }
     function intentStartTutorial() {
       if (!isTutorialRoute()) return;
       AppState.ui.dialog = null;
@@ -3093,7 +3388,8 @@
         : AppState.navigation.routeId === 'academy-basic'
           ? makeAcademyBasicNavigation(nextIndex)
           : makeAcademyIntroNavigation(nextIndex);
-      AppState = makeAppStateForNavigation(nextNavigation, { progress:AppState.progress, rewards:AppState.rewards, settings:AppState.settings });
+        // コースを戻っても、速解き完走や名人の残り手数使用回数は進行データとして保つ。
+        AppState = makeAppStateForNavigation(nextNavigation, { progress:AppState.progress, rewards:AppState.rewards, settings:AppState.settings, speed:AppState.speed, mastery:AppState.mastery });
       replaceRuntimeBoardFromAppState();
       RuntimeState.academyGuidanceSignature = '';
       saveAppState('academy next puzzle');
@@ -3108,6 +3404,15 @@
       AppState = makeTrainingAppState(AppState, AppState.navigation.routeId, nextIndex, null, AppState.navigation.lap);
       replaceRuntimeBoardFromAppState();
       saveAppState('training next puzzle');
+      runArrivalEffect();
+    }
+    function intentNextMasteryPuzzle() {
+      if (!isMasteryRoute() || !AppState.board.clearCommitted) return;
+      const catalog = masteryCatalogForRoute(AppState.navigation.routeId), nextIndex = AppState.navigation.puzzleIndex + 1;
+      if (!catalog || nextIndex >= catalog.length) return;
+      AppState = makeMasteryAppState(AppState, AppState.navigation.routeId, nextIndex, null, AppState.navigation.lap);
+      replaceRuntimeBoardFromAppState();
+      saveAppState('mastery next puzzle');
       runArrivalEffect();
     }
     // 開発中だけ使う状態移動。どのボタンも保存できる安定状態を作り、途中演出は持ち込まない。
@@ -3147,6 +3452,7 @@
       boardGripPrompt.hidden = true;
       AppState = nextAppState;
       RuntimeState.pendingTrainingBoundary = false;
+      RuntimeState.pendingMasteryBoundary = false;
       clearTutorialFeedback();
       replaceRuntimeBoardFromAppState();
       // 応用導入の途中表示をデバッグ遷移後へ残さない。応用のクリア状態では導入も再生しない。
@@ -3160,6 +3466,18 @@
       const puzzle = selectActivePuzzle();
       const progress = debugProgressWithCompleted(puzzle);
       const cleared = buildDebugSolvedBoard(puzzle);
+      if (isMasteryRoute()) {
+        // 「即」も、本番と同じ最短判定・完了記録・巻末遷移を通す。
+        // buildDebugSolvedBoardの履歴は常にpar手なので、ここで本番経路を安全に確認できる。
+        AppState = { ...AppState, board:cleared, ui:{ dialog:null } };
+        RuntimeState.cells = Uint8Array.from(cleared.cells);
+        RuntimeState.history = cleared.history.map(entry => Object.freeze({ triangleIndex:entry.triangleIndex, direction:entry.direction, before:Object.freeze([...entry.before]), after:Object.freeze([...entry.after]) }));
+        RuntimeState.panelIds = panelIdsFromHistory(RuntimeState.history);
+        RuntimeState.phase = BoardPhase.READY;
+        commitClearForCurrentPuzzle();
+        applyDebugStableState(AppState, 'debug clear current mastery');
+        return;
+      }
       // チュートリアルとクラス最終問は、本当にクリアした直後と同じ遷移先へ進める。
       if (isTutorialRoute()) {
         const nextStep = AppState.navigation.tutorialStep + 1;
@@ -3247,6 +3565,30 @@
       next.board = buildDebugSolvedBoard(trainingLowerPuzzleAt(lastIndex));
       applyDebugStableState(next, 'debug training completed');
     }
+    // 名人用の開発入口も、本番と同じ修行完了・十八番完走の状態factoryを通す。
+    function makeDebugMasteryProgress(...masteryCatalogs) {
+      return makeDebugTrainingProgress(TRAINING_UPPER_PUZZLES, TRAINING_MIDDLE_PUZZLES, TRAINING_LOWER_PUZZLES, ...masteryCatalogs);
+    }
+    function withDebugTrainingEighteen(appState, progress) {
+      return { ...appState, progress, speed:{ ...appState.speed, completedTrialIds:[...new Set([...appState.speed.completedTrialIds, 'training9', 'training18'])] } };
+    }
+    function intentDebugMasteryJo() {
+      const entry = makeMasteryEntryAppState(withDebugTrainingEighteen(AppState, makeDebugMasteryProgress()));
+      applyDebugStableState(entry, 'debug mastery jo');
+    }
+    function intentDebugMasteryHa() {
+      applyDebugStableState(makeMasteryAppState(withDebugTrainingEighteen(AppState, makeDebugMasteryProgress(MASTERY_VOLUMES[0].puzzles)), 'mastery-ha', 0, { type:'mastery-ha-welcome' }), 'debug mastery ha');
+    }
+    function intentDebugMasteryKyu() {
+      applyDebugStableState(makeMasteryAppState(withDebugTrainingEighteen(AppState, makeDebugMasteryProgress(MASTERY_VOLUMES[0].puzzles, MASTERY_VOLUMES[1].puzzles)), 'mastery-kyu', 0, { type:'mastery-kyu-welcome' }), 'debug mastery kyu');
+    }
+    function intentDebugMasteryAt(completedCount) {
+      const completed = MASTERY_PUZZLES.slice(0, completedCount), puzzleIndex = completedCount < 15 ? completedCount : completedCount < 30 ? completedCount - 15 : Math.min(14, completedCount - 30);
+      const routeId = completedCount < 15 ? 'mastery-jo' : completedCount < 30 ? 'mastery-ha' : 'mastery-kyu';
+      let next = makeMasteryAppState(withDebugTrainingEighteen(AppState, makeDebugMasteryProgress(completed)), routeId, puzzleIndex, null);
+      if (completedCount === 45) { next.board = buildDebugSolvedBoard(masteryCatalogForRoute('mastery-kyu')[14]); next.ui.dialog = { type:'speed-twenty-seven-required' }; }
+      applyDebugStableState(next, `debug mastery ${completedCount}`);
+    }
     // V2の現在地だけを初回導入へ戻し、旧版の保存キーは変更しない。
     function intentDebugResetToTutorial() {
       applyDebugStableState(makeDefaultAppState(), 'debug reset tutorial');
@@ -3317,6 +3659,13 @@
       RuntimeState.pendingTrainingBoundary = false;
       renderRuntime({ context:'training volume transition stable' });
     }
+    // 名人巻末もclear確定で到着先を保存済み。演出終端は保存済みの案内だけを描く。
+    function advanceMasteryAfterClear() {
+      if (!RuntimeState.pendingMasteryBoundary && !['mastery-ha-welcome','mastery-kyu-welcome','speed-twenty-seven-required'].includes(AppState.ui.dialog?.type)) { renderRuntime({ happy:true, context:'mastery clear' }); return; }
+      replaceRuntimeBoardFromAppState();
+      RuntimeState.pendingMasteryBoundary = false;
+      renderRuntime({ context:'mastery volume transition stable' });
+    }
     // 全員が起きた後のクリア演出。通常の回転とは別の表情と弾みだけを描く。
     function runClearEffect(afterClear = null) {
       const effect = beginEffect(BoardPhase.CELEBRATING);
@@ -3380,6 +3729,7 @@
     boardUndoButton.addEventListener('click', intentUndo);
     boardRestartButton.addEventListener('click', intentRestart);
     trainingTipButton.addEventListener('click', intentOpenTrainingTip);
+    nextMoveHintButton.addEventListener('click', intentOpenNextMoveHint);
     debugResetButton.addEventListener('click', intentDebugResetToTutorial);
     debugClearCurrentButton.addEventListener('click', intentDebugClearCurrentPuzzle);
     debugFinishTutorialButton.addEventListener('click', intentDebugFinishTutorial);
@@ -3393,6 +3743,13 @@
     debugTrainingMiddleButton.addEventListener('click', intentDebugTrainingMiddle);
     debugTrainingLowerButton.addEventListener('click', intentDebugTrainingLower);
     debugFinishTrainingButton.addEventListener('click', intentDebugFinishTraining);
+    debugMasteryJoButton.addEventListener('click', intentDebugMasteryJo);
+    debugMasteryHaButton.addEventListener('click', intentDebugMasteryHa);
+    debugMasteryKyuButton.addEventListener('click', intentDebugMasteryKyu);
+    debugMasteryFourteenButton.addEventListener('click', () => intentDebugMasteryAt(14));
+    debugMasteryTwentynineButton.addEventListener('click', () => intentDebugMasteryAt(29));
+    debugMasteryFortyfourButton.addEventListener('click', () => intentDebugMasteryAt(44));
+    debugMasteryFortyfiveButton.addEventListener('click', () => intentDebugMasteryAt(45));
     window.addEventListener('blur', () => {
       if (RuntimeState.invalidPointerId !== null) {
         safelyReleasePointer(RuntimeState.invalidPointerId);
@@ -3412,6 +3769,8 @@
       RuntimeState.invalidPointerId = null;
       boardElement.classList.remove('is-invalid-grab','is-grip-hover');
       boardGripPrompt.hidden = true;
+      // 急の残り手数は画面だけの一時表示。非表示化・復帰では必ず「？」へ戻す。
+      RuntimeState.masteryRemainingRevealed = false;
       if (RuntimeState.phase !== BoardPhase.READY || RuntimeState.activeEffect) cancelActiveEffect(reason);
       RuntimeState.drag = null;
       RuntimeState.phase = BoardPhase.READY;
@@ -3419,13 +3778,15 @@
       const tutorialTransition = settleCompletedTutorialToNextState();
       const academyTransition = !tutorialTransition && isAcademyBoundaryClear() && AppState.board.clearCommitted && WakeSevenBoardDomain.isSolved(AppState.board.cells);
       const trainingTransition = !tutorialTransition && !academyTransition && (RuntimeState.pendingTrainingBoundary || isTrainingBoundaryClear() && AppState.board.clearCommitted && WakeSevenBoardDomain.isSolved(AppState.board.cells));
+      const masteryTransition = !tutorialTransition && !academyTransition && !trainingTransition && (RuntimeState.pendingMasteryBoundary || isMasteryBoundaryNavigation(AppState.navigation) && AppState.board.clearCommitted && WakeSevenBoardDomain.isSolved(AppState.board.cells));
       if (academyTransition) advanceAcademyAfterClear();
       else if (trainingTransition) advanceTrainingAfterClear();
-      if (!tutorialTransition && !academyTransition && !trainingTransition) {
+      else if (masteryTransition) advanceMasteryAfterClear();
+      if (!tutorialTransition && !academyTransition && !trainingTransition && !masteryTransition) {
         clearTutorialFeedback();
         RuntimeState.tutorialCueGeneration += 1;
       }
-      if (!academyTransition && !trainingTransition) {
+      if (!academyTransition && !trainingTransition && !masteryTransition) {
         // 非表示中は安定盤面だけを保存し、見える状態へ戻った時にだけ0手の応用導入を最初から再生する。
         if ((reason === 'visible' || reason === 'pageshow') && applicationShouldReplayIntro()) presentApplicationPuzzle({ context:`application ${reason}` });
         else renderRuntime({ context:tutorialTransition ?? reason });
@@ -3801,6 +4162,65 @@
       checkRuntime('training-dialog-restore', restoredTrainingTip.ui.dialog?.type === 'training-tip'
         && restoredTrainingTip.ui.dialog?.patternPosition === 5
         && stableDialogForNavigation({ type:'training-upper-practice' }, makeTrainingNavigation('training-upper'), false, trainingGateOpen.progress, trainingGateOpen.speed)?.type === 'training-upper-practice', 'training dialog descriptor did not restore');
+      const masteryCatalogValid = MASTERY_VOLUMES.length === 3 && MASTERY_PUZZLES.length === 45
+        && MASTERY_VOLUMES.every((volume, volumeIndex) => volume.puzzles.length === 15 && volume.puzzles.every((puzzle, index) => puzzle.puzzleId === `${volume.routeId}-${String(index + 1).padStart(3, '0')}` && puzzle.state === volume.states[index] && selectDistance(puzzleInitialCells(puzzle)) === volume.par))
+        && new Set(MASTERY_PUZZLES.map(puzzle => puzzle.state)).size === 45;
+      checkRuntime('mastery-catalog', masteryCatalogValid, 'mastery IDs, fixed order, duplicate states, or shortest distances are invalid');
+      const masteryGateBase = { ...makeDefaultAppState(), progress:debugProgressWithCompleted(TRAINING_UPPER_PUZZLES, TRAINING_MIDDLE_PUZZLES, TRAINING_LOWER_PUZZLES) };
+      const masteryGateOpen = { ...masteryGateBase, speed:{ completedTrialIds:['training18'] } };
+      const masteryGateLapTwo = { ...masteryGateBase, navigation:makeMasteryNavigation('mastery-jo', 0, 2), progress:{ ...masteryGateBase.progress, lap2CompletedPuzzleIds:[...TRAINING_UPPER_PUZZLES, ...TRAINING_MIDDLE_PUZZLES, ...TRAINING_LOWER_PUZZLES].map(puzzle => puzzle.puzzleId) } };
+      checkRuntime('mastery-entry-gate', selectMasteryEntryGate(makeDefaultAppState(), 1) === 'training-incomplete'
+        && selectMasteryEntryGate(masteryGateBase, 1) === 'speed-eighteen-required'
+        && selectMasteryEntryGate(masteryGateOpen, 1) === 'allowed'
+        && makeMasteryEntryAppState(masteryGateOpen)?.ui.dialog?.type === 'mastery-welcome'
+        && selectMasteryEntryGate(masteryGateLapTwo, 2) === 'allowed', 'mastery entry gate did not enforce training and lap-specific eighteen requirements');
+      checkRuntime('mastery-optimal-clear', selectOptimalClearOutcome({ solved:false, actualMoves:0, par:3 }).type === 'not-solved'
+        && selectOptimalClearOutcome({ solved:true, actualMoves:3, par:3 }).type === 'optimal-clear'
+        && selectOptimalClearOutcome({ solved:true, actualMoves:4, par:3 }).type === 'over-limit', 'mastery optimal-clear outcome accepts an over-limit solution');
+      const trainingAndMasteryHintsValid = [...TRAINING_UPPER_PUZZLES, ...TRAINING_MIDDLE_PUZZLES, ...TRAINING_LOWER_PUZZLES, ...masteryCatalogForRoute('mastery-jo')].every(puzzle => {
+        const cells = puzzleInitialCells(puzzle);
+        const move = selectShortestOneMoveHint(cells);
+        return move && selectDistance(WakeSevenBoardDomain.roll(cells, move.triangleIndex, move.direction)) === selectDistance(cells) - 1;
+      });
+      checkRuntime('training-and-mastery-one-move-hint', trainingAndMasteryHintsValid, 'training or mastery Jo one-move hint does not reduce the shortest distance');
+      const masteryKyuLapOne = withMasteryRemainingChecksUsed(makeMasteryAppState(masteryGateOpen, 'mastery-kyu', 0, null, 1), 'mastery-kyu-001', 1);
+      const masteryKyuLapTwo = withMasteryRemainingChecksUsed(makeMasteryAppState(masteryKyuLapOne, 'mastery-kyu', 0, null, 2), 'mastery-kyu-001', 2);
+      const masteryKyuLapOneAfterLapTwo = { ...masteryKyuLapTwo, navigation:makeMasteryNavigation('mastery-kyu', 0, 1) };
+      const masteryKyuForty = withMasteryRemainingChecksUsed(makeMasteryAppState(masteryGateOpen, 'mastery-kyu', 9, null, 1), 'mastery-kyu-010', 1);
+      const masteryUntouchedRuntime = { history:[], cells:Uint8Array.from(puzzleInitialCells(masteryCatalogForRoute('mastery-kyu')[0])) };
+      const masteryFortyUntouchedRuntime = { history:[], cells:Uint8Array.from(puzzleInitialCells(masteryCatalogForRoute('mastery-kyu')[9])) };
+      checkRuntime('mastery-remaining-check-policy', masteryRemainingCheckLimit(0) === 2 && masteryRemainingCheckLimit(5) === 2 && masteryRemainingCheckLimit(6) === 1 && masteryRemainingCheckLimit(11) === 1 && masteryRemainingCheckLimit(12) === 0
+        && normalizeMasteryState({ remainingChecksByLap:{ lap1:{ 'mastery-kyu-001':9, 'mastery-kyu-007':9, 'mastery-kyu-013':9, bad:2 }, lap2:{ 'mastery-kyu-001':1 } } }).remainingChecksByLap.lap1['mastery-kyu-001'] === 2
+        && normalizeMasteryState({ remainingChecksByLap:{ lap1:{ 'mastery-kyu-007':9 } } }).remainingChecksByLap.lap1['mastery-kyu-007'] === 1
+        && normalizeMasteryState({ remainingChecksByLap:{ lap1:{ 'mastery-kyu-013':9 } } }).remainingChecksByLap.lap1['mastery-kyu-013'] === 0
+        && masteryRemainingChecksUsed(masteryKyuLapOneAfterLapTwo) === 1
+        && masteryRemainingChecksUsed(masteryKyuLapTwo) === 2
+        && masteryRemainingCheckShouldReset('undo', 'mastery-kyu', 0) === false
+        && masteryRemainingCheckShouldReset('restart', 'mastery-kyu', 8) === true
+        && masteryRemainingCheckShouldReset('restart', 'mastery-kyu', 9) === false
+        && masteryRemainingCheckShouldReset('optimal-fail-retry', 'mastery-kyu', 11) === true
+        && masteryRemainingCheckShouldReset('optimal-fail-retry', 'mastery-kyu', 12) === false
+        && selectCanRestartCurrentPuzzle(masteryUntouchedRuntime, masteryKyuLapOne) === true
+        && selectCanRestartCurrentPuzzle(masteryFortyUntouchedRuntime, masteryKyuForty) === false, 'mastery remaining-check persistence, lap isolation, Undo, Restart, or retry policy is invalid');
+      const masteryBrokenNavigation = normalizePersistentAppState({ ...makeMasteryAppState(masteryGateOpen, 'mastery-ha', 0), navigation:{ ...makeMasteryNavigation('mastery-ha', 0), puzzleIndex:99, puzzleId:'broken-mastery' } });
+      checkRuntime('mastery-navigation-recovery', masteryBrokenNavigation.navigation.routeId === 'mastery-ha' && masteryBrokenNavigation.navigation.puzzleIndex === 0, 'mastery broken navigation did not recover inside its volume');
+      const masteryJoFinal = makeMasteryAppState({ ...masteryGateOpen, progress:debugProgressWithCompleted(TRAINING_UPPER_PUZZLES, TRAINING_MIDDLE_PUZZLES, TRAINING_LOWER_PUZZLES, MASTERY_VOLUMES[0].puzzles.slice(0, 14)) }, 'mastery-jo', 14);
+      masteryJoFinal.board = buildDebugSolvedBoard(masteryCatalogForRoute('mastery-jo')[14]);
+      const masteryKyuFinal = makeMasteryAppState({ ...masteryGateOpen, progress:debugProgressWithCompleted(TRAINING_UPPER_PUZZLES, TRAINING_MIDDLE_PUZZLES, TRAINING_LOWER_PUZZLES, ...MASTERY_VOLUMES.slice(0, 2).map(volume => volume.puzzles), MASTERY_VOLUMES[2].puzzles.slice(0, 14)) }, 'mastery-kyu', 14);
+      masteryKyuFinal.board = buildDebugSolvedBoard(masteryCatalogForRoute('mastery-kyu')[14]);
+      const masteryJoDestination = makeMasteryBoundaryDestination({ ...masteryJoFinal, progress:withCompletedPuzzleId(masteryJoFinal.progress, masteryJoFinal.navigation, masteryJoFinal.navigation.puzzleId) });
+      const masteryKyuDestination = makeMasteryBoundaryDestination({ ...masteryKyuFinal, progress:withCompletedPuzzleId(masteryKyuFinal.progress, masteryKyuFinal.navigation, masteryKyuFinal.navigation.puzzleId) });
+      checkRuntime('mastery-boundaries', masteryJoDestination.navigation.routeId === 'mastery-ha' && masteryJoDestination.ui.dialog?.type === 'mastery-ha-welcome'
+        && masteryKyuDestination.navigation.routeId === 'mastery-kyu' && masteryKyuDestination.ui.dialog?.type === 'speed-twenty-seven-required', 'mastery volume boundary or twenty-seven destination is invalid');
+      const masteryFail = makeMasteryAppState(masteryGateOpen, 'mastery-jo', 0, { type:'optimal-fail', puzzleId:'mastery-jo-001', bestMoves:3, actualMoves:5 });
+      const masterySolved = buildDebugSolvedBoard(masteryCatalogForRoute('mastery-jo')[0]);
+      const masteryFailInitial = puzzleInitialCells(masteryCatalogForRoute('mastery-jo')[0]);
+      const masteryFailDetour = Array.from(WakeSevenBoardDomain.roll(masteryFailInitial, 0, 1));
+      masteryFail.board = { ...masterySolved, history:[{ triangleIndex:0, direction:1, before:[...masteryFailInitial], after:masteryFailDetour }, { triangleIndex:0, direction:-1, before:masteryFailDetour, after:[...masteryFailInitial] }, ...masterySolved.history] };
+      const restoredMasteryFail = normalizePersistentAppState(masteryFail);
+      const masteryRewardBoundary = makeMasteryBoundaryDestination({ ...masteryKyuFinal, progress:withCompletedPuzzleId(masteryKyuFinal.progress, masteryKyuFinal.navigation, masteryKyuFinal.navigation.puzzleId) });
+      checkRuntime('mastery-dialog-restore', restoredMasteryFail.ui.dialog?.type === 'optimal-fail' && !restoredMasteryFail.board.clearCommitted && restoredMasteryFail.board.history.length === 5, 'mastery optimal-fail did not restore as the same failure dialog');
+      checkRuntime('mastery-reward-boundary', masteryRewardBoundary.rewards.masterGoldGranted === false && masteryRewardBoundary.settings.theme !== 'gold' && !masteryRewardBoundary.speed.completedTrialIds.includes('mastery27'), 'mastery completion granted a P7 reward or completed mastery27');
       const preservedProgress = TUTORIAL_STEPS[0].puzzleId;
       const brokenBoard = normalizePersistentAppState({ ...academyClear, board:{ ...academyClear.board, cells:[9, 9, 9] }, progress:{ tutorialCompleted:true, tutorialCompletedPuzzleIds:[preservedProgress], lap1CompletedPuzzleIds:[], lap2CompletedPuzzleIds:[] }, rewards:{ masterGoldGranted:true, satoriDesignGranted:false }, settings:{ theme:'gold', layout:'satori-tilted' } });
       checkRuntime('broken-board-keeps-independent-state', sameCells(brokenBoard.board.cells, academyInitial) && brokenBoard.progress.tutorialCompletedPuzzleIds.includes(preservedProgress) && brokenBoard.settings.theme === 'gold' && brokenBoard.settings.layout === 'standard', 'broken board fallback changed independent progress or reward settings');
@@ -3840,7 +4260,7 @@
       checkRuntime('tutorial-final-reload-enters-academy', restoredFinalTutorial.navigation.routeId === 'academy-intro' && restoredFinalTutorial.progress.tutorialCompleted && restoredFinalTutorial.ui.dialog?.type === 'academy-enroll', 'final tutorial reload did not enter academy intro');
       const malformedPuzzleContext = normalizePersistentAppState({ ...midTutorial, navigation:{ ...midTutorial.navigation, puzzleId:'unknown-puzzle' } });
       checkRuntime('malformed-tutorial-context-fallback', malformedPuzzleContext.navigation.tutorialStep === 0 && sameCells(malformedPuzzleContext.board.cells, puzzleInitialCells(tutorialStepAt(0))), 'malformed tutorial context did not fall back safely');
-      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:ACADEMY_INTRO_PUZZLES.length + ACADEMY_BASIC_PUZZLES.length + ACADEMY_APPLICATION_PUZZLES.length + ACADEMY_DEVELOPMENT_PUZZLES.length + TRAINING_UPPER_PUZZLES.length + TRAINING_MIDDLE_PUZZLES.length + TRAINING_LOWER_PUZZLES.length, tutorialStepCount:TUTORIAL_STEPS.length, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
+      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:ACADEMY_INTRO_PUZZLES.length + ACADEMY_BASIC_PUZZLES.length + ACADEMY_APPLICATION_PUZZLES.length + ACADEMY_DEVELOPMENT_PUZZLES.length + TRAINING_UPPER_PUZZLES.length + TRAINING_MIDDLE_PUZZLES.length + TRAINING_LOWER_PUZZLES.length + MASTERY_PUZZLES.length, tutorialStepCount:TUTORIAL_STEPS.length, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
     }
     // 起動時に盤面ルールと操作の前提を確認してから表示する
     const selftestResult = runSelftest();
