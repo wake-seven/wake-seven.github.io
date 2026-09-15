@@ -1374,6 +1374,41 @@
       if (rawDialog?.type === 'clear' && navigation.mode === 'stage' && solved) return clearDialogDescriptor(selectPuzzleForNavigation(navigation));
       return null;
     }
+    // 保存復元で学園の解決済み盤面を見つけた時だけ、次の安定routeへ進める。
+    // 実演中の一時状態ではなく、通常クリアと同じfactoryを通す。
+    function restoreAcademyBoundaryDestination(fallback, navigation, solved, progressAfterSolved) {
+      if (!solved) return null;
+      if (navigation.mode === 'tutorial') {
+        const nextStep = navigation.tutorialStep + 1;
+        return nextStep < TUTORIAL_STEPS.length
+          ? makeTutorialStepAppState({ ...fallback, progress:progressAfterSolved }, nextStep)
+          : makeAcademyIntroAppState({ ...fallback, progress:{ ...progressAfterSolved, tutorialCompleted:true } }, { type:'academy-enroll' });
+      }
+      if (navigation.routeId === 'academy-intro' && navigation.puzzleIndex === ACADEMY_INTRO_PUZZLES.length - 1) return makeAcademyBasicAppState({ ...fallback, progress:progressAfterSolved });
+      if (navigation.routeId === 'academy-basic' && navigation.puzzleIndex === ACADEMY_BASIC_PUZZLES.length - 1) return makeAcademyApplicationEntryAppState({ ...fallback, progress:progressAfterSolved });
+      if (navigation.routeId === 'academy-application' && navigation.puzzleIndex === ACADEMY_APPLICATION_PUZZLES.length - 1) return makeAcademyDevelopmentAppState({ ...fallback, progress:progressAfterSolved });
+      if (navigation.routeId === 'academy-development' && navigation.puzzleIndex === 4) return makeAcademyDevelopmentAppState({ ...fallback, progress:progressAfterSolved }, 5, { type:'academy-development-four-welcome' });
+      return null;
+    }
+    // 修行・名人・悟りの巻末だけは、通常クリアではなく次の節目descriptorへ復元する。
+    function restoreCourseBoundaryDestination(stableCurrent, navigation, solved, optimalOutcome) {
+      if (!solved) return null;
+      if (isTrainingBoundaryNavigation(navigation)) return makeTrainingBoundaryDestination(stableCurrent);
+      if (isMasteryRoute(navigation) && optimalOutcome?.type === 'optimal-clear' && isMasteryBoundaryNavigation(navigation)) return makeMasteryBoundaryDestination(stableCurrent);
+      if (isSatoriRoute(navigation) && optimalOutcome?.type === 'optimal-clear' && isSatoriBoundaryNavigation(navigation)) return makeSatoriBoundaryDestination(stableCurrent);
+      return null;
+    }
+    // 履歴まで検証済みの盤面にだけ、失敗・通常クリア・節目以外のdialogを戻す。
+    function restoreStableDialog(rawDialog, navigation, puzzle, solved, progress, speed, optimalOutcome, historyLength) {
+      return stableDialogForNavigation(rawDialog, navigation, solved, progress, speed)
+        ?? ((isMasteryRoute(navigation) || isSatoriRoute(navigation)) && optimalOutcome?.type === 'over-limit'
+          ? { type:'optimal-fail', puzzleId:puzzle.puzzleId, bestMoves:puzzle.par, actualMoves:historyLength, reason:'over-limit' }
+          : isSatoriRoute(navigation) && optimalOutcome?.type === 'move-limit'
+            ? { type:'optimal-fail', puzzleId:puzzle.puzzleId, bestMoves:puzzle.par, actualMoves:historyLength, reason:'move-limit' }
+            : solved && navigation.routeId === 'academy-development' && navigation.puzzleIndex === ACADEMY_DEVELOPMENT_PUZZLES.length - 1 && hasCompletedDevelopmentClass(progress)
+              ? { type:'speed-nine-required' }
+              : solved ? clearDialogDescriptor(puzzle) : null);
+    }
     // localStorageからの復元は、ルート、問題、履歴、ダイアログを順番に検査する。
     // チュートリアルの解決済み途中演出は、次段階（最終なら入学案内）という安定状態へ正規化する。
     function normalizePersistentAppState(raw) {
@@ -1403,16 +1438,8 @@
       if (rawOptimalFail && !rawOptimalFailValid) return fallback;
       const optimalOutcome = isMasteryRoute(navigation) || isSatoriRoute(navigation) ? selectOptimalClearOutcome({ solved, actualMoves:history.length, par:puzzle.par, route:navigation }) : null;
       const progressAfterSolved = solved && optimalOutcome?.type !== 'over-limit' ? withCompletedPuzzleId(progress, navigation, puzzle.puzzleId) : progress;
-      if (solved && navigation.mode === 'tutorial') {
-        const nextStep = navigation.tutorialStep + 1;
-        return nextStep < TUTORIAL_STEPS.length
-          ? makeTutorialStepAppState({ ...fallback, progress:progressAfterSolved }, nextStep)
-          : makeAcademyIntroAppState({ ...fallback, progress:{ ...progressAfterSolved, tutorialCompleted:true } }, { type:'academy-enroll' });
-      }
-      if (solved && navigation.routeId === 'academy-intro' && navigation.puzzleIndex === ACADEMY_INTRO_PUZZLES.length - 1) return makeAcademyBasicAppState({ ...fallback, progress:progressAfterSolved });
-      if (solved && navigation.routeId === 'academy-basic' && navigation.puzzleIndex === ACADEMY_BASIC_PUZZLES.length - 1) return makeAcademyApplicationEntryAppState({ ...fallback, progress:progressAfterSolved });
-      if (solved && navigation.routeId === 'academy-application' && navigation.puzzleIndex === ACADEMY_APPLICATION_PUZZLES.length - 1) return makeAcademyDevelopmentAppState({ ...fallback, progress:progressAfterSolved });
-      if (solved && navigation.routeId === 'academy-development' && navigation.puzzleIndex === 4) return makeAcademyDevelopmentAppState({ ...fallback, progress:progressAfterSolved }, 5, { type:'academy-development-four-welcome' });
+      const academyBoundary = restoreAcademyBoundaryDestination(fallback, navigation, solved, progressAfterSolved);
+      if (academyBoundary) return academyBoundary;
       const stableCurrent = {
         ...fallback,
         board:{ initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted:solved && optimalOutcome?.type !== 'over-limit' },
@@ -1420,13 +1447,11 @@
         speed,
         mastery,
       };
-      // 本番クリア・デバッグ・保存復元で、上巻→中巻→下巻→十八番の表を一つだけ使う。
-      if (solved && isTrainingBoundaryNavigation(navigation)) return makeTrainingBoundaryDestination(stableCurrent);
-      if (solved && isMasteryRoute(navigation) && optimalOutcome?.type === 'optimal-clear' && isMasteryBoundaryNavigation(navigation)) return makeMasteryBoundaryDestination(stableCurrent);
-      if (solved && isSatoriRoute(navigation) && optimalOutcome?.type === 'optimal-clear' && isSatoriBoundaryNavigation(navigation)) return makeSatoriBoundaryDestination(stableCurrent);
+      const courseBoundary = restoreCourseBoundaryDestination(stableCurrent, navigation, solved, optimalOutcome);
+      if (courseBoundary) return courseBoundary;
       return {
         ...stableCurrent,
-        ui:{ dialog:stableDialogForNavigation(raw.ui?.dialog, navigation, solved, progressAfterSolved, speed) ?? ((isMasteryRoute(navigation) || isSatoriRoute(navigation)) && optimalOutcome?.type === 'over-limit' ? { type:'optimal-fail', puzzleId:puzzle.puzzleId, bestMoves:puzzle.par, actualMoves:history.length, reason:'over-limit' } : isSatoriRoute(navigation) && optimalOutcome?.type === 'move-limit' ? { type:'optimal-fail', puzzleId:puzzle.puzzleId, bestMoves:puzzle.par, actualMoves:history.length, reason:'move-limit' } : solved && navigation.routeId === 'academy-development' && navigation.puzzleIndex === ACADEMY_DEVELOPMENT_PUZZLES.length - 1 && hasCompletedDevelopmentClass(progressAfterSolved) ? { type:'speed-nine-required' } : solved ? clearDialogDescriptor(puzzle) : null) },
+        ui:{ dialog:restoreStableDialog(raw.ui?.dialog, navigation, puzzle, solved, progressAfterSolved, speed, optimalOutcome, history.length) },
       };
     }
     let restoredFromStorage = false;
@@ -2275,6 +2300,96 @@
       saveAppState('training tip browse');
       renderRuntime({ context:'training tip browse' });
     }
+    // 学園の歓迎・巻末案内は、見本SVGと開始操作を同じ場所で持つ。
+    // renderDialog本体は共通の「通常クリア」組み立てだけを担当し、ここで完成したdialogは触らない。
+    function renderAcademyDialog(descriptor, title, message, addAction) {
+      const actions = document.createElement('div');
+      actions.className = 'w7-dialog-actions';
+      if (descriptor.type === 'academy-enroll') {
+        dialogElement.className = 'w7-dialog w7-dialog--enroll';
+        title.textContent = 'だるま学園 入学おめでとう！';
+        const action = addAction('つぎへ', intentOpenAcademyIntroWelcome, actions);
+        dialogElement.replaceChildren(title, renderAcademyEnrollArt(), actions);
+        return action;
+      }
+      if (descriptor.type === 'academy-intro-welcome' || descriptor.type === 'academy-basic-welcome') {
+        const intro = descriptor.type === 'academy-intro-welcome';
+        dialogElement.className = 'w7-dialog w7-dialog--welcome';
+        title.textContent = intro ? 'はじめは入門クラスだよ！' : '基本クラスへ ようこそ！';
+        const preview = svgElement('svg', { class:'w7-welcome-board w7-academy-intro-preview', viewBox:'14 -88 293 398', 'aria-hidden':'true' });
+        message.className = 'w7-academy-intro-message';
+        runAcademyWelcomePreview(preview, message, intro ? academyIntroPuzzleAt(0) : academyBasicPuzzleAt(0), intro ? '最初はゆっくりまわそう' : 'あと○くるりが減ったら、指をはなそう', '', { labelX:92, labelY:-22, numberX:156, numberY:-14, numberSize:64, unitX:178, unitY:-22, releaseY:-22 });
+        const action = addAction('はじめる', intro ? intentStartAcademyIntro : intentStartAcademyBasic, actions);
+        dialogElement.replaceChildren(title, message, preview, actions);
+        return action;
+      }
+      if (descriptor.type === 'academy-application-entry') {
+        // 説明だけで終えず「ピカーンと光る三枚をそろえる」実演盤面を先に見せる。
+        dialogElement.className = 'w7-dialog w7-dialog--welcome';
+        title.textContent = '応用クラスへ ようこそ！';
+        message.className = 'w7-application-welcome-message';
+        const preview = svgElement('svg', { class:'w7-welcome-board w7-application-welcome-preview', viewBox:'14 -60 293 370', 'aria-hidden':'true' });
+        const applicationPuzzle = academyApplicationPuzzleAt(0);
+        const action = addAction('はじめる', intentStartAcademyApplication, actions);
+        dialogElement.replaceChildren(title, message, preview, actions);
+        // SVGがダイアログへ載った後に描画を始める。未接続のSVGで開始すると、直後の
+        // replaceChildrenにより盤面だけが失われることがある。
+        queueMicrotask(() => {
+          if (!preview.isConnected) return;
+          runAcademyWelcomePreview(preview, message, applicationPuzzle, '', '', {
+            applicationTargets:true,
+            // 「あと」と大きな数字が重ならないよう、旧版より数字側へ余白を取る。
+            labelX:34, labelY:4, numberX:94, numberY:6, numberSize:48, unitX:116, unitY:4, releaseX:184, releaseY:5,
+            renderMessage(target) {
+              const accent = document.createElement('span');
+              accent.className = 'w7-application-target-text';
+              accent.textContent = 'ピカーンと光る3枚';
+              // 対象を示す語だけ、学園のゴールドで強調する。
+              target.replaceChildren(accent, 'を、同じ向きにそろえよう');
+            },
+          });
+        });
+        return action;
+      }
+      if (descriptor.type === 'academy-development-welcome') {
+        dialogElement.className = 'w7-dialog w7-dialog--welcome';
+        title.textContent = '発展クラス 開始！';
+        message.className = 'w7-academy-intro-message';
+        const overview = document.createElement('p');
+        overview.textContent = '発展クラスでは「あと3くるり」「あと4くるり」にも挑戦するよ！';
+        const preview = svgElement('svg', { class:'w7-welcome-board w7-academy-intro-preview', viewBox:'14 -88 293 398', 'aria-hidden':'true' });
+        // 見本の時計・アニメーションも共通Effect Runnerへ所属させる。開始時は
+        // runArrivalEffect がこのeffectを中断するため、閉じたダイアログの処理は残らない。
+        const previewEffect = beginEffect(BoardPhase.READY);
+        registerEffectCleanup(previewEffect, () => preview.replaceChildren());
+        const action = addAction('はじめる', intentStartAcademyDevelopment, actions);
+        dialogElement.replaceChildren(title, message, preview, overview, actions);
+        queueMicrotask(() => {
+          if (!preview.isConnected || !isCurrentEffect(previewEffect)) return;
+          const puzzle = academyDevelopmentPuzzleAt(0);
+          runAcademyWelcomePreview(preview, message, puzzle, 'くるくる回して、「あと○くるり」が減ったら、指をはなそう', '', { preferredMove:puzzle.firstMove, labelX:92, labelY:-22, numberX:156, numberY:-14, numberSize:64, unitX:178, unitY:-22, releaseY:-22 }, previewEffect);
+        });
+        return action;
+      }
+      if (descriptor.type === 'academy-development-four-welcome') {
+        dialogElement.className = 'w7-dialog w7-dialog--welcome';
+        title.textContent = '次は4くるり！';
+        message.textContent = '次からは、「あと4くるり」の問題です。';
+        const action = addAction('はじめる', intentStartAcademyDevelopmentFour, actions);
+        dialogElement.replaceChildren(title, message, actions);
+        return action;
+      }
+      if (descriptor.type === 'speed-nine-required') {
+        dialogElement.className = 'w7-dialog w7-dialog--clear';
+        title.textContent = '速解き九番勝負が解放されたよ！';
+        message.className = 'w7-clear-note';
+        message.textContent = '九番勝負は次の段階で遊べるようになります。';
+        const action = addAction('もう一度', intentRetryPuzzle, actions);
+        dialogElement.replaceChildren(title, message, actions);
+        return action;
+      }
+      return null;
+    }
     function renderDialog() {
       // クリアと到着の最中はダイアログを重ねず、安定フレームでだけ表示する。
       const descriptor = RuntimeState.phase === BoardPhase.CELEBRATING || RuntimeState.phase === BoardPhase.ARRIVING ? null : AppState.ui.dialog;
@@ -2299,8 +2414,10 @@
       const trainingAction = renderTrainingDialog(descriptor, title, message, addAction);
       const satoriAction = trainingAction ? null : renderSatoriDialog(descriptor, title, message, addAction);
       const masteryAction = trainingAction || satoriAction ? null : renderMasteryDialog(descriptor, title, message, addAction);
-      if (trainingAction || satoriAction || masteryAction) {
-        defaultAction = trainingAction ?? satoriAction ?? masteryAction;
+      const academyAction = trainingAction || satoriAction || masteryAction ? null : renderAcademyDialog(descriptor, title, message, addAction);
+      let dialogAssembled = Boolean(trainingAction || satoriAction || masteryAction || academyAction);
+      if (dialogAssembled) {
+        defaultAction = trainingAction ?? satoriAction ?? masteryAction ?? academyAction;
       } else if (descriptor.type === 'welcome') {
         dialogElement.className = 'w7-dialog w7-dialog--welcome';
         title.textContent = 'だるまさんを起こして！';
@@ -2310,85 +2427,7 @@
         dialogElement.replaceChildren(title, message, preview, actions);
         // replaceChildren後でないとisConnectedがfalseになり、見本の初期描画が走らない。
         runWelcomePreviewCycle(preview);
-      } else if (descriptor.type === 'academy-enroll') {
-        dialogElement.className = 'w7-dialog w7-dialog--enroll';
-        title.textContent = 'だるま学園 入学おめでとう！';
-        defaultAction = addAction('つぎへ', intentOpenAcademyIntroWelcome);
-        details.push(renderAcademyEnrollArt());
-      } else if (descriptor.type === 'academy-intro-welcome') {
-        dialogElement.className = 'w7-dialog w7-dialog--welcome';
-        title.textContent = 'はじめは入門クラスだよ！';
-        const preview = svgElement('svg', { class:'w7-welcome-board w7-academy-intro-preview', viewBox:'14 -88 293 398', 'aria-hidden':'true' });
-        message.className = 'w7-academy-intro-message';
-        runAcademyWelcomePreview(preview, message, academyIntroPuzzleAt(0), '最初はゆっくりまわそう', '', { labelX:92, labelY:-22, numberX:156, numberY:-14, numberSize:64, unitX:178, unitY:-22, releaseY:-22 });
-        defaultAction = addAction('はじめる', intentStartAcademyIntro);
-        dialogElement.replaceChildren(title, message, preview, actions);
-      } else if (descriptor.type === 'academy-basic-welcome') {
-        dialogElement.className = 'w7-dialog w7-dialog--welcome';
-        title.textContent = '基本クラスへ ようこそ！';
-        const preview = svgElement('svg', { class:'w7-welcome-board w7-academy-intro-preview', viewBox:'14 -88 293 398', 'aria-hidden':'true' });
-        message.className = 'w7-academy-intro-message';
-        runAcademyWelcomePreview(preview, message, academyBasicPuzzleAt(0), 'あと○くるりが減ったら、指をはなそう', '', { labelX:92, labelY:-22, numberX:156, numberY:-14, numberSize:64, unitX:178, unitY:-22, releaseY:-22 });
-        defaultAction = addAction('はじめる', intentStartAcademyBasic);
-        dialogElement.replaceChildren(title, message, preview, actions);
-      } else if (descriptor.type === 'academy-application-entry') {
-        // 説明だけで終えず「ピカーンと光る三枚をそろえる」実演盤面を先に見せる。
-        dialogElement.className = 'w7-dialog w7-dialog--welcome';
-        title.textContent = '応用クラスへ ようこそ！';
-        message.className = 'w7-application-welcome-message';
-        const preview = svgElement('svg', { class:'w7-welcome-board w7-application-welcome-preview', viewBox:'14 -60 293 370', 'aria-hidden':'true' });
-        const applicationPuzzle = academyApplicationPuzzleAt(0);
-        defaultAction = addAction('はじめる', intentStartAcademyApplication);
-        dialogElement.replaceChildren(title, message, preview, actions);
-        // SVGがダイアログへ載った後に描画を始める。未接続のSVGで開始すると、直後の
-        // replaceChildrenにより盤面だけが失われることがある。
-        queueMicrotask(() => {
-          if (!preview.isConnected) return;
-          runAcademyWelcomePreview(preview, message, applicationPuzzle, '', '', {
-            applicationTargets:true,
-            // 「あと」と大きな数字が重ならないよう、旧版より数字側へ余白を取る。
-            labelX:34, labelY:4, numberX:94, numberY:6, numberSize:48, unitX:116, unitY:4, releaseX:184, releaseY:5,
-            renderMessage(target) {
-              const accent = document.createElement('span');
-              accent.className = 'w7-application-target-text';
-              accent.textContent = 'ピカーンと光る3枚';
-              // 対象を示す語だけ、学園のゴールドで強調する。
-              target.replaceChildren(accent, 'を、同じ向きにそろえよう');
-            },
-          });
-        });
-      } else if (descriptor.type === 'academy-development-welcome') {
-        dialogElement.className = 'w7-dialog w7-dialog--welcome';
-        title.textContent = '発展クラス 開始！';
-        const spinHint = message;
-        spinHint.className = 'w7-academy-intro-message';
-        const overview = document.createElement('p');
-        overview.textContent = '発展クラスでは「あと3くるり」「あと4くるり」にも挑戦するよ！';
-        const preview = svgElement('svg', { class:'w7-welcome-board w7-academy-intro-preview', viewBox:'14 -88 293 398', 'aria-hidden':'true' });
-        // 見本の時計・アニメーションも共通Effect Runnerへ所属させる。開始時は
-        // runArrivalEffect がこのeffectを中断するため、閉じたダイアログの処理は残らない。
-        const previewEffect = beginEffect(BoardPhase.READY);
-        registerEffectCleanup(previewEffect, () => preview.replaceChildren());
-        defaultAction = addAction('はじめる', intentStartAcademyDevelopment);
-        dialogElement.replaceChildren(title, spinHint, preview, overview, actions);
-        queueMicrotask(() => {
-          if (!preview.isConnected || !isCurrentEffect(previewEffect)) return;
-          const puzzle = academyDevelopmentPuzzleAt(0);
-          runAcademyWelcomePreview(preview, spinHint, puzzle, 'くるくる回して、「あと○くるり」が減ったら、指をはなそう', '', { preferredMove:puzzle.firstMove, labelX:92, labelY:-22, numberX:156, numberY:-14, numberSize:64, unitX:178, unitY:-22, releaseY:-22 }, previewEffect);
-        });
-      } else if (descriptor.type === 'academy-development-four-welcome') {
-        dialogElement.className = 'w7-dialog w7-dialog--welcome';
-        title.textContent = '次は4くるり！';
-        message.textContent = '次からは、「あと4くるり」の問題です。';
-        defaultAction = addAction('はじめる', intentStartAcademyDevelopmentFour);
-        dialogElement.replaceChildren(title, message, actions);
-      } else if (descriptor.type === 'speed-nine-required') {
-        dialogElement.className = 'w7-dialog w7-dialog--clear';
-        title.textContent = '速解き九番勝負が解放されたよ！';
-        message.className = 'w7-clear-note';
-        message.textContent = '九番勝負は次の段階で遊べるようになります。';
-        defaultAction = addAction('もう一度', intentRetryPuzzle);
-        dialogElement.replaceChildren(title, message, actions);
+        dialogAssembled = true;
       } else {
         dialogElement.className = 'w7-dialog w7-dialog--clear';
         title.textContent = '全員起きました！';
@@ -2448,9 +2487,7 @@
         addAction('もう一度', intentRetryPuzzle);
         defaultAction = addAction('次へ', isTrainingRoute() ? intentNextTrainingPuzzle : isMasteryRoute() ? intentNextMasteryPuzzle : isSatoriRoute() ? intentNextSatoriPuzzle : intentNextAcademyPuzzle);
       }
-      // 盤面見本を自前で組み立てる歓迎ダイアログは、ここでタイトルとボタンだけに
-      // 置き換えない。応用開始もこの仲間で、見本盤面を保持する。
-      if (!['welcome','academy-intro-welcome','academy-basic-welcome','academy-application-entry','academy-development-welcome','academy-development-four-welcome','speed-nine-required','training-welcome','training-upper-goal','training-upper-practice','training-middle-goal','training-middle-spin','training-lower-goal','training-tip','speed-eighteen-required','mastery-welcome','mastery-ha-welcome','mastery-kyu-welcome','satori-welcome','satori-complete','optimal-fail','speed-twenty-seven-required'].includes(descriptor.type)) {
+      if (!dialogAssembled) {
         // クリア画面は「見本 → メッセージ → クイズ」の読み順。問題番号は絶対配置なので最後でよい。
         dialogElement.replaceChildren(title, ...(clearArtwork ? [clearArtwork] : []), ...(message.textContent ? [message] : []), ...details, actions);
       }
@@ -3074,6 +3111,71 @@
         }
       }
     }
+    // 入門・基本・発展の誤操作は、候補棒と落下状態だけを更新して共通盤面を巻き戻す。
+    function finishRejectedAcademyCandidateMove(drag, academyMoveAllowed, academyOutcome, committedTurns) {
+      if (!isAcademyCandidateRoute() || academyMoveAllowed) return false;
+      if (academyOutcome === 'wrong-rod') {
+        RuntimeState.academyCandidates.delete(drag.triangleIndex);
+        RuntimeState.academyFallen.add(drag.triangleIndex);
+      }
+      if (academyOutcome === 'wrong-direction') {
+        const reducing = new Set(academyReducingTriangles().map(candidate => candidate.triangleIndex));
+        RuntimeState.academyCandidates.forEach(index => { if (!reducing.has(index)) RuntimeState.academyFallen.add(index); });
+        RuntimeState.academyCandidates = new Set([...RuntimeState.academyCandidates].filter(index => reducing.has(index)));
+      }
+      if (finishEffect(drag.effect)) {
+        renderRuntime({ context:`academy ${academyOutcome}` });
+        if (academyOutcome !== 'cancel') setAcademyFeedback(academyOutcome === 'wrong-direction' ? (committedTurns ? 'そっちじゃないよ' : '棒はあってるよ') : 'そこじゃないよ');
+      }
+      return true;
+    }
+    // 応用の誤操作は六本から落とす対象だけが異なる。盤面の回転・保存・入力は共有する。
+    function finishRejectedAcademyApplicationMove(drag, applicationMoveAllowed, applicationOutcome, committedTurns) {
+      if (!isAcademyApplicationRoute() || applicationMoveAllowed) return false;
+      if (applicationOutcome === 'wrong-rod') RuntimeState.applicationFallen.add(drag.triangleIndex);
+      if (applicationOutcome === 'wrong-direction') {
+        const reducing = new Set(academyReducingTriangles().map(candidate => candidate.triangleIndex));
+        TRIANGLES.forEach((_, index) => { if (!reducing.has(index)) RuntimeState.applicationFallen.add(index); });
+      }
+      if (finishEffect(drag.effect)) {
+        renderRuntime({ context:`application ${applicationOutcome}` });
+        if (applicationOutcome !== 'cancel') setApplicationFeedback(applicationOutcome === 'wrong-direction' ? (committedTurns ? 'そっちじゃないよ' : '棒はあってるよ') : 'そこじゃないよ');
+      }
+      return true;
+    }
+    // 回転後の共通確定。モード固有の最短・節目処理は名前付きのcommitClearへ渡す。
+    function finishCommittedBoardMove(drag, committedTurns) {
+      if (committedTurns) for (let count = 0; count < Math.abs(committedTurns); count += 1) commitBoardMove(drag.triangleIndex, Math.sign(committedTurns));
+      if (!finishEffect(drag.effect)) return;
+      if (committedTurns && (WakeSevenBoardDomain.isSolved(RuntimeState.cells) || isSatoriRoute())) {
+        const clearOutcome = commitClearForCurrentPuzzle();
+        if (clearOutcome?.type === 'over-limit' || clearOutcome?.type === 'move-limit') {
+          renderRuntime({ context:`${isSatoriRoute() ? 'satori' : 'mastery'} optimal fail` });
+          return;
+        }
+        if (clearOutcome?.type === 'optimal-clear' || WakeSevenBoardDomain.isSolved(RuntimeState.cells)) {
+          runClearEffect(isTutorialRoute() ? advanceTutorialAfterClear : isAcademyAssistedRoute() ? advanceAcademyAfterClear : isTrainingRoute() ? advanceTrainingAfterClear : isMasteryRoute() ? advanceMasteryAfterClear : isSatoriRoute() ? advanceSatoriAfterClear : null);
+          return;
+        }
+      }
+      if (committedTurns) {
+        if (isAcademyApplicationRoute()) RuntimeState.applicationFallen = new Set();
+        syncBoardToAppState();
+        saveAppState('move commit');
+        // 発展の最初の五問だけは3→2で数字を重ねず、型名と外周を先に見せる。
+        // それ以外の正しい一手は、入門・基本と同じ残り手数案内を使う。
+        const developmentShapeGuide = isAcademyDevelopmentRoute()
+          && selectDistance(drag.cells) === 3
+          && selectDistance(RuntimeState.cells) === 2
+          && Boolean(selectActivePuzzle().shapeName);
+        if (!developmentShapeGuide && (isAcademyCandidateRoute() || (isAcademyApplicationRoute() && selectDistance(RuntimeState.cells) === 1))) showAcademyRemainingCallout();
+        renderRuntime({ context:'move commit' });
+        if (developmentShapeGuide) showDevelopmentTwoMoveShapeGuide();
+        if (isTrainingRoute() && selectTrainingTwoMoveShape(RuntimeState.cells)) showTrainingTwoMoveShapeGuide();
+        return;
+      }
+      renderRuntime({ context:committedTurns ? 'move commit' : 'short drag cancel' });
+    }
     function finishBoardDrag(event, cancelled = false) {
       const drag = RuntimeState.drag;
       if (!drag || drag.pointerId !== event.pointerId || !isCurrentEffect(drag.effect)) return;
@@ -3103,36 +3205,8 @@
       drag.effect.phase = BoardPhase.ROTATING;
       renderBoardPhase();
       const completeRotation = () => {
-        // 発展クラスで間違えた棒を落とす処理も、入門・基本と同じ候補集合を更新する。
-        // 棒そのものが違う時は落下、正しい棒の逆方向なら正しい棒だけを残す。
-        if (isAcademyCandidateRoute() && !academyMoveAllowed) {
-          if (academyOutcome === 'wrong-rod') {
-            RuntimeState.academyCandidates.delete(drag.triangleIndex);
-            RuntimeState.academyFallen.add(drag.triangleIndex);
-          }
-          if (academyOutcome === 'wrong-direction') {
-            const reducing = new Set(academyReducingTriangles().map(candidate => candidate.triangleIndex));
-            RuntimeState.academyCandidates.forEach(index => { if (!reducing.has(index)) RuntimeState.academyFallen.add(index); });
-            RuntimeState.academyCandidates = new Set([...RuntimeState.academyCandidates].filter(index => reducing.has(index)));
-          }
-          if (finishEffect(drag.effect)) {
-            renderRuntime({ context:`academy ${academyOutcome}` });
-            if (academyOutcome !== 'cancel') setAcademyFeedback(academyOutcome === 'wrong-direction' ? (committedTurns ? 'そっちじゃないよ' : '棒はあってるよ') : 'そこじゃないよ');
-          }
-          return;
-        }
-        if (isAcademyApplicationRoute() && !applicationMoveAllowed) {
-          if (applicationOutcome === 'wrong-rod') RuntimeState.applicationFallen.add(drag.triangleIndex);
-          if (applicationOutcome === 'wrong-direction') {
-            const reducing = new Set(academyReducingTriangles().map(candidate => candidate.triangleIndex));
-            TRIANGLES.forEach((_, index) => { if (!reducing.has(index)) RuntimeState.applicationFallen.add(index); });
-          }
-          if (finishEffect(drag.effect)) {
-            renderRuntime({ context:`application ${applicationOutcome}` });
-            if (applicationOutcome !== 'cancel') setApplicationFeedback(applicationOutcome === 'wrong-direction' ? (committedTurns ? 'そっちじゃないよ' : '棒はあってるよ') : 'そこじゃないよ');
-          }
-          return;
-        }
+        if (finishRejectedAcademyCandidateMove(drag, academyMoveAllowed, academyOutcome, committedTurns)) return;
+        if (finishRejectedAcademyApplicationMove(drag, applicationMoveAllowed, applicationOutcome, committedTurns)) return;
         if (committedTurns && !tutorialMoveAllowed) {
           if (finishEffect(drag.effect)) {
             renderRuntime({ context:'tutorial wrong move' });
@@ -3140,36 +3214,7 @@
           }
           return;
         }
-        if (committedTurns) for (let count = 0; count < Math.abs(committedTurns); count += 1) commitBoardMove(drag.triangleIndex, Math.sign(committedTurns));
-        if (!finishEffect(drag.effect)) return;
-        if (committedTurns && (WakeSevenBoardDomain.isSolved(RuntimeState.cells) || isSatoriRoute())) {
-          const clearOutcome = commitClearForCurrentPuzzle();
-          if (clearOutcome?.type === 'over-limit' || clearOutcome?.type === 'move-limit') {
-            renderRuntime({ context:`${isSatoriRoute() ? 'satori' : 'mastery'} optimal fail` });
-            return;
-          }
-          if (clearOutcome?.type === 'optimal-clear' || WakeSevenBoardDomain.isSolved(RuntimeState.cells)) {
-            runClearEffect(isTutorialRoute() ? advanceTutorialAfterClear : isAcademyAssistedRoute() ? advanceAcademyAfterClear : isTrainingRoute() ? advanceTrainingAfterClear : isMasteryRoute() ? advanceMasteryAfterClear : isSatoriRoute() ? advanceSatoriAfterClear : null);
-            return;
-          }
-        }
-        if (committedTurns) {
-          if (isAcademyApplicationRoute()) RuntimeState.applicationFallen = new Set();
-          syncBoardToAppState();
-          saveAppState('move commit');
-          // 発展の最初の五問だけは3→2で数字を重ねず、型名と外周を先に見せる。
-          // それ以外の正しい一手は、入門・基本と同じ残り手数案内を使う。
-          const developmentShapeGuide = isAcademyDevelopmentRoute()
-            && selectDistance(drag.cells) === 3
-            && selectDistance(RuntimeState.cells) === 2
-            && Boolean(selectActivePuzzle().shapeName);
-          if (!developmentShapeGuide && (isAcademyCandidateRoute() || (isAcademyApplicationRoute() && selectDistance(RuntimeState.cells) === 1))) showAcademyRemainingCallout();
-          renderRuntime({ context:'move commit' });
-          if (developmentShapeGuide) showDevelopmentTwoMoveShapeGuide();
-          if (isTrainingRoute() && selectTrainingTwoMoveShape(RuntimeState.cells)) showTrainingTwoMoveShapeGuide();
-          return;
-        }
-        renderRuntime({ context:committedTurns ? 'move commit' : 'short drag cancel' });
+        finishCommittedBoardMove(drag, committedTurns);
       };
       settleBoardRotation({ effect:drag.effect, cells:drag.cells, triangleIndex:drag.triangleIndex, fromDegrees:academyRewind?.start ?? drag.degrees, turns:academyRewind ? academyRewind.end / TURN_DEGREES : settledTurns, complete:completeRotation });
     }
