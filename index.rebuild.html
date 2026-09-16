@@ -23,6 +23,22 @@
     .w7-board-feature { display:grid; gap:0.625rem; }
     .w7-board-status { display:flex; justify-content:center; gap:1.5rem; min-height:1.75rem; font-weight:700; font-size:1.05rem; font-variant-numeric:tabular-nums; }
     .w7-board-status strong { display:inline-block; min-width:1.25ch; text-align:right; color:#f5d66d; font-size:1.2em; }
+    /* 速解き九番は学園HUDを保ちつつ、現在手数ではなく残り手数と時計だけを見る。 */
+    .w7-speed-hud { display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:.55rem; min-height:2.1rem; padding:.05rem .15rem 0; font-variant-numeric:tabular-nums; }
+    .w7-speed-hud[hidden] { display:none; }
+    .w7-speed-remaining { min-width:0; color:var(--washi); font-size:1.28rem; font-weight:850; letter-spacing:.015em; white-space:nowrap; }
+    .w7-speed-remaining strong { color:#f5d66d; font-size:1.45em; }
+    .w7-speed-clock { min-width:4.8rem; color:#b9e8f2; font-size:1.08rem; font-weight:800; text-align:right; transform:translate(.12rem,.1rem); }
+    body.w7-speed-mode .w7-board-status { display:none; }
+    body.w7-speed-mode .w7-board-feature { gap:.48rem; }
+    .w7-speed-pause-button { min-width:6.4rem; border-color:#62b8d2; background:#dff4f8; }
+    /* 360pxでも「残り手数 → 時計 → 一時停止」を一行で保つ。時計とpauseは上下中央をそろえる。 */
+    @media (max-width:480px) {
+      .w7-speed-hud { grid-template-columns:minmax(0,1fr) 3.75rem 6.4rem; gap:.25rem; padding-left:0; padding-right:0; }
+      .w7-speed-remaining { font-size:.98rem; }
+      .w7-speed-remaining strong { font-size:1.35em; }
+      .w7-speed-clock { min-width:0; font-size:.94rem; transform:translate(.06rem,.08rem); }
+    }
     .w7-board-frame { position:relative; width:100%; max-width:var(--content-max); margin:0 auto; }
     .w7-board { display:block; width:100%; height:auto; overflow:visible; touch-action:none; user-select:none; -webkit-user-select:none; cursor:default; }
     .w7-cell { transform-box:view-box; transform-origin:0 0; will-change:transform; transition:opacity .12s ease,filter .12s ease; }
@@ -54,6 +70,11 @@
     .w7-axis-layer g[data-axis].w7-application-fallen { opacity:.55; pointer-events:none; filter:grayscale(1) brightness(.75); }
     .w7-axis-layer g[data-axis].w7-application-fallen .w7-axis-grip { fill:#8a96a3; stroke:#5b6673; }
     .w7-axis-layer g[data-axis].w7-academy-candidate .w7-axis-grip { fill:#7dd8f5; stroke:#3e9bc2; filter:drop-shadow(0 0 5px rgb(98 215 244 / .68)); }
+    /* 九番の候補棒は学園と同じ水色。誤った候補だけをこの問題の終わりまで落とす。 */
+    .w7-axis-layer g[data-axis].w7-speed-hidden { opacity:0; pointer-events:none; }
+    .w7-axis-layer g[data-axis].w7-speed-candidate .w7-axis-grip { fill:#7dd8f5; stroke:#3e9bc2; filter:drop-shadow(0 0 5px rgb(98 215 244 / .68)); }
+    .w7-axis-layer g[data-axis].w7-speed-fallen { opacity:.55; pointer-events:none; filter:grayscale(1) brightness(.75); }
+    .w7-axis-layer g[data-axis].w7-speed-fallen .w7-axis-grip { fill:#8a96a3; stroke:#5b6673; }
     @keyframes w7-tutorial-grip-pulse { 50% { opacity:.58; } }
     .w7-board.is-grip-hover { cursor:grab; }
     .w7-board[data-phase="dragging"] { cursor:grabbing; }
@@ -208,6 +229,11 @@
         <span>いま <strong id="w7-board-moves">0</strong> くるり</span>
         <span>あと <strong id="w7-board-remaining">1</strong> くるり<span id="w7-academy-clear-suffix" hidden> でクリア</span></span>
       </div>
+      <div id="w7-speed-hud" class="w7-speed-hud" hidden>
+        <span class="w7-speed-remaining">あと <strong id="w7-speed-remaining">2</strong> くるりでクリア</span>
+        <span id="w7-speed-clock" class="w7-speed-clock">0:00.0</span>
+        <button id="w7-speed-pause" class="w7-board-button w7-training-tip-button w7-speed-pause-button" type="button" hidden>一時停止</button>
+      </div>
       <div class="w7-board-frame">
         <svg id="w7-board" class="w7-board" viewBox="14 0 293 310" role="img" aria-label="七枚のだるま盤"></svg>
         <div id="w7-application-target-preview" class="w7-application-target-preview" hidden aria-label="応用クラスで作る形"><svg id="w7-application-target-preview-board" viewBox="0 0 144 106" aria-hidden="true"></svg><span>を作る</span></div>
@@ -216,6 +242,7 @@
       </div>
       <div class="w7-board-controls" aria-label="盤面の操作">
         <button id="w7-training-tip" class="w7-board-button w7-training-tip-button" type="button" hidden>コツを見る</button>
+        <button id="w7-speed-start" class="w7-board-button w7-dialog-default" type="button" hidden>はじめる</button>
         <button id="w7-next-move-hint" class="w7-board-button" type="button" hidden>次の1手を見る</button>
         <button id="w7-board-undo" class="w7-board-button" type="button" data-w7-action="undo">一手戻す</button>
         <button id="w7-board-restart" class="w7-board-button" type="button" data-w7-action="restart">やり直す</button>
@@ -231,6 +258,12 @@
       <button id="w7-debug-start-development" class="w7-debug-button" type="button" title="発展クラスを最初から">発</button>
       <button id="w7-debug-development-four" class="w7-debug-button" type="button" title="発展5問目クリア直後（4くるり案内）">4</button>
       <button id="w7-debug-finish-development" class="w7-debug-button" type="button" title="発展クラス完了直後（速解き九番勝負解放）">発完</button>
+      <button id="w7-debug-speed-nine-wait" class="w7-debug-button" type="button" title="速解き九番勝負の開始待ち">九待</button>
+      <button id="w7-debug-speed-nine-four" class="w7-debug-button" type="button" title="速解き九番勝負4問目">九4</button>
+      <button id="w7-debug-speed-nine-seven" class="w7-debug-button" type="button" title="速解き九番勝負7問目">九7</button>
+      <button id="w7-debug-speed-nine-nine" class="w7-debug-button" type="button" title="速解き九番勝負9問目">九9</button>
+      <button id="w7-debug-speed-nine-pause" class="w7-debug-button" type="button" title="速解き九番勝負を一時停止">九停</button>
+      <button id="w7-debug-speed-nine-final" class="w7-debug-button" type="button" title="速解き九番勝負の完走直前">九終</button>
       <button id="w7-debug-training-upper" class="w7-debug-button" type="button" title="修行上巻を最初から">修上</button>
       <button id="w7-debug-training-middle" class="w7-debug-button" type="button" title="修行中巻を最初から">修中</button>
       <button id="w7-debug-training-lower" class="w7-debug-button" type="button" title="修行下巻を最初から">修下</button>
@@ -427,6 +460,28 @@
       Object.freeze({ puzzleId:'academy-basic-008', classId:'basic', state:7, par:2, initialCandidateCount:3, clearArt:'red', clearQuiz:Object.freeze({ question:'だるまの赤は、何を表す色？', choices:Object.freeze(['まよけや生命力','お祝いごとの華やかさ','火のあたたかさ','秋のもみじ']), correct:0, note:'だるまの赤は、まよけや生命力を表す色です。' }) }),
       Object.freeze({ puzzleId:'academy-basic-009', classId:'basic', state:57, par:2, initialCandidateCount:3 }),
     ]);
+    // 速解き九番勝負は、基本クラスの2くるり9問を固定順の正本として持つ。
+    // 出題時の向き・表裏だけをセッションの対称変換で変え、solverの列挙順から問題を作らない。
+    const SPEED_NINE_PUZZLES = Object.freeze([
+      Object.freeze({ puzzleId:'speed-nine-001', sourcePuzzleId:'academy-basic-001', state:922, par:2 }),
+      Object.freeze({ puzzleId:'speed-nine-002', sourcePuzzleId:'academy-basic-002', state:1516, par:2 }),
+      Object.freeze({ puzzleId:'speed-nine-003', sourcePuzzleId:'academy-basic-003', state:526, par:2 }),
+      Object.freeze({ puzzleId:'speed-nine-004', sourcePuzzleId:'academy-basic-004', state:544, par:2 }),
+      Object.freeze({ puzzleId:'speed-nine-005', sourcePuzzleId:'academy-basic-005', state:1732, par:2 }),
+      Object.freeze({ puzzleId:'speed-nine-006', sourcePuzzleId:'academy-basic-006', state:196, par:2 }),
+      Object.freeze({ puzzleId:'speed-nine-007', sourcePuzzleId:'academy-basic-007', state:76, par:2 }),
+      Object.freeze({ puzzleId:'speed-nine-008', sourcePuzzleId:'academy-basic-008', state:7, par:2 }),
+      Object.freeze({ puzzleId:'speed-nine-009', sourcePuzzleId:'academy-basic-009', state:57, par:2 }),
+    ]);
+    // 速解き共通カタログ: 九番の候補棒だけは固有だが、順番・時計・保存・結果は
+    // 次の十八番/二十七番もこの variant 定義を足すだけで同じ流れを使う。
+    const SPEED_VARIANTS = Object.freeze({
+      nine:Object.freeze({
+        variant:'nine', routeId:'speed-nine', sectionId:'nine', label:'速解き九番勝負',
+        puzzles:SPEED_NINE_PUZZLES,
+        candidateCountAt:position => position <= 3 ? 3 : position <= 6 ? 4 : 5,
+      }),
+    });
     // 旧版の APPLICATION_STAGE_TARGETS をそのまま固定カタログへ移した。
     // source は旧 TWO_MOVE_STAGES の0始まりの参照番号。targetCells は「正しい棒を
     // 一回回した後に同じ向きで寝る物理パネル三枚」で、表示側がソルバーから推測しない。
@@ -568,8 +623,13 @@
     const boardMovesElement = document.querySelector('#w7-board-moves');
     const boardRemainingElement = document.querySelector('#w7-board-remaining');
     const academyClearSuffixElement = document.querySelector('#w7-academy-clear-suffix');
+    const speedHudElement = document.querySelector('#w7-speed-hud');
+    const speedRemainingElement = document.querySelector('#w7-speed-remaining');
+    const speedClockElement = document.querySelector('#w7-speed-clock');
     const boardControlsElement = document.querySelector('.w7-board-controls');
     const trainingTipButton = document.querySelector('#w7-training-tip');
+    const speedPauseButton = document.querySelector('#w7-speed-pause');
+    const speedStartButton = document.querySelector('#w7-speed-start');
     const nextMoveHintButton = document.querySelector('#w7-next-move-hint');
     const boardUndoButton = document.querySelector('#w7-board-undo');
     const boardRestartButton = document.querySelector('#w7-board-restart');
@@ -582,6 +642,12 @@
     const debugStartDevelopmentButton = document.querySelector('#w7-debug-start-development');
     const debugDevelopmentFourButton = document.querySelector('#w7-debug-development-four');
     const debugFinishDevelopmentButton = document.querySelector('#w7-debug-finish-development');
+    const debugSpeedNineWaitButton = document.querySelector('#w7-debug-speed-nine-wait');
+    const debugSpeedNineFourButton = document.querySelector('#w7-debug-speed-nine-four');
+    const debugSpeedNineSevenButton = document.querySelector('#w7-debug-speed-nine-seven');
+    const debugSpeedNineNineButton = document.querySelector('#w7-debug-speed-nine-nine');
+    const debugSpeedNinePauseButton = document.querySelector('#w7-debug-speed-nine-pause');
+    const debugSpeedNineFinalButton = document.querySelector('#w7-debug-speed-nine-final');
     const debugTrainingUpperButton = document.querySelector('#w7-debug-training-upper');
     const debugTrainingMiddleButton = document.querySelector('#w7-debug-training-middle');
     const debugTrainingLowerButton = document.querySelector('#w7-debug-training-lower');
@@ -840,7 +906,31 @@
       return true;
     }
     function selectDistance(cells) { const value = SOLVER.distance[WakeSevenBoardDomain.encode(cells)]; return value === 255 ? null : value; }
+    function formatSpeedClock(milliseconds) {
+      const tenths = Math.max(0, Math.floor(milliseconds / 100));
+      const minutes = Math.floor(tenths / 600);
+      const seconds = Math.floor(tenths / 10) % 60;
+      return `${minutes}:${String(seconds).padStart(2,'0')}.${tenths % 10}`;
+    }
+    function selectSpeedElapsedMilliseconds(session = selectSpeedSession()) {
+      if (!session) return 0;
+      const live = session.status === SPEED_STATUS.RUNNING && Number.isFinite(RuntimeState.speedClockStartedAt)
+        ? Math.max(0, performance.now() - RuntimeState.speedClockStartedAt) : 0;
+      return session.elapsedMilliseconds + live;
+    }
+    // 速解き共通HUD。variant固有の候補棒や採点はここへ持ち込まない。
+    function renderSpeedHud() {
+      const session = selectSpeedSession();
+      const visible = Boolean(session && session.status !== SPEED_STATUS.AWAITING_START);
+      speedHudElement.hidden = !visible;
+      if (!visible) return;
+      const remaining = selectDistance(RuntimeState.cells);
+      speedRemainingElement.textContent = remaining === null ? '—' : String(remaining);
+      const clock = formatSpeedClock(selectSpeedElapsedMilliseconds(session));
+      if (speedClockElement.textContent !== clock) speedClockElement.textContent = clock;
+    }
     function renderBoardStatus(cells = RuntimeState.cells, moveDelta = 0) {
+      if (isSpeedRoute()) { renderSpeedHud(); return; }
       boardMovesElement.textContent = String(RuntimeState.history.length + moveDelta);
       const distance = selectDistance(cells);
       boardRemainingElement.textContent = isSatoriRoute() || isMasteryRoute() && AppState.navigation.routeId === 'mastery-kyu' && !RuntimeState.masteryRemainingRevealed ? '?' : distance === null ? '—' : String(distance);
@@ -852,11 +942,14 @@
       boardElement.dataset.historyLength = String(RuntimeState.history.length);
       boardElement.dataset.solved = String(WakeSevenBoardDomain.isSolved(RuntimeState.cells));
       const ready = RuntimeState.phase === BoardPhase.READY && RuntimeState.invalidPointerId === null && selectCanInteractWithBoard();
+      const speedSession = selectSpeedSession();
+      const speedMode = Boolean(speedSession);
       boardUndoButton.disabled = !ready || RuntimeState.history.length === 0;
       boardRestartButton.disabled = !ready || !selectCanRestartCurrentPuzzle();
       // チュートリアルと学園（入門・基本・応用・発展）は一手ごとの学習導線に絞る。Undo/Restartは出さない。
-      boardControlsElement.hidden = AppState.navigation.mode === 'tutorial' || isAcademyAssistedRoute();
-      boardUndoButton.hidden = isSatoriRoute();
+      boardControlsElement.hidden = AppState.navigation.mode === 'tutorial' || isAcademyAssistedRoute() || speedMode && speedSession.status === SPEED_STATUS.FINISHED;
+      boardUndoButton.hidden = isSatoriRoute() || speedMode;
+      boardRestartButton.hidden = speedMode;
       const masteryAction = isMasteryRoute();
       trainingTipButton.hidden = !isTrainingUpperRoute();
       trainingTipButton.textContent = 'コツを見る';
@@ -871,10 +964,15 @@
         nextMoveHintButton.textContent = '次の1手を見る';
         nextMoveHintButton.disabled = !ready;
       }
+      speedPauseButton.hidden = !speedMode || speedSession.status === SPEED_STATUS.AWAITING_START || speedSession.status === SPEED_STATUS.FINISHED;
+      speedPauseButton.disabled = !speedMode || speedSession.status !== SPEED_STATUS.RUNNING || RuntimeState.phase !== BoardPhase.READY;
+      speedStartButton.hidden = !speedMode || speedSession.status !== SPEED_STATUS.AWAITING_START;
+      speedStartButton.disabled = !speedMode || speedSession.status !== SPEED_STATUS.AWAITING_START || RuntimeState.phase !== BoardPhase.READY;
       document.body.classList.toggle('w7-tutorial-mode', isTutorialRoute());
       // 入門・基本・応用・発展は同じ学園HUDを使う。発展も通常HUDへ戻さない。
       document.body.classList.toggle('w7-academy-mode', isAcademyAssistedRoute());
       document.body.classList.toggle('w7-application-mode', isAcademyApplicationRoute());
+      document.body.classList.toggle('w7-speed-mode', speedMode);
       academyClearSuffixElement.hidden = !isAcademyAssistedRoute();
       document.body.dataset.w7BoardTheme = AppState.settings.theme;
     }
@@ -886,6 +984,7 @@
       renderDialog();
       renderTutorialCue();
       renderAcademyGuidance();
+      renderSpeedNineGuidance();
       renderApplicationGuidance();
       renderApplicationTargetFlash();
       renderApplicationTargetPreview();
@@ -1058,7 +1157,10 @@
       const canonical = canonicalStateForCells(cells);
       return TWO_MOVE_SHAPE_CATALOG.find(shape => canonicalStateForCells(WakeSevenBoardDomain.decode(shape.baseState)) === canonical) ?? null;
     }
-    function selectPuzzleForNavigation(navigation) {
+    function selectPuzzleForNavigation(navigation, speed = null) {
+      const speedSession = speed?.activeSession;
+      const speedConfig = speedConfigForSession(speedSession);
+      if (navigation.mode === 'speed' && speedConfig && navigation.routeId === speedConfig.routeId) return selectSpeedPuzzle(speedSession);
       if (navigation.mode === 'tutorial') return tutorialStepAt(navigation.tutorialStep);
       if (navigation.routeId === 'academy-basic') return academyBasicPuzzleAt(navigation.puzzleIndex);
       if (navigation.routeId === 'academy-application') return academyApplicationPuzzleAt(navigation.puzzleIndex);
@@ -1078,7 +1180,156 @@
     function makeDefaultRewards() { return { masterGoldGranted:false, satoriDesignGranted:false }; }
     function makeDefaultSettings() { return { theme:'standard', layout:'standard', themeChosen:false, layoutChosen:false }; }
     function makeDefaultProgress() { return { tutorialCompleted:false, tutorialCompletedPuzzleIds:[], lap1CompletedPuzzleIds:[], lap2CompletedPuzzleIds:[] }; }
-    function makeDefaultSpeedState() { return { completedTrialIds:[] }; }
+    // 速解き九番: セッション、時計、候補棒、復元をここへまとめる。
+    // 共通の盤面・棒・pointer・回転は下の既存処理を使い、速解き専用には作らない。
+    const SPEED_STATUS = Object.freeze({ AWAITING_START:'awaiting-start', RUNNING:'running', PAUSED:'paused', ADVANCING:'advancing', FINISHED:'finished' });
+    // 九番固有コードの読みやすさを保つ別名。共有フローでは SPEED_STATUS を使う。
+    const SPEED_NINE_STATUS = SPEED_STATUS;
+    const SPEED_ORIGINS = Object.freeze(['academy-trial','menu','debug']);
+    function speedVariantConfig(variant) { return SPEED_VARIANTS[variant] ?? null; }
+    function speedConfigForSession(session) { return speedVariantConfig(session?.variant); }
+    function speedPuzzleCount(session) { return speedConfigForSession(session)?.puzzles.length ?? 0; }
+    function normalizeSpeedRecordList(records) {
+      return (Array.isArray(records) ? records : []).filter(record => Number.isFinite(record?.elapsedMilliseconds) && Number.isInteger(record?.completedCount))
+        .map(record => ({ elapsedMilliseconds:Math.max(0, record.elapsedMilliseconds), completedCount:Math.max(0, record.completedCount) }))
+        .sort((left, right) => left.elapsedMilliseconds - right.elapsedMilliseconds || right.completedCount - left.completedCount).slice(0, 3);
+    }
+    function normalizeSpeedRecords(rawRecords) {
+      const legacyNine = Number.isFinite(rawRecords?.nineBestMilliseconds)
+        ? [{ elapsedMilliseconds:Math.max(0, rawRecords.nineBestMilliseconds), completedCount:SPEED_NINE_PUZZLES.length }] : [];
+      return { byVariant:Object.fromEntries(Object.keys(SPEED_VARIANTS).map(variant => [variant, normalizeSpeedRecordList(rawRecords?.byVariant?.[variant] ?? (variant === 'nine' ? legacyNine : []))])) };
+    }
+    function makeDefaultSpeedState() { return { completedTrialIds:[], activeSession:null, records:normalizeSpeedRecords(null) }; }
+    function speedTopRecords(speed = AppState.speed, variant = speed?.activeSession?.variant ?? 'nine') { return speed?.records?.byVariant?.[variant] ?? []; }
+    function withCompletedSpeedRecord(speed, result) {
+      const existing = speedTopRecords(speed, result.variant);
+      return { ...speed.records, byVariant:{ ...speed.records.byVariant, [result.variant]:normalizeSpeedRecordList([...existing, result]) } };
+    }
+    function speedStableHash(seed, value) { return Array.from(`${seed}:${value}`).reduce((total, char) => (total * 31 + char.charCodeAt(0)) >>> 0, 17); }
+    function speedOrderFromSeed(variant, seed) {
+      const config = speedVariantConfig(variant);
+      if (!config) return Object.freeze([]);
+      const remaining = config.puzzles.map((_, index) => index);
+      const order = [];
+      let value = (seed >>> 0) || 1;
+      while (remaining.length) {
+        value = (value * 1664525 + 1013904223) >>> 0;
+        const selected = remaining.splice(value % remaining.length, 1)[0];
+        value = (value * 1664525 + 1013904223) >>> 0;
+        order.push(Object.freeze({ baseIndex:selected, symmetryIndex:value % VIEW_SYMMETRIES.length }));
+      }
+      return Object.freeze(order);
+    }
+    function speedNineOrderFromSeed(seed) { return speedOrderFromSeed('nine', seed); }
+    function makeSpeedSession(variant = 'nine', origin = 'debug', seed = (Date.now() ^ Math.floor(performance.now() * 1000)) >>> 0) {
+      const config = speedVariantConfig(variant);
+      if (!config) return null;
+      const order = speedOrderFromSeed(variant, seed);
+      return {
+        variant, origin:SPEED_ORIGINS.includes(origin) ? origin : 'debug', status:SPEED_STATUS.AWAITING_START,
+        seed, order, currentIndex:0, elapsedMilliseconds:0, fallenAxes:[], candidateAxes:[], candidateSignature:'', result:null,
+      };
+    }
+    function makeSpeedNineSession(origin = 'debug', seed) { return makeSpeedSession('nine', origin, seed); }
+    function speedCurrentItem(session) { return session?.order?.[session.currentIndex] ?? null; }
+    function selectSpeedPuzzle(session) {
+      const config = speedConfigForSession(session);
+      if (!config) return null;
+      const item = speedCurrentItem(session);
+      const base = config.puzzles[item?.baseIndex] ?? config.puzzles[0];
+      const symmetry = VIEW_SYMMETRIES[item?.symmetryIndex] ?? VIEW_SYMMETRIES[0];
+      const cells = transformCellsBySymmetry(WakeSevenBoardDomain.decode(base.state), symmetry);
+      return Object.freeze({ ...base, state:WakeSevenBoardDomain.encode(cells), symmetryIndex:item?.symmetryIndex ?? 0, speedVariant:session.variant });
+    }
+    function selectSpeedNinePuzzle(session) { return selectSpeedPuzzle(session); }
+    function makeSpeedNavigation(session) {
+      const config = speedConfigForSession(session), puzzle = selectSpeedPuzzle(session);
+      if (!config || !puzzle) return null;
+      return { mode:'speed', routeId:config.routeId, courseId:'speed', sectionId:config.sectionId, lap:1, tutorialStep:null, puzzleIndex:session.currentIndex, puzzleId:puzzle.puzzleId, returnRoute:session.origin };
+    }
+    function isSpeedRoute(appState = AppState) {
+      const session = appState?.speed?.activeSession, config = speedConfigForSession(session);
+      return appState?.navigation?.mode === 'speed' && Boolean(config) && appState.navigation.routeId === config.routeId;
+    }
+    function selectSpeedSession(appState = AppState) { return isSpeedRoute(appState) ? appState.speed.activeSession : null; }
+    function isSpeedNineRoute(appState = AppState) { return isSpeedRoute(appState) && selectSpeedSession(appState)?.variant === 'nine'; }
+    function selectSpeedNineSession(appState = AppState) { const session = selectSpeedSession(appState); return session?.variant === 'nine' ? session : null; }
+    function speedNineCandidateCount(session = selectSpeedNineSession()) {
+      const position = (session?.currentIndex ?? 0) + 1;
+      return speedConfigForSession(session)?.candidateCountAt?.(position) ?? 0;
+    }
+    function speedNineReducingMoves(cells = RuntimeState.cells, session = selectSpeedNineSession(), blockedAxes = new Set()) {
+      const distance = selectDistance(cells);
+      if (!session || !distance) return [];
+      return TRIANGLES.flatMap((_, triangleIndex) => [1,-1].map(direction => ({ triangleIndex, direction })))
+        .filter(move => !blockedAxes.has(move.triangleIndex) && selectDistance(WakeSevenBoardDomain.roll(cells, move.triangleIndex, move.direction)) === distance - 1);
+    }
+    function speedNineExpectedMove(cells = RuntimeState.cells, session = selectSpeedNineSession(), blockedAxes = new Set()) {
+      const state = WakeSevenBoardDomain.encode(cells);
+      return speedNineReducingMoves(cells, session, blockedAxes)
+        .sort((left, right) => speedStableHash(`${session.seed}:${session.currentIndex}:${state}`, `${left.triangleIndex}:${left.direction}`) - speedStableHash(`${session.seed}:${session.currentIndex}:${state}`, `${right.triangleIndex}:${right.direction}`) || left.triangleIndex - right.triangleIndex || left.direction - right.direction)[0] ?? null;
+    }
+    function speedNineCandidateSignature(cells = RuntimeState.cells, session = selectSpeedNineSession(), historyLength = RuntimeState.history.length) { return `${session?.currentIndex ?? -1}:${WakeSevenBoardDomain.encode(cells)}:${historyLength}`; }
+    function chooseSpeedNineCandidateAxes(cells, session) {
+      const fallen = new Set(session.fallenAxes);
+      const reducingAxes = [...new Set(speedNineReducingMoves(cells, session, fallen).map(move => move.triangleIndex))];
+      const all = TRIANGLES.map((_, index) => index);
+      const orderedCorrect = reducingAxes.sort((left, right) => speedStableHash(`${session.seed}:${session.currentIndex}:${WakeSevenBoardDomain.encode(cells)}`, left) - speedStableHash(`${session.seed}:${session.currentIndex}:${WakeSevenBoardDomain.encode(cells)}`, right) || left - right);
+      const decoys = all.filter(index => !reducingAxes.includes(index) && !fallen.has(index))
+        .sort((left, right) => speedStableHash(`${session.seed}:${session.currentIndex}:${WakeSevenBoardDomain.encode(cells)}`, left) - speedStableHash(`${session.seed}:${session.currentIndex}:${WakeSevenBoardDomain.encode(cells)}`, right) || left - right);
+      const fallback = all.filter(index => !fallen.has(index) && !orderedCorrect.includes(index) && !decoys.includes(index))
+        .sort((left, right) => left - right);
+      return [...new Set([...orderedCorrect, ...decoys, ...fallback].filter(Number.isInteger))].slice(0, speedNineCandidateCount(session));
+    }
+    function withSpeedNineCandidates(session, cells, historyLength = 0) {
+      return { ...session, candidateSignature:speedNineCandidateSignature(cells, session, historyLength), candidateAxes:chooseSpeedNineCandidateAxes(cells, session) };
+    }
+    // 誤棒後のF5では、同じ盤面に保存した候補と落下棒をそのまま戻す。
+    // 署名・本数・正解候補のどれかが壊れている場合だけ候補を作り直す。
+    function speedNineCandidatesMatchBoard(session, cells, historyLength = 0) {
+      if (session?.variant !== 'nine' || session.candidateSignature !== speedNineCandidateSignature(cells, session, historyLength)) return false;
+      const candidates = session.candidateAxes;
+      const fallen = new Set(session.fallenAxes);
+      if (!Array.isArray(candidates) || candidates.length !== speedNineCandidateCount(session) || new Set(candidates).size !== candidates.length) return false;
+      if (session.fallenAxes.some(axis => !candidates.includes(axis))) return false;
+      const visible = new Set(candidates.filter(axis => !fallen.has(axis)));
+      return speedNineReducingMoves(cells, session, fallen).some(move => visible.has(move.triangleIndex));
+    }
+    // 不正解で落ちた棒はその盤面だけの表示。正解一手で盤面が変われば候補から外す。
+    function refreshSpeedNineCandidatesAfterCorrectMove(session, cells, historyLength = 0) {
+      return withSpeedNineCandidates({ ...session, fallenAxes:[] }, cells, historyLength);
+    }
+    // 速解き共通の盤面確定値。九番だけ候補棒を持ち、後続variantはこの場で
+    // 候補棒の状態を空にする。保存復元と次問到着が同じ入口を通る。
+    function prepareSpeedSessionForBoard(session, cells, historyLength = 0, options = {}) {
+      const prepared = {
+        ...session,
+        status:options.status ?? session.status,
+        fallenAxes:options.resetFallen ? [] : session.fallenAxes,
+        result:options.resetResult ? null : session.result,
+      };
+      if (prepared.variant === 'nine') {
+        if (!options.resetFallen && speedNineCandidatesMatchBoard(prepared, cells, historyLength)) return prepared;
+        return withSpeedNineCandidates(prepared, cells, historyLength);
+      }
+      return { ...prepared, candidateAxes:[], candidateSignature:'' };
+    }
+    function normalizeSpeedSession(rawSession) {
+      const config = speedVariantConfig(rawSession?.variant);
+      if (!rawSession || !config || !SPEED_ORIGINS.includes(rawSession.origin) || !Object.values(SPEED_STATUS).includes(rawSession.status)) return null;
+      const order = Array.isArray(rawSession.order) && rawSession.order.length === config.puzzles.length
+        && rawSession.order.every(item => Number.isInteger(item?.baseIndex) && item.baseIndex >= 0 && item.baseIndex < config.puzzles.length && Number.isInteger(item.symmetryIndex) && item.symmetryIndex >= 0 && item.symmetryIndex < VIEW_SYMMETRIES.length)
+        && new Set(rawSession.order.map(item => item.baseIndex)).size === config.puzzles.length
+        ? rawSession.order.map(item => Object.freeze({ baseIndex:item.baseIndex, symmetryIndex:item.symmetryIndex })) : null;
+      if (!order || !Number.isInteger(rawSession.currentIndex) || rawSession.currentIndex < 0 || rawSession.currentIndex >= order.length) return null;
+      const elapsedMilliseconds = Number.isFinite(rawSession.elapsedMilliseconds) ? Math.max(0, Math.min(rawSession.elapsedMilliseconds, 24 * 60 * 60 * 1000)) : 0;
+      const fallenAxes = [...new Set((Array.isArray(rawSession.fallenAxes) ? rawSession.fallenAxes : []).filter(axis => Number.isInteger(axis) && axis >= 0 && axis < TRIANGLES.length))];
+      const candidateAxes = [...new Set((Array.isArray(rawSession.candidateAxes) ? rawSession.candidateAxes : []).filter(axis => Number.isInteger(axis) && axis >= 0 && axis < TRIANGLES.length))];
+      const candidateSignature = typeof rawSession.candidateSignature === 'string' ? rawSession.candidateSignature : '';
+      const result = rawSession.result?.variant === rawSession.variant && Number.isFinite(rawSession.result.elapsedMilliseconds) && Number.isInteger(rawSession.result.completedCount)
+        ? { variant:rawSession.variant, origin:rawSession.origin, elapsedMilliseconds:Math.max(0, rawSession.result.elapsedMilliseconds), completedCount:Math.max(0, Math.min(config.puzzles.length, rawSession.result.completedCount)) } : null;
+      return { variant:rawSession.variant, origin:rawSession.origin, status:rawSession.status === SPEED_STATUS.RUNNING ? SPEED_STATUS.PAUSED : rawSession.status, seed:Number.isInteger(rawSession.seed) ? rawSession.seed >>> 0 : 1, order, currentIndex:rawSession.currentIndex, elapsedMilliseconds, fallenAxes, candidateAxes, candidateSignature, result };
+    }
     function makeDefaultMasteryState() { return { remainingChecksByLap:{ lap1:{}, lap2:{} } }; }
     function selectCompletedPuzzleIdsForLap(progress, lap) { return lap === 2 ? progress.lap2CompletedPuzzleIds : progress.lap1CompletedPuzzleIds; }
     function withCompletedPuzzleId(progress, navigation, puzzleId) {
@@ -1192,14 +1443,15 @@
       return makeSatoriAppState(appState, 0, { type:'satori-welcome' }, lap);
     }
     function makeAppStateForNavigation(navigation, options = {}) {
-      const puzzle = selectPuzzleForNavigation(navigation);
+      const speed = options.speed ?? makeDefaultSpeedState();
+      const puzzle = selectPuzzleForNavigation(navigation, speed);
       return {
         schemaVersion:APP_SCHEMA_VERSION,
         catalogVersion:APP_CATALOG_VERSION,
         navigation,
         board:makeBoardState(puzzle),
         progress:options.progress ?? makeDefaultProgress(),
-        speed:options.speed ?? makeDefaultSpeedState(),
+        speed,
         mastery:options.mastery ?? makeDefaultMasteryState(),
         // rewardsは獲得資格、settingsは現在の表示選択。表示・獲得UIは後続フェーズで実装する。
         rewards:options.rewards ?? makeDefaultRewards(),
@@ -1207,6 +1459,15 @@
         ui:{ dialog:options.dialog ?? null },
       };
     }
+    function makeSpeedAppState(appState, session, board = null) {
+      const speed = { ...appState.speed, activeSession:session };
+      const navigation = makeSpeedNavigation(session);
+      const next = makeAppStateForNavigation(navigation, { progress:appState.progress, speed, mastery:appState.mastery, rewards:appState.rewards, settings:appState.settings });
+      if (session.status === SPEED_STATUS.AWAITING_START) next.board = { initialCells:[...SOLVED_BOARD], cells:[...SOLVED_BOARD], history:[], clearCommitted:false };
+      if (board) next.board = board;
+      return next;
+    }
+    function makeSpeedNineAppState(appState, session, board = null) { return makeSpeedAppState(appState, session, board); }
     function makeDefaultAppState() {
       return makeAppStateForNavigation(makeTutorialNavigation(0), { dialog:{ type:'welcome' } });
     }
@@ -1296,7 +1557,8 @@
     }
     function normalizeSpeedState(rawSpeed) {
       const known = new Set(['training9','training18','mastery27']);
-      return { completedTrialIds:[...new Set((Array.isArray(rawSpeed?.completedTrialIds) ? rawSpeed.completedTrialIds : []).filter(id => known.has(id)))] };
+      const activeSession = normalizeSpeedSession(rawSpeed?.activeSession);
+      return { completedTrialIds:[...new Set((Array.isArray(rawSpeed?.completedTrialIds) ? rawSpeed.completedTrialIds : []).filter(id => known.has(id)))], activeSession, records:normalizeSpeedRecords(rawSpeed?.records) };
     }
     function normalizeMasteryState(rawMastery) {
       const kyuIds = new Set(masteryCatalogForRoute('mastery-kyu').map(puzzle => puzzle.puzzleId));
@@ -1305,7 +1567,13 @@
         .map(([puzzleId, used]) => [puzzleId, Math.max(0, Math.min(masteryRemainingCheckLimit(masteryCatalogForRoute('mastery-kyu').findIndex(puzzle => puzzle.puzzleId === puzzleId)), Number.isInteger(used) ? used : 0))]));
       return { remainingChecksByLap:{ lap1:normalizeLap(rawMastery?.remainingChecksByLap?.lap1), lap2:normalizeLap(rawMastery?.remainingChecksByLap?.lap2) } };
     }
-    function navigationFromPersistentState(rawNavigation, progress) {
+    function navigationFromPersistentState(rawNavigation, progress, speed = null) {
+      const speedSession = speed?.activeSession;
+      const speedConfig = speedConfigForSession(speedSession);
+      if (rawNavigation?.mode === 'speed' && speedConfig && rawNavigation?.routeId === speedConfig.routeId) {
+        const expected = makeSpeedNavigation(speedSession);
+        if (rawNavigation.puzzleId === expected.puzzleId && rawNavigation.puzzleIndex === expected.puzzleIndex) return expected;
+      }
       const tutorialStep = rawNavigation?.tutorialStep;
       const tutorialIsValid = rawNavigation?.mode === 'tutorial' && rawNavigation?.routeId === 'tutorial'
         && Number.isInteger(tutorialStep) && TUTORIAL_STEPS[tutorialStep]
@@ -1409,6 +1677,51 @@
               ? { type:'speed-nine-required' }
               : solved ? clearDialogDescriptor(puzzle) : null);
     }
+    // 速解きの復元は通常問題のnavigation検査へ混ぜない。時計と問題間遷移の安定状態を
+    // ここで一度だけ正規化し、F5とhidden復帰を同じ「明示再開」契約にする。
+    function normalizePersistentSpeedAppState(raw, progress, speed, mastery, rewardAndSettings) {
+      const session = speed.activeSession;
+      const config = speedConfigForSession(session);
+      if (!session || !config || raw.navigation?.mode !== 'speed' || raw.navigation?.routeId !== config.routeId) return null;
+      const base = makeSpeedAppState({ ...makeDefaultAppState(), progress, speed, mastery, ...rewardAndSettings }, session);
+      if (session.status === SPEED_STATUS.AWAITING_START) return base;
+      const puzzle = selectSpeedPuzzle(session);
+      const expectedInitial = puzzleInitialCells(puzzle);
+      const board = raw.board;
+      const history = board && sameCells(board.initialCells ?? [], expectedInitial) && isOrientationCells(board.cells)
+        ? validMoveHistory(board.history, expectedInitial, board.cells) : null;
+      if (history === null) {
+        const resetSession = prepareSpeedSessionForBoard(session, expectedInitial, 0, { status:SPEED_STATUS.PAUSED, resetFallen:true, resetResult:true });
+        return makeSpeedAppState({ ...base, speed:{ ...speed, activeSession:resetSession } }, resetSession);
+      }
+      const solved = WakeSevenBoardDomain.isSolved(board.cells);
+      if (session.status === SPEED_STATUS.ADVANCING && solved) {
+        if (session.currentIndex < speedPuzzleCount(session) - 1) {
+          const nextSession = { ...session, currentIndex:session.currentIndex + 1 };
+          const nextPuzzle = selectSpeedPuzzle(nextSession);
+          const nextInitial = puzzleInitialCells(nextPuzzle);
+          const prepared = prepareSpeedSessionForBoard(nextSession, nextInitial, 0, { status:SPEED_STATUS.PAUSED, resetFallen:true, resetResult:true });
+          return makeSpeedAppState({ ...base, speed:{ ...speed, activeSession:prepared } }, prepared);
+        }
+        const result = session.result?.completedCount === speedPuzzleCount(session)
+          ? session.result
+          : { variant:session.variant, origin:session.origin, elapsedMilliseconds:session.elapsedMilliseconds, completedCount:speedPuzzleCount(session) };
+        const finished = { ...session, status:SPEED_STATUS.FINISHED, result };
+        const records = withCompletedSpeedRecord(speed, result);
+        return makeSpeedAppState({ ...base, speed:{ ...speed, records, activeSession:finished } }, finished, { initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted:true });
+      }
+      // 完走は最終問の解決済み盤面だけが名乗れる。壊れた「finished」値で
+      // 結果dialogだけを出さず、同じ問題の停止状態へ安全に戻す。
+      if (session.status === SPEED_STATUS.FINISHED && (session.currentIndex !== speedPuzzleCount(session) - 1 || !solved)) {
+        const recovered = prepareSpeedSessionForBoard(session, board.cells, history.length, { status:SPEED_STATUS.PAUSED, resetResult:true });
+        return makeSpeedAppState({ ...base, speed:{ ...speed, activeSession:recovered } }, recovered, { initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted:false });
+      }
+      const stableStatus = session.status === SPEED_STATUS.RUNNING || session.status === SPEED_STATUS.ADVANCING ? SPEED_STATUS.PAUSED : session.status;
+      const stableSession = stableStatus === SPEED_STATUS.FINISHED
+        ? { ...session, status:stableStatus, result:session.result?.completedCount === speedPuzzleCount(session) ? session.result : { variant:session.variant, origin:session.origin, elapsedMilliseconds:session.elapsedMilliseconds, completedCount:speedPuzzleCount(session) } }
+        : prepareSpeedSessionForBoard(session, board.cells, history.length, { status:stableStatus });
+      return makeSpeedAppState({ ...base, speed:{ ...speed, activeSession:stableSession } }, stableSession, { initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted:stableStatus === SPEED_STATUS.FINISHED && solved });
+    }
     // localStorageからの復元は、ルート、問題、履歴、ダイアログを順番に検査する。
     // チュートリアルの解決済み途中演出は、次段階（最終なら入学案内）という安定状態へ正規化する。
     function normalizePersistentAppState(raw) {
@@ -1417,7 +1730,9 @@
       const speed = normalizeSpeedState(raw.speed);
       const mastery = normalizeMasteryState(raw.mastery);
       const rewardAndSettings = normalizeRewardsAndSettings(raw.rewards, raw.settings);
-      const navigation = navigationFromPersistentState(raw.navigation, progress);
+      const speedState = normalizePersistentSpeedAppState(raw, progress, speed, mastery, rewardAndSettings);
+      if (speedState) return speedState;
+      const navigation = navigationFromPersistentState(raw.navigation, progress, speed);
       // optimal-failは盤面と履歴の手数が一致して初めて復元できる。
       // 盤面検証前のfallbackへ失敗descriptorだけを残すと、初期盤面に失敗ダイアログが重なる。
       const fallbackDialog = raw.ui?.dialog?.type === 'optimal-fail' ? null : stableDialogForNavigation(raw.ui?.dialog, navigation, false, progress, speed);
@@ -1470,8 +1785,11 @@
       try { localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(AppState)); document.documentElement.dataset.w7LastSave = reason; }
       catch { document.documentElement.dataset.w7LastSave = 'unavailable'; }
     }
-    function selectActivePuzzle() { return selectPuzzleForNavigation(AppState.navigation); }
-    function selectCanInteractWithBoard(appState = AppState) { return appState.ui.dialog === null && !appState.board.clearCommitted; }
+    function selectActivePuzzle() { return selectPuzzleForNavigation(AppState.navigation, AppState.speed); }
+    function selectCanInteractWithBoard(appState = AppState) {
+      if (isSpeedRoute(appState)) return appState.speed.activeSession.status === SPEED_STATUS.RUNNING;
+      return appState.ui.dialog === null && !appState.board.clearCommitted;
+    }
     // OPEN-005: P5-2の導入演出は保存状態からだけ決める。途中フレームや「見た」印は
     // 保存しないため、同じ問題を0手で再訪してもtrue、1手以上の復元ではfalseになる。
     function applicationShouldReplayIntro(appState = AppState) {
@@ -1487,6 +1805,11 @@
       // 巻末クリアは次巻を先に保存するが、祝福が終わるまでは解いた巻の見出しを残す。
       if ((RuntimeState.pendingTrainingBoundary || RuntimeState.pendingMasteryBoundary || RuntimeState.pendingSatoriBoundary) && RuntimeState.phase === BoardPhase.CELEBRATING) return;
       const puzzle = selectActivePuzzle();
+      if (isSpeedRoute()) {
+        const session = selectSpeedSession(), config = speedConfigForSession(session);
+        stageLabelElement.textContent = `${config?.label ?? '速解き'} ${session.currentIndex + 1} / ${speedPuzzleCount(session)}`;
+        return;
+      }
       if (AppState.navigation.mode === 'tutorial') {
         stageLabelElement.textContent = `チュートリアル ${AppState.navigation.tutorialStep + 1} / ${TUTORIAL_STEPS.length}`;
         return;
@@ -2383,16 +2706,64 @@
         dialogElement.className = 'w7-dialog w7-dialog--clear';
         title.textContent = '速解き九番勝負が解放されたよ！';
         message.className = 'w7-clear-note';
-        message.textContent = '九番勝負は次の段階で遊べるようになります。';
-        const action = addAction('もう一度', intentRetryPuzzle, actions);
+        message.textContent = '9問を続けて解いてみよう。タイマーは「はじめる」を押してから動くよ。';
+        const action = addAction('九番勝負へ', () => intentOpenSpeedNineFromAcademy(), actions);
         dialogElement.replaceChildren(title, message, actions);
         return action;
       }
       return null;
     }
+    function selectSpeedDialogDescriptor() {
+      const session = selectSpeedSession();
+      if (!session) return null;
+      if (RuntimeState.speedRestartConfirm) return { type:'speed-restart-confirm' };
+      if (session.status === SPEED_STATUS.PAUSED) return { type:'speed-pause' };
+      if (session.status === SPEED_STATUS.FINISHED) return { type:'speed-result' };
+      return null;
+    }
+    function renderSpeedDialog(descriptor, title, message, addAction) {
+      if (!['speed-pause','speed-restart-confirm','speed-result'].includes(descriptor?.type)) return null;
+      const session = selectSpeedSession();
+      if (!session) return null;
+      const config = speedConfigForSession(session);
+      dialogElement.className = 'w7-dialog w7-dialog--welcome';
+      const details = document.createElement('p');
+      details.className = 'w7-clear-note';
+      if (descriptor.type === 'speed-restart-confirm') {
+        title.textContent = '最初からやり直す？';
+        message.textContent = `いまの${config?.label ?? '速解き'}のタイムと途中の進み具合は消えます。`;
+        const actions = document.createElement('div');
+        actions.className = 'w7-dialog-actions';
+        const cancel = addAction('やめる', intentCancelSpeedRestart, actions);
+        addAction('最初から', intentRestartSpeed, actions);
+        dialogElement.replaceChildren(title,message,actions);
+        return cancel;
+      }
+      if (descriptor.type === 'speed-pause') {
+        const records = speedTopRecords(AppState.speed, session.variant);
+        title.textContent = `${config?.label ?? '速解き'}を一時停止`;
+        message.textContent = `${session.currentIndex + 1} / ${speedPuzzleCount(session)} 問目`;
+        details.textContent = `タイム　${formatSpeedClock(session.elapsedMilliseconds)}\n上位記録\n${records.length ? records.map((record, index) => `${index + 1}位　${formatSpeedClock(record.elapsedMilliseconds)}`).join('\n') : '—'}`;
+        const actions = document.createElement('div');
+        actions.className = 'w7-dialog-actions';
+        const resume = addAction('再開する', intentResumeSpeed, actions);
+        addAction('最初から', intentRequestSpeedRestart, actions);
+        dialogElement.replaceChildren(title,message,details,actions);
+        return resume;
+      }
+      const records = speedTopRecords(AppState.speed, session.variant);
+      title.textContent = `${config?.label ?? '速解き'} 完走！`;
+      message.textContent = `タイム　${formatSpeedClock(session.result?.elapsedMilliseconds ?? session.elapsedMilliseconds)}`;
+      details.textContent = `最短で解けた問題　${session.result?.completedCount ?? speedPuzzleCount(session)} / ${speedPuzzleCount(session)}\n上位記録\n${records.length ? records.map((record, index) => `${index + 1}位　${formatSpeedClock(record.elapsedMilliseconds)}`).join('\n') : '—'}`;
+      const actions = document.createElement('div');
+      actions.className = 'w7-dialog-actions';
+      const restart = addAction('もう一度', intentRequestSpeedRestart, actions);
+      dialogElement.replaceChildren(title,message,details,actions);
+      return restart;
+    }
     function renderDialog() {
       // クリアと到着の最中はダイアログを重ねず、安定フレームでだけ表示する。
-      const descriptor = RuntimeState.phase === BoardPhase.CELEBRATING || RuntimeState.phase === BoardPhase.ARRIVING ? null : AppState.ui.dialog;
+      const descriptor = RuntimeState.phase === BoardPhase.CELEBRATING || RuntimeState.phase === BoardPhase.ARRIVING ? null : selectSpeedDialogDescriptor() ?? AppState.ui.dialog;
       dialogBackdropElement.hidden = !descriptor;
       if (!descriptor) { dialogElement.replaceChildren(); dialogElement.className = 'w7-dialog'; return; }
       const puzzle = selectActivePuzzle();
@@ -2411,13 +2782,14 @@
         return button;
       };
       let defaultAction;
-      const trainingAction = renderTrainingDialog(descriptor, title, message, addAction);
-      const satoriAction = trainingAction ? null : renderSatoriDialog(descriptor, title, message, addAction);
-      const masteryAction = trainingAction || satoriAction ? null : renderMasteryDialog(descriptor, title, message, addAction);
-      const academyAction = trainingAction || satoriAction || masteryAction ? null : renderAcademyDialog(descriptor, title, message, addAction);
-      let dialogAssembled = Boolean(trainingAction || satoriAction || masteryAction || academyAction);
+      const speedAction = renderSpeedDialog(descriptor, title, message, addAction);
+      const trainingAction = speedAction ? null : renderTrainingDialog(descriptor, title, message, addAction);
+      const satoriAction = speedAction || trainingAction ? null : renderSatoriDialog(descriptor, title, message, addAction);
+      const masteryAction = speedAction || trainingAction || satoriAction ? null : renderMasteryDialog(descriptor, title, message, addAction);
+      const academyAction = speedAction || trainingAction || satoriAction || masteryAction ? null : renderAcademyDialog(descriptor, title, message, addAction);
+      let dialogAssembled = Boolean(speedAction || trainingAction || satoriAction || masteryAction || academyAction);
       if (dialogAssembled) {
-        defaultAction = trainingAction ?? satoriAction ?? masteryAction ?? academyAction;
+        defaultAction = speedAction ?? trainingAction ?? satoriAction ?? masteryAction ?? academyAction;
       } else if (descriptor.type === 'welcome') {
         dialogElement.className = 'w7-dialog w7-dialog--welcome';
         title.textContent = 'だるまさんを起こして！';
@@ -2530,9 +2902,122 @@
       pendingSatoriBoundary: false,
       masteryRemainingRevealed: false,
       nextMoveHintGeneration: 0,
+      // 速解きのrunning区間はメモリだけで開始時刻を持ち、保存値には累積時間だけを残す。
+      speedClockStartedAt: null,
+      speedClockFrame: null,
+      speedRestartConfirm: false,
       effectGeneration: 0,
       activeEffect: null,
     };
+    // speed timer: 保存するのは精算済みの累積時間だけ。running中の開始時刻はRuntimeStateに限る。
+    function stopSpeedClockFrame() {
+      if (RuntimeState.speedClockFrame !== null) cancelAnimationFrame(RuntimeState.speedClockFrame);
+      RuntimeState.speedClockFrame = null;
+    }
+    function scheduleSpeedClockRender() {
+      stopSpeedClockFrame();
+      const tick = () => {
+        const session = selectSpeedSession();
+        if (!session || session.status !== SPEED_STATUS.RUNNING) return;
+        renderSpeedHud();
+        RuntimeState.speedClockFrame = requestAnimationFrame(tick);
+      };
+      RuntimeState.speedClockFrame = requestAnimationFrame(tick);
+    }
+    function startSpeedClock(reason = 'speed resume') {
+      const session = selectSpeedSession();
+      if (!session || session.status === SPEED_STATUS.FINISHED || session.status === SPEED_STATUS.RUNNING) return false;
+      AppState = { ...AppState, speed:{ ...AppState.speed, activeSession:{ ...session, status:SPEED_STATUS.RUNNING } } };
+      RuntimeState.speedClockStartedAt = performance.now();
+      scheduleSpeedClockRender();
+      saveAppState(reason);
+      return true;
+    }
+    function pauseSpeedClock(reason = 'speed pause', { save = true } = {}) {
+      const session = selectSpeedSession();
+      if (!session) return false;
+      if (session.status === SPEED_STATUS.RUNNING && Number.isFinite(RuntimeState.speedClockStartedAt)) {
+        const elapsedMilliseconds = session.elapsedMilliseconds + Math.max(0, performance.now() - RuntimeState.speedClockStartedAt);
+        AppState = { ...AppState, speed:{ ...AppState.speed, activeSession:{ ...session, status:SPEED_STATUS.PAUSED, elapsedMilliseconds } } };
+      } else if (session.status !== SPEED_STATUS.FINISHED) {
+        AppState = { ...AppState, speed:{ ...AppState.speed, activeSession:{ ...session, status:SPEED_STATUS.PAUSED } } };
+      }
+      RuntimeState.speedClockStartedAt = null;
+      stopSpeedClockFrame();
+      if (save) saveAppState(reason);
+      return true;
+    }
+    function prepareSpeedCurrentPuzzle(session, status = SPEED_STATUS.PAUSED) {
+      const puzzle = selectSpeedPuzzle(session);
+      const initialCells = puzzleInitialCells(puzzle);
+      const prepared = prepareSpeedSessionForBoard(session, initialCells, 0, { status, resetFallen:true, resetResult:true });
+      return makeSpeedAppState(AppState, prepared, { initialCells, cells:[...initialCells], history:[], clearCommitted:false });
+    }
+    // 速解き共通の開始・停止・再開・最初から。P7b以降も同じUI入口を使う。
+    function intentStartSpeed() {
+      const session = selectSpeedSession();
+      if (!session || session.status !== SPEED_STATUS.AWAITING_START || RuntimeState.phase !== BoardPhase.READY) return false;
+      stopSpeedClockFrame();
+      RuntimeState.speedClockStartedAt = null;
+      AppState = prepareSpeedCurrentPuzzle(session, SPEED_STATUS.PAUSED);
+      replaceRuntimeBoardFromAppState();
+      saveAppState('speed start arrival');
+      runArrivalEffect(() => {
+        if (!isSpeedRoute() || AppState.speed.activeSession.status !== SPEED_STATUS.PAUSED) return;
+        startSpeedClock('speed started');
+        renderRuntime({ context:'speed running' });
+      });
+      return true;
+    }
+    function intentPauseSpeed() {
+      const session = selectSpeedSession();
+      if (!session || session.status !== SPEED_STATUS.RUNNING || RuntimeState.phase !== BoardPhase.READY) return false;
+      pauseSpeedClock('speed pause');
+      renderRuntime({ context:'speed pause' });
+      return true;
+    }
+    function intentResumeSpeed() {
+      const session = selectSpeedSession();
+      if (!session || session.status !== SPEED_STATUS.PAUSED || RuntimeState.phase !== BoardPhase.READY) return false;
+      startSpeedClock('speed resume');
+      renderRuntime({ context:'speed resumed' });
+      return true;
+    }
+    function intentRestartSpeed() {
+      const session = selectSpeedSession();
+      if (!session) return false;
+      stopSpeedClockFrame();
+      RuntimeState.speedClockStartedAt = null;
+      RuntimeState.speedRestartConfirm = false;
+      const reset = makeSpeedSession(session.variant, session.origin);
+      AppState = makeSpeedAppState(AppState, reset);
+      replaceRuntimeBoardFromAppState();
+      saveAppState('speed restart');
+      renderRuntime({ context:'speed restart' });
+      return true;
+    }
+    function intentRequestSpeedRestart() {
+      if (!selectSpeedSession()) return false;
+      RuntimeState.speedRestartConfirm = true;
+      renderRuntime({ context:'speed restart confirm' });
+      return true;
+    }
+    function intentCancelSpeedRestart() {
+      if (!selectSpeedSession()) return false;
+      RuntimeState.speedRestartConfirm = false;
+      renderRuntime({ context:'speed restart cancel' });
+      return true;
+    }
+    function intentOpenSpeedNineFromAcademy() {
+      if (!hasCompletedDevelopmentClass(AppState.progress, AppState.navigation.lap ?? 1)) return false;
+      stopSpeedClockFrame();
+      RuntimeState.speedClockStartedAt = null;
+      AppState = makeSpeedNineAppState(AppState, makeSpeedNineSession('academy-trial'));
+      replaceRuntimeBoardFromAppState();
+      saveAppState('speed nine academy entry');
+      renderRuntime({ context:'speed nine academy entry' });
+      return true;
+    }
     // チュートリアル固有の表示・誤操作判定。盤面DOM、棒の判定、回転処理は共有する。
     function isTutorialRoute(appState = AppState) { return appState.navigation.mode === 'tutorial' && appState.navigation.routeId === 'tutorial'; }
     function isAcademyGuidedRoute(appState = AppState) { return appState.navigation.mode === 'stage' && ['academy-intro','academy-basic'].includes(appState.navigation.routeId); }
@@ -2615,6 +3100,26 @@
         axis.classList.toggle('w7-academy-fallen', RuntimeState.academyFallen.has(index));
       });
       renderAcademyRemainingCallout();
+    }
+    function speedNineVisibleCandidateAxes(session = selectSpeedNineSession()) {
+      if (!session || session.status === SPEED_NINE_STATUS.AWAITING_START || session.status === SPEED_NINE_STATUS.FINISHED) return new Set();
+      const signature = speedNineCandidateSignature(RuntimeState.cells, session, RuntimeState.history.length);
+      const candidates = session.candidateSignature === signature && session.candidateAxes.length ? session.candidateAxes : chooseSpeedNineCandidateAxes(RuntimeState.cells, session);
+      return new Set(candidates.filter(axis => !session.fallenAxes.includes(axis)));
+    }
+    // speed nine candidate rods: 候補、落下、再読込後の見た目を速解きセッションだけから描く。
+    function renderSpeedNineGuidance() {
+      const session = selectSpeedNineSession();
+      boardElement.querySelectorAll('.w7-axis-layer g[data-axis]').forEach(axis => {
+        axis.classList.remove('w7-speed-hidden','w7-speed-candidate','w7-speed-fallen');
+        if (!session) return;
+        const index = Number(axis.dataset.axis);
+        const fallen = session.fallenAxes.includes(index);
+        const candidate = speedNineVisibleCandidateAxes(session).has(index);
+        axis.classList.toggle('w7-speed-candidate', candidate);
+        axis.classList.toggle('w7-speed-fallen', fallen);
+        axis.classList.toggle('w7-speed-hidden', !candidate && !fallen);
+      });
     }
     // 応用は最初から六本の棒を見せ、誤った棒だけを今回の挑戦中に落とす。
     // targetCells と同様、判定はここで推測せず applicationMoveOutcome に集約する。
@@ -2792,7 +3297,7 @@
     function selectCanUseHistory(state = RuntimeState, appState = AppState) { return selectCanInteractWithBoard(appState) && state.phase === BoardPhase.READY && state.invalidPointerId === null; }
     // 急31〜39では、0手でも残り手数を使った後ならRestartで回数を戻せる。
     function selectCanRestartCurrentPuzzle(state = RuntimeState, appState = AppState) {
-      const untouched = state.history.length === 0 && WakeSevenBoardDomain.encode(state.cells) === selectPuzzleForNavigation(appState.navigation).state;
+      const untouched = state.history.length === 0 && WakeSevenBoardDomain.encode(state.cells) === selectPuzzleForNavigation(appState.navigation, appState.speed).state;
       const canRefundMasteryRemainingCheck = masteryRemainingCheckShouldReset('restart', appState.navigation.routeId, appState.navigation.puzzleIndex) && masteryRemainingChecksUsed(appState) > 0;
       return !untouched || canRefundMasteryRemainingCheck;
     }
@@ -2912,6 +3417,7 @@
     }
     function isSelectableGrip(hit) {
       if (!hit) return false;
+      if (isSpeedNineRoute()) return speedNineVisibleCandidateAxes().has(hit.triangleIndex);
       if (isAcademyApplicationRoute()) return !RuntimeState.applicationFallen.has(hit.triangleIndex);
       if (!isAcademyCandidateRoute()) return true;
       refreshAcademyGuidance();
@@ -2951,6 +3457,20 @@
       if (correctDirections.length) return 'wrong-direction';
       if (direction || maxAbsDegrees >= 120) return 'wrong-rod';
       return 'cancel';
+    }
+    // 九番は「最短を一手減らす」すべての手を正解にする。solver列挙順の一手だけを
+    // 正解にすると、同じ最短解がある盤面で正しい棒を誤って落としてしまう。
+    function speedNineMoveOutcomeFor(cells, session, triangleIndex, direction, maxAbsDegrees) {
+      if (!session || maxAbsDegrees < GUIDED_ROD_JUDGMENT_DEGREES) return 'cancel';
+      const reducing = speedNineReducingMoves(cells, session, new Set(session.fallenAxes));
+      if (reducing.some(move => move.triangleIndex === triangleIndex && move.direction === direction)) return 'correct';
+      if (reducing.some(move => move.triangleIndex === triangleIndex)) return 'wrong-direction';
+      return 'wrong-rod';
+    }
+    // それ以外の候補棒は落として同じ問題中に使えなくし、盤面は共通処理で巻き戻す。
+    function speedNineMoveOutcome(triangleIndex, direction, maxAbsDegrees) {
+      const session = selectSpeedNineSession();
+      return speedNineMoveOutcomeFor(RuntimeState.cells, session, triangleIndex, direction, maxAbsDegrees);
     }
     function academyGuidedRewindPath(rawDegrees) {
       const normalized = ((rawDegrees % 360) + 360) % 360;
@@ -3036,6 +3556,7 @@
         refreshAcademyGuidance();
         if (!RuntimeState.academyCandidates.has(hit.triangleIndex) || RuntimeState.academyFallen.has(hit.triangleIndex)) { beginInvalidGrab(event); return; }
       }
+      if (isSpeedNineRoute() && !speedNineVisibleCandidateAxes().has(hit.triangleIndex)) { beginInvalidGrab(event); return; }
       if (isAcademyApplicationRoute() && RuntimeState.applicationFallen.has(hit.triangleIndex)) { beginInvalidGrab(event); return; }
       clearNextMoveHint();
       if (isMasteryRoute() && RuntimeState.masteryRemainingRevealed) {
@@ -3052,7 +3573,7 @@
       safelyCapturePointer(event.pointerId);
       registerEffectCleanup(effect, () => safelyReleasePointer(event.pointerId));
       renderRotationPreview(RuntimeState.drag.cells, hit.triangleIndex, 0, 0);
-      if (isTutorialRoute() || isAcademyAssistedRoute()) flashGrabbedCells(hit.triangleIndex);
+      if (isTutorialRoute() || isAcademyAssistedRoute() || isSpeedNineRoute()) flashGrabbedCells(hit.triangleIndex);
       if (expectedMove) {
         const step = tutorialStepAt(AppState.navigation.tutorialStep);
         const moveIndex = RuntimeState.history.length;
@@ -3143,10 +3664,68 @@
       }
       return true;
     }
+    function finishRejectedSpeedNineMove(drag, speedMoveAllowed, speedOutcome) {
+      if (!isSpeedNineRoute() || speedMoveAllowed) return false;
+      const session = selectSpeedNineSession();
+      if (speedOutcome === 'wrong-rod' && session) {
+        const fallenAxes = [...new Set([...session.fallenAxes, drag.triangleIndex])];
+        AppState = { ...AppState, speed:{ ...AppState.speed, activeSession:{ ...session, fallenAxes } } };
+        saveAppState('speed nine wrong candidate rod');
+      }
+      if (finishEffect(drag.effect)) {
+        renderRuntime({ context:`speed nine ${speedOutcome}` });
+        if (speedOutcome === 'wrong-rod') setAcademyFeedback('その棒じゃないよ');
+        else if (speedOutcome === 'wrong-direction') setAcademyFeedback('そっちじゃないよ');
+      }
+      return true;
+    }
+    // 速解きの問題確定は、共通クリア演出の前にadvancingとして保存する。
+    // 演出中のF5/hiddenはこの確定値から次問またはfinishedへ一度だけ正規化する。
+    function commitSpeedClear() {
+      const session = selectSpeedSession();
+      if (!session || !WakeSevenBoardDomain.isSolved(RuntimeState.cells)) return false;
+      pauseSpeedClock('speed clear', { save:false });
+      syncBoardToAppState();
+      AppState.board.clearCommitted = true;
+      AppState.ui.dialog = null;
+      AppState = { ...AppState, speed:{ ...AppState.speed, activeSession:{ ...AppState.speed.activeSession, status:SPEED_STATUS.ADVANCING } } };
+      saveAppState('speed clear committed');
+      runClearEffect(advanceSpeedAfterClear);
+      return true;
+    }
+    function advanceSpeedAfterClear() {
+      const session = selectSpeedSession();
+      if (!session || session.status !== SPEED_STATUS.ADVANCING) { renderRuntime({ happy:true, context:'speed clear stable' }); return; }
+      if (session.currentIndex >= speedPuzzleCount(session) - 1) {
+        const elapsedMilliseconds = session.elapsedMilliseconds;
+        const result = { variant:session.variant, origin:session.origin, elapsedMilliseconds, completedCount:speedPuzzleCount(session) };
+        const records = withCompletedSpeedRecord(AppState.speed, result);
+        AppState = { ...AppState, speed:{ ...AppState.speed, records, activeSession:{ ...session, status:SPEED_STATUS.FINISHED, result } } };
+        RuntimeState.speedClockStartedAt = null;
+        stopSpeedClockFrame();
+        saveAppState('speed finished');
+        renderRuntime({ happy:true, context:'speed finished' });
+        return;
+      }
+      const nextSession = { ...session, currentIndex:session.currentIndex + 1, status:SPEED_STATUS.PAUSED, fallenAxes:[], candidateAxes:[], candidateSignature:'', result:null };
+      AppState = prepareSpeedCurrentPuzzle(nextSession, SPEED_STATUS.PAUSED);
+      replaceRuntimeBoardFromAppState();
+      saveAppState('speed next arrival');
+      runArrivalEffect(() => {
+        const active = selectSpeedSession();
+        if (!active || active.status !== SPEED_STATUS.PAUSED) return;
+        startSpeedClock('speed next started');
+        renderRuntime({ context:'speed next running' });
+      });
+    }
     // 回転後の共通確定。モード固有の最短・節目処理は名前付きのcommitClearへ渡す。
     function finishCommittedBoardMove(drag, committedTurns) {
       if (committedTurns) for (let count = 0; count < Math.abs(committedTurns); count += 1) commitBoardMove(drag.triangleIndex, Math.sign(committedTurns));
       if (!finishEffect(drag.effect)) return;
+      if (committedTurns && isSpeedRoute() && WakeSevenBoardDomain.isSolved(RuntimeState.cells)) {
+        commitSpeedClear();
+        return;
+      }
       if (committedTurns && (WakeSevenBoardDomain.isSolved(RuntimeState.cells) || isSatoriRoute())) {
         const clearOutcome = commitClearForCurrentPuzzle();
         if (clearOutcome?.type === 'over-limit' || clearOutcome?.type === 'move-limit') {
@@ -3160,6 +3739,17 @@
       }
       if (committedTurns) {
         if (isAcademyApplicationRoute()) RuntimeState.applicationFallen = new Set();
+        // 速解きは一手ごとに「今の盤面」の候補棒を保存する。描画時だけ再計算すると、
+        // F5直後に見える棒が直前の手と食い違うため、盤面確定と同じ場所で更新する。
+        if (isSpeedNineRoute()) {
+          const session = selectSpeedNineSession();
+          if (session) {
+            // 落下棒は「直前の状態」での不正解表示。正解一手で盤面が変わったら
+            // 必ず破棄し、新しい状態の候補棒だけを作る。残すと次の正解を塞ぎ得る。
+            const activeSession = refreshSpeedNineCandidatesAfterCorrectMove(session, RuntimeState.cells, RuntimeState.history.length);
+            AppState = { ...AppState, speed:{ ...AppState.speed, activeSession } };
+          }
+        }
         syncBoardToAppState();
         saveAppState('move commit');
         // 発展の最初の五問だけは3→2で数字を重ねず、型名と外周を先に見せる。
@@ -3185,15 +3775,18 @@
       if (cancelled) { cancelActiveEffect('pointercancel'); renderRuntime({ context:'pointercancel' }); return; }
       const elapsed = performance.now() - drag.startedAt;
       const selectedTurns = selectDragTurns(drag.degrees, elapsed, true);
-      const requestedCommittedTurns = isTutorialRoute() || isAcademyAssistedRoute() ? logicalDirectionForTurns(selectedTurns) : selectedTurns;
+      const requestedCommittedTurns = isTutorialRoute() || isAcademyAssistedRoute() || isSpeedRoute() ? logicalDirectionForTurns(selectedTurns) : selectedTurns;
       const committedTurns = selectCommittedTurnsWithinSatoriLimit(requestedCommittedTurns);
       const tutorialMoveAllowed = isTutorialMoveAllowed(drag.triangleIndex, committedTurns);
       const academyOutcome = isAcademyCandidateRoute() ? academyMoveOutcome(drag.triangleIndex, committedTurns, drag.maxAbsDegrees) : null;
       const applicationOutcome = isAcademyApplicationRoute() ? applicationMoveOutcome(drag.triangleIndex, committedTurns, drag.maxAbsDegrees) : null;
+      const speedOutcome = isSpeedNineRoute() ? speedNineMoveOutcome(drag.triangleIndex, committedTurns, drag.maxAbsDegrees) : null;
       const academyMoveAllowed = academyOutcome === 'correct';
       const applicationMoveAllowed = applicationOutcome === 'correct';
+      // 九番だけは候補棒を判定する。後続variantは共通の一手確定へそのまま渡す。
+      const speedMoveAllowed = !isSpeedNineRoute() || speedOutcome === 'correct';
       const assistedMoveAllowed = isAcademyCandidateRoute() ? academyMoveAllowed : isAcademyApplicationRoute() ? applicationMoveAllowed : null;
-      const settledTurns = isAcademyAssistedRoute() ? assistedMoveAllowed ? selectedTurns : 0 : tutorialMoveAllowed && isTutorialRoute() ? selectedTurns : tutorialMoveAllowed ? committedTurns : 0;
+      const settledTurns = isAcademyAssistedRoute() ? assistedMoveAllowed ? selectedTurns : 0 : isSpeedRoute() ? speedMoveAllowed ? selectedTurns : 0 : tutorialMoveAllowed && isTutorialRoute() ? selectedTurns : tutorialMoveAllowed ? committedTurns : 0;
       // 誤った学園／応用操作は、360度ぶんを逆再生しない。旧版と同じく現在角度から最短の
       // 元位置／一周位置へ戻すため、長く回したときも「棒が落ちる」結果がすぐ伝わる。
       const academyRewind = isAcademyAssistedRoute() && !assistedMoveAllowed ? academyGuidedRewindPath(drag.degrees) : null;
@@ -3207,6 +3800,7 @@
       const completeRotation = () => {
         if (finishRejectedAcademyCandidateMove(drag, academyMoveAllowed, academyOutcome, committedTurns)) return;
         if (finishRejectedAcademyApplicationMove(drag, applicationMoveAllowed, applicationOutcome, committedTurns)) return;
+        if (finishRejectedSpeedNineMove(drag, speedMoveAllowed, speedOutcome)) return;
         if (committedTurns && !tutorialMoveAllowed) {
           if (finishEffect(drag.effect)) {
             renderRuntime({ context:'tutorial wrong move' });
@@ -3226,7 +3820,7 @@
       if (RuntimeState.drag?.pointerId === event.pointerId) finishBoardDrag(event, true);
     }
     // 盤面が中央から広がる到着演出
-    function runArrivalEffect() {
+    function runArrivalEffect(afterArrival = null) {
       const effect = beginEffect(BoardPhase.ARRIVING);
       renderRuntime();
       const view = selectBoardView();
@@ -3239,7 +3833,7 @@
           cell.setAttribute('transform', `translate(${x} ${y}) rotate(${view.rotationDegrees}) scale(${.72 + .28 * progress})`);
           cell.style.opacity = String(progress);
         });
-      }, () => { if (finishEffect(effect)) renderRuntime({ context:'arrival' }); });
+      }, () => { if (finishEffect(effect)) { renderRuntime({ context:'arrival' }); afterArrival?.(); } });
     }
     function hideApplicationTargetPreview() {
       applicationTargetPreviewElement.hidden = true;
@@ -3654,6 +4248,8 @@
     }
     function applyDebugStableState(nextAppState, reason) {
       cancelActiveEffect(reason);
+      stopSpeedClockFrame();
+      RuntimeState.speedClockStartedAt = null;
       if (RuntimeState.invalidPointerId !== null) safelyReleasePointer(RuntimeState.invalidPointerId);
       RuntimeState.invalidPointerId = null;
       boardElement.classList.remove('is-invalid-grab','is-grip-hover');
@@ -3748,6 +4344,36 @@
       next.board = buildDebugSolvedBoard(academyDevelopmentPuzzleAt(lastIndex));
       applyDebugStableState(next, 'debug development completed');
     }
+    // speed nine debug: 本番と同じセッションfactory、問題順、候補棒を通して安定状態を作る。
+    function makeDebugSpeedNineProgress() {
+      return debugProgressWithCompleted(TUTORIAL_STEPS, ACADEMY_INTRO_PUZZLES, ACADEMY_BASIC_PUZZLES, ACADEMY_APPLICATION_PUZZLES, ACADEMY_DEVELOPMENT_PUZZLES);
+    }
+    function intentDebugSpeedNineAt(index = 0, status = SPEED_NINE_STATUS.RUNNING) {
+      const session = makeSpeedNineSession('debug', 0x907 + index);
+      session.currentIndex = Math.max(0, Math.min(SPEED_NINE_PUZZLES.length - 1, index));
+      session.status = status === SPEED_NINE_STATUS.AWAITING_START ? status : SPEED_NINE_STATUS.PAUSED;
+      const base = { ...AppState, progress:makeDebugSpeedNineProgress() };
+      const next = status === SPEED_NINE_STATUS.AWAITING_START
+        ? makeSpeedNineAppState(base, session)
+        : prepareDebugSpeedNinePuzzle(base, session);
+      applyDebugStableState(next, `debug speed nine ${session.currentIndex + 1}`);
+      if (status === SPEED_NINE_STATUS.RUNNING) {
+        startSpeedClock('debug speed nine running');
+        renderRuntime({ context:'debug speed nine running' });
+      }
+    }
+    function prepareDebugSpeedNinePuzzle(base, session) {
+      const puzzle = selectSpeedNinePuzzle(session);
+      const initialCells = puzzleInitialCells(puzzle);
+      const prepared = withSpeedNineCandidates({ ...session, fallenAxes:[], result:null }, initialCells, 0);
+      return makeSpeedNineAppState(base, prepared, { initialCells, cells:[...initialCells], history:[], clearCommitted:false });
+    }
+    function intentDebugSpeedNinePause() {
+      if (!isSpeedNineRoute()) intentDebugSpeedNineAt(0, SPEED_NINE_STATUS.RUNNING);
+      pauseSpeedClock('debug speed nine pause');
+      renderRuntime({ context:'debug speed nine pause' });
+    }
+    function intentDebugSpeedNineFinalPreclear() { intentDebugSpeedNineAt(SPEED_NINE_PUZZLES.length - 1, SPEED_NINE_STATUS.RUNNING); }
     function makeDebugTrainingProgress(...trainingCatalogs) {
       return debugProgressWithCompleted(TUTORIAL_STEPS, ACADEMY_INTRO_PUZZLES, ACADEMY_BASIC_PUZZLES, ACADEMY_APPLICATION_PUZZLES, ACADEMY_DEVELOPMENT_PUZZLES, ...trainingCatalogs);
     }
@@ -3982,6 +4608,8 @@
     boardUndoButton.addEventListener('click', intentUndo);
     boardRestartButton.addEventListener('click', intentRestart);
     trainingTipButton.addEventListener('click', intentOpenTrainingTip);
+    speedPauseButton.addEventListener('click', intentPauseSpeed);
+    speedStartButton.addEventListener('click', intentStartSpeed);
     nextMoveHintButton.addEventListener('click', intentOpenNextMoveHint);
     debugResetButton.addEventListener('click', intentDebugResetToTutorial);
     debugClearCurrentButton.addEventListener('click', intentDebugClearCurrentPuzzle);
@@ -3992,6 +4620,12 @@
     debugStartDevelopmentButton.addEventListener('click', intentDebugStartDevelopment);
     debugDevelopmentFourButton.addEventListener('click', intentDebugDevelopmentFour);
     debugFinishDevelopmentButton.addEventListener('click', intentDebugFinishDevelopment);
+    debugSpeedNineWaitButton.addEventListener('click', () => intentDebugSpeedNineAt(0, 'awaiting-start'));
+    debugSpeedNineFourButton.addEventListener('click', () => intentDebugSpeedNineAt(3));
+    debugSpeedNineSevenButton.addEventListener('click', () => intentDebugSpeedNineAt(6));
+    debugSpeedNineNineButton.addEventListener('click', () => intentDebugSpeedNineAt(8));
+    debugSpeedNinePauseButton.addEventListener('click', intentDebugSpeedNinePause);
+    debugSpeedNineFinalButton.addEventListener('click', intentDebugSpeedNineFinalPreclear);
     debugTrainingUpperButton.addEventListener('click', intentDebugTrainingUpper);
     debugTrainingMiddleButton.addEventListener('click', intentDebugTrainingMiddle);
     debugTrainingLowerButton.addEventListener('click', intentDebugTrainingLower);
@@ -4021,8 +4655,40 @@
         renderRuntime({ context:'window blur' });
       }
     });
+    // speed interruption: F5、hidden、pagehideはすべてpausedへ寄せる。advancingだけは
+    // 既に確定したクリアを一度だけ次問／finishedへ進め、演出フレームを保存しない。
+    function normalizeSpeedAfterInterruption(reason) {
+      const session = selectSpeedSession();
+      if (!session) return false;
+      if (RuntimeState.phase !== BoardPhase.READY || RuntimeState.activeEffect) cancelActiveEffect(`speed ${reason}`);
+      if (session.status === SPEED_STATUS.ADVANCING && WakeSevenBoardDomain.isSolved(RuntimeState.cells)) {
+        if (session.currentIndex >= speedPuzzleCount(session) - 1) {
+          const result = session.result?.completedCount === speedPuzzleCount(session)
+            ? session.result
+            : { variant:session.variant, origin:session.origin, elapsedMilliseconds:session.elapsedMilliseconds, completedCount:speedPuzzleCount(session) };
+          const records = withCompletedSpeedRecord(AppState.speed, result);
+          AppState = { ...AppState, speed:{ ...AppState.speed, records, activeSession:{ ...session, status:SPEED_STATUS.FINISHED, result } } };
+          AppState.board.clearCommitted = true;
+        } else {
+          const nextSession = { ...session, currentIndex:session.currentIndex + 1, status:SPEED_STATUS.PAUSED, fallenAxes:[], candidateAxes:[], candidateSignature:'', result:null };
+          AppState = prepareSpeedCurrentPuzzle(nextSession, SPEED_STATUS.PAUSED);
+        }
+        replaceRuntimeBoardFromAppState();
+      } else if (session.status === SPEED_STATUS.RUNNING) {
+        pauseSpeedClock(`speed ${reason}`, { save:false });
+      }
+      RuntimeState.speedClockStartedAt = null;
+      stopSpeedClockFrame();
+      RuntimeState.drag = null;
+      RuntimeState.phase = BoardPhase.READY;
+      boardElement.classList.remove('is-invalid-grab','is-grip-hover');
+      boardGripPrompt.hidden = true;
+      renderRuntime({ context:`speed ${reason}` });
+      return true;
+    }
     // 非表示化やbfcache復帰では、途中フレームを捨ててAppStateの安定盤面とダイアログを描き直す。
     function normalizeRuntimeAfterInterruption(reason) {
+      if (isSpeedRoute()) { normalizeSpeedAfterInterruption(reason); return; }
       if (RuntimeState.invalidPointerId !== null) safelyReleasePointer(RuntimeState.invalidPointerId);
       RuntimeState.invalidPointerId = null;
       boardElement.classList.remove('is-invalid-grab','is-grip-hover');
@@ -4481,6 +5147,101 @@
       const masteryRewardBoundary = makeMasteryBoundaryDestination({ ...masteryKyuFinal, progress:withCompletedPuzzleId(masteryKyuFinal.progress, masteryKyuFinal.navigation, masteryKyuFinal.navigation.puzzleId) });
       checkRuntime('mastery-dialog-restore', restoredMasteryFail.ui.dialog?.type === 'optimal-fail' && !restoredMasteryFail.board.clearCommitted && restoredMasteryFail.board.history.length === 5, 'mastery optimal-fail did not restore as the same failure dialog');
       checkRuntime('mastery-reward-boundary', masteryRewardBoundary.rewards.masterGoldGranted === false && masteryRewardBoundary.settings.theme !== 'gold' && !masteryRewardBoundary.speed.completedTrialIds.includes('mastery27'), 'mastery completion granted a P7 reward or completed mastery27');
+      // P7a: 九問固定カタログ、seed順、候補棒、paused復元を盤面エンジンとは別の契約として固定する。
+      // ここは速解きの改修時に最初に rg "speed-nine" で到達できる検査地点でもある。
+      const speedNineCatalogValid = SPEED_NINE_PUZZLES.length === 9
+        && SPEED_NINE_PUZZLES.every((puzzle, index) => puzzle.puzzleId === `speed-nine-${String(index + 1).padStart(3, '0')}`
+          && puzzle.sourcePuzzleId === ACADEMY_BASIC_PUZZLES[index].puzzleId
+          && puzzle.state === ACADEMY_BASIC_PUZZLES[index].state
+          && puzzle.par === 2
+          && SOLVER.distance[puzzle.state] === 2);
+      const speedNineSeed = 7027;
+      const speedNineSession = makeSpeedNineSession('debug', speedNineSeed);
+      const speedNineOrderValid = speedNineSession.order.length === 9
+        && new Set(speedNineSession.order.map(item => item.baseIndex)).size === 9
+        && speedNineSession.order.every(item => Number.isInteger(item.symmetryIndex) && item.symmetryIndex >= 0 && item.symmetryIndex < VIEW_SYMMETRIES.length)
+        && speedNineSession.order.map(item => `${item.baseIndex}:${item.symmetryIndex}`).join('|') === speedNineOrderFromSeed(speedNineSeed).map(item => `${item.baseIndex}:${item.symmetryIndex}`).join('|');
+      const speedNineCandidateValid = [0, 3, 6].every(currentIndex => {
+        const session = { ...speedNineSession, currentIndex, status:SPEED_NINE_STATUS.PAUSED, fallenAxes:[] };
+        const cells = puzzleInitialCells(selectSpeedNinePuzzle(session));
+        const prepared = withSpeedNineCandidates(session, cells, 0);
+        const reducing = speedNineReducingMoves(cells, prepared, new Set());
+        const visibleReducing = reducing.filter(move => prepared.candidateAxes.includes(move.triangleIndex));
+        return SOLVER.distance[WakeSevenBoardDomain.encode(cells)] === 2
+          && prepared.candidateAxes.length === speedNineCandidateCount(prepared)
+          && new Set(prepared.candidateAxes).size === prepared.candidateAxes.length
+          && visibleReducing.length > 0
+          && visibleReducing.every(move => speedNineMoveOutcomeFor(cells, prepared, move.triangleIndex, move.direction, 120) === 'correct');
+      });
+      // 間違い棒を落としてから正解した場合も、次状態の正解棒を塞がない。
+      // ここが壊れると、正解を選び続けても先へ進めない速解き盤面になる。
+      const speedNineFallenResetValid = SPEED_NINE_PUZZLES.some((_, currentIndex) => {
+        const session = { ...speedNineSession, currentIndex, status:SPEED_NINE_STATUS.PAUSED, fallenAxes:[] };
+        const cells = puzzleInitialCells(selectSpeedNinePuzzle(session));
+        const prepared = withSpeedNineCandidates(session, cells, 0);
+        const reducing = speedNineReducingMoves(cells, prepared, new Set());
+        const firstCorrect = reducing[0];
+        const fallenAxis = prepared.candidateAxes.find(axis => !reducing.some(move => move.triangleIndex === axis));
+        if (!firstCorrect || !Number.isInteger(fallenAxis)) return false;
+        const afterCorrect = WakeSevenBoardDomain.roll(cells, firstCorrect.triangleIndex, firstCorrect.direction);
+        const next = refreshSpeedNineCandidatesAfterCorrectMove({ ...prepared, fallenAxes:[fallenAxis] }, afterCorrect, 1);
+        const nextReducing = speedNineReducingMoves(afterCorrect, next, new Set());
+        return next.fallenAxes.length === 0
+          && nextReducing.some(move => next.candidateAxes.includes(move.triangleIndex));
+      });
+      // 誤棒が落ちた安定盤面を再読込しても、別の候補棒で穴埋めしない。
+      const speedNineFallenReloadValid = SPEED_NINE_PUZZLES.some((_, currentIndex) => {
+        const session = { ...speedNineSession, currentIndex, status:SPEED_NINE_STATUS.PAUSED, fallenAxes:[] };
+        const cells = puzzleInitialCells(selectSpeedNinePuzzle(session));
+        const prepared = withSpeedNineCandidates(session, cells, 0);
+        const reducingAxes = new Set(speedNineReducingMoves(cells, prepared, new Set()).map(move => move.triangleIndex));
+        const fallenAxis = prepared.candidateAxes.find(axis => !reducingAxes.has(axis));
+        if (!Number.isInteger(fallenAxis)) return false;
+        const withFallen = { ...prepared, fallenAxes:[fallenAxis] };
+        const restored = normalizePersistentAppState(makeSpeedNineAppState(makeDefaultAppState(), withFallen, {
+          initialCells:[...cells], cells:[...cells], history:[], clearCommitted:false,
+        }));
+        const restoredSession = restored.speed.activeSession;
+        return restoredSession?.status === SPEED_NINE_STATUS.PAUSED
+          && restoredSession.candidateAxes.join(',') === prepared.candidateAxes.join(',')
+          && restoredSession.fallenAxes.join(',') === String(fallenAxis)
+          && restoredSession.candidateAxes.filter(axis => !restoredSession.fallenAxes.includes(axis)).length === prepared.candidateAxes.length - 1;
+      });
+      const speedRecordContract = normalizeSpeedRecords({ byVariant:{ nine:[
+        { elapsedMilliseconds:3200, completedCount:9 }, { elapsedMilliseconds:1900, completedCount:9 },
+        { elapsedMilliseconds:2500, completedCount:9 }, { elapsedMilliseconds:4000, completedCount:9 },
+      ] } }).byVariant.nine;
+      const speedNineResumeSession = withSpeedNineCandidates({ ...speedNineSession, status:SPEED_NINE_STATUS.RUNNING, elapsedMilliseconds:1234 }, puzzleInitialCells(selectSpeedNinePuzzle(speedNineSession)), 0);
+      const speedNineRunningRestore = normalizePersistentAppState(makeSpeedNineAppState({ ...makeDefaultAppState(), speed:{ ...makeDefaultSpeedState(), activeSession:speedNineResumeSession } }, speedNineResumeSession));
+      const speedNineFirstCells = puzzleInitialCells(selectSpeedNinePuzzle(speedNineSession));
+      const speedNineFirstMove = speedNineExpectedMove(speedNineFirstCells, speedNineSession, new Set());
+      const speedNineAfterFirst = speedNineFirstMove && WakeSevenBoardDomain.roll(speedNineFirstCells, speedNineFirstMove.triangleIndex, speedNineFirstMove.direction);
+      const speedNineSecondMove = speedNineAfterFirst && speedNineExpectedMove(speedNineAfterFirst, speedNineSession, new Set());
+      const speedNineSolved = speedNineSecondMove && WakeSevenBoardDomain.roll(speedNineAfterFirst, speedNineSecondMove.triangleIndex, speedNineSecondMove.direction);
+      const speedNineAdvancing = { ...speedNineSession, status:SPEED_NINE_STATUS.ADVANCING, elapsedMilliseconds:2222 };
+      const speedNineAdvancingState = makeSpeedNineAppState({ ...makeDefaultAppState(), speed:{ ...makeDefaultSpeedState(), activeSession:speedNineAdvancing } }, speedNineAdvancing, {
+        initialCells:[...speedNineFirstCells], cells:Array.from(speedNineSolved ?? speedNineFirstCells),
+        history:speedNineFirstMove && speedNineSecondMove ? [
+          { triangleIndex:speedNineFirstMove.triangleIndex, direction:speedNineFirstMove.direction, before:[...speedNineFirstCells], after:Array.from(speedNineAfterFirst) },
+          { triangleIndex:speedNineSecondMove.triangleIndex, direction:speedNineSecondMove.direction, before:Array.from(speedNineAfterFirst), after:Array.from(speedNineSolved) },
+        ] : [], clearCommitted:true,
+      });
+      const speedNineAdvancingRestore = normalizePersistentAppState(speedNineAdvancingState);
+      const speedNineBrokenFinished = normalizePersistentAppState(makeSpeedNineAppState({ ...makeDefaultAppState(), speed:{ ...makeDefaultSpeedState(), activeSession:{ ...speedNineSession, status:SPEED_NINE_STATUS.FINISHED } } }, { ...speedNineSession, status:SPEED_NINE_STATUS.FINISHED }, {
+        initialCells:[...speedNineFirstCells], cells:[...speedNineFirstCells], history:[], clearCommitted:false,
+      }));
+      checkRuntime('speed-nine-catalog-and-session', speedNineCatalogValid && speedNineOrderValid && speedNineCandidateValid && speedNineFallenResetValid && speedNineFallenReloadValid
+        && speedRecordContract.length === 3 && speedRecordContract[0].elapsedMilliseconds === 1900
+        && speedNineRunningRestore.speed.activeSession?.status === SPEED_NINE_STATUS.PAUSED
+        && speedNineRunningRestore.speed.activeSession.elapsedMilliseconds === 1234
+        && speedNineAdvancingRestore.navigation.routeId === 'speed-nine'
+        && speedNineAdvancingRestore.speed.activeSession?.currentIndex === 1
+        && speedNineAdvancingRestore.speed.activeSession?.status === SPEED_NINE_STATUS.PAUSED
+        && speedNineAdvancingRestore.progress.lap1CompletedPuzzleIds.length === 0
+        && speedNineAdvancingRestore.speed.completedTrialIds.length === 0
+        && speedNineBrokenFinished.speed.activeSession?.status === SPEED_NINE_STATUS.PAUSED
+        && speedNineBrokenFinished.ui.dialog === null,
+      'speed-nine catalog, candidate selection, fallen-rod reset/reload, paused restore, advancing recovery, or P7c isolation is invalid');
       const satoriCatalogValid = SATORI_PUZZLES.length === 73
         && new Set(SATORI_PUZZLES.map(puzzle => puzzle.puzzleId)).size === 73
         && new Set(SATORI_PUZZLES.map(puzzle => puzzle.state)).size === 73
