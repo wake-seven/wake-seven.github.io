@@ -641,13 +641,68 @@ P7は時計を持つ連続問題、通常コースとの試験合流、独立し
 #### P7c. 試験合流、記録、金色盤面報酬
 
 - **仕様:** `SPD-001`、`SPD-002` の試験終点、`REWARD-001` の名人報酬部分、`FLOW-002`。
-- **入力:** 合格済みP7b、学園→九番→修行、修行→十八番→名人、名人→二十七番→悟りの既存ゲート、P6bの `speed-twenty-seven-required`、P6cの悟り入口。
-- **作業:** finished descriptorの起動元とvariantから、メニュー完走または試験合格の行先を一つの純粋なdestination factoryで決める。九番試験完走で修行、十八番試験完走で名人、二十七番試験完走で悟りへ接続し、対応する解放フラグと試験合格フラグを一度だけ保存する。メニュー完走はコース進捗を変更しない。
-- **金色報酬:** 同じ周回の名人45問完了後に開始した二十七番試験の初回完走だけが、試験完了、`rewards.masterGoldGranted`、金色テーマ初回自動適用、最終descriptorを一つの冪等コマンドで確定する。通常の二十七番完走、名人45問完了だけ、二度目の完走では再付与しない。演出callbackから報酬を保存しない。
-- **完了条件:** 三つの試験が正しい次コースへ一度だけ合流し、通常起動との終点が分かれる。二十七番試験の初回完走だけが金色盤面を獲得・初回適用し、P6cの悟り開始条件を満たす。
-- **検証:** 各試験の最終問確定前後、finished表示中、次へ遷移前後でリロードする。完走記録、合格フラグ、次route、金色報酬が欠落・二重付与されないことを確認する。通常起動の3variantではコース進捗が変わらないことも確認する。
-- **コミット境界:** `rebuild(p7c): connect speed trials and master reward`。
-- **停止:** 画面要素やダイアログ表示をゲート判定に使う、起動元が復元で失われる、演出終了時に進捗・報酬を付与する、または通常完走で試験合格になる場合。
+- **実装対象:** `index.rebuild.html` 一枚だけ。`index.html` は合格ダイアログ、称号、金色配色、次コースへの接続を確認するために参照し、変更しない。
+- **開始条件:** P7bが独立コミット `2604b99`（`rebuild(p7b): add remaining speed variants`）として確定し、作業ツリーが空であることを最初に確認する。P7bの未コミット修正が残っている場合はP7cを混ぜずに停止する。
+- **P7cに含めるもの:** 三つの試験finishedの合格確定、合格ダイアログ、次コース入口への接続、試験合格フラグ、二十七番試験の金色盤面報酬、保存復元、開発用入口、自己検査。
+- **P7cに含めないもの:** 自由モード、自作モード、全体メニュー、テーマ選択UI、七十三番の追加報酬、二周目の新報酬。P7bの問題順、時計、操作差、上位記録方式も変更しない。
+
+##### P7c-1. 試験終点policyと合格条件
+
+`SPEED_TRIAL_POLICIES` を試験開始だけでなく完走判定にも使い、origin、variant、元route、試験合格ID、次route、合格表示を一か所で対応付ける。別のswitchへ同じ対応表を複製しない。
+
+| origin | variant | 元route | 保存する合格ID | 次の入口 | 合格後の既存案内 |
+| --- | --- | --- | --- | --- | --- |
+| `academy-trial` | `nine` | 発展8問目・一周目 | `training9` | 修行上巻1問目 | `training-welcome` |
+| `training-trial` | `eighteen` | 修行下巻9問目・一周目 | `training18` | 名人・序1問目 | `mastery-welcome` |
+| `mastery-trial` | `twentySeven` | 名人・急15問目・一周目 | `mastery27` | 悟り1問目 | `satori-welcome` |
+
+- 合格は最短クリア数に関係なく、対応variantの規定問題数を完走した正常なfinished resultで確定する。`optimalClears` は結果表示と記録に残すが、試験の合否へ使わない。
+- 合格判定は、正規化済みfinished session、`result.completed === true`、resultとsessionのvariant／origin／total／returnRoute一致、元routeの同一周回完了をすべて確認する。DOM、表示中のダイアログ、ボタン有無は見ない。
+- `menu` と `debug` originは常に汎用完走であり、同じvariantを完走しても試験合格へ変換しない。originとvariantの組合せ違い、二周目のreturnRoute、未完了の元コースは試験合格として受け入れない。
+- 速解きvariantの通常選択解放は既存の進捗selectorから導出したままにし、重複するunlock booleanを追加しない。試験ゲートだけが `completedTrialIds` を正本にする。
+
+##### P7c-2. finished確定と冪等コマンド
+
+- finished resultから `{ kind:'menu-result' }` または `{ kind:'trial-pass', completedTrialId, nextNavigation, welcomeDialog, grantsMasterGold }` を返す純粋なdestination factoryを作る。行先の決定と状態変更を同じ関数へ混ぜない。
+- 最終問の確定では、P7bの上位記録登録、finished session、試験合格ID、必要なら金色報酬を一つの次AppStateとして組み立て、`saveAppState`を一度だけ呼ぶ。クリア演出、renderer、ダイアログ描画から合格や報酬を書き込まない。
+- 通常実行の `finishSpeedSession`、最終問advancing中のF5復元、hidden／pagehideによる安定化は、同じ試験完走finalizerを使う。経路ごとに合格処理を複製せず、どの経路でも記録と合格を一度だけ確定する。
+- finished中は有効なactive sessionとresultを保持し、試験合格画面を再描画できる安定状態にする。合格IDは集合として追加し、同じfinalizerを二度適用してもID、上位記録、報酬が増えない。
+- 試験合格画面の「次へ」でだけactive speed sessionを閉じ、destination factoryが示す次コース1問目へ移る。次route作成は既存の `makeTrainingEntryAppState`、`makeMasteryEntryAppState`、`makeSatoriEntryAppState` を通し、各コースの盤面factoryを複製しない。
+
+##### P7c-3. 合格ダイアログと次コースへのチェイン
+
+- 試験finishedは汎用の「速解き○番勝負 完走！」ではなく、旧版の節目に対応する合格ダイアログを出す。九番は「だるま学園 卒業！」、十八番は「だるま修行 修了！」、二十七番は「名人への道 制覇！」を主題とし、旧版の合格印・文言・ボタンの見た目と振る舞いを比較して取り込む。
+- 合格印は九番「修了試験／速解き九番勝負／合格」、十八番「修行卒業試験／速解き十八番勝負／突破」、二十七番「免許皆伝／速解き二十七番勝負／制覇」を基準にする。汎用完走のタイム・最短数・上位記録UIを合格印と重ねない。
+- 九番の次ボタンは修行上巻、十八番は名人・序、二十七番は悟りへ接続する。遷移後は既存の `training-welcome`、`mastery-welcome`、`satori-welcome` を表示し、開始案内を飛ばさない。
+- 合格画面はfinished sessionから導出し、同内容のHTMLを保存しない。F5では同じ合格画面へ戻り、「次へ」を押した後のF5では次コース入口と既存welcomeへ戻る。
+- P7bの「元のコースへ戻る」は試験finishedでは廃止し、汎用結果へ戻さない。通常のmenu完走は従来どおり「もう一度」「速解き一覧」を持ち、コース遷移を出さない。
+
+##### P7c-4. 二十七番試験と金色盤面報酬
+
+- 金色報酬の条件は、`mastery-trial` origin、`twentySeven` variant、一周目の名人45問完了を示す正規returnRoute、正常finished result、`masterGoldGranted === false` のすべてとする。名人45問を終えただけ、menuからの二十七番、debug完走、九番／十八番完走では付与しない。
+- 初回だけ `rewards.masterGoldGranted = true` とし、`settings.theme = 'gold'`、`settings.themeChosen = false` を同じ試験完走コマンドで確定する。layout、`layoutChosen`、悟り報酬は変更しない。
+- すでに `masterGoldGranted === true` なら、現在のthemeと `themeChosen` を上書きしない。ユーザーが後から標準色等を明示選択できるP8の契約を壊さない。
+- `body[data-w7-board-theme="gold"]` で本編盤面へ旧版相当の金色を適用する。基準色は起きたパネル `#F6DE93`、寝たパネル `#D7B75F`、枠 `#C89C35` とし、論理盤面、棒、当たり判定、回転順、ダイアログ内の通常見本へ影響させない。
+- 二十七番合格画面では金色になった盤面を確認できるようにする。報酬演出が必要でも、演出は確定済みstateを見せるだけとし、演出完了を報酬保存の条件にしない。
+
+##### P7c-5. 保存復元と破損時fallback
+
+- 正常な試験finishedは、session result、上位記録、合格ID、報酬の整合が取れた一つの安定状態として復元する。最終問advancingの保存はP7bの規則でfinishedへ正規化したうえで、同じfinalizerにより合格状態へ一度だけ進める。
+- 合格後の次コースwelcome descriptorは、route先頭、未解決の初期盤面、対応する合格ID、必要な前コース進捗が揃う場合だけ復元する。壊れた合格表示を別routeへ重ねない。
+- origin、variant、returnRoute、resultのいずれかが不正なら、合格IDや金色報酬を推測付与しない。既存の安全なspeed fallback、または元コースの要求ダイアログへ戻し、他コースの進捗・既存報酬・設定は保持する。
+- 完走記録はP7bのfinished確定で一度だけ登録し、P7cの合格確定、F5、次へ、合格画面再描画では追加しない。保存shapeを変えない限りschema／catalog versionを不要に上げない。
+
+##### P7c-6. 開発用入口、自己検査、実行順
+
+- 開発用入口は九番・十八番・二十七番それぞれの「試験最終問直前」「試験合格finished」「次コースwelcome」を正規factoryから作る。二十七番は金色未獲得の初回合格と、獲得済み・theme明示選択済みの再適用防止を確認できる入口も用意する。
+- 自己検査は三つのorigin／variant対応、元routeと一周目制約、最短数に依存しない合格、合格IDの一意追加、次route、menu/debug非合格、通常二十七番の非報酬、初回金色付与、再適用時の設定保持、advancing復元、合格finished復元、次へ後welcome復元を確認する。
+- 実装順は、(1) trial destination policy、(2) 冪等finalizer、(3) runtime／F5／hiddenの三経路統合、(4) 合格ダイアログと次コース操作、(5) 金色CSSと報酬表示、(6) 保存正規化、(7) 開発用入口と自己検査、(8) PC／360px手動比較とする。
+
+- **完了条件:** 九番試験が修行、十八番試験が名人、二十七番試験が悟りへ一度だけ合流する。通常起動とdebug起動は同じvariantを完走してもコース進捗・合格ID・報酬を変更しない。二十七番試験の初回完走だけが金色盤面を獲得して即時適用し、再完走は現在設定を上書きしない。三つの合格finishedと次コースwelcomeがF5後も同じ状態へ戻る。
+- **検証:** 各試験の最終問確定前、advancing保存、finished合格表示、次へ直後、welcome表示中でリロードする。完走記録、合格ID、次route、金色報酬が欠落・二重付与されないことを確認する。`optimalClears = 0` でも試験完走なら合格し、menu起動の九番・十八番・二十七番、debug完走、未完了／不一致returnRouteでは非合格であることを確認する。二十七番初回、報酬獲得済み、標準theme明示選択済みの三状態でtheme挙動を確認する。構文、`git diff --check`、起動時自己検査、コンソール例外なしの最小起動確認を行い、E2Eは作らない。
+- **自然検索レビュー:** 別文脈のAIが検索語を指定されずに「九番合格後に修行へ進む」「十八番の試験合格」「二十七番で金色盤面をもらう」「速解き試験のリロード」を調べ、自然な日本語または英語の `rg` からtrial policy、finished finalizer、合格ダイアログ、次route、報酬、保存復元へ辿れることを確認する。処理を近づけた結果、P7bの時計・問題順・通常結果から遠くなるなら、無理に一塊へせず、名前付きの純粋な境界一つで接続する。
+- **コミット境界:** `rebuild(p7c): connect speed trials and master reward`。P7dへ進まず、P7bの完成済みセッション基盤を同じコミットで再設計しない。
+- **停止:** 画面要素やダイアログ表示をゲート判定に使う、originとreturnRouteの照合なしに合格させる、runtimeと復元で別々の合格処理を持つ、演出終了時に進捗・報酬を付与する、通常完走やdebug完走で試験合格になる、報酬再適用でユーザー設定を上書きする、または次コース用の盤面／進行factoryを複製する場合。
 
 #### P7d. 自由モード
 
