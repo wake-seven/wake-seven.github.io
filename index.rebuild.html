@@ -46,7 +46,9 @@
     .w7-cell-hex { fill:var(--washi); stroke:#c0ac88; stroke-width:1.5; }
     .w7-cell--fallen .w7-cell-hex { fill:var(--washi2); stroke:#c0ac88; }
     .w7-cell--standing { filter:brightness(1.04); }
-    /* 悟り報酬は本編だけに適用する。ダイアログ内の見本盤は標準色のまま。 */
+    /* 報酬の盤面色は本編だけに適用する。ダイアログ内の見本盤は標準色のまま。 */
+    body[data-w7-board-theme="gold"] #w7-board .w7-cell--standing .w7-cell-hex { fill:#F6DE93; stroke:#C89C35; }
+    body[data-w7-board-theme="gold"] #w7-board .w7-cell--fallen .w7-cell-hex { fill:#D7B75F; stroke:#C89C35; }
     body[data-w7-board-theme="satori"] #w7-board .w7-cell--standing .w7-cell-hex { fill:#F1F1ED; stroke:#D6D6D0; }
     body[data-w7-board-theme="satori"] #w7-board .w7-cell--fallen .w7-cell-hex { fill:#AAA9A4; stroke:#D6D6D0; }
     .w7-cell.is-grabbed .w7-cell-hex { animation:w7-grab-flash .34s cubic-bezier(.18,.8,.24,1); }
@@ -147,6 +149,10 @@
     .w7-dialog { position:relative; width:min(100%,22rem); border:2px solid #7dd8f5; border-radius:1rem; padding:1.35rem; background:var(--ai2); color:var(--washi); box-shadow:0 1rem 3rem rgb(0 0 0 / .42); text-align:center; }
     .w7-dialog h2 { margin:0 0 .6rem; font-size:1.55rem; }
     .w7-dialog p { margin:.3rem 0 1rem; line-height:1.55; }
+    /* 速解き試験の合格印。旧版と同じ緑の判子SVGを、合格文言と一組で出す。 */
+    .w7-speed-trial-badge { display:flex; align-items:center; justify-content:center; gap:.62rem; width:fit-content; max-width:100%; margin:.35rem auto 1rem; padding:.52rem .8rem; border:1px solid rgb(201 165 78 / .82); border-radius:.65rem; background:linear-gradient(135deg,rgb(201 165 78 / .26),rgb(22 40 60 / .15)); color:#f8e6ad; font-size:.94rem; font-weight:800; line-height:1.4; text-align:left; }
+    .w7-speed-trial-badge-stamp { display:block; flex:0 0 auto; width:2.55rem; height:2.55rem; overflow:visible; filter:drop-shadow(0 2px 1px rgb(0 0 0 / .2)); }
+    .w7-speed-trial-badge-label { min-width:0; white-space:pre-line; }
     .w7-clear-stage-context { position:absolute; top:.9rem; right:1rem; margin:0!important; color:#9bcBDD; font-size:.78rem; font-weight:700; line-height:1.2!important; }
     .w7-clear-note { margin:.625rem 0 .75rem!important; padding:.7rem .8rem; border-radius:.25rem; background:rgb(98 184 210 / .1); color:#b9e8f2; font-size:1.08rem; font-weight:700; line-height:1.62!important; text-align:left; white-space:pre-line; }
     .w7-clear-art { display:block; width:min(100%,14rem); height:8rem; margin:.25rem auto .75rem; overflow:visible; }
@@ -266,15 +272,18 @@
       <button id="w7-debug-speed-nine-pause" class="w7-debug-button" type="button" title="速解き九番勝負を一時停止">九停</button>
       <button id="w7-debug-speed-nine-final" class="w7-debug-button" type="button" title="速解き九番勝負の完走直前">九終</button>
       <button id="w7-debug-speed-nine-finished" class="w7-debug-button" type="button" title="速解き九番勝負の完走結果">九完</button>
+      <button id="w7-debug-speed-nine-trial" class="w7-debug-button" type="button" title="速解き九番勝負の試験合格">試九</button>
       <button id="w7-debug-speed-menu" class="w7-debug-button" type="button" title="速解き種別選択">速選</button>
       <button id="w7-debug-speed-eighteen-wait" class="w7-debug-button" type="button" title="速解き十八番勝負の開始待ち">十八待</button>
       <button id="w7-debug-speed-eighteen-mid" class="w7-debug-button" type="button" title="速解き十八番勝負の中間問題">十八中</button>
       <button id="w7-debug-speed-eighteen-final" class="w7-debug-button" type="button" title="速解き十八番勝負の完走直前">十八終</button>
       <button id="w7-debug-speed-eighteen-finished" class="w7-debug-button" type="button" title="速解き十八番勝負の完走結果">十八完</button>
+      <button id="w7-debug-speed-eighteen-trial" class="w7-debug-button" type="button" title="速解き十八番勝負の試験合格">試十八</button>
       <button id="w7-debug-speed-twenty-seven-wait" class="w7-debug-button" type="button" title="速解き二十七番勝負の開始待ち">二七待</button>
       <button id="w7-debug-speed-twenty-seven-mid" class="w7-debug-button" type="button" title="速解き二十七番勝負の中間問題">二七中</button>
       <button id="w7-debug-speed-twenty-seven-final" class="w7-debug-button" type="button" title="速解き二十七番勝負の完走直前">二七終</button>
       <button id="w7-debug-speed-twenty-seven-finished" class="w7-debug-button" type="button" title="速解き二十七番勝負の完走結果">二七完</button>
+      <button id="w7-debug-speed-twenty-seven-trial" class="w7-debug-button" type="button" title="速解き二十七番勝負の試験合格・金色盤面">試二七</button>
       <button id="w7-debug-speed-seventy-three-wait" class="w7-debug-button" type="button" title="速解き七十三番勝負の開始待ち">七三待</button>
       <button id="w7-debug-speed-seventy-three-mid" class="w7-debug-button" type="button" title="速解き七十三番勝負の中間問題">七三中</button>
       <button id="w7-debug-speed-seventy-three-final" class="w7-debug-button" type="button" title="速解き七十三番勝負の完走直前">七三終</button>
@@ -685,15 +694,18 @@
     const debugSpeedNinePauseButton = document.querySelector('#w7-debug-speed-nine-pause');
     const debugSpeedNineFinalButton = document.querySelector('#w7-debug-speed-nine-final');
     const debugSpeedNineFinishedButton = document.querySelector('#w7-debug-speed-nine-finished');
+    const debugSpeedNineTrialButton = document.querySelector('#w7-debug-speed-nine-trial');
     const debugSpeedMenuButton = document.querySelector('#w7-debug-speed-menu');
     const debugSpeedEighteenWaitButton = document.querySelector('#w7-debug-speed-eighteen-wait');
     const debugSpeedEighteenMidButton = document.querySelector('#w7-debug-speed-eighteen-mid');
     const debugSpeedEighteenFinalButton = document.querySelector('#w7-debug-speed-eighteen-final');
     const debugSpeedEighteenFinishedButton = document.querySelector('#w7-debug-speed-eighteen-finished');
+    const debugSpeedEighteenTrialButton = document.querySelector('#w7-debug-speed-eighteen-trial');
     const debugSpeedTwentySevenWaitButton = document.querySelector('#w7-debug-speed-twenty-seven-wait');
     const debugSpeedTwentySevenMidButton = document.querySelector('#w7-debug-speed-twenty-seven-mid');
     const debugSpeedTwentySevenFinalButton = document.querySelector('#w7-debug-speed-twenty-seven-final');
     const debugSpeedTwentySevenFinishedButton = document.querySelector('#w7-debug-speed-twenty-seven-finished');
+    const debugSpeedTwentySevenTrialButton = document.querySelector('#w7-debug-speed-twenty-seven-trial');
     const debugSpeedSeventyThreeWaitButton = document.querySelector('#w7-debug-speed-seventy-three-wait');
     const debugSpeedSeventyThreeMidButton = document.querySelector('#w7-debug-speed-seventy-three-mid');
     const debugSpeedSeventyThreeFinalButton = document.querySelector('#w7-debug-speed-seventy-three-final');
@@ -1249,12 +1261,12 @@
     // 九番固有コードの読みやすさを保つ別名。共有フローでは SPEED_STATUS を使う。
     const SPEED_NINE_STATUS = SPEED_STATUS;
     const SPEED_ORIGINS = Object.freeze(['academy-trial','training-trial','mastery-trial','menu','debug']);
-    // speed trial policy: variant、元route、最終問題、要求dialog、完了条件を一つにする。
-    // 開始時と保存復元の両方がこの表を使い、P7cがoriginを安全に信頼できる状態にする。
+    // speed trial policy: variant、元route、最終問題、要求dialog、試験合格、次コースを一つにする。
+    // 開始、完走、保存復元のすべてがこの表を使い、originだけで合格扱いにしない。
     const SPEED_TRIAL_POLICIES = Object.freeze({
-      'academy-trial':Object.freeze({ variant:'nine', routeId:'academy-development', finalIndex:ACADEMY_DEVELOPMENT_PUZZLES.length - 1, dialogType:'speed-nine-required', completed:(progress, lap) => hasCompletedDevelopmentClass(progress, lap) }),
-      'training-trial':Object.freeze({ variant:'eighteen', routeId:'training-lower', finalIndex:TRAINING_LOWER_PUZZLES.length - 1, dialogType:'speed-eighteen-required', completed:(progress, lap) => hasCompletedTrainingCourse(progress, lap) }),
-      'mastery-trial':Object.freeze({ variant:'twentySeven', routeId:'mastery-kyu', finalIndex:MASTERY_VOLUMES.find(volume => volume.routeId === 'mastery-kyu').puzzles.length - 1, dialogType:'speed-twenty-seven-required', completed:(progress, lap) => hasCompletedMasteryCourse(progress, lap) }),
+      'academy-trial':Object.freeze({ variant:'nine', routeId:'academy-development', finalIndex:ACADEMY_DEVELOPMENT_PUZZLES.length - 1, dialogType:'speed-nine-required', completedTrialId:'training9', nextEntry:'training', completed:(progress, lap) => hasCompletedDevelopmentClass(progress, lap) }),
+      'training-trial':Object.freeze({ variant:'eighteen', routeId:'training-lower', finalIndex:TRAINING_LOWER_PUZZLES.length - 1, dialogType:'speed-eighteen-required', completedTrialId:'training18', nextEntry:'mastery', completed:(progress, lap) => hasCompletedTrainingCourse(progress, lap) }),
+      'mastery-trial':Object.freeze({ variant:'twentySeven', routeId:'mastery-kyu', finalIndex:MASTERY_VOLUMES.find(volume => volume.routeId === 'mastery-kyu').puzzles.length - 1, dialogType:'speed-twenty-seven-required', completedTrialId:'mastery27', nextEntry:'satori', grantsMasterGold:true, completed:(progress, lap) => hasCompletedMasteryCourse(progress, lap) }),
     });
     function speedVariantConfig(variant) { return SPEED_VARIANTS[variant] ?? null; }
     function speedConfigForSession(session) { return speedVariantConfig(session?.variant); }
@@ -1644,6 +1656,74 @@
       if (selectSatoriEntryGate(appState, lap) !== 'allowed') return null;
       return makeSatoriAppState(appState, 0, { type:'satori-welcome' }, lap);
     }
+    // 試験の完走先は、速解きの通常結果と試験合格を分ける唯一の境界。
+    // DOMや表示中dialogではなく、finished resultと開始時に保存したrouteだけを読む。
+    function speedFinishedResultMatchesSession(session) {
+      const config = speedConfigForSession(session), result = session?.result;
+      return Boolean(config && session?.status === SPEED_STATUS.FINISHED && session.currentIndex === config.total - 1
+        && result?.completed === true && result.recorded === true
+        && result.variant === session.variant && result.origin === session.origin
+        && result.total === config.total && result.elapsedMilliseconds === session.elapsedMilliseconds
+        && result.optimalClears === session.optimalClears
+        && (result.returnRoute === null && session.returnRoute === null || sameSpeedReturnRoute(result.returnRoute, session.returnRoute)));
+    }
+    function speedTrialFinishDestination(session, progress = AppState.progress) {
+      const policy = speedTrialPolicy(session?.origin);
+      if (!policy || !speedFinishedResultMatchesSession(session)
+        || policy.variant !== session.variant
+        || !speedTrialReturnRouteAllowed(session.variant, session.origin, session.returnRoute, progress)) return Object.freeze({ kind:'menu-result' });
+      return Object.freeze({ kind:'trial-pass', completedTrialId:policy.completedTrialId, nextEntry:policy.nextEntry, grantsMasterGold:policy.grantsMasterGold === true });
+    }
+    function speedTrialPassCopy(destination) {
+      if (destination?.completedTrialId === 'training9') return Object.freeze({ title:'だるま学園 卒業！', message:'だるま学園を卒業し、だるま修行の旅に出ます。', badge:'修了試験\n速解き九番勝負\n合格', action:'だるま修行へ →' });
+      if (destination?.completedTrialId === 'training18') return Object.freeze({ title:'だるま修行 修了！', message:'だるま修行を終え、名人への道が開かれました。', badge:'修行卒業試験\n速解き十八番勝負\n突破', action:'名人への道・序　七転八起へ →' });
+      if (destination?.completedTrialId === 'mastery27') return Object.freeze({ title:'名人への道 制覇！', message:'金色の盤面を獲得しました。', badge:'免許皆伝\n速解き二十七番勝負\n制覇', action:'悟りへの道へ →' });
+      return null;
+    }
+    // 旧版の speedExamBadgeSvg と同じ判子。試験合格ダイアログだけが使うため、
+    // 「速解き試験」「合格印」で検索すると、文言・遷移先・見た目をこの近辺で確認できる。
+    function renderSpeedTrialExamStamp() {
+      const stamp = svgElement('svg', { class:'w7-speed-trial-badge-stamp', viewBox:'0 0 34 34', 'aria-hidden':'true' });
+      stamp.innerHTML = '<g transform="rotate(-15 17 17)"><rect x="5" y="4" width="24" height="21" rx="2.5" fill="#7C9463" stroke="#2B2118" stroke-width="1.6" stroke-linejoin="round"/><rect x="8.5" y="7.5" width="17" height="14" rx="1" fill="#F1E6C8" stroke="#8A8478" stroke-width="1.3"/><path d="M13.4 10.5q1.6 2 0 4t0 4" fill="none" stroke="#6B5A44" stroke-width="1.1" stroke-linecap="round" opacity=".75"/><path d="M17 10q1.6 2 0 4t0 4.4" fill="none" stroke="#6B5A44" stroke-width="1.1" stroke-linecap="round" opacity=".75"/><path d="M20.6 10.5q1.6 2 0 4t0 4" fill="none" stroke="#6B5A44" stroke-width="1.1" stroke-linecap="round" opacity=".75"/></g>';
+      return stamp;
+    }
+    function renderSpeedTrialPassBadge(label) {
+      const badge = document.createElement('div');
+      badge.className = 'w7-speed-trial-badge';
+      const copy = document.createElement('span');
+      copy.className = 'w7-speed-trial-badge-label';
+      copy.textContent = label;
+      badge.replaceChildren(renderSpeedTrialExamStamp(), copy);
+      return badge;
+    }
+    // P7bの記録とP7cの試験合格は、最終問の通常完了、F5復元、hidden復帰で同じ結果になる。
+    // 再実行しても同じ上位記録、合格ID、初回報酬を増やさない。
+    function finishSpeedSession(appState, session) {
+      const pending = session.result ?? speedResultDescriptor(session);
+      const result = { ...pending, recorded:true };
+      const finished = { ...session, status:SPEED_STATUS.FINISHED, result };
+      const speed = { ...appState.speed, records:withMissingCompletedSpeedRecord(appState.speed, result), activeSession:finished };
+      let next = { ...appState, speed };
+      const destination = speedTrialFinishDestination(finished, next.progress);
+      if (destination.kind !== 'trial-pass') return next;
+      const completedTrialIds = [...new Set([...next.speed.completedTrialIds, destination.completedTrialId])];
+      next = { ...next, speed:{ ...next.speed, completedTrialIds } };
+      if (destination.grantsMasterGold && !next.rewards.masterGoldGranted) {
+        next = { ...next,
+          rewards:{ ...next.rewards, masterGoldGranted:true },
+          settings:{ ...next.settings, theme:'gold', themeChosen:false },
+        };
+      }
+      return next;
+    }
+    function makeSpeedTrialNextAppState(appState, destination) {
+      const speed = { ...appState.speed, activeSession:null };
+      const source = { ...appState, speed };
+      if (destination?.nextEntry === 'training') return makeTrainingEntryAppState(source, 1);
+      if (destination?.nextEntry === 'mastery') return makeMasteryEntryAppState(source, 1);
+      if (destination?.nextEntry === 'satori') return makeSatoriEntryAppState(source, 1);
+      return null;
+    }
     function makeAppStateForNavigation(navigation, options = {}) {
       const speed = options.speed ?? makeDefaultSpeedState();
       const puzzle = selectPuzzleForNavigation(navigation, speed);
@@ -1912,11 +1992,9 @@
           const prepared = prepareSpeedSessionForBoard(nextSession, nextInitial, 0, { status:SPEED_STATUS.PAUSED, resetFallen:true, resetResult:true });
           return makeSpeedAppState({ ...base, speed:{ ...speed, activeSession:prepared } }, prepared);
         }
-        const pending = session.result ?? speedResultDescriptor(session);
-        const result = { ...pending, recorded:true };
-        const records = pending.recorded ? speed.records : withCompletedSpeedRecord(speed, result);
-        const finished = { ...session, status:SPEED_STATUS.FINISHED, result };
-        return makeSpeedAppState({ ...base, speed:{ ...speed, records, activeSession:finished } }, finished, { initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted:true });
+        const finalized = finishSpeedSession(base, session);
+        const finished = finalized.speed.activeSession;
+        return makeSpeedAppState(finalized, finished, { initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted:true });
       }
       // 完走は最終問の解決済み盤面だけが名乗れる。壊れた「finished」値で
       // 結果dialogだけを出さず、同じ問題の停止状態へ安全に戻す。
@@ -1929,8 +2007,11 @@
       const stableSession = session.status === SPEED_STATUS.FINISHED
         ? session
         : recoverSpeedSessionAsPaused(session, board.cells, history.length);
-      const records = stableSession.status === SPEED_STATUS.FINISHED ? withMissingCompletedSpeedRecord(speed, stableSession.result) : speed.records;
-      return makeSpeedAppState({ ...base, speed:{ ...speed, records, activeSession:stableSession } }, stableSession, { initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted:stableSession.status === SPEED_STATUS.FINISHED && solved });
+      const finalized = stableSession.status === SPEED_STATUS.FINISHED
+        ? finishSpeedSession(base, stableSession)
+        : { ...base, speed:{ ...speed, activeSession:stableSession } };
+      const finalSession = finalized.speed.activeSession;
+      return makeSpeedAppState(finalized, finalSession, { initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted:finalSession.status === SPEED_STATUS.FINISHED && solved });
     }
     // localStorageからの復元は、ルート、問題、履歴、ダイアログを順番に検査する。
     // チュートリアルの解決済み途中演出は、次段階（最終なら入学案内）という安定状態へ正規化する。
@@ -2929,11 +3010,13 @@
       if (AppState.ui.dialog?.type === 'speed-variant-menu') return null;
       if (RuntimeState.speedRestartConfirm) return { type:'speed-restart-confirm' };
       if (session.status === SPEED_STATUS.PAUSED) return { type:'speed-pause' };
-      if (session.status === SPEED_STATUS.FINISHED) return { type:'speed-result' };
+      if (session.status === SPEED_STATUS.FINISHED) {
+        return speedTrialFinishDestination(session).kind === 'trial-pass' ? { type:'speed-trial-result' } : { type:'speed-result' };
+      }
       return null;
     }
     function renderSpeedDialog(descriptor, title, message, addAction) {
-      if (!['speed-pause','speed-restart-confirm','speed-result'].includes(descriptor?.type)) return null;
+      if (!['speed-pause','speed-restart-confirm','speed-result','speed-trial-result'].includes(descriptor?.type)) return null;
       const session = selectSpeedSession();
       if (!session) return null;
       const config = speedConfigForSession(session);
@@ -2962,6 +3045,20 @@
         dialogElement.replaceChildren(title,message,details,actions);
         return resume;
       }
+      if (descriptor.type === 'speed-trial-result') {
+        const destination = speedTrialFinishDestination(session);
+        const copy = speedTrialPassCopy(destination);
+        if (destination.kind !== 'trial-pass' || !copy || !AppState.speed.completedTrialIds.includes(destination.completedTrialId)) return null;
+        dialogElement.className = 'w7-dialog w7-dialog--clear';
+        title.textContent = copy.title;
+        message.textContent = copy.message;
+        const badge = renderSpeedTrialPassBadge(copy.badge);
+        const actions = document.createElement('div');
+        actions.className = 'w7-dialog-actions';
+        const action = addAction(copy.action, intentContinueAfterSpeedTrial, actions);
+        dialogElement.replaceChildren(title,message,badge,actions);
+        return action;
+      }
       const records = speedTopRecords(AppState.speed, session.variant);
       title.textContent = `${config?.label ?? '速解き'} 完走！`;
       message.textContent = `タイム　${formatSpeedClock(session.result?.elapsedMilliseconds ?? session.elapsedMilliseconds)}`;
@@ -2969,7 +3066,6 @@
       const actions = document.createElement('div');
       actions.className = 'w7-dialog-actions';
       const restart = addAction('もう一度', intentRequestSpeedRestart, actions);
-      if (session.origin.endsWith('-trial')) addAction('元のコースへ戻る', intentReturnFromSpeedTrial, actions);
       addAction('速解き一覧', intentOpenSpeedVariantMenu, actions);
       dialogElement.replaceChildren(title,message,details,actions);
       return restart;
@@ -3261,21 +3357,17 @@
       renderRuntime({ context:`speed ${variant} ${origin} entry` });
       return true;
     }
-    // P7bでは試験合格をまだ付与しない。finishedから元の「試験が必要」状態へ戻すだけにし、
-    // P7cが同じreturnRouteとoriginから次コースへ合流させる。
-    function intentReturnFromSpeedTrial() {
+    // 合格画面の次へは、確定済みのtrial destinationだけを使って次コースの既存入口へ進む。
+    function intentContinueAfterSpeedTrial() {
       const session = selectSpeedSession();
-      const returnRoute = session?.returnRoute;
-      const requiredDialog = speedTrialPolicy(session?.origin)?.dialogType;
-      if (!session?.origin?.endsWith('-trial') || !returnRoute || !requiredDialog) return false;
-      const speed = { ...AppState.speed, activeSession:null };
-      const sourcePuzzle = selectPuzzleForNavigation(returnRoute, speed);
-      if (!sourcePuzzle) return false;
-      AppState = makeAppStateForNavigation(returnRoute, { progress:AppState.progress, speed, mastery:AppState.mastery, rewards:AppState.rewards, settings:AppState.settings, dialog:{ type:requiredDialog } });
-      AppState.board = buildShortestSolvedBoard(sourcePuzzle);
+      const destination = speedTrialFinishDestination(session);
+      if (destination.kind !== 'trial-pass' || !AppState.speed.completedTrialIds.includes(destination.completedTrialId)) return false;
+      const next = makeSpeedTrialNextAppState(AppState, destination);
+      if (!next) return false;
+      AppState = next;
       replaceRuntimeBoardFromAppState();
-      saveAppState(`speed ${session.variant} trial return`);
-      renderRuntime({ context:`speed ${session.variant} trial return` });
+      saveAppState(`speed ${session.variant} trial continue`);
+      renderRuntime({ context:`speed ${session.variant} trial continue` });
       return true;
     }
     function intentOpenSpeedEighteenFromTraining() { return intentOpenSpeedVariant('eighteen', 'training-trial'); }
@@ -3957,12 +4049,6 @@
     function speedResultDescriptor(session, { recorded = false } = {}) {
       return { variant:session.variant, origin:session.origin, elapsedMilliseconds:session.elapsedMilliseconds, optimalClears:session.optimalClears, total:speedPuzzleCount(session), completed:true, returnRoute:session.returnRoute, recorded };
     }
-    function finishSpeedSession(session) {
-      const pending = session.result ?? speedResultDescriptor(session);
-      const result = { ...pending, recorded:true };
-      const records = pending.recorded ? AppState.speed.records : withCompletedSpeedRecord(AppState.speed, result);
-      return { ...AppState, speed:{ ...AppState.speed, records, activeSession:{ ...session, status:SPEED_STATUS.FINISHED, result } } };
-    }
     // 速解きの問題確定は、共通クリア演出の前にadvancingとして保存する。
     // 演出中のF5/hiddenはこの確定値から次問またはfinishedへ一度だけ正規化する。
     function commitSpeedClear() {
@@ -3984,7 +4070,7 @@
       const session = selectSpeedSession();
       if (!session || session.status !== SPEED_STATUS.ADVANCING) { renderRuntime({ happy:true, context:'speed clear stable' }); return; }
       if (session.currentIndex >= speedPuzzleCount(session) - 1) {
-        AppState = finishSpeedSession(session);
+        AppState = finishSpeedSession(AppState, session);
         RuntimeState.speedClockStartedAt = null;
         stopSpeedClockFrame();
         saveAppState('speed finished');
@@ -4695,6 +4781,35 @@
       applyDebugStableState(next, `debug speed ${variant} finished`);
       return true;
     }
+    // 試験合格の開発入口も、本番と同じorigin・元route・finished finalizerを通す。
+    function debugSpeedTrialProgress(origin) {
+      if (origin === 'academy-trial') return debugProgressWithCompleted(TUTORIAL_STEPS, ACADEMY_INTRO_PUZZLES, ACADEMY_BASIC_PUZZLES, ACADEMY_APPLICATION_PUZZLES, ACADEMY_DEVELOPMENT_PUZZLES);
+      if (origin === 'training-trial') return debugProgressWithCompleted(TUTORIAL_STEPS, ACADEMY_INTRO_PUZZLES, ACADEMY_BASIC_PUZZLES, ACADEMY_APPLICATION_PUZZLES, ACADEMY_DEVELOPMENT_PUZZLES, TRAINING_UPPER_PUZZLES, TRAINING_MIDDLE_PUZZLES, TRAINING_LOWER_PUZZLES);
+      if (origin === 'mastery-trial') return debugProgressWithCompleted(TUTORIAL_STEPS, ACADEMY_INTRO_PUZZLES, ACADEMY_BASIC_PUZZLES, ACADEMY_APPLICATION_PUZZLES, ACADEMY_DEVELOPMENT_PUZZLES, TRAINING_UPPER_PUZZLES, TRAINING_MIDDLE_PUZZLES, TRAINING_LOWER_PUZZLES, MASTERY_PUZZLES);
+      return null;
+    }
+    function debugSpeedTrialReturnRoute(origin) {
+      if (origin === 'academy-trial') return makeAcademyDevelopmentNavigation(ACADEMY_DEVELOPMENT_PUZZLES.length - 1);
+      if (origin === 'training-trial') return makeTrainingNavigation('training-lower', TRAINING_LOWER_PUZZLES.length - 1, 1);
+      if (origin === 'mastery-trial') return makeMasteryNavigation('mastery-kyu', masteryCatalogForRoute('mastery-kyu').length - 1, 1);
+      return null;
+    }
+    function intentDebugSpeedTrialFinished(origin) {
+      const policy = speedTrialPolicy(origin), progress = debugSpeedTrialProgress(origin), returnRoute = debugSpeedTrialReturnRoute(origin);
+      if (!policy || !progress || !returnRoute) return false;
+      const session = makeSpeedSession(policy.variant, origin, 0x7c00 + policy.variant.length, returnRoute, progress);
+      if (!session) return false;
+      session.currentIndex = speedPuzzleCount(session) - 1;
+      session.elapsedMilliseconds = speedPuzzleCount(session) * 1000;
+      session.optimalClears = 0;
+      session.status = SPEED_STATUS.FINISHED;
+      session.result = speedResultDescriptor(session, { recorded:true });
+      const base = { ...AppState, progress, speed:{ ...AppState.speed, activeSession:session } };
+      const finalized = finishSpeedSession(base, session);
+      const next = makeSpeedAppState(finalized, finalized.speed.activeSession, buildShortestSolvedBoard(selectSpeedPuzzle(session)));
+      applyDebugStableState(next, `debug speed ${policy.variant} trial passed`);
+      return true;
+    }
     function prepareSpeedCurrentPuzzleForDebug(base, session) {
       const puzzle = selectSpeedPuzzle(session), initialCells = puzzleInitialCells(puzzle);
       const prepared = prepareSpeedSessionForBoard(session, initialCells, 0, { status:SPEED_STATUS.PAUSED, resetFallen:true, resetPuzzleRestarted:true, resetResult:true });
@@ -4954,15 +5069,18 @@
     debugSpeedNinePauseButton.addEventListener('click', intentDebugSpeedNinePause);
     debugSpeedNineFinalButton.addEventListener('click', intentDebugSpeedNineFinalPreclear);
     debugSpeedNineFinishedButton.addEventListener('click', () => intentDebugSpeedVariantFinished('nine'));
+    debugSpeedNineTrialButton.addEventListener('click', () => intentDebugSpeedTrialFinished('academy-trial'));
     debugSpeedMenuButton.addEventListener('click', () => { AppState = { ...AppState, progress:debugProgressWithCompleted(TUTORIAL_STEPS, ACADEMY_INTRO_PUZZLES, ACADEMY_BASIC_PUZZLES, ACADEMY_APPLICATION_PUZZLES, ACADEMY_DEVELOPMENT_PUZZLES, TRAINING_UPPER_PUZZLES, TRAINING_MIDDLE_PUZZLES, TRAINING_LOWER_PUZZLES, MASTERY_PUZZLES, SATORI_PUZZLES) }; intentOpenSpeedVariantMenu(); });
     debugSpeedEighteenWaitButton.addEventListener('click', () => intentDebugSpeedVariantAt('eighteen', 0, SPEED_STATUS.AWAITING_START));
     debugSpeedEighteenMidButton.addEventListener('click', () => intentDebugSpeedVariantAt('eighteen', 9));
     debugSpeedEighteenFinalButton.addEventListener('click', () => intentDebugSpeedVariantAt('eighteen', 17));
     debugSpeedEighteenFinishedButton.addEventListener('click', () => intentDebugSpeedVariantFinished('eighteen'));
+    debugSpeedEighteenTrialButton.addEventListener('click', () => intentDebugSpeedTrialFinished('training-trial'));
     debugSpeedTwentySevenWaitButton.addEventListener('click', () => intentDebugSpeedVariantAt('twentySeven', 0, SPEED_STATUS.AWAITING_START));
     debugSpeedTwentySevenMidButton.addEventListener('click', () => intentDebugSpeedVariantAt('twentySeven', 13));
     debugSpeedTwentySevenFinalButton.addEventListener('click', () => intentDebugSpeedVariantAt('twentySeven', 26));
     debugSpeedTwentySevenFinishedButton.addEventListener('click', () => intentDebugSpeedVariantFinished('twentySeven'));
+    debugSpeedTwentySevenTrialButton.addEventListener('click', () => intentDebugSpeedTrialFinished('mastery-trial'));
     debugSpeedSeventyThreeWaitButton.addEventListener('click', () => intentDebugSpeedVariantAt('seventyThree', 0, SPEED_STATUS.AWAITING_START));
     debugSpeedSeventyThreeMidButton.addEventListener('click', () => intentDebugSpeedVariantAt('seventyThree', 36));
     debugSpeedSeventyThreeFinalButton.addEventListener('click', () => intentDebugSpeedVariantAt('seventyThree', 72));
@@ -5004,7 +5122,7 @@
       if (RuntimeState.phase !== BoardPhase.READY || RuntimeState.activeEffect) cancelActiveEffect(`speed ${reason}`);
       if (session.status === SPEED_STATUS.ADVANCING && WakeSevenBoardDomain.isSolved(RuntimeState.cells)) {
         if (session.currentIndex >= speedPuzzleCount(session) - 1) {
-          AppState = finishSpeedSession(session);
+          AppState = finishSpeedSession(AppState, session);
           AppState.board.clearCommitted = true;
         } else {
           const nextSession = { ...session, currentIndex:session.currentIndex + 1, status:SPEED_STATUS.PAUSED, fallenAxes:[], candidateAxes:[], candidateSignature:'', currentPuzzleRestarted:false, result:null };
@@ -5666,6 +5784,63 @@
         && invalidFinishedRecoveredAsPaused && corruptFinishedContractRecovered && finishedRecordRecoveredOnce && pausedFallbackRollsBackCurrentClear && boundedOptimalClears
         && permanentUnlocksValid && trialOriginValid,
       'speed variants, fixed IDs, order policy, fixed view, unlock selector, trial origin, source route, restart/optimal recovery, or finished records are invalid');
+      // P7c: 試験合格はfinished resultからだけ確定し、通常完走・復元・再適用を混線させない。
+      const makeFinishedSpeedTrial = origin => {
+        const policy = speedTrialPolicy(origin), progress = debugSpeedTrialProgress(origin), returnRoute = debugSpeedTrialReturnRoute(origin);
+        const session = policy && progress && returnRoute ? makeSpeedSession(policy.variant, origin, 0x7c00 + policy.variant.length, returnRoute, progress) : null;
+        if (!session) return null;
+        session.currentIndex = speedPuzzleCount(session) - 1;
+        session.elapsedMilliseconds = speedPuzzleCount(session) * 1000;
+        session.optimalClears = 0;
+        session.status = SPEED_STATUS.FINISHED;
+        session.result = speedResultDescriptor(session, { recorded:true });
+        const base = { ...makeDefaultAppState(), progress, speed:{ ...makeDefaultSpeedState(), activeSession:session } };
+        const finalized = finishSpeedSession(base, session);
+        const app = makeSpeedAppState(finalized, finalized.speed.activeSession, buildShortestSolvedBoard(selectSpeedPuzzle(session)));
+        return { policy, session, finalized, app };
+      };
+      const speedTrialNine = makeFinishedSpeedTrial('academy-trial');
+      const speedTrialEighteen = makeFinishedSpeedTrial('training-trial');
+      const speedTrialTwentySeven = makeFinishedSpeedTrial('mastery-trial');
+      const nineDestination = speedTrialFinishDestination(speedTrialNine?.finalized.speed.activeSession, speedTrialNine?.finalized.progress);
+      const eighteenDestination = speedTrialFinishDestination(speedTrialEighteen?.finalized.speed.activeSession, speedTrialEighteen?.finalized.progress);
+      const twentySevenDestination = speedTrialFinishDestination(speedTrialTwentySeven?.finalized.speed.activeSession, speedTrialTwentySeven?.finalized.progress);
+      const speedTrialNineNext = makeSpeedTrialNextAppState(speedTrialNine?.finalized, nineDestination);
+      const speedTrialEighteenNext = makeSpeedTrialNextAppState(speedTrialEighteen?.finalized, eighteenDestination);
+      const speedTrialTwentySevenNext = makeSpeedTrialNextAppState(speedTrialTwentySeven?.finalized, twentySevenDestination);
+      const restoredSpeedTrialTwentySeven = normalizePersistentAppState(speedTrialTwentySeven.app);
+      const restoredSpeedTrialTwentySevenAgain = normalizePersistentAppState(restoredSpeedTrialTwentySeven);
+      const retainedThemeAfterMasterReward = finishSpeedSession({ ...speedTrialTwentySeven.finalized, settings:{ ...speedTrialTwentySeven.finalized.settings, theme:'standard', themeChosen:true } }, speedTrialTwentySeven.finalized.speed.activeSession);
+      const trialAdvancingSession = { ...speedTrialNine.session, status:SPEED_STATUS.ADVANCING, result:null };
+      const trialAdvancingBase = { ...makeDefaultAppState(), progress:speedTrialNine.finalized.progress, speed:{ ...makeDefaultSpeedState(), activeSession:trialAdvancingSession } };
+      const restoredTrialAdvancing = normalizePersistentAppState(makeSpeedAppState(trialAdvancingBase, trialAdvancingSession, buildShortestSolvedBoard(selectSpeedPuzzle(trialAdvancingSession))));
+      const finishNonTrialSpeed = (variant, origin) => {
+        const session = makeSpeedSession(variant, origin, 27000 + variant.length, origin === 'menu' ? menuReturnRoute : null, speedVariantProgress);
+        if (!session) return null;
+        session.currentIndex = speedPuzzleCount(session) - 1;
+        session.elapsedMilliseconds = speedPuzzleCount(session) * 1000;
+        session.status = SPEED_STATUS.FINISHED;
+        session.result = speedResultDescriptor(session, { recorded:true });
+        return finishSpeedSession({ ...makeDefaultAppState(), progress:speedVariantProgress, speed:{ ...makeDefaultSpeedState(), activeSession:session } }, session);
+      };
+      const finalizedMenuSpeeds = ['nine','eighteen','twentySeven'].map(variant => finishNonTrialSpeed(variant, 'menu'));
+      const finalizedDebugSpeed = finishNonTrialSpeed('twentySeven', 'debug');
+      const mismatchedTrialFinish = finishSpeedSession({ ...makeDefaultAppState(), progress:makeDefaultProgress(), speed:{ ...makeDefaultSpeedState(), activeSession:speedTrialNine.session } }, speedTrialNine.session);
+      checkRuntime('speed-trial-destination-and-master-reward', nineDestination?.completedTrialId === 'training9' && speedTrialNine.finalized.speed.completedTrialIds.includes('training9')
+        && speedTrialNine.finalized.speed.records.byVariant.nine.length === 1 && speedTrialNineNext?.navigation.routeId === 'training-upper' && speedTrialNineNext.ui.dialog?.type === 'training-welcome'
+        && eighteenDestination?.completedTrialId === 'training18' && speedTrialEighteen.finalized.speed.completedTrialIds.includes('training18')
+        && speedTrialEighteenNext?.navigation.routeId === 'mastery-jo' && speedTrialEighteenNext.ui.dialog?.type === 'mastery-welcome'
+        && twentySevenDestination?.completedTrialId === 'mastery27' && speedTrialTwentySeven.finalized.speed.completedTrialIds.includes('mastery27')
+        && speedTrialTwentySeven.finalized.rewards.masterGoldGranted && speedTrialTwentySeven.finalized.settings.theme === 'gold' && !speedTrialTwentySeven.finalized.settings.themeChosen
+        && speedTrialTwentySevenNext?.navigation.routeId === 'satori' && speedTrialTwentySevenNext.ui.dialog?.type === 'satori-welcome'
+        && restoredSpeedTrialTwentySeven.speed.completedTrialIds.includes('mastery27') && restoredSpeedTrialTwentySeven.rewards.masterGoldGranted
+        && restoredSpeedTrialTwentySevenAgain.speed.records.byVariant.twentySeven.length === 1
+        && retainedThemeAfterMasterReward.settings.theme === 'standard' && retainedThemeAfterMasterReward.settings.themeChosen
+        && restoredTrialAdvancing.speed.completedTrialIds.includes('training9') && restoredTrialAdvancing.speed.activeSession?.status === SPEED_STATUS.FINISHED
+        && finalizedMenuSpeeds.every(finalized => finalized && speedTrialFinishDestination(finalized.speed.activeSession, finalized.progress).kind === 'menu-result' && finalized.speed.completedTrialIds.length === 0 && !finalized.rewards.masterGoldGranted)
+        && finalizedDebugSpeed && speedTrialFinishDestination(finalizedDebugSpeed.speed.activeSession, finalizedDebugSpeed.progress).kind === 'menu-result' && finalizedDebugSpeed.speed.completedTrialIds.length === 0 && !finalizedDebugSpeed.rewards.masterGoldGranted
+        && speedTrialFinishDestination(mismatchedTrialFinish.speed.activeSession, mismatchedTrialFinish.progress).kind === 'menu-result' && mismatchedTrialFinish.speed.completedTrialIds.length === 0,
+      'speed trial destination, pass flags, course handoff, master gold reward, reload, or non-trial isolation is invalid');
       const satoriCatalogValid = SATORI_PUZZLES.length === 73
         && new Set(SATORI_PUZZLES.map(puzzle => puzzle.puzzleId)).size === 73
         && new Set(SATORI_PUZZLES.map(puzzle => puzzle.state)).size === 73
