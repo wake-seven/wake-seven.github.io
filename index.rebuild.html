@@ -128,6 +128,16 @@
     .w7-tutorial-arrow .w7-arrow-head,.w7-next-move-arrow .w7-arrow-head { fill:#62b8d2; stroke:#bff0ff; stroke-width:1.5; stroke-linejoin:round; animation:w7-tutorial-grip-pulse 1.2s ease-in-out infinite; }
     .w7-board-controls { display:flex; justify-content:center; flex-wrap:wrap; gap:0.75rem; }
     .w7-board-controls[hidden] { display:none; }
+    /* custom board / 自作問題: 編集時は棒を隠し、盤面の七枚を直接選んで向きを作る。 */
+    .w7-custom-editor { display:grid; gap:.55rem; justify-items:center; margin:-.15rem 0 .3rem; text-align:center; }
+    .w7-custom-editor[hidden] { display:none; }
+    .w7-custom-editor-message { margin:0; color:#b9e8f2; font-size:clamp(.95rem,3.8vw,1.1rem); font-weight:700; line-height:1.55; }
+    .w7-custom-editor-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:.55rem; }
+    .w7-custom-editor .w7-board-button { min-height:2.55rem; }
+    body.w7-custom-editor-mode .w7-board-status { display:none; }
+    body.w7-custom-editor-mode #w7-board { cursor:pointer; }
+    body.w7-custom-editor-mode #w7-board .w7-cell { cursor:pointer; outline:none; }
+    body.w7-custom-editor-mode #w7-board .w7-cell:focus .w7-cell-hex { stroke:#62d7f4; stroke-width:3; filter:drop-shadow(0 0 5px rgb(98 215 244 / .72)); }
     .w7-board-button { min-width:7rem; min-height:2.75rem; border:1px solid #c0ac88; border-radius:999px; padding:0.55rem 1rem; background:var(--washi); color:#2d2925; font:inherit; font-weight:700; box-shadow:0 2px 0 rgb(0 0 0 / .24); cursor:pointer; }
     .w7-training-tip-button { min-width:6.4rem; border-color:#62b8d2; background:#dff4f8; }
     .w7-training-shape-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.45rem; margin:.8rem 0; }
@@ -235,6 +245,13 @@
         <span>いま <strong id="w7-board-moves">0</strong> くるり</span>
         <span>あと <strong id="w7-board-remaining">1</strong> くるり<span id="w7-academy-clear-suffix" hidden> でクリア</span></span>
       </div>
+      <section id="w7-custom-editor" class="w7-custom-editor" aria-live="polite" hidden>
+        <p id="w7-custom-editor-message" class="w7-custom-editor-message"></p>
+        <div class="w7-custom-editor-actions">
+          <button id="w7-custom-reset" class="w7-board-button" type="button">まっさらにする</button>
+          <button id="w7-custom-play" class="w7-board-button w7-dialog-default" type="button">この盤面で遊ぶ</button>
+        </div>
+      </section>
       <div id="w7-speed-hud" class="w7-speed-hud" hidden>
         <span class="w7-speed-remaining">あと <strong id="w7-speed-remaining">2</strong> くるりでクリア</span>
         <span id="w7-speed-clock" class="w7-speed-clock">0:00.0</span>
@@ -251,6 +268,7 @@
         <button id="w7-speed-start" class="w7-board-button w7-dialog-default" type="button" hidden>はじめる</button>
         <button id="w7-speed-menu" class="w7-board-button" type="button" hidden>速解き</button>
         <button id="w7-next-move-hint" class="w7-board-button" type="button" hidden>次の1手を見る</button>
+        <button id="w7-custom-edit" class="w7-board-button" type="button" title="現在の盤面は引き継がず、新しい盤面を作ります" hidden>編集に戻る</button>
         <button id="w7-board-undo" class="w7-board-button" type="button" data-w7-action="undo">一手戻す</button>
         <button id="w7-board-restart" class="w7-board-button" type="button" data-w7-action="restart">やり直す</button>
       </div>
@@ -292,6 +310,12 @@
       <button id="w7-debug-free-restore" class="w7-debug-button" type="button" title="保存済みの自由問題へ再入場">自由戻</button>
       <button id="w7-debug-free-mid" class="w7-debug-button" type="button" title="自由問題を一手進めた状態">自由中</button>
       <button id="w7-debug-free-clear" class="w7-debug-button" type="button" title="自由問題をクリアした直後">自由終</button>
+      <button id="w7-debug-custom-editor" class="w7-debug-button" type="button" title="自作問題の編集画面">自作</button>
+      <button id="w7-debug-custom-one" class="w7-debug-button" type="button" title="最短1手の自作盤面">自作1</button>
+      <button id="w7-debug-custom-four" class="w7-debug-button" type="button" title="最短4手の自作盤面">自作4</button>
+      <button id="w7-debug-custom-impossible" class="w7-debug-button" type="button" title="解けない自作盤面">自作不可</button>
+      <button id="w7-debug-custom-mid" class="w7-debug-button" type="button" title="自作問題を一手進めた状態">自作中</button>
+      <button id="w7-debug-custom-clear" class="w7-debug-button" type="button" title="自作問題をクリアした直後">自作終</button>
       <button id="w7-debug-training-upper" class="w7-debug-button" type="button" title="修行上巻を最初から">修上</button>
       <button id="w7-debug-training-middle" class="w7-debug-button" type="button" title="修行中巻を最初から">修中</button>
       <button id="w7-debug-training-lower" class="w7-debug-button" type="button" title="修行下巻を最初から">修下</button>
@@ -625,8 +649,8 @@
       Object.freeze({ puzzleId:'tutorial-005', state:1449, par:2, cue:'chain-direction', solution:Object.freeze([Object.freeze({ triangleIndex:4, direction:1 }), Object.freeze({ triangleIndex:3, direction:1 })]) }),
     ]);
     const APP_STORAGE_KEY = 'wake7-rebuild-v2';
-    // P7d: 自由セッションをAppStateへ追加したため、途中の旧P7c保存値は受け入れない。
-    const APP_SCHEMA_VERSION = 8;
+    // P7e: 自作編集／プレイdescriptorをAppStateへ追加する。P7d schemaはcustomなしとして移行する。
+    const APP_SCHEMA_VERSION = 9;
     const APP_CATALOG_VERSION = 9;
     // 画面上の見た目だけを変える座標変換。盤面ルールや履歴は変えない。
     /* The board's logic always uses CELL_POSITIONS; this display transform is presentation-only. */
@@ -668,6 +692,7 @@
     // 盤面、だるま、六本の棒をSVGへ描く
     const SVG_NS = 'http://www.w3.org/2000/svg';
     const boardElement = document.querySelector('#w7-board');
+    const boardStatusElement = document.querySelector('.w7-board-status');
     const boardMovesElement = document.querySelector('#w7-board-moves');
     const boardRemainingElement = document.querySelector('#w7-board-remaining');
     const academyClearSuffixElement = document.querySelector('#w7-academy-clear-suffix');
@@ -680,8 +705,13 @@
     const speedStartButton = document.querySelector('#w7-speed-start');
     const speedMenuButton = document.querySelector('#w7-speed-menu');
     const nextMoveHintButton = document.querySelector('#w7-next-move-hint');
+    const customEditButton = document.querySelector('#w7-custom-edit');
     const boardUndoButton = document.querySelector('#w7-board-undo');
     const boardRestartButton = document.querySelector('#w7-board-restart');
+    const customEditorElement = document.querySelector('#w7-custom-editor');
+    const customEditorMessageElement = document.querySelector('#w7-custom-editor-message');
+    const customResetButton = document.querySelector('#w7-custom-reset');
+    const customPlayButton = document.querySelector('#w7-custom-play');
     const debugResetButton = document.querySelector('#w7-debug-reset');
     const debugClearCurrentButton = document.querySelector('#w7-debug-clear-current');
     const debugFinishTutorialButton = document.querySelector('#w7-debug-finish-tutorial');
@@ -718,6 +748,12 @@
     const debugFreeRestoreButton = document.querySelector('#w7-debug-free-restore');
     const debugFreeMidButton = document.querySelector('#w7-debug-free-mid');
     const debugFreeClearButton = document.querySelector('#w7-debug-free-clear');
+    const debugCustomEditorButton = document.querySelector('#w7-debug-custom-editor');
+    const debugCustomOneButton = document.querySelector('#w7-debug-custom-one');
+    const debugCustomFourButton = document.querySelector('#w7-debug-custom-four');
+    const debugCustomImpossibleButton = document.querySelector('#w7-debug-custom-impossible');
+    const debugCustomMidButton = document.querySelector('#w7-debug-custom-mid');
+    const debugCustomClearButton = document.querySelector('#w7-debug-custom-clear');
     const debugTrainingUpperButton = document.querySelector('#w7-debug-training-upper');
     const debugTrainingMiddleButton = document.querySelector('#w7-debug-training-middle');
     const debugTrainingLowerButton = document.querySelector('#w7-debug-training-lower');
@@ -1007,6 +1043,35 @@
       const distance = selectDistance(cells);
       boardRemainingElement.textContent = isSatoriRoute() || isMasteryRoute() && AppState.navigation.routeId === 'mastery-kyu' && !RuntimeState.masteryRemainingRevealed ? '?' : distance === null ? '—' : String(distance);
     }
+    // custom board / 盤面編集: DOMの表示はdescriptorを読むだけ。開始可否は必ずsolver距離から決める。
+    function renderCustomEditor() {
+      const session = selectCustomSession();
+      const editing = session?.phase === 'editing';
+      customEditorElement.hidden = !editing;
+      boardStatusElement.hidden = editing;
+      boardElement.tabIndex = editing ? 0 : -1;
+      // role=imgの内部は読み上げ上ひとまとまりになる。編集時だけ七枚のbuttonを公開する。
+      boardElement.setAttribute('role', editing ? 'group' : 'img');
+      boardElement.setAttribute('aria-label', editing ? '自作問題の盤面。だるまを選ぶと向きが変わります。' : '七枚のだるま盤');
+      if (!editing) return;
+      const distance = selectDistance(session.cells);
+      customEditorMessageElement.textContent = distance === null
+        ? 'この配置は解けません。ダルマをタップして向きを変えてください'
+        : distance === 0
+          ? '全員起きています。ダルマをタップして向きを変えてください'
+          : `ダルマをタップして向きを変更　現在の最短は${distance}手`;
+      const ready = RuntimeState.phase === BoardPhase.READY && AppState.ui.dialog === null;
+      customResetButton.disabled = !ready || WakeSevenBoardDomain.isSolved(session.cells);
+      customPlayButton.disabled = !ready || !Number.isInteger(distance) || distance < 1;
+      boardElement.querySelectorAll('.w7-cell').forEach(cell => {
+        const index = Number(cell.dataset.cellIndex);
+        const orientation = Number(cell.dataset.orientation);
+        cell.setAttribute('role', 'button');
+        cell.setAttribute('tabindex', '0');
+        const stateLabel = orientation === 0 ? '起きている' : orientation === 1 ? '右回りに120度寝ている' : '左回りに120度寝ている';
+        cell.setAttribute('aria-label', `だるま${index + 1}。${stateLabel}。選ぶと向きが変わります`);
+      });
+    }
     function renderBoardPhase() {
       boardElement.dataset.phase = RuntimeState.phase;
       boardElement.dataset.route = AppState.navigation.routeId;
@@ -1024,9 +1089,11 @@
       boardRestartButton.disabled = !ready || !selectCanRestartCurrentPuzzle();
       // チュートリアルと学園（入門・基本・応用・発展）は一手ごとの学習導線に絞る。Undo/Restartは出さない。
       const speedControlsVisible = speedMode && speedSession.status !== SPEED_STATUS.FINISHED && (speedSession.status === SPEED_STATUS.AWAITING_START || speedUndo || speedRestart || speedPauseInControls);
-      boardControlsElement.hidden = AppState.navigation.mode === 'tutorial' || isAcademyAssistedRoute() || speedMode && !speedControlsVisible;
+      boardControlsElement.hidden = isCustomEditor() || AppState.navigation.mode === 'tutorial' || isAcademyAssistedRoute() || speedMode && !speedControlsVisible;
       boardUndoButton.hidden = isSatoriRoute() || speedMode && !speedUndo;
       boardRestartButton.hidden = speedMode && !speedRestart;
+      customEditButton.hidden = !isCustomPlaying();
+      customEditButton.disabled = !isCustomPlaying() || !ready;
       const masteryAction = isMasteryRoute();
       trainingTipButton.hidden = !isTrainingUpperRoute();
       trainingTipButton.textContent = 'コツを見る';
@@ -1056,14 +1123,16 @@
       document.body.classList.toggle('w7-academy-mode', isAcademyAssistedRoute());
       document.body.classList.toggle('w7-application-mode', isAcademyApplicationRoute());
       document.body.classList.toggle('w7-speed-mode', speedMode);
+      document.body.classList.toggle('w7-custom-editor-mode', isCustomEditor());
       academyClearSuffixElement.hidden = !isAcademyAssistedRoute();
       document.body.dataset.w7BoardTheme = AppState.settings.theme;
     }
     function renderRuntime(options = {}) {
-      renderBoard(RuntimeState.cells, boardElement, { happy:Boolean(options.happy), panelIds:RuntimeState.panelIds });
+      renderBoard(RuntimeState.cells, boardElement, { happy:Boolean(options.happy), panelIds:RuntimeState.panelIds, includeAxes:!isCustomEditor() });
       renderBoardStatus();
       renderStageLabel();
       renderBoardPhase();
+      renderCustomEditor();
       renderDialog();
       renderTutorialCue();
       renderAcademyGuidance();
@@ -1240,13 +1309,16 @@
       const canonical = canonicalStateForCells(cells);
       return TWO_MOVE_SHAPE_CATALOG.find(shape => canonicalStateForCells(WakeSevenBoardDomain.decode(shape.baseState)) === canonical) ?? null;
     }
-    function selectPuzzleForNavigation(navigation, speed = null, free = null) {
+    function selectPuzzleForNavigation(navigation, speed = null, free = null, custom = null) {
       const speedSession = speed?.activeSession;
       const speedConfig = speedConfigForSession(speedSession);
       if (navigation.mode === 'speed' && speedConfig && navigation.routeId === speedConfig.routeId) return selectSpeedPuzzle(speedSession);
       // 自由routeの盤面はFreeSessionDescriptorからだけ作る。欠けたdescriptorを学園問題で
       // 埋めると、routeと盤面が食い違い、後続の保存・Undo・クリアの原因を隠してしまう。
       if (navigation.mode === 'free' && navigation.routeId === 'free') return makeFreePuzzle(free?.activeSession?.initialState);
+      // custom board / 自作問題は編集またはプレイdescriptorからだけ盤面を作る。
+      // descriptorがないrouteを通常問題で埋めないため、破損は保存復元境界でeditorへ戻す。
+      if (navigation.mode === 'custom' && navigation.routeId === 'custom') return makeCustomPuzzle(custom?.activeSession);
       if (navigation.mode === 'tutorial') return tutorialStepAt(navigation.tutorialStep);
       if (navigation.routeId === 'academy-basic') return academyBasicPuzzleAt(navigation.puzzleIndex);
       if (navigation.routeId === 'academy-application') return academyApplicationPuzzleAt(navigation.puzzleIndex);
@@ -1269,6 +1341,8 @@
     // free mode / 自由モード: activeとsavedは同じFreeSessionDescriptorだけを使う。
     // 共通Board Engineへ渡す盤面もこのdescriptorから作り、DOMを保存値にしない。
     function makeDefaultFreeState() { return { activeSession:null, savedSession:null, returnNavigation:null }; }
+    // custom board / 自作問題は「表示中の一セッション」だけを持つ。P7eでは離脱後の再入場スロットを作らない。
+    function makeDefaultCustomState() { return { activeSession:null }; }
     function freePuzzleIdForState(state) { return `free-${state}`; }
     function makeFreePuzzle(state) {
       if (!Number.isInteger(state) || state < 0 || state >= WakeSevenBoardDomain.stateCount) return null;
@@ -1284,9 +1358,13 @@
       return { mode:'free', routeId:'free', courseId:'free', sectionId:'free', lap:1, tutorialStep:null, puzzleIndex:0, puzzleId:puzzle.puzzleId, returnRoute:null };
     }
     function isFreeRoute(appState = AppState) { return appState?.navigation?.mode === 'free' && appState.navigation.routeId === 'free'; }
+    function isCustomRoute(appState = AppState) { return appState?.navigation?.mode === 'custom' && appState.navigation.routeId === 'custom'; }
+    function selectCustomSession(appState = AppState) { return isCustomRoute(appState) ? appState.custom?.activeSession ?? null : null; }
+    function isCustomEditor(appState = AppState) { return isCustomRoute(appState) && selectCustomSession(appState)?.phase === 'editing'; }
+    function isCustomPlaying(appState = AppState) { return isCustomRoute(appState) && selectCustomSession(appState)?.phase === 'playing'; }
     // 自由へ入った時点の戻り先だけをactive側の付帯情報として持つ。saved session単体は入口を奪わない。
     function cloneFreeReturnNavigation(navigation) {
-      if (!navigation || navigation.mode === 'free' || typeof navigation.mode !== 'string' || typeof navigation.routeId !== 'string' || typeof navigation.puzzleId !== 'string') return null;
+      if (!navigation || ['free','custom'].includes(navigation.mode) || typeof navigation.mode !== 'string' || typeof navigation.routeId !== 'string' || typeof navigation.puzzleId !== 'string') return null;
       return {
         mode:navigation.mode, routeId:navigation.routeId, courseId:navigation.courseId ?? null, sectionId:navigation.sectionId ?? null,
         lap:navigation.lap === 2 ? 2 : 1, tutorialStep:Number.isInteger(navigation.tutorialStep) ? navigation.tutorialStep : null,
@@ -1766,7 +1844,8 @@
     function makeAppStateForNavigation(navigation, options = {}) {
       const speed = options.speed ?? makeDefaultSpeedState();
       const free = options.free ?? makeDefaultFreeState();
-      const puzzle = selectPuzzleForNavigation(navigation, speed, free);
+      const custom = options.custom ?? makeDefaultCustomState();
+      const puzzle = selectPuzzleForNavigation(navigation, speed, free, custom);
       if (!puzzle) throw new Error(`missing puzzle descriptor for ${navigation?.mode ?? 'unknown'} route`);
       return {
         schemaVersion:APP_SCHEMA_VERSION,
@@ -1776,6 +1855,7 @@
         progress:options.progress ?? makeDefaultProgress(),
         speed,
         free,
+        custom,
         mastery:options.mastery ?? makeDefaultMasteryState(),
         // rewardsは獲得資格、settingsは現在の表示選択。表示・獲得UIは後続フェーズで実装する。
         rewards:options.rewards ?? makeDefaultRewards(),
@@ -1923,6 +2003,125 @@
         initialState:rawSession.initialState, par:puzzle.par, initialCells:[...rawSession.initialCells], cells:[...rawSession.cells],
         history:cloneFreeHistory(history), clearCommitted:solved,
       };
+    }
+    // custom board / 自作問題: 編集とプレイを同じbooleanで混ぜず、phase付きdescriptorで表す。
+    // editingは解決済み／可解／到達不能のどれも正当な編集状態、playingだけが通常盤面の契約を持つ。
+    function cloneCustomReturnNavigation(navigation) {
+      if (!navigation || ['custom','speed'].includes(navigation.mode) || typeof navigation.mode !== 'string' || typeof navigation.routeId !== 'string' || typeof navigation.puzzleId !== 'string') return null;
+      // freeはrouteIdも固定。modeだけがfreeの壊れた値を、自作から自由への復帰として扱わない。
+      if (navigation.mode === 'free' && navigation.routeId !== 'free') return null;
+      return {
+        mode:navigation.mode, routeId:navigation.routeId, courseId:navigation.courseId ?? null, sectionId:navigation.sectionId ?? null,
+        lap:navigation.lap === 2 ? 2 : 1, tutorialStep:Number.isInteger(navigation.tutorialStep) ? navigation.tutorialStep : null,
+        puzzleIndex:Number.isInteger(navigation.puzzleIndex) ? navigation.puzzleIndex : 0, puzzleId:navigation.puzzleId,
+        returnRoute:navigation.returnRoute ?? null,
+        // 自由から自作へ入った場合だけ、自由そのものの戻り先も保持する。
+        // 自作→自由→通常の往復でcustom routeを自由の戻り先にしてはいけない。
+        freeReturnNavigation:navigation.mode === 'free' ? cloneFreeReturnNavigation(navigation.freeReturnNavigation) : null,
+      };
+    }
+    function customReturnNavigationForEntry(appState = AppState) {
+      const returnNavigation = cloneCustomReturnNavigation(appState?.navigation);
+      if (!returnNavigation) return null;
+      return appState?.navigation?.mode === 'free'
+        ? { ...returnNavigation, freeReturnNavigation:cloneFreeReturnNavigation(appState.free?.returnNavigation) }
+        : returnNavigation;
+    }
+    // 自由から自作へ来た正当な戻り先は、routeだけでなく退避済み自由盤面とも一致する。
+    // 破損値がmode:'free'を名乗っていても、ここを通れなければ自由routeを勝手に開かない。
+    function customReturnNavigationMatchesSavedFree(navigation, free) {
+      if (navigation?.mode !== 'free' || navigation.routeId !== 'free') return false;
+      const expected = makeFreeNavigation(cloneFreeSession(free?.savedSession));
+      return expected?.puzzleId === navigation.puzzleId;
+    }
+    function cloneCustomSession(session) {
+      if (!session || session.phase === 'editing') return session?.phase === 'editing'
+        ? { phase:'editing', cells:[...session.cells], returnNavigation:cloneCustomReturnNavigation(session.returnNavigation) }
+        : null;
+      return session.phase === 'playing' ? {
+        phase:'playing', initialState:session.initialState, par:session.par, initialCells:[...session.initialCells], cells:[...session.cells],
+        history:cloneFreeHistory(session.history), clearCommitted:session.clearCommitted === true, returnNavigation:cloneCustomReturnNavigation(session.returnNavigation),
+      } : null;
+    }
+    function makeCustomEditorSession(cells = SOLVED_BOARD, returnNavigation = null) {
+      return isOrientationCells(Array.from(cells))
+        ? { phase:'editing', cells:Array.from(cells), returnNavigation:cloneCustomReturnNavigation(returnNavigation) }
+        : null;
+    }
+    // 編集の一手は通常回転と別物。cellの向きだけを一段進め、通常のhistoryを持ち込まない。
+    function makeCustomEditedSession(editor, cellIndex) {
+      if (!editor || editor.phase !== 'editing' || !Number.isInteger(cellIndex) || cellIndex < 0 || cellIndex >= CELL_COUNT) return null;
+      const cells = [...editor.cells];
+      cells[cellIndex] = (cells[cellIndex] + 1) % 3;
+      return makeCustomEditorSession(cells, editor.returnNavigation);
+    }
+    function makeCustomPuzzle(session) {
+      if (session?.phase === 'editing' && isOrientationCells(session.cells)) {
+        const state = WakeSevenBoardDomain.encode(session.cells);
+        return Object.freeze({ puzzleId:'custom-editor', classId:'custom', state, par:selectDistance(session.cells) });
+      }
+      if (session?.phase === 'playing' && Number.isInteger(session.initialState) && isOrientationCells(session.initialCells)) {
+        const par = selectDistance(session.initialCells);
+        return Number.isInteger(par) && par >= 1 && session.initialState === WakeSevenBoardDomain.encode(session.initialCells)
+          ? Object.freeze({ puzzleId:`custom-${session.initialState}`, classId:'custom', state:session.initialState, par })
+          : null;
+      }
+      return null;
+    }
+    function makeCustomNavigation(session) {
+      const puzzle = makeCustomPuzzle(session);
+      return puzzle ? { mode:'custom', routeId:'custom', courseId:'custom', sectionId:'custom', lap:1, tutorialStep:null, puzzleIndex:0, puzzleId:puzzle.puzzleId, returnRoute:null } : null;
+    }
+    function customSessionBoard(session) {
+      return session.phase === 'editing'
+        ? { initialCells:[...session.cells], cells:[...session.cells], history:[], clearCommitted:false }
+        : { initialCells:[...session.initialCells], cells:[...session.cells], history:cloneFreeHistory(session.history), clearCommitted:session.clearCommitted === true };
+    }
+    function makeCustomAppState(appState, session, options = {}) {
+      const active = cloneCustomSession(session);
+      const navigation = makeCustomNavigation(active);
+      if (!active || !navigation) return null;
+      const custom = { activeSession:active };
+      const next = makeAppStateForNavigation(navigation, {
+        progress:appState.progress, speed:appState.speed, free:options.free ?? freeStateForRouteChange(appState), custom,
+        mastery:appState.mastery, rewards:appState.rewards, settings:appState.settings, dialog:options.dialog ?? null,
+      });
+      next.board = customSessionBoard(active);
+      return next;
+    }
+    function makeCustomPlayingSessionForBoard(active, board) {
+      if (!active || active.phase !== 'playing' || !board) return null;
+      return {
+        phase:'playing', initialState:active.initialState, par:active.par, initialCells:[...board.initialCells], cells:[...board.cells],
+        history:cloneFreeHistory(board.history), clearCommitted:board.clearCommitted === true,
+        returnNavigation:cloneCustomReturnNavigation(active.returnNavigation),
+      };
+    }
+    function syncCustomSessionFromBoard() {
+      const session = makeCustomPlayingSessionForBoard(selectCustomSession(), AppState.board);
+      if (!session) return;
+      AppState = { ...AppState, custom:{ activeSession:session } };
+    }
+    function normalizeCustomSession(rawSession) {
+      if (rawSession?.phase === 'editing') return isOrientationCells(rawSession.cells)
+        ? makeCustomEditorSession(rawSession.cells, rawSession.returnNavigation)
+        : null;
+      if (rawSession?.phase !== 'playing' || !Number.isInteger(rawSession.initialState) || !isOrientationCells(rawSession.initialCells) || !isOrientationCells(rawSession.cells)) return null;
+      const par = selectDistance(rawSession.initialCells);
+      if (!Number.isInteger(par) || par < 1 || rawSession.initialState !== WakeSevenBoardDomain.encode(rawSession.initialCells) || rawSession.par !== par) return null;
+      const history = validMoveHistory(rawSession.history, rawSession.initialCells, rawSession.cells);
+      const solved = WakeSevenBoardDomain.isSolved(rawSession.cells);
+      if (history === null || rawSession.clearCommitted !== solved) return null;
+      return {
+        phase:'playing', initialState:rawSession.initialState, par, initialCells:[...rawSession.initialCells], cells:[...rawSession.cells],
+        history:cloneFreeHistory(history), clearCommitted:solved, returnNavigation:cloneCustomReturnNavigation(rawSession.returnNavigation),
+      };
+    }
+    function normalizeCustomState(rawCustom, rawNavigation) {
+      const activeSession = rawNavigation?.mode === 'custom' && rawNavigation?.routeId === 'custom'
+        ? normalizeCustomSession(rawCustom?.activeSession)
+        : null;
+      return { activeSession };
     }
     function normalizeFreeState(rawFree, rawNavigation) {
       const savedSession = normalizeFreeSession(rawFree?.savedSession);
@@ -2162,24 +2361,54 @@
         preservedSavedSession:activeMatchesBoard ? null : free.savedSession,
       });
     }
+    // 自作routeだけがactive descriptorを復元する。壊れた自作は通常進捗や自由savedを変えず、
+    // 解決済みの新しいeditorへ戻す。custom値だけで他routeへ飛ばない。
+    function customSessionMatchesBoard(session, board) {
+      if (!session || !board) return false;
+      if (session.phase === 'editing') return sameCells(board.initialCells ?? [], session.cells) && sameCells(board.cells ?? [], session.cells)
+        && Array.isArray(board.history) && board.history.length === 0 && board.clearCommitted === false;
+      const history = validMoveHistory(board.history, session.initialCells, session.cells);
+      return session.phase === 'playing' && sameCells(board.initialCells ?? [], session.initialCells) && sameCells(board.cells ?? [], session.cells)
+        && board.clearCommitted === session.clearCommitted && history?.length === session.history.length
+        && history.every((entry, index) => entry.triangleIndex === session.history[index].triangleIndex && entry.direction === session.history[index].direction
+          && sameCells(entry.before, session.history[index].before) && sameCells(entry.after, session.history[index].after));
+    }
+    function normalizePersistentCustomAppState(raw, progress, speed, free, custom, mastery, rewardAndSettings) {
+      if (raw.navigation?.mode !== 'custom' || raw.navigation?.routeId !== 'custom') return null;
+      const active = custom.activeSession;
+      const navigation = active && makeCustomNavigation(active);
+      const matches = active && navigation?.puzzleId === raw.navigation?.puzzleId && customSessionMatchesBoard(active, raw.board);
+      // 盤面descriptorが壊れても、独立して検証できる戻り先まで捨てない。
+      // これにより自由→自作の破損復旧後も、保存済み自由セッションへ戻れる。
+      const fallbackReturnNavigation = active?.returnNavigation
+        ?? cloneCustomReturnNavigation(raw.custom?.activeSession?.returnNavigation);
+      const session = matches ? active : makeCustomEditorSession(SOLVED_BOARD, fallbackReturnNavigation);
+      const source = { ...makeDefaultAppState(), progress, speed, free, custom:{ activeSession:session }, mastery, ...rewardAndSettings };
+      const dialog = matches && session.phase === 'playing' && session.clearCommitted ? { type:'custom-clear', puzzleId:makeCustomPuzzle(session).puzzleId } : null;
+      return makeCustomAppState(source, session, { free, dialog });
+    }
     // localStorageからの復元は、ルート、問題、履歴、ダイアログを順番に検査する。
     // チュートリアルの解決済み途中演出は、次段階（最終なら入学案内）という安定状態へ正規化する。
     function normalizePersistentAppState(raw) {
-      if (!raw || raw.schemaVersion !== APP_SCHEMA_VERSION || raw.catalogVersion !== APP_CATALOG_VERSION) return makeDefaultAppState();
+      // P7dのschema 8はcustomが存在しない以外は同じ契約なので、通常／速解き／自由の保存を保ったままP7eへ移行する。
+      if (!raw || ![8, APP_SCHEMA_VERSION].includes(raw.schemaVersion) || raw.catalogVersion !== APP_CATALOG_VERSION) return makeDefaultAppState();
       const progress = normalizeCourseProgress(raw.progress);
       const speed = normalizeSpeedState(raw.speed, progress);
       const free = normalizeFreeState(raw.free, raw.navigation);
+      const custom = normalizeCustomState(raw.custom, raw.navigation);
       const mastery = normalizeMasteryState(raw.mastery);
       const rewardAndSettings = normalizeRewardsAndSettings(raw.rewards, raw.settings);
       const speedState = normalizePersistentSpeedAppState(raw, progress, speed, free, mastery, rewardAndSettings);
       if (speedState) return speedState;
       const freeState = normalizePersistentFreeAppState(raw, progress, speed, free, mastery, rewardAndSettings);
       if (freeState) return freeState;
+      const customState = normalizePersistentCustomAppState(raw, progress, speed, free, custom, mastery, rewardAndSettings);
+      if (customState) return customState;
       const navigation = navigationFromPersistentState(raw.navigation, progress, speed);
       // optimal-failは盤面と履歴の手数が一致して初めて復元できる。
       // 盤面検証前のfallbackへ失敗descriptorだけを残すと、初期盤面に失敗ダイアログが重なる。
       const fallbackDialog = raw.ui?.dialog?.type === 'optimal-fail' ? null : stableDialogForNavigation(raw.ui?.dialog, navigation, false, progress, speed);
-      const fallback = makeAppStateForNavigation(navigation, { progress, speed, free, mastery, ...rewardAndSettings, dialog:fallbackDialog });
+      const fallback = makeAppStateForNavigation(navigation, { progress, speed, free, custom:makeDefaultCustomState(), mastery, ...rewardAndSettings, dialog:fallbackDialog });
       const puzzle = selectPuzzleForNavigation(navigation);
       const expectedInitial = puzzleInitialCells(puzzle);
       const board = raw.board;
@@ -2228,7 +2457,7 @@
       try { localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(AppState)); document.documentElement.dataset.w7LastSave = reason; }
       catch { document.documentElement.dataset.w7LastSave = 'unavailable'; }
     }
-    function selectActivePuzzle() { return selectPuzzleForNavigation(AppState.navigation, AppState.speed, AppState.free); }
+    function selectActivePuzzle() { return selectPuzzleForNavigation(AppState.navigation, AppState.speed, AppState.free, AppState.custom); }
     function selectCanInteractWithBoard(appState = AppState) {
       if (isSpeedRoute(appState)) return appState.speed.activeSession.status === SPEED_STATUS.RUNNING;
       return appState.ui.dialog === null && !appState.board.clearCommitted;
@@ -2244,6 +2473,7 @@
       AppState.board.cells = Array.from(RuntimeState.cells);
       AppState.board.history = RuntimeState.history.map(entry => ({ triangleIndex:entry.triangleIndex, direction:entry.direction, before:[...entry.before], after:[...entry.after] }));
       if (isFreeRoute()) syncFreeSessionFromBoard();
+      if (isCustomPlaying()) syncCustomSessionFromBoard();
     }
     function renderStageLabel() {
       // 巻末クリアは次巻を先に保存するが、祝福が終わるまでは解いた巻の見出しを残す。
@@ -2260,6 +2490,8 @@
       }
       // 残り手数は共通HUDが現在盤面から描く。ここで初期parを「あと」と表示すると一手後に矛盾する。
       if (isFreeRoute()) { stageLabelElement.textContent = '自由問題'; return; }
+      if (isCustomEditor()) { stageLabelElement.textContent = '自作問題をつくる'; return; }
+      if (isCustomPlaying()) { stageLabelElement.textContent = '自作問題'; return; }
       if (AppState.navigation.routeId === 'academy-application-entry') { stageLabelElement.textContent = 'だるま学園・応用クラス'; return; }
       if (isTrainingRoute()) { stageLabelElement.textContent = `だるま修行・${trainingVolumeName()} ${AppState.navigation.puzzleIndex + 1} / ${trainingCatalogForRoute(AppState.navigation.routeId).length}`; return; }
       if (isMasteryRoute()) { stageLabelElement.textContent = `${masteryVolumeName()}　${masteryVolumeForRoute(AppState.navigation.routeId).subtitle} ${AppState.navigation.puzzleIndex + 1} / 15`; return; }
@@ -3284,6 +3516,14 @@
         defaultAction = addAction('別の問題', intentNextFreePuzzle);
         dialogElement.replaceChildren(title, message, actions);
         dialogAssembled = true;
+      } else if (descriptor.type === 'custom-clear' && isCustomPlaying()) {
+        // 自作問題はコース達成を更新しない。クリア後は同じ途中盤面を編集素材へせず、新しいeditorへ戻す。
+        dialogElement.className = 'w7-dialog w7-dialog--clear';
+        title.textContent = '全員起きました！';
+        message.textContent = '次は、好きな盤面をつくろう。';
+        defaultAction = addAction('盤面をつくる', intentReturnToCustomEditor);
+        dialogElement.replaceChildren(title, message, actions);
+        dialogAssembled = true;
       } else {
         dialogElement.className = 'w7-dialog w7-dialog--clear';
         title.textContent = '全員起きました！';
@@ -3817,7 +4057,7 @@
       RuntimeState.masteryRemainingRevealed = false;
       RuntimeState.nextMoveHintGeneration += 1;
     }
-    function selectCanStartBoardDrag(state = RuntimeState, appState = AppState) { return selectCanInteractWithBoard(appState) && state.phase === BoardPhase.READY && state.invalidPointerId === null && !WakeSevenBoardDomain.isSolved(state.cells); }
+    function selectCanStartBoardDrag(state = RuntimeState, appState = AppState) { return !isCustomEditor(appState) && selectCanInteractWithBoard(appState) && state.phase === BoardPhase.READY && state.invalidPointerId === null && !WakeSevenBoardDomain.isSolved(state.cells); }
     function selectCanUseHistory(state = RuntimeState, appState = AppState) {
       const speed = selectSpeedSession(appState);
       return selectCanInteractWithBoard(appState) && state.phase === BoardPhase.READY && state.invalidPointerId === null && (!speed || speedConfigForSession(speed)?.allowUndo === true);
@@ -3826,7 +4066,7 @@
     function selectCanRestartCurrentPuzzle(state = RuntimeState, appState = AppState) {
       const speed = selectSpeedSession(appState);
       if (speed) return speedConfigForSession(speed)?.allowRestart === true;
-      const untouched = state.history.length === 0 && WakeSevenBoardDomain.encode(state.cells) === selectPuzzleForNavigation(appState.navigation, appState.speed, appState.free).state;
+      const untouched = state.history.length === 0 && sameCells(Array.from(state.cells), appState.board.initialCells);
       const canRefundMasteryRemainingCheck = masteryRemainingCheckShouldReset('restart', appState.navigation.routeId, appState.navigation.puzzleIndex) && masteryRemainingChecksUsed(appState) > 0;
       return !untouched || canRefundMasteryRemainingCheck;
     }
@@ -4066,10 +4306,43 @@
       else renderTutorialCue();
       return true;
     }
+    // 見えている六角形と同じ境界で判定する。円近似だと辺の外が反応し、角が反応しなくなる。
+    function pointIsInsideCustomHexCell(point, center, view = selectBoardView()) {
+      const display = viewPoint(center, view);
+      const dx = point.x - display.x, dy = point.y - display.y;
+      const radians = view.rotationDegrees * Math.PI / 180;
+      const localX = dx * Math.cos(radians) + dy * Math.sin(radians);
+      const localY = -dx * Math.sin(radians) + dy * Math.cos(radians);
+      const halfWidth = CELL_RADIUS * Math.sqrt(3) / 2;
+      return Math.abs(localX) <= halfWidth && Math.abs(localY) <= CELL_RADIUS - Math.abs(localX) / Math.sqrt(3);
+    }
+    function customEditorCellAtPoint(point, view = selectBoardView()) {
+      let nearest = null, distance = Infinity;
+      CELL_POSITIONS.forEach((cell, index) => {
+        if (!pointIsInsideCustomHexCell(point, cell, view)) return;
+        const display = viewPoint(cell, view);
+        const nextDistance = Math.hypot(point.x - display.x, point.y - display.y);
+        if (nextDistance < distance) { distance = nextDistance; nearest = index; }
+      });
+      return nearest;
+    }
+    function selectCanEditCustomPointer(event, appState = AppState, runtime = RuntimeState) {
+      return event?.isPrimary === true && isCustomEditor(appState) && runtime.phase === BoardPhase.READY && appState.ui.dialog === null
+        && !(event.pointerType === 'mouse' && event.button !== 0);
+    }
+    function handleCustomEditorPointerDown(event) {
+      if (!selectCanEditCustomPointer(event)) return false;
+      const cellIndex = customEditorCellAtPoint(eventToBoardPoint(event));
+      if (cellIndex === null) return false;
+      event.preventDefault();
+      boardElement.focus({ preventScroll:true });
+      return editCustomCell(cellIndex, 'custom pointer edit');
+    }
     function handleBoardPointerDown(event) {
       // 完成形見本を急いで触った時は、無反応にせず実盤面へ進める。
       // この一回は回転操作としては数えない。
       if (skipApplicationIntroPreview(event)) return;
+      if (isCustomEditor()) { handleCustomEditorPointerDown(event); return; }
       if (!selectCanStartBoardDrag() || event.pointerType === 'mouse' && event.button !== 0) return;
       event.preventDefault();
       const point = eventToBoardPoint(event);
@@ -4591,9 +4864,19 @@
       return { ...appState, rewards, settings, ui:{ dialog:{ type:'satori-complete' } } };
     }
     // クリアは演出ではなく確定コマンドで一度だけ記録する。チュートリアルは祝福後に自動遷移する。
+    function completeCustomBoard() {
+      if (!isCustomPlaying() || !WakeSevenBoardDomain.isSolved(RuntimeState.cells)) return { type:'not-solved' };
+      // 自作クリアは通常コース、試験、報酬、自由セッションに触れない専用の冪等境界。
+      AppState.board.clearCommitted = true;
+      AppState.ui.dialog = { type:'custom-clear', puzzleId:selectActivePuzzle().puzzleId };
+      syncCustomSessionFromBoard();
+      saveAppState('custom clear committed');
+      return { type:'custom-clear' };
+    }
     function commitClearForCurrentPuzzle() {
       syncBoardToAppState();
       const puzzle = selectActivePuzzle();
+      if (isCustomPlaying()) return completeCustomBoard();
       if (isFreeRoute()) {
         if (!WakeSevenBoardDomain.isSolved(RuntimeState.cells)) return { type:'not-solved' };
         // 自由問題は遊んだ一問だけを保存する。通常コースの完了ID・称号・記録には触れない。
@@ -4651,6 +4934,7 @@
       RuntimeState.masteryRemainingRevealed = false;
       RuntimeState.academyGuidanceSignature = '';
       if (isFreeRoute()) syncFreeSessionFromBoard();
+      if (isCustomPlaying()) syncCustomSessionFromBoard();
       saveAppState(reason);
       if (isAcademyApplicationRoute()) presentApplicationPuzzle({ context:reason });
       else renderRuntime({ context:reason });
@@ -4769,9 +5053,9 @@
     // P8のメニューも含め速解き中の入場は許可しない。時計と途中盤面を壊さない安全境界にする。
     function canEnterFreeMode(appState = AppState) { return !isSpeedRoute(appState); }
     // 保存済み自由セッションを開くための純粋factory。再入場intentと自己検査は必ず同じ入口を使う。
-    function makeFreeRestoreAppState(appState, random = Math.random) {
+    function makeFreeRestoreAppState(appState, random = Math.random, options = {}) {
       const saved = cloneFreeSession(appState?.free?.savedSession);
-      return makeFreeAppState(appState, saved ?? makeNewFreeSession(null, random));
+      return makeFreeAppState(appState, saved ?? makeNewFreeSession(null, random), { returnNavigation:options.returnNavigation });
     }
     // 自由を離れるための純粋factory。現在の盤面を同期済みで受け取り、activeをsavedへ退避して
     // 検証済みの戻りrouteを作る。P8のメニューと自己検査もこの境界を共有する。
@@ -4823,6 +5107,101 @@
       renderRuntime({ context:reason });
       return true;
     }
+    // custom board / 自作問題の入口。速解き中は時計と途中盤面を壊さないため、P8の停止確認まで入場させない。
+    function canEnterCustomMode(appState = AppState) { return !isSpeedRoute(appState); }
+    function makeCustomPlayingSession(editor) {
+      if (editor?.phase !== 'editing' || !isOrientationCells(editor.cells)) return null;
+      const initialState = WakeSevenBoardDomain.encode(editor.cells);
+      const par = selectDistance(editor.cells);
+      return Number.isInteger(par) && par >= 1 ? {
+        phase:'playing', initialState, par, initialCells:[...editor.cells], cells:[...editor.cells], history:[], clearCommitted:false,
+        returnNavigation:cloneCustomReturnNavigation(editor.returnNavigation),
+      } : null;
+    }
+    function enterCustomAppState(next, reason, { arrival = false } = {}) {
+      if (!next || !canEnterCustomMode()) return false;
+      AppState = next;
+      replaceRuntimeBoardFromAppState();
+      saveAppState(reason);
+      if (arrival) runArrivalEffect();
+      else renderRuntime({ context:reason });
+      return true;
+    }
+    // 解決済み盤面から始めるeditor生成はここだけ。プレイ途中を暗黙に編集素材へしない。
+    function enterCustomEditor(reason = 'custom editor', returnNavigation = undefined) {
+      if (!canEnterCustomMode()) return false;
+      const current = selectCustomSession();
+      const returnRoute = returnNavigation !== undefined
+        ? returnNavigation
+        : current?.returnNavigation ?? customReturnNavigationForEntry(AppState);
+      const session = makeCustomEditorSession(SOLVED_BOARD, returnRoute);
+      return enterCustomAppState(makeCustomAppState(AppState, session), reason);
+    }
+    // 盤面編集の一手は回転履歴ではない。descriptorとAppState.boardを同じ安定境界で更新する。
+    function editCustomCell(cellIndex, reason = 'custom edit cell') {
+      const editor = selectCustomSession();
+      if (!editor || editor.phase !== 'editing' || RuntimeState.phase !== BoardPhase.READY || AppState.ui.dialog !== null || !Number.isInteger(cellIndex) || cellIndex < 0 || cellIndex >= CELL_COUNT) return false;
+      const nextEditor = makeCustomEditedSession(editor, cellIndex);
+      if (!nextEditor) return false;
+      AppState = { ...AppState, custom:{ activeSession:nextEditor }, board:customSessionBoard(nextEditor), ui:{ dialog:null } };
+      replaceRuntimeBoardFromAppState();
+      saveAppState(reason);
+      renderRuntime({ context:reason });
+      return true;
+    }
+    // renderRuntimeはSVGセルを作り直す。keyboard編集だけは同じセルへ戻し、連続操作を切らない。
+    function focusCustomEditorCell(cellIndex) {
+      if (!isCustomEditor() || !Number.isInteger(cellIndex)) return;
+      boardElement.querySelector(`.w7-cell[data-cell-index="${cellIndex}"]`)?.focus({ preventScroll:true });
+    }
+    function resetCustomEditor() {
+      const editor = selectCustomSession();
+      if (!editor || editor.phase !== 'editing' || RuntimeState.phase !== BoardPhase.READY || AppState.ui.dialog !== null) return false;
+      const nextEditor = makeCustomEditorSession(SOLVED_BOARD, editor.returnNavigation);
+      AppState = { ...AppState, custom:{ activeSession:nextEditor }, board:customSessionBoard(nextEditor), ui:{ dialog:null } };
+      replaceRuntimeBoardFromAppState();
+      saveAppState('custom editor reset');
+      renderRuntime({ context:'custom editor reset' });
+      return true;
+    }
+    // 「この盤面で遊ぶ」はクリック時にもsolverを再確認し、編集時点の盤面を不変の初期盤面として固定する。
+    function startCustomPlay() {
+      const editor = selectCustomSession();
+      const session = makeCustomPlayingSession(editor);
+      if (!session || RuntimeState.phase !== BoardPhase.READY || AppState.ui.dialog !== null) return false;
+      return enterCustomAppState(makeCustomAppState(AppState, session), 'custom play start', { arrival:true });
+    }
+    function makeCustomLeaveAppState(appState) {
+      if (!isCustomRoute(appState)) return null;
+      const returnNavigation = appState.custom?.activeSession?.returnNavigation;
+      const source = { ...appState, custom:makeDefaultCustomState() };
+      if (customReturnNavigationMatchesSavedFree(returnNavigation, source.free)) {
+        return makeFreeRestoreAppState(source, Math.random, { returnNavigation:returnNavigation.freeReturnNavigation });
+      }
+      // freeを装った壊れた戻り先は、自由のさらに前の通常routeへ安全に戻す。
+      const fallbackReturnNavigation = returnNavigation?.mode === 'free' ? returnNavigation.freeReturnNavigation : returnNavigation;
+      const navigation = navigationFromPersistentState(fallbackReturnNavigation, appState.progress, appState.speed);
+      return makeAppStateForNavigation(navigation, {
+        progress:appState.progress, speed:appState.speed, free:freeStateForRouteChange(source), custom:makeDefaultCustomState(), mastery:appState.mastery,
+        rewards:appState.rewards, settings:appState.settings,
+      });
+    }
+    function leaveCustomMode(reason = 'custom leave') {
+      const next = makeCustomLeaveAppState(AppState);
+      if (!next) return false;
+      AppState = next;
+      replaceRuntimeBoardFromAppState();
+      saveAppState(reason);
+      renderRuntime({ context:reason });
+      return true;
+    }
+    function intentReturnToCustomEditor() {
+      const dialog = AppState.ui.dialog;
+      const canReturn = isCustomPlaying()
+        && (dialog?.type === 'custom-clear' || dialog === null && RuntimeState.phase === BoardPhase.READY);
+      if (!canReturn) return false;
+      return enterCustomEditor(dialog?.type === 'custom-clear' ? 'custom clear to editor' : 'custom play to editor');
+    }
     // 開発中だけ使う状態移動。どのボタンも保存できる安定状態を作り、途中演出は持ち込まない。
     function debugProgressWithCompleted(...catalogs) {
       const completed = catalogs.flat();
@@ -4853,6 +5232,19 @@
       }
       return Object.freeze({ initialCells, cells:Array.from(cells), history, clearCommitted:true });
     }
+    // debug solverの結果は検査用freeze値。クリアcommandへ渡す時だけ、AppState用の可変盤面へ写す。
+    function makeDebugWritableBoard(solvedBoard) {
+      return {
+        initialCells:[...solvedBoard.initialCells], cells:[...solvedBoard.cells], history:cloneFreeHistory(solvedBoard.history), clearCommitted:false,
+      };
+    }
+    function applyDebugSolvedBoard(solvedBoard) {
+      AppState = { ...AppState, board:makeDebugWritableBoard(solvedBoard), ui:{ dialog:null } };
+      RuntimeState.cells = Uint8Array.from(solvedBoard.cells);
+      RuntimeState.history = solvedBoard.history.map(entry => Object.freeze({ triangleIndex:entry.triangleIndex, direction:entry.direction, before:Object.freeze([...entry.before]), after:Object.freeze([...entry.after]) }));
+      RuntimeState.panelIds = panelIdsFromHistory(RuntimeState.history);
+      RuntimeState.phase = BoardPhase.READY;
+    }
     function applyDebugStableState(nextAppState, reason) {
       cancelActiveEffect(reason);
       stopSpeedClockFrame();
@@ -4875,28 +5267,29 @@
       renderRuntime({ context:reason });
     }
     function intentDebugClearCurrentPuzzle() {
+      // editorには「即クリア」の対象となるプレイ問題がない。到達不能配置でもsolverを呼ばない。
+      if (isCustomEditor()) return;
       const puzzle = selectActivePuzzle();
       const progress = debugProgressWithCompleted(puzzle);
       const cleared = buildShortestSolvedBoard(puzzle);
       if (isFreeRoute()) {
         // 自由問題の「即」は、通常コースの進捗を足さず本番の自由クリア確定だけを通す。
-        AppState = { ...AppState, board:cleared, ui:{ dialog:null } };
-        RuntimeState.cells = Uint8Array.from(cleared.cells);
-        RuntimeState.history = cleared.history.map(entry => Object.freeze({ triangleIndex:entry.triangleIndex, direction:entry.direction, before:Object.freeze([...entry.before]), after:Object.freeze([...entry.after]) }));
-        RuntimeState.panelIds = panelIdsFromHistory(RuntimeState.history);
-        RuntimeState.phase = BoardPhase.READY;
+        applyDebugSolvedBoard(cleared);
         commitClearForCurrentPuzzle();
         applyDebugStableState(AppState, 'debug clear current free');
+        return;
+      }
+      if (isCustomRoute()) {
+        // playingだけは本番の自作clear commandを必ず通す。
+        applyDebugSolvedBoard(cleared);
+        commitClearForCurrentPuzzle();
+        applyDebugStableState(AppState, 'debug clear current custom');
         return;
       }
       if (isMasteryRoute() || isSatoriRoute()) {
         // 「即」も、本番と同じ最短判定・完了記録・巻末遷移を通す。
         // buildShortestSolvedBoardの履歴は常にpar手なので、ここで本番経路を安全に確認できる。
-        AppState = { ...AppState, board:cleared, ui:{ dialog:null } };
-        RuntimeState.cells = Uint8Array.from(cleared.cells);
-        RuntimeState.history = cleared.history.map(entry => Object.freeze({ triangleIndex:entry.triangleIndex, direction:entry.direction, before:Object.freeze([...entry.before]), after:Object.freeze([...entry.after]) }));
-        RuntimeState.panelIds = panelIdsFromHistory(RuntimeState.history);
-        RuntimeState.phase = BoardPhase.READY;
+        applyDebugSolvedBoard(cleared);
         commitClearForCurrentPuzzle();
         applyDebugStableState(AppState, `debug clear current ${isSatoriRoute() ? 'satori' : 'mastery'}`);
         return;
@@ -4967,6 +5360,64 @@
       replaceRuntimeBoardFromAppState();
       commitClearForCurrentPuzzle();
       applyDebugStableState(AppState, 'debug free clear');
+      return true;
+    }
+    // P7e開発用入口。すべてcustom descriptor、solver、共通clear commandを通して安定状態を作る。
+    function debugCustomCellsAtDistance(distance) {
+      const state = SOLVER.byDepth[distance]?.[0];
+      return Number.isInteger(state) ? Array.from(WakeSevenBoardDomain.decode(state)) : null;
+    }
+    function debugCustomImpossibleCells() {
+      for (let state = 0; state < WakeSevenBoardDomain.stateCount; state += 1) {
+        const cells = Array.from(WakeSevenBoardDomain.decode(state));
+        if (selectDistance(cells) === null) return cells;
+      }
+      return null;
+    }
+    function applyDebugCustomEditor(cells, reason) {
+      if (!canEnterCustomMode() || !cells) return false;
+      const returnNavigation = selectCustomSession()?.returnNavigation ?? customReturnNavigationForEntry(AppState);
+      const next = makeCustomAppState(AppState, makeCustomEditorSession(cells, returnNavigation));
+      if (!next) return false;
+      applyDebugStableState(next, reason);
+      return true;
+    }
+    function intentDebugCustomEditor() { return enterCustomEditor('debug custom editor'); }
+    function intentDebugCustomOne() { return applyDebugCustomEditor(debugCustomCellsAtDistance(1), 'debug custom one'); }
+    function intentDebugCustomFour() { return applyDebugCustomEditor(debugCustomCellsAtDistance(4), 'debug custom four'); }
+    function intentDebugCustomImpossible() { return applyDebugCustomEditor(debugCustomImpossibleCells(), 'debug custom impossible'); }
+    function makeDebugCustomMidSession(returnNavigation = null) {
+      const editor = makeCustomEditorSession(debugCustomCellsAtDistance(2), returnNavigation);
+      const session = makeCustomPlayingSession(editor);
+      if (!session) return null;
+      const move = TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction })))
+        .find(candidate => selectDistance(WakeSevenBoardDomain.roll(session.cells, candidate.triangleIndex, candidate.direction)) === session.par - 1);
+      if (!move) return session;
+      const before = [...session.cells], cells = Array.from(WakeSevenBoardDomain.roll(before, move.triangleIndex, move.direction));
+      return { ...session, cells, history:[{ ...move, before, after:cells }] };
+    }
+    function intentDebugCustomMid() {
+      if (!canEnterCustomMode()) return false;
+      const session = makeDebugCustomMidSession(customReturnNavigationForEntry(AppState));
+      const next = session && makeCustomAppState(AppState, session);
+      if (!next) return false;
+      applyDebugStableState(next, 'debug custom mid');
+      return true;
+    }
+    function intentDebugCustomClear() {
+      if (!canEnterCustomMode()) return false;
+      const editor = makeCustomEditorSession(debugCustomCellsAtDistance(1), customReturnNavigationForEntry(AppState));
+      const session = makeCustomPlayingSession(editor);
+      const puzzle = makeCustomPuzzle(session);
+      if (!session || !puzzle) return false;
+      const cleared = buildShortestSolvedBoard(puzzle);
+      const solvedSession = { ...session, cells:[...cleared.cells], history:cloneFreeHistory(cleared.history), clearCommitted:false };
+      const next = makeCustomAppState(AppState, solvedSession);
+      if (!next) return false;
+      AppState = next;
+      replaceRuntimeBoardFromAppState();
+      commitClearForCurrentPuzzle();
+      applyDebugStableState(AppState, 'debug custom clear');
       return true;
     }
     function intentDebugFinishTutorial() {
@@ -5327,8 +5778,22 @@
     boardElement.addEventListener('pointerup', handleBoardPointerUp);
     boardElement.addEventListener('pointercancel', handleBoardPointerCancel);
     boardElement.addEventListener('lostpointercapture', handleBoardLostPointerCapture);
+    boardElement.addEventListener('keydown', event => {
+      if (!isCustomEditor()) return;
+      const cell = event.target.closest?.('.w7-cell');
+      const shortcut = /^[1-7]$/.test(event.key) ? Number(event.key) - 1 : null;
+      const cellIndex = shortcut ?? (cell ? Number(cell.dataset.cellIndex) : null);
+      const activatesFocusedCell = (event.key === 'Enter' || event.key === ' ') && cell;
+      if (activatesFocusedCell || shortcut !== null) {
+        event.preventDefault();
+        if (editCustomCell(cellIndex, 'custom keyboard edit')) focusCustomEditorCell(cellIndex);
+      }
+    });
     boardUndoButton.addEventListener('click', intentUndo);
     boardRestartButton.addEventListener('click', intentRestart);
+    customResetButton.addEventListener('click', resetCustomEditor);
+    customPlayButton.addEventListener('click', startCustomPlay);
+    customEditButton.addEventListener('click', intentReturnToCustomEditor);
     trainingTipButton.addEventListener('click', intentOpenTrainingTip);
     speedPauseButton.addEventListener('click', intentPauseSpeed);
     speedStartButton.addEventListener('click', intentStartSpeed);
@@ -5370,6 +5835,12 @@
     debugFreeRestoreButton.addEventListener('click', intentDebugFreeRestore);
     debugFreeMidButton.addEventListener('click', intentDebugFreeMid);
     debugFreeClearButton.addEventListener('click', intentDebugFreeClear);
+    debugCustomEditorButton.addEventListener('click', intentDebugCustomEditor);
+    debugCustomOneButton.addEventListener('click', intentDebugCustomOne);
+    debugCustomFourButton.addEventListener('click', intentDebugCustomFour);
+    debugCustomImpossibleButton.addEventListener('click', intentDebugCustomImpossible);
+    debugCustomMidButton.addEventListener('click', intentDebugCustomMid);
+    debugCustomClearButton.addEventListener('click', intentDebugCustomClear);
     debugTrainingUpperButton.addEventListener('click', intentDebugTrainingUpper);
     debugTrainingMiddleButton.addEventListener('click', intentDebugTrainingMiddle);
     debugTrainingLowerButton.addEventListener('click', intentDebugTrainingLower);
@@ -6251,6 +6722,110 @@
         && corruptFreeLeave?.navigation.mode === 'tutorial' && corruptFreeLeave.free.savedSession?.initialState === corruptFreeActive.free.activeSession?.initialState
         && corruptFreeSaved?.navigation.routeId === 'academy-intro' && corruptFreeSaved.free.savedSession === null,
       'free session restore, route boundary, corrupted descriptor fallback, or course-progress isolation is invalid');
+      // P7e 自作問題: editorとplayingを一つのphase descriptorにし、solver判定、履歴、F5、
+      // clear後のeditor復帰を検査する。通常進捗と自由savedはここで変えない。
+      const customOneCells = Array.from(WakeSevenBoardDomain.decode(SOLVER.byDepth[1][0]));
+      const customTwoCells = Array.from(WakeSevenBoardDomain.decode(SOLVER.byDepth[2][0]));
+      const customEditor = makeCustomEditorSession(SOLVED_BOARD, makeTutorialNavigation(0));
+      const customCycleOne = makeCustomEditedSession(customEditor, 0);
+      const customCycleTwo = makeCustomEditedSession(customCycleOne, 0);
+      const customCycleThree = makeCustomEditedSession(customCycleTwo, 0);
+      const customOneEditor = makeCustomEditorSession(customOneCells, makeTutorialNavigation(0));
+      const customPlaying = makeCustomPlayingSession(customOneEditor);
+      const customTwoPlaying = makeCustomPlayingSession(makeCustomEditorSession(customTwoCells, makeTutorialNavigation(0)));
+      const customMove = customTwoPlaying && TRIANGLES.flatMap((_, triangleIndex) => [1, -1].map(direction => ({ triangleIndex, direction })))
+        .find(move => selectDistance(WakeSevenBoardDomain.roll(customTwoPlaying.cells, move.triangleIndex, move.direction)) === customTwoPlaying.par - 1);
+      const customMid = customTwoPlaying && customMove ? {
+        ...customTwoPlaying,
+        cells:Array.from(WakeSevenBoardDomain.roll(customTwoPlaying.cells, customMove.triangleIndex, customMove.direction)),
+        history:[{ ...customMove, before:[...customTwoPlaying.cells], after:Array.from(WakeSevenBoardDomain.roll(customTwoPlaying.cells, customMove.triangleIndex, customMove.direction)) }],
+      } : null;
+      const customEditorState = customEditor && makeCustomAppState(makeDefaultAppState(), customEditor);
+      const customPlayingState = customPlaying && makeCustomAppState(makeDefaultAppState(), customPlaying);
+      const customMidState = customMid && makeCustomAppState(makeDefaultAppState(), customMid);
+      const customSolvedBoard = customPlaying && buildShortestSolvedBoard(makeCustomPuzzle(customPlaying));
+      const customClearSession = customPlaying && customSolvedBoard ? { ...customPlaying, cells:[...customSolvedBoard.cells], history:cloneFreeHistory(customSolvedBoard.history), clearCommitted:true } : null;
+      const customClearState = customClearSession && makeCustomAppState(makeDefaultAppState(), customClearSession, { dialog:{ type:'custom-clear', puzzleId:makeCustomPuzzle(customClearSession).puzzleId } });
+      const restoredCustomEditor = customEditorState && normalizePersistentAppState(customEditorState);
+      const restoredCustomMid = customMidState && normalizePersistentAppState(customMidState);
+      const restoredCustomClear = customClearState && normalizePersistentAppState(customClearState);
+      const migratedP7dFree = freeMidState && normalizePersistentAppState({ ...freeMidState, schemaVersion:8, custom:undefined });
+      const corruptCustomPlaying = customPlayingState && normalizePersistentAppState({ ...customPlayingState, custom:{ activeSession:{ ...customPlaying, par:99 } } });
+      const normalAfterCorruptCustom = corruptCustomPlaying && makeCustomLeaveAppState(corruptCustomPlaying);
+      const impossibleCustom = debugCustomImpossibleCells();
+      const customProgressIsolation = makeCustomAppState({
+        ...makeDefaultAppState(),
+        progress:{ tutorialCompleted:true, tutorialCompletedPuzzleIds:[TUTORIAL_STEPS[0].puzzleId], lap1CompletedPuzzleIds:[ACADEMY_INTRO_PUZZLES[0].puzzleId], lap2CompletedPuzzleIds:[] },
+        free:{ activeSession:null, savedSession:freeSession, returnNavigation:null },
+      }, customPlaying);
+      // 自由の途中盤面だけでなく、自由が通常コースのどこから開かれたかも自作往復で保つ。
+      const customFromFree = freeMidState && makeCustomAppState(freeMidState,
+        makeCustomEditorSession(SOLVED_BOARD, customReturnNavigationForEntry(freeMidState)));
+      const freeAfterCustom = customFromFree && makeCustomLeaveAppState(customFromFree);
+      const normalAfterCustomFree = freeAfterCustom && makeFreeLeaveAppState(freeAfterCustom);
+      // custom本体が壊れても、独立した戻り先を保てば通常／自由のどちらへも復帰できる。
+      const customFreePlaying = customFromFree && makeCustomAppState(customFromFree,
+        makeCustomPlayingSession(makeCustomEditorSession(customOneCells, customFromFree.custom.activeSession?.returnNavigation)));
+      const corruptCustomFromFree = customFreePlaying && normalizePersistentAppState({
+        ...customFreePlaying,
+        custom:{ activeSession:{ ...customFreePlaying.custom.activeSession, par:99 } },
+      });
+      const freeAfterCorruptCustom = corruptCustomFromFree && makeCustomLeaveAppState(corruptCustomFromFree);
+      const normalAfterCorruptCustomFree = freeAfterCorruptCustom && makeFreeLeaveAppState(freeAfterCorruptCustom);
+      const corruptFreeReturn = customFreePlaying && normalizePersistentAppState({
+        ...customFreePlaying,
+        custom:{ activeSession:{
+          ...customFreePlaying.custom.activeSession,
+          returnNavigation:{ ...customFreePlaying.custom.activeSession.returnNavigation, puzzleId:'free-corrupt' },
+        } },
+      });
+      const normalAfterCorruptFreeReturn = corruptFreeReturn && makeCustomLeaveAppState(corruptFreeReturn);
+      const customHexCenter = CELL_POSITIONS[0];
+      const customHexCorner = { x:customHexCenter.x, y:customHexCenter.y - CELL_RADIUS * .98 };
+      // 隣のpanelと共有しない外周の斜辺のすぐ外。旧円近似なら受理してしまう座標。
+      const customHexOutsideSlope = { x:customHexCenter.x + 24, y:customHexCenter.y - 42 };
+      // Undo／Restart後に共通boardから同期するdescriptorと、debug solver結果の可変変換を検査する。
+      const customUndoBoard = customMid && { initialCells:[...customMid.initialCells], cells:[...customMid.initialCells], history:[], clearCommitted:false };
+      const customRestartBoard = customMid && { initialCells:[...customMid.initialCells], cells:[...customMid.initialCells], history:[], clearCommitted:false };
+      const customAfterUndo = customUndoBoard && makeCustomPlayingSessionForBoard(customMid, customUndoBoard);
+      const customAfterRestart = customRestartBoard && makeCustomPlayingSessionForBoard(customMid, customRestartBoard);
+      const debugWritableCustomBoard = customSolvedBoard && makeDebugWritableBoard(customSolvedBoard);
+      const customDebugClearSession = debugWritableCustomBoard && makeCustomPlayingSessionForBoard(customPlaying, { ...debugWritableCustomBoard, clearCommitted:true });
+      checkRuntime('custom-board-editor-play-persistence-and-isolation', customEditor?.phase === 'editing' && selectDistance(customEditor.cells) === 0
+        && customCycleOne?.cells[0] === 1 && customCycleTwo?.cells[0] === 2 && customCycleThree?.cells[0] === 0
+        && customOneEditor && selectDistance(customOneEditor.cells) === 1 && customPlaying?.phase === 'playing' && customPlaying.par === 1
+        && customMid && normalizeCustomSession(customMid)?.history.length === 1
+        && impossibleCustom && selectDistance(impossibleCustom) === null
+        && restoredCustomEditor?.navigation.mode === 'custom' && restoredCustomEditor.custom.activeSession?.phase === 'editing' && sameCells(restoredCustomEditor.board.cells, SOLVED_BOARD)
+        && restoredCustomMid?.custom.activeSession?.phase === 'playing' && restoredCustomMid.board.history.length === 1 && sameCells(restoredCustomMid.board.cells, customMid.cells)
+        && restoredCustomClear?.ui.dialog?.type === 'custom-clear' && restoredCustomClear.board.clearCommitted
+        && migratedP7dFree?.schemaVersion === APP_SCHEMA_VERSION && migratedP7dFree.navigation.mode === 'free' && migratedP7dFree.board.history.length === 1
+        && corruptCustomPlaying?.navigation.mode === 'custom' && corruptCustomPlaying.custom.activeSession?.phase === 'editing' && sameCells(corruptCustomPlaying.board.cells, SOLVED_BOARD)
+        && corruptCustomPlaying.custom.activeSession?.returnNavigation?.routeId === 'tutorial'
+        && normalAfterCorruptCustom?.navigation.mode === 'tutorial' && normalAfterCorruptCustom.navigation.tutorialStep === 0
+        && customProgressIsolation?.progress.tutorialCompleted && customProgressIsolation.progress.lap1CompletedPuzzleIds.includes(ACADEMY_INTRO_PUZZLES[0].puzzleId)
+        && customProgressIsolation.free.savedSession?.initialState === freeSession.initialState
+        && freeAfterCustom?.navigation.mode === 'free' && freeAfterCustom.free.returnNavigation?.routeId === 'tutorial'
+        && freeAfterCustom.board.history.length === 1 && sameCells(freeAfterCustom.board.cells, freeAfterOne)
+        && normalAfterCustomFree?.navigation.mode === 'tutorial' && normalAfterCustomFree.navigation.tutorialStep === 0
+        && corruptCustomFromFree?.navigation.mode === 'custom' && corruptCustomFromFree.custom.activeSession?.phase === 'editing'
+        && corruptCustomFromFree.custom.activeSession?.returnNavigation?.mode === 'free'
+        && corruptCustomFromFree.custom.activeSession?.returnNavigation?.freeReturnNavigation?.routeId === 'tutorial'
+        && freeAfterCorruptCustom?.navigation.mode === 'free' && freeAfterCorruptCustom.free.returnNavigation?.routeId === 'tutorial'
+        && freeAfterCorruptCustom.board.history.length === 1 && sameCells(freeAfterCorruptCustom.board.cells, freeAfterOne)
+        && normalAfterCorruptCustomFree?.navigation.mode === 'tutorial' && normalAfterCorruptCustomFree.navigation.tutorialStep === 0
+        && corruptFreeReturn?.navigation.mode === 'custom' && normalAfterCorruptFreeReturn?.navigation.mode === 'tutorial'
+        && normalAfterCorruptFreeReturn.navigation.tutorialStep === 0
+        && cloneCustomReturnNavigation({ mode:'free', routeId:'academy-intro', puzzleId:'academy-intro-001' }) === null
+        && customEditorCellAtPoint(customHexCorner, STANDARD_BOARD_VIEW) === 0
+        && customEditorCellAtPoint(customHexOutsideSlope, STANDARD_BOARD_VIEW) === null
+        && customAfterUndo?.history.length === 0 && sameCells(customAfterUndo.cells, customMid.initialCells)
+        && customAfterRestart?.history.length === 0 && sameCells(customAfterRestart.cells, customMid.initialCells)
+        && debugWritableCustomBoard && !Object.isFrozen(debugWritableCustomBoard)
+        && normalizeCustomSession(customDebugClearSession)?.clearCommitted
+        && selectCanEditCustomPointer({ isPrimary:true, pointerType:'touch' }, customEditorState, { phase:BoardPhase.READY })
+        && !selectCanEditCustomPointer({ isPrimary:false, pointerType:'touch' }, customEditorState, { phase:BoardPhase.READY }),
+      'custom editor, solver gate, play conversion, reload recovery, or free/progress isolation is invalid');
       const preservedProgress = TUTORIAL_STEPS[0].puzzleId;
       const brokenBoard = normalizePersistentAppState({ ...academyClear, board:{ ...academyClear.board, cells:[9, 9, 9] }, progress:{ tutorialCompleted:true, tutorialCompletedPuzzleIds:[preservedProgress], lap1CompletedPuzzleIds:[], lap2CompletedPuzzleIds:[] }, rewards:{ masterGoldGranted:true, satoriDesignGranted:false }, settings:{ theme:'gold', layout:'satori-tilted' } });
       checkRuntime('broken-board-keeps-independent-state', sameCells(brokenBoard.board.cells, academyInitial) && brokenBoard.progress.tutorialCompletedPuzzleIds.includes(preservedProgress) && brokenBoard.settings.theme === 'gold' && brokenBoard.settings.layout === 'standard', 'broken board fallback changed independent progress or reward settings');
