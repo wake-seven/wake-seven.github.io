@@ -495,7 +495,7 @@
     });
     const SOLVER = WakeSevenBoardDomain.buildSolver();
     const INITIAL_BOARD = Object.freeze(Array.from(WakeSevenBoardDomain.decode(REFERENCE_STAGE.state)));
-    // P4bで触れる学園問題。旧版の並びをそのまま明示し、問題追加時もここをrgすれば辿れる。
+    // 学園の固定問題。問題順・盤面・クリア後の文言をここで管理する。
     const ACADEMY_INTRO_PUZZLES = Object.freeze([
       Object.freeze({ puzzleId:'academy-intro-001', classId:'intro', state:31, par:1, initialCandidateCount:6, clearNote:'水色の棒をつかんで回そう', clearArt:'introGuide' }),
       Object.freeze({ puzzleId:'academy-intro-002', classId:'intro', state:558, par:1, initialCandidateCount:6, clearNote:'ゲームを中断して閉じても、今やっている問題から再開できます。' }),
@@ -1670,7 +1670,7 @@
     }
     function hasCompletedPuzzle(progress, lap, puzzleId) { return selectCompletedPuzzleIdsForLap(progress, lap).includes(puzzleId); }
     // P5bの解放条件は画面表示ではなく、発展八問の完了記録だけで決める。
-    // P7で速解き九番勝負を足す時も、この関数だけを入口にする。
+    // 速解き九番勝負の解放判定も、この完了記録を参照する。
     function hasCompletedDevelopmentClass(progress, lap = 1) {
       const completed = new Set(selectCompletedPuzzleIdsForLap(progress, lap));
       return ACADEMY_DEVELOPMENT_PUZZLES.every(puzzle => completed.has(puzzle.puzzleId));
@@ -1759,12 +1759,12 @@
       if (lap === 2 && !hasCompletedSatoriCourse(appState.progress, 1)) return 'satori-lap1-incomplete';
       return 'allowed';
     }
-    // P7の九番完走はこの入口だけを呼ぶ。P6aからは未実装試験を開始できない。
+    // 九番試験の合格後は、ここで修行の入口条件を確認する。
     function makeTrainingEntryAppState(appState, lap = appState.navigation?.lap ?? 1) {
       if (selectTrainingEntryGate(appState, lap) !== 'allowed') return null;
       return makeTrainingAppState(appState, 'training-upper', 0, { type:'training-welcome' }, lap);
     }
-    // P7の十八番完走後はこの入口だけを呼ぶ。P6b自身は未実装試験を完了させない。
+    // 十八番試験の合格後は、ここで名人の入口条件を確認する。
     function makeMasteryEntryAppState(appState, lap = appState.navigation?.lap ?? 1) {
       if (selectMasteryEntryGate(appState, lap) !== 'allowed') return null;
       return makeMasteryAppState(appState, 'mastery-jo', 0, { type:'mastery-welcome' }, lap);
@@ -2258,11 +2258,7 @@
           ? makeTutorialStepAppState({ ...fallback, progress:progressAfterSolved }, nextStep)
           : makeAcademyIntroAppState({ ...fallback, progress:{ ...progressAfterSolved, tutorialCompleted:true } }, { type:'academy-enroll' });
       }
-      if (navigation.routeId === 'academy-intro' && navigation.puzzleIndex === ACADEMY_INTRO_PUZZLES.length - 1) return makeAcademyBasicAppState({ ...fallback, progress:progressAfterSolved });
-      if (navigation.routeId === 'academy-basic' && navigation.puzzleIndex === ACADEMY_BASIC_PUZZLES.length - 1) return makeAcademyApplicationEntryAppState({ ...fallback, progress:progressAfterSolved });
-      if (navigation.routeId === 'academy-application' && navigation.puzzleIndex === ACADEMY_APPLICATION_PUZZLES.length - 1) return makeAcademyDevelopmentAppState({ ...fallback, progress:progressAfterSolved });
-      if (navigation.routeId === 'academy-development' && navigation.puzzleIndex === 4) return makeAcademyDevelopmentAppState({ ...fallback, progress:progressAfterSolved }, 5, { type:'academy-development-four-welcome' });
-      return null;
+      return makeAcademyBoundaryDestination({ ...fallback, navigation, progress:progressAfterSolved });
     }
     // 修行・名人・悟りの巻末だけは、通常クリアではなく次の節目descriptorへ復元する。
     function restoreCourseBoundaryDestination(stableCurrent, navigation, solved, optimalOutcome) {
@@ -2425,8 +2421,6 @@
       if (rawOptimalFail && !rawOptimalFailValid) return fallback;
       const optimalOutcome = isMasteryRoute(navigation) || isSatoriRoute(navigation) ? selectOptimalClearOutcome({ solved, actualMoves:history.length, par:puzzle.par, route:navigation }) : null;
       const progressAfterSolved = solved && optimalOutcome?.type !== 'over-limit' ? withCompletedPuzzleId(progress, navigation, puzzle.puzzleId) : progress;
-      const academyBoundary = restoreAcademyBoundaryDestination(fallback, navigation, solved, progressAfterSolved);
-      if (academyBoundary) return academyBoundary;
       const stableCurrent = {
         ...fallback,
         board:{ initialCells:expectedInitial, cells:[...board.cells], history, clearCommitted:solved && optimalOutcome?.type !== 'over-limit' },
@@ -2434,6 +2428,8 @@
         speed,
         mastery,
       };
+      const academyBoundary = restoreAcademyBoundaryDestination(stableCurrent, navigation, solved, progressAfterSolved);
+      if (academyBoundary) return academyBoundary;
       const courseBoundary = restoreCourseBoundaryDestination(stableCurrent, navigation, solved, optimalOutcome);
       if (courseBoundary) return courseBoundary;
       return {
@@ -3489,15 +3485,17 @@
         return button;
       };
       let defaultAction;
-      const speedAction = renderSpeedDialog(descriptor, title, message, addAction);
-      const speedMenuAction = speedAction ? null : renderSpeedVariantMenuDialog(descriptor, title, message, addAction);
-      const trainingAction = speedAction || speedMenuAction ? null : renderTrainingDialog(descriptor, title, message, addAction);
-      const satoriAction = speedAction || trainingAction ? null : renderSatoriDialog(descriptor, title, message, addAction);
-      const masteryAction = speedAction || trainingAction || satoriAction ? null : renderMasteryDialog(descriptor, title, message, addAction);
-      const academyAction = speedAction || trainingAction || satoriAction || masteryAction ? null : renderAcademyDialog(descriptor, title, message, addAction);
-      let dialogAssembled = Boolean(speedAction || speedMenuAction || trainingAction || satoriAction || masteryAction || academyAction);
+      // 種別ごとのdialogは先に処理できたものだけを採用する。新しいdialogを足す時も、
+      // この並びに一行置くだけで後続rendererが二重にDOMを組み立てない。
+      const specializedAction = renderSpeedDialog(descriptor, title, message, addAction)
+        ?? renderSpeedVariantMenuDialog(descriptor, title, message, addAction)
+        ?? renderTrainingDialog(descriptor, title, message, addAction)
+        ?? renderSatoriDialog(descriptor, title, message, addAction)
+        ?? renderMasteryDialog(descriptor, title, message, addAction)
+        ?? renderAcademyDialog(descriptor, title, message, addAction);
+      let dialogAssembled = Boolean(specializedAction);
       if (dialogAssembled) {
-        defaultAction = speedAction ?? speedMenuAction ?? trainingAction ?? satoriAction ?? masteryAction ?? academyAction;
+        defaultAction = specializedAction;
       } else if (descriptor.type === 'welcome') {
         dialogElement.className = 'w7-dialog w7-dialog--welcome';
         title.textContent = 'だるまさんを起こして！';
@@ -4572,6 +4570,38 @@
       }
       renderRuntime({ context:committedTurns ? 'move commit' : 'short drag cancel' });
     }
+    // 棒を離した瞬間のモード固有判定を、回転の開始／完了処理から分けて読めるようにする。
+    // 各コースの正誤規則は academyMoveOutcome 等に残し、ここは「今回どこまで回して確定するか」だけを決める。
+    function selectBoardMoveDecision(drag, selectedTurns) {
+      const requestedCommittedTurns = isTutorialRoute() || isAcademyAssistedRoute() || isSpeedRoute()
+        ? logicalDirectionForTurns(selectedTurns)
+        : selectedTurns;
+      const committedTurns = selectCommittedTurnsWithinSatoriLimit(requestedCommittedTurns);
+      const tutorialMoveAllowed = isTutorialMoveAllowed(drag.triangleIndex, committedTurns);
+      const academyOutcome = isAcademyCandidateRoute()
+        ? academyMoveOutcome(drag.triangleIndex, committedTurns, drag.maxAbsDegrees)
+        : null;
+      const applicationOutcome = isAcademyApplicationRoute()
+        ? applicationMoveOutcome(drag.triangleIndex, committedTurns, drag.maxAbsDegrees)
+        : null;
+      const speedOutcome = isSpeedNineRoute()
+        ? speedNineMoveOutcome(drag.triangleIndex, committedTurns, drag.maxAbsDegrees)
+        : null;
+      const academyMoveAllowed = academyOutcome === 'correct';
+      const applicationMoveAllowed = applicationOutcome === 'correct';
+      // 九番だけは候補棒を判定する。後続variantは共通の一手確定へそのまま渡す。
+      const speedMoveAllowed = !isSpeedNineRoute() || speedOutcome === 'correct';
+      const assistedMoveAllowed = isAcademyCandidateRoute()
+        ? academyMoveAllowed
+        : isAcademyApplicationRoute()
+          ? applicationMoveAllowed
+          : null;
+      let settledTurns = committedTurns;
+      if (isAcademyAssistedRoute()) settledTurns = assistedMoveAllowed ? selectedTurns : 0;
+      else if (isSpeedRoute()) settledTurns = speedMoveAllowed ? selectedTurns : 0;
+      else if (isTutorialRoute()) settledTurns = tutorialMoveAllowed ? selectedTurns : 0;
+      return { committedTurns, tutorialMoveAllowed, academyOutcome, applicationOutcome, speedOutcome, academyMoveAllowed, applicationMoveAllowed, speedMoveAllowed, assistedMoveAllowed, settledTurns };
+    }
     function finishBoardDrag(event, cancelled = false) {
       const drag = RuntimeState.drag;
       if (!drag || drag.pointerId !== event.pointerId || !isCurrentEffect(drag.effect)) return;
@@ -4581,18 +4611,7 @@
       if (cancelled) { cancelActiveEffect('pointercancel'); renderRuntime({ context:'pointercancel' }); return; }
       const elapsed = performance.now() - drag.startedAt;
       const selectedTurns = selectDragTurns(drag.degrees, elapsed, true);
-      const requestedCommittedTurns = isTutorialRoute() || isAcademyAssistedRoute() || isSpeedRoute() ? logicalDirectionForTurns(selectedTurns) : selectedTurns;
-      const committedTurns = selectCommittedTurnsWithinSatoriLimit(requestedCommittedTurns);
-      const tutorialMoveAllowed = isTutorialMoveAllowed(drag.triangleIndex, committedTurns);
-      const academyOutcome = isAcademyCandidateRoute() ? academyMoveOutcome(drag.triangleIndex, committedTurns, drag.maxAbsDegrees) : null;
-      const applicationOutcome = isAcademyApplicationRoute() ? applicationMoveOutcome(drag.triangleIndex, committedTurns, drag.maxAbsDegrees) : null;
-      const speedOutcome = isSpeedNineRoute() ? speedNineMoveOutcome(drag.triangleIndex, committedTurns, drag.maxAbsDegrees) : null;
-      const academyMoveAllowed = academyOutcome === 'correct';
-      const applicationMoveAllowed = applicationOutcome === 'correct';
-      // 九番だけは候補棒を判定する。後続variantは共通の一手確定へそのまま渡す。
-      const speedMoveAllowed = !isSpeedNineRoute() || speedOutcome === 'correct';
-      const assistedMoveAllowed = isAcademyCandidateRoute() ? academyMoveAllowed : isAcademyApplicationRoute() ? applicationMoveAllowed : null;
-      const settledTurns = isAcademyAssistedRoute() ? assistedMoveAllowed ? selectedTurns : 0 : isSpeedRoute() ? speedMoveAllowed ? selectedTurns : 0 : tutorialMoveAllowed && isTutorialRoute() ? selectedTurns : tutorialMoveAllowed ? committedTurns : 0;
+      const { committedTurns, tutorialMoveAllowed, academyOutcome, applicationOutcome, speedOutcome, academyMoveAllowed, applicationMoveAllowed, speedMoveAllowed, assistedMoveAllowed, settledTurns } = selectBoardMoveDecision(drag, selectedTurns);
       // 誤った学園／応用操作は、360度ぶんを逆再生しない。旧版と同じく現在角度から最短の
       // 元位置／一周位置へ戻すため、長く回したときも「棒が落ちる」結果がすぐ伝わる。
       const academyRewind = isAcademyAssistedRoute() && !assistedMoveAllowed ? academyGuidedRewindPath(drag.degrees) : null;
@@ -5304,15 +5323,7 @@
         return;
       }
       if (isAcademyBoundaryClear()) {
-        const next = AppState.navigation.routeId === 'academy-intro'
-          ? makeAcademyBasicAppState({ ...AppState, progress })
-          : AppState.navigation.routeId === 'academy-basic'
-            ? makeAcademyApplicationEntryAppState({ ...AppState, progress })
-            : AppState.navigation.routeId === 'academy-application'
-              ? makeAcademyDevelopmentAppState({ ...AppState, progress })
-              : AppState.navigation.puzzleIndex === 4
-                ? makeAcademyDevelopmentAppState({ ...AppState, progress }, 5, { type:'academy-development-four-welcome' })
-                : { ...AppState, board:cleared, progress, ui:{ dialog:{ type:'speed-nine-required' } } };
+        const next = makeAcademyBoundaryDestination({ ...AppState, board:cleared, progress });
         applyDebugStableState(next, 'debug clear current academy boundary');
         return;
       }
@@ -5658,14 +5669,30 @@
       saveAppState(reason);
       runArrivalEffect();
     }
-    function isAcademyBoundaryClear() {
-      if (isAcademyGuidedRoute()) {
-        const lastIndex = AppState.navigation.routeId === 'academy-basic' ? ACADEMY_BASIC_PUZZLES.length - 1 : ACADEMY_INTRO_PUZZLES.length - 1;
-        return AppState.navigation.puzzleIndex === lastIndex;
+    // 学園の節目: 通常クリア・保存復元・デバッグ即クリアで同じ行き先を選ぶ。
+    // ここでは演出や保存を行わず、呼び出し元が持つ安定盤面と完了記録を受け取る。
+    function academyBoundaryKind(navigation = AppState.navigation) {
+      if (navigation.mode !== 'stage') return null;
+      const { routeId, puzzleIndex } = navigation;
+      if (routeId === 'academy-intro' && puzzleIndex === ACADEMY_INTRO_PUZZLES.length - 1) return 'basic';
+      if (routeId === 'academy-basic' && puzzleIndex === ACADEMY_BASIC_PUZZLES.length - 1) return 'application';
+      if (routeId === 'academy-application' && puzzleIndex === ACADEMY_APPLICATION_PUZZLES.length - 1) return 'development';
+      if (routeId === 'academy-development' && puzzleIndex === 4) return 'development-four';
+      if (routeId === 'academy-development' && puzzleIndex === ACADEMY_DEVELOPMENT_PUZZLES.length - 1) return 'speed-nine';
+      return null;
+    }
+    function isAcademyBoundaryClear() { return academyBoundaryKind() !== null; }
+    function makeAcademyBoundaryDestination(appState) {
+      switch (academyBoundaryKind(appState.navigation)) {
+        case 'basic': return makeAcademyBasicAppState(appState);
+        case 'application': return makeAcademyApplicationEntryAppState(appState);
+        case 'development': return makeAcademyDevelopmentAppState(appState);
+        case 'development-four': return makeAcademyDevelopmentAppState(appState, 5, { type:'academy-development-four-welcome' });
+        case 'speed-nine': return { ...appState, ui:{ dialog:hasCompletedDevelopmentClass(appState.progress)
+          ? { type:'speed-nine-required' }
+          : clearDialogDescriptor(selectPuzzleForNavigation(appState.navigation)) } };
+        default: return null;
       }
-      if (isAcademyApplicationRoute()) return AppState.navigation.puzzleIndex === ACADEMY_APPLICATION_PUZZLES.length - 1;
-      if (isAcademyDevelopmentRoute()) return AppState.navigation.puzzleIndex === 4 || AppState.navigation.puzzleIndex === ACADEMY_DEVELOPMENT_PUZZLES.length - 1;
-      return false;
     }
     function isTrainingBoundaryNavigation(navigation) {
       const catalog = trainingCatalogForRoute(navigation?.routeId);
@@ -5682,16 +5709,9 @@
     }
     // クラス最終問だけはクリア演出の直後に次クラスの導入へ進む。中断後もこの安定状態へ戻る。
     function advanceAcademyAfterClear() {
-      if (!isAcademyBoundaryClear()) { renderRuntime({ happy:true, context:'academy clear' }); return; }
-      if (AppState.navigation.routeId === 'academy-intro') AppState = makeAcademyBasicAppState(AppState);
-      else if (AppState.navigation.routeId === 'academy-basic') AppState = makeAcademyApplicationEntryAppState(AppState);
-      else if (AppState.navigation.routeId === 'academy-application') AppState = makeAcademyDevelopmentAppState(AppState);
-      else if (AppState.navigation.puzzleIndex === 4) AppState = makeAcademyDevelopmentAppState(AppState, 5, { type:'academy-development-four-welcome' });
-      else {
-        // P5bは速解きのゲーム本体を作らない。到達済みの発展最終問を保存可能な
-        // 解放ダイアログとして残し、P7でここへ本物の九番勝負遷移を接続する。
-        AppState.ui.dialog = hasCompletedDevelopmentClass(AppState.progress) ? { type:'speed-nine-required' } : clearDialogDescriptor(selectActivePuzzle());
-      }
+      const next = makeAcademyBoundaryDestination(AppState);
+      if (!next) { renderRuntime({ happy:true, context:'academy clear' }); return; }
+      AppState = next;
       replaceRuntimeBoardFromAppState();
       RuntimeState.academyGuidanceSignature = '';
       saveAppState('academy class transition');
@@ -5939,11 +5959,7 @@
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveStableAppStateBeforeLeave('hidden'); });
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') normalizeRuntimeAfterInterruption('visible'); });
     window.addEventListener('pageshow', event => { if (event.persisted) normalizeRuntimeAfterInterruption('pageshow'); });
-    // 盤面ルール、棒の判定、回転、Undo、クリア演出の自己検査
-    function runSelftest() {
-      const errors = [];
-      const runtimeChecks = [];
-      const checkRuntime = (name, passed, failure) => { runtimeChecks.push(name); if (!passed) errors.push(failure); };
+    function checkBoardCoreContracts(checkRuntime, errors) {
       const seen = new Set();
       for (let state = 0; state < WakeSevenBoardDomain.stateCount; state += 1) {
         const decoded = WakeSevenBoardDomain.decode(state);
@@ -6050,6 +6066,10 @@
       checkRuntime('wake-angle-window', DARUMA_UPRIGHT_WINDOW_DEGREES === 22 && !rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees - 1, 0, null, STANDARD_BOARD_VIEW).standing && rotationFrameForCell(wakeCells, 0, wakeCellIndex, wakesAtDegrees, 0, null, STANDARD_BOARD_VIEW).standing, 'daruma wake angle window changed');
       const happyPaths = Array.from(document.querySelectorAll('#w7-face-happy path')).map(path => path.getAttribute('d'));
       checkRuntime('clear-face-asset', happyPaths.join('|') === 'M-13 -14C-11 -17 -6 -17 -4 -14|M4 -14C6 -17 11 -17 13 -14|M-13 -4Q-8 -11 -3 -4|M3 -4Q8 -11 13 -4|M-5 5C-3 8 3 8 5 5', 'clear face asset mismatch');
+      return { reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length };
+    }
+
+    function checkAcademyContracts(checkRuntime) {
       const applySolution = (puzzle, solution) => solution.reduce((cells, move) => WakeSevenBoardDomain.roll(cells, move.triangleIndex, move.direction), Uint8Array.from(puzzleInitialCells(puzzle)));
       const tutorialCatalogValid = TUTORIAL_STEPS.length === 5 && TUTORIAL_STEPS.every(step => {
         const before = puzzleInitialCells(step);
@@ -6210,6 +6230,9 @@
         && restoredDevelopmentFive.navigation.puzzleIndex === 5
         && restoredDevelopmentFive.ui.dialog?.type === 'academy-development-four-welcome'
         && restoredDevelopmentFinal.ui.dialog?.type === 'speed-nine-required'
+        && restoredDevelopmentFinal.board.clearCommitted
+        && sameCells(restoredDevelopmentFinal.board.cells, developmentFinal.board.cells)
+        && restoredDevelopmentFinal.board.history.length === developmentFinal.board.history.length
         && hasCompletedDevelopmentClass(restoredDevelopmentFinal.progress)
         && brokenDevelopmentNavigation.navigation.routeId === 'academy-development'
         && brokenDevelopmentNavigation.navigation.puzzleIndex === 0, 'development restore, class boundary, or broken navigation fallback is invalid');
@@ -6231,6 +6254,10 @@
       academyClear.board = { initialCells:[...academyInitial], cells:academySolved, history:[{ ...academySolution[0], before:[...academyInitial], after:academySolved }], clearCommitted:false };
       const restoredAcademyClear = normalizePersistentAppState(academyClear);
       checkRuntime('academy-clear-reload', restoredAcademyClear.board.clearCommitted && restoredAcademyClear.ui.dialog?.type === 'clear' && restoredAcademyClear.progress.lap1CompletedPuzzleIds.includes(academyPuzzle.puzzleId), 'academy clear reload did not rebuild stable dialog');
+      return { academyClear, academyInitial };
+    }
+
+    function checkTrainingContracts(checkRuntime) {
       const trainingCatalogs = [TRAINING_UPPER_PUZZLES, TRAINING_MIDDLE_PUZZLES, TRAINING_LOWER_PUZZLES];
       const expectedTrainingStates = [[1812,882,1086,468,1004,44,550,165,783], [21,15,99,13,39,93,91,117,380], [104,358,426,582,332,344,325,146,200]];
       const trainingCatalogValid = trainingCatalogs.every((catalog, volumeIndex) => catalog.length === 9
@@ -6299,6 +6326,9 @@
       checkRuntime('training-dialog-restore', restoredTrainingTip.ui.dialog?.type === 'training-tip'
         && restoredTrainingTip.ui.dialog?.patternPosition === 5
         && stableDialogForNavigation({ type:'training-upper-practice' }, makeTrainingNavigation('training-upper'), false, trainingGateOpen.progress, trainingGateOpen.speed)?.type === 'training-upper-practice', 'training dialog descriptor did not restore');
+    }
+
+    function checkMasteryContracts(checkRuntime) {
       const masteryCatalogValid = MASTERY_VOLUMES.length === 3 && MASTERY_PUZZLES.length === 45
         && MASTERY_VOLUMES.every((volume, volumeIndex) => volume.puzzles.length === 15 && volume.puzzles.every((puzzle, index) => puzzle.puzzleId === `${volume.routeId}-${String(index + 1).padStart(3, '0')}` && puzzle.state === volume.states[index] && selectDistance(puzzleInitialCells(puzzle)) === volume.par))
         && new Set(MASTERY_PUZZLES.map(puzzle => puzzle.state)).size === 45;
@@ -6358,6 +6388,9 @@
       const masteryRewardBoundary = makeMasteryBoundaryDestination({ ...masteryKyuFinal, progress:withCompletedPuzzleId(masteryKyuFinal.progress, masteryKyuFinal.navigation, masteryKyuFinal.navigation.puzzleId) });
       checkRuntime('mastery-dialog-restore', restoredMasteryFail.ui.dialog?.type === 'optimal-fail' && !restoredMasteryFail.board.clearCommitted && restoredMasteryFail.board.history.length === 5, 'mastery optimal-fail did not restore as the same failure dialog');
       checkRuntime('mastery-reward-boundary', masteryRewardBoundary.rewards.masterGoldGranted === false && masteryRewardBoundary.settings.theme !== 'gold' && !masteryRewardBoundary.speed.completedTrialIds.includes('mastery27'), 'mastery completion granted a P7 reward or completed mastery27');
+    }
+
+    function checkSpeedContracts(checkRuntime) {
       // P7a: 九問固定カタログ、seed順、候補棒、paused復元を盤面エンジンとは別の契約として固定する。
       // ここは速解きの改修時に最初に rg "speed-nine" で到達できる検査地点でもある。
       const speedNineCatalogValid = SPEED_NINE_PUZZLES.length === 9
@@ -6597,6 +6630,9 @@
         && finalizedDebugSpeed && speedTrialFinishDestination(finalizedDebugSpeed.speed.activeSession, finalizedDebugSpeed.progress).kind === 'menu-result' && finalizedDebugSpeed.speed.completedTrialIds.length === 0 && !finalizedDebugSpeed.rewards.masterGoldGranted
         && speedTrialFinishDestination(mismatchedTrialFinish.speed.activeSession, mismatchedTrialFinish.progress).kind === 'menu-result' && mismatchedTrialFinish.speed.completedTrialIds.length === 0,
       'speed trial destination, pass flags, course handoff, master gold reward, reload, or non-trial isolation is invalid');
+    }
+
+    function checkSatoriContracts(checkRuntime) {
       const satoriCatalogValid = SATORI_PUZZLES.length === 73
         && new Set(SATORI_PUZZLES.map(puzzle => puzzle.puzzleId)).size === 73
         && new Set(SATORI_PUZZLES.map(puzzle => puzzle.state)).size === 73
@@ -6658,6 +6694,9 @@
       const tiltedHit = hitTestGrip(tiltedGrip, SATORI_BOARD_VIEW);
       checkRuntime('satori-board-view', tiltedCenter.x === CELL_POSITIONS[3].x && tiltedCenter.y === CELL_POSITIONS[3].y && tiltedDaruma.firstChild?.getAttribute('transform') === 'rotate(30)'
         && tiltedHit?.triangleIndex === 0 && WakeSevenBoardDomain.encode(WakeSevenBoardDomain.roll(INITIAL_BOARD, tiltedHit.triangleIndex, 1)) === WakeSevenBoardDomain.encode(WakeSevenBoardDomain.roll(INITIAL_BOARD, 0, 1)), 'satori display rotation changed board logic, grip mapping, or upright daruma compensation');
+    }
+
+    function checkFreeModeContracts(checkRuntimeEach) {
       // P7d 自由問題: 2〜4手の同じSessionDescriptorをactive/savedで使い、復元と通常ルート離脱を検査する。
       const freeInitialState = SOLVER.byDepth[2][0];
       const freeSession = makeFreeSession(freeInitialState);
@@ -6701,27 +6740,31 @@
       const corruptFreeSaved = academyAfterFree && normalizePersistentAppState({ ...academyAfterFree, free:{ activeSession:null, savedSession:{ ...academyAfterFree.free.savedSession, par:99 } } });
       const freeUndoSession = freeSession && { ...freeSession, cells:[...freeSession.initialCells], history:[], clearCommitted:false };
       const freeRestartSession = freeMidSession && { ...freeMidSession, cells:[...freeMidSession.initialCells], history:[], clearCommitted:false };
-      checkRuntime('free-session-persistence-and-isolation', freeDepthSessions.every((session, index) => session?.par === index + 2 && normalizeFreeSession(session)?.par === index + 2)
-        && freeDifferentState !== freeInitialState && selectNewFreeState(freeInitialState, () => .999999) !== freeInitialState
-        && selectPuzzleForNavigation({ mode:'free', routeId:'free' }, null, makeDefaultFreeState()) === null
-        && normalizeFreeSession(freeUndoSession)?.history.length === 0 && normalizeFreeSession(freeRestartSession)?.history.length === 0
-        && freeMidState?.navigation.mode === 'free' && freeMidState?.navigation.puzzleId === freePuzzleIdForState(freeInitialState) && freeMidState.free.returnNavigation?.routeId === 'tutorial'
-        && restoredFreeMid?.navigation.mode === 'free' && restoredFreeMid.free.returnNavigation?.routeId === 'tutorial' && restoredFreeMid.board.history.length === 1 && sameCells(restoredFreeMid.board.cells, freeAfterOne)
-        && freeLeaveState?.navigation.mode === 'tutorial' && freeLeaveState.free.activeSession === null && freeLeaveState.free.savedSession?.history.length === 1
-        && freeReenteredState?.navigation.mode === 'free' && freeReenteredState.free.returnNavigation?.routeId === 'tutorial' && freeReenteredState.board.history.length === 1 && sameCells(freeReenteredState.board.cells, freeAfterOne)
-        && academyAfterFree?.navigation.routeId === 'academy-intro' && academyAfterFree.free.activeSession === null && academyAfterFree.free.returnNavigation === null && academyAfterFree.free.savedSession?.initialState === freeInitialState
-        && restoredAcademyAfterFree?.navigation.routeId === 'academy-intro' && restoredAcademyAfterFree.free.activeSession === null && restoredAcademyAfterFree.free.savedSession?.history.length === 1
-        && academyNextAfterFree?.navigation.puzzleIndex === 1 && academyNextAfterFree.free.activeSession === null && academyNextAfterFree.free.savedSession?.initialState === freeInitialState
-        && !canEnterFreeMode(freeSpeedState)
-        && restoredFreeClear?.ui.dialog?.type === 'free-clear' && restoredFreeClear.board.clearCommitted
-        && sameCells(restoredFreeClear.progress.lap1CompletedPuzzleIds, freeIsolationSource.progress.lap1CompletedPuzzleIds)
-        && sameCells(restoredFreeClear.progress.tutorialCompletedPuzzleIds, freeIsolationSource.progress.tutorialCompletedPuzzleIds)
-        && sameCells(restoredFreeClear.speed.completedTrialIds, freeIsolationSource.speed.completedTrialIds)
-        && restoredFreeClear.rewards.masterGoldGranted && restoredFreeClear.settings.theme === 'gold' && restoredFreeClear.settings.themeChosen
-        && corruptFreeActive?.navigation.mode === 'free' && corruptFreeActive.free.returnNavigation?.routeId === 'tutorial' && corruptFreeActive.free.savedSession?.initialState === freeInitialState && corruptFreeActive.free.activeSession?.par >= 2 && corruptFreeActive.free.activeSession?.par <= 4
-        && corruptFreeLeave?.navigation.mode === 'tutorial' && corruptFreeLeave.free.savedSession?.initialState === corruptFreeActive.free.activeSession?.initialState
-        && corruptFreeSaved?.navigation.routeId === 'academy-intro' && corruptFreeSaved.free.savedSession === null,
-      'free session restore, route boundary, corrupted descriptor fallback, or course-progress isolation is invalid');
+      checkRuntimeEach('free', [
+        ['catalog', () => freeDepthSessions.every((session, index) => session?.par === index + 2 && normalizeFreeSession(session)?.par === index + 2), 'free session catalog or par normalization is invalid'],
+        ['new-problem', () => freeDifferentState !== freeInitialState && selectNewFreeState(freeInitialState, () => .999999) !== freeInitialState, 'free new problem repeated its current state'],
+        ['missing-descriptor', () => selectPuzzleForNavigation({ mode:'free', routeId:'free' }, null, makeDefaultFreeState()) === null, 'free route accepted a missing session descriptor'],
+        ['undo-restart', () => normalizeFreeSession(freeUndoSession)?.history.length === 0 && normalizeFreeSession(freeRestartSession)?.history.length === 0, 'free Undo or Restart did not clear its session history'],
+        ['active-restore', () => freeMidState?.navigation.mode === 'free' && freeMidState?.navigation.puzzleId === freePuzzleIdForState(freeInitialState) && freeMidState.free.returnNavigation?.routeId === 'tutorial'
+          && restoredFreeMid?.navigation.mode === 'free' && restoredFreeMid.free.returnNavigation?.routeId === 'tutorial' && restoredFreeMid.board.history.length === 1 && sameCells(restoredFreeMid.board.cells, freeAfterOne), 'free active session did not restore its board or return route'],
+        ['leave-and-reenter', () => freeLeaveState?.navigation.mode === 'tutorial' && freeLeaveState.free.activeSession === null && freeLeaveState.free.savedSession?.history.length === 1
+          && freeReenteredState?.navigation.mode === 'free' && freeReenteredState.free.returnNavigation?.routeId === 'tutorial' && freeReenteredState.board.history.length === 1 && sameCells(freeReenteredState.board.cells, freeAfterOne), 'free leave or reenter changed the saved board'],
+        ['normal-route-isolation', () => academyAfterFree?.navigation.routeId === 'academy-intro' && academyAfterFree.free.activeSession === null && academyAfterFree.free.returnNavigation === null && academyAfterFree.free.savedSession?.initialState === freeInitialState
+          && restoredAcademyAfterFree?.navigation.routeId === 'academy-intro' && restoredAcademyAfterFree.free.activeSession === null && restoredAcademyAfterFree.free.savedSession?.history.length === 1
+          && academyNextAfterFree?.navigation.puzzleIndex === 1 && academyNextAfterFree.free.activeSession === null && academyNextAfterFree.free.savedSession?.initialState === freeInitialState, 'free session leaked into a normal academy route'],
+        ['clear-isolation', () => !canEnterFreeMode(freeSpeedState) && restoredFreeClear?.ui.dialog?.type === 'free-clear' && restoredFreeClear.board.clearCommitted
+          && sameCells(restoredFreeClear.progress.lap1CompletedPuzzleIds, freeIsolationSource.progress.lap1CompletedPuzzleIds)
+          && sameCells(restoredFreeClear.progress.tutorialCompletedPuzzleIds, freeIsolationSource.progress.tutorialCompletedPuzzleIds)
+          && sameCells(restoredFreeClear.speed.completedTrialIds, freeIsolationSource.speed.completedTrialIds)
+          && restoredFreeClear.rewards.masterGoldGranted && restoredFreeClear.settings.theme === 'gold' && restoredFreeClear.settings.themeChosen, 'free clear changed course progress, speed records, or rewards'],
+        ['corrupt-descriptor-recovery', () => corruptFreeActive?.navigation.mode === 'free' && corruptFreeActive.free.returnNavigation?.routeId === 'tutorial' && corruptFreeActive.free.savedSession?.initialState === freeInitialState && corruptFreeActive.free.activeSession?.par >= 2 && corruptFreeActive.free.activeSession?.par <= 4
+          && corruptFreeLeave?.navigation.mode === 'tutorial' && corruptFreeLeave.free.savedSession?.initialState === corruptFreeActive.free.activeSession?.initialState
+          && corruptFreeSaved?.navigation.routeId === 'academy-intro' && corruptFreeSaved.free.savedSession === null, 'free corrupt descriptor recovery is invalid'],
+      ]);
+      return { freeSession, freeAfterOne, freeMidState };
+    }
+
+    function checkCustomBoardContracts(checkRuntimeEach, { freeSession, freeAfterOne, freeMidState }) {
       // P7e 自作問題: editorとplayingを一つのphase descriptorにし、solver判定、履歴、F5、
       // clear後のeditor復帰を検査する。通常進捗と自由savedはここで変えない。
       const customOneCells = Array.from(WakeSevenBoardDomain.decode(SOLVER.byDepth[1][0]));
@@ -6791,41 +6834,43 @@
       const customAfterRestart = customRestartBoard && makeCustomPlayingSessionForBoard(customMid, customRestartBoard);
       const debugWritableCustomBoard = customSolvedBoard && makeDebugWritableBoard(customSolvedBoard);
       const customDebugClearSession = debugWritableCustomBoard && makeCustomPlayingSessionForBoard(customPlaying, { ...debugWritableCustomBoard, clearCommitted:true });
-      checkRuntime('custom-board-editor-play-persistence-and-isolation', customEditor?.phase === 'editing' && selectDistance(customEditor.cells) === 0
-        && customCycleOne?.cells[0] === 1 && customCycleTwo?.cells[0] === 2 && customCycleThree?.cells[0] === 0
-        && customOneEditor && selectDistance(customOneEditor.cells) === 1 && customPlaying?.phase === 'playing' && customPlaying.par === 1
-        && customMid && normalizeCustomSession(customMid)?.history.length === 1
-        && impossibleCustom && selectDistance(impossibleCustom) === null
-        && restoredCustomEditor?.navigation.mode === 'custom' && restoredCustomEditor.custom.activeSession?.phase === 'editing' && sameCells(restoredCustomEditor.board.cells, SOLVED_BOARD)
-        && restoredCustomMid?.custom.activeSession?.phase === 'playing' && restoredCustomMid.board.history.length === 1 && sameCells(restoredCustomMid.board.cells, customMid.cells)
-        && restoredCustomClear?.ui.dialog?.type === 'custom-clear' && restoredCustomClear.board.clearCommitted
-        && migratedP7dFree?.schemaVersion === APP_SCHEMA_VERSION && migratedP7dFree.navigation.mode === 'free' && migratedP7dFree.board.history.length === 1
-        && corruptCustomPlaying?.navigation.mode === 'custom' && corruptCustomPlaying.custom.activeSession?.phase === 'editing' && sameCells(corruptCustomPlaying.board.cells, SOLVED_BOARD)
-        && corruptCustomPlaying.custom.activeSession?.returnNavigation?.routeId === 'tutorial'
-        && normalAfterCorruptCustom?.navigation.mode === 'tutorial' && normalAfterCorruptCustom.navigation.tutorialStep === 0
-        && customProgressIsolation?.progress.tutorialCompleted && customProgressIsolation.progress.lap1CompletedPuzzleIds.includes(ACADEMY_INTRO_PUZZLES[0].puzzleId)
-        && customProgressIsolation.free.savedSession?.initialState === freeSession.initialState
-        && freeAfterCustom?.navigation.mode === 'free' && freeAfterCustom.free.returnNavigation?.routeId === 'tutorial'
-        && freeAfterCustom.board.history.length === 1 && sameCells(freeAfterCustom.board.cells, freeAfterOne)
-        && normalAfterCustomFree?.navigation.mode === 'tutorial' && normalAfterCustomFree.navigation.tutorialStep === 0
-        && corruptCustomFromFree?.navigation.mode === 'custom' && corruptCustomFromFree.custom.activeSession?.phase === 'editing'
-        && corruptCustomFromFree.custom.activeSession?.returnNavigation?.mode === 'free'
-        && corruptCustomFromFree.custom.activeSession?.returnNavigation?.freeReturnNavigation?.routeId === 'tutorial'
-        && freeAfterCorruptCustom?.navigation.mode === 'free' && freeAfterCorruptCustom.free.returnNavigation?.routeId === 'tutorial'
-        && freeAfterCorruptCustom.board.history.length === 1 && sameCells(freeAfterCorruptCustom.board.cells, freeAfterOne)
-        && normalAfterCorruptCustomFree?.navigation.mode === 'tutorial' && normalAfterCorruptCustomFree.navigation.tutorialStep === 0
-        && corruptFreeReturn?.navigation.mode === 'custom' && normalAfterCorruptFreeReturn?.navigation.mode === 'tutorial'
-        && normalAfterCorruptFreeReturn.navigation.tutorialStep === 0
-        && cloneCustomReturnNavigation({ mode:'free', routeId:'academy-intro', puzzleId:'academy-intro-001' }) === null
-        && customEditorCellAtPoint(customHexCorner, STANDARD_BOARD_VIEW) === 0
-        && customEditorCellAtPoint(customHexOutsideSlope, STANDARD_BOARD_VIEW) === null
-        && customAfterUndo?.history.length === 0 && sameCells(customAfterUndo.cells, customMid.initialCells)
-        && customAfterRestart?.history.length === 0 && sameCells(customAfterRestart.cells, customMid.initialCells)
-        && debugWritableCustomBoard && !Object.isFrozen(debugWritableCustomBoard)
-        && normalizeCustomSession(customDebugClearSession)?.clearCommitted
-        && selectCanEditCustomPointer({ isPrimary:true, pointerType:'touch' }, customEditorState, { phase:BoardPhase.READY })
-        && !selectCanEditCustomPointer({ isPrimary:false, pointerType:'touch' }, customEditorState, { phase:BoardPhase.READY }),
-      'custom editor, solver gate, play conversion, reload recovery, or free/progress isolation is invalid');
+      checkRuntimeEach('custom', [
+        ['editor-cycle', () => customEditor?.phase === 'editing' && selectDistance(customEditor.cells) === 0
+          && customCycleOne?.cells[0] === 1 && customCycleTwo?.cells[0] === 2 && customCycleThree?.cells[0] === 0, 'custom editor did not cycle one cell through its three orientations'],
+        ['play-conversion', () => Boolean(customOneEditor) && selectDistance(customOneEditor.cells) === 1 && customPlaying?.phase === 'playing' && customPlaying.par === 1
+          && Boolean(customMid) && normalizeCustomSession(customMid)?.history.length === 1, 'custom editor did not create a playable solver-backed board'],
+        ['impossible-board', () => Boolean(impossibleCustom) && selectDistance(impossibleCustom) === null, 'custom editor lost its impossible-board state'],
+        ['reload-editor', () => restoredCustomEditor?.navigation.mode === 'custom' && restoredCustomEditor.custom.activeSession?.phase === 'editing' && sameCells(restoredCustomEditor.board.cells, SOLVED_BOARD), 'custom editor did not restore as an editor'],
+        ['reload-playing', () => restoredCustomMid?.custom.activeSession?.phase === 'playing' && restoredCustomMid.board.history.length === 1 && Boolean(customMid) && sameCells(restoredCustomMid.board.cells, customMid.cells), 'custom playing board did not restore its history'],
+        ['reload-clear', () => restoredCustomClear?.ui.dialog?.type === 'custom-clear' && restoredCustomClear.board.clearCommitted, 'custom clear dialog did not restore'],
+        ['schema-migration', () => migratedP7dFree?.schemaVersion === APP_SCHEMA_VERSION && migratedP7dFree.navigation.mode === 'free' && migratedP7dFree.board.history.length === 1, 'custom schema migration changed a saved free board'],
+        ['corrupt-playing-fallback', () => corruptCustomPlaying?.navigation.mode === 'custom' && corruptCustomPlaying.custom.activeSession?.phase === 'editing' && sameCells(corruptCustomPlaying.board.cells, SOLVED_BOARD)
+          && corruptCustomPlaying.custom.activeSession?.returnNavigation?.routeId === 'tutorial'
+          && normalAfterCorruptCustom?.navigation.mode === 'tutorial' && normalAfterCorruptCustom.navigation.tutorialStep === 0, 'corrupt custom playing session did not fall back to its editor and return route'],
+        ['progress-isolation', () => customProgressIsolation?.progress.tutorialCompleted && customProgressIsolation.progress.lap1CompletedPuzzleIds.includes(ACADEMY_INTRO_PUZZLES[0].puzzleId)
+          && customProgressIsolation.free.savedSession?.initialState === freeSession.initialState, 'custom session changed normal progress or saved free board'],
+        ['free-round-trip', () => freeAfterCustom?.navigation.mode === 'free' && freeAfterCustom.free.returnNavigation?.routeId === 'tutorial'
+          && freeAfterCustom.board.history.length === 1 && sameCells(freeAfterCustom.board.cells, freeAfterOne)
+          && normalAfterCustomFree?.navigation.mode === 'tutorial' && normalAfterCustomFree.navigation.tutorialStep === 0, 'custom to free round-trip changed its saved route or board'],
+        ['corrupt-free-return', () => corruptCustomFromFree?.navigation.mode === 'custom' && corruptCustomFromFree.custom.activeSession?.phase === 'editing'
+          && corruptCustomFromFree.custom.activeSession?.returnNavigation?.mode === 'free'
+          && corruptCustomFromFree.custom.activeSession?.returnNavigation?.freeReturnNavigation?.routeId === 'tutorial'
+          && freeAfterCorruptCustom?.navigation.mode === 'free' && freeAfterCorruptCustom.free.returnNavigation?.routeId === 'tutorial'
+          && freeAfterCorruptCustom.board.history.length === 1 && sameCells(freeAfterCorruptCustom.board.cells, freeAfterOne)
+          && normalAfterCorruptCustomFree?.navigation.mode === 'tutorial' && normalAfterCorruptCustomFree.navigation.tutorialStep === 0
+          && corruptFreeReturn?.navigation.mode === 'custom' && normalAfterCorruptFreeReturn?.navigation.mode === 'tutorial'
+          && normalAfterCorruptFreeReturn.navigation.tutorialStep === 0, 'corrupt custom/free return route did not recover safely'],
+        ['return-route-validation', () => cloneCustomReturnNavigation({ mode:'free', routeId:'academy-intro', puzzleId:'academy-intro-001' }) === null, 'custom accepted an invalid free return navigation'],
+        ['hex-hit-test', () => customEditorCellAtPoint(customHexCorner, STANDARD_BOARD_VIEW) === 0 && customEditorCellAtPoint(customHexOutsideSlope, STANDARD_BOARD_VIEW) === null, 'custom editor hit test no longer follows the visible hexagon'],
+        ['undo-restart-sync', () => customAfterUndo?.history.length === 0 && Boolean(customMid) && sameCells(customAfterUndo.cells, customMid.initialCells)
+          && customAfterRestart?.history.length === 0 && sameCells(customAfterRestart.cells, customMid.initialCells), 'custom Undo or Restart did not synchronize the descriptor'],
+        ['debug-board-contract', () => Boolean(debugWritableCustomBoard) && !Object.isFrozen(debugWritableCustomBoard) && normalizeCustomSession(customDebugClearSession)?.clearCommitted, 'custom debug solved board is not writable or cannot normalize'],
+        ['pointer-gate', () => selectCanEditCustomPointer({ isPrimary:true, pointerType:'touch' }, customEditorState, { phase:BoardPhase.READY })
+          && !selectCanEditCustomPointer({ isPrimary:false, pointerType:'touch' }, customEditorState, { phase:BoardPhase.READY }), 'custom editor pointer gate accepts a non-primary pointer'],
+      ]);
+    }
+
+    function checkPersistenceContracts(checkRuntime, { academyClear, academyInitial }) {
       const preservedProgress = TUTORIAL_STEPS[0].puzzleId;
       const brokenBoard = normalizePersistentAppState({ ...academyClear, board:{ ...academyClear.board, cells:[9, 9, 9] }, progress:{ tutorialCompleted:true, tutorialCompletedPuzzleIds:[preservedProgress], lap1CompletedPuzzleIds:[], lap2CompletedPuzzleIds:[] }, rewards:{ masterGoldGranted:true, satoriDesignGranted:false }, settings:{ theme:'gold', layout:'satori-tilted' } });
       checkRuntime('broken-board-keeps-independent-state', sameCells(brokenBoard.board.cells, academyInitial) && brokenBoard.progress.tutorialCompletedPuzzleIds.includes(preservedProgress) && brokenBoard.settings.theme === 'gold' && brokenBoard.settings.layout === 'standard', 'broken board fallback changed independent progress or reward settings');
@@ -6865,7 +6910,34 @@
       checkRuntime('tutorial-final-reload-enters-academy', restoredFinalTutorial.navigation.routeId === 'academy-intro' && restoredFinalTutorial.progress.tutorialCompleted && restoredFinalTutorial.ui.dialog?.type === 'academy-enroll', 'final tutorial reload did not enter academy intro');
       const malformedPuzzleContext = normalizePersistentAppState({ ...midTutorial, navigation:{ ...midTutorial.navigation, puzzleId:'unknown-puzzle' } });
       checkRuntime('malformed-tutorial-context-fallback', malformedPuzzleContext.navigation.tutorialStep === 0 && sameCells(malformedPuzzleContext.board.cells, puzzleInitialCells(tutorialStepAt(0))), 'malformed tutorial context did not fall back safely');
-      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, reachableCount:seen.size, distanceDistribution:Object.freeze(distribution), stageReferenceCount:ACADEMY_INTRO_PUZZLES.length + ACADEMY_BASIC_PUZZLES.length + ACADEMY_APPLICATION_PUZZLES.length + ACADEMY_DEVELOPMENT_PUZZLES.length + TRAINING_UPPER_PUZZLES.length + TRAINING_MIDDLE_PUZZLES.length + TRAINING_LOWER_PUZZLES.length + MASTERY_PUZZLES.length + SATORI_PUZZLES.length, tutorialStepCount:TUTORIAL_STEPS.length, symmetryCount:VIEW_SYMMETRIES.length, initialDistance, renderedInitialCells:initialCells.length, renderedSolvedCells:solvedCells.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
+    }
+
+    // 自己検査の実行順。各機能の準備値は関数内へ閉じ、横断検査で必要な値だけ渡す。
+    function runSelftest() {
+      const errors = [];
+      const runtimeChecks = [];
+      const checkRuntime = (name, passed, failure) => { runtimeChecks.push(name); if (!passed) errors.push(`${name}: ${failure}`); };
+      // 一つの機能で複数の保存・遷移契約を検査する時も、失敗名を一つに潰さない。
+      // 自由問題／自作問題などを改修した時、consoleの最初の失敗だけで確認箇所へ戻れる。
+      const checkRuntimeEach = (group, contracts) => contracts.forEach(([name, verify, failure]) => {
+        try {
+          checkRuntime(`${group}:${name}`, Boolean(verify()), failure);
+        } catch (error) {
+          const detail = error instanceof Error ? error.message : String(error);
+          checkRuntime(`${group}:${name}`, false, `${failure}: ${detail}`);
+        }
+      });
+      const core = checkBoardCoreContracts(checkRuntime, errors);
+      const academy = checkAcademyContracts(checkRuntime);
+      checkTrainingContracts(checkRuntime);
+      checkMasteryContracts(checkRuntime);
+      checkSpeedContracts(checkRuntime);
+      checkSatoriContracts(checkRuntime);
+      const free = checkFreeModeContracts(checkRuntimeEach);
+      // 自由→自作→自由の往復は、自由の検査で作った同じ途中盤面を使う横断契約。
+      checkCustomBoardContracts(checkRuntimeEach, free);
+      checkPersistenceContracts(checkRuntime, academy);
+      return Object.freeze({ passed:errors.length === 0, errors:Object.freeze(errors), stateCount:WakeSevenBoardDomain.stateCount, ...core, stageReferenceCount:ACADEMY_INTRO_PUZZLES.length + ACADEMY_BASIC_PUZZLES.length + ACADEMY_APPLICATION_PUZZLES.length + ACADEMY_DEVELOPMENT_PUZZLES.length + TRAINING_UPPER_PUZZLES.length + TRAINING_MIDDLE_PUZZLES.length + TRAINING_LOWER_PUZZLES.length + MASTERY_PUZZLES.length + SATORI_PUZZLES.length, tutorialStepCount:TUTORIAL_STEPS.length, symmetryCount:VIEW_SYMMETRIES.length, axisCount:TRIANGLES.length, runtimeChecks:Object.freeze(runtimeChecks) });
     }
     // 起動時に盤面ルールと操作の前提を確認してから表示する
     const selftestResult = runSelftest();
