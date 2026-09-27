@@ -299,7 +299,8 @@
       .w7-speed-hud { grid-template-columns:minmax(0,1fr) auto auto; gap:.25rem; padding-left:0; padding-right:0; }
       .w7-speed-clock { transform:translate(.06rem,.08rem); }
     }
-    .w7-board-frame { position:relative; width:100%; max-width:var(--content-max); margin:0 auto; }
+    /* 盤面上の縦スワイプを、組み込みブラウザーのページスクロールや引き下げ操作へ渡さない。 */
+    .w7-board-frame { position:relative; width:100%; max-width:var(--content-max); margin:0 auto; touch-action:none; }
     .w7-board-view-controls { position:absolute; z-index:2; top:1.125rem; left:.25rem; right:.25rem; display:flex; justify-content:space-between; pointer-events:none; }
     .w7-board-view-controls.is-bottom { top:auto; bottom:.75rem; }
     .w7-board-view-controls[hidden] { display:none; }
@@ -1446,6 +1447,7 @@
     const DEBUG_MODE = new URLSearchParams(location.search).get('debug') === '1'
       && (location.protocol === 'file:' || ['localhost','127.0.0.1','::1'].includes(location.hostname));
     const boardElement = document.querySelector('#w7-board');
+    const boardFrameElement = document.querySelector('.w7-board-frame');
     const debugToolsElement = document.querySelector('#w7-debug-tools');
     const debugStageSelect = document.querySelector('#w7-debug-stage-select');
     const debugSpeedSelect = document.querySelector('#w7-debug-speed-select');
@@ -10053,6 +10055,11 @@
       const transition = isTutorialRoute() ? TUTORIAL_CLEAR_TRANSITION_MILLISECONDS : CLEAR_SETTLE_MILLISECONDS;
       setEffectTimer(effect, () => { if (finishEffect(effect)) afterClear ? afterClear() : renderRuntime({ happy:true, context:'clear effect' }); }, transition);
     }
+    // SVGのtouch-actionだけを無視するWebViewでも、盤面から始まった指の移動で
+    // ページ全体をスクロールさせない。枠内のボタンのタップはそのまま使える。
+    boardFrameElement.addEventListener('touchmove', event => {
+      if (event.cancelable) event.preventDefault();
+    }, { passive:false });
     // 盤面と操作ボタンのイベント
     boardElement.addEventListener('pointerdown', event => { markSoundUserGesture(); handleBoardPointerDown(event); });
     boardElement.addEventListener('pointermove', handleBoardPointerMove);
