@@ -139,6 +139,7 @@
   <div class="bar">
     <button class="chip primary" id="shuffle">シャッフル</button>
     <button class="chip" id="solve">自動解答</button>
+    <button class="chip" id="explode" type="button" aria-pressed="false" aria-controls="stage">分解する</button>
     <button class="chip" id="top">上から見る</button>
     <button class="chip" id="under">裏から見る</button>
     <button class="chip" id="reset">視点を戻す</button>
@@ -346,6 +347,12 @@ function solid(geometry,material){
   mesh.castShadow=true; mesh.receiveShadow=true;
   return mesh;
 }
+// 分解図で動かす実部品に、親から見た移動量を添える。
+// 印刷・縁取り・ねじの溝は取り付け先と同じ量だけ動かし、一つの部品として見せる。
+function explodeOffset(object,x,y,z){
+  object.userData.explodeOffset=new THREE.Vector3(x,y,z);
+  return object;
+}
 
 /* パネル：薄いプラスチック製。裏側だけに受けを持ち、天面はだるまだけ。 */
 function makePanel(i){
@@ -357,18 +364,18 @@ function makePanel(i){
   const seam=solid(slab(.1,R-1.95),SM(0xc7b995,.58));
   seam.position.y=.48; g.add(seam);
   const up=solid(molded(regularHex(R-2.2),3.42,.55),edge);
-  up.position.y=.58; g.add(up);
+  up.position.y=.58; g.add(explodeOffset(up,0,44,0));
   const rim=new THREE.Mesh(hexRing(.018,R-2.45,R-3.15),SM(0xC7B486,.55));
-  rim.position.y=PANEL_TOP+.005; g.add(rim);
+  rim.position.y=PANEL_TOP+.005; g.add(explodeOffset(rim,0,44,0));
   const daruma=new THREE.Mesh(
     new THREE.PlaneGeometry(76,88),
     new THREE.MeshStandardMaterial({map:darumaTexture(COL[i],MAT[mat].face),roughness:.5,envMapIntensity:.2,
       transparent:true,alphaTest:.04,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1}));
   daruma.rotation.x=-Math.PI/2; daruma.position.y=PANEL_TOP+.025;
-  daruma.receiveShadow=true; g.add(daruma);
+  daruma.receiveShadow=true; g.add(explodeOffset(daruma,0,44,0));
   // 鉄板は表皮のすぐ下に封入。裏面から金属が飛び出す構造にしない。
   const steel=new THREE.Mesh(new THREE.CylinderGeometry(14,14,.6,32),SM(0x8b9299,.3,.8));
-  steel.position.y=2.95; g.add(steel);
+  steel.position.y=2.95; g.add(explodeOffset(steel,0,22,0));
   const weld=new THREE.Mesh(new THREE.RingGeometry(14.8,15.2,48),SM(0xd0c2a3,.6));
   weld.rotation.x=Math.PI/2; weld.position.y=-1.015; g.add(weld);
   return g;
@@ -388,7 +395,7 @@ function makePlug(){
   }
   shape.closePath();
   const beam=solid(molded(shape,7,.65),SM(MAT[mat].grip,.33));
-  beam.position.y=10.5; g.add(beam);
+  beam.position.y=10.5; g.add(explodeOffset(beam,0,20,0));
   const cover=solid(molded(shape,.7,.18),SM(MAT[mat].grip,.48));
   cover.position.y=9.72; g.add(cover);
   for(let k=0;k<3;k++){
@@ -396,20 +403,20 @@ function makePlug(){
     const housing=new THREE.Shape(); housing.absarc(0,0,6.65,0,Math.PI*2,false);
     const bore=new THREE.Path(); bore.absarc(0,0,5.3,0,Math.PI*2,true); housing.holes.push(bore);
     const endCap=solid(molded(housing,5.65,.12),SM(MAT[mat].grip,.4));
-    endCap.position.set(R,PANEL_TOP+.2,0); arm.add(endCap);
+    endCap.position.set(R,PANEL_TOP+.2,0); arm.add(explodeOffset(endCap,0,-8,0));
     // ゴムの環が面に接し、回転時の滑りを防ぐ。磁石は抜け止めの内側を上下する。
     const pad=solid(new THREE.TorusGeometry(5.95,.45,8,32),SM(0x45443e,.92));
-    pad.rotation.x=Math.PI/2; pad.position.set(R,PANEL_TOP+.475,0); arm.add(pad);
+    pad.rotation.x=Math.PI/2; pad.position.set(R,PANEL_TOP+.475,0); arm.add(explodeOffset(pad,0,-35,0));
     const magnet=solid(new THREE.CylinderGeometry(5.05,5.05,2.1,32),SM(0x90979b,.28,.72));
-    magnet.position.set(R,PANEL_TOP+1.18,0); arm.add(magnet); magnets.push({magnet});
+    magnet.position.set(R,PANEL_TOP+1.18,0); arm.add(explodeOffset(magnet,0,-23,0)); magnets.push({magnet});
     const lip=new THREE.Mesh(new THREE.RingGeometry(4.75,5.35,32),SM(MAT[mat].grip,.44));
-    lip.rotation.x=Math.PI/2; lip.position.set(R,PANEL_TOP+.11,0); arm.add(lip);
+    lip.rotation.x=Math.PI/2; lip.position.set(R,PANEL_TOP+.11,0); arm.add(explodeOffset(lip,0,-8,0));
     arm.rotation.y=k*Math.PI*2/3; g.add(arm);
   }
   const buttonSeat=solid(new THREE.CylinderGeometry(5,5,.5,32),SM(0x655222,.65));
-  buttonSeat.position.y=17.55; g.add(buttonSeat);
+  buttonSeat.position.y=17.55; g.add(explodeOffset(buttonSeat,0,42,0));
   releaseButton=solid(new THREE.CylinderGeometry(4.15,4.3,1.2,32),SM(MAT[mat].plug,.4));
-  g.add(releaseButton);
+  g.add(explodeOffset(releaseButton,0,56,0));
   setClaw(0);
   return g;
 }
@@ -427,13 +434,13 @@ function build(){
   const addPart=(mesh,x=0,y=0,z=0)=>{mesh.position.set(x,y,z);root.add(mesh);parts.push(mesh);return mesh;};
   // 元の六角形の外形を保った上下ケース。細い継ぎ目と丸い稜線。
   const plate=solid(molded(regularHex(158.8),6.9,.7),SM(MAT[mat].board,.53));
-  plate.rotation.y=Math.PI/6; addPart(plate,0,-9);
+  plate.rotation.y=Math.PI/6; addPart(explodeOffset(plate,0,-64,0),0,-9);
   const seam=solid(slab(.18,159),SM(0x223548,.7));
-  seam.rotation.y=Math.PI/6; addPart(seam,0,-2.1);
+  seam.rotation.y=Math.PI/6; addPart(explodeOffset(seam,0,-64,0),0,-2.1);
   // 七つの穴を一枚の天板から抜く。重なった受け枠やパネルとの干渉を作らない。
   const deck=regularHex(156.8);
   const floor=solid(slab(.92,157),SM(MAT[mat].recess,.72));
-  floor.rotation.y=Math.PI/6; addPart(floor,0,-1.92);
+  floor.rotation.y=Math.PI/6; addPart(explodeOffset(floor,0,-28,0),0,-1.92);
   POS.forEach(([x,z])=>{
     // 天板全体を30°回すため、穴は逆回転してから切り抜く。
     const hole=new THREE.Path();
@@ -452,15 +459,15 @@ function build(){
   // 底面のねじ留めと滑り止め。ねじ頭は底面の内側に収める。
   for(let i=0;i<6;i++){
     const a=i*Math.PI/3, x=123*Math.cos(a), z=123*Math.sin(a);
-    addPart(solid(new THREE.CylinderGeometry(6.2,6.8,2,32),SM(0x292f35,.94)),x,-9.8,z);
+    addPart(explodeOffset(solid(new THREE.CylinderGeometry(6.2,6.8,2,32),SM(0x292f35,.94)),0,-94,0),x,-9.8,z);
     const sx=143*Math.cos(a), sz=143*Math.sin(a);
     const seat=new THREE.Mesh(new THREE.CircleGeometry(3.1,24),SM(0x192d40,.85));
-    seat.rotation.x=Math.PI/2; addPart(seat,sx,-9.015,sz);
+    seat.rotation.x=Math.PI/2; addPart(explodeOffset(seat,0,-64,0),sx,-9.015,sz);
     const screw=new THREE.Mesh(new THREE.CircleGeometry(2.05,24),SM(0xadb1b4,.32,.72));
-    screw.rotation.x=Math.PI/2; addPart(screw,sx,-9.025,sz);
+    screw.rotation.x=Math.PI/2; addPart(explodeOffset(screw,0,-84,0),sx,-9.025,sz);
     for(const angle of [0,Math.PI/2]){
       const slot=new THREE.Mesh(new THREE.PlaneGeometry(2.6,.48),SM(0x3d464e,.7));
-      slot.rotation.set(Math.PI/2,0,angle+.25); addPart(slot,sx,-9.04,sz);
+      slot.rotation.set(Math.PI/2,0,angle+.25); addPart(explodeOffset(slot,0,-84,0),sx,-9.04,sz);
     }
   }
   // 台座の上側を示す金の矢印。盤を回しても「起きる向き」はここで分かる。
@@ -520,8 +527,10 @@ stage.addEventListener('keydown',e=>{
   }
 });
 function place(){
-  camera.position.set(Math.sin(yaw)*Math.cos(pitch)*dist, Math.sin(pitch)*dist+24, Math.cos(yaw)*Math.cos(pitch)*dist);
-  camera.lookAt(0,10,0);
+  // 分解時は全体が入るよう少し引く。利用者が選んだ視点・倍率は組立後にも保つ。
+  const viewDist=dist*(1+.65*explodeAmount), rise=40*explodeAmount;
+  camera.position.set(Math.sin(yaw)*Math.cos(pitch)*viewDist, Math.sin(pitch)*viewDist+24+rise, Math.cos(yaw)*Math.cos(pitch)*viewDist);
+  camera.lookAt(0,10+rise,0);
   needsRender=true;
 }
 function resize(){
@@ -537,6 +546,64 @@ const groundPlane=new THREE.Plane(new THREE.Vector3(0,1,0),-PLUG_HOME_Y), planeH
 let mode='idle'; // 'idle'：三又は待機中／'lifted'：3枚を持ち上げて回転待ち
 let liftedTi=0, pivot=null;
 let carryDrag=null, rotateDrag=null, viewDrag=null;
+
+/* 分解／組立：確定済みの各部品の位置を保存し、往復しても盤面や磁石位置がずれないようにする。
+   分解中は鑑賞操作だけを受け、三又を持ち上げた状態では分解を開始しない。 */
+const EXPLODE_TEXT={
+  ja:{open:'分解する',close:'組み立てる',opening:'分解中…',closing:'組み立て中…',inspect:'分解したパーツを、ドラッグでいろいろな角度から眺めてみよう。'},
+  en:{open:'Take apart',close:'Reassemble',opening:'Taking apart…',closing:'Reassembling…',inspect:'Drag to explore the separated parts from different angles.'},
+  zh:{open:'拆开',close:'组装',opening:'正在拆开…',closing:'正在组装…',inspect:'拖动视图，从不同角度观察拆开的零件。'},
+  ko:{open:'분해하기',close:'조립하기',opening:'분해 중…',closing:'조립 중…',inspect:'드래그하여 분리된 부품을 여러 각도에서 살펴보세요.'}
+};
+let explodeLanguage='ja';
+try{ explodeLanguage=JSON.parse(localStorage.getItem('wake7-rebuild-v2')||'null')?.settings?.language||'ja'; }catch(_){}
+const explodeText=EXPLODE_TEXT[explodeLanguage]||EXPLODE_TEXT.ja;
+const explodeButton=document.getElementById('explode');
+let explodeTarget=0, explodeAmount=0, explodedParts=null, assembledCaption='';
+function explosionActive(){ return explodeTarget!==0||explodeAmount!==0; }
+function updateExplodeControls(){
+  explodeButton.textContent=explodeTarget?explodeText.close:explodeText.open;
+  explodeButton.setAttribute('aria-pressed',String(explodeTarget===1));
+  explodeButton.classList.toggle('on',explodeTarget===1);
+  explodeButton.disabled=!!(anim||mode!=='idle'||carryDrag||rotateDrag||viewDrag);
+  for(const id of ['shuffle','solve']) document.getElementById(id).disabled=explosionActive();
+}
+function toggleExplodedView(){
+  if(anim||mode!=='idle'||carryDrag||rotateDrag||viewDrag) return;
+  if(!explodedParts){
+    assembledCaption=CAP.innerHTML;
+    explodedParts=[];
+    root.traverse(object=>{
+      const offset=object.userData.explodeOffset;
+      if(offset) explodedParts.push({object,position:object.position.clone(),offset});
+    });
+    // 現在の席を基準に七枚を外へ広げる。シャッフル後も同じ場所へ組み立て直す。
+    for(const object of panels) explodedParts.push({object,position:object.position.clone(),offset:new THREE.Vector3(object.position.x*.36,48,object.position.z*.36)});
+    explodedParts.push({object:plug,position:plug.position.clone(),offset:new THREE.Vector3(0,100,0)});
+  }
+  explodeTarget=1-explodeTarget;
+  CAP.textContent=explodeTarget?explodeText.opening:explodeText.closing;
+  // 同じフレーム内で押し直した場合も、古い位置の記録を残さず通常操作へ戻す。
+  if(explodeAmount===explodeTarget) finishExplodedView();
+  updateExplodeControls();
+}
+function finishExplodedView(){
+  if(explodeTarget) CAP.textContent=explodeText.inspect;
+  else { explodedParts=null; CAP.innerHTML=assembledCaption; }
+  updateExplodeControls();
+}
+function updateExplodedView(dt){
+  if(explodeAmount===explodeTarget) return false;
+  const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  explodeAmount=reduceMotion?explodeTarget:explodeAmount+(explodeTarget-explodeAmount)*(1-Math.exp(-7*dt));
+  if(Math.abs(explodeAmount-explodeTarget)<.001) explodeAmount=explodeTarget;
+  for(const {object,position,offset} of explodedParts) object.position.copy(position).addScaledVector(offset,explodeAmount);
+  place();
+  if(explodeAmount===explodeTarget) finishExplodedView();
+  return true;
+}
+explodeButton.addEventListener('click',toggleExplodedView);
+updateExplodeControls();
 
 // 三又を運んでいる間、今離すとどの軸に決まるかを示す小さな光点。軸そのものの位置だけを指す。
 const targetRing=new THREE.Group();
@@ -753,7 +820,7 @@ stage.addEventListener('pointerdown',e=>{
   if(e.button!==0) return;
   if(anim||carryDrag||rotateDrag||viewDrag) return;
   targetDist=dist; updateZoom();
-  if(mode==='idle'&&pointerOnPlug(e)){
+  if(!explosionActive()&&mode==='idle'&&pointerOnPlug(e)){
     const pt=pointerToBoardXZ(e)||{x:plug.position.x,z:plug.position.z};
     carryDrag={id:e.pointerId, dx:plug.position.x-pt.x, dz:plug.position.z-pt.z, nearest:homeTri};
     stage.setPointerCapture(e.pointerId); stage.classList.add('drag');
@@ -891,7 +958,7 @@ function playShuffle(moves,i){
   shuffleStep(ti,n,()=>playShuffle(moves,i+1));
 }
 $('shuffle').addEventListener('click',()=>{
-  if(anim||mode==='lifted'||carryDrag||rotateDrag||viewDrag) return;
+  if(explosionActive()||anim||mode==='lifted'||carryDrag||rotateDrag||viewDrag) return;
   anim=true; targetRing.visible=false;
   CAP.textContent='シャッフル中…';
   const moves=Array.from({length:5},()=>[(Math.random()*6)|0, Math.random()<.5?1:-1]);
@@ -956,7 +1023,7 @@ function playSolve(moves,i){
   shuffleStep(ti,n,()=>playSolve(moves,i+1),1.8);
 }
 $('solve').addEventListener('click',()=>{
-  if(anim||mode==='lifted'||carryDrag||rotateDrag||viewDrag) return;
+  if(explosionActive()||anim||mode==='lifted'||carryDrag||rotateDrag||viewDrag) return;
   const moves=solveMoves();
   if(!moves.length){ CAP.textContent='もう全員起きています。'; return; }
   anim=true; targetRing.visible=false;
@@ -985,6 +1052,10 @@ if(!howtoSeen) showHowto();
 let lastFrame=performance.now(), shadowsWereMoving=true;
 function loop(now=performance.now()){
   const dt=Math.min((now-lastFrame)/1000,.25); lastFrame=now;
+  const explosionMoving=updateExplodedView(dt);
+  // ボタンの状態もドラッグ・自動操作の終了に合わせて戻す。
+  const explodeBusy=!!(anim||mode!=='idle'||carryDrag||rotateDrag||viewDrag);
+  if(explodeButton.disabled!==explodeBusy) explodeButton.disabled=explodeBusy;
   if(dist!==targetDist){
     dist+=(targetDist-dist)*(1-Math.exp(-14*dt));
     if(Math.abs(dist-targetDist)<.05) dist=targetDist;
@@ -995,7 +1066,7 @@ function loop(now=performance.now()){
     const s=1+Math.sin(performance.now()*0.004)*.18;
     targetRing.scale.set(s,s,1);
   }
-  const shadowsMoving=!!(anim||carryDrag||rotateDrag);
+  const shadowsMoving=!!(anim||carryDrag||rotateDrag||explosionMoving);
   if(shadowsMoving||shadowsWereMoving) renderer.shadowMap.needsUpdate=true;
   if(needsRender||shadowsMoving||shadowsWereMoving||targetRing.visible){
     renderer.render(scene,camera);
